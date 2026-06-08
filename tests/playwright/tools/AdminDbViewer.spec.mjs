@@ -229,7 +229,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-session-user-summary]")).toHaveCount(0);
     await expect(page.locator("[data-session-user-controls]")).toHaveCount(0);
     await expect(page.locator("[data-session-user-button]")).toHaveCount(0);
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("DavidQ");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await expect(page.locator("nav.nav-links a[data-route='admin-db-viewer']")).toHaveText("DB Viewer");
@@ -320,7 +320,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 1");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 2");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 3");
-    await expect(page.locator("[data-admin-db-table='users']")).toContainText("Admin");
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("guest");
     await expect(page.locator("[data-admin-db-table='roles']")).toContainText("user");
@@ -335,7 +335,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(sampleTable).toContainText("User 1");
     await expect(sampleTable).toContainText("User 2");
     await expect(sampleTable).toContainText("User 3");
-    await expect(sampleTable).toContainText("Admin");
+    await expect(sampleTable).toContainText("DavidQ");
     await expect(sampleTable).toContainText("Guest Project Journey starter");
     await expect(sampleTable).toContainText("local-seeds/user-3/");
     await expect(sampleTable).toContainText(seedData.samples[0].createdAt);
@@ -417,7 +417,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     )).toEqual(["users", "user_roles", "roles"]);
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
-    await expect(page.locator("[data-admin-db-table='users']")).toContainText("Admin");
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
 
     await page.getByRole("button", { name: "Tool State Samples" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Tool State Samples\./);

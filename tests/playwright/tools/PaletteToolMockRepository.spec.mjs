@@ -308,11 +308,13 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Hero Updated");
     await expect(page.locator("[data-palette-table-counts]")).toContainText("palette_colors");
 
+    await page.locator("[data-palette-harmony-match]").selectOption("all");
     await page.locator("[data-palette-harmony-scheme]").selectOption("triadic");
-    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(2);
-    await page.locator("[data-palette-harmony-choice='1']").click();
+    await expect(page.locator("[data-palette-harmony-choice]").first()).toBeVisible();
+    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("title", /Nature Forest Full/);
+    await page.locator("[data-palette-harmony-choice]").first().click();
     await expect(page.locator("[data-palette-count]")).toHaveText("2");
-    await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Triadic 2");
+    await expect(page.locator("[data-palette-selected-summary]")).toContainText("Triadic");
 
     expectNoPageFailures(failures);
   } finally {
@@ -404,6 +406,14 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
 
     await expect(page.locator("[data-palette-generator-preview-row]")).toHaveCount(8);
     await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(64);
+    await expect(page.locator("[data-palette-enable-picker-swatches]")).toBeChecked();
+    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("display-only");
+    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(0);
+    await page.locator("[data-palette-enable-picker-swatches]").uncheck();
+    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("Enable visible picker swatches");
+    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(64);
+    await page.locator("[data-palette-enable-picker-swatches]").check();
+    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(0);
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-collection", "Nature");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-type-name", "Forest");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-variant-name", "Full");

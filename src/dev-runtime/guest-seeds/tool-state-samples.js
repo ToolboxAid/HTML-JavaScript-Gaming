@@ -11,7 +11,7 @@ const HUMAN_SEED_USERS = Object.freeze([
   Object.freeze({ displayName: "User 1", toolKey: "project-journey", userKey: MOCK_DB_KEYS.users.user1 }),
   Object.freeze({ displayName: "User 2", toolKey: "palette", userKey: MOCK_DB_KEYS.users.user2 }),
   Object.freeze({ displayName: "User 3", toolKey: "asset", userKey: MOCK_DB_KEYS.users.user3 }),
-  Object.freeze({ displayName: "Admin", toolKey: "workspace", userKey: MOCK_DB_KEYS.users.admin }),
+  Object.freeze({ displayName: "DavidQ", toolKey: "workspace", userKey: MOCK_DB_KEYS.users.admin }),
 ]);
 
 function activeToolSamplesByKey() {

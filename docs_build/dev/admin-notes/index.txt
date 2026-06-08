@@ -1,10 +1,10 @@
 [ ] Start the server
 npm run dev:local-api
 
-[ ] move 
-src\assets\fonts\0xProtoNerdFont\ to assets\theme-v2\fonts\
-src\assets\fonts\vector_battle\ to assets\theme-v2\fonts\
-delete src\assets\
+[x] moved fonts
+assets\theme-v2\fonts\0xProtoNerdFont\
+assets\theme-v2\fonts\vector_battle\
+src\assets\ removed after move
 
 [ ] Project Life Cycle
 

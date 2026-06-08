@@ -281,6 +281,7 @@ const sourceSortState = { direction: "asc", key: "name" };
 let sourceSizeState = "medium";
 const userSortState = { direction: "asc", key: "hue" };
 let userSizeState = "medium";
+let pickerSwatchesEnabled = true;
 const checkedSwatchKeys = new Set();
 const selectedTagFilters = new Set();
 let tagMatchMode = "any";
@@ -304,6 +305,7 @@ const elements = {
   generatorColors: document.querySelector("[data-palette-generator-colors]"),
   generatorCollection: document.querySelector("[data-palette-theme-collection]"),
   generatorContrast: document.querySelector("[data-palette-generator-contrast]"),
+  enablePickerSwatches: document.querySelector("[data-palette-enable-picker-swatches]"),
   generatorGenerate: document.querySelector("[data-palette-generator-generate]"),
   generatorHueShift: document.querySelector("[data-palette-generator-hue-shift]"),
   generatorPreview: document.querySelector("[data-palette-generator-preview]"),
@@ -318,6 +320,7 @@ const elements = {
   hexPreview: document.querySelector("[data-palette-user-hex-preview]"),
   log: document.querySelector("[data-palette-log]"),
   name: document.querySelector("[data-palette-name]"),
+  pickerDisabledReason: document.querySelector("[data-palette-picker-disabled-reason]"),
   projectDiagnostic: document.querySelector("[data-palette-project-diagnostic]"),
   projectOverlay: document.querySelector("[data-palette-project-overlay]"),
   redo: document.querySelector("[data-palette-redo]"),
@@ -878,6 +881,41 @@ function generatorSwatchName(settings, row, column, hex) {
   return `${collection} ${type} ${variant} ${family} R${row + 1} C${column + 1}`;
 }
 
+function generatedPickerSwatches(settings = readPaletteGeneratorSettings()) {
+  if (!settings.collection || !settings.paletteType) {
+    return [];
+  }
+  const pickerSettings = currentPickerSettings(settings);
+  const swatches = [];
+  for (let row = 0; row < settings.steps; row += 1) {
+    for (let column = 0; column < settings.colors; column += 1) {
+      const baseHex = interpolateHex(settings.paletteType.swatches, column, settings.colors);
+      const baseHsl = rgbToHsl(hexToRgb(baseHex));
+      const adjusted = variantAdjustedHsl({
+        hue: baseHsl.hue + settings.hueShift,
+        saturation: baseHsl.saturation * (settings.saturation / 100),
+        lightness: generatorLightness(baseHsl.lightness, row, settings.steps, settings.contrast)
+      }, settings.variant, column, settings.colors);
+      const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
+      const swatch = {
+        hex,
+        name: generatorSwatchName(settings, row, column, hex),
+        pickerSettings,
+        source: GENERATED_SWATCH_SOURCE,
+        tags: []
+      };
+      swatches.push({
+        ...swatch,
+        column,
+        label: settings.paletteType.name,
+        metadata: metadataFromPickerSettings(swatch, pickerSettings),
+        row
+      });
+    }
+  }
+  return swatches;
+}
+
 function createGeneratorPreviewInput(hex, label, row, column, settings, options = {}) {
   const swatch = document.createElement("button");
   swatch.className = "palette-generator-preview-swatch";
@@ -901,6 +939,11 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   };
   swatch.setAttribute("aria-label", `${options.pinned ? "Remove" : "Add"} picker swatch ${swatchName}`);
   swatch.setAttribute("aria-pressed", String(Boolean(options.pinned)));
+  if (options.enabled === false) {
+    swatch.disabled = true;
+    swatch.dataset.paletteGeneratorDisabled = "true";
+    swatch.setAttribute("aria-disabled", "true");
+  }
   if (options.selected) {
     swatch.setAttribute("aria-current", "true");
   }
@@ -936,6 +979,7 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   if (!settings.collection || !settings.paletteType) {
     elements.generatorPreview.replaceChildren();
     setText(elements.generatorPreviewStatus, "No curated palette swatches are available for the selected collection and type.");
+    setText(elements.pickerDisabledReason, "No picker swatches are available to enable for the selected collection and type.");
     setText(elements.generatorStatus, "Palette generator missing curated swatches.");
     return;
   }
@@ -957,6 +1001,7 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
       const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
       rowElement.append(createGeneratorPreviewInput(hex, settings.paletteType.name, row, column, settings, {
+        enabled: pickerSwatchesEnabled,
         pinned: Boolean(pinnedSwatch),
         pinnedSwatch,
         selected: Boolean(pinnedSwatch && swatchKey(snapshot.selectedSwatch) === swatchKey(pinnedSwatch)),
@@ -968,6 +1013,9 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
 
   elements.generatorPreview.replaceChildren(fragment);
   setText(elements.generatorPreviewStatus, paletteGeneratorSummary(settings));
+  setText(elements.pickerDisabledReason, pickerSwatchesEnabled
+    ? "Picker color inputs are display-only; outer swatch buttons are selectable."
+    : "Enable visible picker swatches before selecting from the picker grid.");
   setText(elements.generatorStatus, action);
 }
 
@@ -992,6 +1040,17 @@ function generatedSwatchFromTile(tile) {
     ...swatch,
     metadata: metadataFromPickerSettings(swatch, pickerSettings)
   };
+}
+
+function currentHarmonyMatchSwatches() {
+  return generatedPickerSwatches(readPaletteGeneratorSettings()).map((swatch) => ({
+    hex: swatch.hex,
+    metadata: swatch.metadata,
+    name: swatch.name,
+    pickerSettings: swatch.pickerSettings,
+    source: GENERATED_SWATCH_SOURCE,
+    tags: swatch.tags
+  }));
 }
 
 function resetPaletteGeneratorControls() {
@@ -1536,6 +1595,7 @@ function renderHarmony(snapshot) {
   const sourceId = elements.sourceSelect?.value || "";
   harmonyRows = baseSwatch
     ? repository.createHarmonySuggestions(baseSwatch, {
+        matchSwatches: currentHarmonyMatchSwatches(),
         matchSource: elements.harmonyMatch?.value || "calculated",
         schemeId: elements.harmonyScheme?.value || "complementary",
         sourceId
@@ -1771,6 +1831,12 @@ elements.userSize?.addEventListener("click", (event) => {
 
 elements.sourceSelect?.addEventListener("change", render);
 elements.sourceSearch?.addEventListener("input", renderSourceSwatches);
+elements.enablePickerSwatches?.addEventListener("change", () => {
+  pickerSwatchesEnabled = Boolean(elements.enablePickerSwatches.checked);
+  renderPaletteGeneratorPreview(pickerSwatchesEnabled
+    ? "Visible picker swatches enabled."
+    : "Visible picker swatches disabled.");
+});
 
 elements.sourcePinAll?.addEventListener("click", () => {
   applyResult(repository.pinSourceSwatches(sourceSwatchRows));
@@ -1801,6 +1867,11 @@ elements.sourceSize?.addEventListener("click", (event) => {
 elements.generatorPreview?.addEventListener("click", (event) => {
   const tile = event.target.closest("[data-palette-generator-swatch]");
   if (!tile) {
+    return;
+  }
+  if (tile.disabled || tile.dataset.paletteGeneratorDisabled === "true") {
+    setText(elements.log, "Enable visible picker swatches before selecting from the picker grid.");
+    setText(elements.generatorStatus, "Picker swatch selection is disabled.");
     return;
   }
   const swatch = generatedSwatchFromTile(tile);

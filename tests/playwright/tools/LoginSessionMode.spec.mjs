@@ -146,6 +146,7 @@ async function openFixedLocalApiLoginPage(page) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
+  await fetch(`${server.baseUrl}/api/mock-db/seed`, { method: "POST" });
   await fetch(`${server.baseUrl}/api/session/mode`, {
     body: JSON.stringify({ modeId: "local-mem" }),
     headers: { "content-type": "application/json" },
@@ -255,6 +256,21 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
     await expect(page.locator("main hr")).toHaveCount(1);
     await expect(page.getByRole("heading", { name: "Local Development Status", level: 2 })).toBeVisible();
+    const diagnosticsLayout = await page.locator("[aria-labelledby='login-local-status-title']").evaluate((statusCard) => {
+      const accountPanel = document.querySelector(".account-panel");
+      const container = statusCard.closest(".container");
+      if (!accountPanel || !container) {
+        return { belowPanel: false, fillsContainer: false };
+      }
+      const statusBox = statusCard.getBoundingClientRect();
+      const panelBox = accountPanel.getBoundingClientRect();
+      const containerBox = container.getBoundingClientRect();
+      return {
+        belowPanel: statusBox.top >= panelBox.bottom - 1,
+        fillsContainer: statusBox.width >= containerBox.width * 0.95
+      };
+    });
+    expect(diagnosticsLayout).toEqual({ belowPanel: true, fillsContainer: true });
     await expect(page.locator("[data-login-status-current-url]")).toContainText(`${failures.server.baseUrl}/login.html`);
     await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local Mem)");
     await expect(page.locator("[data-login-status-api]")).toContainText("Available");
@@ -266,6 +282,16 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local Mem");
     await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local Mem");
     await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local Mem only.");
+    const reseedPlacement = await page.locator("aside.side-menu").evaluate((sideMenu) => {
+      const visibleChildren = Array.from(sideMenu.children).filter((child) => {
+        return !child.hasAttribute("hidden");
+      });
+      return {
+        separatorBeforeReseed: visibleChildren.at(-2)?.tagName === "HR",
+        reseedIsLast: Boolean(visibleChildren.at(-1)?.querySelector("[data-login-reseed-start]"))
+      };
+    });
+    expect(reseedPlacement).toEqual({ separatorBeforeReseed: true, reseedIsLast: true });
     await expect(page.locator("[data-login-reseed-start]")).toBeEnabled();
     await expect(page.locator("[data-login-reseed-confirm]")).toBeHidden();
     await expect(page.locator("[data-login-reseed-cancel]")).toBeHidden();
@@ -289,14 +315,14 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses MockDbAdapter backed by in-memory lists.");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Environment: Local Mem");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Persistence: Memory");
-    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
+    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
 
     let snapshot = await mockDbSessionSnapshot(page);
     expect(snapshot.mode.id).toBe("local-mem");
     expect(snapshot.persistence).toBe("Memory");
-    expect(snapshot.userNames).toEqual(["User 1", "User 2", "User 3", "Admin", "forge-bot"]);
+    expect(snapshot.userNames).toEqual(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]);
     expect(snapshot.userNames).not.toContain("Guest");
 
     await page.locator("[data-login-mode='local-db']").click();
@@ -317,7 +343,7 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-reseed-status]")).toHaveText("Confirm reseed for Local DB only. The other DB mode will not be reseeded.");
     await page.locator("[data-login-reseed-confirm]").click();
     await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed complete for Local DB. Only Local DB was reseeded.");
-    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
+    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
     await expect(page.locator("[data-login-user-controls]")).toBeVisible();
     await expect(page.locator("[data-login-user-status]")).toHaveText("Guest is unauthenticated and is not stored in the users table.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
@@ -326,7 +352,7 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     expect(localDbSnapshot.mode.id).toBe("local-db");
     expect(localDbSnapshot.persistence).toBe("Local DB");
     expect(localDbSnapshot.sessionUser.id).toBe("guest");
-    expect(localDbSnapshot.userNames).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "Admin", "forge-bot"]));
+    expect(localDbSnapshot.userNames).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]));
     expect(localDbSnapshot.userNames).not.toContain("Guest");
 
     await page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user2}']`).click();
@@ -339,7 +365,7 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     expect(localDbSnapshot.sessionUser.id).toBe(MOCK_DB_KEYS.users.user2);
 
     await page.locator("[data-login-mode='local-mem']").click();
-    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
+    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
     await page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`).click();
     await expect(page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`)).toHaveClass(/primary/);
     await expect(page.locator("[data-login-user-status]")).toHaveText("Selected local user: User 1.");
@@ -347,7 +373,7 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
     await expect(page.locator("[data-account-logout]")).toBeVisible();
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Guest" }).click();
     await expect(page.getByRole("button", { name: "Guest" })).toHaveClass(/primary/);
@@ -370,7 +396,7 @@ test("Protected pages block direct URL access without the required Local session
     await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
     await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
@@ -387,7 +413,7 @@ test("Protected pages block direct URL access without the required Local session
     await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
     await expect(page.locator("[data-session-access-status]")).toContainText("Login/session diagnostic: Selected Local user key");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
@@ -403,10 +429,10 @@ test("Protected pages block direct URL access without the required Local session
     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Local DB", level: 1 })).toBeVisible();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for All\./);
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("DavidQ");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
-    await expect(page.locator("[data-admin-db-table='users']")).toContainText("Admin");
+    await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
@@ -422,7 +448,7 @@ test("Protected pages block direct URL access without the required Local session
     await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
     await expect(page.locator("[data-session-access-status]")).toContainText("Current session: User 1.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
@@ -479,9 +505,9 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
     await expect(page.locator("[data-account-logout]")).toBeVisible();
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
-    await expect(page.locator("[data-admin-my-stuff-menu]")).toBeHidden();
-    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeHidden();
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
+    await expect(page.locator("[data-admin-my-stuff-menu]")).toHaveCount(0);
+    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveCount(0);
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
@@ -495,7 +521,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
   try {
     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Site Settings", level: 1 })).toBeVisible();
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("DavidQ");
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
     await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
@@ -516,7 +542,7 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
 
   try {
     await expect(page).toHaveURL("http://127.0.0.1:5501/login.html");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("DavidQ");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
     await expectLocalAdminMyStuffMenu(page);
@@ -546,13 +572,13 @@ test("Account logout clears only the current session and blocks protected pages"
     await expect(page.getByRole("heading", { name: "Login required", level: 1 })).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
 
     const storedUsers = await page.evaluate(async () => {
       const snapshot = await fetch("/api/mock-db/snapshot").then((response) => response.json());
       return (snapshot.data.tables.users || []).map((user) => user.displayName);
     });
-    expect(storedUsers).toEqual(["User 1", "User 2", "User 3", "Admin", "forge-bot"]);
+    expect(storedUsers).toEqual(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]);
 
     const directPage = await page.context().newPage();
     try {

@@ -721,7 +721,7 @@ export function getStandaloneMockDbSeedTables() {
       },
       {
         key: MOCK_DB_KEYS.users.admin,
-        displayName: "Admin",
+        displayName: "DavidQ",
         email: "admin@example.invalid",
         authProvider: "mock",
         authProviderUserId: "admin",

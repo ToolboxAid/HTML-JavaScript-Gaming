@@ -110,6 +110,27 @@
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
     const apiBackedLoginDiagnostic = "Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html.";
+    const adminMainItems = Object.freeze([
+        Object.freeze({ label: "Analytics", route: "admin-analytics" }),
+        Object.freeze({ label: "Branding", route: "admin-branding" }),
+        Object.freeze({ label: "Controls", route: "admin-controls" }),
+        Object.freeze({ label: "Moderation", route: "admin-moderation" }),
+        Object.freeze({ label: "Platform Settings", route: "platform-settings" }),
+        Object.freeze({ label: "Ratings", route: "admin-ratings" }),
+        Object.freeze({ label: "Roles", route: "admin-roles" }),
+        Object.freeze({ label: "Site Settings", route: "admin-site-settings" }),
+        Object.freeze({ label: "Themes", route: "admin-themes" }),
+        Object.freeze({ label: "Users", route: "admin-users" })
+    ]);
+    const localAdminMyStuffItems = Object.freeze([
+        Object.freeze({ label: "DB Viewer", route: "admin-db-viewer" }),
+        Object.freeze({ label: "Design System", route: "admin-design-system" }),
+        Object.freeze({ label: "Environments", route: "environments" }),
+        Object.freeze({ label: "Game Migration", route: "game-migration" }),
+        Object.freeze({ label: "Grouping Colors", route: "admin-grouping-colors" }),
+        Object.freeze({ label: "Notes", href: "/admin/admin-notes.html", localNotes: true }),
+        Object.freeze({ label: "Tools Progress", route: "admin-tools-progress" })
+    ]);
 
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;
@@ -136,6 +157,91 @@
 
     function routeHref(routeName) {
         return rootPrefix() + (routeMap[routeName] || routeName || "index.html");
+    }
+
+    function isLocalDevMode(loginState) {
+        return String(loginState?.mode || "").indexOf("local-") === 0;
+    }
+
+    function createMenuLink(item) {
+        const link = document.createElement("a");
+        link.dataset.navLink = "";
+        if (item.route) {
+            link.dataset.route = item.route;
+            link.href = routeHref(item.route);
+        } else {
+            link.href = item.href || "#";
+        }
+        if (item.localNotes) {
+            link.dataset.adminNotesLocalMenu = "";
+        }
+        link.textContent = item.label;
+        return link;
+    }
+
+    function createLocalAdminMyStuffMenu() {
+        const item = document.createElement("div");
+        item.className = "nav-item nav-popout-item";
+        item.dataset.adminMyStuffMenu = "";
+
+        const label = document.createElement("a");
+        label.dataset.adminMyStuffLabel = "";
+        label.href = "/admin/admin-notes.html";
+        label.setAttribute("aria-haspopup", "true");
+        label.textContent = "My Stuff \u25B8";
+
+        const submenu = document.createElement("div");
+        submenu.className = "sub-menu sub-menu--nested";
+        submenu.dataset.adminMyStuffSubmenu = "";
+        submenu.setAttribute("aria-label", "My Stuff");
+        localAdminMyStuffItems.forEach(function (menuItem) {
+            submenu.append(createMenuLink(menuItem));
+        });
+
+        item.append(label, submenu);
+        return item;
+    }
+
+    function createAdminMenu(loginState) {
+        const item = document.createElement("div");
+        item.className = "nav-item";
+        item.dataset.adminMenu = "";
+
+        const link = document.createElement("a");
+        link.dataset.navLink = "";
+        link.dataset.route = "admin";
+        link.href = routeHref("admin");
+        link.textContent = "Admin \u25BE";
+
+        const submenu = document.createElement("div");
+        submenu.className = "sub-menu";
+        if (isLocalDevMode(loginState)) {
+            const separator = document.createElement("hr");
+            separator.dataset.adminMyStuffSeparator = "";
+            separator.setAttribute("role", "separator");
+            separator.setAttribute("aria-disabled", "true");
+            separator.tabIndex = -1;
+            submenu.append(createLocalAdminMyStuffMenu(), separator);
+        }
+        adminMainItems.forEach(function (menuItem) {
+            submenu.append(createMenuLink(menuItem));
+        });
+
+        item.append(link, submenu);
+        return item;
+    }
+
+    function renderAdminMenu(root, loginState, canUseAdmin) {
+        root.querySelectorAll("[data-admin-menu]").forEach(function (item) {
+            item.remove();
+        });
+        if (!canUseAdmin) {
+            return;
+        }
+        const nav = root.querySelector("nav.nav-links");
+        if (nav) {
+            nav.append(createAdminMenu(loginState));
+        }
     }
 
     function localRouteUnavailableDiagnostic(method, url, status) {
@@ -207,23 +313,11 @@
         return link ? link.closest(".nav-item") : null;
     }
 
-    function setMenuVisible(navItem, visible) {
-        if (!navItem) {
-            return;
-        }
-        navItem.hidden = !visible;
-        navItem.querySelectorAll("a").forEach(function (link) {
-            link.setAttribute("aria-hidden", String(!visible));
-            link.tabIndex = visible ? 0 : -1;
-        });
-    }
-
     function applyLocalDevLoginState(root) {
         const loginState = localDevLoginState();
         const accountItem = navItemForRoute(root, "account");
         const accountLink = accountItem?.querySelector(":scope > a[data-route='account']");
         const accountMenu = directSubMenu(accountItem);
-        const adminItem = navItemForRoute(root, "admin");
         const canUseAccount = loginState.authenticated && loginState.roleSlugs.includes("user");
         const canUseAdmin = loginState.authenticated && loginState.roleSlugs.includes("admin");
 
@@ -239,7 +333,7 @@
                 link.setAttribute("aria-hidden", String(!canUseAccount));
             });
         }
-        setMenuVisible(adminItem, canUseAdmin);
+        renderAdminMenu(root, loginState, canUseAdmin);
     }
 
     function protectedPageRequirement(pagePath) {

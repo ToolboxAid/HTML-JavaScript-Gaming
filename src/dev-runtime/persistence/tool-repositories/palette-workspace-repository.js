@@ -601,8 +601,15 @@ function harmonyForSwatch(swatch, options = {}, sourcePaletteData = null) {
   const scheme = schemeForId(options.schemeId);
   const matchSource = matchSourceForId(options.matchSource);
   const sourceId = normalizeSourceId(options.sourceId);
+  const providedMatchSwatches = Array.isArray(options.matchSwatches)
+    ? options.matchSwatches
+        .map((matchSwatch) => normalizePaletteSwatchInput(matchSwatch, { source: matchSwatch?.source || "generated" }))
+        .filter((matchSwatch) => matchSwatch.hex)
+    : [];
   const sourcePalettes = sourcePaletteData?.palettes || {};
-  const sourceSwatches = matchSource === "source"
+  const sourceSwatches = providedMatchSwatches.length
+    ? providedMatchSwatches
+    : matchSource === "source"
     ? sourcePalettes[sourceId] || []
     : Object.values(sourcePalettes).flat();
 

@@ -662,7 +662,7 @@ test("Project Journey supports Guest as the selected shared session user", async
       method: "POST",
     });
     await page.goto(`${failures.server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("DavidQ");
     await page.getByRole("button", { name: "Project Journey" }).click();
     await expect(page.locator("[data-admin-db-table='project_journey_notes']")).not.toContainText("Guest Scratch Note");
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).not.toContainText("Guest first task");
