@@ -290,9 +290,25 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
     await expect(page.locator("[data-palette-count]")).toHaveText("0");
     await expect(page.locator("[data-palette-editor-form] button")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Remove Selected" })).toHaveCount(0);
-    await expect(page.getByText("Project Palette Tags")).toBeVisible();
+    await expect(page.getByText("Project Palette Tags")).toHaveCount(0);
+    await expect(page.locator("[data-palette-tags-list]")).toBeVisible();
     await expect(page.getByText("Swatch Editor")).toHaveCount(0);
     await expect(page.locator("[data-palette-clear-checked]")).toBeDisabled();
+    const tagEditorLayout = await page.locator("[data-palette-clear-tag-filters]").evaluate((clearFilters) => {
+      const tagsAccordion = clearFilters.closest("details");
+      const tagInput = tagsAccordion.querySelector("[data-palette-tags]");
+      const clearChecked = tagsAccordion.querySelector("[data-palette-clear-checked]");
+      const columnHeader = tagsAccordion.closest(".tool-column").querySelector(".tool-column-header h2");
+      return {
+        clearCheckedTop: Math.round(clearChecked.getBoundingClientRect().top),
+        clearFiltersTop: Math.round(clearFilters.getBoundingClientRect().top),
+        columnHeading: columnHeader.textContent.trim(),
+        tagInputTop: Math.round(tagInput.getBoundingClientRect().top)
+      };
+    });
+    expect(tagEditorLayout.columnHeading).toBe("Inspector");
+    expect(tagEditorLayout.clearFiltersTop).toBeLessThan(tagEditorLayout.tagInputTop);
+    expect(tagEditorLayout.tagInputTop).toBeLessThan(tagEditorLayout.clearCheckedTop);
 
     await expectCompactToolFormControls(page, [
       "[data-palette-selected-hex]",
@@ -373,22 +389,23 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
   try {
     await expect(page.locator("[data-palette-fullscreen-panels] > details > summary")).toHaveText([
       "Project Swatches",
-      "Picker Swatches",
       "Picker Preview"
     ]);
-    const accordionOrder = await page.locator("[data-palette-project-accordion]").evaluate((projectAccordion) => {
-      const pickerAccordion = document.querySelector("[data-palette-picker-accordion]");
+    const accordionOrder = await page.locator("[data-palette-picker-accordion]").evaluate((pickerAccordion) => {
+      const projectWorkspaceAccordion = pickerAccordion.previousElementSibling;
       return {
         pickerTop: Math.round(pickerAccordion.getBoundingClientRect().top),
-        projectTop: Math.round(projectAccordion.getBoundingClientRect().top)
+        projectWorkspaceTop: Math.round(projectWorkspaceAccordion.getBoundingClientRect().top)
       };
     });
-    expect(accordionOrder.projectTop).toBeLessThan(accordionOrder.pickerTop);
+    expect(accordionOrder.projectWorkspaceTop).toBeLessThan(accordionOrder.pickerTop);
+    await expect(page.locator("[data-palette-picker-accordion]")).toBeVisible();
     await expect(page.locator("[data-palette-project-accordion] [data-palette-generator-preview]")).toHaveCount(0);
     await expect(page.locator("[data-palette-picker-accordion] [data-palette-generator-preview]")).toHaveCount(0);
     await expect(page.locator("[data-palette-preview-accordion] [data-palette-generator-preview]")).toHaveCount(1);
-    await expect(page.getByRole("heading", { name: "Defined Swatch Selector" })).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Swatch Type / Theme" })).toBeVisible();
+    await expect(page.locator("[data-palette-preview-accordion]")).not.toHaveClass(/accordion-fill-panel/);
+    await expect(page.getByRole("heading", { name: "Defined Swatch Selector" })).toHaveCount(0);
+    await expect(page.getByRole("heading", { name: "Swatch Type / Theme" })).toHaveCount(0);
     await expect(page.locator("[data-palette-source-select], [data-palette-source-search], [data-palette-source-pin-all]")).toHaveCount(0);
 
     await expect(page.locator("[data-palette-theme-collection] option")).toHaveText(Object.keys(expectedThemeTypes));
@@ -417,14 +434,36 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("0");
     expect(await page.locator("[data-palette-generator-variant] option").allTextContents()).not.toEqual(expect.arrayContaining(["64 colors", "128 colors", "256 colors"]));
 
-    const selectorLayout = await page.locator("[data-palette-picker-accordion] .grid.cols-3").first().evaluate((grid) => (
-      Array.from(grid.querySelectorAll("select")).map((select) => Math.round(select.getBoundingClientRect().top))
-    ));
-    expect(new Set(selectorLayout).size).toBe(1);
-    const sliderLayout = await page.locator("[aria-label='Palette generator sliders']").evaluate((grid) => (
-      Array.from(grid.querySelectorAll("input[type='range']")).map((slider) => Math.round(slider.getBoundingClientRect().top))
-    ));
-    expect(new Set(sliderLayout).size).toBe(1);
+    const pickerLayout = await page.locator("[data-palette-picker-accordion]").evaluate((accordion) => {
+      const rows = ["paletteThemeCollection", "paletteGeneratorType", "paletteGeneratorVariant"].map((id) => {
+        const label = accordion.querySelector(`label[for='${id}']`);
+        const control = accordion.querySelector(`#${id}`);
+        return {
+          controlTop: Math.round(control.getBoundingClientRect().top),
+          labelTop: Math.round(label.getBoundingClientRect().top)
+        };
+      });
+      const sliders = ["paletteGeneratorContrast", "paletteGeneratorSaturation", "paletteGeneratorHueShift"].map((id) => {
+        const input = accordion.querySelector(`#${id}`);
+        const label = accordion.querySelector(`label[for='${id}']`);
+        return {
+          inputTop: Math.round(input.getBoundingClientRect().top),
+          labelTop: Math.round(label.getBoundingClientRect().top)
+        };
+      });
+      const summary = accordion.querySelector("[data-palette-generator-grid-summary]");
+      return {
+        rowAlignment: rows.map((row) => Math.abs(row.controlTop - row.labelTop)),
+        sliderPositions: sliders.map((slider) => slider.inputTop),
+        slidersStackedUnderLabels: sliders.map((slider) => slider.labelTop < slider.inputTop),
+        summaryText: summary.textContent.trim()
+      };
+    });
+    expect(pickerLayout.rowAlignment.every((offset) => offset <= 4)).toBe(true);
+    expect(pickerLayout.summaryText).toBe("Colors x Steps 8 x 8");
+    expect(pickerLayout.sliderPositions[0]).toBeLessThan(pickerLayout.sliderPositions[1]);
+    expect(pickerLayout.sliderPositions[1]).toBeLessThan(pickerLayout.sliderPositions[2]);
+    expect(pickerLayout.slidersStackedUnderLabels.every(Boolean)).toBe(true);
     const undoRedoLayout = await page.locator("[data-palette-undo]").evaluate((undo) => {
       const redo = document.querySelector("[data-palette-redo]");
       return {
@@ -453,8 +492,17 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-picker-disabled-reason]")).toHaveCount(0);
     await expect(page.locator("[data-palette-picker-group-label='available']")).toHaveCount(0);
     await expect(page.locator("[data-palette-picker-group-label='unavailable']")).toHaveCount(0);
-    await expect(page.locator("[data-palette-generator-preview-status]")).toHaveText("Available Picker Swatches (64)");
-    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(0);
+    const initialAvailability = await page.locator("[data-palette-generator-swatch]").evaluateAll((swatches) => {
+      const unavailable = swatches.filter((swatch) => swatch.dataset.paletteGeneratorUnavailable === "true").length;
+      return {
+        available: swatches.length - unavailable,
+        total: swatches.length,
+        unavailable
+      };
+    });
+    expect(initialAvailability.total).toBe(64);
+    await expect(page.locator("[data-palette-generator-preview-status]")).toHaveText(`Available Picker Swatches (${initialAvailability.available})`);
+    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(initialAvailability.unavailable);
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-collection", "Nature");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-type-name", "Forest");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-variant-name", "Full");
@@ -588,6 +636,91 @@ test("Palette Tool preserves eight-column picker rows when swatches are unavaila
   }
 });
 
+test("Palette Tool blocks only earlier duplicate hexes within each picker column", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/colors/index.html");
+
+  try {
+    await page.locator("[data-palette-generator-colors]").selectOption("8");
+    await page.locator("[data-palette-generator-steps]").selectOption("64");
+    await page.locator("[data-palette-generator-contrast]").evaluate((control) => {
+      control.value = "100";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await expectPickerRowsToHaveColumnCount(page, 8);
+
+    const duplicateGroup = await page.locator("[data-palette-generator-swatch]").evaluateAll((swatches) => {
+      const groups = new Map();
+      swatches.forEach((swatch) => {
+        const key = `${swatch.dataset.paletteGeneratorColumn}:${swatch.dataset.paletteGeneratorHex}`;
+        const group = groups.get(key) || [];
+        group.push({
+          column: swatch.dataset.paletteGeneratorColumn,
+          hex: swatch.dataset.paletteGeneratorHex,
+          row: swatch.dataset.paletteGeneratorRow
+        });
+        groups.set(key, group);
+      });
+      const duplicate = [...groups.values()]
+        .filter((group) => group.length > 1)
+        .map((group) => group.sort((left, right) => Number(left.row) - Number(right.row)))
+        .at(0);
+      return duplicate || [];
+    });
+    expect(duplicateGroup.length).toBeGreaterThan(1);
+
+    const earlierDuplicate = duplicateGroup[0];
+    const bottomDuplicate = duplicateGroup.at(-1);
+    const earlierSwatch = page.locator(`[data-palette-generator-row='${earlierDuplicate.row}'][data-palette-generator-column='${earlierDuplicate.column}']`);
+    const bottomSwatch = page.locator(`[data-palette-generator-row='${bottomDuplicate.row}'][data-palette-generator-column='${bottomDuplicate.column}']`);
+
+    await expect(earlierSwatch).toHaveAttribute("data-palette-generator-availability", "unavailable");
+    await expect(earlierSwatch).toHaveAttribute("data-palette-generator-unavailable-reason", "Duplicate Hex in Column");
+    await expect(earlierSwatch.locator("[data-palette-pin-indicator]")).toHaveCount(0);
+    const earlierVisual = await earlierSwatch.evaluate((swatch) => ({
+      cursor: getComputedStyle(swatch).cursor,
+      opacity: getComputedStyle(swatch).opacity,
+      value: swatch.querySelector("input[type='color']").value
+    }));
+    expect(earlierVisual.cursor).not.toBe("not-allowed");
+    expect(earlierVisual.opacity).toBe("1");
+    expect(earlierVisual.value.toUpperCase()).toBe(earlierDuplicate.hex.slice(0, 7).toUpperCase());
+    await earlierSwatch.click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("0");
+    await expect(page.locator("[data-palette-log]")).toContainText("Duplicate Hex in Column picker swatch was not added.");
+
+    await expect(bottomSwatch).toHaveAttribute("data-palette-generator-availability", "available");
+    await expect(bottomSwatch.locator("[data-palette-pin-indicator]")).toHaveCount(1);
+    await bottomSwatch.click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("1");
+
+    const uniqueSwatchData = await page.locator("[data-palette-generator-swatch][data-palette-generator-availability='available']").evaluateAll((swatches) => {
+      const groups = new Map();
+      swatches.forEach((swatch) => {
+        const key = `${swatch.dataset.paletteGeneratorColumn}:${swatch.dataset.paletteGeneratorHex}`;
+        groups.set(key, (groups.get(key) || 0) + 1);
+      });
+      return swatches
+        .map((swatch) => ({
+          column: swatch.dataset.paletteGeneratorColumn,
+          hex: swatch.dataset.paletteGeneratorHex,
+          row: swatch.dataset.paletteGeneratorRow
+        }))
+        .find((swatch) => groups.get(`${swatch.column}:${swatch.hex}`) === 1);
+    });
+    expect(uniqueSwatchData).toBeTruthy();
+    const uniqueSwatch = page.locator(`[data-palette-generator-row='${uniqueSwatchData.row}'][data-palette-generator-column='${uniqueSwatchData.column}']`);
+    await expect(uniqueSwatch).toHaveAttribute("data-palette-generator-availability", "available");
+    await expect(uniqueSwatch.locator("[data-palette-pin-indicator]")).toHaveCount(1);
+    await uniqueSwatch.click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("2");
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
 test("Palette Tool generated grid swatches can be selected, pinned, and refreshed", async ({ page }) => {
   test.setTimeout(120000);
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
@@ -683,10 +816,18 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-availability", "unavailable");
     await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-unavailable-reason", "Already in Project");
     await expect(unavailablePickerSwatch).not.toBeDisabled();
-    await expect(page.locator("[data-palette-generator-preview-status]")).toHaveText("Available Picker Swatches (63)");
+    const refreshedAvailability = await page.locator("[data-palette-generator-swatch]").evaluateAll((swatches) => {
+      const unavailable = swatches.filter((swatch) => swatch.dataset.paletteGeneratorUnavailable === "true").length;
+      return {
+        available: swatches.length - unavailable,
+        unavailable
+      };
+    });
+    expect(refreshedAvailability.unavailable).toBeGreaterThanOrEqual(1);
+    await expect(page.locator("[data-palette-generator-preview-status]")).toHaveText(`Available Picker Swatches (${refreshedAvailability.available})`);
     await expect(page.locator("[data-palette-picker-group-label='available']")).toHaveCount(0);
     await expect(page.locator("[data-palette-picker-group-label='unavailable']")).toHaveCount(0);
-    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(refreshedAvailability.unavailable);
     await expectPickerRowsToHaveColumnCount(page, 16);
     const unavailableVisual = await unavailablePickerSwatch.evaluate((swatch) => ({
       cursor: getComputedStyle(swatch).cursor,
@@ -701,7 +842,7 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     await expect(page.locator("[data-palette-log]")).toContainText("Already in Project picker swatch is already present and was not added again.");
     await expect(page.locator("[data-palette-include-already-project-swatches]")).toHaveCount(0);
     await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-availability", "unavailable");
-    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(refreshedAvailability.unavailable);
 
     await page.locator("[data-palette-theme-collection]").selectOption("Nature");
     await page.locator("[data-palette-generator-type]").selectOption("Forest");
@@ -748,7 +889,7 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
 
   try {
-    await expect(page.getByText("Project Palette Tags")).toBeVisible();
+    await expect(page.getByText("Project Palette Tags")).toHaveCount(0);
     await expect(page.getByText("Swatch Editor")).toHaveCount(0);
     await expect(page.locator("[data-palette-clear-checked]")).toBeDisabled();
 

@@ -315,6 +315,7 @@ const elements = {
   generatorCollection: document.querySelector("[data-palette-theme-collection]"),
   generatorContrast: document.querySelector("[data-palette-generator-contrast]"),
   generatorGenerate: document.querySelector("[data-palette-generator-generate]"),
+  generatorGridSummary: document.querySelector("[data-palette-generator-grid-summary]"),
   generatorHueShift: document.querySelector("[data-palette-generator-hue-shift]"),
   generatorPreview: document.querySelector("[data-palette-generator-preview]"),
   generatorPreviewStatus: document.querySelector("[data-palette-generator-preview-status]"),
@@ -895,6 +896,30 @@ function pickerUnavailableReason(pinnedSwatch) {
   return pinnedSwatch ? "Already in Project" : "";
 }
 
+function duplicatePickerHexReasons(swatches) {
+  const columnHexGroups = new Map();
+  swatches.forEach((swatch) => {
+    const key = `${swatch.column}:${swatchColorKey(swatch.hex)}`;
+    const group = columnHexGroups.get(key) || [];
+    group.push(swatch);
+    columnHexGroups.set(key, group);
+  });
+
+  const reasons = new Map();
+  columnHexGroups.forEach((group) => {
+    if (group.length <= 1) {
+      return;
+    }
+    const bottomRow = Math.max(...group.map((swatch) => swatch.row));
+    group.forEach((swatch) => {
+      if (swatch.row !== bottomRow) {
+        reasons.set(`${swatch.row}:${swatch.column}`, "Duplicate Hex in Column");
+      }
+    });
+  });
+  return reasons;
+}
+
 function generatedPickerSwatches(settings = readPaletteGeneratorSettings()) {
   if (!settings.collection || !settings.paletteType) {
     return [];
@@ -1025,7 +1050,6 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   }
 
   const allSwatches = [];
-  let availableCount = 0;
   for (let row = 0; row < settings.steps; row += 1) {
     for (let column = 0; column < settings.colors; column += 1) {
       const baseHex = interpolateHex(settings.paletteType.swatches, column, settings.colors);
@@ -1037,28 +1061,34 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
       }, settings.variant, column, settings.colors);
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
       const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
-      const unavailableReason = pickerUnavailableReason(pinnedSwatch);
-      const available = !unavailableReason;
-      if (available) {
-        availableCount += 1;
-      }
       allSwatches.push({
-        available,
         column,
         hex,
         pinnedSwatch,
         row,
-        selected: Boolean(pinnedSwatch && swatchKey(snapshot.selectedSwatch) === swatchKey(pinnedSwatch)),
-        unavailableReason
+        selected: Boolean(pinnedSwatch && swatchKey(snapshot.selectedSwatch) === swatchKey(pinnedSwatch))
       });
     }
   }
+  const duplicateReasons = duplicatePickerHexReasons(allSwatches);
+  let availableCount = 0;
+  allSwatches.forEach((swatch) => {
+    const unavailableReason = pickerUnavailableReason(swatch.pinnedSwatch)
+      || duplicateReasons.get(`${swatch.row}:${swatch.column}`)
+      || "";
+    swatch.unavailableReason = unavailableReason;
+    swatch.available = !unavailableReason;
+    if (swatch.available) {
+      availableCount += 1;
+    }
+  });
 
   const fragment = document.createDocumentFragment();
   appendPickerRows(fragment, allSwatches, settings);
 
   elements.generatorPreview.replaceChildren(fragment);
   setText(elements.generatorPreviewStatus, `Available Picker Swatches (${availableCount})`);
+  setText(elements.generatorGridSummary, `Colors x Steps ${settings.colors} x ${settings.steps}`);
   setText(elements.generatorStatus, action);
 }
 
@@ -1231,8 +1261,8 @@ function createCheckedSwatchTile(swatch, options = {}) {
   checkbox.type = "checkbox";
   checkbox.checked = checkedSwatchKeys.has(swatchKey(swatch));
   checkbox.dataset.paletteSwatchCheck = swatchKey(swatch);
-  checkbox.setAttribute("aria-label", `Apply Project Palette Tags to ${swatch.name}`);
-  checkbox.title = `Apply Project Palette Tags to ${swatch.name}`;
+  checkbox.setAttribute("aria-label", `Apply Tags to ${swatch.name}`);
+  checkbox.title = `Apply Tags to ${swatch.name}`;
 
   wrapper.append(createSwatchTile(swatch, options), checkbox);
   return wrapper;
@@ -1907,8 +1937,11 @@ elements.generatorPreview?.addEventListener("click", (event) => {
   }
   if (tile.dataset.paletteGeneratorUnavailable === "true") {
     const reason = tile.dataset.paletteGeneratorUnavailableReason || "Unavailable";
-    setText(elements.log, `${reason} picker swatch is already present and was not added again.`);
-    setText(elements.generatorStatus, `${reason} picker swatch remains visible with its original color, but duplicate add is blocked.`);
+    const alreadyInProject = reason === "Already in Project";
+    setText(elements.log, alreadyInProject
+      ? `${reason} picker swatch is already present and was not added again.`
+      : `${reason} picker swatch was not added.`);
+    setText(elements.generatorStatus, `${reason} picker swatch remains visible with its original color, but add is blocked.`);
     return;
   }
   const swatch = generatedSwatchFromTile(tile);
