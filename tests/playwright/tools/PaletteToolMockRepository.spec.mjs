@@ -32,9 +32,6 @@ const expectedThemeTypes = {
 
 const expectedVariants = [
   "Full",
-  "256 colors",
-  "128 colors",
-  "64 colors",
   "32 colors",
   "16 colors",
   "8 colors",
@@ -129,8 +126,12 @@ async function expectUserHexPreview(page, state, value) {
   }
 }
 
-async function fillUserSwatch(page, { hex, name, symbol }) {
-  await page.locator("[data-palette-symbol]").fill(symbol);
+function swatchTileByName(page, name) {
+  const escapedName = String(name).replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
+  return page.locator(`[data-palette-user-list] [data-palette-swatch-key][data-palette-swatch-name="${escapedName}"]`);
+}
+
+async function fillUserSwatch(page, { hex, name }) {
   await page.locator("[data-palette-hex]").fill(hex);
   await page.locator("[data-palette-name]").fill(name);
 }
@@ -139,7 +140,7 @@ async function addUserSwatch(page, swatch) {
   await fillUserSwatch(page, swatch);
   await expect(page.getByRole("button", { name: "Add User Defined" })).toBeEnabled();
   await page.getByRole("button", { name: "Add User Defined" }).click();
-  await expect(page.locator(`[data-palette-swatch-row='${swatch.symbol}']`)).toHaveAttribute("data-palette-swatch-name", swatch.name);
+  await expect(swatchTileByName(page, swatch.name)).toHaveCount(1);
 }
 
 async function currentPreviewHexes(page, row) {
@@ -149,7 +150,7 @@ async function currentPreviewHexes(page, row) {
 }
 
 async function visiblePaletteNames(page) {
-  return page.locator("[data-palette-user-list] [data-palette-swatch-row]").evaluateAll((swatches) => (
+  return page.locator("[data-palette-user-list] [data-palette-swatch-key]").evaluateAll((swatches) => (
     swatches.map((swatch) => swatch.dataset.paletteSwatchName)
   ));
 }
@@ -157,11 +158,20 @@ async function visiblePaletteNames(page) {
 async function expectSortToggle(page, key, label) {
   const button = page.locator(`[data-palette-user-sort] [data-palette-sort-key='${key}']`);
   await button.click();
-  await expect(button).toHaveText(`${label} ^`);
-  const ascending = await visiblePaletteNames(page);
-  await button.click();
-  await expect(button).toHaveText(`${label} v`);
-  const descending = await visiblePaletteNames(page);
+  let ascending = [];
+  let descending = [];
+  if ((await button.textContent())?.includes("^")) {
+    ascending = await visiblePaletteNames(page);
+    await button.click();
+    await expect(button).toHaveText(`${label} v`);
+    descending = await visiblePaletteNames(page);
+  } else {
+    await expect(button).toHaveText(`${label} v`);
+    descending = await visiblePaletteNames(page);
+    await button.click();
+    await expect(button).toHaveText(`${label} ^`);
+    ascending = await visiblePaletteNames(page);
+  }
   expect(ascending).toEqual([...descending].reverse());
 }
 
@@ -179,15 +189,17 @@ test("Palette repository owns project swatches and protects invalid payloads", a
   expect(baseline.workspace.tools["palette-browser"].swatches).toEqual([]);
   expect(baseline.validation.status).toBe("Ready");
 
-  const invalidInput = { symbol: "AB", hex: "#112233", name: "Invalid Symbol", tags: ["Hero"] };
+  const invalidInput = { hex: "#12", name: "", tags: ["Hero"] };
   const invalidResult = repository.addSwatch(invalidInput);
   expect(invalidResult.ok).toBe(false);
-  expect(invalidResult.issues.map((issue) => issue.label)).toContain("Symbol");
+  expect(invalidResult.issues.map((issue) => issue.label)).toEqual(expect.arrayContaining(["Hex", "Name"]));
   expect(invalidInput.tags).toEqual(["Hero"]);
   expect(repository.getSnapshot().workspace.tools["palette-browser"].swatches).toEqual([]);
 
-  expect(repository.addSwatch({ symbol: "H", hex: "#123456AA", name: "Hero Blue" }).ok).toBe(true);
-  expect(repository.getSnapshot().selectedSwatch).toMatchObject({ name: "Hero Blue", symbol: "H" });
+  expect(repository.addSwatch({ hex: "#123456AA", name: "Hero Blue" }).ok).toBe(true);
+  expect(repository.getSnapshot().selectedSwatch).toMatchObject({ name: "Hero Blue" });
+  const heroKey = repository.getSnapshot().selectedSwatch.symbol;
+  expect(heroKey).toBeTruthy();
   expect(repository.getTables().palette_colors).toHaveLength(1);
   expect(repository.getSnapshot().tableCounts).toEqual(expect.arrayContaining([
     expect.objectContaining({ rows: 1, table: "palette_colors" })
@@ -199,16 +211,16 @@ test("Palette repository owns project swatches and protects invalid payloads", a
   expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", source: "reference", tags: [] });
   expect(repository.displaySource("reference")).toBe("Reference");
 
-  const tagResult = repository.addTagToSwatches(["H", "R"], "batch");
+  const tagResult = repository.addTagToSwatches([heroKey, "R"], "batch");
   expect(tagResult.ok).toBe(true);
-  expect(repository.findSwatch("H")).toMatchObject({ name: "Hero Blue", tags: ["batch"] });
+  expect(repository.findSwatch(heroKey)).toMatchObject({ name: "Hero Blue", tags: ["batch"] });
   expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", tags: ["batch"] });
   expect(repository.findSwatch("G")).toBeNull();
 
   const invalidPayload = {
     tools: {
       "palette-browser": {
-        swatches: [{ symbol: "XX", hex: "#FFFFFF", name: "Invalid" }]
+        swatches: [{ hex: "#FFFFFF", name: "Invalid" }]
       }
     }
   };
@@ -224,7 +236,8 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
 
   try {
     await expect(page.getByRole("heading", { name: "Colors" }).first()).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Selected Swatches", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Palette", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Selected Swatches", exact: true })).toHaveCount(0);
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText(/import json|export json|Crayola/i);
@@ -239,11 +252,9 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
     await expect(page.locator("[data-palette-clear-checked]")).toBeDisabled();
 
     await expectCompactToolFormControls(page, [
-      "[data-palette-selected-symbol]",
       "[data-palette-selected-hex]",
       "[data-palette-selected-name]",
       "[data-palette-tags]",
-      "[data-palette-symbol]",
       "[data-palette-hex]",
       "[data-palette-name]",
       "[data-palette-theme-collection]",
@@ -259,21 +270,22 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
     await expect(page.getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Update Selected" })).toBeDisabled();
     await expect(page.locator("[data-palette-tags]")).toBeDisabled();
+    await expect(page.locator("[data-palette-symbol], [data-palette-selected-symbol]")).toHaveCount(0);
+    await expect(page.getByText("Symbol")).toHaveCount(0);
 
-    await fillUserSwatch(page, { symbol: "HH", hex: "#12", name: "" });
+    await fillUserSwatch(page, { hex: "#12", name: "" });
     await expect(page.getByRole("button", { name: "Add User Defined" })).toBeDisabled();
     await expectUserHexPreview(page, "invalid", "#ffffff");
     await expect(page.locator("[data-palette-validation-overlay]")).toBeVisible();
-    await expect(page.locator("[data-palette-validation-list]")).toContainText("Symbol");
     await expect(page.locator("[data-palette-validation-list]")).toContainText("Hex");
     await expect(page.locator("[data-palette-validation-list]")).toContainText("Name");
 
-    await addUserSwatch(page, { symbol: "H", hex: "#123456aa", name: "Hero Blue" });
+    await addUserSwatch(page, { hex: "#123456aa", name: "Hero Blue" });
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-hex", "#123456AA");
-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("title", "Name: Hero Blue\nHex: #123456AA\nSource: custom");
-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-selected", "true");
-    await expectReadableDisabledField(page, "[data-palette-selected-symbol]", "H");
+    const heroTile = swatchTileByName(page, "Hero Blue");
+    await expect(heroTile).toHaveAttribute("data-palette-swatch-hex", "#123456AA");
+    await expect(heroTile).toHaveAttribute("title", /Color: #123456AA[\s\S]*Name: Hero Blue[\s\S]*Source: custom/);
+    await expect(heroTile).toHaveAttribute("data-palette-selected", "true");
     await expectReadableDisabledField(page, "[data-palette-selected-hex]", "#123456AA");
     await expectReadableDisabledField(page, "[data-palette-selected-name]", "Hero Blue");
     await expect(page.locator("[data-palette-tags]")).toBeEnabled();
@@ -281,18 +293,17 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
 
     await page.locator("[data-palette-tags]").fill("hero");
     await page.locator("[data-palette-tags]").press("Enter");
-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-tags", "hero");
+    await expect(heroTile).toHaveAttribute("data-palette-swatch-tags", "hero");
     await page.locator("[data-palette-tags]").fill("ui");
     await page.locator("[data-palette-tags]").press("Enter");
-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
+    await expect(heroTile).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
     await expect(page.locator("[data-palette-editor-tags-list] [data-palette-tag-value]")).toHaveText(["hero", "ui"]);
 
-    await page.locator("[data-palette-symbol]").fill("J");
     await page.locator("[data-palette-hex]").fill("#ABCDEF");
     await page.locator("[data-palette-name]").fill("Hero Updated");
     await page.getByRole("button", { name: "Update Selected" }).click();
-    await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-swatch-name", "Hero Updated");
-    await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
+    await expect(swatchTileByName(page, "Hero Updated")).toHaveAttribute("data-palette-swatch-name", "Hero Updated");
+    await expect(swatchTileByName(page, "Hero Updated")).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Hero Updated");
     await expect(page.locator("[data-palette-table-counts]")).toContainText("palette_colors");
 
@@ -317,7 +328,8 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-project-accordion] > summary")).toHaveText("Selected Swatches");
     await expect(page.locator("[data-palette-source-accordion] > summary")).toHaveText("Defined Swatch Selector");
     await expect(page.locator("[data-palette-generator-accordion] > summary")).toHaveText("Swatch Type / Theme");
-    await expect(page.locator("[data-palette-project-accordion] [data-palette-generator-preview]")).toHaveCount(1);
+    await expect(page.locator("[data-palette-project-accordion] [data-palette-generator-preview]")).toHaveCount(0);
+    await expect(page.locator("[data-palette-fullscreen-panels] > [data-palette-generator-preview]")).toHaveCount(1);
     await expect(page.locator("[data-palette-generator-accordion] [data-palette-generator-preview]")).toHaveCount(0);
     await expect(page.locator("[data-palette-source-select], [data-palette-source-search], [data-palette-source-pin-all]")).toHaveCount(0);
 
@@ -345,6 +357,37 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("40");
     await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("100");
     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("0");
+    expect(await page.locator("[data-palette-generator-variant] option").allTextContents()).not.toEqual(expect.arrayContaining(["64 colors", "128 colors", "256 colors"]));
+
+    const selectorLayout = await page.locator("[data-palette-source-accordion] .grid.cols-3").first().evaluate((grid) => (
+      Array.from(grid.querySelectorAll("select")).map((select) => Math.round(select.getBoundingClientRect().top))
+    ));
+    expect(new Set(selectorLayout).size).toBe(1);
+    const sliderLayout = await page.locator("[aria-label='Palette generator sliders']").evaluate((grid) => (
+      Array.from(grid.querySelectorAll("input[type='range']")).map((slider) => Math.round(slider.getBoundingClientRect().top))
+    ));
+    expect(new Set(sliderLayout).size).toBe(1);
+    const undoRedoLayout = await page.locator("[data-palette-undo]").evaluate((undo) => {
+      const redo = document.querySelector("[data-palette-redo]");
+      return {
+        redoLeft: Math.round(redo.getBoundingClientRect().left),
+        undoLeft: Math.round(undo.getBoundingClientRect().left),
+        undoTop: Math.round(undo.getBoundingClientRect().top),
+        redoTop: Math.round(redo.getBoundingClientRect().top)
+      };
+    });
+    expect(undoRedoLayout.undoTop).toBe(undoRedoLayout.redoTop);
+    expect(undoRedoLayout.undoLeft).toBeLessThan(undoRedoLayout.redoLeft);
+    await expect(page.locator("[data-palette-user-sort] [data-palette-sort-key], [data-palette-user-size] [data-palette-size-key]")).toHaveText([
+      "Hue ^",
+      "Sat",
+      "Brit",
+      "Name",
+      "Tag",
+      "Small",
+      "Medium",
+      "Large"
+    ]);
 
     await expect(page.locator("[data-palette-generator-preview-row]")).toHaveCount(8);
     await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(64);
@@ -429,11 +472,43 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
 
   try {
+    await page.locator("[data-palette-generator-colors]").selectOption("4");
+    await page.locator("[data-palette-generator-steps]").selectOption("2");
+    await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(8);
+    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(0);
+    const pickerCursors = await page.locator("[data-palette-generator-swatch]").evaluateAll((swatches) => (
+      swatches.map((swatch) => getComputedStyle(swatch).cursor)
+    ));
+    expect(pickerCursors.every((cursor) => cursor !== "not-allowed")).toBe(true);
+    for (let index = 0; index < 8; index += 1) {
+      await page.locator("[data-palette-generator-swatch]").nth(index).click();
+    }
+    await expect(page.locator("[data-palette-count]")).toHaveText("8");
+
+    await page.locator("[data-palette-generator-reset]").click();
     const firstGenerated = page.locator("[data-palette-generator-swatch]").first();
+    await page.locator("[data-palette-theme-collection]").selectOption("Sci-Fi");
+    await page.locator("[data-palette-generator-type]").selectOption("Cyberpunk");
+    await page.locator("[data-palette-generator-variant]").selectOption("16");
+    await page.locator("[data-palette-generator-colors]").selectOption("16");
+    await page.locator("[data-palette-generator-steps]").selectOption("4");
+    await page.locator("[data-palette-generator-contrast]").evaluate((control) => {
+      control.value = "72";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await page.locator("[data-palette-generator-saturation]").evaluate((control) => {
+      control.value = "58";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await page.locator("[data-palette-generator-hue-shift]").evaluate((control) => {
+      control.value = "-35";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
     await expect(firstGenerated).toHaveAttribute("data-palette-pinned", "false");
     const generatedName = await firstGenerated.getAttribute("data-palette-generator-name");
-    const generatedSymbol = await firstGenerated.getAttribute("data-palette-generator-symbol");
     const generatedHex = await firstGenerated.getAttribute("data-palette-generator-hex");
+    await expect(firstGenerated).toHaveAttribute("title", /Color: #[0-9A-F]{6}[\s\S]*Name: Sci-Fi Cyberpunk 16 colors/);
+    await expect(firstGenerated).toHaveAttribute("title", /Theme Collection: Sci-Fi[\s\S]*Palette Type: Cyberpunk[\s\S]*Variant: 16 colors/);
 
     const gridSpacing = await page.locator("[data-palette-generator-preview]").evaluate((preview) => {
       const firstRow = preview.querySelector("[data-palette-generator-preview-row]");
@@ -451,37 +526,49 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     expect(Math.abs(gridSpacing.xGap)).toBeLessThanOrEqual(1);
 
     await firstGenerated.click();
-    await expect(page.locator("[data-palette-count]")).toHaveText("1");
-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-name", generatedName || "");
-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-hex", generatedHex || "");
-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-selected", "true");
+    await expect(page.locator("[data-palette-count]")).toHaveText("9");
+    const generatedTile = swatchTileByName(page, generatedName || "");
+    await expect(generatedTile).toHaveAttribute("data-palette-swatch-name", generatedName || "");
+    await expect(generatedTile).toHaveAttribute("data-palette-swatch-hex", generatedHex || "");
+    await expect(generatedTile).toHaveAttribute("data-palette-selected", "true");
+    await expect(generatedTile).toHaveAttribute("title", /Color: #[0-9A-F]{6}[\s\S]*Theme Collection: Sci-Fi[\s\S]*Palette Type: Cyberpunk[\s\S]*Variant: 16 colors[\s\S]*Colors: 16[\s\S]*Steps: 4[\s\S]*Contrast: 72[\s\S]*Saturation: 58[\s\S]*Hue Shift: -35/);
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-pinned", "true");
     await expect(page.locator("[data-palette-generator-swatch]").first().locator("[data-palette-pin-indicator]")).toHaveCount(1);
     await expect(page.locator("[data-palette-log]")).toContainText("Pinned generated swatch");
 
-    await page.locator("[data-palette-theme-collection]").selectOption("Sci-Fi");
-    await page.locator("[data-palette-generator-type]").selectOption("Cyberpunk");
+    await page.locator("[data-palette-theme-collection]").selectOption("Nature");
+    await page.locator("[data-palette-generator-type]").selectOption("Forest");
     await page.locator("[data-palette-generator-variant]").selectOption("High Contrast");
     await page.locator("[data-palette-generator-colors]").selectOption("12");
     await page.locator("[data-palette-generator-steps]").selectOption("16");
     await page.locator("[data-palette-generator-contrast]").evaluate((control) => {
-      control.value = "72";
+      control.value = "40";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
     await page.locator("[data-palette-generator-saturation]").evaluate((control) => {
-      control.value = "58";
+      control.value = "100";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
     await page.locator("[data-palette-generator-hue-shift]").evaluate((control) => {
-      control.value = "-35";
+      control.value = "0";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-name", generatedName || "");
-    await expect(page.locator("[data-palette-count]")).toHaveText("1");
+    await expect(generatedTile).toHaveAttribute("data-palette-swatch-name", generatedName || "");
+    await expect(page.locator("[data-palette-count]")).toHaveText("9");
+
+    await page.locator("[data-palette-restore-picker-settings]").click();
+    await expect(page.locator("[data-palette-theme-collection]")).toHaveValue("Sci-Fi");
+    await expect(page.locator("[data-palette-generator-type]")).toHaveValue("Cyberpunk");
+    await expect(page.locator("[data-palette-generator-variant]")).toHaveValue("16");
+    await expect(page.locator("[data-palette-generator-colors]")).toHaveValue("16");
+    await expect(page.locator("[data-palette-generator-steps]")).toHaveValue("4");
+    await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("72");
+    await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("58");
+    await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("-35");
 
     await page.locator("[data-palette-generator-generate]").click();
-    await expect(page.locator("[data-palette-log]")).toContainText("Generated palette grid: Sci-Fi / Cyberpunk / High Contrast, 12 colors x 16 steps.");
-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-name", generatedName || "");
+    await expect(page.locator("[data-palette-log]")).toContainText("Generated palette grid: Sci-Fi / Cyberpunk / 16 colors, 16 colors x 4 steps.");
+    await expect(generatedTile).toHaveAttribute("data-palette-swatch-name", generatedName || "");
 
     expectNoPageFailures(failures);
   } finally {
@@ -498,9 +585,9 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
     await expect(page.getByText("Swatch Editor")).toHaveCount(0);
     await expect(page.locator("[data-palette-clear-checked]")).toBeDisabled();
 
-    await addUserSwatch(page, { symbol: "A", hex: "#111111", name: "Anchor" });
-    await addUserSwatch(page, { symbol: "B", hex: "#6B4F2A", name: "Brownstone" });
-    await addUserSwatch(page, { symbol: "C", hex: "#264EA4", name: "Bluegate" });
+    await addUserSwatch(page, { hex: "#111111", name: "Anchor" });
+    await addUserSwatch(page, { hex: "#6B4F2A", name: "Brownstone" });
+    await addUserSwatch(page, { hex: "#264EA4", name: "Bluegate" });
     await expect(page.locator("[data-palette-count]")).toHaveText("3");
     await expect(page.locator("[data-palette-swatch-check]")).toHaveCount(3);
 
@@ -513,9 +600,9 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
     const blueItem = page.locator("[data-palette-swatch-item]", {
       has: page.locator("[data-palette-swatch-name='Bluegate']")
     });
-    const anchorTile = anchorItem.locator("[data-palette-swatch-row]");
-    const brownTile = brownItem.locator("[data-palette-swatch-row]");
-    const blueTile = blueItem.locator("[data-palette-swatch-row]");
+    const anchorTile = anchorItem.locator("[data-palette-swatch-key]");
+    const brownTile = brownItem.locator("[data-palette-swatch-key]");
+    const blueTile = blueItem.locator("[data-palette-swatch-key]");
     const anchorCheck = anchorItem.locator("[data-palette-swatch-check]");
     const brownCheck = brownItem.locator("[data-palette-swatch-check]");
 
@@ -572,7 +659,7 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Bluegate']")).toHaveCount(0);
     await page.locator("[data-palette-tag-filter='batch']").uncheck();
     await page.locator("[data-palette-tag-filter='solo']").uncheck();
-    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-row]")).toHaveCount(3);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-key]")).toHaveCount(3);
 
     expectNoPageFailures(failures);
   } finally {
@@ -586,7 +673,7 @@ test("Palette Tool rejects invalid payloads before render and blocks editing wit
 
   try {
     await expect(page.locator("[data-palette-log]")).toContainText("Invalid palette payload rejected before render");
-    await expect(page.locator("[data-palette-validation-list]")).toContainText("Symbol must be exactly one character.");
+    await expect(page.locator("[data-palette-validation-list]")).toContainText("Palette key is missing.");
     await expect(page.locator("[data-palette-count]")).toHaveText("0");
     expectNoPageFailures(invalidFailures);
   } finally {

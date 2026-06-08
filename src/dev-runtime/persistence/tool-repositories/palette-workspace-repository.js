@@ -55,14 +55,40 @@ const SOURCE_ID_RENAMES = Object.freeze({
 });
 const SYMBOL_CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*()-+=[]{};:,.?";
 
-function cloneSwatch(swatch) {
+function clonePickerSettings(settings) {
+  if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
+    return null;
+  }
   return {
+    activeTags: Array.isArray(settings.activeTags) ? [...settings.activeTags] : [],
+    colors: settings.colors,
+    contrast: settings.contrast,
+    hueShift: settings.hueShift,
+    paletteType: settings.paletteType,
+    saturation: settings.saturation,
+    sortDirection: settings.sortDirection,
+    sortField: settings.sortField,
+    steps: settings.steps,
+    swatchSize: settings.swatchSize,
+    themeCollection: settings.themeCollection,
+    variant: settings.variant,
+    variantValue: settings.variantValue
+  };
+}
+
+function cloneSwatch(swatch) {
+  const cloned = {
     symbol: swatch.symbol,
     hex: swatch.hex,
     name: swatch.name,
     source: swatch.source,
     tags: [...swatch.tags]
   };
+  const pickerSettings = clonePickerSettings(swatch.pickerSettings);
+  if (pickerSettings) {
+    cloned.pickerSettings = pickerSettings;
+  }
+  return cloned;
 }
 
 function cloneSourcePaletteRow(row) {
@@ -217,25 +243,28 @@ export function normalizePaletteSwatchInput(input = {}, options = {}) {
   const hex = normalizeHex(source.hex);
   const name = normalizeText(source.name);
   const tags = normalizeTags(source.tags);
+  const pickerSettings = clonePickerSettings(source.pickerSettings);
 
-  return {
+  const swatch = {
     symbol,
     hex,
     name,
     source: normalizeSource(source.source || options.source),
     tags
   };
+  if (pickerSettings) {
+    swatch.pickerSettings = pickerSettings;
+  }
+  return swatch;
 }
 
 export function validatePaletteSwatchInput(input = {}, existingSwatches = [], options = {}) {
   const swatch = normalizePaletteSwatchInput(input, options);
-  const excludeSymbol = normalizeText(options.excludeSymbol);
+  const excludeSymbol = normalizeText(options.excludeSymbol || options.excludeKey);
   const issues = [];
 
-  if (!swatch.symbol) {
-    issues.push(createIssue("symbol", "Symbol", "Enter a symbol for this swatch."));
-  } else if (!isOneCharacter(swatch.symbol)) {
-    issues.push(createIssue("symbol", "Symbol", "Symbol must be exactly one character."));
+  if (options.requireSymbol && !swatch.symbol) {
+    issues.push(createIssue("symbol", "Palette Key", "Palette key is missing."));
   }
 
   if (!swatch.hex) {
@@ -303,7 +332,7 @@ export function validatePaletteWorkspacePayload(payload = {}) {
   const normalizedSwatches = [];
   swatches.forEach((candidate, index) => {
     const normalized = normalizePaletteSwatchInput(candidate);
-    const validation = validatePaletteSwatchInput(normalized, normalizedSwatches);
+    const validation = validatePaletteSwatchInput(normalized, normalizedSwatches, { requireSymbol: true });
     if (validation.issues.length) {
       validation.issues.forEach((issue) => {
         issues.push({
@@ -569,7 +598,17 @@ function nextAvailableSymbol(existingSwatches, seedText = "") {
   const used = new Set(existingSwatches.map((swatch) => swatch.symbol));
   const seedCandidates = Array.from(normalizeText(seedText).toUpperCase().replace(/[^A-Z0-9]/g, ""));
   const candidates = [...seedCandidates, ...Array.from(SYMBOL_CANDIDATES)];
-  return candidates.find((candidate) => !used.has(candidate)) || "";
+  const compactCandidate = candidates.find((candidate) => !used.has(candidate));
+  if (compactCandidate) {
+    return compactCandidate;
+  }
+  let index = existingSwatches.length + 1;
+  let candidate = `swatch-${index}`;
+  while (used.has(candidate)) {
+    index += 1;
+    candidate = `swatch-${index}`;
+  }
+  return candidate;
 }
 
 function generatedHarmonyNameRoot(name) {
@@ -652,6 +691,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       .map((row) => ({
         hex: row.hex,
         name: row.name,
+        pickerSettings: clonePickerSettings(row.pickerSettings) || undefined,
         source: row.source,
         symbol: row.symbol,
         tags: [...row.tags]
@@ -681,6 +721,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         hex: swatch.hex,
         id: `${projectId}-palette-color-${index + 1}`,
         name: swatch.name,
+        pickerSettings: clonePickerSettings(swatch.pickerSettings) || undefined,
         projectId,
         source: swatch.source,
         symbol: swatch.symbol,
@@ -770,7 +811,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   function saveSwatch(input = {}, optionsForSave = {}) {
     const projectId = activeProjectId();
     const swatches = getActiveSwatches();
-    const validation = validatePaletteSwatchInput(input, swatches, {
+    const inputWithKey = {
+      ...input,
+      symbol: normalizeText(input.symbol) || optionsForSave.excludeSymbol || nextAvailableSymbol(swatches, `${input.name || ""} ${input.hex || ""}`)
+    };
+    const validation = validatePaletteSwatchInput(inputWithKey, swatches, {
       excludeSymbol: optionsForSave.excludeSymbol,
       source: optionsForSave.source || PALETTE_SOURCE_USER
     });
@@ -833,6 +878,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     return saveSwatch(
       {
         ...input,
+        symbol: selectedSwatch.symbol,
         source: selectedSwatch.source || PALETTE_SOURCE_USER,
         tags: [...selectedSwatch.tags]
       },

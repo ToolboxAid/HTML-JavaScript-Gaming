@@ -47,9 +47,6 @@ function swatches(values) {
 
 const PALETTE_VARIANTS = Object.freeze([
   { label: "Full", value: "full" },
-  { label: "256 colors", value: "256" },
-  { label: "128 colors", value: "128" },
-  { label: "64 colors", value: "64" },
   { label: "32 colors", value: "32" },
   { label: "16 colors", value: "16" },
   { label: "8 colors", value: "8" },
@@ -67,9 +64,6 @@ const PALETTE_VARIANTS = Object.freeze([
 ]);
 
 const NUMERIC_VARIANT_COUNTS = Object.freeze({
-  "256": 256,
-  "128": 128,
-  "64": 64,
   "32": 32,
   "16": 16,
   "8": 8,
@@ -218,13 +212,12 @@ let selectedSourceSwatch = null;
 let sourceSwatchRows = [];
 const sourceSortState = { direction: "asc", key: "name" };
 let sourceSizeState = "medium";
-const userSortState = { direction: "asc", key: "name" };
+const userSortState = { direction: "asc", key: "hue" };
 let userSizeState = "medium";
-const checkedSwatchSymbols = new Set();
+const checkedSwatchKeys = new Set();
 const selectedTagFilters = new Set();
 const invalidHexPreviewValue = "#FFFFFF";
 const GENERATED_SWATCH_SOURCE = "generated";
-const GENERATED_SYMBOL_CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*()-+=[]{};:,.?";
 
 const elements = {
   activeProject: document.querySelector("[data-palette-active-project]"),
@@ -259,10 +252,10 @@ const elements = {
   projectDiagnostic: document.querySelector("[data-palette-project-diagnostic]"),
   projectOverlay: document.querySelector("[data-palette-project-overlay]"),
   redo: document.querySelector("[data-palette-redo]"),
+  restorePickerSettings: document.querySelector("[data-palette-restore-picker-settings]"),
   selectedSummary: document.querySelector("[data-palette-selected-summary]"),
   selectedHex: document.querySelector("[data-palette-selected-hex]"),
   selectedName: document.querySelector("[data-palette-selected-name]"),
-  selectedSymbol: document.querySelector("[data-palette-selected-symbol]"),
   sourceList: document.querySelector("[data-palette-source-list]"),
   sourcePinAll: document.querySelector("[data-palette-source-pin-all]"),
   sourceSearch: document.querySelector("[data-palette-source-search]"),
@@ -270,7 +263,6 @@ const elements = {
   sourceSize: document.querySelector("[data-palette-source-size]"),
   sourceSort: document.querySelector("[data-palette-source-sort]"),
   storagePath: document.querySelector("[data-palette-storage-path]"),
-  symbol: document.querySelector("[data-palette-symbol]"),
   tableCounts: document.querySelector("[data-palette-table-counts]"),
   tags: document.querySelector("[data-palette-tags]"),
   tagSuggestions: document.querySelector("[data-palette-tag-suggestions]"),
@@ -339,6 +331,10 @@ function createStatusMessage(text) {
   message.className = "status";
   message.textContent = text;
   return message;
+}
+
+function swatchKey(swatch) {
+  return swatch?.symbol || "";
 }
 
 function sortDirectionCaret(direction) {
@@ -492,6 +488,27 @@ function swatchColorKey(hex) {
   return String(hex || "").trim().toUpperCase().slice(0, 7);
 }
 
+function colorFamilyName(hex) {
+  const rgb = hexToRgb(hex);
+  if (!rgb) {
+    return "Generated Color";
+  }
+  const hsl = rgbToHsl(rgb);
+  if (hsl.saturation < 8) {
+    return hsl.lightness < 30 ? "Dark Gray" : hsl.lightness > 72 ? "Light Gray" : "Neutral Gray";
+  }
+  const hue = positiveHue(hsl.hue);
+  if (hue < 20 || hue >= 340) return "Red";
+  if (hue < 45) return "Orange";
+  if (hue < 70) return "Yellow";
+  if (hue < 165) return "Green";
+  if (hue < 195) return "Cyan";
+  if (hue < 255) return "Blue";
+  if (hue < 290) return "Violet";
+  if (hue < 340) return "Magenta";
+  return "Generated Color";
+}
+
 function pinnedSwatchForHex(hex, snapshot = repository.getSnapshot()) {
   const colorKey = swatchColorKey(hex);
   if (!colorKey) {
@@ -500,12 +517,49 @@ function pinnedSwatchForHex(hex, snapshot = repository.getSnapshot()) {
   return snapshot.swatches.find((swatch) => swatchColorKey(swatch.hex) === colorKey) || null;
 }
 
-function nextGeneratedSymbol(snapshot, reservedSymbols) {
-  const usedSymbols = new Set([
-    ...snapshot.swatches.map((swatch) => swatch.symbol),
-    ...reservedSymbols
-  ]);
-  return Array.from(GENERATED_SYMBOL_CANDIDATES).find((symbol) => !usedSymbols.has(symbol)) || "";
+function selectedOptionText(element) {
+  return element?.selectedOptions?.[0]?.textContent || element?.value || "";
+}
+
+function currentPickerSettings(settings = readPaletteGeneratorSettings()) {
+  return {
+    activeTags: [...selectedTagFilters],
+    colors: settings.colors,
+    contrast: settings.contrast,
+    hueShift: settings.hueShift,
+    paletteType: settings.paletteType?.name || selectedOptionText(elements.generatorType),
+    saturation: settings.saturation,
+    sortDirection: userSortState.direction,
+    sortField: userSortState.key,
+    steps: settings.steps,
+    swatchSize: userSizeState,
+    themeCollection: settings.collection?.name || selectedOptionText(elements.generatorCollection),
+    variant: settings.variant?.label || selectedOptionText(elements.generatorVariant),
+    variantValue: settings.variant?.value || elements.generatorVariant?.value || ""
+  };
+}
+
+function pickerSettingsLines(settings = null) {
+  const stored = settings && typeof settings === "object" ? settings : {};
+  return [
+    `Theme Collection: ${stored.themeCollection || "Not stored"}`,
+    `Palette Type: ${stored.paletteType || "Not stored"}`,
+    `Variant: ${stored.variant || "Not stored"}`,
+    `Colors: ${stored.colors ?? "Not stored"}`,
+    `Steps: ${stored.steps ?? "Not stored"}`,
+    `Contrast: ${stored.contrast ?? "Not stored"}`,
+    `Saturation: ${stored.saturation ?? "Not stored"}`,
+    `Hue Shift: ${stored.hueShift ?? "Not stored"}`,
+    `Tags: ${Array.isArray(stored.activeTags) && stored.activeTags.length ? stored.activeTags.join(", ") : "None"}`
+  ];
+}
+
+function pickerTooltipText(swatch, settings = swatch?.pickerSettings) {
+  return [
+    `Color: ${swatch?.hex || "Not stored"}`,
+    `Name: ${swatch?.name || "Generated color"}`,
+    ...pickerSettingsLines(settings)
+  ].join("\n");
 }
 
 function interpolateHex(swatchesToInterpolate, column, columns) {
@@ -716,14 +770,17 @@ function readPaletteGeneratorSettings() {
 }
 
 function generatorSwatchName(settings, row, column, hex) {
-  return `${settings.paletteType?.name || "Generated"} ${row + 1}-${column + 1} ${hex}`;
+  const collection = settings.collection?.name || "Palette";
+  const type = settings.paletteType?.name || "Generated";
+  const variant = settings.variant?.label || "Full";
+  const family = colorFamilyName(hex);
+  return `${collection} ${type} ${variant} ${family} R${row + 1} C${column + 1}`;
 }
 
 function createGeneratorPreviewInput(hex, label, row, column, settings, options = {}) {
   const swatch = document.createElement("button");
   swatch.className = "palette-generator-preview-swatch";
   swatch.type = "button";
-  swatch.disabled = Boolean(options.disabled);
   swatch.dataset.paletteGeneratorSwatch = "";
   swatch.dataset.paletteGeneratorRow = String(row);
   swatch.dataset.paletteGeneratorColumn = String(column);
@@ -732,12 +789,16 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   swatch.dataset.paletteGeneratorTypeName = settings.paletteType?.name || "";
   swatch.dataset.paletteGeneratorVariantName = settings.variant?.label || "";
   swatch.dataset.paletteGeneratorHex = hex;
-  swatch.dataset.paletteGeneratorSymbol = options.symbol || "";
   swatch.dataset.palettePinned = String(Boolean(options.pinned));
   swatch.dataset.paletteSelected = String(Boolean(options.selected));
+  swatch.dataset.paletteGeneratorName = options.pinnedSwatch?.name || generatorSwatchName(settings, row, column, hex);
   const swatchName = generatorSwatchName(settings, row, column, hex);
-  swatch.dataset.paletteGeneratorName = options.pinnedSwatch?.name || swatchName;
-  swatch.setAttribute("aria-label", `${options.pinned ? "Unpin" : "Pin"} generated swatch ${swatchName}`);
+  const tooltipSwatch = {
+    hex,
+    name: options.pinnedSwatch?.name || swatchName,
+    pickerSettings: options.pickerSettings
+  };
+  swatch.setAttribute("aria-label", `${options.pinned ? "Unpin" : "Add"} generated swatch ${swatchName}`);
   swatch.setAttribute("aria-pressed", String(Boolean(options.pinned)));
   if (options.selected) {
     swatch.setAttribute("aria-current", "true");
@@ -752,7 +813,7 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   input.setAttribute("aria-label", `${label} generated swatch ${hex}`);
   input.title = `${swatchName}${options.pinned ? " pinned" : ""}`;
 
-  swatch.title = `${swatchName}\nHex: ${hex}\nSource: generated${options.pinned ? "\nPinned in Selected Swatches" : ""}`;
+  swatch.title = pickerTooltipText(tooltipSwatch, options.pickerSettings);
   swatch.append(input, createPinIndicator(Boolean(options.pinned)));
   return swatch;
 }
@@ -779,7 +840,6 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   }
 
   const fragment = document.createDocumentFragment();
-  const reservedSymbols = new Set();
   for (let row = 0; row < settings.steps; row += 1) {
     const rowElement = document.createElement("div");
     rowElement.className = "palette-generator-preview-row";
@@ -795,16 +855,11 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
       }, settings.variant, column, settings.colors);
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
       const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
-      const symbol = pinnedSwatch?.symbol || nextGeneratedSymbol(snapshot, reservedSymbols);
-      if (symbol) {
-        reservedSymbols.add(symbol);
-      }
       rowElement.append(createGeneratorPreviewInput(hex, settings.paletteType.name, row, column, settings, {
-        disabled: !symbol && !pinnedSwatch,
         pinned: Boolean(pinnedSwatch),
         pinnedSwatch,
-        selected: Boolean(pinnedSwatch && snapshot.selectedSwatch?.symbol === pinnedSwatch.symbol),
-        symbol
+        selected: Boolean(pinnedSwatch && swatchKey(snapshot.selectedSwatch) === swatchKey(pinnedSwatch)),
+        pickerSettings: currentPickerSettings(settings)
       }));
     }
     fragment.append(rowElement);
@@ -827,8 +882,8 @@ function generatedSwatchFromTile(tile) {
   return {
     hex: tile.dataset.paletteGeneratorHex,
     name: tile.dataset.paletteGeneratorName,
+    pickerSettings: currentPickerSettings(),
     source: GENERATED_SWATCH_SOURCE,
-    symbol: tile.dataset.paletteGeneratorSymbol,
     tags: []
   };
 }
@@ -846,6 +901,51 @@ function resetPaletteGeneratorControls() {
   renderPaletteGeneratorPreview("Palette generator controls reset.");
 }
 
+function setSelectValueByTextOrValue(select, preferredValue, preferredText) {
+  if (!select) {
+    return false;
+  }
+  const option = [...select.options].find((item) => (
+    item.value === String(preferredValue || "") || item.textContent === String(preferredText || "")
+  ));
+  if (!option) {
+    return false;
+  }
+  select.value = option.value;
+  return true;
+}
+
+function applyPickerSettings(settings = null) {
+  if (!settings || typeof settings !== "object") {
+    setText(elements.log, "Restore Picker Settings unavailable: selected swatch has no stored picker settings.");
+    return;
+  }
+  setSelectValueByTextOrValue(elements.generatorCollection, settings.themeCollection, settings.themeCollection);
+  renderPaletteTypeOptions();
+  setSelectValueByTextOrValue(elements.generatorType, settings.paletteType, settings.paletteType);
+  renderPaletteVariantOptions();
+  setSelectValueByTextOrValue(elements.generatorVariant, settings.variantValue, settings.variant);
+  if (elements.generatorColors && settings.colors) elements.generatorColors.value = String(settings.colors);
+  if (elements.generatorSteps && settings.steps) elements.generatorSteps.value = String(settings.steps);
+  if (elements.generatorContrast && settings.contrast !== undefined) elements.generatorContrast.value = String(settings.contrast);
+  if (elements.generatorSaturation && settings.saturation !== undefined) elements.generatorSaturation.value = String(settings.saturation);
+  if (elements.generatorHueShift && settings.hueShift !== undefined) elements.generatorHueShift.value = String(settings.hueShift);
+  if (settings.sortField && SORT_OPTIONS.some((option) => option.key === settings.sortField)) {
+    userSortState.key = settings.sortField;
+  }
+  if (["asc", "desc"].includes(settings.sortDirection)) {
+    userSortState.direction = settings.sortDirection;
+  }
+  if (settings.swatchSize && SIZE_OPTIONS.some((option) => option.key === settings.swatchSize)) {
+    userSizeState = settings.swatchSize;
+  }
+  selectedTagFilters.clear();
+  (Array.isArray(settings.activeTags) ? settings.activeTags : []).forEach((tag) => selectedTagFilters.add(tag));
+  render();
+  renderPaletteGeneratorPreview(`Restored picker settings from ${settings.paletteType || "selected swatch"}.`);
+  setText(elements.log, `Restored picker settings from ${settings.themeCollection || "stored"} / ${settings.paletteType || "palette"} / ${settings.variant || "variant"}.`);
+}
+
 function createPinIndicator(pinned) {
   const indicator = document.createElement("span");
   indicator.className = "palette-swatch-pin";
@@ -860,10 +960,11 @@ function swatchTileLabel(swatch, action) {
 
 function swatchTooltipText(swatch, sourceLabel = "") {
   return [
+    `Color: ${swatch.hex}`,
     `Name: ${swatch.name}`,
-    `Hex: ${swatch.hex}`,
     `Source: ${sourceLabel || repository.displaySource(swatch.source)}`,
-    swatch.tags.length ? `Tags: ${swatch.tags.join(", ")}` : ""
+    ...pickerSettingsLines(swatch.pickerSettings),
+    swatch.tags.length ? `Palette Tags: ${swatch.tags.join(", ")}` : "Palette Tags: None"
   ].filter(Boolean).join("\n");
 }
 
@@ -888,7 +989,7 @@ function createSwatchTile(swatch, options = {}) {
   }
 
   if (options.swatchRow) {
-    tile.dataset.paletteSwatchRow = swatch.symbol;
+    tile.dataset.paletteSwatchKey = swatchKey(swatch);
   }
   if (Number.isInteger(options.sourceIndex)) {
     tile.dataset.paletteSourceIndex = String(options.sourceIndex);
@@ -907,13 +1008,13 @@ function createSwatchTile(swatch, options = {}) {
 function createCheckedSwatchTile(swatch, options = {}) {
   const wrapper = document.createElement("span");
   wrapper.className = "palette-swatch-item";
-  wrapper.dataset.paletteSwatchItem = swatch.symbol;
+  wrapper.dataset.paletteSwatchItem = swatchKey(swatch);
 
   const checkbox = document.createElement("input");
   checkbox.className = "palette-swatch-check";
   checkbox.type = "checkbox";
-  checkbox.checked = checkedSwatchSymbols.has(swatch.symbol);
-  checkbox.dataset.paletteSwatchCheck = swatch.symbol;
+  checkbox.checked = checkedSwatchKeys.has(swatchKey(swatch));
+  checkbox.dataset.paletteSwatchCheck = swatchKey(swatch);
   checkbox.setAttribute("aria-label", `Apply Project Palette Tags to ${swatch.name}`);
   checkbox.title = `Apply Project Palette Tags to ${swatch.name}`;
 
@@ -928,13 +1029,11 @@ function normalizeTag(value) {
 function readUserSwatchForm() {
   return {
     hex: elements.hex?.value,
-    name: elements.name?.value,
-    symbol: elements.symbol?.value
+    name: elements.name?.value
   };
 }
 
 function fillUserSwatchForm(swatch) {
-  if (elements.symbol) elements.symbol.value = swatch?.symbol || "";
   if (elements.hex) elements.hex.value = swatch?.hex || "";
   if (elements.name) elements.name.value = swatch?.name || "";
   renderUserHexPreview();
@@ -962,14 +1061,14 @@ function selectedTagControls() {
   ].filter(Boolean);
 }
 
-function checkedSwatchSymbolsFromSnapshot(snapshot) {
-  const activeSymbols = new Set(snapshot.swatches.map((swatch) => swatch.symbol));
-  [...checkedSwatchSymbols].forEach((symbol) => {
-    if (!activeSymbols.has(symbol)) {
-      checkedSwatchSymbols.delete(symbol);
+function checkedSwatchKeysFromSnapshot(snapshot) {
+  const activeKeys = new Set(snapshot.swatches.map(swatchKey));
+  [...checkedSwatchKeys].forEach((key) => {
+    if (!activeKeys.has(key)) {
+      checkedSwatchKeys.delete(key);
     }
   });
-  return [...checkedSwatchSymbols];
+  return [...checkedSwatchKeys];
 }
 
 function userDefinedLocked(snapshot) {
@@ -1012,7 +1111,7 @@ function renderUserDefinedControlState(snapshot) {
   const selectedSwatch = snapshot.selectedSwatch;
   const userSwatch = selectedUserDefinedSwatch(snapshot);
   const locked = userDefinedLocked(snapshot);
-  setDisabled([elements.hex, elements.name, elements.symbol, elements.clear], locked);
+  setDisabled([elements.hex, elements.name, elements.clear], locked);
   setDisabled(elements.add, locked || !userDefinedAddReady(snapshot));
   setDisabled(elements.update, locked || !userSwatch);
   setText(
@@ -1071,8 +1170,8 @@ function acceptTagFromInput() {
     return;
   }
   const snapshot = repository.getSnapshot();
-  const checkedSymbols = checkedSwatchSymbolsFromSnapshot(snapshot);
-  if (!snapshot.selectedSwatch && !checkedSymbols.length) {
+  const checkedKeys = checkedSwatchKeysFromSnapshot(snapshot);
+  if (!snapshot.selectedSwatch && !checkedKeys.length) {
     editorIssues = [{
       action: "Select a Palette Colors swatch before adding tags.",
       field: "tags",
@@ -1081,8 +1180,8 @@ function acceptTagFromInput() {
     render();
     return;
   }
-  const result = checkedSymbols.length
-    ? repository.addTagToSwatches(checkedSymbols, tag)
+  const result = checkedKeys.length
+    ? repository.addTagToSwatches(checkedKeys, tag)
     : repository.updateSelectedSwatchTags([...editorTags, tag]);
   if (elements.tags) {
     elements.tags.value = "";
@@ -1147,19 +1246,19 @@ function renderProject(snapshot) {
 
 function renderSelectedSwatchEditor(snapshot) {
   const selectedSwatch = snapshot.selectedSwatch;
-  if (elements.selectedSymbol) elements.selectedSymbol.value = selectedSwatch?.symbol || "";
   if (elements.selectedHex) elements.selectedHex.value = selectedSwatch?.hex || "";
   if (elements.selectedName) elements.selectedName.value = selectedSwatch?.name || "";
   if (elements.tags) elements.tags.value = "";
   editorTags = Array.isArray(selectedSwatch?.tags) ? [...selectedSwatch.tags] : [];
-  setDisabled([elements.selectedSymbol, elements.selectedHex, elements.selectedName], true);
-  const checkedSymbols = checkedSwatchSymbolsFromSnapshot(snapshot);
-  setDisabled(selectedTagControls(), snapshot.projectRequired || snapshot.validation.status === "Reject" || (!selectedSwatch && !checkedSymbols.length));
-  setDisabled(elements.clearChecked, checkedSymbols.length === 0);
+  setDisabled([elements.selectedHex, elements.selectedName], true);
+  const checkedKeys = checkedSwatchKeysFromSnapshot(snapshot);
+  setDisabled(selectedTagControls(), snapshot.projectRequired || snapshot.validation.status === "Reject" || (!selectedSwatch && !checkedKeys.length));
+  setDisabled(elements.clearChecked, checkedKeys.length === 0);
+  setDisabled(elements.restorePickerSettings, !selectedSwatch?.pickerSettings);
   setText(
     elements.editorDiagnostic,
-    checkedSymbols.length
-      ? `Adding tags to ${checkedSymbols.length} checked swatch${checkedSymbols.length === 1 ? "" : "es"}.`
+    checkedKeys.length
+      ? `Adding tags to ${checkedKeys.length} checked swatch${checkedKeys.length === 1 ? "" : "es"}.`
       : selectedSwatch ? `Editing tags for ${selectedSwatch.name}.` : "Select a Palette Colors swatch to edit tags."
   );
 }
@@ -1191,7 +1290,9 @@ function renderUserPalette(snapshot) {
     sortDirection: userSortState.direction,
     sortKey: userSortState.key
   }).filter((swatch) => (
-    activeFilters.length === 0 || activeFilters.every((tag) => swatch.tags.includes(tag))
+    activeFilters.length === 0
+      || activeFilters.every((tag) => swatch.tags.includes(tag))
+      || swatchKey(snapshot.selectedSwatch) === swatchKey(swatch)
   ));
   if (swatches.length === 0) {
     const message = document.createElement("p");
@@ -1203,13 +1304,13 @@ function renderUserPalette(snapshot) {
     return;
   }
 
-  checkedSwatchSymbolsFromSnapshot(snapshot);
+  checkedSwatchKeysFromSnapshot(snapshot);
   swatches.forEach((swatch) => {
     elements.userList.append(createCheckedSwatchTile(swatch, {
       action: "Select palette color",
       pinned: true,
-      pressed: snapshot.selectedSwatch?.symbol === swatch.symbol,
-      selected: snapshot.selectedSwatch?.symbol === swatch.symbol,
+      pressed: swatchKey(snapshot.selectedSwatch) === swatchKey(swatch),
+      selected: swatchKey(snapshot.selectedSwatch) === swatchKey(swatch),
       size: userSizeState,
       swatchRow: true
     }));
@@ -1218,7 +1319,7 @@ function renderUserPalette(snapshot) {
 
 function sourcePaletteDiagnostic(snapshot) {
   return snapshot.sourcePaletteRecordCount > 0 && snapshot.sourcePaletteOptions.length === 0
-    ? "Source palette records exist, but the source dropdown is empty. Check palette_source_swatches mock-DB records for valid source, symbol, hex, and name fields."
+    ? "Source palette records exist, but the source dropdown is empty. Check palette_source_swatches mock-DB records for valid source, palette key, hex, and name fields."
     : "";
 }
 
@@ -1332,7 +1433,6 @@ function renderHarmony(snapshot) {
       hex: suggestion.hex,
       name: suggestion.name,
       source: suggestion.source,
-      symbol: String(index + 1),
       tags: []
     }, {
       action: pinned ? "Remove harmony swatch" : "Add harmony swatch",
@@ -1386,7 +1486,7 @@ function render() {
     return;
   }
 
-  checkedSwatchSymbolsFromSnapshot(snapshot);
+  checkedSwatchKeysFromSnapshot(snapshot);
   renderSourceOptions(snapshot);
   renderPaletteControls();
   renderProject(snapshot);
@@ -1421,7 +1521,7 @@ function validateUserSwatch() {
     editorIssues = validatePaletteSwatchInput(
       readUserSwatchForm(),
       snapshot.swatches,
-      { excludeSymbol: snapshot.selectedSwatch?.symbol || "" }
+    { excludeKey: swatchKey(snapshot.selectedSwatch) }
     ).issues;
   }
   renderUserDefinedControlState(snapshot);
@@ -1442,7 +1542,7 @@ function runInitialQueryState() {
       tools: {
         [PALETTE_TOOL_KEY]: {
           swatches: [
-            { symbol: "AB", hex: "#112233", name: "Invalid Symbol" }
+            { hex: "#112233", name: "Missing Palette Key" }
           ]
         }
       }
@@ -1498,7 +1598,7 @@ elements.update?.addEventListener("click", () => {
 elements.clear?.addEventListener("click", clearUserSwatchForm);
 
 elements.clearChecked?.addEventListener("click", () => {
-  checkedSwatchSymbols.clear();
+  checkedSwatchKeys.clear();
   setText(elements.log, "Cleared checked palette swatches.");
   setText(elements.editorDiagnostic, "Cleared checked palette swatches.");
   render();
@@ -1510,6 +1610,10 @@ elements.undo?.addEventListener("click", () => {
 
 elements.redo?.addEventListener("click", () => {
   applyResult(repository.redo());
+});
+
+elements.restorePickerSettings?.addEventListener("click", () => {
+  applyPickerSettings(repository.getSnapshot().selectedSwatch?.pickerSettings);
 });
 
 elements.userSort?.addEventListener("click", (event) => {
@@ -1566,19 +1670,9 @@ elements.generatorPreview?.addEventListener("click", (event) => {
   if (!tile) {
     return;
   }
-  if (tile.disabled) {
-    editorIssues = [{
-      action: "No one-character palette symbol is available for this generated swatch.",
-      field: "generatedSwatch",
-      label: "Generated Swatch"
-    }];
-    renderValidation(repository.getSnapshot());
-    setText(elements.log, "Generated swatch blocked: no available symbol.");
-    return;
-  }
   const swatch = generatedSwatchFromTile(tile);
   const result = tile.dataset.palettePinned === "true"
-    ? repository.removeSwatch(swatch.symbol)
+    ? repository.removeSwatch(swatchKey(pinnedSwatchForHex(swatch.hex)))
     : repository.pinSourceSwatch(swatch);
   applyResult({
     ...result,
@@ -1657,7 +1751,7 @@ elements.harmonyAddAll?.addEventListener("click", () => {
 });
 
 elements.userList?.addEventListener("click", (event) => {
-  const tile = event.target.closest("[data-palette-swatch-row]");
+  const tile = event.target.closest("[data-palette-swatch-key]");
   if (!tile) {
     return;
   }
@@ -1665,7 +1759,7 @@ elements.userList?.addEventListener("click", (event) => {
   const pin = event.target.closest("[data-palette-pin-indicator]");
   if (pin) {
     const deletingSelected = tile.dataset.paletteSelected === "true";
-    const result = repository.removeSwatch(tile.dataset.paletteSwatchRow);
+    const result = repository.removeSwatch(tile.dataset.paletteSwatchKey);
     selectedSourceSwatch = null;
     if (deletingSelected || !result.snapshot.selectedSwatch) {
       fillUserSwatchForm(selectedUserDefinedSwatch(result.snapshot));
@@ -1674,7 +1768,7 @@ elements.userList?.addEventListener("click", (event) => {
     return;
   }
 
-  const snapshot = repository.selectSwatch(tile.dataset.paletteSwatchRow);
+  const snapshot = repository.selectSwatch(tile.dataset.paletteSwatchKey);
   fillUserSwatchForm(selectedUserDefinedSwatch(snapshot));
   selectedSourceSwatch = null;
   editorIssues = [];
@@ -1688,9 +1782,9 @@ elements.userList?.addEventListener("change", (event) => {
   }
 
   if (checkbox.checked) {
-    checkedSwatchSymbols.add(checkbox.dataset.paletteSwatchCheck);
+    checkedSwatchKeys.add(checkbox.dataset.paletteSwatchCheck);
   } else {
-    checkedSwatchSymbols.delete(checkbox.dataset.paletteSwatchCheck);
+    checkedSwatchKeys.delete(checkbox.dataset.paletteSwatchCheck);
   }
   render();
 });
