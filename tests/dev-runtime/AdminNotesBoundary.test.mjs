@@ -130,6 +130,7 @@ test("local dev server injects Admin Notes into the served Admin menu only", () 
   const servedHeader = localAdminNotesMenuContent(repoRoot, headerPath, source).toString("utf8");
 
   assert.match(servedHeader, /data-admin-notes-local-menu/);
+  assert.match(servedHeader, /data-nav-link data-admin-notes-local-menu/);
   assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
   assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_MENU_LABEL.replace(/[()]/g, "\\$&")));
   assert.ok(

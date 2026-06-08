@@ -5,7 +5,7 @@ export const ADMIN_NOTES_LOCAL_MENU_LABEL = "Admin Notes (Local Dev)";
 
 const HEADER_PARTIAL_PATH = "assets/theme-v2/partials/header-nav.html";
 const INSERT_BEFORE = '          <a data-nav-link data-route="admin-analytics" href="admin/analytics.html">Analytics</a>';
-const LOCAL_MENU_LINK = `          <a data-admin-notes-local-menu href="${ADMIN_NOTES_LOCAL_VIEWER_PATH}">${ADMIN_NOTES_LOCAL_MENU_LABEL}</a>`;
+const LOCAL_MENU_LINK = `          <a data-nav-link data-admin-notes-local-menu href="${ADMIN_NOTES_LOCAL_VIEWER_PATH}">${ADMIN_NOTES_LOCAL_MENU_LABEL}</a>`;
 
 function repoRelativePath(repoRoot, targetPath) {
   return path.relative(repoRoot, targetPath).replaceAll(path.sep, "/");

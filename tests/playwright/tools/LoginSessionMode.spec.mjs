@@ -366,11 +366,16 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
     await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
+    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Admin Notes (Local Dev)");
+    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
       "href",
       /\/src\/dev-runtime\/admin\/admin-notes\.html$/,
     );
+    await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
+    await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
