@@ -1,34 +1,36 @@
-# PR_26158_040 Testing Lane Execution Report
+# PR_26158_041 Testing Lane Execution Report
 
 ## Lanes Run
 
 | Lane | Command | Result |
 | --- | --- | --- |
-| Docs/static content validation | PowerShell content check for required sections in `docs_build/dev/reports/game-deploy-path-plan-report.md` | PASS |
-| Changed-file whitespace/static validation | `git diff --check` | PASS |
+| Changed-file syntax checks | `node --check assets/theme-v2/js/gamefoundry-partials.js`; `node --check src/dev-runtime/admin/admin-notes-viewer.js`; `node --check tests/helpers/playwrightRepoServer.mjs`; `node --check tests/dev-runtime/AdminNotesBoundary.test.mjs` | PASS |
+| Docs/static Admin Notes boundary validation | `node --test tests/dev-runtime/AdminNotesBoundary.test.mjs` | PASS, 3/3 |
+| Production path Admin Notes exposure audit | `rg -n "docs_build/dev/admin-notes\|docs_build\\dev\\admin-notes\|admin-notes\|Admin Notes\|data-admin-notes" account admin assets toolbox src --glob '!src/dev-runtime/**' --glob '!archive/v1-v2/**' --glob '!tmp/**'` | PASS, no matches |
+| UAT/PROD dev-runtime admin import audit | `rg -n "src/dev-runtime/admin\|src\\dev-runtime\\admin" account admin assets toolbox src --glob '!src/dev-runtime/**' --glob '!archive/v1-v2/**' --glob '!tmp/**'` | PASS, no matches |
+| Changed-file whitespace/static validation | `git diff --check` | PASS, Git line-ending warnings only |
 | start_of_day protection check | `git diff --name-only \| rg "start_of_day"` | PASS, no matches |
 
 ## Validation Notes
 
 | Check | Evidence | Result |
 | --- | --- | --- |
-| MVP end-to-end path is defined. | `game-deploy-path-plan-report.md` includes `Minimum End-To-End Path` and `MVP Flow`. | PASS |
-| Current implemented pieces are identified. | Report includes `Current Implemented Pieces` with evidence file paths. | PASS |
-| Missing pieces and blockers are identified. | Report includes `Missing Pieces` and `Blockers`. | PASS |
-| DB-owned data is separated from generated deploy artifacts. | Report includes `DB Versus Generated Deploy Artifacts`. | PASS |
-| UAT deployment path for one playable game is defined. | Report includes `Required UAT Deployment Path For One Playable Game`. | PASS |
-| Manifest, asset, debug, publish-state, and public-play gates are defined. | Report includes `Validation Gates`. | PASS |
-| Runtime publish behavior was not implemented. | Only docs/reports changed. | PASS |
+| Admin Notes docs live under `docs_build/dev/admin-notes/`. | `tests/dev-runtime/AdminNotesBoundary.test.mjs`; `docs_build/dev/admin-notes/README.md`. | PASS |
+| Production-facing Admin Notes route was removed. | `admin/notes.html` deleted; header nav and partial route map removed. | PASS |
+| Duplicate production-path note files were removed. | `admin/notes/index.txt` and `admin/notes/other/index.txt` deleted. | PASS |
+| Runtime implementation moved under dev-runtime admin. | `src/dev-runtime/admin/admin-notes-viewer.js`. | PASS |
+| Production paths do not link/import dev Admin Notes content. | Static `rg` audit returned no matches. | PASS |
+| UAT/PROD candidate paths do not import `src/dev-runtime/admin/`. | Static `rg` audit returned no matches. | PASS |
 
 ## Skipped Lanes
 
 | Lane | Decision | Reason |
 | --- | --- | --- |
-| Playwright | SKIP | PR is docs/planning only; no runtime, page, API, or UI behavior changed. |
-| Full samples smoke | SKIP | No sample loader/framework, runtime, manifest fixture, or sample artifact changed. |
-| Node test suite | SKIP | No executable source or test logic changed. |
+| Playwright | SKIP | The production Admin Notes route was retired; the old Playwright lane targeted the removed route. Static boundary validation is the requested lane for this cleanup. |
+| Full samples smoke | SKIP | No sample loader/framework, sample fixture, or game runtime path changed. |
+| Full Node suite | SKIP | Targeted Node syntax and Admin Notes boundary test covered the changed files and requested static ownership validation. |
 
 ## Notes
 
-- No V8 coverage was generated for this PR because Playwright was intentionally skipped by request.
-- No `start_of_day` folders were modified.
+- `git diff --check` emitted line-ending warnings only.
+- No `start_of_day` files were modified.

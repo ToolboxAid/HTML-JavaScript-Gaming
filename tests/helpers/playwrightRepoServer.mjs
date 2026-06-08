@@ -1,15 +1,12 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import http from "node:http";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { createMockApiRouter } from "../../src/dev-runtime/server/mock-api-router.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-const adminNotesRoot = path.resolve(repoRoot, "docs_build", "dev", "admin-notes");
-const adminNotesRootRelative = "docs_build/dev/admin-notes";
-const adminNotesIndexFile = "index.txt";
 
 function contentTypeForPath(filePath) {
   const extension = path.extname(filePath).toLowerCase();
@@ -26,15 +23,6 @@ function isInsideRepoRoot(absolutePath) {
   return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
 }
 
-function isInsideAdminNotesRoot(absolutePath) {
-  const relativePath = path.relative(adminNotesRoot, absolutePath);
-  return relativePath === "" || (!relativePath.startsWith("..") && !path.isAbsolute(relativePath));
-}
-
-function repoRelativePath(absolutePath) {
-  return path.relative(repoRoot, absolutePath).replace(/\\/g, "/");
-}
-
 function resolveBrowserRoutePath(decodedPath) {
   const normalizedPath = path.normalize(decodedPath).replace(/^(\.\.[/\\])+/, "");
   const webPath = normalizedPath.replace(/\\/g, "/");
@@ -42,60 +30,6 @@ function resolveBrowserRoutePath(decodedPath) {
     return `/toolbox${webPath.slice("/tools".length)}`;
   }
   return normalizedPath;
-}
-
-async function writeAdminNotesDirectoryListing(absolutePath, response) {
-  if (!isInsideAdminNotesRoot(absolutePath)) {
-    response.statusCode = 403;
-    response.setHeader("Content-Type", "application/json; charset=utf-8");
-    response.end(JSON.stringify({ error: "Forbidden", entries: [] }));
-    return;
-  }
-
-  const stat = await fs.stat(absolutePath).catch(() => null);
-  if (!stat || !stat.isDirectory()) {
-    response.statusCode = 200;
-    response.setHeader("Content-Type", "application/json; charset=utf-8");
-    response.end(JSON.stringify({
-      root: adminNotesRootRelative,
-      folderPath: repoRelativePath(absolutePath),
-      folderFileUrl: "",
-      entries: []
-    }));
-    return;
-  }
-
-  const directoryEntries = await fs.readdir(absolutePath, { withFileTypes: true });
-  const entries = await Promise.all(directoryEntries.map(async (entry) => {
-    const absoluteEntryPath = path.join(absolutePath, entry.name);
-    if (entry.isDirectory()) {
-      const indexPath = path.join(absoluteEntryPath, adminNotesIndexFile);
-      const hasIndex = Boolean(await fs.stat(indexPath).catch(() => null));
-      return {
-        type: "folder",
-        label: `${entry.name}/`,
-        path: repoRelativePath(indexPath),
-        hasIndex
-      };
-    }
-    if (entry.isFile() && path.extname(entry.name).toLowerCase() === ".txt") {
-      return {
-        type: "file",
-        label: entry.name,
-        path: repoRelativePath(absoluteEntryPath)
-      };
-    }
-    return null;
-  }));
-
-  response.statusCode = 200;
-  response.setHeader("Content-Type", "application/json; charset=utf-8");
-  response.end(JSON.stringify({
-    root: adminNotesRootRelative,
-    folderPath: repoRelativePath(absolutePath),
-    folderFileUrl: pathToFileURL(absolutePath).href,
-    entries: entries.filter(Boolean)
-  }));
 }
 
 export async function startRepoServer() {
@@ -112,10 +46,6 @@ export async function startRepoServer() {
       if (!isInsideRepoRoot(absolutePath)) {
         response.statusCode = 403;
         response.end("Forbidden");
-        return;
-      }
-      if (requestUrl.searchParams.has("adminNotesDirectory")) {
-        await writeAdminNotesDirectoryListing(absolutePath, response);
         return;
       }
       let targetPath = absolutePath;

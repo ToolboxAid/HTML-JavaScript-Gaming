@@ -1,3 +1,4 @@
+// Dev-runtime only: do not import this viewer from production-facing pages or bundles.
 const NOTES_DIRECTORY = "docs_build/dev/admin-notes";
 const DEFAULT_NOTE = "index";
 const LINK_CLASS = "btn btn--compact primary";

@@ -79,7 +79,6 @@
         "admin-users": "admin/users.html",
         "admin-roles": "admin/roles.html",
         "admin-moderation": "admin/moderation.html",
-        "admin-notes": "admin/notes.html",
         "admin-analytics": "admin/analytics.html",
         "admin-tools-progress": "admin/tools-progress.html",
         "cookie-policy": "legal/cookie-policy.html",
