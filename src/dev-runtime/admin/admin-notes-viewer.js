@@ -1,6 +1,7 @@
 // Dev-runtime only: do not import this viewer from production-facing pages or bundles.
 const NOTES_DIRECTORY = "docs_build/dev/admin-notes";
 const DEFAULT_NOTE = "index";
+const VIEWER_PATH = "/src/dev-runtime/admin/admin-notes.html";
 const LINK_CLASS = "btn btn--compact primary";
 const NOTE_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
 const STATUS_ICON_PATTERN = /^\[([ xX.!?-])\]\s*(.*)$/;
@@ -178,7 +179,7 @@ class AdminNotesViewer {
 
   async loadTextFile({ filePath, title, currentFilePath, missingMessage, errorMessage, pushHistory, pushUrl }) {
     try {
-      const response = await fetch(filePath, { cache: "no-store" });
+      const response = await fetch(this.repoFileUrl(filePath), { cache: "no-store" });
       if (!response.ok) {
         this.renderError(missingMessage);
         await this.renderDirectoryLinks(this.folderPathForFile(currentFilePath), currentFilePath);
@@ -197,11 +198,15 @@ class AdminNotesViewer {
   }
 
   hrefForNote(noteName) {
-    return noteName === DEFAULT_NOTE ? "admin/notes.html" : `admin/notes.html?note=${encodeURIComponent(noteName)}`;
+    return noteName === DEFAULT_NOTE ? VIEWER_PATH : `${VIEWER_PATH}?note=${encodeURIComponent(noteName)}`;
   }
 
   hrefForFile(filePath) {
-    return `admin/notes.html?file=${encodeURIComponent(filePath)}`;
+    return `${VIEWER_PATH}?file=${encodeURIComponent(filePath)}`;
+  }
+
+  repoFileUrl(filePath) {
+    return `/${String(filePath || "").replace(/^\/+/, "")}`;
   }
 
   rootRelativeTextPathFromValue(value) {
@@ -329,7 +334,7 @@ class AdminNotesViewer {
 
   directoryListingUrl(folderPath) {
     const folderUrl = folderPath.endsWith("/") ? folderPath : `${folderPath}/`;
-    return `${folderUrl}?${DIRECTORY_LIST_QUERY}=1`;
+    return `${this.repoFileUrl(folderUrl)}?${DIRECTORY_LIST_QUERY}=1`;
   }
 
   safeFolderFileUrl(value) {

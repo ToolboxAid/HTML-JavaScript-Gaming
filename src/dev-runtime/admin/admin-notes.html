@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Admin Notes Local Viewer - GameFoundryStudio</title>
+    <meta name="description" content="Local development viewer for Admin Notes under docs_build/dev/admin-notes.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="../../../assets/theme-v2/css/theme.css">
+</head>
+<body>
+    <main data-admin-notes-viewer>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Local Dev Admin</div>
+                <h1>Admin Notes</h1>
+                <p class="lede">Dev-only notes loaded from docs_build/dev/admin-notes/.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container">
+                <article class="card">
+                    <div class="card-body">
+                        <div class="section-heading">
+                            <div>
+                                <div class="kicker">Loaded Note</div>
+                                <h2 data-admin-notes-title>index.txt</h2>
+                            </div>
+                            <p class="status" data-admin-notes-status>Loading docs_build/dev/admin-notes/index.txt.</p>
+                        </div>
+                        <div data-admin-notes-content></div>
+                    </div>
+                </article>
+                <article class="card" data-admin-notes-directory>
+                    <div class="card-body">
+                        <div class="section-heading">
+                            <div>
+                                <div class="kicker">Local Dev</div>
+                                <h3>Current Folder</h3>
+                            </div>
+                            <a class="btn btn--compact" data-admin-notes-open-folder href="#" aria-disabled="true">Open folder</a>
+                        </div>
+                        <div class="cluster" data-admin-notes-directory-links></div>
+                        <p class="status" data-admin-notes-folder-diagnostic></p>
+                    </div>
+                </article>
+                <article class="card">
+                    <div class="card-body">
+                        <h3>Status Legend</h3>
+                        <p class="cluster" data-admin-notes-legend-list></p>
+                    </div>
+                </article>
+            </div>
+        </section>
+    </main>
+    <script type="module" src="./admin-notes-viewer.js"></script>
+</body>
+</html>

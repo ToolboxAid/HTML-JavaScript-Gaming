@@ -2,6 +2,7 @@ import fs from "node:fs/promises";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { handleAdminNotesDirectoryRequest } from "../admin/admin-notes-directory.mjs";
 import { createMockApiRouter } from "./mock-api-router.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -41,6 +42,9 @@ export async function startLocalApiServer({
     try {
       const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);
       if (await handleMockApiRequest(request, response, requestUrl)) {
+        return;
+      }
+      if (await handleAdminNotesDirectoryRequest(requestUrl, response, { repoRoot })) {
         return;
       }
       const decodedPath = decodeURIComponent(requestUrl.pathname);

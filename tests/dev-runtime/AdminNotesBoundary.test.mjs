@@ -13,9 +13,6 @@ const productionRoots = [
   "src/shared",
   "toolbox",
 ];
-const allowedAdminMenuLinkPath = "assets/theme-v2/partials/header-nav.html";
-const allowedAdminMenuRoutePath = "assets/theme-v2/js/gamefoundry-partials.js";
-const allowedAdminMenuHref = "docs_build/dev/admin-notes/index.txt";
 
 const expectedDevNotes = [
   "docs_build/dev/admin-notes/README.md",
@@ -24,6 +21,7 @@ const expectedDevNotes = [
   "docs_build/dev/admin-notes/other/index.txt",
   "docs_build/dev/admin-notes/quick-reference.txt",
   "docs_build/dev/admin-notes/sample.txt",
+  "src/dev-runtime/admin/admin-notes.html",
 ];
 
 const retiredProductionFiles = [
@@ -67,23 +65,7 @@ function relativePath(absolutePath) {
   return path.relative(repoRoot, absolutePath).replaceAll(path.sep, "/");
 }
 
-function allowedAdminMenuLinkOnly(filePath, source) {
-  const relative = relativePath(filePath);
-  let allowedFragment = "";
-  if (relative === allowedAdminMenuLinkPath) {
-    allowedFragment = `<a data-nav-link data-route="admin-notes-dev" href="${allowedAdminMenuHref}">Notes (Dev/Admin Only)</a>`;
-  }
-  if (relative === allowedAdminMenuRoutePath) {
-    allowedFragment = `"admin-notes-dev": "${allowedAdminMenuHref}",`;
-  }
-  if (!allowedFragment || !source.includes(allowedFragment)) {
-    return false;
-  }
-  const remainder = source.replace(allowedFragment, "");
-  return !/docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|admin-notes|Admin Notes/.test(remainder);
-}
-
-test("Admin Notes dev documents live under docs_build/dev/admin-notes only", () => {
+test("Admin Notes dev files and local viewer entrypoint exist", () => {
   expectedDevNotes.forEach((filePath) => {
     assert.equal(fs.existsSync(repoPath(filePath)), true, `${filePath} exists`);
   });
@@ -98,31 +80,24 @@ test("Admin Notes implementation is isolated under src/dev-runtime/admin", () =>
     true,
     "dev-runtime Admin Notes viewer exists",
   );
+  assert.equal(
+    fs.existsSync(repoPath("src/dev-runtime/admin/admin-notes-directory.mjs")),
+    true,
+    "dev-runtime Admin Notes directory handler exists",
+  );
 });
 
-test("only the admin menu links to dev Admin Notes content", () => {
-  const headerSource = fs.readFileSync(repoPath(allowedAdminMenuLinkPath), "utf8");
-  assert.match(
-    headerSource,
-    /data-route="admin-notes-dev" href="docs_build\/dev\/admin-notes\/index\.txt">Notes \(Dev\/Admin Only\)<\/a>/,
-    "Admin menu has the dev/admin-only Admin Notes link",
-  );
-  assert.doesNotMatch(
-    headerSource,
-    /href="admin\/notes\.html"/,
-    "Admin Notes must not restore the retired production route",
-  );
+test("production-facing paths do not link to dev Admin Notes files or implementation", () => {
+  const headerSource = fs.readFileSync(repoPath("assets/theme-v2/partials/header-nav.html"), "utf8");
+  assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|Admin Notes/);
 
   const violations = productionRoots
     .flatMap(walkTextFiles)
     .filter((filePath) => {
       const source = fs.readFileSync(filePath, "utf8");
-      if (!/docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|admin-notes|Admin Notes/.test(source)) {
-        return false;
-      }
-      return !allowedAdminMenuLinkOnly(filePath, source);
+      return /docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|admin-notes|Admin Notes/.test(source);
     })
     .map(relativePath);
 
-  assert.deepEqual(violations, [], "only the Admin menu may expose Admin Notes");
+  assert.deepEqual(violations, [], "production-facing paths must not expose Admin Notes");
 });

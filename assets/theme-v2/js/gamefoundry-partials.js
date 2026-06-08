@@ -80,7 +80,6 @@
         "admin-roles": "admin/roles.html",
         "admin-moderation": "admin/moderation.html",
         "admin-analytics": "admin/analytics.html",
-        "admin-notes-dev": "docs_build/dev/admin-notes/index.txt",
         "admin-tools-progress": "admin/tools-progress.html",
         "cookie-policy": "legal/cookie-policy.html",
         disclaimer: "legal/disclaimer.html",

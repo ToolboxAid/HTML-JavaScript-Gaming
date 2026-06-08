@@ -11,6 +11,6 @@ Owned paths:
 
 Runtime boundary:
 - Admin Notes viewer implementation, when needed for local/dev inspection, belongs under `src/dev-runtime/admin/`.
-- Only the admin/dev menu may link directly to `docs_build/dev/admin-notes/` content.
-- Public user navigation, toolbox pages, root pages, and production runtime bundles must not link to or fetch Admin Notes content.
+- Local/dev viewer access belongs under `src/dev-runtime/admin/`.
+- Public user navigation, Admin/public route pages, toolbox pages, root pages, and production runtime bundles must not link to or fetch Admin Notes content.
 - UAT/PROD bundles must not import `src/dev-runtime/admin/`.
