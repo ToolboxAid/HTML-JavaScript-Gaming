@@ -1,0 +1,108 @@
+import fs from "node:fs/promises";
+import http from "node:http";
+import path from "node:path";
+import process from "node:process";
+import test from "node:test";
+import assert from "node:assert/strict";
+import { createMockApiRouter } from "../../src/dev-runtime/server/mock-api-router.mjs";
+import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
+
+function startApiServer() {
+  const handleRequest = createMockApiRouter();
+  const server = http.createServer((request, response) => {
+    const address = server.address();
+    const port = address && typeof address !== "string" ? address.port : 0;
+    const requestUrl = new URL(request.url || "/", `http://127.0.0.1:${port}`);
+    handleRequest(request, response, requestUrl).catch((error) => {
+      response.statusCode = 500;
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.end(JSON.stringify({
+        error: error instanceof Error ? error.message : String(error || "Seed integrity test server error."),
+        ok: false,
+      }));
+    });
+  });
+  return new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        reject(new Error("Unable to start seed integrity API server."));
+        return;
+      }
+      resolve({
+        baseUrl: `http://127.0.0.1:${address.port}`,
+        close: () => new Promise((closeResolve) => server.close(closeResolve)),
+      });
+    });
+  });
+}
+
+async function apiJson(baseUrl, pathName, options = {}) {
+  const response = await fetch(`${baseUrl}${pathName}`, {
+    headers: options.body ? { "content-type": "application/json" } : undefined,
+    ...options,
+  });
+  const payload = await response.json();
+  assert.equal(payload.ok, true, `${pathName} should return ok`);
+  return payload.data;
+}
+
+function assertRuntimeTimestamps(rows) {
+  rows.forEach((row) => {
+    const createdAtMs = Date.parse(row.createdAt);
+    const updatedAtMs = Date.parse(row.updatedAt);
+    assert.equal(Number.isFinite(createdAtMs), true, `${row.key}.createdAt should parse`);
+    assert.equal(Number.isFinite(updatedAtMs), true, `${row.key}.updatedAt should parse`);
+    assert.equal(row.createdAt.startsWith("2026-06-06T09"), false, `${row.key}.createdAt should not use old hardcoded seed timestamp`);
+    assert.equal(row.updatedAt.startsWith("2026-06-06T09"), false, `${row.key}.updatedAt should not use old hardcoded seed timestamp`);
+    assert.ok(createdAtMs > Date.now() - 10 * 60_000, `${row.key}.createdAt should be runtime-generated`);
+    assert.ok(createdAtMs < Date.now() + 2 * 60 * 60_000, `${row.key}.createdAt should stay near runtime seed creation`);
+  });
+}
+
+test("server Local DB seed includes runtime timestamps, guest samples, and unique user-owned samples", async () => {
+  const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-seed-integrity-${process.pid}.sqlite`);
+  process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
+  const server = await startApiServer();
+  try {
+    const registry = await apiJson(server.baseUrl, "/api/toolbox/registry/snapshot");
+    await apiJson(server.baseUrl, "/api/session/mode", {
+      body: JSON.stringify({ modeId: "local-db" }),
+      method: "POST",
+    });
+    const snapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    const samples = snapshot.tables.tool_state_samples || [];
+    const guestSamples = samples.filter((sample) => sample.audience === "guest");
+    const userSamples = samples.filter((sample) => sample.audience === "user");
+    const activeToolKeys = (registry.activeTools || [])
+      .map((tool) => tool.id || tool.key || tool.slug || tool.name)
+      .filter(Boolean)
+      .sort();
+    const guestToolKeys = [...new Set(guestSamples.map((sample) => sample.toolKey))].sort();
+
+    assert.deepEqual(guestToolKeys, activeToolKeys, "guest seed data should include every active tool");
+    assert.equal(guestSamples.every((sample) => sample.loadablePath && sample.sampleKind === "toolState"), true);
+    assert.deepEqual(userSamples.map((sample) => sample.userKey).sort(), [
+      MOCK_DB_KEYS.users.admin,
+      MOCK_DB_KEYS.users.user1,
+      MOCK_DB_KEYS.users.user2,
+      MOCK_DB_KEYS.users.user3,
+    ].sort());
+    assert.equal(new Set(userSamples.map((sample) => sample.projectKey)).size, userSamples.length);
+    assert.equal(new Set(userSamples.map((sample) => sample.toolStateKey)).size, userSamples.length);
+    assert.equal(guestSamples.every((sample) => sample.createdBy === MOCK_DB_KEYS.users.forgeBot), true);
+    assert.equal(userSamples.every((sample) => sample.createdBy === sample.userKey), true);
+    assertRuntimeTimestamps(samples);
+    assert.equal((snapshot.tables.users || []).some((user) => user.displayName === "Guest"), false);
+  } finally {
+    await server.close();
+    await fs.rm(localDbPath, { force: true });
+    if (previousLocalDbPath) {
+      process.env.GAMEFOUNDRY_LOCAL_DB_PATH = previousLocalDbPath;
+    } else {
+      delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+    }
+  }
+});

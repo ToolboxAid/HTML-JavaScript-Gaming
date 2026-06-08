@@ -166,6 +166,53 @@ function expectDbShapedRows(tables, tableNames) {
   }
 }
 
+async function seedIntegritySnapshot(page) {
+  return page.evaluate(async () => {
+    const [snapshot, registry] = await Promise.all([
+      fetch("/api/mock-db/snapshot").then((response) => response.json()),
+      fetch("/api/toolbox/registry/snapshot").then((response) => response.json()),
+    ]);
+    return {
+      activeToolKeys: (registry.data.activeTools || [])
+        .map((tool) => tool.id || tool.key || tool.slug || tool.name)
+        .filter(Boolean)
+        .sort(),
+      samples: snapshot.data.tables.tool_state_samples || [],
+    };
+  });
+}
+
+function expectSeedIntegrity(seedData) {
+  const guestSamples = seedData.samples.filter((sample) => sample.audience === "guest");
+  const userSamples = seedData.samples.filter((sample) => sample.audience === "user");
+  const guestToolKeys = [...new Set(guestSamples.map((sample) => sample.toolKey))].sort();
+  const userKeys = userSamples.map((sample) => sample.userKey).sort();
+  const projectKeys = userSamples.map((sample) => sample.projectKey);
+  const toolStateKeys = userSamples.map((sample) => sample.toolStateKey);
+
+  expect(guestToolKeys).toEqual(seedData.activeToolKeys);
+  expect(userKeys).toEqual([
+    MOCK_DB_KEYS.users.admin,
+    MOCK_DB_KEYS.users.user1,
+    MOCK_DB_KEYS.users.user2,
+    MOCK_DB_KEYS.users.user3,
+  ].sort());
+  expect(new Set(projectKeys).size).toBe(projectKeys.length);
+  expect(new Set(toolStateKeys).size).toBe(toolStateKeys.length);
+  expect(guestSamples.every((sample) => sample.createdBy === MOCK_DB_KEYS.users.forgeBot)).toBe(true);
+  expect(userSamples.every((sample) => sample.createdBy === sample.userKey)).toBe(true);
+  seedData.samples.forEach((sample) => {
+    const createdAtMs = Date.parse(sample.createdAt);
+    const updatedAtMs = Date.parse(sample.updatedAt);
+    expect(Number.isFinite(createdAtMs), `${sample.key}.createdAt`).toBe(true);
+    expect(Number.isFinite(updatedAtMs), `${sample.key}.updatedAt`).toBe(true);
+    expect(sample.createdAt.startsWith("2026-06-06T09"), `${sample.key}.createdAt hardcoded`).toBe(false);
+    expect(sample.updatedAt.startsWith("2026-06-06T09"), `${sample.key}.updatedAt hardcoded`).toBe(false);
+    expect(createdAtMs).toBeGreaterThan(Date.now() - 10 * 60_000);
+    expect(createdAtMs).toBeLessThan(Date.now() + 2 * 60 * 60_000);
+  });
+}
+
 test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, users, roles, and diagnostics", async ({ page }) => {
   const failures = await openRepoPage(page, "/admin/db-viewer.html");
 
@@ -196,6 +243,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       "Palette",
       "Asset",
       "User Roles",
+      "Tool State Samples",
     ]);
     await expect(page.locator("[data-admin-db-filter='all']")).toHaveClass(/primary/);
     await expect(page.locator("[data-admin-db-filter='all']")).toHaveAttribute("aria-pressed", "true");
@@ -219,6 +267,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       "palette_source_swatches",
       "asset_library_items",
       "asset_storage_objects",
+      "tool_state_samples",
       "roles",
       "user_roles",
       "users",
@@ -278,6 +327,18 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
     await expect(page.locator("[data-admin-db-table='roles']")).toContainText("system");
     await expect(page.locator("[data-admin-db-table='user_roles']")).toContainText("01K2GFSJ0Y");
+    const seedData = await seedIntegritySnapshot(page);
+    expectSeedIntegrity(seedData);
+    const sampleTable = page.locator("[data-admin-db-table='tool_state_samples']");
+    await expect(sampleTable.locator("thead")).toContainText("toolStatePayload");
+    await expect(sampleTable).toContainText("Guest");
+    await expect(sampleTable).toContainText("User 1");
+    await expect(sampleTable).toContainText("User 2");
+    await expect(sampleTable).toContainText("User 3");
+    await expect(sampleTable).toContainText("Admin");
+    await expect(sampleTable).toContainText("Guest Project Journey starter");
+    await expect(sampleTable).toContainText("local-seeds/user-3/");
+    await expect(sampleTable).toContainText(seedData.samples[0].createdAt);
 
     await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
       "All current Local Mem DB tables include createdAt, updatedAt, createdBy, and updatedBy."
@@ -303,6 +364,9 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
       "user_roles.roleKey -> roles.key: 6/6 records linked."
+    );
+    await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
+      "tool_state_samples.userKey -> users.key: 4/4 records linked."
     );
     await expect(page.locator("[data-admin-db-missing-links]")).toContainText("No missing links detected.");
     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);
@@ -355,6 +419,12 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("Admin");
 
+    await page.getByRole("button", { name: "Tool State Samples" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Tool State Samples\./);
+    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("Guest Project Journey starter");
+    await expect(page.locator("[data-admin-db-table='users']")).toHaveCount(0);
+
     await page.getByRole("button", { name: "All" }).click();
     page.once("dialog", async (dialog) => {
       expect(dialog.message()).toBe("Clear all shared Local Mem DB records?");
@@ -373,6 +443,8 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local Mem DB loaded \d+ tables and 0 records for All\./);
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("No records in this table.");
     await expect(page.locator("[data-admin-db-table='project_journey_items'] thead")).toContainText("projectKey");
+    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("No records in this table.");
+    await expect(page.locator("[data-admin-db-table='tool_state_samples'] thead")).toContainText("toolStatePayload");
     await expect(page.locator("[data-admin-db-table='users'] thead")).toContainText("authProviderUserId");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
     await page.locator("[data-admin-db-clear]").click();
@@ -411,6 +483,7 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
       "Palette",
       "Asset",
       "User Roles",
+      "Tool State Samples",
     ]);
     await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);
@@ -419,6 +492,10 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
     await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("Local DB read-only inspection still shows schema headers.");
     await expect(page.locator("[data-admin-db-table='palette_colors'] thead")).toContainText("createdAt");
     await expect(page.locator("[data-admin-db-table='asset_library_items'] thead")).toContainText("storageObjectId");
+    const localDbSeedData = await seedIntegritySnapshot(page);
+    expectSeedIntegrity(localDbSeedData);
+    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("Guest Project Journey starter");
+    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText(localDbSeedData.samples[0].createdAt);
     await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
       "All current Local DB tables include createdAt, updatedAt, createdBy, and updatedBy."
     );

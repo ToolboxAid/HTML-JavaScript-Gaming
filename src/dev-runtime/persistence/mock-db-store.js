@@ -136,12 +136,14 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   asset_storage_objects: Object.freeze(["key", "id", "assetId", "projectId", "ownerProjectId", "role", "originalName", "storedPath", "mimeType", "size", "checksum", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_import_events: Object.freeze(["key", "id", "assetId", "projectId", "fileName", "mimeType", "storedPath", "status", "type", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_validation_items: Object.freeze(["key", "id", "projectId", "field", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  tool_state_samples: Object.freeze(["key", "audience", "userKey", "displayName", "toolKey", "toolName", "route", "projectKey", "toolStateKey", "manifestPath", "sampleLabel", "sampleKind", "loadablePath", "toolStatePayload", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
 });
 
 const DEFAULT_TABLE_OWNERS = Object.freeze(Object.fromEntries([
   ["users", "standalone"],
   ["roles", "standalone"],
   ["user_roles", "standalone"],
+  ["tool_state_samples", "standalone"],
   ...Object.entries(MOCK_DB_TOOL_GROUPS).flatMap(([ownerId, group]) =>
     group.tableNames.map((tableName) => [tableName, ownerId]),
   ),
@@ -316,8 +318,12 @@ function generatedRecordKey(tableName, record, index) {
   return makeMockUlid(8_000_000_000 + hashString(stableSource));
 }
 
+function runtimeTimestampForOffset(offsetMinutes = 0) {
+  return new Date(Date.now() + offsetMinutes * 60_000).toISOString();
+}
+
 function timestampForIndex(index) {
-  return new Date(Date.UTC(2026, 5, 6, 9, index % 60, 0)).toISOString();
+  return runtimeTimestampForOffset(index % 60);
 }
 
 function guestSessionUser() {
@@ -489,7 +495,7 @@ export function createMockDbAuditFields(minutes = 0, userKey) {
   const auditUserKey = normalizeUserKey(userKey, "createdBy", {
     tableName: "audit fields",
   });
-  const timestamp = new Date(Date.UTC(2026, 5, 6, 9, minutes, 0)).toISOString();
+  const timestamp = runtimeTimestampForOffset(minutes);
   return {
     createdAt: timestamp,
     updatedAt: timestamp,

@@ -15,6 +15,7 @@ const TOOL_GROUP_LABELS = Object.freeze({
   workspace: "Workspace",
 });
 const STANDALONE_TABLE_LABELS = Object.freeze({
+  tool_state_samples: "Tool State Samples",
   user_roles: "User Roles",
 });
 const IDENTITY_TABLE_GROUP = Object.freeze(["users", "user_roles", "roles"]);
@@ -337,6 +338,7 @@ class AdminDbViewer {
     const paletteColorKeys = new Set((tables.palette_colors || []).map((row) => `${row.projectId}:${row.symbol}`));
     const assetIds = new Set((tables.asset_library_items || []).map((asset) => asset.id));
     const assetStorageIds = new Set((tables.asset_storage_objects || []).map((object) => object.id));
+    const userOwnedToolStateSamples = (tables.tool_state_samples || []).filter((sample) => sample.userKey);
     const allRecords = Object.entries(tables).flatMap(([tableName, records]) =>
       records.map((record) => ({
         ...record,
@@ -390,6 +392,11 @@ class AdminDbViewer {
         name: "user_roles.roleKey -> roles.key",
         checked: (tables.user_roles || []).length,
         missing: (tables.user_roles || []).filter((row) => !roleKeys.has(row.roleKey)),
+      },
+      {
+        name: "tool_state_samples.userKey -> users.key",
+        checked: userOwnedToolStateSamples.length,
+        missing: userOwnedToolStateSamples.filter((sample) => !userKeys.has(sample.userKey)),
       },
       {
         name: "palette_colors.projectId -> project_workspace_palette_globals.projectId",

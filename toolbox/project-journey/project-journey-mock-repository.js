@@ -145,14 +145,12 @@ export const PROJECT_JOURNEY_STATUS_BY_ID = Object.fromEntries(
   PROJECT_JOURNEY_STATUSES.map((status) => [status.id, status]),
 );
 
-const now = "2026-06-06T09:00:00.000Z";
-
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
 function timestamp(minutes) {
-  return new Date(new Date(now).getTime() + minutes * 60_000).toISOString();
+  return new Date(Date.now() + minutes * 60_000).toISOString();
 }
 
 function makeAuditFields(minutes, userKey = MOCK_DB_KEYS.users.forgeBot) {

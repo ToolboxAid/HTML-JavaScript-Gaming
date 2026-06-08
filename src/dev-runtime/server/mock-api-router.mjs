@@ -63,6 +63,12 @@ const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
 const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
+const HUMAN_SEED_USERS = Object.freeze([
+  Object.freeze({ displayName: "User 1", toolKey: "project-journey", userKey: MOCK_DB_KEYS.users.user1 }),
+  Object.freeze({ displayName: "User 2", toolKey: "palette", userKey: MOCK_DB_KEYS.users.user2 }),
+  Object.freeze({ displayName: "User 3", toolKey: "asset", userKey: MOCK_DB_KEYS.users.user3 }),
+  Object.freeze({ displayName: "Admin", toolKey: "workspace", userKey: MOCK_DB_KEYS.users.admin }),
+]);
 
 const DB_ADAPTER_CONTRACT = Object.freeze({
   contract: "GameFoundryDbAdapter",
@@ -127,6 +133,101 @@ function toolRegistrySnapshot() {
     readinessByStatus: Object.fromEntries(TOOL_STATUS_MODEL.map((status) => [status, getToolProgressReadiness(status)])),
     tools: getToolRegistry().map(serverRegistryTool),
   };
+}
+
+function activeToolSamplesByKey() {
+  return getActiveToolRegistry().map((tool) => {
+    const toolKey = tool.id || tool.key || tool.slug || tool.name || "tool";
+    return {
+      route: getToolRoute(tool) || "toolbox/index.html",
+      toolKey,
+      toolName: tool.name || tool.label || tool.title || toolKey,
+    };
+  });
+}
+
+function serverSeedUlid(sequence) {
+  return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;
+}
+
+function serverSeedAuditFields(offsetMinutes = 0, userKey = MOCK_DB_KEYS.users.forgeBot) {
+  const timestamp = new Date(Date.now() + offsetMinutes * 60_000).toISOString();
+  return {
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    createdBy: userKey,
+    updatedBy: userKey,
+  };
+}
+
+function guestToolStateSampleRows() {
+  return activeToolSamplesByKey().map((tool, index) => ({
+    key: serverSeedUlid(7_001 + index),
+    audience: "guest",
+    userKey: "",
+    displayName: "Guest",
+    toolKey: tool.toolKey,
+    toolName: tool.toolName,
+    route: tool.route,
+    projectKey: "",
+    toolStateKey: serverSeedUlid(7_501 + index),
+    manifestPath: "",
+    sampleLabel: `Guest ${tool.toolName} starter`,
+    sampleKind: "toolState",
+    loadablePath: tool.route,
+    toolStatePayload: {
+      audience: "guest",
+      loadable: true,
+      toolKey: tool.toolKey,
+    },
+    ...serverSeedAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+  }));
+}
+
+function humanToolStateSampleRows() {
+  const availableTools = activeToolSamplesByKey();
+  const toolSamples = new Map(availableTools.map((tool) => [tool.toolKey, tool]));
+  return HUMAN_SEED_USERS.map((user, index) => {
+    const tool = toolSamples.get(user.toolKey) || availableTools[index] || {
+      route: "toolbox/index.html",
+      toolKey: user.toolKey,
+      toolName: user.toolKey,
+    };
+    const projectKey = serverSeedUlid(7_801 + index);
+    const toolStateKey = serverSeedUlid(7_901 + index);
+    return {
+      key: serverSeedUlid(7_701 + index),
+      audience: "user",
+      userKey: user.userKey,
+      displayName: user.displayName,
+      toolKey: tool.toolKey,
+      toolName: tool.toolName,
+      route: tool.route,
+      projectKey,
+      toolStateKey,
+      manifestPath: `local-seeds/${user.displayName.toLowerCase().replaceAll(" ", "-")}/${tool.toolKey}.manifest.json`,
+      sampleLabel: `${user.displayName} ${tool.toolName} seed`,
+      sampleKind: "toolState",
+      loadablePath: `${tool.route}?toolState=${toolStateKey}`,
+      toolStatePayload: {
+        audience: "user",
+        ownerUserKey: user.userKey,
+        projectKey,
+        toolKey: tool.toolKey,
+        toolStateKey,
+      },
+      ...serverSeedAuditFields(30 + index, user.userKey),
+    };
+  });
+}
+
+function serverSeedTables() {
+  const tables = getStandaloneMockDbSeedTables();
+  tables.tool_state_samples = [
+    ...guestToolStateSampleRows(),
+    ...humanToolStateSampleRows(),
+  ];
+  return tables;
 }
 
 function isUlidKey(value) {
@@ -626,7 +727,7 @@ class LocalDevMockDataSource {
     }
     this.applyStateSnapshot({
       cleared: false,
-      tables: getStandaloneMockDbSeedTables(),
+      tables: serverSeedTables(),
     });
     if (options.initial) {
       this.localMemState = clone(this.currentStateSnapshot());
@@ -639,7 +740,7 @@ class LocalDevMockDataSource {
   clear() {
     this.assertConfiguredAdapter("Clearing Local Mem DB state");
     this.cleared = true;
-    this.standaloneTables = clone(getStandaloneMockDbSeedTables());
+    this.standaloneTables = clone(serverSeedTables());
     Object.keys(this.standaloneTables).forEach((tableName) => {
       this.standaloneTables[tableName] = [];
     });
@@ -845,6 +946,7 @@ class LocalDevMockDataSource {
     const schemas = getMockDbTableSchemas();
     const toolGroups = getMockDbToolGroups();
     const owners = {
+      tool_state_samples: "standalone",
       users: "standalone",
       roles: "standalone",
       user_roles: "standalone",
@@ -864,6 +966,7 @@ class LocalDevMockDataSource {
         owners,
         schemas,
         tables: {
+          tool_state_samples: [],
           users: [],
           roles: [],
           user_roles: [],

@@ -404,7 +404,7 @@ function previewKindForRole(role) {
 }
 
 function timestampForIndex(index) {
-  return new Date(Date.UTC(2026, 5, 6, 9, index % 60, 0)).toISOString();
+  return new Date(Date.now() + (index % 60) * 60_000).toISOString();
 }
 
 function auditFields(timestamp, userKey = ASSET_SYSTEM_USER_KEY) {
