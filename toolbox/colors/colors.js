@@ -104,6 +104,7 @@ const SUGGESTED_TAGS = Object.freeze([
 
 const PALETTE_GENERATOR_DEFAULTS = Object.freeze({
   contrast: 40,
+  steps: 1,
   saturation: 100,
   hueShift: 0
 });
@@ -291,6 +292,7 @@ const sourceSortState = { direction: "asc", key: "name" };
 let sourceSizeState = "medium";
 const userSortState = { direction: "asc", key: "hue" };
 let userSizeState = "medium";
+let lastGeneratorPointerActivation = { at: 0, tile: null };
 const checkedSwatchKeys = new Set();
 const selectedTagFilters = new Set();
 let tagMatchMode = "any";
@@ -314,7 +316,6 @@ const elements = {
   generatorColors: document.querySelector("[data-palette-generator-colors]"),
   generatorCollection: document.querySelector("[data-palette-theme-collection]"),
   generatorContrast: document.querySelector("[data-palette-generator-contrast]"),
-  generatorGenerate: document.querySelector("[data-palette-generator-generate]"),
   generatorGridSummary: document.querySelector("[data-palette-generator-grid-summary]"),
   generatorHueShift: document.querySelector("[data-palette-generator-hue-shift]"),
   generatorPreview: document.querySelector("[data-palette-generator-preview]"),
@@ -336,6 +337,7 @@ const elements = {
   selectedSummary: document.querySelector("[data-palette-selected-summary]"),
   selectedHex: document.querySelector("[data-palette-selected-hex]"),
   selectedName: document.querySelector("[data-palette-selected-name]"),
+  showDuplicates: document.querySelector("[data-palette-show-duplicates]"),
   sourceList: document.querySelector("[data-palette-source-list]"),
   sourcePinAll: document.querySelector("[data-palette-source-pin-all]"),
   sourceSearch: document.querySelector("[data-palette-source-search]"),
@@ -865,6 +867,10 @@ function generatorLightness(baseLightness, row, rows, contrast) {
   return clampNumber(baseLightness - rowPosition * distance, 10, 90);
 }
 
+function actualPaletteGeneratorRows(steps) {
+  return Math.max(1, Math.round(clampNumber(Number(steps) || 0, 0, 64)) * 2 + 1);
+}
+
 function readPaletteGeneratorSettings() {
   const collection = selectedThemeCollection();
   const paletteType = selectedPaletteType(collection);
@@ -874,7 +880,7 @@ function readPaletteGeneratorSettings() {
     paletteType,
     variant,
     colors: clampNumber(parseGeneratorNumber(elements.generatorColors, 8), 1, 256),
-    steps: clampNumber(parseGeneratorNumber(elements.generatorSteps, 8), 2, 64),
+    steps: Math.round(clampNumber(parseGeneratorNumber(elements.generatorSteps, PALETTE_GENERATOR_DEFAULTS.steps), 0, 64)),
     contrast: clampNumber(parseGeneratorNumber(elements.generatorContrast, PALETTE_GENERATOR_DEFAULTS.contrast), 0, 100),
     saturation: clampNumber(parseGeneratorNumber(elements.generatorSaturation, PALETTE_GENERATOR_DEFAULTS.saturation), 0, 100),
     hueShift: clampNumber(parseGeneratorNumber(elements.generatorHueShift, PALETTE_GENERATOR_DEFAULTS.hueShift), -180, 180)
@@ -889,11 +895,11 @@ function generatorSwatchName(settings, row, column, hex) {
   const family = settings.colors === curatedNames.length && curatedNames[column]
     ? curatedNames[column]
     : colorFamilyName(hex);
-  return `${collection} ${type} ${variant} ${family} R${row + 1} C${column + 1}`;
+  return `${collection} ${type} ${variant} ${family} ${swatchColorKey(hex)}`;
 }
 
-function pickerUnavailableReason(pinnedSwatch) {
-  return pinnedSwatch ? "Already in Project" : "";
+function showDuplicatePickerSwatches() {
+  return elements.showDuplicates ? elements.showDuplicates.checked : true;
 }
 
 function duplicatePickerHexReasons(swatches) {
@@ -926,14 +932,15 @@ function generatedPickerSwatches(settings = readPaletteGeneratorSettings()) {
   }
   const pickerSettings = currentPickerSettings(settings);
   const swatches = [];
-  for (let row = 0; row < settings.steps; row += 1) {
+  const rows = actualPaletteGeneratorRows(settings.steps);
+  for (let row = 0; row < rows; row += 1) {
     for (let column = 0; column < settings.colors; column += 1) {
       const baseHex = interpolateHex(settings.paletteType.swatches, column, settings.colors);
       const baseHsl = rgbToHsl(hexToRgb(baseHex));
       const adjusted = variantAdjustedHsl({
         hue: baseHsl.hue + settings.hueShift,
         saturation: baseHsl.saturation * (settings.saturation / 100),
-        lightness: generatorLightness(baseHsl.lightness, row, settings.steps, settings.contrast)
+        lightness: generatorLightness(baseHsl.lightness, row, rows, settings.contrast)
       }, settings.variant, column, settings.colors);
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
       const swatch = {
@@ -956,9 +963,10 @@ function generatedPickerSwatches(settings = readPaletteGeneratorSettings()) {
 }
 
 function createGeneratorPreviewInput(hex, label, row, column, settings, options = {}) {
-  const swatch = document.createElement("button");
+  const swatch = document.createElement("div");
   swatch.className = "palette-generator-preview-swatch";
-  swatch.type = "button";
+  swatch.setAttribute("role", "button");
+  swatch.tabIndex = 0;
   swatch.dataset.paletteGeneratorSwatch = "";
   swatch.dataset.paletteGeneratorRow = String(row);
   swatch.dataset.paletteGeneratorColumn = String(column);
@@ -968,7 +976,7 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   swatch.dataset.paletteGeneratorVariantName = settings.variant?.label || "";
   swatch.dataset.paletteGeneratorHex = hex;
   swatch.dataset.palettePinned = String(Boolean(options.pinned));
-  swatch.dataset.paletteSelected = String(Boolean(options.selected));
+  swatch.dataset.paletteSelected = "false";
   swatch.dataset.paletteGeneratorName = options.pinnedSwatch?.name || generatorSwatchName(settings, row, column, hex);
   swatch.dataset.paletteGeneratorAvailability = options.available === false ? "unavailable" : "available";
   swatch.dataset.paletteGeneratorUnavailable = String(options.available === false);
@@ -983,21 +991,22 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
     ? `${options.unavailableReason || "Unavailable"} picker swatch ${swatchName}`
     : `${options.pinned ? "Remove" : "Add"} picker swatch ${swatchName}`);
   swatch.setAttribute("aria-pressed", String(Boolean(options.pinned)));
-  if (options.selected) {
-    swatch.setAttribute("aria-current", "true");
-  }
 
-  const input = document.createElement("input");
-  input.type = "color";
-  input.disabled = true;
-  input.value = hex;
-  input.dataset.paletteGeneratorColor = hex;
-  input.dataset.paletteGeneratorFamily = label;
-  input.setAttribute("aria-label", `${label} picker swatch ${hex}`);
-  input.title = `${swatchName}${options.pinned ? " pinned" : ""}`;
+  const visual = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  visual.classList.add("palette-generator-preview-color");
+  visual.dataset.paletteGeneratorColor = hex;
+  visual.dataset.paletteGeneratorFamily = label;
+  visual.setAttribute("aria-hidden", "true");
+  visual.setAttribute("focusable", "false");
+  visual.setAttribute("viewBox", "0 0 1 1");
+  const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
+  rect.setAttribute("width", "1");
+  rect.setAttribute("height", "1");
+  rect.setAttribute("fill", hex);
+  visual.append(rect);
 
   swatch.title = pickerTooltipText(tooltipSwatch, options.pickerSettings);
-  swatch.append(input);
+  swatch.append(visual);
   if (options.available !== false) {
     swatch.append(createPinIndicator(Boolean(options.pinned)));
   }
@@ -1041,6 +1050,8 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   }
 
   const settings = readPaletteGeneratorSettings();
+  const rows = actualPaletteGeneratorRows(settings.steps);
+  const showDuplicates = showDuplicatePickerSwatches();
   const snapshot = repository.getSnapshot();
   if (!settings.collection || !settings.paletteType) {
     elements.generatorPreview.replaceChildren();
@@ -1050,14 +1061,14 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   }
 
   const allSwatches = [];
-  for (let row = 0; row < settings.steps; row += 1) {
+  for (let row = 0; row < rows; row += 1) {
     for (let column = 0; column < settings.colors; column += 1) {
       const baseHex = interpolateHex(settings.paletteType.swatches, column, settings.colors);
       const baseHsl = rgbToHsl(hexToRgb(baseHex));
       const adjusted = variantAdjustedHsl({
         hue: baseHsl.hue + settings.hueShift,
         saturation: baseHsl.saturation * (settings.saturation / 100),
-        lightness: generatorLightness(baseHsl.lightness, row, settings.steps, settings.contrast)
+        lightness: generatorLightness(baseHsl.lightness, row, rows, settings.contrast)
       }, settings.variant, column, settings.colors);
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
       const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
@@ -1065,39 +1076,32 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
         column,
         hex,
         pinnedSwatch,
-        row,
-        selected: Boolean(pinnedSwatch && swatchKey(snapshot.selectedSwatch) === swatchKey(pinnedSwatch))
+        row
       });
     }
   }
   const duplicateReasons = duplicatePickerHexReasons(allSwatches);
   let availableCount = 0;
-  allSwatches.forEach((swatch) => {
-    const unavailableReason = pickerUnavailableReason(swatch.pinnedSwatch)
-      || duplicateReasons.get(`${swatch.row}:${swatch.column}`)
-      || "";
+  const visibleSwatches = allSwatches.filter((swatch) => {
+    const unavailableReason = duplicateReasons.get(`${swatch.row}:${swatch.column}`) || "";
+    if (unavailableReason && !showDuplicates) {
+      return false;
+    }
     swatch.unavailableReason = unavailableReason;
     swatch.available = !unavailableReason;
-    if (swatch.available) {
+    if (swatch.available && !swatch.pinnedSwatch) {
       availableCount += 1;
     }
+    return true;
   });
 
   const fragment = document.createDocumentFragment();
-  appendPickerRows(fragment, allSwatches, settings);
+  appendPickerRows(fragment, visibleSwatches, settings);
 
   elements.generatorPreview.replaceChildren(fragment);
   setText(elements.generatorPreviewStatus, `Available Picker Swatches (${availableCount})`);
-  setText(elements.generatorGridSummary, `Colors x Steps ${settings.colors} x ${settings.steps}`);
+  setText(elements.generatorGridSummary, `Grid ${settings.colors} x ${rows}`);
   setText(elements.generatorStatus, action);
-}
-
-function paletteGeneratorActionSummary(prefix = "Palette generator preview updated") {
-  const settings = readPaletteGeneratorSettings();
-  if (!settings.collection || !settings.paletteType) {
-    return `${prefix}: no curated swatches resolved.`;
-  }
-  return `${prefix}: ${settings.collection.name} / ${settings.paletteType.name} / ${settings.variant.label}, ${settings.colors} colors x ${settings.steps} steps.`;
 }
 
 function generatedSwatchFromTile(tile) {
@@ -1113,6 +1117,32 @@ function generatedSwatchFromTile(tile) {
     ...swatch,
     metadata: metadataFromPickerSettings(swatch, pickerSettings)
   };
+}
+
+function activateGeneratorPreviewTile(tile) {
+  if (!tile) {
+    return;
+  }
+  if (tile.dataset.paletteGeneratorUnavailable === "true") {
+    const reason = tile.dataset.paletteGeneratorUnavailableReason || "Unavailable";
+    setText(elements.log, `${reason} picker swatch has no pin and was not added.`);
+    setText(elements.generatorStatus, `${reason} picker swatch remains visible with its original color, but add is blocked.`);
+    return;
+  }
+  const swatch = generatedSwatchFromTile(tile);
+  const pinnedSwatch = pinnedSwatchForHex(swatch.hex);
+  const removing = tile.dataset.palettePinned === "true" && pinnedSwatch;
+  const result = removing
+    ? repository.removeSwatch(swatchKey(pinnedSwatch))
+    : repository.pinSourceSwatch(swatch);
+  applyResult({
+    ...result,
+    message: result.ok
+      ? removing
+        ? `Removed picker swatch ${swatch.name} from Project Swatches.`
+        : `Added picker swatch ${swatch.name} to Project Swatches.`
+      : result.message
+  });
 }
 
 function currentHarmonyMatchSwatches() {
@@ -1164,7 +1194,7 @@ function applyPickerSettings(settings = null) {
   renderPaletteVariantOptions();
   setSelectValueByTextOrValue(elements.generatorVariant, settings.variantValue, settings.variant);
   if (elements.generatorColors && settings.colors) elements.generatorColors.value = String(settings.colors);
-  if (elements.generatorSteps && settings.steps) elements.generatorSteps.value = String(settings.steps);
+  if (elements.generatorSteps && settings.steps !== undefined) elements.generatorSteps.value = String(settings.steps);
   if (elements.generatorContrast && settings.contrast !== undefined) elements.generatorContrast.value = String(settings.contrast);
   if (elements.generatorSaturation && settings.saturation !== undefined) elements.generatorSaturation.value = String(settings.saturation);
   if (elements.generatorHueShift && settings.hueShift !== undefined) elements.generatorHueShift.value = String(settings.hueShift);
@@ -1878,7 +1908,9 @@ elements.redo?.addEventListener("click", () => {
   applyResult(repository.redo());
 });
 
-elements.restorePickerSettings?.addEventListener("click", () => {
+elements.restorePickerSettings?.addEventListener("click", (event) => {
+  event.preventDefault();
+  event.stopPropagation();
   applyPickerSettings(repository.getSnapshot().selectedSwatch?.pickerSettings);
 });
 
@@ -1930,30 +1962,50 @@ elements.sourceSize?.addEventListener("click", (event) => {
   renderSizeButtons(elements.sourceSize, sourceSizeState, "Source swatches");
 });
 
+elements.generatorPreview?.addEventListener("pointerup", (event) => {
+  if (event.button !== 0) {
+    return;
+  }
+  const tile = event.target.closest("[data-palette-generator-swatch]");
+  if (!tile) {
+    return;
+  }
+  lastGeneratorPointerActivation = { at: performance.now(), tile };
+  activateGeneratorPreviewTile(tile);
+});
+
 elements.generatorPreview?.addEventListener("click", (event) => {
   const tile = event.target.closest("[data-palette-generator-swatch]");
   if (!tile) {
     return;
   }
-  if (tile.dataset.paletteGeneratorUnavailable === "true") {
-    const reason = tile.dataset.paletteGeneratorUnavailableReason || "Unavailable";
-    const alreadyInProject = reason === "Already in Project";
-    setText(elements.log, alreadyInProject
-      ? `${reason} picker swatch is already present and was not added again.`
-      : `${reason} picker swatch was not added.`);
-    setText(elements.generatorStatus, `${reason} picker swatch remains visible with its original color, but add is blocked.`);
+  if (lastGeneratorPointerActivation.tile === tile && performance.now() - lastGeneratorPointerActivation.at < 500) {
     return;
   }
-  const swatch = generatedSwatchFromTile(tile);
-  const result = tile.dataset.palettePinned === "true"
-    ? repository.removeSwatch(swatchKey(pinnedSwatchForHex(swatch.hex)))
-    : repository.pinSourceSwatch(swatch);
-  applyResult({
-    ...result,
-    message: result.ok && tile.dataset.palettePinned !== "true"
-      ? `Added picker swatch ${swatch.name} to Project Swatches.`
-      : result.message
-  });
+  activateGeneratorPreviewTile(tile);
+});
+
+elements.generatorPreview?.addEventListener("keydown", (event) => {
+  if (![" ", "Enter"].includes(event.key)) {
+    return;
+  }
+  const tile = event.target.closest("[data-palette-generator-swatch]");
+  if (!tile) {
+    return;
+  }
+  event.preventDefault();
+  tile.click();
+});
+
+elements.showDuplicates?.addEventListener("click", (event) => {
+  event.stopPropagation();
+});
+
+elements.showDuplicates?.addEventListener("change", (event) => {
+  event.stopPropagation();
+  renderPaletteGeneratorPreview(event.target.checked
+    ? "Showing duplicate picker swatches."
+    : "Hiding duplicate picker swatches.");
 });
 
 elements.generatorCollection?.addEventListener("change", () => {
@@ -1975,18 +2027,14 @@ elements.generatorVariant?.addEventListener("change", () => {
   control?.addEventListener("change", () => renderPaletteGeneratorPreview());
 });
 
+elements.generatorSteps?.addEventListener("input", () => renderPaletteGeneratorPreview());
+
 [
   elements.generatorContrast,
   elements.generatorSaturation,
   elements.generatorHueShift
 ].forEach((control) => {
   control?.addEventListener("input", () => renderPaletteGeneratorPreview());
-});
-
-elements.generatorGenerate?.addEventListener("click", () => {
-  const message = paletteGeneratorActionSummary("Generated palette grid");
-  renderPaletteGeneratorPreview(message);
-  setText(elements.log, message);
 });
 
 elements.generatorReset?.addEventListener("click", resetPaletteGeneratorControls);

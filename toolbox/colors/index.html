@@ -56,7 +56,7 @@
                                                     <td><select class="tool-form-control" id="paletteGeneratorVariant" data-palette-generator-variant></select></td>
                                                 </tr>
                                                 <tr>
-                                                    <th scope="row">Colors x Steps</th>
+                                                    <th scope="row">Grid</th>
                                                     <td>
                                                         <div class="action-group action-group--tight">
                                                             <label class="field-inline" for="paletteGeneratorColors">
@@ -81,34 +81,86 @@
                                                             </label>
                                                             <label class="field-inline" for="paletteGeneratorSteps">
                                                                 <span>Steps</span>
-                                                                <select class="tool-form-control" id="paletteGeneratorSteps" data-palette-generator-steps>
-                                                                    <option value="2">2</option>
-                                                                    <option value="4">4</option>
-                                                                    <option value="8" selected>8</option>
-                                                                    <option value="16">16</option>
-                                                                    <option value="32">32</option>
-                                                                    <option value="64">64</option>
-                                                                </select>
+                                                                <input class="tool-form-control" id="paletteGeneratorSteps" type="number" min="0" max="64" step="1" value="1" data-palette-generator-steps>
                                                             </label>
-                                                            <span class="status" data-palette-generator-grid-summary>Colors x Steps 8 x 8</span>
+                                                            <span class="status" data-palette-generator-grid-summary>Grid 8 x 3</span>
                                                         </div>
                                                     </td>
                                                 </tr>
                                             </tbody>
                                         </table>
                                     </div>
-                                    <label class="field-group" for="paletteGeneratorContrast">Contrast
-                                        <input class="tool-form-control" id="paletteGeneratorContrast" type="range" min="0" max="100" value="40" data-palette-generator-contrast>
-                                    </label>
-                                    <label class="field-group" for="paletteGeneratorSaturation">Saturation
-                                        <input class="tool-form-control" id="paletteGeneratorSaturation" type="range" min="0" max="100" value="100" data-palette-generator-saturation>
-                                    </label>
-                                    <label class="field-group" for="paletteGeneratorHueShift">Hue Shift
-                                        <input class="tool-form-control" id="paletteGeneratorHueShift" type="range" min="-180" max="180" value="0" data-palette-generator-hue-shift>
-                                    </label>
+                                    <div class="grid cols-3" aria-label="Picker swatch adjustment controls">
+                                        <label class="field-group" for="paletteGeneratorContrast">Contrast
+                                            <input class="tool-form-control" id="paletteGeneratorContrast" type="range" min="0" max="100" value="40" data-palette-generator-contrast>
+                                        </label>
+                                        <label class="field-group" for="paletteGeneratorSaturation">Saturation
+                                            <input class="tool-form-control" id="paletteGeneratorSaturation" type="range" min="0" max="100" value="100" data-palette-generator-saturation>
+                                        </label>
+                                        <label class="field-group" for="paletteGeneratorHueShift">Hue Shift
+                                            <input class="tool-form-control" id="paletteGeneratorHueShift" type="range" min="-180" max="180" value="0" data-palette-generator-hue-shift>
+                                        </label>
+                                    </div>
                                     <div class="hero-actions">
-                                        <button class="btn primary" type="button" data-palette-generator-generate>Generate</button>
                                         <button class="btn" type="button" data-palette-generator-reset>Reset</button>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open data-palette-tags-accordion>
+                                <summary>Tags</summary>
+                                <div class="accordion-body content-stack">
+                                    <fieldset class="content-stack" data-palette-tag-match-mode-group>
+                                        <legend>Match Mode</legend>
+                                        <label class="field-inline" for="paletteTagMatchAny">
+                                            <input id="paletteTagMatchAny" type="radio" name="paletteTagMatchMode" value="any" data-palette-tag-match-mode checked>
+                                            <span>Any selected tag</span>
+                                        </label>
+                                        <label class="field-inline" for="paletteTagMatchAll">
+                                            <input id="paletteTagMatchAll" type="radio" name="paletteTagMatchMode" value="all" data-palette-tag-match-mode>
+                                            <span>All selected tags</span>
+                                        </label>
+                                    </fieldset>
+                                    <ul data-palette-tags-list>
+                                        <li>No tags in active palette.</li>
+                                    </ul>
+                                    <div class="action-group action-group--end">
+                                        <button class="btn btn--compact" type="button" data-palette-clear-tag-filters>Clear Filters</button>
+                                    </div>
+                                    <form class="content-stack" data-palette-editor-form>
+                                        <div class="table-wrapper">
+                                            <table class="data-table tool-form-table" aria-label="Selected palette swatch tag editor fields">
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteSelectedHexInput">Hex</label></th>
+                                                        <td><input class="field-value--readable-disabled tool-form-control" id="paletteSelectedHexInput" type="text" data-palette-selected-hex readonly disabled></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="paletteSelectedNameInput">Name</label></th>
+                                                        <td><input class="field-value--readable-disabled tool-form-control" id="paletteSelectedNameInput" type="text" data-palette-selected-name readonly disabled></td>
+                                                    </tr>
+                                                    <tr data-palette-editor-tags-input-row>
+                                                        <th scope="row" rowspan="2"><label for="paletteTagsInput">Tags</label></th>
+                                                        <td>
+                                                            <input class="tool-form-control" id="paletteTagsInput" type="text" list="paletteTagSuggestions" data-palette-tags>
+                                                            <datalist id="paletteTagSuggestions" data-palette-tag-suggestions></datalist>
+                                                        </td>
+                                                    </tr>
+                                                    <tr data-palette-editor-tags-list-row>
+                                                        <td>
+                                                            <div class="action-group action-group--tight" role="list" aria-label="Selected palette color tags" data-palette-editor-tags-list>
+                                                                <p class="status">No tags added.</p>
+                                                            </div>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <td colspan="2" data-palette-editor-diagnostic>Select a Project Swatches color to edit tags.</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </form>
+                                    <div class="action-group action-group--end">
+                                        <button class="btn btn--compact" type="button" data-palette-clear-checked>Clear Checked</button>
                                     </div>
                                 </div>
                             </details>
@@ -141,20 +193,11 @@
                                             </table>
                                         </div>
                                         <div class="hero-actions">
-                                        <button class="btn primary" type="submit" data-palette-add>Add</button>
-                                        <button class="btn" type="button" data-palette-update>Update</button>
-                                        <button class="btn" type="button" data-palette-clear>Clear</button>
+                                            <button class="btn primary" type="submit" data-palette-add>Add</button>
+                                            <button class="btn" type="button" data-palette-update>Update</button>
+                                            <button class="btn" type="button" data-palette-clear>Clear</button>
                                         </div>
                                     </form>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>History</summary>
-                                <div class="accordion-body">
-                                    <div class="action-group">
-                                    <button class="btn" type="button" data-palette-undo>Undo</button>
-                                    <button class="btn" type="button" data-palette-redo>Redo</button>
-                                    </div>
                                 </div>
                             </details>
                         </div>
@@ -179,13 +222,17 @@
                         </article>
                         <div class="content-stack accordion-fill-stack" data-palette-fullscreen-panels>
                             <details class="vertical-accordion accordion-fill-panel" open data-palette-project-accordion>
-                                <summary>Project Swatches</summary>
+                                <summary>
+                                    <span>Project Swatches</span>
+                                    <span class="action-group action-group--end action-group--tight">
+                                        <button class="btn btn--compact" type="button" data-palette-restore-picker-settings>Restore Grid Picker Settings</button>
+                                    </span>
+                                </summary>
                                 <div class="accordion-body content-stack accordion-scroll-body">
                                     <div class="grid cols-2" aria-label="Project Swatches controls" data-palette-user-controls>
                                         <div class="action-group" aria-label="Project Swatches sort" data-palette-user-sort></div>
                                         <div class="action-group action-group--end">
                                             <div class="action-group action-group--end" aria-label="Project Swatches size" data-palette-user-size></div>
-                                            <button class="btn btn--compact" type="button" data-palette-restore-picker-settings>Restore Picker Settings</button>
                                         </div>
                                     </div>
                                     <div class="palette-swatch-list-wrapper scroll-region" data-palette-user-scroll>
@@ -196,7 +243,16 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion accordion-fill-panel" open data-palette-preview-accordion>
-                                <summary><span>Picker Preview</span><span class="status" role="status" data-palette-generator-preview-status>Available Picker Swatches (0)</span></summary>
+                                <summary>
+                                    <span>Picker Preview</span>
+                                    <span class="action-group action-group--end action-group--tight">
+                                        <span class="status" role="status" data-palette-generator-preview-status>Available Picker Swatches (0)</span>
+                                        <label class="field-inline" for="paletteShowDuplicates">
+                                            <input id="paletteShowDuplicates" type="checkbox" data-palette-show-duplicates checked>
+                                            <span>Show duplicates</span>
+                                        </label>
+                                    </span>
+                                </summary>
                                 <div class="accordion-body content-stack accordion-scroll-body">
                                     <div class="palette-generator-preview scroll-region" role="grid" aria-label="Picker Swatches" data-palette-generator-preview></div>
                                 </div>
@@ -259,61 +315,12 @@
                                     </div>
                                 </div>
                             </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Tags</summary>
-                                <div class="accordion-body content-stack">
-                                    <fieldset class="content-stack" data-palette-tag-match-mode-group>
-                                        <legend>Match Mode</legend>
-                                        <label class="field-inline" for="paletteTagMatchAny">
-                                            <input id="paletteTagMatchAny" type="radio" name="paletteTagMatchMode" value="any" data-palette-tag-match-mode checked>
-                                            <span>Any selected tag</span>
-                                        </label>
-                                        <label class="field-inline" for="paletteTagMatchAll">
-                                            <input id="paletteTagMatchAll" type="radio" name="paletteTagMatchMode" value="all" data-palette-tag-match-mode>
-                                            <span>All selected tags</span>
-                                        </label>
-                                    </fieldset>
-                                    <ul data-palette-tags-list>
-                                        <li>No tags in active palette.</li>
-                                    </ul>
-                                    <div class="action-group action-group--end">
-                                        <button class="btn btn--compact" type="button" data-palette-clear-tag-filters>Clear Filters</button>
-                                    </div>
-                                    <form class="content-stack" data-palette-editor-form>
-                                        <div class="table-wrapper">
-                                            <table class="data-table tool-form-table" aria-label="Selected palette swatch tag editor fields">
-                                                <tbody>
-                                                    <tr>
-                                                        <th scope="row"><label for="paletteSelectedHexInput">Hex</label></th>
-                                                        <td><input class="field-value--readable-disabled tool-form-control" id="paletteSelectedHexInput" type="text" data-palette-selected-hex readonly disabled></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="paletteSelectedNameInput">Name</label></th>
-                                                        <td><input class="field-value--readable-disabled tool-form-control" id="paletteSelectedNameInput" type="text" data-palette-selected-name readonly disabled></td>
-                                                    </tr>
-                                                    <tr data-palette-editor-tags-input-row>
-                                                        <th scope="row" rowspan="2"><label for="paletteTagsInput">Tags</label></th>
-                                                        <td>
-                                                            <input class="tool-form-control" id="paletteTagsInput" type="text" list="paletteTagSuggestions" data-palette-tags>
-                                                            <datalist id="paletteTagSuggestions" data-palette-tag-suggestions></datalist>
-                                                        </td>
-                                                    </tr>
-                                                    <tr data-palette-editor-tags-list-row>
-                                                        <td>
-                                                            <div class="action-group action-group--tight" role="list" aria-label="Selected palette color tags" data-palette-editor-tags-list>
-                                                                <p class="status">No tags added.</p>
-                                                            </div>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="2" data-palette-editor-diagnostic>Select a Project Swatches color to edit tags.</td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                    </form>
-                                    <div class="action-group action-group--end">
-                                        <button class="btn btn--compact" type="button" data-palette-clear-checked>Clear Checked</button>
+                            <details class="vertical-accordion" open data-palette-history-accordion>
+                                <summary>History</summary>
+                                <div class="accordion-body">
+                                    <div class="action-group">
+                                        <button class="btn" type="button" data-palette-undo>Undo</button>
+                                        <button class="btn" type="button" data-palette-redo>Redo</button>
                                     </div>
                                 </div>
                             </details>
