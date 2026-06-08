@@ -365,6 +365,11 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
     await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
+    await expect(page.locator("nav.nav-links a[data-route='admin-notes-dev']")).toHaveText("Notes (Dev/Admin Only)");
+    await expect(page.locator("nav.nav-links a[data-route='admin-notes-dev']")).toHaveAttribute(
+      "href",
+      /(^|\/)docs_build\/dev\/admin-notes\/index\.txt$/,
+    );
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
