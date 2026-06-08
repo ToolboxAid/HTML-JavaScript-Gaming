@@ -989,7 +989,20 @@ function createPickerGroupLabel(group, count) {
   return label;
 }
 
-function appendPickerGroupRows(fragment, group, items, settings) {
+function createPickerGridPlaceholder(row, column) {
+  const placeholder = document.createElement("span");
+  placeholder.className = "palette-generator-preview-swatch";
+  placeholder.dataset.paletteGeneratorPlaceholder = "true";
+  placeholder.dataset.paletteGeneratorRow = String(row);
+  placeholder.dataset.paletteGeneratorColumn = String(column);
+  placeholder.setAttribute("aria-hidden", "true");
+  return placeholder;
+}
+
+function appendPickerGroupRows(fragment, group, allSwatches, settings) {
+  const items = allSwatches.filter((item) => (
+    group === "available" ? item.available : !item.available
+  ));
   fragment.append(createPickerGroupLabel(group, items.length));
   if (!items.length) {
     const message = document.createElement("p");
@@ -1004,28 +1017,33 @@ function appendPickerGroupRows(fragment, group, items, settings) {
 
   const rows = new Map();
   items.forEach((item) => {
-    const rowItems = rows.get(item.row) || [];
-    rowItems.push(item);
+    const rowItems = rows.get(item.row) || new Map();
+    rowItems.set(item.column, item);
     rows.set(item.row, rowItems);
   });
-  [...rows.entries()].forEach(([row, rowItems]) => {
-    const rowElement = document.createElement("div");
-    rowElement.className = "palette-generator-preview-row";
-    rowElement.setAttribute("role", "row");
-    rowElement.dataset.paletteGeneratorPreviewRow = String(row);
-    rowElement.dataset.palettePickerGroup = group;
-    rowItems.forEach((item) => {
-      rowElement.append(createGeneratorPreviewInput(item.hex, settings.paletteType.name, item.row, item.column, settings, {
-        available: item.available,
-        pinned: Boolean(item.pinnedSwatch),
-        pinnedSwatch: item.pinnedSwatch,
-        selected: item.selected,
-        unavailableReason: item.unavailableReason,
-        pickerSettings: currentPickerSettings(settings)
-      }));
+  [...rows.entries()]
+    .sort(([left], [right]) => left - right)
+    .forEach(([row, rowItems]) => {
+      const rowElement = document.createElement("div");
+      rowElement.className = "palette-generator-preview-row";
+      rowElement.setAttribute("role", "row");
+      rowElement.dataset.paletteGeneratorPreviewRow = String(row);
+      rowElement.dataset.palettePickerGroup = group;
+      for (let column = 0; column < settings.colors; column += 1) {
+        const item = rowItems.get(column);
+        rowElement.append(item
+          ? createGeneratorPreviewInput(item.hex, settings.paletteType.name, item.row, item.column, settings, {
+            available: item.available,
+            pinned: Boolean(item.pinnedSwatch),
+            pinnedSwatch: item.pinnedSwatch,
+            selected: item.selected,
+            unavailableReason: item.unavailableReason,
+            pickerSettings: currentPickerSettings(settings)
+          })
+          : createPickerGridPlaceholder(row, column));
+      }
+      fragment.append(rowElement);
     });
-    fragment.append(rowElement);
-  });
 }
 
 function paletteGeneratorSummary(settings) {
@@ -1076,11 +1094,9 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
     }
   }
 
-  const availableSwatches = allSwatches.filter((swatch) => swatch.available);
-  const unavailableSwatches = allSwatches.filter((swatch) => !swatch.available);
   const fragment = document.createDocumentFragment();
-  appendPickerGroupRows(fragment, "available", availableSwatches, settings);
-  appendPickerGroupRows(fragment, "unavailable", unavailableSwatches, settings);
+  appendPickerGroupRows(fragment, "available", allSwatches, settings);
+  appendPickerGroupRows(fragment, "unavailable", allSwatches, settings);
 
   elements.generatorPreview.replaceChildren(fragment);
   setText(elements.generatorPreviewStatus, paletteGeneratorSummary(settings));

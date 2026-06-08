@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test";
 import {
   PALETTE_WORKSPACE_PATH,
   PALETTE_TOOL_TABLES,
-  createProjectWorkspacePaletteRepository
+  createProjectWorkspacePaletteRepository,
+  validatePaletteWorkspacePayload
 } from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
@@ -145,9 +146,17 @@ async function addUserSwatch(page, swatch) {
 }
 
 async function currentPreviewHexes(page, row) {
-  return page.locator(`[data-palette-generator-preview-row='${row}'] [data-palette-generator-color]`).evaluateAll((swatches) => (
+  return page.locator(`[data-palette-picker-group='available'][data-palette-generator-preview-row='${row}'] [data-palette-generator-color]`).evaluateAll((swatches) => (
     swatches.map((swatch) => swatch.value.toUpperCase())
   ));
+}
+
+async function expectPickerRowsToHaveColumnCount(page, group, columns) {
+  const counts = await page.locator(`[data-palette-picker-group='${group}']`).evaluateAll((rows) => (
+    rows.map((row) => row.children.length)
+  ));
+  expect(counts.length).toBeGreaterThan(0);
+  expect(counts).toEqual(counts.map(() => columns));
 }
 
 async function visiblePaletteNames(page) {
@@ -217,6 +226,39 @@ test("Palette repository owns project swatches and protects invalid payloads", a
   expect(repository.findSwatch(heroKey)).toMatchObject({ name: "Hero Blue", tags: ["batch"] });
   expect(repository.findSwatch("reference-red")).toMatchObject({ name: "Reference Red", tags: ["batch"] });
   expect(repository.findSwatch("reference-green")).toBeNull();
+
+  const noSymbolPayloadValidation = validatePaletteWorkspacePayload({
+    tools: {
+      "palette-browser": {
+        swatches: [
+          { key: "symbol-free-swatch", hex: "#224466", name: "Symbol Free Swatch", tags: [] }
+        ]
+      }
+    }
+  });
+  expect(noSymbolPayloadValidation.valid).toBe(true);
+  expect(noSymbolPayloadValidation.normalized.tools["palette-browser"].swatches[0]).toMatchObject({
+    hex: "#224466",
+    key: "symbol-free-swatch",
+    name: "Symbol Free Swatch"
+  });
+
+  const lifecycleRepository = createProjectWorkspacePaletteRepository({ sourcePaletteRows });
+  const lifecycleAdd = lifecycleRepository.addSwatch({ hex: "#224466", name: "Lifecycle Blue" });
+  expect(lifecycleAdd.ok).toBe(true);
+  const lifecycleKey = lifecycleAdd.snapshot.selectedSwatch.key;
+  expect(lifecycleRepository.updateSelectedSwatch({ hex: "#224477", name: "Lifecycle Updated" }).ok).toBe(true);
+  expect(lifecycleRepository.findSwatch(lifecycleKey)).toMatchObject({ hex: "#224477", name: "Lifecycle Updated" });
+  expect(lifecycleRepository.removeSwatch(lifecycleKey).ok).toBe(true);
+  expect(lifecycleRepository.findSwatch(lifecycleKey)).toBeNull();
+  const lifecycleSourceSwatch = lifecycleRepository.listSourceSwatches({ sourceId: "reference" })[0];
+  expect(lifecycleRepository.pinSourceSwatch(lifecycleSourceSwatch).ok).toBe(true);
+  expect(lifecycleRepository.findSwatch(lifecycleSourceSwatch.key)).toMatchObject({ name: lifecycleSourceSwatch.name });
+  expect(lifecycleRepository.removeSwatch(lifecycleSourceSwatch.key).ok).toBe(true);
+  expect(lifecycleRepository.findSwatch(lifecycleSourceSwatch.key)).toBeNull();
+  lifecycleRepository.addSwatch({ hex: "#667788", name: "Clearable Swatch" });
+  lifecycleRepository.clearProjectData();
+  expect(lifecycleRepository.getTables().palette_colors).toEqual([]);
 
   const invalidPayload = {
     tools: {
@@ -507,6 +549,44 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
   }
 });
 
+test("Palette Tool preserves eight-column picker rows when swatches are unavailable", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/colors/index.html");
+
+  try {
+    await page.locator("[data-palette-generator-colors]").selectOption("8");
+    await page.locator("[data-palette-generator-steps]").selectOption("2");
+    await expectPickerRowsToHaveColumnCount(page, "available", 8);
+    const firstAvailableEightColumnSwatch = page.locator("[data-palette-generator-swatch][data-palette-generator-availability='available']").first();
+    const eightColumnHex = await firstAvailableEightColumnSwatch.getAttribute("data-palette-generator-hex");
+    await firstAvailableEightColumnSwatch.click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("1");
+
+    await expectPickerRowsToHaveColumnCount(page, "available", 8);
+    await expectPickerRowsToHaveColumnCount(page, "unavailable", 8);
+    const unavailableEightColumnSwatch = page.locator(`[data-palette-generator-swatch][data-palette-generator-hex='${eightColumnHex}'][data-palette-generator-availability='unavailable']`);
+    await expect(unavailableEightColumnSwatch).toHaveAttribute("data-palette-generator-unavailable-reason", "Already in Project");
+    const unavailableEightColumnVisual = await unavailableEightColumnSwatch.evaluate((swatch) => ({
+      cursor: getComputedStyle(swatch).cursor,
+      opacity: getComputedStyle(swatch).opacity,
+      value: swatch.querySelector("input[type='color']").value
+    }));
+    expect(unavailableEightColumnVisual.cursor).not.toBe("not-allowed");
+    expect(unavailableEightColumnVisual.opacity).toBe("1");
+    expect(unavailableEightColumnVisual.value.toUpperCase()).toBe((eightColumnHex || "").slice(0, 7).toUpperCase());
+
+    await unavailableEightColumnSwatch.click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("1");
+    await expect(page.locator("[data-palette-log]")).toContainText("Already in Project picker swatch was not added");
+    await page.locator("[data-palette-generator-swatch][data-palette-generator-availability='available']").first().click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("2");
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
 test("Palette Tool generated grid swatches can be selected, pinned, and refreshed", async ({ page }) => {
   test.setTimeout(120000);
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
@@ -595,6 +675,8 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     await expect(page.locator("[data-palette-picker-group-label='available']")).toHaveText("Available Picker Swatches (63)");
     await expect(page.locator("[data-palette-picker-group-label='unavailable']")).toHaveText("Already in Project (1)");
     await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(1);
+    await expectPickerRowsToHaveColumnCount(page, "available", 16);
+    await expectPickerRowsToHaveColumnCount(page, "unavailable", 16);
     const unavailableVisual = await unavailablePickerSwatch.evaluate((swatch) => ({
       cursor: getComputedStyle(swatch).cursor,
       opacity: getComputedStyle(swatch).opacity,

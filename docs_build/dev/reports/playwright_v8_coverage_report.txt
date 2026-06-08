@@ -17,7 +17,7 @@ Exercised tool entry points detected:
 (64%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(85%) toolbox/colors/colors.js - executed lines 1938/1938; executed functions 165/194
+(85%) toolbox/colors/colors.js - executed lines 1953/1953; executed functions 165/194
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
 Files with executed line/function counts where available:
@@ -25,15 +25,13 @@ Files with executed line/function counts where available:
 (64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 525/525; executed functions 28/44
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 9/14
 (78%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 21/27
-(85%) toolbox/colors/colors.js - executed lines 1938/1938; executed functions 165/194
+(85%) toolbox/colors/colors.js - executed lines 1953/1953; executed functions 165/194
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
 Uncovered or low-coverage changed JS files:
 (100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) assets/theme-v2/js/account-achievements.js - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (85%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
 (100%) toolbox/colors/palette-api-client.js - changed JS file with browser V8 coverage
