@@ -76,6 +76,24 @@ function clonePickerSettings(settings) {
   };
 }
 
+function cloneColorMetadata(metadata) {
+  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
+    return null;
+  }
+  const cloned = { ...metadata };
+  if (Array.isArray(metadata.activeTags)) {
+    cloned.activeTags = [...metadata.activeTags];
+  }
+  if (Array.isArray(metadata.tags)) {
+    cloned.tags = [...metadata.tags];
+  }
+  const pickerSettings = clonePickerSettings(metadata.pickerSettings);
+  if (pickerSettings) {
+    cloned.pickerSettings = pickerSettings;
+  }
+  return cloned;
+}
+
 function cloneSwatch(swatch) {
   const cloned = {
     symbol: swatch.symbol,
@@ -87,6 +105,10 @@ function cloneSwatch(swatch) {
   const pickerSettings = clonePickerSettings(swatch.pickerSettings);
   if (pickerSettings) {
     cloned.pickerSettings = pickerSettings;
+  }
+  const metadata = cloneColorMetadata(swatch.metadata);
+  if (metadata) {
+    cloned.metadata = metadata;
   }
   return cloned;
 }
@@ -244,6 +266,7 @@ export function normalizePaletteSwatchInput(input = {}, options = {}) {
   const name = normalizeText(source.name);
   const tags = normalizeTags(source.tags);
   const pickerSettings = clonePickerSettings(source.pickerSettings);
+  const metadata = cloneColorMetadata(source.metadata);
 
   const swatch = {
     symbol,
@@ -254,6 +277,16 @@ export function normalizePaletteSwatchInput(input = {}, options = {}) {
   };
   if (pickerSettings) {
     swatch.pickerSettings = pickerSettings;
+  }
+  if (metadata) {
+    swatch.metadata = {
+      ...metadata,
+      hex,
+      name,
+      pickerSettings: pickerSettings || metadata.pickerSettings,
+      source: normalizeSource(source.source || options.source),
+      tags: [...tags]
+    };
   }
   return swatch;
 }
@@ -690,6 +723,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       .filter((row) => row.projectId === projectId)
       .map((row) => ({
         hex: row.hex,
+        metadata: cloneColorMetadata(row.metadata) || undefined,
         name: row.name,
         pickerSettings: clonePickerSettings(row.pickerSettings) || undefined,
         source: row.source,
@@ -720,6 +754,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         }, index),
         hex: swatch.hex,
         id: `${projectId}-palette-color-${index + 1}`,
+        metadata: cloneColorMetadata(swatch.metadata) || undefined,
         name: swatch.name,
         pickerSettings: clonePickerSettings(swatch.pickerSettings) || undefined,
         projectId,

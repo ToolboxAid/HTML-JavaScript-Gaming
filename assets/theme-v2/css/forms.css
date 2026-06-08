@@ -184,8 +184,8 @@ input[type="color"][data-palette-swatch-size="large"] {
 
 .palette-swatch-check {
   position: absolute;
-  top: calc(var(--space-8) * -1);
-  left: calc(var(--space-8) * -1);
+  top: var(--space-3);
+  left: var(--space-3);
   z-index: var(--z-index-md);
   width: var(--space-14);
   height: var(--space-14);

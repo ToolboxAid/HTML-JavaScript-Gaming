@@ -138,8 +138,8 @@ async function fillUserSwatch(page, { hex, name }) {
 
 async function addUserSwatch(page, swatch) {
   await fillUserSwatch(page, swatch);
-  await expect(page.getByRole("button", { name: "Add User Defined" })).toBeEnabled();
-  await page.getByRole("button", { name: "Add User Defined" }).click();
+  await expect(page.locator("[data-palette-add]")).toBeEnabled();
+  await page.locator("[data-palette-add]").click();
   await expect(swatchTileByName(page, swatch.name)).toHaveCount(1);
 }
 
@@ -267,14 +267,15 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
     ]);
 
     await expectUserHexPreview(page, "invalid", "#ffffff");
-    await expect(page.getByRole("button", { name: "Add User Defined" })).toBeDisabled();
-    await expect(page.getByRole("button", { name: "Update Selected" })).toBeDisabled();
+    await expect(page.locator("[data-palette-add]")).toBeDisabled();
+    await expect(page.locator("[data-palette-update]")).toBeDisabled();
+    await expect(page.locator("[data-palette-clear]")).toBeEnabled();
     await expect(page.locator("[data-palette-tags]")).toBeDisabled();
     await expect(page.locator("[data-palette-symbol], [data-palette-selected-symbol]")).toHaveCount(0);
     await expect(page.getByText("Symbol")).toHaveCount(0);
 
     await fillUserSwatch(page, { hex: "#12", name: "" });
-    await expect(page.getByRole("button", { name: "Add User Defined" })).toBeDisabled();
+    await expect(page.locator("[data-palette-add]")).toBeDisabled();
     await expectUserHexPreview(page, "invalid", "#ffffff");
     await expect(page.locator("[data-palette-validation-overlay]")).toBeVisible();
     await expect(page.locator("[data-palette-validation-list]")).toContainText("Hex");
@@ -284,12 +285,14 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
     const heroTile = swatchTileByName(page, "Hero Blue");
     await expect(heroTile).toHaveAttribute("data-palette-swatch-hex", "#123456AA");
-    await expect(heroTile).toHaveAttribute("title", /Color: #123456AA[\s\S]*Name: Hero Blue[\s\S]*Source: custom/);
+    await expect(heroTile).toHaveAttribute("title", "Name: Hero Blue\nHex: #123456AA\nTheme: User Defined\nPalette Type: Custom");
+    await expect(heroTile).toHaveAttribute("data-palette-metadata-hex", "#123456AA");
+    await expect(heroTile).toHaveAttribute("data-palette-metadata-theme-collection", "User Defined");
     await expect(heroTile).toHaveAttribute("data-palette-selected", "true");
     await expectReadableDisabledField(page, "[data-palette-selected-hex]", "#123456AA");
     await expectReadableDisabledField(page, "[data-palette-selected-name]", "Hero Blue");
     await expect(page.locator("[data-palette-tags]")).toBeEnabled();
-    await expect(page.getByRole("button", { name: "Update Selected" })).toBeEnabled();
+    await expect(page.locator("[data-palette-update]")).toBeEnabled();
 
     await page.locator("[data-palette-tags]").fill("hero");
     await page.locator("[data-palette-tags]").press("Enter");
@@ -301,7 +304,7 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
 
     await page.locator("[data-palette-hex]").fill("#ABCDEF");
     await page.locator("[data-palette-name]").fill("Hero Updated");
-    await page.getByRole("button", { name: "Update Selected" }).click();
+    await page.locator("[data-palette-update]").click();
     await expect(swatchTileByName(page, "Hero Updated")).toHaveAttribute("data-palette-swatch-name", "Hero Updated");
     await expect(swatchTileByName(page, "Hero Updated")).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Hero Updated");
@@ -325,12 +328,22 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
 
   try {
-    await expect(page.locator("[data-palette-project-accordion] > summary")).toHaveText("Selected Swatches");
-    await expect(page.locator("[data-palette-source-accordion] > summary")).toHaveText("Defined Swatch Selector");
-    await expect(page.locator("[data-palette-generator-accordion] > summary")).toHaveText("Swatch Type / Theme");
+    await expect(page.locator("[data-palette-fullscreen-panels] > details > summary")).toHaveText([
+      "Project Swatches",
+      "Picker Swatches"
+    ]);
+    const accordionOrder = await page.locator("[data-palette-project-accordion]").evaluate((projectAccordion) => {
+      const pickerAccordion = document.querySelector("[data-palette-picker-accordion]");
+      return {
+        pickerTop: Math.round(pickerAccordion.getBoundingClientRect().top),
+        projectTop: Math.round(projectAccordion.getBoundingClientRect().top)
+      };
+    });
+    expect(accordionOrder.projectTop).toBeLessThan(accordionOrder.pickerTop);
     await expect(page.locator("[data-palette-project-accordion] [data-palette-generator-preview]")).toHaveCount(0);
-    await expect(page.locator("[data-palette-fullscreen-panels] > [data-palette-generator-preview]")).toHaveCount(1);
-    await expect(page.locator("[data-palette-generator-accordion] [data-palette-generator-preview]")).toHaveCount(0);
+    await expect(page.locator("[data-palette-picker-accordion] [data-palette-generator-preview]")).toHaveCount(1);
+    await expect(page.getByRole("heading", { name: "Defined Swatch Selector" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Swatch Type / Theme" })).toBeVisible();
     await expect(page.locator("[data-palette-source-select], [data-palette-source-search], [data-palette-source-pin-all]")).toHaveCount(0);
 
     await expect(page.locator("[data-palette-theme-collection] option")).toHaveText(Object.keys(expectedThemeTypes));
@@ -359,7 +372,7 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("0");
     expect(await page.locator("[data-palette-generator-variant] option").allTextContents()).not.toEqual(expect.arrayContaining(["64 colors", "128 colors", "256 colors"]));
 
-    const selectorLayout = await page.locator("[data-palette-source-accordion] .grid.cols-3").first().evaluate((grid) => (
+    const selectorLayout = await page.locator("[data-palette-picker-accordion] .grid.cols-3").first().evaluate((grid) => (
       Array.from(grid.querySelectorAll("select")).map((select) => Math.round(select.getBoundingClientRect().top))
     ));
     expect(new Set(selectorLayout).size).toBe(1);
@@ -451,6 +464,8 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
       await expect(page.locator("[data-palette-generator-type] option")).toHaveText(types);
       for (const type of types) {
         await page.locator("[data-palette-generator-type]").selectOption(type);
+        await page.locator("[data-palette-generator-colors]").selectOption("4");
+        await page.locator("[data-palette-generator-steps]").selectOption("2");
         await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(8);
         await expect(page.locator("[data-palette-generator-preview-status]")).toContainText(`${collection} / ${type}`);
       }
@@ -507,8 +522,10 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     await expect(firstGenerated).toHaveAttribute("data-palette-pinned", "false");
     const generatedName = await firstGenerated.getAttribute("data-palette-generator-name");
     const generatedHex = await firstGenerated.getAttribute("data-palette-generator-hex");
-    await expect(firstGenerated).toHaveAttribute("title", /Color: #[0-9A-F]{6}[\s\S]*Name: Sci-Fi Cyberpunk 16 colors/);
-    await expect(firstGenerated).toHaveAttribute("title", /Theme Collection: Sci-Fi[\s\S]*Palette Type: Cyberpunk[\s\S]*Variant: 16 colors/);
+    await expect(firstGenerated).toHaveAttribute("title", /Name: Sci-Fi Cyberpunk 16 colors[\s\S]*Hex: #[0-9A-F]{6}[\s\S]*Theme: Sci-Fi[\s\S]*Palette Type: Cyberpunk/);
+    const pickerTooltip = await firstGenerated.getAttribute("title");
+    expect(pickerTooltip?.split("\n")).toHaveLength(4);
+    expect(pickerTooltip).not.toContain("Contrast:");
 
     const gridSpacing = await page.locator("[data-palette-generator-preview]").evaluate((preview) => {
       const firstRow = preview.querySelector("[data-palette-generator-preview-row]");
@@ -531,10 +548,21 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     await expect(generatedTile).toHaveAttribute("data-palette-swatch-name", generatedName || "");
     await expect(generatedTile).toHaveAttribute("data-palette-swatch-hex", generatedHex || "");
     await expect(generatedTile).toHaveAttribute("data-palette-selected", "true");
-    await expect(generatedTile).toHaveAttribute("title", /Color: #[0-9A-F]{6}[\s\S]*Theme Collection: Sci-Fi[\s\S]*Palette Type: Cyberpunk[\s\S]*Variant: 16 colors[\s\S]*Colors: 16[\s\S]*Steps: 4[\s\S]*Contrast: 72[\s\S]*Saturation: 58[\s\S]*Hue Shift: -35/);
+    await expect(generatedTile).toHaveAttribute("title", `Name: ${generatedName}\nHex: ${generatedHex}\nTheme: Sci-Fi\nPalette Type: Cyberpunk`);
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-theme-collection", "Sci-Fi");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-palette-type", "Cyberpunk");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-variant", "16 colors");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-colors", "16");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-steps", "4");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-contrast", "72");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-saturation", "58");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-hue-shift", "-35");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-sort-field", "hue");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-sort-direction", "asc");
+    await expect(generatedTile).toHaveAttribute("data-palette-metadata-swatch-size", "medium");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-pinned", "true");
     await expect(page.locator("[data-palette-generator-swatch]").first().locator("[data-palette-pin-indicator]")).toHaveCount(1);
-    await expect(page.locator("[data-palette-log]")).toContainText("Pinned generated swatch");
+    await expect(page.locator("[data-palette-log]")).toContainText("Added picker swatch");
 
     await page.locator("[data-palette-theme-collection]").selectOption("Nature");
     await page.locator("[data-palette-generator-type]").selectOption("Forest");
@@ -610,8 +638,12 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Anchor");
     const checkBox = await anchorCheck.boundingBox();
     const tileBox = await anchorTile.boundingBox();
-    expect((checkBox?.x || 0) - (tileBox?.x || 0)).toBeLessThan(10);
-    expect((checkBox?.y || 0) - (tileBox?.y || 0)).toBeLessThan(10);
+    const checkboxLeftInset = (checkBox?.x || 0) - (tileBox?.x || 0);
+    const checkboxTopInset = (checkBox?.y || 0) - (tileBox?.y || 0);
+    expect(checkboxLeftInset).toBeGreaterThanOrEqual(2);
+    expect(checkboxLeftInset).toBeLessThanOrEqual(6);
+    expect(checkboxTopInset).toBeGreaterThanOrEqual(2);
+    expect(checkboxTopInset).toBeLessThanOrEqual(6);
 
     await page.locator("[data-palette-tags]").fill("solo");
     await page.locator("[data-palette-tags]").press("Enter");
@@ -639,6 +671,12 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
     await expect(brownTile).toHaveAttribute("data-palette-swatch-tags", "batch");
     await expect(blueTile).toHaveAttribute("data-palette-swatch-tags", "");
 
+    await page.locator("[data-palette-tags]").fill("pla");
+    await expect(page.locator("#paletteTagSuggestions option[value='Player']")).toHaveCount(1);
+    await page.locator("[data-palette-tags]").fill("Player");
+    await page.locator("[data-palette-tags]").press("Enter");
+    await expect(anchorTile).toHaveAttribute("data-palette-swatch-tags", "solo, batch, afterclear, player");
+
     await expectSortToggle(page, "hue", "Hue");
     await expectSortToggle(page, "saturation", "Sat");
     await expectSortToggle(page, "brightness", "Brit");
@@ -647,18 +685,35 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
 
     const tagFilters = page.locator("[data-palette-tag-filter]");
     const tagFilterItems = page.locator("[data-palette-tags-list] li");
-    await expect(tagFilters).toHaveCount(3);
-    await expect(tagFilterItems).toHaveText(["afterclear", "batch", "solo"]);
+    await expect(tagFilters).toHaveCount(4);
+    await expect(tagFilterItems).toHaveText(["afterclear", "batch", "player", "solo"]);
+    await expect(page.getByRole("button", { name: "Deselect All" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Clear Filters" })).toBeDisabled();
+    await expect(page.getByRole("radio", { name: "Any selected tag" })).toBeChecked();
+    await expect(page.getByRole("radio", { name: "All selected tags" })).not.toBeChecked();
+
     await page.locator("[data-palette-tag-filter='batch']").check();
+    await expect(page.getByRole("button", { name: "Clear Filters" })).toBeEnabled();
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(1);
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Bluegate']")).toHaveCount(0);
     await page.locator("[data-palette-tag-filter='solo']").check();
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Bluegate']")).toHaveCount(0);
+    await page.getByRole("radio", { name: "All selected tags" }).check();
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(0);
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Bluegate']")).toHaveCount(0);
-    await page.locator("[data-palette-tag-filter='batch']").uncheck();
-    await page.locator("[data-palette-tag-filter='solo']").uncheck();
+    await page.locator("[data-palette-tag-filter='solo']").click();
+    await expect(page.locator("[data-palette-tag-filter='solo']")).not.toBeChecked();
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(1);
+    await page.locator("[data-palette-tag-filter='solo']").check();
+    await page.getByRole("button", { name: "Clear Filters" }).click();
+    await expect(page.locator("[data-palette-tag-filter='batch']")).not.toBeChecked();
+    await expect(page.locator("[data-palette-tag-filter='solo']")).not.toBeChecked();
+    await expect(page.getByRole("button", { name: "Clear Filters" })).toBeDisabled();
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-key]")).toHaveCount(3);
 
     expectNoPageFailures(failures);
@@ -686,8 +741,8 @@ test("Palette Tool rejects invalid payloads before render and blocks editing wit
   try {
     await expect(page.locator("[data-palette-active-project]")).toHaveText("No active project.");
     await expect(page.locator("[data-palette-project-overlay]")).toBeVisible();
-    await expect(page.getByRole("button", { name: "Add User Defined" })).toBeDisabled();
-    await expect(page.getByRole("button", { name: "Update Selected" })).toBeDisabled();
+    await expect(page.locator("[data-palette-add]")).toBeDisabled();
+    await expect(page.locator("[data-palette-update]")).toBeDisabled();
     await expect(page.locator("[data-palette-validation-list]")).toContainText("Active Project");
     expectNoPageFailures(missingProjectFailures);
   } finally {

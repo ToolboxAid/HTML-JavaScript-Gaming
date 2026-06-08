@@ -67,7 +67,7 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2" data-palette-editor-diagnostic>Select a Palette Colors swatch to edit tags.</td>
+                                                        <td colspan="2" data-palette-editor-diagnostic>Select a Project Swatches color to edit tags.</td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -107,9 +107,9 @@
                                             </table>
                                         </div>
                                         <div class="hero-actions">
-                                            <button class="btn primary" type="submit" data-palette-add>Add User Defined</button>
-                                            <button class="btn" type="button" data-palette-update>Update Selected</button>
-                                            <button class="btn" type="button" data-palette-clear>Clear Form</button>
+                                        <button class="btn primary" type="submit" data-palette-add>Add</button>
+                                        <button class="btn" type="button" data-palette-update>Update</button>
+                                        <button class="btn" type="button" data-palette-clear>Clear</button>
                                         </div>
                                     </form>
                                 </div>
@@ -129,7 +129,7 @@
                     <section class="tool-center-panel">
                         <h2>Palette</h2>
                         <div class="grid cols-3" aria-label="Palette summary">
-                            <article class="mini-stat"><strong data-palette-count>0</strong>Palette Colors</article>
+                            <article class="mini-stat"><strong data-palette-count>0</strong>Project Swatches</article>
                             <article class="mini-stat"><strong data-palette-selected-summary>None</strong>Selected</article>
                             <article class="mini-stat"><strong data-palette-validation-status>Blocked</strong>Validation</article>
                         </div>
@@ -144,27 +144,27 @@
                             </div>
                         </article>
                         <div class="content-stack accordion-fill-stack" data-palette-fullscreen-panels>
-                            <div class="palette-generator-preview" role="grid" aria-label="Generated palette preview" data-palette-generator-preview></div>
-                            <p class="status" role="status" data-palette-generator-preview-status>Curated palette preview ready.</p>
                             <details class="vertical-accordion accordion-fill-panel" open data-palette-project-accordion>
-                                <summary>Selected Swatches</summary>
+                                <summary>Project Swatches</summary>
                                 <div class="accordion-body content-stack accordion-scroll-body">
-                                    <div class="action-group" aria-label="Active project palette controls" data-palette-user-controls>
-                                        <div class="action-group" aria-label="Active project palette sort" data-palette-user-sort></div>
-                                        <div class="action-group action-group--end" aria-label="Active project palette size" data-palette-user-size></div>
+                                    <div class="action-group" aria-label="Project Swatches controls" data-palette-user-controls>
+                                        <div class="action-group" aria-label="Project Swatches sort" data-palette-user-sort></div>
+                                        <div class="action-group action-group--end" aria-label="Project Swatches size" data-palette-user-size></div>
                                         <button class="btn btn--compact" type="button" data-palette-restore-picker-settings>Restore Picker Settings</button>
                                     </div>
                                     <div class="palette-swatch-list-wrapper scroll-region" data-palette-user-scroll>
-                                        <div class="palette-swatch-list" role="group" aria-label="Active project palette colors" data-palette-user-list>
+                                        <div class="palette-swatch-list" role="group" aria-label="Project Swatches colors" data-palette-user-list>
                                             <p class="status">No project palette colors yet.</p>
                                         </div>
                                     </div>
                                 </div>
                             </details>
-                            <details class="vertical-accordion accordion-fill-panel" open data-palette-source-accordion>
-                                <summary>Defined Swatch Selector</summary>
+                            <details class="vertical-accordion accordion-fill-panel" open data-palette-picker-accordion>
+                                <summary>Picker Swatches</summary>
                                 <div class="accordion-body content-stack">
-                                    <div class="grid cols-3" aria-label="Defined swatch selector controls">
+                                    <section class="content-stack" aria-labelledby="palette-defined-swatch-selector-title">
+                                        <h3 id="palette-defined-swatch-selector-title">Defined Swatch Selector</h3>
+                                        <div class="grid cols-3" aria-label="Defined swatch selector controls">
                                         <label class="field-group" for="paletteThemeCollection">Theme Collection
                                             <select class="tool-form-control" id="paletteThemeCollection" data-palette-theme-collection></select>
                                         </label>
@@ -174,13 +174,11 @@
                                         <label class="field-group" for="paletteGeneratorVariant">Variant
                                             <select class="tool-form-control" id="paletteGeneratorVariant" data-palette-generator-variant></select>
                                         </label>
-                                    </div>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion accordion-fill-panel" open data-palette-generator-accordion>
-                                <summary>Swatch Type / Theme</summary>
-                                <div class="accordion-body content-stack">
-                                    <div class="table-wrapper">
+                                        </div>
+                                    </section>
+                                    <section class="content-stack" aria-labelledby="palette-swatch-type-theme-title">
+                                        <h3 id="palette-swatch-type-theme-title">Swatch Type / Theme</h3>
+                                        <div class="table-wrapper">
                                         <table class="data-table tool-form-table" aria-label="Swatch type and theme controls">
                                             <tbody>
                                                 <tr>
@@ -236,6 +234,9 @@
                                         <button class="btn primary" type="button" data-palette-generator-generate>Generate</button>
                                         <button class="btn" type="button" data-palette-generator-reset>Reset</button>
                                     </div>
+                                    </section>
+                                    <div class="palette-generator-preview" role="grid" aria-label="Picker Swatches" data-palette-generator-preview></div>
+                                    <p class="status" role="status" data-palette-generator-preview-status>Curated Picker Swatches ready.</p>
                                 </div>
                             </details>
                         </div>
@@ -299,9 +300,23 @@
                             <details class="vertical-accordion" open>
                                 <summary>Tags</summary>
                                 <div class="accordion-body content-stack">
+                                    <fieldset class="content-stack" data-palette-tag-match-mode-group>
+                                        <legend>Match Mode</legend>
+                                        <label class="field-inline" for="paletteTagMatchAny">
+                                            <input id="paletteTagMatchAny" type="radio" name="paletteTagMatchMode" value="any" data-palette-tag-match-mode checked>
+                                            <span>Any selected tag</span>
+                                        </label>
+                                        <label class="field-inline" for="paletteTagMatchAll">
+                                            <input id="paletteTagMatchAll" type="radio" name="paletteTagMatchMode" value="all" data-palette-tag-match-mode>
+                                            <span>All selected tags</span>
+                                        </label>
+                                    </fieldset>
                                     <ul data-palette-tags-list>
                                         <li>No tags in active palette.</li>
                                     </ul>
+                                    <div class="action-group action-group--end">
+                                        <button class="btn btn--compact" type="button" data-palette-clear-tag-filters>Clear Filters</button>
+                                    </div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
