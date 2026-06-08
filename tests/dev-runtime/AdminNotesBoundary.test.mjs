@@ -5,6 +5,7 @@ import process from "node:process";
 import test from "node:test";
 import {
   ADMIN_NOTES_LOCAL_MENU_LABEL,
+  ADMIN_NOTES_LOCAL_SOURCE_PATH,
   ADMIN_NOTES_LOCAL_VIEWER_PATH,
   localAdminNotesHeaderPartialPath,
 } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
@@ -109,9 +110,12 @@ test("Admin Notes local viewer page uses external dev-runtime JavaScript only", 
   assert.doesNotMatch(viewerSource, /\son[a-z]+\s*=/i, "viewer page must not contain inline event handlers");
   assert.match(
     viewerSource,
-    /<script type="module" src="\.\/admin-notes-viewer\.js"><\/script>/,
+    /<script type="module" src="src\/dev-runtime\/admin\/admin-notes-viewer\.js"><\/script>/,
     "viewer page loads its external dev-runtime viewer script",
   );
+  assert.match(viewerSource, /<div data-partial="header-nav"><\/div>/, "viewer page uses the shared header partial slot");
+  assert.match(viewerSource, /<div data-partial="footer"><\/div>/, "viewer page uses the shared footer partial slot");
+  assert.match(viewerSource, /assets\/theme-v2\/js\/gamefoundry-partials\.js/, "viewer page loads shared Theme V2 partial wiring");
 });
 
 test("production-facing paths do not link to dev Admin Notes files or implementation", () => {
@@ -138,6 +142,7 @@ test("local dev server serves a dedicated Admin Notes header partial only", () =
   assert.match(servedHeader, /data-admin-notes-local-menu/);
   assert.match(servedHeader, /data-nav-link data-admin-notes-local-menu/);
   assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
+  assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
   assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_MENU_LABEL.replace(/[()]/g, "\\$&")));
   assert.ok(
     servedHeader.indexOf("data-admin-notes-local-menu") < servedHeader.indexOf('data-route="admin-analytics"'),

@@ -435,9 +435,10 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
       "href",
-      /\/src\/dev-runtime\/admin\/admin-notes\.html$/,
+      /\/admin\/admin-notes\.html$/,
     );
     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
+    await expect(page).toHaveURL(/\/admin\/admin-notes\.html$/);
     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
     await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
     await expectNoPageFailures(failures);
@@ -458,10 +459,10 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
       "href",
-      "/src/dev-runtime/admin/admin-notes.html",
+      "/admin/admin-notes.html",
     );
     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
-    await expect(page).toHaveURL("http://127.0.0.1:5501/src/dev-runtime/admin/admin-notes.html");
+    await expect(page).toHaveURL("http://127.0.0.1:5501/admin/admin-notes.html");
     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
     await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
     await expectNoPageFailures(failures);

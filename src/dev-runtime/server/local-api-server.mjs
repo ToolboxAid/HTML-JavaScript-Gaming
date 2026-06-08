@@ -31,6 +31,9 @@ function resolveBrowserRoutePath(decodedPath) {
   if (webPath === "/tools" || webPath.startsWith("/tools/")) {
     return `/toolbox${webPath.slice("/tools".length)}`;
   }
+  if (webPath === "/admin/admin-notes.html") {
+    return "/src/dev-runtime/admin/admin-notes.html";
+  }
   return normalizedPath;
 }
 

@@ -1,7 +1,7 @@
 // Dev-runtime only: do not import this viewer from production-facing pages or bundles.
 const NOTES_DIRECTORY = "docs_build/dev/admin-notes";
 const DEFAULT_NOTE = "index";
-const VIEWER_PATH = "/src/dev-runtime/admin/admin-notes.html";
+const VIEWER_PATH = "/admin/admin-notes.html";
 const LINK_CLASS = "btn btn--compact primary";
 const NOTE_NAME_PATTERN = /^[A-Za-z0-9_-]+$/;
 const STATUS_ICON_PATTERN = /^\[([ xX.!?-])\]\s*(.*)$/;

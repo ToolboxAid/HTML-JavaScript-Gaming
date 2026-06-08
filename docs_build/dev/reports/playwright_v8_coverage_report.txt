@@ -14,18 +14,19 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (0%) Toolbox Index - not exercised by this Playwright run
 (0%) Tool Template V2 - not exercised by this Playwright run
-(68%) Theme V2 Shared JS - exercised 2 runtime JS files
+(70%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/admin/admin-notes-menu.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 501/501; executed functions 47/49
 
 Files with executed line/function counts where available:
 (20%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 1/5
 (29%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 4/14
 (62%) assets/theme-v2/js/login-session.js - executed lines 357/357; executed functions 16/26
 (63%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 5/8
-(73%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 441/441; executed functions 29/40
+(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 441/441; executed functions 30/40
 (96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 501/501; executed functions 47/49
 
 Uncovered or low-coverage changed JS files:
@@ -37,4 +38,6 @@ Changed JS files considered:
 (0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/AdminNotesBoundary.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminNotesLocalViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
+(96%) src/dev-runtime/admin/admin-notes-viewer.js - changed JS file with browser V8 coverage
