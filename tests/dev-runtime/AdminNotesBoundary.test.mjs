@@ -6,7 +6,7 @@ import test from "node:test";
 import {
   ADMIN_NOTES_LOCAL_MENU_LABEL,
   ADMIN_NOTES_LOCAL_VIEWER_PATH,
-  localAdminNotesMenuContent,
+  localAdminNotesHeaderPartialPath,
 } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
 
 const repoRoot = process.cwd();
@@ -93,7 +93,12 @@ test("Admin Notes implementation is isolated under src/dev-runtime/admin", () =>
   assert.equal(
     fs.existsSync(repoPath("src/dev-runtime/admin/admin-notes-menu.mjs")),
     true,
-    "dev-runtime Admin Notes local menu injector exists",
+    "dev-runtime Admin Notes local menu route helper exists",
+  );
+  assert.equal(
+    fs.existsSync(repoPath("src/dev-runtime/admin/header-nav.local.html")),
+    true,
+    "dev-runtime local header partial exists",
   );
 });
 
@@ -124,10 +129,11 @@ test("production-facing paths do not link to dev Admin Notes files or implementa
   assert.deepEqual(violations, [], "production-facing paths must not expose Admin Notes");
 });
 
-test("local dev server injects Admin Notes into the served Admin menu only", () => {
+test("local dev server serves a dedicated Admin Notes header partial only", () => {
   const headerPath = repoPath("assets/theme-v2/partials/header-nav.html");
-  const source = fs.readFileSync(headerPath);
-  const servedHeader = localAdminNotesMenuContent(repoRoot, headerPath, source).toString("utf8");
+  const source = fs.readFileSync(headerPath, "utf8");
+  const localHeaderPath = localAdminNotesHeaderPartialPath(repoRoot, headerPath);
+  const servedHeader = fs.readFileSync(localHeaderPath, "utf8");
 
   assert.match(servedHeader, /data-admin-notes-local-menu/);
   assert.match(servedHeader, /data-nav-link data-admin-notes-local-menu/);
@@ -137,5 +143,7 @@ test("local dev server injects Admin Notes into the served Admin menu only", () 
     servedHeader.indexOf("data-admin-notes-local-menu") < servedHeader.indexOf('data-route="admin-analytics"'),
     "local Admin Notes menu entry is sorted before Analytics",
   );
-  assert.doesNotMatch(source.toString("utf8"), /data-admin-notes-local-menu/);
+  assert.equal(relativePath(localHeaderPath), "src/dev-runtime/admin/header-nav.local.html");
+  assert.doesNotMatch(source, /data-admin-notes-local-menu/);
+  assert.equal(localAdminNotesHeaderPartialPath(repoRoot, repoPath("login.html")), repoPath("login.html"));
 });

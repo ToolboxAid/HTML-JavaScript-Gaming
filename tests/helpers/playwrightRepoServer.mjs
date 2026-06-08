@@ -3,7 +3,7 @@ import path from "node:path";
 import http from "node:http";
 import { fileURLToPath } from "node:url";
 import { handleAdminNotesDirectoryRequest } from "../../src/dev-runtime/admin/admin-notes-directory.mjs";
-import { localAdminNotesMenuContent } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
+import { localAdminNotesHeaderPartialPath } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
 import { createMockApiRouter } from "../../src/dev-runtime/server/mock-api-router.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -58,8 +58,8 @@ export async function startRepoServer() {
       if (stat && stat.isDirectory()) {
         targetPath = path.join(targetPath, "index.html");
       }
-      const fileContents = await fs.readFile(targetPath);
-      const responseContents = localAdminNotesMenuContent(repoRoot, targetPath, fileContents);
+      targetPath = localAdminNotesHeaderPartialPath(repoRoot, targetPath);
+      const responseContents = await fs.readFile(targetPath);
       response.statusCode = 200;
       response.setHeader("Content-Type", contentTypeForPath(targetPath));
       response.end(responseContents);

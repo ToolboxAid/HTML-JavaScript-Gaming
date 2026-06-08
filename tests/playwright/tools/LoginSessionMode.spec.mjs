@@ -3,6 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { expect, test } from "@playwright/test";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+import { startLocalApiServer } from "../../../src/dev-runtime/server/local-api-server.mjs";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
@@ -80,6 +81,64 @@ async function openRepoPage(page, pathName, options = {}) {
   return { consoleErrors, failedRequests, localDbStoragePath, pageErrors, previousLocalDbStoragePath, server };
 }
 
+async function openFixedLocalApiLoginPage(page) {
+  const fixedBaseUrl = "http://127.0.0.1:5501";
+  let server;
+  try {
+    server = await startLocalApiServer({ host: "127.0.0.1", port: 5501 });
+  } catch (error) {
+    if (error?.code !== "EADDRINUSE") {
+      throw error;
+    }
+    const response = await fetch(`${fixedBaseUrl}/api/session/current`);
+    if (!response.ok) {
+      throw error;
+    }
+    server = {
+      baseUrl: fixedBaseUrl,
+      close: async () => {},
+    };
+  }
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("pageerror", (error) => {
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) {
+      pageErrors.push(error.message);
+    }
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
+      consoleErrors.push(message.text());
+    }
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-mem" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  await fetch(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.admin }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+
+  await workspaceV2CoverageReporter.start(page);
+  await page.goto(`${fixedBaseUrl}/login.html`, { waitUntil: "networkidle" });
+  return { consoleErrors, failedRequests, pageErrors, server };
+}
+
 function expectNoPageFailures(failures) {
   expect(failures.failedRequests).toEqual([]);
   expect(failures.pageErrors).toEqual([]);
@@ -95,6 +154,11 @@ async function closeWithCoverage(page, failures) {
   } else {
     delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
   }
+}
+
+async function closeFixedLocalApiPage(page, failures) {
+  await workspaceV2CoverageReporter.stop(page);
+  await failures.server.close();
 }
 
 async function mockDbSessionSnapshot(page) {
@@ -379,6 +443,30 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
+  }
+});
+
+test("API-backed 5501 login page shows the local Admin Notes menu route for Admin", async ({ page }) => {
+  const failures = await openFixedLocalApiLoginPage(page);
+
+  try {
+    await expect(page).toHaveURL("http://127.0.0.1:5501/login.html");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
+    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
+    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Admin Notes (Local Dev)");
+    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
+    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
+      "href",
+      "/src/dev-runtime/admin/admin-notes.html",
+    );
+    await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
+    await expect(page).toHaveURL("http://127.0.0.1:5501/src/dev-runtime/admin/admin-notes.html");
+    await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeFixedLocalApiPage(page, failures);
   }
 });
 
