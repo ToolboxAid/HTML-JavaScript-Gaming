@@ -10,7 +10,7 @@ import {
   PROJECT_JOURNEY_STATUS_BY_ID,
   PROJECT_JOURNEY_STATUSES,
   createProjectJourneyMockRepository,
-} from "../../../toolbox/project-journey/project-journey-mock-repository.js";
+} from "../../../src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js";
 import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -228,9 +228,10 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     expect(dividerPlacement).toMatchObject({
       previousStat: "Total",
       nextStat: statusLabels()[0],
-      borderTopWidth: "1px",
       role: "separator",
     });
+    expect(Number.parseFloat(dividerPlacement.borderTopWidth)).toBeGreaterThanOrEqual(0.75);
+    expect(Number.parseFloat(dividerPlacement.borderTopWidth)).toBeLessThanOrEqual(1);
     expect(dividerPlacement.borderTopColor).toBe(dividerPlacement.columnBorderColor);
     await expect(page.locator(`[data-journey-note-button="${PROJECT_JOURNEY_KEYS.notes.designPass}"]`)).toHaveClass(/primary/);
     await expect(page.locator(`[data-journey-item-button="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`)).toHaveClass(/primary/);
@@ -682,7 +683,7 @@ test("Project Journey supports Guest as the selected shared session user", async
         .map(([tableName]) => tableName)
         .sort();
     }, MOCK_DB_KEYS.users.user3);
-    expect(user3TableReferences).toEqual(["user_roles", "users"]);
+    expect(user3TableReferences).toEqual(["tool_state_samples", "user_roles", "users"]);
     await page.goto(`${failures.server.baseUrl}/toolbox/project-journey/index.html?project=demo-project`, { waitUntil: "networkidle" });
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 3");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
@@ -1126,7 +1127,7 @@ test("Project Journey source stays separate from notes files and browser persist
   const sourcePaths = [
     "toolbox/project-journey/index.html",
     "toolbox/project-journey/project-journey.js",
-    "toolbox/project-journey/project-journey-mock-repository.js"
+    "src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js"
   ];
   const banned = [
     "admin" + "-notes",

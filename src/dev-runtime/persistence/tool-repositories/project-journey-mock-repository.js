@@ -1,13 +1,13 @@
 import {
   createProjectWorkspaceMockRepository,
-} from "../project-workspace/project-workspace-mock-repository.js";
+} from "./project-workspace-mock-repository.js";
 import {
   loadMockDbTables,
   MOCK_DB_KEYS,
   saveMockDbTables,
   getMockDbSessionUser,
   getMockDbSystemUser,
-} from "../../src/dev-runtime/persistence/mock-db-store.js";
+} from "../mock-db-store.js";
 
 function makeUlid(sequence) {
   return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;

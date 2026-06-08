@@ -1,4 +1,4 @@
-import { createProjectWorkspaceMockRepository } from "../project-workspace/project-workspace-mock-repository.js";
+import { createProjectWorkspaceMockRepository } from "./project-workspace-mock-repository.js";
 
 export const GAME_DESIGN_TABLES = Object.freeze([
   "game_design_documents",

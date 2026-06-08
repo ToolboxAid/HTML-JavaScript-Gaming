@@ -4,7 +4,7 @@ import {
   ASSET_TOOL_TABLES,
   ASSET_USAGE_BY_ROLE,
   createAssetToolMockRepository
-} from "../../../toolbox/assets/assets-mock-repository.js";
+} from "../../../src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";

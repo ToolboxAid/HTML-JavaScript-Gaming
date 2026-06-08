@@ -1,11 +1,11 @@
-import { createProjectWorkspaceMockRepository } from "../project-workspace/project-workspace-mock-repository.js";
-import { createPaletteSourceMockDbRows } from "./palette-source-mock-db.js";
+import { createProjectWorkspaceMockRepository } from "./project-workspace-mock-repository.js";
+import { createPaletteSourceMockDbRows } from "../../guest-seeds/palette-source-mock-db.js";
 import {
   loadMockDbTables,
   MOCK_DB_KEYS,
   normalizeMockDbTables,
   saveMockDbTables,
-} from "../../src/dev-runtime/persistence/mock-db-store.js";
+} from "../mock-db-store.js";
 
 export const PALETTE_TOOL_KEY = "palette-browser";
 export const PALETTE_WORKSPACE_PATH = `tools.${PALETTE_TOOL_KEY}.swatches`;

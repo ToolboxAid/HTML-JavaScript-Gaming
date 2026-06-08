@@ -1,0 +1,110 @@
+import {
+  getActiveToolRegistry,
+  getToolRoute,
+} from "../../../toolbox/toolRegistry.js";
+import {
+  MOCK_DB_KEYS,
+  getStandaloneMockDbSeedTables,
+} from "../persistence/mock-db-store.js";
+
+const HUMAN_SEED_USERS = Object.freeze([
+  Object.freeze({ displayName: "User 1", toolKey: "project-journey", userKey: MOCK_DB_KEYS.users.user1 }),
+  Object.freeze({ displayName: "User 2", toolKey: "palette", userKey: MOCK_DB_KEYS.users.user2 }),
+  Object.freeze({ displayName: "User 3", toolKey: "asset", userKey: MOCK_DB_KEYS.users.user3 }),
+  Object.freeze({ displayName: "Admin", toolKey: "workspace", userKey: MOCK_DB_KEYS.users.admin }),
+]);
+
+function activeToolSamplesByKey() {
+  return getActiveToolRegistry().map((tool) => {
+    const toolKey = tool.id || tool.key || tool.slug || tool.name || "tool";
+    return {
+      route: getToolRoute(tool) || "toolbox/index.html",
+      toolKey,
+      toolName: tool.name || tool.label || tool.title || toolKey,
+    };
+  });
+}
+
+function serverSeedUlid(sequence) {
+  return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;
+}
+
+function serverSeedAuditFields(offsetMinutes = 0, userKey = MOCK_DB_KEYS.users.forgeBot) {
+  const timestamp = new Date(Date.now() + offsetMinutes * 60_000).toISOString();
+  return {
+    createdAt: timestamp,
+    updatedAt: timestamp,
+    createdBy: userKey,
+    updatedBy: userKey,
+  };
+}
+
+function guestToolStateSampleRows() {
+  return activeToolSamplesByKey().map((tool, index) => ({
+    key: serverSeedUlid(7_001 + index),
+    audience: "guest",
+    userKey: "",
+    displayName: "Guest",
+    toolKey: tool.toolKey,
+    toolName: tool.toolName,
+    route: tool.route,
+    projectKey: "",
+    toolStateKey: serverSeedUlid(7_501 + index),
+    manifestPath: "",
+    sampleLabel: `Guest ${tool.toolName} starter`,
+    sampleKind: "toolState",
+    loadablePath: tool.route,
+    toolStatePayload: {
+      audience: "guest",
+      loadable: true,
+      toolKey: tool.toolKey,
+    },
+    ...serverSeedAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+  }));
+}
+
+function humanToolStateSampleRows() {
+  const availableTools = activeToolSamplesByKey();
+  const toolSamples = new Map(availableTools.map((tool) => [tool.toolKey, tool]));
+  return HUMAN_SEED_USERS.map((user, index) => {
+    const tool = toolSamples.get(user.toolKey) || availableTools[index] || {
+      route: "toolbox/index.html",
+      toolKey: user.toolKey,
+      toolName: user.toolKey,
+    };
+    const projectKey = serverSeedUlid(7_801 + index);
+    const toolStateKey = serverSeedUlid(7_901 + index);
+    return {
+      key: serverSeedUlid(7_701 + index),
+      audience: "user",
+      userKey: user.userKey,
+      displayName: user.displayName,
+      toolKey: tool.toolKey,
+      toolName: tool.toolName,
+      route: tool.route,
+      projectKey,
+      toolStateKey,
+      manifestPath: `local-seeds/${user.displayName.toLowerCase().replaceAll(" ", "-")}/${tool.toolKey}.manifest.json`,
+      sampleLabel: `${user.displayName} ${tool.toolName} seed`,
+      sampleKind: "toolState",
+      loadablePath: `${tool.route}?toolState=${toolStateKey}`,
+      toolStatePayload: {
+        audience: "user",
+        ownerUserKey: user.userKey,
+        projectKey,
+        toolKey: tool.toolKey,
+        toolStateKey,
+      },
+      ...serverSeedAuditFields(30 + index, user.userKey),
+    };
+  });
+}
+
+export function createServerSeedTables() {
+  const tables = getStandaloneMockDbSeedTables();
+  tables.tool_state_samples = [
+    ...guestToolStateSampleRows(),
+    ...humanToolStateSampleRows(),
+  ];
+  return tables;
+}

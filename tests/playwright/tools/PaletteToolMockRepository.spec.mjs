@@ -3,7 +3,7 @@ import {
   PALETTE_WORKSPACE_PATH,
   PALETTE_TOOL_TABLES,
   createProjectWorkspacePaletteRepository
-} from "../../../toolbox/colors/palette-workspace-repository.js";
+} from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { expectCompactToolFormControls } from "../../helpers/toolFormControlAssertions.mjs";

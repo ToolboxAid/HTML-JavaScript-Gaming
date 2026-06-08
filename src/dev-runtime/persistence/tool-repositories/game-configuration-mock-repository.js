@@ -1,4 +1,4 @@
-import { createGameDesignMockRepository } from "../game-design/game-design-mock-repository.js";
+import { createGameDesignMockRepository } from "./game-design-mock-repository.js";
 
 export const GAME_CONFIGURATION_TABLES = Object.freeze([
   "game_configuration_documents",

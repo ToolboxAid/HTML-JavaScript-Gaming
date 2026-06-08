@@ -2,8 +2,8 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { expect, test } from "@playwright/test";
-import { createAssetToolMockRepository } from "../../../toolbox/assets/assets-mock-repository.js";
-import { createProjectWorkspacePaletteRepository } from "../../../toolbox/colors/palette-workspace-repository.js";
+import { createAssetToolMockRepository } from "../../../src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js";
+import { createProjectWorkspacePaletteRepository } from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
 import {
   MOCK_DB_KEYS,
   getStandaloneMockDbSeedTables,
