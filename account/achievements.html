@@ -46,10 +46,10 @@
                     <section id="build-achievements-panel" data-achievements-panel="build" aria-labelledby="build-achievements-title" aria-hidden="false">
                         <div class="content-stack">
                             <div class="grid cols-4" aria-label="Build stats">
-                                <article class="mini-stat"><strong>12</strong>Created games</article>
-                                <article class="mini-stat"><strong>8</strong>Playable builds</article>
-                                <article class="mini-stat"><strong>4.7</strong>Average creator rating</article>
-                                <article class="mini-stat"><strong>3</strong>Ready to publish</article>
+                                <article class="mini-stat"><strong data-achievements-build-created-count>0</strong>Created projects</article>
+                                <article class="mini-stat"><strong>Not tracked yet</strong>Playable builds</article>
+                                <article class="mini-stat"><strong>Not tracked yet</strong>Average creator rating</article>
+                                <article class="mini-stat"><strong data-achievements-build-ready-count>0</strong>Ready to publish</article>
                             </div>
                             <div class="card">
                             <div class="card-body content-stack">
@@ -62,39 +62,21 @@
                                         <caption>Build achievements and ratings</caption>
                                         <thead>
                                             <tr>
-                                                <th scope="col">Game</th>
+                                                <th scope="col">Project</th>
                                                 <th scope="col">Status</th>
                                                 <th scope="col">Stats</th>
                                                 <th scope="col">Rating</th>
                                                 <th scope="col">Quick actions</th>
                                             </tr>
                                         </thead>
-                                        <tbody>
+                                        <tbody data-achievements-build-rows>
                                             <tr>
-                                                <td>Sky Forge Sprint</td>
-                                                <td>Playable</td>
-                                                <td>18 builds, 6 releases</td>
-                                                <td>4.8</td>
-                                                <td><button class="btn" type="button">Open build</button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Crystal Circuit</td>
-                                                <td>Draft</td>
-                                                <td>9 builds, 2 release checks</td>
-                                                <td>4.5</td>
-                                                <td><button class="btn" type="button">Review stats</button></td>
-                                            </tr>
-                                            <tr>
-                                                <td>Moonlit Maze</td>
-                                                <td>Ready</td>
-                                                <td>21 builds, 8 ratings</td>
-                                                <td>4.9</td>
-                                                <td><button class="btn" type="button">Prepare publish</button></td>
+                                                <td colspan="5">Loading Project Workspace projects...</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </div>
-                                <div class="status" role="status">Build wireframe only: quick actions are enabled placeholders for future account workflows.</div>
+                                <div class="status" role="status" data-achievements-build-status>Build project rows load from Project Workspace data.</div>
                             </div>
                             </div>
                         </div>
@@ -174,7 +156,7 @@
                                     </article>
                                     <article class="callout">
                                         <h3>Best shared game</h3>
-                                        <p>Sky Forge Sprint leads shared launches and profile follows this month.</p>
+                                        <p>Shared project performance is not tracked yet.</p>
                                     </article>
                                     <article class="callout">
                                         <h3>Next milestone</h3>
@@ -195,24 +177,24 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>Sky Forge Sprint</td>
-                                                <td>4.2K</td>
-                                                <td>840</td>
-                                                <td>+0.4</td>
+                                                <td>Demo Project</td>
+                                                <td>Not tracked yet</td>
+                                                <td>Not tracked yet</td>
+                                                <td>Not tracked yet</td>
                                                 <td><button class="btn" type="button">Copy share link</button></td>
                                             </tr>
                                             <tr>
-                                                <td>Moonlit Maze</td>
-                                                <td>2.7K</td>
-                                                <td>510</td>
-                                                <td>+0.3</td>
+                                                <td>Gravity Demo</td>
+                                                <td>Not tracked yet</td>
+                                                <td>Not tracked yet</td>
+                                                <td>Not tracked yet</td>
                                                 <td><button class="btn" type="button">View analytics</button></td>
                                             </tr>
                                             <tr>
-                                                <td>Crystal Circuit</td>
-                                                <td>1.5K</td>
-                                                <td>320</td>
-                                                <td>+0.2</td>
+                                                <td>Collision Demo</td>
+                                                <td>Not tracked yet</td>
+                                                <td>Not tracked yet</td>
+                                                <td>Not tracked yet</td>
                                                 <td><button class="btn" type="button">Share again</button></td>
                                             </tr>
                                         </tbody>
@@ -229,7 +211,7 @@
     </main>
     <div data-partial="footer"></div>
     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-    <script src="../assets/theme-v2/js/account-achievements.js" defer></script>
+    <script type="module" src="../assets/theme-v2/js/account-achievements.js"></script>
 </body>
 
 </html>

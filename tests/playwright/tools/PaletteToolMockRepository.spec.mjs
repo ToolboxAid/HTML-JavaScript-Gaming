@@ -406,13 +406,8 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
 
     await expect(page.locator("[data-palette-generator-preview-row]")).toHaveCount(8);
     await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(64);
-    await expect(page.locator("[data-palette-enable-picker-swatches]")).toBeChecked();
-    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("display-only");
-    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(0);
-    await page.locator("[data-palette-enable-picker-swatches]").uncheck();
-    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("Enable visible picker swatches");
-    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(64);
-    await page.locator("[data-palette-enable-picker-swatches]").check();
+    await expect(page.locator("[data-palette-include-selected-picker-swatches]")).not.toBeChecked();
+    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("Already selected picker swatches are dimmed");
     await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(0);
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-collection", "Nature");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-type-name", "Forest");
@@ -572,6 +567,13 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     await expect(generatedTile).toHaveAttribute("data-palette-metadata-swatch-size", "medium");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-pinned", "true");
     await expect(page.locator("[data-palette-generator-swatch]").first().locator("[data-palette-pin-indicator]")).toHaveCount(1);
+    await expect(page.locator("[data-palette-generator-swatch]").first()).toBeDisabled();
+    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(1);
+    await page.locator("[data-palette-include-selected-picker-swatches]").check();
+    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("included");
+    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(0);
+    await page.locator("[data-palette-include-selected-picker-swatches]").uncheck();
+    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(1);
     await expect(page.locator("[data-palette-log]")).toContainText("Added picker swatch");
 
     await page.locator("[data-palette-theme-collection]").selectOption("Nature");

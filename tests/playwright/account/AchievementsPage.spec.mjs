@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import fs from "node:fs/promises";
 import path from "node:path";
+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
@@ -8,8 +9,14 @@ async function openAchievementsPage(page) {
   const server = await startRepoServer();
   const failedRequests = [];
   const pageErrors = [];
+  const consoleErrors = [];
   page.on("pageerror", (error) => {
     pageErrors.push(error.message);
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      consoleErrors.push(message.text());
+    }
   });
   page.on("response", (response) => {
     if (response.status() >= 400) {
@@ -19,9 +26,19 @@ async function openAchievementsPage(page) {
   page.on("requestfailed", (request) => {
     failedRequests.push(`FAILED ${request.url()}`);
   });
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-mem" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  await fetch(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.user1 }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}/account/achievements.html`, { waitUntil: "networkidle" });
-  return { failedRequests, pageErrors, server };
+  return { consoleErrors, failedRequests, pageErrors, server };
 }
 
 test.afterAll(async () => {
@@ -29,7 +46,7 @@ test.afterAll(async () => {
 });
 
 test("account achievements page switches Build Play Share views", async ({ page }) => {
-  const { failedRequests, pageErrors, server } = await openAchievementsPage(page);
+  const { consoleErrors, failedRequests, pageErrors, server } = await openAchievementsPage(page);
 
   try {
     await expect(page.getByRole("heading", { name: "Achievements" })).toBeVisible();
@@ -51,6 +68,7 @@ test("account achievements page switches Build Play Share views", async ({ page 
     await expect(page.locator("header.site-header .nav-item").filter({ has: page.locator("> a[data-route='account']") }).locator(".sub-menu a")).toHaveText([
       "Account Home",
       "Achievements",
+      "Logout",
       "Preferences",
       "Profile",
       "Security",
@@ -72,7 +90,31 @@ test("account achievements page switches Build Play Share views", async ({ page 
     await expect(page.getByRole("heading", { name: "Created games" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Played games" })).toBeHidden();
     await expect(page.getByText("Games I shared")).toBeHidden();
-    await expect(page.getByRole("button", { name: "Open build" })).toBeVisible();
+    await expect(page.locator("[data-achievements-build-created-count]")).toHaveText("4");
+    await expect(page.locator("[data-achievements-build-ready-count]")).toHaveText("0");
+    await expect(page.locator("[data-achievements-build-status]")).toContainText("Project Workspace project source");
+    const buildRows = await page.locator("[data-achievements-build-rows] tr").evaluateAll((rows) => rows.map((row) => {
+      const cells = Array.from(row.querySelectorAll("td")).map((cell) => cell.textContent.trim());
+      return {
+        name: cells[0],
+        rating: cells[3],
+        stats: cells[2],
+        status: cells[1],
+      };
+    }));
+    expect(buildRows).toEqual([
+      { name: "Demo Project", status: "Under Construction", stats: "Not tracked yet", rating: "Not tracked yet" },
+      { name: "Gravity Demo", status: "Wireframe", stats: "Not tracked yet", rating: "Not tracked yet" },
+      { name: "Collision Demo", status: "Wireframe", stats: "Not tracked yet", rating: "Not tracked yet" },
+      { name: "Camera Follow Demo", status: "Wireframe", stats: "Not tracked yet", rating: "Not tracked yet" },
+    ]);
+    await expect(page.locator("[data-achievements-panel='build']")).not.toContainText("Sky Forge Sprint");
+    await expect(page.locator("[data-achievements-panel='build']")).not.toContainText("Crystal Circuit");
+    await expect(page.locator("[data-achievements-panel='build']")).not.toContainText("Moonlit Maze");
+    await expect(page.locator("body")).not.toContainText("Sky Forge Sprint");
+    await expect(page.locator("body")).not.toContainText("Crystal Circuit");
+    await expect(page.locator("body")).not.toContainText("Moonlit Maze");
+    await expect(page.getByRole("button", { name: "Open Demo Project" })).toBeVisible();
 
     await page.locator("[data-achievements-tab='play']").click();
     await expect(page.locator("[data-achievements-panel='build']")).toBeHidden();
@@ -104,6 +146,7 @@ test("account achievements page switches Build Play Share views", async ({ page 
     expect(inactiveControls).toEqual([]);
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await server.close();

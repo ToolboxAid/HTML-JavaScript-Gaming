@@ -281,7 +281,7 @@ const sourceSortState = { direction: "asc", key: "name" };
 let sourceSizeState = "medium";
 const userSortState = { direction: "asc", key: "hue" };
 let userSizeState = "medium";
-let pickerSwatchesEnabled = true;
+let includeSelectedPickerSwatches = false;
 const checkedSwatchKeys = new Set();
 const selectedTagFilters = new Set();
 let tagMatchMode = "any";
@@ -305,7 +305,7 @@ const elements = {
   generatorColors: document.querySelector("[data-palette-generator-colors]"),
   generatorCollection: document.querySelector("[data-palette-theme-collection]"),
   generatorContrast: document.querySelector("[data-palette-generator-contrast]"),
-  enablePickerSwatches: document.querySelector("[data-palette-enable-picker-swatches]"),
+  includeSelectedPickerSwatches: document.querySelector("[data-palette-include-selected-picker-swatches]"),
   generatorGenerate: document.querySelector("[data-palette-generator-generate]"),
   generatorHueShift: document.querySelector("[data-palette-generator-hue-shift]"),
   generatorPreview: document.querySelector("[data-palette-generator-preview]"),
@@ -1000,8 +1000,9 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
       }, settings.variant, column, settings.colors);
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
       const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
+      const enabled = !pinnedSwatch || includeSelectedPickerSwatches;
       rowElement.append(createGeneratorPreviewInput(hex, settings.paletteType.name, row, column, settings, {
-        enabled: pickerSwatchesEnabled,
+        enabled,
         pinned: Boolean(pinnedSwatch),
         pinnedSwatch,
         selected: Boolean(pinnedSwatch && swatchKey(snapshot.selectedSwatch) === swatchKey(pinnedSwatch)),
@@ -1013,9 +1014,9 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
 
   elements.generatorPreview.replaceChildren(fragment);
   setText(elements.generatorPreviewStatus, paletteGeneratorSummary(settings));
-  setText(elements.pickerDisabledReason, pickerSwatchesEnabled
-    ? "Picker color inputs are display-only; outer swatch buttons are selectable."
-    : "Enable visible picker swatches before selecting from the picker grid.");
+  setText(elements.pickerDisabledReason, includeSelectedPickerSwatches
+    ? "Already selected picker swatches are included so they can be toggled from the picker."
+    : "Already selected picker swatches are dimmed because they are already in Project Swatches.");
   setText(elements.generatorStatus, action);
 }
 
@@ -1831,11 +1832,11 @@ elements.userSize?.addEventListener("click", (event) => {
 
 elements.sourceSelect?.addEventListener("change", render);
 elements.sourceSearch?.addEventListener("input", renderSourceSwatches);
-elements.enablePickerSwatches?.addEventListener("change", () => {
-  pickerSwatchesEnabled = Boolean(elements.enablePickerSwatches.checked);
-  renderPaletteGeneratorPreview(pickerSwatchesEnabled
-    ? "Visible picker swatches enabled."
-    : "Visible picker swatches disabled.");
+elements.includeSelectedPickerSwatches?.addEventListener("change", () => {
+  includeSelectedPickerSwatches = Boolean(elements.includeSelectedPickerSwatches.checked);
+  renderPaletteGeneratorPreview(includeSelectedPickerSwatches
+    ? "Already selected picker swatches included."
+    : "Already selected picker swatches dimmed.");
 });
 
 elements.sourcePinAll?.addEventListener("click", () => {
@@ -1870,8 +1871,8 @@ elements.generatorPreview?.addEventListener("click", (event) => {
     return;
   }
   if (tile.disabled || tile.dataset.paletteGeneratorDisabled === "true") {
-    setText(elements.log, "Enable visible picker swatches before selecting from the picker grid.");
-    setText(elements.generatorStatus, "Picker swatch selection is disabled.");
+    setText(elements.log, "Already selected picker swatches are dimmed because they are already in Project Swatches.");
+    setText(elements.generatorStatus, "Use Include already selected swatches to toggle pinned picker swatches from the picker.");
     return;
   }
   const swatch = generatedSwatchFromTile(tile);

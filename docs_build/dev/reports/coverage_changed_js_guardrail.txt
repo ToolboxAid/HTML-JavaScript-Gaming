@@ -6,26 +6,12 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) src/dev-runtime/guest-seeds/palette-source-mock-db.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/mock-db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/assetUsageIntegration.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/shared/toolbox/paletteDocumentContract.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(84%) toolbox/colors/colors.js - executed lines 1871/1871; executed functions 157/186
+(84%) toolbox/colors/colors.js - executed lines 1872/1872; executed functions 157/186
 
 Guardrail warnings:
-(0%) src/dev-runtime/guest-seeds/palette-source-mock-db.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/engine/api/mock-db-viewer-ui.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/assetUsageIntegration.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/shared/toolbox/paletteDocumentContract.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file missing from coverage; advisory only

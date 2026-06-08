@@ -1,0 +1,2 @@
+[ ] add an assign to column, 
+[ ] when clicking My notes. have  a radio input for filter My Notes : Created by me & Assigned to me.
