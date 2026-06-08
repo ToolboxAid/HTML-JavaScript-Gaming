@@ -19,5 +19,5 @@ export function clearMockDb() {
 }
 
 export function seedMockDb() {
-  return unwrap(safeRequestServerApi("/mock-db/seed", { method: "POST" }), "Local Mem DB seed");
+  return unwrap(safeRequestServerApi("/mock-db/seed", { method: "POST" }), "Mock DB seed");
 }

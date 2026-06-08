@@ -722,8 +722,11 @@ class LocalDevMockDataSource {
   }
 
   seed(options = {}) {
+    const action = this.sessionModeId === LOCAL_DB_MODE_ID
+      ? "Reseeding Local DB state"
+      : "Reseeding Local Mem DB state";
     if (!options.initial) {
-      this.assertConfiguredAdapter("Seeding Local Mem DB state");
+      this.assertConfiguredAdapter(action);
     }
     this.applyStateSnapshot({
       cleared: false,
@@ -733,7 +736,7 @@ class LocalDevMockDataSource {
       this.localMemState = clone(this.currentStateSnapshot());
       return this.currentStateSnapshot();
     }
-    this.persistCurrentAdapterState("Seeding Local DB state");
+    this.persistCurrentAdapterState(action);
     return this.snapshot();
   }
 

@@ -131,6 +131,24 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-status-endpoint]")).toHaveText("/api/session/current");
     await expect(page.locator("[data-login-status-api-url]")).toHaveText("http://127.0.0.1:5501/login.html");
     await expect(page.locator("[data-login-status-command]")).toHaveText("npm run dev:local-api");
+    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local Mem");
+    await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local Mem");
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local Mem only.");
+    await expect(page.locator("[data-login-reseed-start]")).toBeEnabled();
+    await expect(page.locator("[data-login-reseed-confirm]")).toBeHidden();
+    await expect(page.locator("[data-login-reseed-cancel]")).toBeHidden();
+    await page.locator("[data-login-reseed-start]").click();
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Confirm reseed for Local Mem only. The other DB mode will not be reseeded.");
+    await expect(page.locator("[data-login-reseed-start]")).toBeDisabled();
+    await expect(page.locator("[data-login-reseed-confirm]")).toBeVisible();
+    await expect(page.locator("[data-login-reseed-cancel]")).toBeVisible();
+    await page.locator("[data-login-reseed-cancel]").click();
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed canceled for Local Mem.");
+    await expect(page.locator("[data-login-reseed-start]")).toBeEnabled();
+    await page.locator("[data-login-reseed-start]").click();
+    await page.locator("[data-login-reseed-confirm]").click();
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed complete for Local Mem. Only Local Mem was reseeded.");
+    await expect(page.locator("[data-login-reseed-start]")).toBeEnabled();
     await expect(page.getByRole("button", { name: "DEV" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
@@ -160,6 +178,13 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-mode-status]")).not.toContainText("Local DB adapter not configured");
     await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local DB)");
     await expect(page.locator("[data-login-status-api]")).toContainText("Available");
+    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local DB");
+    await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local DB");
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local DB only.");
+    await page.locator("[data-login-reseed-start]").click();
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Confirm reseed for Local DB only. The other DB mode will not be reseeded.");
+    await page.locator("[data-login-reseed-confirm]").click();
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed complete for Local DB. Only Local DB was reseeded.");
     await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
     await expect(page.locator("[data-login-user-controls]")).toBeVisible();
     await expect(page.locator("[data-login-user-status]")).toHaveText("Guest is unauthenticated and is not stored in the users table.");
@@ -280,6 +305,29 @@ test("Protected pages block direct URL access without the required Local session
     await expect(page.getByRole("heading", { name: "Login required", level: 1 })).toBeVisible();
     await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+});
+
+test("Login reseed shows a visible failure when the seed API fails", async ({ page }) => {
+  const failures = await openRepoPage(page, "/login.html");
+
+  try {
+    await page.route("**/api/mock-db/seed", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({
+          error: "Forced reseed failure for validation.",
+          ok: false,
+        }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+    await page.locator("[data-login-reseed-start]").click();
+    await page.locator("[data-login-reseed-confirm]").click();
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed failed for Local Mem: Forced reseed failure for validation.");
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);

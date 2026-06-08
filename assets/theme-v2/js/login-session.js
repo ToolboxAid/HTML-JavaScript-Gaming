@@ -5,6 +5,7 @@ import {
   setSessionMode,
   setSessionUser,
 } from "../../../src/engine/api/session-api-client.js";
+import { seedMockDb } from "../../../src/engine/api/mock-db-api-client.js";
 
 const modeButtons = Array.from(document.querySelectorAll("[data-login-mode]"));
 const modeTitle = document.querySelector("[data-login-mode-title]");
@@ -14,11 +15,21 @@ const modeDisabledMessage = document.querySelector("[data-login-mode-disabled-me
 const userControls = document.querySelector("[data-login-user-controls]");
 const userStatus = document.querySelector("[data-login-user-status]");
 const continueLink = document.querySelector("[data-login-continue]");
+const reseedFields = {
+  activeMode: document.querySelector("[data-login-reseed-active-mode]"),
+  cancelButton: document.querySelector("[data-login-reseed-cancel]"),
+  confirmButton: document.querySelector("[data-login-reseed-confirm]"),
+  startButton: document.querySelector("[data-login-reseed-start]"),
+  status: document.querySelector("[data-login-reseed-status]"),
+  target: document.querySelector("[data-login-reseed-target]"),
+};
 const localApiStartCommand = "npm run dev:local-api";
 const localApiLoginUrl = "http://127.0.0.1:5501/login.html";
 const expectedSessionEndpoint = "/api/session/current";
 const apiBackedLoginDiagnostic = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}.`;
 const staticModeDisabledMessage = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}. Local Mem and Local DB are disabled until the local API server is running.`;
+let reseedConfirmationPending = false;
+let reseedStatusMessage = "";
 const localStatusFields = {
   api: document.querySelector("[data-login-status-api]"),
   apiUrl: document.querySelector("[data-login-status-api-url]"),
@@ -66,6 +77,55 @@ function updateLocalDevelopmentStatus({ apiAvailability, disabledReason, serverM
   if (localStatusFields.command) {
     localStatusFields.command.textContent = localApiStartCommand;
   }
+}
+
+function setReseedButtonState(button, disabled) {
+  if (!button) {
+    return;
+  }
+  button.disabled = disabled;
+  if (disabled) {
+    button.setAttribute("aria-disabled", "true");
+  } else {
+    button.removeAttribute("aria-disabled");
+  }
+}
+
+function reseedModeLabel(mode) {
+  return mode?.label || mode?.environment || mode?.id || "selected DB mode";
+}
+
+function updateReseedControls({ apiAvailable, mode, statusMessage }) {
+  const modeLabel = apiAvailable ? reseedModeLabel(mode) : "Unavailable";
+  const message = statusMessage || (apiAvailable
+    ? `Ready to reseed ${modeLabel} only.`
+    : "Reseed unavailable until the Local API is available.");
+  if (reseedFields.activeMode) {
+    reseedFields.activeMode.textContent = modeLabel;
+  }
+  if (reseedFields.target) {
+    reseedFields.target.textContent = modeLabel;
+  }
+  if (reseedFields.status) {
+    reseedFields.status.textContent = message;
+  }
+  setReseedButtonState(reseedFields.startButton, !apiAvailable || reseedConfirmationPending);
+  setReseedButtonState(reseedFields.confirmButton, !apiAvailable || !reseedConfirmationPending);
+  setReseedButtonState(reseedFields.cancelButton, !apiAvailable || !reseedConfirmationPending);
+  if (reseedFields.confirmButton) {
+    reseedFields.confirmButton.hidden = !apiAvailable || !reseedConfirmationPending;
+  }
+  if (reseedFields.cancelButton) {
+    reseedFields.cancelButton.hidden = !apiAvailable || !reseedConfirmationPending;
+  }
+}
+
+function currentModeForReseed() {
+  const session = getSessionCurrent();
+  return getSessionModes().find((item) => item.id === session.mode) || {
+    id: session.mode,
+    label: session.environment || session.mode,
+  };
 }
 
 function dispatchSessionChanged() {
@@ -147,6 +207,8 @@ function renderError(error) {
   const disabledReason = message === apiBackedLoginDiagnostic
     ? staticModeDisabledMessage
     : `Local Mem and Local DB are disabled because ${message}`;
+  reseedConfirmationPending = false;
+  reseedStatusMessage = "Reseed unavailable until the Local API is available.";
   modeButtons.forEach((button) => {
     button.disabled = true;
     button.setAttribute("aria-disabled", "true");
@@ -176,6 +238,11 @@ function renderError(error) {
     apiAvailability: `Unavailable: ${message}`,
     disabledReason,
     serverMode,
+  });
+  updateReseedControls({
+    apiAvailable: false,
+    mode: null,
+    statusMessage: reseedStatusMessage,
   });
   updateContinueLink();
 }
@@ -216,6 +283,11 @@ function render() {
       disabledReason: "Local Mem and Local DB are enabled because the Local API is available.",
       serverMode: `API-backed local server (${mode.label || session.mode})`,
     });
+    updateReseedControls({
+      apiAvailable: true,
+      mode,
+      statusMessage: reseedStatusMessage,
+    });
     if (modeDisabledMessage) {
       modeDisabledMessage.hidden = true;
       modeDisabledMessage.textContent = "";
@@ -235,6 +307,8 @@ modeButtons.forEach((button) => {
       return;
     }
     try {
+      reseedConfirmationPending = false;
+      reseedStatusMessage = "";
       setSessionMode(modeId);
       dispatchModeChanged();
       render();
@@ -255,6 +329,53 @@ userControls?.addEventListener("click", (event) => {
     render();
   } catch (error) {
     renderError(error);
+  }
+});
+
+reseedFields.startButton?.addEventListener("click", () => {
+  try {
+    const mode = currentModeForReseed();
+    const modeLabel = reseedModeLabel(mode);
+    reseedConfirmationPending = true;
+    reseedStatusMessage = `Confirm reseed for ${modeLabel} only. The other DB mode will not be reseeded.`;
+    render();
+  } catch (error) {
+    reseedConfirmationPending = false;
+    reseedStatusMessage = `Reseed unavailable: ${errorMessage(error)}`;
+    renderError(error);
+  }
+});
+
+reseedFields.cancelButton?.addEventListener("click", () => {
+  try {
+    const modeLabel = reseedModeLabel(currentModeForReseed());
+    reseedConfirmationPending = false;
+    reseedStatusMessage = `Reseed canceled for ${modeLabel}.`;
+    render();
+  } catch (error) {
+    reseedConfirmationPending = false;
+    reseedStatusMessage = `Reseed canceled. ${errorMessage(error)}`;
+    renderError(error);
+  }
+});
+
+reseedFields.confirmButton?.addEventListener("click", () => {
+  try {
+    const modeLabel = reseedModeLabel(currentModeForReseed());
+    seedMockDb();
+    reseedConfirmationPending = false;
+    reseedStatusMessage = `Reseed complete for ${modeLabel}. Only ${modeLabel} was reseeded.`;
+    dispatchModeChanged();
+    render();
+  } catch (error) {
+    const message = errorMessage(error);
+    let modeLabel = "selected DB mode";
+    try {
+      modeLabel = reseedModeLabel(currentModeForReseed());
+    } catch {}
+    reseedConfirmationPending = false;
+    reseedStatusMessage = `Reseed failed for ${modeLabel}: ${message}`;
+    render();
   }
 });
 

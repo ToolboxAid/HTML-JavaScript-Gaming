@@ -61,6 +61,27 @@ function assertRuntimeTimestamps(rows) {
   });
 }
 
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function sampleByKey(snapshot, sampleKey) {
+  const sample = (snapshot.tables.tool_state_samples || []).find((row) => row.key === sampleKey);
+  assert.ok(sample, `tool_state_samples should include ${sampleKey}`);
+  return sample;
+}
+
+async function replaceSampleLabel(baseUrl, sampleKey, sampleLabel) {
+  const snapshot = await apiJson(baseUrl, "/api/mock-db/snapshot");
+  const nextState = clone(snapshot);
+  const sample = sampleByKey(nextState, sampleKey);
+  sample.sampleLabel = sampleLabel;
+  await apiJson(baseUrl, "/api/dev/testing/mock-db-state", {
+    body: JSON.stringify({ state: nextState }),
+    method: "POST",
+  });
+}
+
 test("server Local DB seed includes runtime timestamps, guest samples, and unique user-owned samples", async () => {
   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
   const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-seed-integrity-${process.pid}.sqlite`);
@@ -96,6 +117,64 @@ test("server Local DB seed includes runtime timestamps, guest samples, and uniqu
     assert.equal(userSamples.every((sample) => sample.createdBy === sample.userKey), true);
     assertRuntimeTimestamps(samples);
     assert.equal((snapshot.tables.users || []).some((user) => user.displayName === "Guest"), false);
+  } finally {
+    await server.close();
+    await fs.rm(localDbPath, { force: true });
+    if (previousLocalDbPath) {
+      process.env.GAMEFOUNDRY_LOCAL_DB_PATH = previousLocalDbPath;
+    } else {
+      delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+    }
+  }
+});
+
+test("server reseed targets only the active Local DB mode", async () => {
+  const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+  const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-reseed-integrity-${process.pid}.sqlite`);
+  process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
+  const server = await startApiServer();
+  try {
+    const localMemInitial = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    const sampleKey = (localMemInitial.tables.tool_state_samples || [])[0]?.key;
+    assert.ok(sampleKey, "Local Mem seed should include a tool_state_samples row");
+    const originalLabel = sampleByKey(localMemInitial, sampleKey).sampleLabel;
+
+    await apiJson(server.baseUrl, "/api/session/mode", {
+      body: JSON.stringify({ modeId: "local-db" }),
+      method: "POST",
+    });
+    await replaceSampleLabel(server.baseUrl, sampleKey, "Local DB mutated before Local Mem reseed");
+    let localDbSnapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    assert.equal(sampleByKey(localDbSnapshot, sampleKey).sampleLabel, "Local DB mutated before Local Mem reseed");
+
+    await apiJson(server.baseUrl, "/api/session/mode", {
+      body: JSON.stringify({ modeId: "local-mem" }),
+      method: "POST",
+    });
+    await replaceSampleLabel(server.baseUrl, sampleKey, "Local Mem mutated before reseed");
+    await apiJson(server.baseUrl, "/api/mock-db/seed", { method: "POST" });
+    const localMemReseeded = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    assert.equal(sampleByKey(localMemReseeded, sampleKey).sampleLabel, originalLabel);
+    assertRuntimeTimestamps(localMemReseeded.tables.tool_state_samples || []);
+
+    await apiJson(server.baseUrl, "/api/session/mode", {
+      body: JSON.stringify({ modeId: "local-db" }),
+      method: "POST",
+    });
+    localDbSnapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    assert.equal(sampleByKey(localDbSnapshot, sampleKey).sampleLabel, "Local DB mutated before Local Mem reseed");
+
+    await apiJson(server.baseUrl, "/api/mock-db/seed", { method: "POST" });
+    const localDbReseeded = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    assert.equal(sampleByKey(localDbReseeded, sampleKey).sampleLabel, originalLabel);
+    assertRuntimeTimestamps(localDbReseeded.tables.tool_state_samples || []);
+
+    await apiJson(server.baseUrl, "/api/session/mode", {
+      body: JSON.stringify({ modeId: "local-mem" }),
+      method: "POST",
+    });
+    const localMemAfterLocalDbReseed = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    assert.equal(sampleByKey(localMemAfterLocalDbReseed, sampleKey).sampleLabel, originalLabel);
   } finally {
     await server.close();
     await fs.rm(localDbPath, { force: true });

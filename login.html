@@ -63,6 +63,20 @@
                             <p><strong>Expected API endpoint:</strong> <span data-login-status-endpoint>/api/session/current</span></p>
                             <p><strong>Correct local URL:</strong> <span data-login-status-api-url>http://127.0.0.1:5501/login.html</span></p>
                             <p><strong>Startup command:</strong> <span data-login-status-command>npm run dev:local-api</span></p>
+                            <section class="content-stack" aria-labelledby="login-reseed-title">
+                                <div>
+                                    <div class="kicker">Database</div>
+                                    <h2 id="login-reseed-title">Reseed</h2>
+                                </div>
+                                <p><strong>Active DB mode:</strong> <span data-login-reseed-active-mode>Checking...</span></p>
+                                <p><strong>Reseed target:</strong> <span data-login-reseed-target>Checking...</span></p>
+                                <div class="action-group" role="group" aria-label="Reseed active DB">
+                                    <button class="btn btn--compact" type="button" data-login-reseed-start>Reseed Active DB</button>
+                                    <button class="btn btn--compact" type="button" data-login-reseed-confirm hidden>Confirm Reseed</button>
+                                    <button class="btn btn--compact" type="button" data-login-reseed-cancel hidden>Cancel</button>
+                                </div>
+                                <p class="status" role="status" data-login-reseed-status>Checking...</p>
+                            </section>
                         </div>
                     </div>
                 </section>
