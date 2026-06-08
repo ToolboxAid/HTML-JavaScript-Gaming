@@ -3,6 +3,11 @@ import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import test from "node:test";
+import {
+  ADMIN_NOTES_LOCAL_MENU_LABEL,
+  ADMIN_NOTES_LOCAL_VIEWER_PATH,
+  localAdminNotesMenuContent,
+} from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
 
 const repoRoot = process.cwd();
 const productionRoots = [
@@ -85,11 +90,16 @@ test("Admin Notes implementation is isolated under src/dev-runtime/admin", () =>
     true,
     "dev-runtime Admin Notes directory handler exists",
   );
+  assert.equal(
+    fs.existsSync(repoPath("src/dev-runtime/admin/admin-notes-menu.mjs")),
+    true,
+    "dev-runtime Admin Notes local menu injector exists",
+  );
 });
 
 test("production-facing paths do not link to dev Admin Notes files or implementation", () => {
   const headerSource = fs.readFileSync(repoPath("assets/theme-v2/partials/header-nav.html"), "utf8");
-  assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|Admin Notes/);
+  assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|Admin Notes/);
 
   const violations = productionRoots
     .flatMap(walkTextFiles)
@@ -100,4 +110,19 @@ test("production-facing paths do not link to dev Admin Notes files or implementa
     .map(relativePath);
 
   assert.deepEqual(violations, [], "production-facing paths must not expose Admin Notes");
+});
+
+test("local dev server injects Admin Notes into the served Admin menu only", () => {
+  const headerPath = repoPath("assets/theme-v2/partials/header-nav.html");
+  const source = fs.readFileSync(headerPath);
+  const servedHeader = localAdminNotesMenuContent(repoRoot, headerPath, source).toString("utf8");
+
+  assert.match(servedHeader, /data-admin-notes-local-menu/);
+  assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
+  assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_MENU_LABEL.replace(/[()]/g, "\\$&")));
+  assert.ok(
+    servedHeader.indexOf("data-admin-notes-local-menu") < servedHeader.indexOf('data-route="admin-analytics"'),
+    "local Admin Notes menu entry is sorted before Analytics",
+  );
+  assert.doesNotMatch(source.toString("utf8"), /data-admin-notes-local-menu/);
 });

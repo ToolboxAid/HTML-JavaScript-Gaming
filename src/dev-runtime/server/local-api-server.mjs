@@ -3,6 +3,7 @@ import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { handleAdminNotesDirectoryRequest } from "../admin/admin-notes-directory.mjs";
+import { localAdminNotesMenuContent } from "../admin/admin-notes-menu.mjs";
 import { createMockApiRouter } from "./mock-api-router.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -61,9 +62,10 @@ export async function startLocalApiServer({
         targetPath = path.join(targetPath, "index.html");
       }
       const fileContents = await fs.readFile(targetPath);
+      const responseContents = localAdminNotesMenuContent(repoRoot, targetPath, fileContents);
       response.statusCode = 200;
       response.setHeader("Content-Type", contentTypeForPath(targetPath));
-      response.end(fileContents);
+      response.end(responseContents);
     } catch {
       response.statusCode = 404;
       response.end("Not Found");
