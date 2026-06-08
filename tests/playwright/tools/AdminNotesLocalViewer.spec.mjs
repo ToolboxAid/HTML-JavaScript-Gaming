@@ -85,25 +85,39 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
     await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
     await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/index.txt.");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("Project Life Cycle");
+    await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
+    await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
+    await expect(page.getByRole("heading", { name: "Open folders:", level: 4 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Open files:", level: 4 })).toBeVisible();
 
-    await expect(page.locator("[data-admin-notes-directory-links] [data-admin-notes-directory-link='folder']")).toContainText([
+    await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='folder']")).toContainText([
       "notes/",
       "other/",
     ]);
-    await expect(page.locator("[data-admin-notes-directory-links] [data-admin-notes-directory-link='file']")).toContainText([
+    await expect(page.locator("[data-admin-notes-folder-links] [data-admin-notes-directory-link='file']")).toHaveCount(0);
+    await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link='file']")).toContainText([
       "quick-reference.txt",
       "sample.txt",
     ]);
+    await expect(page.locator("[data-admin-notes-file-links] [data-admin-notes-directory-link='folder']")).toHaveCount(0);
 
     await page.getByRole("link", { name: "quick-reference.txt" }).click();
     await expect(page.locator("[data-admin-notes-title]")).toHaveText("quick-reference.txt");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("Quick Reference");
     await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/quick-reference.txt.");
+    await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
+    await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
 
     await page.getByRole("link", { name: "other/" }).click();
     await expect(page.locator("[data-admin-notes-title]")).toHaveText("index.txt");
     await expect(page.locator("[data-admin-notes-content]")).toContainText("sample linked admin subnote");
     await expect(page.locator("[data-admin-notes-status]")).toContainText("Loaded docs_build/dev/admin-notes/other/index.txt.");
+    await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("other");
+    await expect(page.locator("[data-admin-notes-parent-folder]")).toBeEnabled();
+    await page.locator("[data-admin-notes-parent-folder]").click();
+    await expect(page.locator("[data-admin-notes-current-folder]")).toHaveText("admin-notes");
+    await expect(page.locator("[data-admin-notes-parent-folder]")).toBeDisabled();
+    await expect(page.locator("[data-admin-notes-content]")).toContainText("Project Life Cycle");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -112,10 +126,10 @@ test("Admin Notes local viewer loads index and opens root folder note files", as
 });
 
 test("Admin Notes direct dev-runtime source route still renders the viewer", async ({ page }) => {
-  const failures = await openLocalViewer(page, "/src/dev-runtime/admin/admin-notes.html");
+  const failures = await openLocalViewer(page, "/src/dev-runtime/admin/notes.html");
 
   try {
-    await expect(page).toHaveURL(/\/src\/dev-runtime\/admin\/admin-notes\.html$/);
+    await expect(page).toHaveURL(/\/src\/dev-runtime\/admin\/notes\.html$/);
     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
     await expect(page.locator("header.site-header")).toBeVisible();
     await expect(page.locator("footer.footer")).toBeVisible();

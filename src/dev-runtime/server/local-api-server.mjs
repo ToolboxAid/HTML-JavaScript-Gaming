@@ -32,7 +32,7 @@ function resolveBrowserRoutePath(decodedPath) {
     return `/toolbox${webPath.slice("/tools".length)}`;
   }
   if (webPath === "/admin/admin-notes.html") {
-    return "/src/dev-runtime/admin/admin-notes.html";
+    return "/src/dev-runtime/admin/notes.html";
   }
   return normalizedPath;
 }

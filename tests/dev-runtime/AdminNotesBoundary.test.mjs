@@ -27,11 +27,12 @@ const expectedDevNotes = [
   "docs_build/dev/admin-notes/other/index.txt",
   "docs_build/dev/admin-notes/quick-reference.txt",
   "docs_build/dev/admin-notes/sample.txt",
-  "src/dev-runtime/admin/admin-notes.html",
+  "src/dev-runtime/admin/notes.html",
 ];
 
 const retiredProductionFiles = [
   "admin/notes.html",
+  "src/dev-runtime/admin/admin-notes.html",
   "admin/notes/index.txt",
   "admin/notes/other/index.txt",
   "docs_build/dev/admin-notes/notes/Other/index.txt",
@@ -104,7 +105,7 @@ test("Admin Notes implementation is isolated under src/dev-runtime/admin", () =>
 });
 
 test("Admin Notes local viewer page uses external dev-runtime JavaScript only", () => {
-  const viewerSource = fs.readFileSync(repoPath("src/dev-runtime/admin/admin-notes.html"), "utf8");
+  const viewerSource = fs.readFileSync(repoPath("src/dev-runtime/admin/notes.html"), "utf8");
   assert.doesNotMatch(viewerSource, /<script(?![^>]*\bsrc=)/i, "viewer page must not contain inline scripts");
   assert.doesNotMatch(viewerSource, /<style\b/i, "viewer page must not contain style blocks");
   assert.doesNotMatch(viewerSource, /\son[a-z]+\s*=/i, "viewer page must not contain inline event handlers");

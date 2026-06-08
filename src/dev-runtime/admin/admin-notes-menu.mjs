@@ -1,7 +1,7 @@
 import path from "node:path";
 
 export const ADMIN_NOTES_LOCAL_VIEWER_PATH = "/admin/admin-notes.html";
-export const ADMIN_NOTES_LOCAL_SOURCE_PATH = "/src/dev-runtime/admin/admin-notes.html";
+export const ADMIN_NOTES_LOCAL_SOURCE_PATH = "/src/dev-runtime/admin/notes.html";
 export const ADMIN_NOTES_LOCAL_MENU_LABEL = "Admin Notes (Local Dev)";
 
 const HEADER_PARTIAL_PATH = "assets/theme-v2/partials/header-nav.html";

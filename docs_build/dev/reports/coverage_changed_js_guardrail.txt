@@ -8,7 +8,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 Changed runtime JS files considered:
 (0%) src/dev-runtime/admin/admin-notes-menu.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(96%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 501/501; executed functions 47/49
+(91%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 520/520; executed functions 48/53
 
 Guardrail warnings:
 (0%) src/dev-runtime/admin/admin-notes-menu.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

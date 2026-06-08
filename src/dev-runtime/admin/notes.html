@@ -35,15 +35,18 @@
                 </article>
                 <article class="card" data-admin-notes-directory>
                     <div class="card-body">
-                        <div class="section-heading">
-                            <div>
-                                <div class="kicker">Local Dev</div>
-                                <h3>Current Folder</h3>
+                        <div class="content-stack">
+                            <div class="kicker">Local Dev</div>
+                            <div class="section-heading">
+                                <h3>Current Folder: <span data-admin-notes-current-folder>admin-notes</span></h3>
+                                <button class="btn btn--compact" type="button" data-admin-notes-parent-folder disabled>..</button>
                             </div>
-                            <a class="btn btn--compact" data-admin-notes-open-folder href="#" aria-disabled="true">Open folder</a>
+                            <h4>Open folders:</h4>
+                            <div class="cluster" data-admin-notes-folder-links></div>
+                            <h4>Open files:</h4>
+                            <div class="cluster" data-admin-notes-file-links></div>
+                            <p class="status" data-admin-notes-folder-diagnostic></p>
                         </div>
-                        <div class="cluster" data-admin-notes-directory-links></div>
-                        <p class="status" data-admin-notes-folder-diagnostic></p>
                     </div>
                 </article>
                 <article class="card">

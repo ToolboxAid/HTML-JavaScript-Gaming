@@ -61,10 +61,13 @@ class AdminNotesViewer {
     this.status = documentRef.querySelector("[data-admin-notes-status]");
     this.content = documentRef.querySelector("[data-admin-notes-content]");
     this.directory = documentRef.querySelector("[data-admin-notes-directory]");
-    this.directoryLinks = documentRef.querySelector("[data-admin-notes-directory-links]");
-    this.openFolderLink = documentRef.querySelector("[data-admin-notes-open-folder]");
+    this.currentFolder = documentRef.querySelector("[data-admin-notes-current-folder]");
+    this.parentFolderButton = documentRef.querySelector("[data-admin-notes-parent-folder]");
+    this.folderLinks = documentRef.querySelector("[data-admin-notes-folder-links]");
+    this.fileLinks = documentRef.querySelector("[data-admin-notes-file-links]");
     this.folderDiagnostic = documentRef.querySelector("[data-admin-notes-folder-diagnostic]");
     this.legendList = documentRef.querySelector("[data-admin-notes-legend-list]");
+    this.currentFolderPath = NOTES_DIRECTORY;
     this.bindEvents();
   }
 
@@ -81,15 +84,20 @@ class AdminNotesViewer {
       }
       this.openNote(link.dataset.adminNoteLink || DEFAULT_NOTE, true);
     });
-    this.openFolderLink?.addEventListener("click", (event) => {
-      if (!this.openFolderLink.href || this.openFolderLink.getAttribute("aria-disabled") === "true") {
-        event.preventDefault();
-        this.setFolderDiagnostic("Open folder is available only for safe Admin Notes folders in local/dev mode.");
+    this.parentFolderButton?.addEventListener("click", (event) => {
+      event.preventDefault();
+      if (this.parentFolderButton.disabled) {
         return;
       }
-      event.preventDefault();
-      this.documentRef.defaultView?.open(this.openFolderLink.href, "_blank", "noopener,noreferrer");
-      this.setFolderDiagnostic("If the folder did not open, your browser may require local file or dev-server mode for folder links.");
+      const parentFolderPath = this.parentFolderPath(this.currentFolderPath);
+      if (!parentFolderPath) {
+        return;
+      }
+      if (parentFolderPath === NOTES_DIRECTORY) {
+        this.openNote(DEFAULT_NOTE, true);
+        return;
+      }
+      this.openFile(`${parentFolderPath}/${NOTE_INDEX_FILE}`, true);
     });
   }
 
@@ -260,7 +268,8 @@ class AdminNotesViewer {
 
   clearContent() {
     this.content?.replaceChildren();
-    this.directoryLinks?.replaceChildren();
+    this.folderLinks?.replaceChildren();
+    this.fileLinks?.replaceChildren();
   }
 
   setTitle(value) {
@@ -286,7 +295,8 @@ class AdminNotesViewer {
 
   async renderDirectoryLinks(folderPath, currentFilePath) {
     const listing = await this.directoryListingForFolder(folderPath);
-    this.updateOpenFolderLink(listing);
+    const currentFolderPath = listing.folderPath || this.adminNotesFolderPathFromValue(folderPath) || NOTES_DIRECTORY;
+    this.updateCurrentFolder(currentFolderPath);
     this.setFolderDiagnostic(listing.error || "");
     const entries = listing.entries;
     const safeEntries = entries
@@ -294,10 +304,16 @@ class AdminNotesViewer {
       .filter(Boolean)
       .filter((entry) => !(entry.path === currentFilePath && this.fileNameForPath(entry.path) === NOTE_INDEX_FILE))
       .sort((left, right) => left.label.localeCompare(right.label));
+    const folderEntries = safeEntries.filter((entry) => entry.type === "folder");
+    const fileEntries = safeEntries.filter((entry) => entry.type === "file");
 
-    this.directoryLinks?.replaceChildren();
-    safeEntries.forEach((entry) => {
-      this.directoryLinks?.append(this.directoryLink(entry));
+    this.folderLinks?.replaceChildren();
+    this.fileLinks?.replaceChildren();
+    folderEntries.forEach((entry) => {
+      this.folderLinks?.append(this.directoryLink(entry));
+    });
+    fileEntries.forEach((entry) => {
+      this.fileLinks?.append(this.directoryLink(entry));
     });
   }
 
@@ -321,7 +337,6 @@ class AdminNotesViewer {
       return {
         entries: Array.isArray(listing.entries) ? listing.entries : [],
         folderPath: this.adminNotesFolderPathFromValue(listing.folderPath),
-        folderFileUrl: this.safeFolderFileUrl(listing.folderFileUrl),
         error: ""
       };
     } catch {
@@ -337,32 +352,37 @@ class AdminNotesViewer {
     return `${this.repoFileUrl(folderUrl)}?${DIRECTORY_LIST_QUERY}=1`;
   }
 
-  safeFolderFileUrl(value) {
-    const rawValue = String(value || "").trim();
-    if (!rawValue || !rawValue.startsWith("file://")) {
-      return "";
-    }
-    return rawValue;
-  }
-
   setFolderDiagnostic(message) {
     if (this.folderDiagnostic) {
       this.folderDiagnostic.textContent = message;
     }
   }
 
-  updateOpenFolderLink(listing) {
-    if (!this.openFolderLink) {
-      return;
+  updateCurrentFolder(folderPath) {
+    this.currentFolderPath = folderPath;
+    if (this.currentFolder) {
+      this.currentFolder.textContent = this.folderNameForPath(folderPath);
     }
-    const folderUrl = listing.folderFileUrl || "";
-    if (!folderUrl) {
-      this.openFolderLink.href = "#";
-      this.openFolderLink.setAttribute("aria-disabled", "true");
-      return;
+    if (this.parentFolderButton) {
+      const atRoot = folderPath === NOTES_DIRECTORY;
+      this.parentFolderButton.disabled = atRoot;
+      this.parentFolderButton.setAttribute("aria-disabled", String(atRoot));
     }
-    this.openFolderLink.href = folderUrl;
-    this.openFolderLink.setAttribute("aria-disabled", "false");
+  }
+
+  folderNameForPath(folderPath) {
+    return String(folderPath || NOTES_DIRECTORY).split("/").filter(Boolean).pop() || "admin-notes";
+  }
+
+  parentFolderPath(folderPath) {
+    const safeFolderPath = this.adminNotesFolderPathFromValue(folderPath);
+    if (!safeFolderPath || safeFolderPath === NOTES_DIRECTORY) {
+      return "";
+    }
+    const segments = safeFolderPath.split("/");
+    segments.pop();
+    const parentPath = segments.join("/");
+    return this.adminNotesFolderPathFromValue(parentPath) || "";
   }
 
   safeDirectoryEntry(entry) {
