@@ -16,6 +16,7 @@ const sourcePaletteRows = [
 
 const expectedThemeTypes = {
   Nature: ["Forest", "Jungle", "Desert", "Mountain", "Arctic", "Swamp", "Ocean", "Tropical"],
+  ROYGBIV: ["ROYGBIV"],
   Floral: ["Rose Garden", "Spring Bloom", "Wildflowers", "Lavender Field", "Autumn Harvest"],
   Water: ["Deep Ocean", "Tropical Reef", "River", "Lake", "Storm Sea", "Frozen Water"],
   Elements: ["Fire", "Ice", "Earth", "Air", "Lightning", "Poison", "Crystal"],
@@ -406,9 +407,11 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
 
     await expect(page.locator("[data-palette-generator-preview-row]")).toHaveCount(8);
     await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(64);
-    await expect(page.locator("[data-palette-include-selected-picker-swatches]")).not.toBeChecked();
-    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("Already selected picker swatches are dimmed");
-    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(0);
+    await expect(page.locator("[data-palette-include-already-project-swatches]")).not.toBeChecked();
+    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("Already in Project swatches are listed");
+    await expect(page.locator("[data-palette-picker-group-label='available']")).toHaveText("Available Picker Swatches (64)");
+    await expect(page.locator("[data-palette-picker-group-label='unavailable']")).toHaveText("Already in Project (0)");
+    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(0);
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-collection", "Nature");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-type-name", "Forest");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-variant-name", "Full");
@@ -429,6 +432,23 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("45");
     expect(await firstSwatch.inputValue()).not.toBe(initialColor);
 
+    await page.locator("[data-palette-theme-collection]").selectOption("ROYGBIV");
+    await expect(page.locator("[data-palette-generator-type] option")).toHaveText(["ROYGBIV"]);
+    await page.locator("[data-palette-generator-colors]").selectOption("7");
+    await page.locator("[data-palette-generator-steps]").selectOption("2");
+    await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(14);
+    const royNames = await page.locator("[data-palette-generator-swatch]").evaluateAll((swatches) => (
+      swatches.slice(0, 7).map((swatch) => swatch.dataset.paletteGeneratorName)
+    ));
+    expect(royNames.join(" ")).toContain("Red");
+    expect(royNames.join(" ")).toContain("Orange");
+    expect(royNames.join(" ")).toContain("Yellow");
+    expect(royNames.join(" ")).toContain("Green");
+    expect(royNames.join(" ")).toContain("Blue");
+    expect(royNames.join(" ")).toContain("Indigo");
+    expect(royNames.join(" ")).toContain("Violet");
+
+    await page.locator("[data-palette-generator-steps]").selectOption("8");
     await page.locator("[data-palette-theme-collection]").selectOption("Sci-Fi");
     await expect(page.locator("[data-palette-generator-type] option")).toHaveText(expectedThemeTypes["Sci-Fi"]);
     await page.locator("[data-palette-generator-type]").selectOption("Cyberpunk");
@@ -495,13 +515,13 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     await page.locator("[data-palette-generator-colors]").selectOption("4");
     await page.locator("[data-palette-generator-steps]").selectOption("2");
     await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(8);
-    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(0);
+    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(0);
     const pickerCursors = await page.locator("[data-palette-generator-swatch]").evaluateAll((swatches) => (
       swatches.map((swatch) => getComputedStyle(swatch).cursor)
     ));
     expect(pickerCursors.every((cursor) => cursor !== "not-allowed")).toBe(true);
     for (let index = 0; index < 8; index += 1) {
-      await page.locator("[data-palette-generator-swatch]").nth(index).click();
+      await page.locator("[data-palette-generator-swatch][data-palette-generator-availability='available']").first().click();
     }
     await expect(page.locator("[data-palette-count]")).toHaveText("8");
 
@@ -549,6 +569,7 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
 
     await firstGenerated.click();
     await expect(page.locator("[data-palette-count]")).toHaveText("9");
+    await expect(page.locator("[data-palette-log]")).toContainText("Added picker swatch");
     const generatedTile = swatchTileByName(page, generatedName || "");
     await expect(generatedTile).toHaveAttribute("data-palette-swatch-name", generatedName || "");
     await expect(generatedTile).toHaveAttribute("data-palette-swatch-hex", generatedHex || "");
@@ -565,16 +586,33 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     await expect(generatedTile).toHaveAttribute("data-palette-metadata-sort-field", "hue");
     await expect(generatedTile).toHaveAttribute("data-palette-metadata-sort-direction", "asc");
     await expect(generatedTile).toHaveAttribute("data-palette-metadata-swatch-size", "medium");
-    await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-pinned", "true");
-    await expect(page.locator("[data-palette-generator-swatch]").first().locator("[data-palette-pin-indicator]")).toHaveCount(1);
-    await expect(page.locator("[data-palette-generator-swatch]").first()).toBeDisabled();
-    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(1);
-    await page.locator("[data-palette-include-selected-picker-swatches]").check();
-    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("included");
-    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(0);
-    await page.locator("[data-palette-include-selected-picker-swatches]").uncheck();
-    await expect(page.locator("[data-palette-generator-swatch]:disabled")).toHaveCount(1);
-    await expect(page.locator("[data-palette-log]")).toContainText("Added picker swatch");
+    const unavailablePickerSwatch = page.locator(`[data-palette-generator-swatch][data-palette-generator-hex='${generatedHex}']`);
+    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-pinned", "true");
+    await expect(unavailablePickerSwatch.locator("[data-palette-pin-indicator]")).toHaveCount(1);
+    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-availability", "unavailable");
+    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-unavailable-reason", "Already in Project");
+    await expect(unavailablePickerSwatch).not.toBeDisabled();
+    await expect(page.locator("[data-palette-picker-group-label='available']")).toHaveText("Available Picker Swatches (63)");
+    await expect(page.locator("[data-palette-picker-group-label='unavailable']")).toHaveText("Already in Project (1)");
+    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(1);
+    const unavailableVisual = await unavailablePickerSwatch.evaluate((swatch) => ({
+      cursor: getComputedStyle(swatch).cursor,
+      opacity: getComputedStyle(swatch).opacity,
+      value: swatch.querySelector("input[type='color']").value
+    }));
+    expect(unavailableVisual.cursor).not.toBe("not-allowed");
+    expect(unavailableVisual.opacity).toBe("1");
+    expect(unavailableVisual.value.toUpperCase()).toBe((generatedHex || "").slice(0, 7).toUpperCase());
+    await unavailablePickerSwatch.click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("9");
+    await expect(page.locator("[data-palette-log]")).toContainText("Already in Project picker swatch was not added");
+    await page.locator("[data-palette-include-already-project-swatches]").check();
+    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("included in the available section");
+    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-availability", "available");
+    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(0);
+    await page.locator("[data-palette-include-already-project-swatches]").uncheck();
+    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-availability", "unavailable");
+    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(1);
 
     await page.locator("[data-palette-theme-collection]").selectOption("Nature");
     await page.locator("[data-palette-generator-type]").selectOption("Forest");

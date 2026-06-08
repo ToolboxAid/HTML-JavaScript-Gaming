@@ -14,37 +14,26 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (84%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(71%) Theme V2 Shared JS - exercised 3 runtime JS files
+(64%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(84%) toolbox/colors/colors.js - executed lines 1872/1872; executed functions 157/186
+(85%) toolbox/colors/colors.js - executed lines 1938/1938; executed functions 165/194
+(100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
 Files with executed line/function counts where available:
 (58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
+(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 525/525; executed functions 28/44
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 9/14
-(66%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 525/525; executed functions 29/44
 (78%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 21/27
-(84%) toolbox/colors/colors.js - executed lines 1872/1872; executed functions 157/186
-(93%) assets/theme-v2/js/account-achievements.js - executed lines 106/106; executed functions 13/14
+(85%) toolbox/colors/colors.js - executed lines 1938/1938; executed functions 165/194
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - changed JS file not collected as browser runtime coverage
+(0%) assets/theme-v2/js/account-achievements.js - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/ProjectJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(66%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(84%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
-(93%) assets/theme-v2/js/account-achievements.js - changed JS file with browser V8 coverage
+(85%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
+(100%) toolbox/colors/palette-api-client.js - changed JS file with browser V8 coverage

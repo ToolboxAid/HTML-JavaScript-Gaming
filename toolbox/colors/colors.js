@@ -152,6 +152,16 @@ const CURATED_PALETTE_COLLECTIONS = Object.freeze([
     ])
   },
   {
+    name: "ROYGBIV",
+    types: Object.freeze([
+      {
+        name: "ROYGBIV",
+        names: Object.freeze(["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"]),
+        swatches: swatches("#FF0000 #FFA500 #FFFF00 #008000 #0000FF #4B0082 #EE82EE")
+      }
+    ])
+  },
+  {
     name: "Floral",
     types: Object.freeze([
       { name: "Rose Garden", swatches: swatches("#3A1020 #76223A #B9375E #E56B8A #F2A0A8 #FFD3C9 #446B3F #8FAE5D") },
@@ -281,7 +291,7 @@ const sourceSortState = { direction: "asc", key: "name" };
 let sourceSizeState = "medium";
 const userSortState = { direction: "asc", key: "hue" };
 let userSizeState = "medium";
-let includeSelectedPickerSwatches = false;
+let includeAlreadyProjectSwatches = false;
 const checkedSwatchKeys = new Set();
 const selectedTagFilters = new Set();
 let tagMatchMode = "any";
@@ -305,7 +315,7 @@ const elements = {
   generatorColors: document.querySelector("[data-palette-generator-colors]"),
   generatorCollection: document.querySelector("[data-palette-theme-collection]"),
   generatorContrast: document.querySelector("[data-palette-generator-contrast]"),
-  includeSelectedPickerSwatches: document.querySelector("[data-palette-include-selected-picker-swatches]"),
+  includeAlreadyProjectSwatches: document.querySelector("[data-palette-include-already-project-swatches]"),
   generatorGenerate: document.querySelector("[data-palette-generator-generate]"),
   generatorHueShift: document.querySelector("[data-palette-generator-hue-shift]"),
   generatorPreview: document.querySelector("[data-palette-generator-preview]"),
@@ -877,8 +887,15 @@ function generatorSwatchName(settings, row, column, hex) {
   const collection = settings.collection?.name || "Palette";
   const type = settings.paletteType?.name || "Generated";
   const variant = settings.variant?.label || "Full";
-  const family = colorFamilyName(hex);
+  const curatedNames = Array.isArray(settings.paletteType?.names) ? settings.paletteType.names : [];
+  const family = settings.colors === curatedNames.length && curatedNames[column]
+    ? curatedNames[column]
+    : colorFamilyName(hex);
   return `${collection} ${type} ${variant} ${family} R${row + 1} C${column + 1}`;
+}
+
+function pickerUnavailableReason(pinnedSwatch) {
+  return pinnedSwatch ? "Already in Project" : "";
 }
 
 function generatedPickerSwatches(settings = readPaletteGeneratorSettings()) {
@@ -931,19 +948,19 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   swatch.dataset.palettePinned = String(Boolean(options.pinned));
   swatch.dataset.paletteSelected = String(Boolean(options.selected));
   swatch.dataset.paletteGeneratorName = options.pinnedSwatch?.name || generatorSwatchName(settings, row, column, hex);
+  swatch.dataset.paletteGeneratorAvailability = options.available === false ? "unavailable" : "available";
+  swatch.dataset.paletteGeneratorUnavailable = String(options.available === false);
+  swatch.dataset.paletteGeneratorUnavailableReason = options.unavailableReason || "";
   const swatchName = generatorSwatchName(settings, row, column, hex);
   const tooltipSwatch = {
     hex,
     name: options.pinnedSwatch?.name || swatchName,
     pickerSettings: options.pickerSettings
   };
-  swatch.setAttribute("aria-label", `${options.pinned ? "Remove" : "Add"} picker swatch ${swatchName}`);
+  swatch.setAttribute("aria-label", options.available === false
+    ? `${options.unavailableReason || "Unavailable"} picker swatch ${swatchName}`
+    : `${options.pinned ? "Remove" : "Add"} picker swatch ${swatchName}`);
   swatch.setAttribute("aria-pressed", String(Boolean(options.pinned)));
-  if (options.enabled === false) {
-    swatch.disabled = true;
-    swatch.dataset.paletteGeneratorDisabled = "true";
-    swatch.setAttribute("aria-disabled", "true");
-  }
   if (options.selected) {
     swatch.setAttribute("aria-current", "true");
   }
@@ -960,6 +977,55 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   swatch.title = pickerTooltipText(tooltipSwatch, options.pickerSettings);
   swatch.append(input, createPinIndicator(Boolean(options.pinned)));
   return swatch;
+}
+
+function createPickerGroupLabel(group, count) {
+  const label = document.createElement("p");
+  label.className = "status";
+  label.dataset.palettePickerGroupLabel = group;
+  label.textContent = group === "available"
+    ? `Available Picker Swatches (${count})`
+    : `Already in Project (${count})`;
+  return label;
+}
+
+function appendPickerGroupRows(fragment, group, items, settings) {
+  fragment.append(createPickerGroupLabel(group, items.length));
+  if (!items.length) {
+    const message = document.createElement("p");
+    message.className = "status";
+    message.dataset.palettePickerGroupEmpty = group;
+    message.textContent = group === "available"
+      ? "No available picker swatches for the current settings."
+      : "No picker swatches are already in Project Swatches.";
+    fragment.append(message);
+    return;
+  }
+
+  const rows = new Map();
+  items.forEach((item) => {
+    const rowItems = rows.get(item.row) || [];
+    rowItems.push(item);
+    rows.set(item.row, rowItems);
+  });
+  [...rows.entries()].forEach(([row, rowItems]) => {
+    const rowElement = document.createElement("div");
+    rowElement.className = "palette-generator-preview-row";
+    rowElement.setAttribute("role", "row");
+    rowElement.dataset.paletteGeneratorPreviewRow = String(row);
+    rowElement.dataset.palettePickerGroup = group;
+    rowItems.forEach((item) => {
+      rowElement.append(createGeneratorPreviewInput(item.hex, settings.paletteType.name, item.row, item.column, settings, {
+        available: item.available,
+        pinned: Boolean(item.pinnedSwatch),
+        pinnedSwatch: item.pinnedSwatch,
+        selected: item.selected,
+        unavailableReason: item.unavailableReason,
+        pickerSettings: currentPickerSettings(settings)
+      }));
+    });
+    fragment.append(rowElement);
+  });
 }
 
 function paletteGeneratorSummary(settings) {
@@ -984,12 +1050,8 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
     return;
   }
 
-  const fragment = document.createDocumentFragment();
+  const allSwatches = [];
   for (let row = 0; row < settings.steps; row += 1) {
-    const rowElement = document.createElement("div");
-    rowElement.className = "palette-generator-preview-row";
-    rowElement.setAttribute("role", "row");
-    rowElement.dataset.paletteGeneratorPreviewRow = String(row);
     for (let column = 0; column < settings.colors; column += 1) {
       const baseHex = interpolateHex(settings.paletteType.swatches, column, settings.colors);
       const baseHsl = rgbToHsl(hexToRgb(baseHex));
@@ -1000,23 +1062,31 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
       }, settings.variant, column, settings.colors);
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
       const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
-      const enabled = !pinnedSwatch || includeSelectedPickerSwatches;
-      rowElement.append(createGeneratorPreviewInput(hex, settings.paletteType.name, row, column, settings, {
-        enabled,
-        pinned: Boolean(pinnedSwatch),
+      const unavailableReason = pickerUnavailableReason(pinnedSwatch);
+      const available = !unavailableReason || includeAlreadyProjectSwatches;
+      allSwatches.push({
+        available,
+        column,
+        hex,
         pinnedSwatch,
+        row,
         selected: Boolean(pinnedSwatch && swatchKey(snapshot.selectedSwatch) === swatchKey(pinnedSwatch)),
-        pickerSettings: currentPickerSettings(settings)
-      }));
+        unavailableReason
+      });
     }
-    fragment.append(rowElement);
   }
+
+  const availableSwatches = allSwatches.filter((swatch) => swatch.available);
+  const unavailableSwatches = allSwatches.filter((swatch) => !swatch.available);
+  const fragment = document.createDocumentFragment();
+  appendPickerGroupRows(fragment, "available", availableSwatches, settings);
+  appendPickerGroupRows(fragment, "unavailable", unavailableSwatches, settings);
 
   elements.generatorPreview.replaceChildren(fragment);
   setText(elements.generatorPreviewStatus, paletteGeneratorSummary(settings));
-  setText(elements.pickerDisabledReason, includeSelectedPickerSwatches
-    ? "Already selected picker swatches are included so they can be toggled from the picker."
-    : "Already selected picker swatches are dimmed because they are already in Project Swatches.");
+  setText(elements.pickerDisabledReason, includeAlreadyProjectSwatches
+    ? "Already in Project swatches are included in the available section so they can be toggled from the picker."
+    : "Already in Project swatches are listed in the bottom section and cannot be added again.");
   setText(elements.generatorStatus, action);
 }
 
@@ -1832,11 +1902,11 @@ elements.userSize?.addEventListener("click", (event) => {
 
 elements.sourceSelect?.addEventListener("change", render);
 elements.sourceSearch?.addEventListener("input", renderSourceSwatches);
-elements.includeSelectedPickerSwatches?.addEventListener("change", () => {
-  includeSelectedPickerSwatches = Boolean(elements.includeSelectedPickerSwatches.checked);
-  renderPaletteGeneratorPreview(includeSelectedPickerSwatches
-    ? "Already selected picker swatches included."
-    : "Already selected picker swatches dimmed.");
+elements.includeAlreadyProjectSwatches?.addEventListener("change", () => {
+  includeAlreadyProjectSwatches = Boolean(elements.includeAlreadyProjectSwatches.checked);
+  renderPaletteGeneratorPreview(includeAlreadyProjectSwatches
+    ? "Already in Project swatches included."
+    : "Already in Project swatches unavailable.");
 });
 
 elements.sourcePinAll?.addEventListener("click", () => {
@@ -1870,9 +1940,10 @@ elements.generatorPreview?.addEventListener("click", (event) => {
   if (!tile) {
     return;
   }
-  if (tile.disabled || tile.dataset.paletteGeneratorDisabled === "true") {
-    setText(elements.log, "Already selected picker swatches are dimmed because they are already in Project Swatches.");
-    setText(elements.generatorStatus, "Use Include already selected swatches to toggle pinned picker swatches from the picker.");
+  if (tile.dataset.paletteGeneratorUnavailable === "true") {
+    const reason = tile.dataset.paletteGeneratorUnavailableReason || "Unavailable";
+    setText(elements.log, `${reason} picker swatch was not added.`);
+    setText(elements.generatorStatus, `Use Include already in Project swatches to toggle ${reason.toLowerCase()} swatches from the picker.`);
     return;
   }
   const swatch = generatedSwatchFromTile(tile);

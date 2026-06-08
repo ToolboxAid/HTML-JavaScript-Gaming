@@ -25,6 +25,10 @@ Project Workspace uses the `project-workspace` server repository source, seeded 
 
 Because the Account page did not read from the Project Workspace repository/API boundary, the two surfaces drifted. This PR moves the Build rows into `assets/theme-v2/js/account-achievements.js` and reads them through `createServerRepositoryClient("project-workspace")`.
 
+## Scope Cleanup
+
+The current working tree also removes `docs_build/dev/admin-notes/project-journey/index.txt` because it was accidentally included in the prior PR_26159_030 commit even though Admin Notes and Project Journey notes are unrelated to this PR. No Admin Notes runtime behavior is changed.
+
 ## Colors Disabled / Grayed Swatch Explanation
 
 The meaningful disabled subset is picker swatches that are already pinned into Project Swatches. Those swatches are not invalid colors; they are already selected. They are dimmed/disabled by default in Picker Preview so clicking the picker grid adds new swatches instead of toggling already selected ones.
@@ -58,6 +62,7 @@ The checkbox is now labeled `Include already selected swatches`, which describes
 | Playwright impacted | PASS | Account Achievements, Project Workspace render, and Palette lanes run. |
 | Do not run full samples validation | PASS | Full samples skipped with reason. |
 | Produce repo-structured ZIP | PASS | Created under `tmp/PR_26159_030-achievements-project-data-alignment_delta.zip`. |
+| Keep PR scope clean | PASS | Removed the out-of-scope `docs_build/dev/admin-notes/project-journey/index.txt` file that was accidentally included in the prior PR_26159_030 commit. |
 
 ## Validation Evidence
 
@@ -72,7 +77,7 @@ Commands run:
 - `npx playwright test tests/playwright/tools/PaletteToolMockRepository.spec.mjs` - PASS, 6 passed
 - `npx playwright test tests/playwright/account/AchievementsPage.spec.mjs tests/playwright/tools/PaletteToolMockRepository.spec.mjs --workers=1` - PASS, 8 passed and final V8 coverage
 - `git diff --check` - PASS
-- Active scans for old Achievements mock names, Colors Symbol validation, and old global picker checkbox naming - PASS
+- Active scans for old Achievements mock names, Colors Symbol validation, and old global picker checkbox naming - PASS. The text `Picker Preview` remains only as the accordion title, not as the checkbox label.
 
 ## Skipped Lanes
 

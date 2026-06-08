@@ -1,38 +1,37 @@
 # Testing Lane Execution Report
 
-PR: PR_26159_030-achievements-project-data-alignment
+PR: PR_26159_031-colors-picker-viewer-restore
 Generated: 2026-06-08
 Full samples validation: SKIPPED
 
 ## Summary
 
 PASS: 7
-WARN: 1
+WARN: 0
 FAIL: 0
-SKIP: 1
+SKIP: 2
 
 ## Executed Lanes
 
 | Lane | Status | Command | Evidence |
 | --- | --- | --- | --- |
-| Changed JS syntax | PASS | `node --check assets/theme-v2/js/account-achievements.js` | Account Achievements module parses. |
-| Colors runtime syntax | PASS | `node --check toolbox/colors/colors.js` | Colors picker subset changes parse. |
-| Achievements Playwright syntax | PASS | `node --check tests/playwright/account/AchievementsPage.spec.mjs` | Updated account test parses. |
-| Palette Playwright syntax | PASS | `node --check tests/playwright/tools/PaletteToolMockRepository.spec.mjs` | Updated palette test parses. |
-| Account Achievements Playwright | PASS | `npx playwright test tests/playwright/account/AchievementsPage.spec.mjs` | 2 passed. Validates Project Workspace project names/statuses, placeholders, old mock names absent, and no console errors. |
-| Project Workspace render validation | PASS | `npx playwright test tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs -g "Project Workspace creates, opens, and deletes mock projects"` | 1 passed. Validates Project Workspace still renders its project cards/list. |
-| Palette / Colors Playwright | PASS | `npx playwright test tests/playwright/tools/PaletteToolMockRepository.spec.mjs` | 6 passed. Validates Add/Update without Symbol, renamed picker checkbox, subset-only disabled behavior, and no console errors. |
-| Combined V8 coverage run | PASS | `npx playwright test tests/playwright/account/AchievementsPage.spec.mjs tests/playwright/tools/PaletteToolMockRepository.spec.mjs --workers=1` | 8 passed. Final V8 coverage includes `assets/theme-v2/js/account-achievements.js` and `toolbox/colors/colors.js`. |
-| Full Project Workspace spec | WARN | `npx playwright test tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs` | 6 passed, 1 unrelated existing Toolbox member-role count expectation failed: expected `Tool Count: 5/38`, current page shows `6/38`. The requested Project Workspace render/list test passed and was rerun directly. |
-| Static validation | PASS | `git diff --check`; active `rg` scans for Symbol validation, old Achievements mock names, and picker checkbox labels | No whitespace errors; no active Colors Symbol validation hits; old Achievements mock names are absent from active Achievements source; global picker enable label removed. |
+| Colors runtime syntax | PASS | `node --check toolbox/colors/colors.js` | Colors picker grouping, ROYGBIV data, and unavailable handling parse. |
+| Colors API helper syntax | PASS | `node --check toolbox/colors/palette-api-client.js` | Validation API contract forwarding parses. |
+| Palette Playwright syntax | PASS | `node --check tests/playwright/tools/PaletteToolMockRepository.spec.mjs` | Updated Palette tests parse. |
+| Palette / Colors Playwright | PASS | `npx playwright test tests/playwright/tools/PaletteToolMockRepository.spec.mjs` | 6 passed. Validates available/unavailable picker groups, unavailable click blocking, no graying/not-allowed cursor, ROYGBIV, Add/Update without Symbol validation, and no console errors. |
+| Runtime V8 coverage | PASS | Palette Playwright afterAll coverage reporter | `docs_build/dev/reports/playwright_v8_coverage_report.txt` includes `toolbox/colors/colors.js` and `toolbox/colors/palette-api-client.js`. |
+| Static whitespace validation | PASS | `git diff --check` | No whitespace errors; line-ending warnings only. |
+| Targeted string scans | PASS | Active `rg` scans for Symbol validation/control strings and old global picker checkbox strings | No active Colors Symbol validation/control hits and no old global picker checkbox strings. |
 
 ## Skipped Lanes
 
 | Lane | Status | Reason |
 | --- | --- | --- |
-| Full samples validation | SKIP | This PR did not change sample JSON contracts or the shared sample loader/framework. Targeted account, Project Workspace render, Colors, syntax, and static checks covered the impacted surfaces. |
+| Full samples validation | SKIP | This PR does not touch sample JSON, sample launcher code, or shared sample framework behavior. |
+| Broad Playwright suite | SKIP | Targeted Palette Playwright covers the changed Colors runtime/UI behavior and console-error assertions. |
 
 ## Notes
 
-- The unrelated untracked folder `docs_build/dev/admin-notes/project-journey/` was present before this PR work and was not touched or packaged.
-- Playwright V8 coverage was generated at `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
+- The unavailable picker swatch rule is normalized RGB duplicate detection against Project Swatches via `pinnedSwatchForHex(hex)`.
+- Unavailable picker swatches are not disabled buttons, so their color and cursor remain normal while click handling prevents duplicate adds.
+- Existing local test-server output still prints SQLite experimental warnings and seed-only audit fallback diagnostics; targeted Playwright assertions passed.

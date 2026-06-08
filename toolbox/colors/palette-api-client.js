@@ -19,6 +19,6 @@ export function normalizePaletteSwatchInput(input) {
   return callServerToolFunction("palette", "normalizePaletteSwatchInput", input);
 }
 
-export function validatePaletteSwatchInput(input, options) {
-  return callServerToolFunction("palette", "validatePaletteSwatchInput", input, options);
+export function validatePaletteSwatchInput(input, existingSwatches, options) {
+  return callServerToolFunction("palette", "validatePaletteSwatchInput", input, existingSwatches, options);
 }
