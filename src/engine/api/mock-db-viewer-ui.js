@@ -335,7 +335,7 @@ class AdminDbViewer {
         .map((template) => template.key),
     );
     const paletteGlobals = new Set((tables.project_workspace_palette_globals || []).map((row) => row.projectId));
-    const paletteColorKeys = new Set((tables.palette_colors || []).map((row) => `${row.projectId}:${row.symbol}`));
+    const paletteColorKeys = new Set((tables.palette_colors || []).map((row) => `${row.projectId}:${row.swatchKey}`));
     const assetIds = new Set((tables.asset_library_items || []).map((asset) => asset.id));
     const assetStorageIds = new Set((tables.asset_storage_objects || []).map((object) => object.id));
     const userOwnedToolStateSamples = (tables.tool_state_samples || []).filter((sample) => sample.userKey);
@@ -404,9 +404,9 @@ class AdminDbViewer {
         missing: (tables.palette_colors || []).filter((row) => !paletteGlobals.has(row.projectId)),
       },
       {
-        name: "palette_swatch_usages.swatchSymbol -> palette_colors.symbol",
+        name: "palette_swatch_usages.swatchKey -> palette_colors.swatchKey",
         checked: (tables.palette_swatch_usages || []).length,
-        missing: (tables.palette_swatch_usages || []).filter((row) => !paletteColorKeys.has(`${row.projectId}:${row.swatchSymbol}`)),
+        missing: (tables.palette_swatch_usages || []).filter((row) => !paletteColorKeys.has(`${row.projectId}:${row.swatchKey}`)),
       },
       {
         name: "palette_swatch_usages.assetId -> asset_library_items.id",

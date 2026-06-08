@@ -53,7 +53,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     inputMode: "palette",
     maxSizeBytes: 1048576,
     usageRoles: ["hud", "text", "background", "border", "accent", "warning", "success", "danger", "shadow", "highlight"],
-    validationNeeds: ["Active Palette Tool swatch required", "Palette color metadata must include symbol, hex, name, and tags when present"]
+    validationNeeds: ["Active Palette Tool swatch required", "Palette color metadata must include key, hex, name, and tags when present"]
   },
   {
     id: "data",
@@ -363,7 +363,7 @@ function colorAssetFileName(swatch) {
   if (!swatch) {
     return "";
   }
-  return `${slugify(`${swatch.symbol}-${swatch.name}`)}.color`;
+  return `${slugify(`${swatch.key}-${swatch.name}`)}.color`;
 }
 
 function clonePaletteSwatch(swatch) {
@@ -372,9 +372,9 @@ function clonePaletteSwatch(swatch) {
   }
   return {
     hex: swatch.hex,
+    key: swatch.key,
     name: swatch.name,
     source: swatch.source,
-    symbol: swatch.symbol,
     tags: Array.isArray(swatch.tags) ? [...swatch.tags] : []
   };
 }
@@ -563,7 +563,7 @@ export function createAssetToolMockRepository(options = {}) {
     const paletteMode = role?.inputMode === "palette";
     const paletteSnapshot = paletteRepository.getSnapshot();
     const selectedPaletteSwatch = paletteMode
-      ? paletteRepository.findSwatch(input.paletteColor || input.paletteSwatchSymbol)
+      ? paletteRepository.findSwatch(input.paletteColor || input.paletteSwatchKey)
       : null;
     const filePickerMode = role?.inputMode === "file";
     const fileName = filePickerMode
@@ -581,7 +581,7 @@ export function createAssetToolMockRepository(options = {}) {
       fileName,
       mimeType,
       name: normalizeText(input.name),
-      paletteColor: normalizeText(input.paletteColor || input.paletteSwatchSymbol),
+      paletteColor: normalizeText(input.paletteColor || input.paletteSwatchKey),
       paletteSwatch: clonePaletteSwatch(selectedPaletteSwatch),
       pickerMode: normalizeText(input.pickerMode),
       size: Number(input.size) || 0,
@@ -784,7 +784,7 @@ export function createAssetToolMockRepository(options = {}) {
     if (role.inputMode === "palette" && asset.paletteSwatch) {
       paletteRepository.recordSwatchUsage({
         assetId: asset.id,
-        symbol: asset.paletteSwatch.symbol,
+        key: asset.paletteSwatch.key,
         toolId: "assets"
       });
     }
@@ -917,7 +917,7 @@ export function createAssetToolMockRepository(options = {}) {
     const assetRole = normalizeRoleId(input.assetRole || input.type);
     const role = roleDefinitionForId(assetRole);
     const swatch = role?.inputMode === "palette"
-      ? paletteRepository.findSwatch(input.paletteColor || input.paletteSwatchSymbol)
+      ? paletteRepository.findSwatch(input.paletteColor || input.paletteSwatchKey)
       : null;
     const fileName = role?.inputMode === "palette"
       ? colorAssetFileName(swatch)

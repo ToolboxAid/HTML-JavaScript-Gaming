@@ -56,7 +56,7 @@ function normalizePaletteColors(value) {
   return value
     .filter((entry) => isRecord(entry))
     .map((entry) => ({
-      symbol: sanitizeText(entry.symbol),
+      key: sanitizeText(entry.key || entry.swatchKey),
       hex: sanitizeText(entry.hex),
       name: sanitizeText(entry.name)
     }));

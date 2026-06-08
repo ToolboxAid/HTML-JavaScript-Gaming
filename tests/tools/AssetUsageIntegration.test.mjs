@@ -76,7 +76,7 @@ export async function run() {
     const validPalette = createPaletteHandoff({
       paletteId: "builtin:crayola032",
       displayName: "crayola032",
-      colors: [{ symbol: "!", hex: "#232323", name: "Black" }],
+      colors: [{ key: "black", hex: "#232323", name: "Black" }],
       metadata: { source: "engine" },
       sourceToolId: "sprite-editor"
     });
@@ -84,6 +84,7 @@ export async function run() {
     const storedPalette = readSharedPaletteHandoff();
     assert.equal(storedPalette.paletteId, "builtin:crayola032");
     assert.equal(storedPalette.displayName, "crayola032");
+    assert.equal(storedPalette.colors[0].key, "black");
     assert.equal(storedPalette.colors[0].hex, "#232323");
     assert.equal(storedPalette.sourceToolId, "sprite-editor");
     assert.equal(typeof storedPalette.selectedAt, "string");

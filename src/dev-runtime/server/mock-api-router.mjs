@@ -796,7 +796,7 @@ class LocalDevMockDataSource {
       } else if (paletteOptions.sourceMode === "invalid") {
         paletteOptions.tables = {
           palette_source_swatches: [
-            { id: "invalid-source-row", source: "broken-source", symbol: "AB", hex: "not-a-hex", name: "", tags: ["diagnostic"] },
+            { key: "invalid-source-row", source: "broken-source", swatchKey: "invalid-source-row", hex: "not-a-hex", name: "", tags: ["diagnostic"] },
           ],
         };
         delete paletteOptions.sourceMode;

@@ -575,10 +575,9 @@ test("Local Mem DB viewer renders live persisted tool records after refresh", as
     await expect(page.locator("[data-journey-item-tree]")).toContainText("Persisted DB item after reload");
 
     await page.goto(`${server.baseUrl}/toolbox/colors/index.html`, { waitUntil: "networkidle" });
-    await page.locator("[data-palette-symbol]").fill("P");
     await page.locator("[data-palette-hex]").fill("#7A52FF");
     await page.locator("[data-palette-name]").fill("Persist Purple");
-    await page.getByRole("button", { name: "Add User Defined" }).click();
+    await page.locator("[data-palette-add]").click();
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Persist Purple']")).toHaveCount(1);
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Persist Purple']")).toHaveCount(1);

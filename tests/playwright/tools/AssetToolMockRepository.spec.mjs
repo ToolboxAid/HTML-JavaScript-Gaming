@@ -382,21 +382,21 @@ test("Color assets consume the active Project Workspace palette", async ({ page 
     await expect(page.locator("[data-asset-tool-palette-color]")).toBeEnabled();
     await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText("Palette swatch picker ready.");
 
-    await page.locator("[data-asset-tool-palette-color]").selectOption("H");
-    await expect(page.locator("[data-asset-tool-palette-selection]")).toHaveText("Symbol: H Hex: #1F75FE Name: Hero Blue Tags: hero, ui");
+    await page.locator("[data-asset-tool-palette-color]").selectOption("hero-blue");
+    await expect(page.locator("[data-asset-tool-palette-selection]")).toHaveText("Key: hero-blue Hex: #1F75FE Name: Hero Blue Tags: hero, ui");
     await expect(page.getByLabel("Name")).toHaveValue("Hero Blue");
-    await expect(page.locator("[data-asset-tool-path]")).toHaveValue(`projects/${DEMO_ASSET_PROJECT_ID}/color/hud/h-hero-blue.color`);
+    await expect(page.locator("[data-asset-tool-path]")).toHaveValue(`projects/${DEMO_ASSET_PROJECT_ID}/color/hud/hero-blue-hero-blue.color`);
 
     await page.getByRole("button", { name: "Upload Asset" }).click();
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Hero Blue to project asset storage.");
     await expect(page.locator("[data-asset-tool-library]")).toContainText("Hero Blue");
     await expect(page.locator("[data-asset-tool-library]")).toContainText("Color");
-    await expect(page.locator("[data-asset-tool-library]")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/color/hud/h-hero-blue.color`);
-    await expect(page.locator("[data-asset-tool-library]")).toContainText("H #1F75FE");
+    await expect(page.locator("[data-asset-tool-library]")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/color/hud/hero-blue-hero-blue.color`);
+    await expect(page.locator("[data-asset-tool-library]")).toContainText("hero-blue #1F75FE");
     await expect(page.locator("[data-asset-tool-library]")).toContainText("Tags: hero, ui");
     await expect(page.locator("[data-asset-tool-preview-title]")).toHaveText("Hero Blue Preview");
-    await expect(page.locator("[data-asset-tool-preview]")).toHaveText("Swatch metadata preview: H #1F75FE Hero Blue. Tags: hero, ui");
-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Swatch symbol: H");
+    await expect(page.locator("[data-asset-tool-preview]")).toHaveText("Swatch metadata preview: hero-blue #1F75FE Hero Blue. Tags: hero, ui");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Swatch key: hero-blue");
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Swatch hex: #1F75FE");
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Swatch name: Hero Blue");
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Swatch tags: hero, ui");

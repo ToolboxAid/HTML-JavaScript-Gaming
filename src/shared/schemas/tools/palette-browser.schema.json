@@ -48,13 +48,12 @@
   "$defs": {
     "swatch": {
       "type": "object",
-      "required": ["symbol", "hex", "name"],
+      "required": ["key", "hex", "name"],
       "additionalProperties": false,
       "properties": {
-        "symbol": {
+        "key": {
           "type": "string",
-          "minLength": 1,
-          "maxLength": 1
+          "minLength": 1
         },
         "hex": {
           "type": "string",

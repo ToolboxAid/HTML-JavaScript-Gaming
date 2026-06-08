@@ -10,8 +10,8 @@ import { expectCompactToolFormControls } from "../../helpers/toolFormControlAsse
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const sourcePaletteRows = [
-  { source: "reference", sourceLabel: "Reference", symbol: "R", hex: "#FF0000", name: "Reference Red", tags: ["warm"] },
-  { source: "reference", sourceLabel: "Reference", symbol: "G", hex: "#00FF00", name: "Reference Green", tags: ["cool"] }
+  { source: "reference", sourceLabel: "Reference", swatchKey: "reference-red", hex: "#FF0000", name: "Reference Red", tags: ["warm"] },
+  { source: "reference", sourceLabel: "Reference", swatchKey: "reference-green", hex: "#00FF00", name: "Reference Green", tags: ["cool"] }
 ];
 
 const expectedThemeTypes = {
@@ -198,7 +198,7 @@ test("Palette repository owns project swatches and protects invalid payloads", a
 
   expect(repository.addSwatch({ hex: "#123456AA", name: "Hero Blue" }).ok).toBe(true);
   expect(repository.getSnapshot().selectedSwatch).toMatchObject({ name: "Hero Blue" });
-  const heroKey = repository.getSnapshot().selectedSwatch.symbol;
+  const heroKey = repository.getSnapshot().selectedSwatch.key;
   expect(heroKey).toBeTruthy();
   expect(repository.getTables().palette_colors).toHaveLength(1);
   expect(repository.getSnapshot().tableCounts).toEqual(expect.arrayContaining([
@@ -208,19 +208,19 @@ test("Palette repository owns project swatches and protects invalid payloads", a
   const sourceSwatch = repository.listSourceSwatches({ sourceId: "reference", sortKey: "hue" })[0];
   const pinResult = repository.pinSourceSwatch(sourceSwatch);
   expect(pinResult.ok).toBe(true);
-  expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", source: "reference", tags: [] });
+  expect(repository.findSwatch("reference-red")).toMatchObject({ name: "Reference Red", source: "reference", tags: [] });
   expect(repository.displaySource("reference")).toBe("Reference");
 
-  const tagResult = repository.addTagToSwatches([heroKey, "R"], "batch");
+  const tagResult = repository.addTagToSwatches([heroKey, "reference-red"], "batch");
   expect(tagResult.ok).toBe(true);
   expect(repository.findSwatch(heroKey)).toMatchObject({ name: "Hero Blue", tags: ["batch"] });
-  expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", tags: ["batch"] });
-  expect(repository.findSwatch("G")).toBeNull();
+  expect(repository.findSwatch("reference-red")).toMatchObject({ name: "Reference Red", tags: ["batch"] });
+  expect(repository.findSwatch("reference-green")).toBeNull();
 
   const invalidPayload = {
     tools: {
       "palette-browser": {
-        swatches: [{ hex: "#FFFFFF", name: "Invalid" }]
+        swatches: [{ hex: "#12", name: "" }]
       }
     }
   };
@@ -271,8 +271,6 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
     await expect(page.locator("[data-palette-update]")).toBeDisabled();
     await expect(page.locator("[data-palette-clear]")).toBeEnabled();
     await expect(page.locator("[data-palette-tags]")).toBeDisabled();
-    await expect(page.locator("[data-palette-symbol], [data-palette-selected-symbol]")).toHaveCount(0);
-    await expect(page.getByText("Symbol")).toHaveCount(0);
 
     await fillUserSwatch(page, { hex: "#12", name: "" });
     await expect(page.locator("[data-palette-add]")).toBeDisabled();
@@ -330,7 +328,8 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
   try {
     await expect(page.locator("[data-palette-fullscreen-panels] > details > summary")).toHaveText([
       "Project Swatches",
-      "Picker Swatches"
+      "Picker Swatches",
+      "Picker Preview"
     ]);
     const accordionOrder = await page.locator("[data-palette-project-accordion]").evaluate((projectAccordion) => {
       const pickerAccordion = document.querySelector("[data-palette-picker-accordion]");
@@ -341,7 +340,8 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     });
     expect(accordionOrder.projectTop).toBeLessThan(accordionOrder.pickerTop);
     await expect(page.locator("[data-palette-project-accordion] [data-palette-generator-preview]")).toHaveCount(0);
-    await expect(page.locator("[data-palette-picker-accordion] [data-palette-generator-preview]")).toHaveCount(1);
+    await expect(page.locator("[data-palette-picker-accordion] [data-palette-generator-preview]")).toHaveCount(0);
+    await expect(page.locator("[data-palette-preview-accordion] [data-palette-generator-preview]")).toHaveCount(1);
     await expect(page.getByRole("heading", { name: "Defined Swatch Selector" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Swatch Type / Theme" })).toBeVisible();
     await expect(page.locator("[data-palette-source-select], [data-palette-source-search], [data-palette-source-pin-all]")).toHaveCount(0);
@@ -728,7 +728,8 @@ test("Palette Tool rejects invalid payloads before render and blocks editing wit
 
   try {
     await expect(page.locator("[data-palette-log]")).toContainText("Invalid palette payload rejected before render");
-    await expect(page.locator("[data-palette-validation-list]")).toContainText("Palette key is missing.");
+    await expect(page.locator("[data-palette-validation-list]")).toContainText("Hex");
+    await expect(page.locator("[data-palette-validation-list]")).toContainText("Name");
     await expect(page.locator("[data-palette-count]")).toHaveText("0");
     expectNoPageFailures(invalidFailures);
   } finally {

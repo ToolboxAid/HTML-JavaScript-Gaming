@@ -1,5 +1,3 @@
-const SYMBOL_CANDIDATES = "!#$%&()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_abcdefghijklmnopqrstuvwxyz{|}~";
-
 const MOCK_DB_SOURCE_GROUPS = Object.freeze([
   {
     label: "8-color set",
@@ -907,8 +905,8 @@ const MOCK_DB_SOURCE_GROUPS = Object.freeze([
   }
 ]);
 
-function symbolForIndex(index) {
-  return SYMBOL_CANDIDATES[index] || String.fromCodePoint(0x00A1 + index - SYMBOL_CANDIDATES.length);
+function swatchKeyForIndex(source, index) {
+  return `${source}-swatch-${index + 1}`;
 }
 
 function tagForLabel(label) {
@@ -925,7 +923,7 @@ export function createPaletteSourceMockDbRows() {
     name,
     source: definition.source,
     sourceLabel: definition.label,
-    symbol: symbolForIndex(index),
+    swatchKey: swatchKeyForIndex(definition.source, index),
     tags: ["source", tagForLabel(definition.label)]
   })));
 }

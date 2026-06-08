@@ -53,7 +53,6 @@ const HARMONY_SOURCE_LABEL = "Harmony Scheme";
 const SOURCE_ID_RENAMES = Object.freeze({
   crayola: PALETTE_SOURCE_PALETTE_COLORS
 });
-const SYMBOL_CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*()-+=[]{};:,.?";
 
 function clonePickerSettings(settings) {
   if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
@@ -80,7 +79,23 @@ function cloneColorMetadata(metadata) {
   if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
     return null;
   }
-  const cloned = { ...metadata };
+  const cloned = {
+    colors: metadata.colors,
+    contrast: metadata.contrast,
+    hex: metadata.hex,
+    hueShift: metadata.hueShift,
+    name: metadata.name,
+    paletteType: metadata.paletteType,
+    saturation: metadata.saturation,
+    sortDirection: metadata.sortDirection,
+    sortField: metadata.sortField,
+    source: metadata.source,
+    steps: metadata.steps,
+    swatchSize: metadata.swatchSize,
+    themeCollection: metadata.themeCollection,
+    variant: metadata.variant,
+    variantValue: metadata.variantValue
+  };
   if (Array.isArray(metadata.activeTags)) {
     cloned.activeTags = [...metadata.activeTags];
   }
@@ -96,7 +111,7 @@ function cloneColorMetadata(metadata) {
 
 function cloneSwatch(swatch) {
   const cloned = {
-    symbol: swatch.symbol,
+    key: swatch.key,
     hex: swatch.hex,
     name: swatch.name,
     source: swatch.source,
@@ -204,10 +219,6 @@ function rgbKey(hex) {
   return normalizeHex(hex).slice(0, 7);
 }
 
-function isOneCharacter(value) {
-  return Array.from(value).length === 1;
-}
-
 function normalizeTags(value) {
   const rawTags = Array.isArray(value) ? value : normalizeText(value).split(",");
   const tags = rawTags
@@ -261,7 +272,7 @@ function duplicateIssue(field, label, value) {
 
 export function normalizePaletteSwatchInput(input = {}, options = {}) {
   const source = input && typeof input === "object" && !Array.isArray(input) ? input : {};
-  const symbol = normalizeText(source.symbol);
+  const key = normalizeText(source.swatchKey || source.key);
   const hex = normalizeHex(source.hex);
   const name = normalizeText(source.name);
   const tags = normalizeTags(source.tags);
@@ -269,7 +280,7 @@ export function normalizePaletteSwatchInput(input = {}, options = {}) {
   const metadata = cloneColorMetadata(source.metadata);
 
   const swatch = {
-    symbol,
+    key,
     hex,
     name,
     source: normalizeSource(source.source || options.source),
@@ -293,12 +304,8 @@ export function normalizePaletteSwatchInput(input = {}, options = {}) {
 
 export function validatePaletteSwatchInput(input = {}, existingSwatches = [], options = {}) {
   const swatch = normalizePaletteSwatchInput(input, options);
-  const excludeSymbol = normalizeText(options.excludeSymbol || options.excludeKey);
+  const excludeKey = normalizeText(options.excludeKey);
   const issues = [];
-
-  if (options.requireSymbol && !swatch.symbol) {
-    issues.push(createIssue("symbol", "Palette Key", "Palette key is missing."));
-  }
 
   if (!swatch.hex) {
     issues.push(createIssue("hex", "Hex", "Enter #RRGGBB or #RRGGBBAA."));
@@ -308,9 +315,9 @@ export function validatePaletteSwatchInput(input = {}, existingSwatches = [], op
     issues.push(createIssue("name", "Name", "Enter a name for this swatch."));
   }
 
-  const comparableSwatches = existingSwatches.filter((existing) => existing.symbol !== excludeSymbol);
-  if (swatch.symbol && comparableSwatches.some((existing) => existing.symbol === swatch.symbol)) {
-    issues.push(duplicateIssue("symbol", "Duplicate Symbol", swatch.symbol));
+  const comparableSwatches = existingSwatches.filter((existing) => existing.key !== excludeKey);
+  if (swatch.key && comparableSwatches.some((existing) => existing.key === swatch.key)) {
+    issues.push(duplicateIssue("key", "Duplicate Key", swatch.key));
   }
 
   const nameKey = swatch.name.toLowerCase();
@@ -365,7 +372,7 @@ export function validatePaletteWorkspacePayload(payload = {}) {
   const normalizedSwatches = [];
   swatches.forEach((candidate, index) => {
     const normalized = normalizePaletteSwatchInput(candidate);
-    const validation = validatePaletteSwatchInput(normalized, normalizedSwatches, { requireSymbol: true });
+    const validation = validatePaletteSwatchInput(normalized, normalizedSwatches);
     if (validation.issues.length) {
       validation.issues.forEach((issue) => {
         issues.push({
@@ -399,7 +406,7 @@ function normalizeSourcePaletteRows(sourcePaletteRows = []) {
     .map((row, index) => {
       const normalizedSourceId = normalizeSourceId(row?.sourceId || row?.paletteId || row?.source);
       const swatch = normalizePaletteSwatchInput(row, { source: normalizedSourceId });
-      if (!normalizedSourceId || !swatch.symbol || !isOneCharacter(swatch.symbol) || !swatch.hex || !swatch.name) {
+      if (!normalizedSourceId || !swatch.key || !swatch.hex || !swatch.name) {
         return null;
       }
       return {
@@ -409,7 +416,7 @@ function normalizeSourcePaletteRows(sourcePaletteRows = []) {
         name: swatch.name,
         source: normalizedSourceId,
         sourceLabel: sourceLabel(normalizedSourceId, row.sourceLabel || row.paletteLabel || row.label),
-        symbol: swatch.symbol,
+        swatchKey: swatch.key,
         tags: [...swatch.tags]
       };
     })
@@ -430,8 +437,6 @@ function compareSwatches(sortKey, sortDirection = "asc") {
       result = colorMetrics(left.hex).saturation - colorMetrics(right.hex).saturation || left.name.localeCompare(right.name);
     } else if (sortKey === "source") {
       result = left.source.localeCompare(right.source) || left.name.localeCompare(right.name);
-    } else if (sortKey === "symbol") {
-      result = left.symbol.localeCompare(right.symbol);
     } else if (sortKey === "tag") {
       result = (left.tags[0] || "\uffff").localeCompare(right.tags[0] || "\uffff") || left.name.localeCompare(right.name);
     } else {
@@ -627,19 +632,14 @@ function harmonyForSwatch(swatch, options = {}, sourcePaletteData = null) {
   return withoutBaseColorSuggestions(uniqueSuggestions(calculated), swatch.hex, scheme.label);
 }
 
-function nextAvailableSymbol(existingSwatches, seedText = "") {
-  const used = new Set(existingSwatches.map((swatch) => swatch.symbol));
-  const seedCandidates = Array.from(normalizeText(seedText).toUpperCase().replace(/[^A-Z0-9]/g, ""));
-  const candidates = [...seedCandidates, ...Array.from(SYMBOL_CANDIDATES)];
-  const compactCandidate = candidates.find((candidate) => !used.has(candidate));
-  if (compactCandidate) {
-    return compactCandidate;
-  }
+function nextAvailableSwatchKey(existingSwatches, seedText = "") {
+  const used = new Set(existingSwatches.map((swatch) => swatch.key));
+  const root = normalizeText(seedText).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "swatch";
   let index = existingSwatches.length + 1;
-  let candidate = `swatch-${index}`;
+  let candidate = `${root}-${index}`;
   while (used.has(candidate)) {
     index += 1;
-    candidate = `swatch-${index}`;
+    candidate = `${root}-${index}`;
   }
   return candidate;
 }
@@ -666,8 +666,8 @@ function nextGeneratedHarmonyName(name, existingSwatches) {
   return candidate;
 }
 
-function createUsageId(projectId, swatchSymbol, assetId) {
-  return `${projectId || "project"}-${swatchSymbol || "swatch"}-${assetId || "asset"}`;
+function createUsageId(projectId, swatchKey, assetId) {
+  return `${projectId || "project"}-${swatchKey || "swatch"}-${assetId || "asset"}`;
 }
 
 export function createProjectWorkspacePaletteRepository(options = {}) {
@@ -697,7 +697,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   });
   const undoStacks = new Map();
   const redoStacks = new Map();
-  let selectedSymbol = "";
+  let selectedSwatchKey = "";
 
   function persistTables() {
     saveMockDbTables(PALETTE_DB_OWNER, getTables(), options);
@@ -723,11 +723,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       .filter((row) => row.projectId === projectId)
       .map((row) => ({
         hex: row.hex,
+        key: row.swatchKey,
         metadata: cloneColorMetadata(row.metadata) || undefined,
         name: row.name,
         pickerSettings: clonePickerSettings(row.pickerSettings) || undefined,
         source: row.source,
-        symbol: row.symbol,
         tags: [...row.tags]
       }));
   }
@@ -736,7 +736,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const existingRows = new Map(
       paletteColorRows
         .filter((row) => row.projectId === projectId)
-        .map((row) => [row.symbol, row])
+        .map((row) => [row.swatchKey, row])
     );
     for (let index = paletteColorRows.length - 1; index >= 0; index -= 1) {
       if (paletteColorRows[index].projectId === projectId) {
@@ -745,7 +745,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
     const timestamp = new Date().toISOString();
     swatches.forEach((swatch, index) => {
-      const existingRow = existingRows.get(swatch.symbol) || {};
+      const existingRow = existingRows.get(swatch.key) || {};
       paletteColorRows.push({
         ...rowAuditFields({
           ...existingRow,
@@ -759,7 +759,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         pickerSettings: clonePickerSettings(swatch.pickerSettings) || undefined,
         projectId,
         source: swatch.source,
-        symbol: swatch.symbol,
+        swatchKey: swatch.key,
         tags: [...swatch.tags]
       });
     });
@@ -828,11 +828,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     syncWorkspaceRecordFromColors(projectId);
     const activeSwatches = swatchesFromColorRows(projectId);
     if (optionsForReplace.selection === "clear") {
-      selectedSymbol = "";
-    } else if (optionsForReplace.selectedSymbol) {
-      selectedSymbol = optionsForReplace.selectedSymbol;
-    } else if (!activeSwatches.some((swatch) => swatch.symbol === selectedSymbol)) {
-      selectedSymbol = optionsForReplace.selection === "preserve" ? "" : activeSwatches[0]?.symbol || "";
+      selectedSwatchKey = "";
+    } else if (optionsForReplace.selectedKey) {
+      selectedSwatchKey = optionsForReplace.selectedKey;
+    } else if (!activeSwatches.some((swatch) => swatch.key === selectedSwatchKey)) {
+      selectedSwatchKey = optionsForReplace.selection === "preserve" ? "" : activeSwatches[0]?.key || "";
     }
     persistTables();
 
@@ -848,10 +848,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const swatches = getActiveSwatches();
     const inputWithKey = {
       ...input,
-      symbol: normalizeText(input.symbol) || optionsForSave.excludeSymbol || nextAvailableSymbol(swatches, `${input.name || ""} ${input.hex || ""}`)
+      key: normalizeText(input.key) || optionsForSave.excludeKey || nextAvailableSwatchKey(swatches, `${input.name || ""} ${input.hex || ""}`)
     };
     const validation = validatePaletteSwatchInput(inputWithKey, swatches, {
-      excludeSymbol: optionsForSave.excludeSymbol,
+      excludeKey: optionsForSave.excludeKey,
       source: optionsForSave.source || PALETTE_SOURCE_USER
     });
 
@@ -873,12 +873,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const nextSwatches = optionsForSave.excludeSymbol
-      ? swatches.map((swatch) => (swatch.symbol === optionsForSave.excludeSymbol ? validation.swatch : swatch))
+    const nextSwatches = optionsForSave.excludeKey
+      ? swatches.map((swatch) => (swatch.key === optionsForSave.excludeKey ? validation.swatch : swatch))
       : [...swatches, validation.swatch];
-    selectedSymbol = validation.swatch.symbol;
+    selectedSwatchKey = validation.swatch.key;
     return replaceSwatches(projectId, nextSwatches, {
-      selectedSymbol: validation.swatch.symbol
+      selectedKey: validation.swatch.key
     });
   }
 
@@ -901,7 +901,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    if (!swatches.some((swatch) => swatch.symbol === selectedSwatch.symbol)) {
+    if (!swatches.some((swatch) => swatch.key === selectedSwatch.key)) {
       return {
         issues: [createIssue("selectedSwatch", "Selected Swatch", "Selected swatch no longer exists.")],
         ok: false,
@@ -913,12 +913,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     return saveSwatch(
       {
         ...input,
-        symbol: selectedSwatch.symbol,
+        key: selectedSwatch.key,
         source: selectedSwatch.source || PALETTE_SOURCE_USER,
         tags: [...selectedSwatch.tags]
       },
       {
-        excludeSymbol: selectedSwatch.symbol,
+        excludeKey: selectedSwatch.key,
         source: selectedSwatch.source || PALETTE_SOURCE_USER
       }
     );
@@ -941,7 +941,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       ...selectedSwatch,
       tags: normalizeTags(tags)
     }, swatches, {
-      excludeSymbol: selectedSwatch.symbol,
+      excludeKey: selectedSwatch.key,
       source: selectedSwatch.source || PALETTE_SOURCE_USER
     });
     if (validation.issues.length) {
@@ -954,7 +954,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
 
     const result = replaceSwatches(projectId, swatches.map((swatch) => (
-      swatch.symbol === selectedSwatch.symbol ? validation.swatch : swatch
+      swatch.key === selectedSwatch.key ? validation.swatch : swatch
     )), { selection: "preserve" });
     return {
       ...result,
@@ -962,12 +962,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     };
   }
 
-  function addTagToSwatches(symbols = [], tag = "") {
+  function addTagToSwatches(keys = [], tag = "") {
     const projectId = activeProjectId();
     const swatches = getActiveSwatches();
     const normalizedTag = normalizeTags([tag])[0] || "";
-    const targetSymbols = [...new Set(symbols.map(normalizeText))]
-      .filter((symbol) => swatches.some((swatch) => swatch.symbol === symbol));
+    const targetKeys = [...new Set(keys.map(normalizeText))]
+      .filter((key) => swatches.some((swatch) => swatch.key === key));
 
     if (!projectId) {
       return {
@@ -987,7 +987,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    if (!targetSymbols.length) {
+    if (!targetKeys.length) {
       return {
         issues: [createIssue("checkedSwatches", "Checked Swatches", "Check at least one active project palette swatch before batch tagging.")],
         ok: false,
@@ -997,7 +997,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
 
     const nextSwatches = swatches.map((swatch) => (
-      targetSymbols.includes(swatch.symbol)
+      targetKeys.includes(swatch.key)
         ? { ...swatch, tags: normalizeTags([...swatch.tags, normalizedTag]) }
         : swatch
     ));
@@ -1005,15 +1005,15 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     return {
       ...result,
       message: result.ok
-        ? `Added tag ${normalizedTag} to ${targetSymbols.length} checked swatch${targetSymbols.length === 1 ? "" : "es"}.`
+        ? `Added tag ${normalizedTag} to ${targetKeys.length} checked swatch${targetKeys.length === 1 ? "" : "es"}.`
         : result.message
     };
   }
 
-  function removeSwatch(symbol) {
+  function removeSwatch(key) {
     const projectId = activeProjectId();
-    const normalizedSymbol = normalizeText(symbol);
-    const swatchToRemove = getActiveSwatches().find((swatch) => swatch.symbol === normalizedSymbol);
+    const normalizedKey = normalizeText(key);
+    const swatchToRemove = getActiveSwatches().find((swatch) => swatch.key === normalizedKey);
     if (!projectId || !swatchToRemove) {
       return {
         issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a project palette swatch before removing.")],
@@ -1023,7 +1023,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const usage = getSwatchUsage(swatchToRemove.symbol);
+    const usage = getSwatchUsage(swatchToRemove.key);
     if (usage.length) {
       return {
         issues: [createIssue("dependentTools", "Dependent Tools", `${swatchToRemove.name} is used by ${usage.map((row) => row.toolId).join(", ")}.`)],
@@ -1033,9 +1033,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const nextSwatches = getActiveSwatches().filter((swatch) => swatch.symbol !== swatchToRemove.symbol);
+    const nextSwatches = getActiveSwatches().filter((swatch) => swatch.key !== swatchToRemove.key);
     const result = replaceSwatches(projectId, nextSwatches, {
-      selection: selectedSymbol === swatchToRemove.symbol ? "clear" : "preserve"
+      selection: selectedSwatchKey === swatchToRemove.key ? "clear" : "preserve"
     });
     return {
       ...result,
@@ -1054,19 +1054,19 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    return removeSwatch(selectedSwatch.symbol);
+    return removeSwatch(selectedSwatch.key);
   }
 
-  function selectSwatch(symbol) {
-    const normalizedSymbol = normalizeText(symbol);
-    if (getActiveSwatches().some((swatch) => swatch.symbol === normalizedSymbol)) {
-      selectedSymbol = normalizedSymbol;
+  function selectSwatch(key) {
+    const normalizedKey = normalizeText(key);
+    if (getActiveSwatches().some((swatch) => swatch.key === normalizedKey)) {
+      selectedSwatchKey = normalizedKey;
     }
     return getSnapshot();
   }
 
   function getSelectedSwatch() {
-    return selectedSymbol ? getActiveSwatches().find((swatch) => swatch.symbol === selectedSymbol) || null : null;
+    return selectedSwatchKey ? getActiveSwatches().find((swatch) => swatch.key === selectedSwatchKey) || null : null;
   }
 
   function listSwatches(optionsForList = {}) {
@@ -1098,9 +1098,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const query = normalizeText(optionsForList.query).toLowerCase();
     const swatches = sourceRowsForSource(sourceId).map((row) => ({
       hex: row.hex,
+      key: row.swatchKey,
       name: row.name,
       source: row.source,
-      symbol: row.symbol,
       tags: [...row.tags]
     }));
     return swatches
@@ -1108,7 +1108,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         if (!query) {
           return true;
         }
-        return [swatch.symbol, swatch.hex, swatch.name, swatch.source, ...swatch.tags]
+        return [swatch.key, swatch.hex, swatch.name, swatch.source, ...swatch.tags]
           .join(" ")
           .toLowerCase()
           .includes(query);
@@ -1148,7 +1148,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const issues = [];
     let added = 0;
     let alreadyPinned = 0;
-    let lastAddedSymbol = "";
+    let lastAddedKey = "";
     let skipped = 0;
 
     (Array.isArray(sourceSwatches) ? sourceSwatches : []).forEach((sourceSwatch) => {
@@ -1157,7 +1157,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       });
       swatch.tags = [];
       const colorKey = rgbKey(swatch.hex);
-      if (!swatch.symbol || !isOneCharacter(swatch.symbol) || !swatch.hex || !swatch.name) {
+      if (!swatch.key) {
+        swatch.key = nextAvailableSwatchKey(nextSwatches, `${swatch.name || ""} ${swatch.hex || ""}`);
+      }
+      if (!swatch.hex || !swatch.name) {
         skipped += 1;
         return;
       }
@@ -1175,7 +1178,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
 
       nextSwatches.push(validation.swatch);
       added += 1;
-      lastAddedSymbol = validation.swatch.symbol;
+      lastAddedKey = validation.swatch.key;
     });
 
     const message = `Pin All complete: ${added} pinned, ${alreadyPinned} already pinned, ${skipped} skipped.`;
@@ -1189,7 +1192,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
 
     const result = replaceSwatches(projectId, nextSwatches, {
-      selectedSymbol: lastAddedSymbol
+      selectedKey: lastAddedKey
     });
     return {
       ...result,
@@ -1224,7 +1227,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   function toggleSourceSwatchPin(sourceSwatch = {}) {
     const pinnedSwatch = findPinnedSourceSwatch(sourceSwatch);
     if (pinnedSwatch) {
-      return removeSwatch(pinnedSwatch.symbol);
+      return removeSwatch(pinnedSwatch.key);
     }
     return pinSourceSwatch(sourceSwatch);
   }
@@ -1260,21 +1263,13 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
 
     const name = nextGeneratedHarmonyName(suggestion.name, swatches);
-    const symbol = nextAvailableSymbol(swatches, name);
-    if (!symbol) {
-      return {
-        issues: [createIssue("symbol", "Symbol", "No available one-character palette symbol remains.")],
-        ok: false,
-        message: "Harmony color blocked: no available symbol.",
-        snapshot: getSnapshot()
-      };
-    }
+    const key = nextAvailableSwatchKey(swatches, `${name} ${suggestion.hex || ""}`);
 
     const validation = validatePaletteSwatchInput({
       hex: suggestion.hex,
+      key,
       name,
       source: generatedHarmonyNameRoot(name),
-      symbol,
       tags: []
     }, swatches, { source: generatedHarmonyNameRoot(name) });
     if (validation.issues.length) {
@@ -1287,7 +1282,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
 
     return replaceSwatches(projectId, [...swatches, validation.swatch], {
-      selectedSymbol: validation.swatch.symbol
+      selectedKey: validation.swatch.key
     });
   }
 
@@ -1309,7 +1304,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   function toggleHarmonySuggestionPin(suggestion = {}) {
     const pinnedSwatch = findPinnedSourceSwatch(suggestion);
     if (pinnedSwatch) {
-      return removeSwatch(pinnedSwatch.symbol);
+      return removeSwatch(pinnedSwatch.key);
     }
     return addHarmonySuggestion(suggestion);
   }
@@ -1332,7 +1327,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const previousSwatches = undoStack.pop();
     replacePaletteColorRows(projectId, previousSwatches);
     syncWorkspaceRecordFromColors(projectId);
-    selectedSymbol = previousSwatches[0]?.symbol || "";
+    selectedSwatchKey = previousSwatches[0]?.key || "";
     return {
       ok: true,
       message: "Palette undo applied.",
@@ -1358,7 +1353,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const nextSwatches = redoStack.pop();
     replacePaletteColorRows(projectId, nextSwatches);
     syncWorkspaceRecordFromColors(projectId);
-    selectedSymbol = nextSwatches[0]?.symbol || "";
+    selectedSwatchKey = nextSwatches[0]?.key || "";
     return {
       ok: true,
       message: "Palette redo applied.",
@@ -1388,7 +1383,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
 
     replacePaletteColorRows(projectId, validation.normalized.tools[PALETTE_TOOL_KEY].swatches);
     syncWorkspaceRecordFromColors(projectId);
-    selectedSymbol = swatchesFromColorRows(projectId)[0]?.symbol || "";
+    selectedSwatchKey = swatchesFromColorRows(projectId)[0]?.key || "";
     undoStacks.set(projectId, []);
     redoStacks.set(projectId, []);
     persistTables();
@@ -1404,9 +1399,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       tools: {
         [PALETTE_TOOL_KEY]: {
           swatches: [
-            { symbol: "H", hex: "#1F75FE", name: "Hero Blue", source: PALETTE_SOURCE_USER, tags: ["hero", "ui"] },
-            { symbol: "A", hex: "#FF7538", name: "Accent Orange", source: PALETTE_SOURCE_USER, tags: ["accent"] },
-            { symbol: "B", hex: "#232323", name: "Backdrop Black", source: PALETTE_SOURCE_USER, tags: ["background"] }
+            { key: "hero-blue", hex: "#1F75FE", name: "Hero Blue", source: PALETTE_SOURCE_USER, tags: ["hero", "ui"] },
+            { key: "accent-orange", hex: "#FF7538", name: "Accent Orange", source: PALETTE_SOURCE_USER, tags: ["accent"] },
+            { key: "backdrop-black", hex: "#232323", name: "Backdrop Black", source: PALETTE_SOURCE_USER, tags: ["background"] }
           ]
         }
       }
@@ -1415,7 +1410,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
 
   function recordSwatchUsage(input = {}) {
     const projectId = activeProjectId();
-    const swatch = findSwatch(input.symbol);
+    const swatch = findSwatch(input.key || input.swatchKey);
     if (!projectId || !swatch) {
       return {
         ok: false,
@@ -1424,7 +1419,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const existingIndex = usageRows.findIndex((usage) => usage.id === createUsageId(projectId, swatch.symbol, input.assetId));
+    const existingIndex = usageRows.findIndex((usage) => usage.id === createUsageId(projectId, swatch.key, input.assetId));
     const existingRow = existingIndex >= 0 ? usageRows[existingIndex] : {};
     const timestamp = new Date().toISOString();
     const row = {
@@ -1434,11 +1429,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         updatedBy: PALETTE_SYSTEM_USER_KEY
       }),
       assetId: normalizeText(input.assetId),
-      id: createUsageId(projectId, swatch.symbol, input.assetId),
+      id: createUsageId(projectId, swatch.key, input.assetId),
       projectId,
       swatchHex: swatch.hex,
+      swatchKey: swatch.key,
       swatchName: swatch.name,
-      swatchSymbol: swatch.symbol,
       toolId: normalizeText(input.toolId) || "assets"
     };
     if (existingIndex >= 0) {
@@ -1454,17 +1449,17 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     };
   }
 
-  function getSwatchUsage(symbol) {
+  function getSwatchUsage(key) {
     const projectId = activeProjectId();
-    const normalizedSymbol = normalizeText(symbol);
+    const normalizedKey = normalizeText(key);
     return usageRows
-      .filter((row) => row.projectId === projectId && row.swatchSymbol === normalizedSymbol)
+      .filter((row) => row.projectId === projectId && row.swatchKey === normalizedKey)
       .map((row) => ({ ...row }));
   }
 
-  function findSwatch(symbol) {
-    const normalizedSymbol = normalizeText(symbol);
-    return getActiveSwatches().find((swatch) => swatch.symbol === normalizedSymbol) || null;
+  function findSwatch(key) {
+    const normalizedKey = normalizeText(key);
+    return getActiveSwatches().find((swatch) => swatch.key === normalizedKey) || null;
   }
 
   function clearProjectData() {
@@ -1472,7 +1467,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     paletteColorRows.splice(0);
     usageRows.splice(0);
     workspaceRecords.clear();
-    selectedSymbol = "";
+    selectedSwatchKey = "";
     persistTables();
     return getSnapshot();
   }
@@ -1482,7 +1477,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     paletteColorRows.splice(0);
     usageRows.splice(0);
     workspaceRecords.clear();
-    selectedSymbol = "";
+    selectedSwatchKey = "";
     persistTables();
     return getSnapshot();
   }

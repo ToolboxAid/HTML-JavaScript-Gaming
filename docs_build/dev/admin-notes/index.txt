@@ -1,3 +1,5 @@
+[ ] Start the server
+npm run dev:local-api
 
 [ ] move 
 src\assets\fonts\0xProtoNerdFont\ to assets\theme-v2\fonts\

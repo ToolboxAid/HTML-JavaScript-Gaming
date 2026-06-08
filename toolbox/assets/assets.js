@@ -131,7 +131,7 @@ function createMetadataCell(asset) {
   const cell = document.createElement("td");
   const lines = asset.paletteSwatch
     ? [
-        `${asset.paletteSwatch.symbol} ${asset.paletteSwatch.hex}`,
+        `${asset.paletteSwatch.key} ${asset.paletteSwatch.hex}`,
         asset.paletteSwatch.name,
         asset.paletteSwatch.tags.length ? `Tags: ${asset.paletteSwatch.tags.join(", ")}` : "Tags: None",
         asset.checksum
@@ -205,12 +205,12 @@ function updatePalettePicker() {
 
   palette.swatches.forEach((swatch) => {
     const option = document.createElement("option");
-    option.value = swatch.symbol;
-    option.textContent = `${swatch.symbol} ${swatch.hex} ${swatch.name}`;
+    option.value = swatch.key;
+    option.textContent = `${swatch.key} ${swatch.hex} ${swatch.name}`;
     elements.paletteColor.append(option);
   });
 
-  if (currentValue && palette.swatches.some((swatch) => swatch.symbol === currentValue)) {
+  if (currentValue && palette.swatches.some((swatch) => swatch.key === currentValue)) {
     elements.paletteColor.value = currentValue;
   }
   elements.paletteColor.disabled = palette.swatches.length === 0;
@@ -218,8 +218,8 @@ function updatePalettePicker() {
 }
 
 function selectedPaletteSwatch() {
-  const symbol = elements.paletteColor?.value || "";
-  return symbol ? repository.getPaletteSnapshot().swatches.find((swatch) => swatch.symbol === symbol) || null : null;
+  const key = elements.paletteColor?.value || "";
+  return key ? repository.getPaletteSnapshot().swatches.find((swatch) => swatch.key === key) || null : null;
 }
 
 function setPaletteSelectionContent(message, includeLink = true) {
@@ -263,7 +263,7 @@ function updatePaletteSelectionDetails() {
   if (elements.name && !elements.name.value.trim()) {
     elements.name.value = swatch.name;
   }
-  setPaletteSelectionContent(`Symbol: ${swatch.symbol} Hex: ${swatch.hex} Name: ${swatch.name}${tags}`, false);
+  setPaletteSelectionContent(`Key: ${swatch.key} Hex: ${swatch.hex} Name: ${swatch.name}${tags}`, false);
 }
 
 function updateFileAccept() {
@@ -429,7 +429,7 @@ function renderPreview(snapshot) {
   setText(elements.previewTitle, `${asset.name} Preview`);
   if (asset.paletteSwatch) {
     const tags = asset.paletteSwatch.tags.length ? ` Tags: ${asset.paletteSwatch.tags.join(", ")}` : "";
-    setText(elements.preview, `${asset.previewKind}: ${asset.paletteSwatch.symbol} ${asset.paletteSwatch.hex} ${asset.paletteSwatch.name}.${tags}`);
+    setText(elements.preview, `${asset.previewKind}: ${asset.paletteSwatch.key} ${asset.paletteSwatch.hex} ${asset.paletteSwatch.name}.${tags}`);
     return;
   }
   setText(elements.preview, `${asset.previewKind}: ${asset.storedPath} from ${asset.originalName}.`);
@@ -467,7 +467,7 @@ function renderMetadata(snapshot) {
     `Stored path: ${asset.storedPath}`,
     `Role: ${asset.assetRoleLabel}`,
     `Owner project: ${asset.ownerProjectId}`,
-    asset.paletteSwatch ? `Swatch symbol: ${asset.paletteSwatch.symbol}` : "",
+    asset.paletteSwatch ? `Swatch key: ${asset.paletteSwatch.key}` : "",
     asset.paletteSwatch ? `Swatch hex: ${asset.paletteSwatch.hex}` : "",
     asset.paletteSwatch ? `Swatch name: ${asset.paletteSwatch.name}` : "",
     asset.paletteSwatch && asset.paletteSwatch.tags.length ? `Swatch tags: ${asset.paletteSwatch.tags.join(", ")}` : ""

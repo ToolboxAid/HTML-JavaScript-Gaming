@@ -404,7 +404,7 @@ function createStatusMessage(text) {
 }
 
 function swatchKey(swatch) {
-  return swatch?.symbol || "";
+  return swatch?.key || "";
 }
 
 function sortDirectionCaret(direction) {
@@ -1675,7 +1675,7 @@ function runInitialQueryState() {
       tools: {
         [PALETTE_TOOL_KEY]: {
           swatches: [
-            { hex: "#112233", name: "Missing Palette Key" }
+            { hex: "#12", name: "" }
           ]
         }
       }

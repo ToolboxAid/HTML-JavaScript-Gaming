@@ -20,20 +20,19 @@ function toHexColor(value) {
   return match ? `#${match[1].toUpperCase()}` : "";
 }
 
-function getFallbackSymbol(index) {
-  const symbols = "!#$%&()*+,-./:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[]^_`abcdefghijklmnopqrstuvwxyz{|}~0123456789";
+function getFallbackSwatchKey(index) {
   if (!Number.isInteger(index) || index < 0) {
-    return "!";
+    return "swatch-1";
   }
-  return symbols[index % symbols.length];
+  return `swatch-${index + 1}`;
 }
 
 function normalizeEntry(rawEntry, index) {
   const source = asObject(rawEntry);
   const hex = toHexColor(source.hex);
-  const symbol = sanitizeText(source.symbol).slice(0, 1) || getFallbackSymbol(index);
+  const key = sanitizeText(source.key || source.swatchKey) || getFallbackSwatchKey(index);
   return {
-    symbol,
+    key,
     hex,
     name: sanitizeText(source.name) || `Swatch ${index + 1}`
   };
@@ -47,7 +46,7 @@ function normalizeLegacyColorEntries(colors) {
     .map((entry) => toHexColor(entry))
     .filter((entry) => Boolean(entry))
     .map((hex, index) => ({
-      symbol: getFallbackSymbol(index),
+      key: getFallbackSwatchKey(index),
       hex: hex.slice(0, 7),
       name: `Swatch ${index + 1}`
     }));
@@ -103,8 +102,8 @@ export function validatePaletteDocument(rawDocument, options = {}) {
   }
 
   normalized.swatches.forEach((entry, index) => {
-    if (sanitizeText(entry.symbol).length !== 1) {
-      issues.push(`swatches[${index}].symbol must be a single character.`);
+    if (!sanitizeText(entry.key)) {
+      issues.push(`swatches[${index}].key is required.`);
     }
     if (!toHexColor(entry.hex)) {
       issues.push(`swatches[${index}].hex must be #RRGGBB or #RRGGBBAA.`);
