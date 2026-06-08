@@ -83,6 +83,95 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
+                                <summary>Palette Generator</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Palette generator controls">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteGeneratorType">Palette Type</label></th>
+                                                    <td>
+                                                        <select class="tool-form-control" id="paletteGeneratorType" data-palette-generator-type>
+                                                            <option value="full" selected>Full</option>
+                                                            <option value="monochrome">Monochrome</option>
+                                                            <option value="forest">Forest</option>
+                                                            <option value="jungle">Jungle</option>
+                                                            <option value="desert">Desert</option>
+                                                            <option value="ocean">Ocean</option>
+                                                            <option value="arctic">Arctic</option>
+                                                            <option value="floral">Floral</option>
+                                                            <option value="pastel">Pastel</option>
+                                                            <option value="fire">Fire</option>
+                                                            <option value="ice">Ice</option>
+                                                            <option value="earth">Earth</option>
+                                                            <option value="lightning">Lightning</option>
+                                                            <option value="fantasy">Fantasy</option>
+                                                            <option value="sci-fi">Sci-Fi</option>
+                                                            <option value="cyberpunk">Cyberpunk</option>
+                                                            <option value="arcade">Arcade</option>
+                                                            <option value="8-bit">8-Bit</option>
+                                                            <option value="16-bit">16-Bit</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteGeneratorColors">Colors</label></th>
+                                                    <td>
+                                                        <select class="tool-form-control" id="paletteGeneratorColors" data-palette-generator-colors>
+                                                            <option value="1">1</option>
+                                                            <option value="2">2</option>
+                                                            <option value="3">3</option>
+                                                            <option value="4">4</option>
+                                                            <option value="5">5</option>
+                                                            <option value="6">6</option>
+                                                            <option value="7" selected>7</option>
+                                                            <option value="8">8</option>
+                                                            <option value="12">12</option>
+                                                            <option value="16">16</option>
+                                                            <option value="24">24</option>
+                                                            <option value="32">32</option>
+                                                            <option value="64">64</option>
+                                                            <option value="128">128</option>
+                                                            <option value="256">256</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteGeneratorSteps">Steps</label></th>
+                                                    <td>
+                                                        <select class="tool-form-control" id="paletteGeneratorSteps" data-palette-generator-steps>
+                                                            <option value="2">2</option>
+                                                            <option value="4">4</option>
+                                                            <option value="8" selected>8</option>
+                                                            <option value="16">16</option>
+                                                            <option value="32">32</option>
+                                                            <option value="64">64</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteGeneratorContrast">Contrast</label></th>
+                                                    <td><input class="tool-form-control" id="paletteGeneratorContrast" type="range" min="0" max="100" value="40" data-palette-generator-contrast></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteGeneratorSaturation">Saturation</label></th>
+                                                    <td><input class="tool-form-control" id="paletteGeneratorSaturation" type="range" min="0" max="100" value="100" data-palette-generator-saturation></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteGeneratorHueShift">Hue Shift</label></th>
+                                                    <td><input class="tool-form-control" id="paletteGeneratorHueShift" type="range" min="-180" max="180" value="0" data-palette-generator-hue-shift></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <div class="hero-actions">
+                                        <button class="btn primary" type="button" data-palette-generator-generate>Generate</button>
+                                        <button class="btn" type="button" data-palette-generator-reset>Reset</button>
+                                    </div>
+                                    <p class="status" role="status" data-palette-generator-status>Palette generator preview ready.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
                                 <summary>User Defined Swatch</summary>
                                 <div class="accordion-body content-stack">
                                     <form class="content-stack" data-palette-user-swatch-form>
@@ -133,7 +222,7 @@
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="colors" data-tool-icon-src="assets/theme-v2/images/badges/colors.png" data-tool-character-src="assets/theme-v2/images/characters/palette-manager.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Palette Colors</h2>
+                        <h2>Selected Swatches</h2>
                         <div class="grid cols-3" aria-label="Palette summary">
                             <article class="mini-stat"><strong data-palette-count>0</strong>Palette Colors</article>
                             <article class="mini-stat"><strong data-palette-selected-summary>None</strong>Selected</article>
@@ -151,7 +240,7 @@
                         </article>
                         <div class="content-stack accordion-fill-stack" data-palette-fullscreen-panels>
                             <details class="vertical-accordion accordion-fill-panel" open data-palette-project-accordion>
-                                <summary>Active Project Palette</summary>
+                                <summary>Selected Swatches</summary>
                                 <div class="accordion-body content-stack accordion-scroll-body">
                                     <div class="grid cols-2" aria-label="Active project palette controls">
                                         <div class="action-group" aria-label="Active project palette sort" data-palette-user-sort></div>
@@ -165,7 +254,7 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion accordion-fill-panel" open data-palette-source-accordion>
-                                <summary>Source Palette Browser</summary>
+                                <summary>Defined Swatch Selector</summary>
                                 <div class="accordion-body content-stack accordion-scroll-body">
                                     <div class="content-stack content-stack--compact" aria-label="Source palette controls">
                                         <div class="content-cluster" aria-label="Source palette filters">
@@ -185,6 +274,13 @@
                                             <p class="status">No source colors available.</p>
                                         </div>
                                     </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion accordion-fill-panel" open data-palette-generator-accordion>
+                                <summary>Swatch Type / Theme</summary>
+                                <div class="accordion-body content-stack accordion-scroll-body">
+                                    <div class="palette-generator-preview" role="grid" aria-label="Generated palette preview" data-palette-generator-preview></div>
+                                    <p class="status" role="status" data-palette-generator-preview-status>Full palette preview uses ROYGBIV columns.</p>
                                 </div>
                             </details>
                         </div>

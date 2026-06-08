@@ -261,10 +261,11 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [],
-    "status": "Planned",
+    "status": "Ready",
     "progressChecklist": [
-      "Review readiness",
-      "Static wireframe text only"
+      "Project palette runtime available",
+      "Palette generator controls render live preview",
+      "Source palette pinning and tag batching available"
     ],
     "deferred": false,
     "hidden": false,

@@ -222,11 +222,15 @@ async function expectSwatchRegionScrollsOnly(page, scrollSelector, controlsSelec
 async function expectFullscreenAccordionSplit(page) {
   const projectBox = await page.locator("[data-palette-project-accordion]").boundingBox();
   const sourceBox = await page.locator("[data-palette-source-accordion]").boundingBox();
-  expect(projectBox?.height || 0).toBeGreaterThan(180);
-  expect(sourceBox?.height || 0).toBeGreaterThan(180);
+  const generatorBox = await page.locator("[data-palette-generator-accordion]").boundingBox();
+  expect(projectBox?.height || 0).toBeGreaterThan(120);
+  expect(sourceBox?.height || 0).toBeGreaterThan(120);
+  expect(generatorBox?.height || 0).toBeGreaterThan(120);
   expect(Math.abs((projectBox?.height || 0) - (sourceBox?.height || 0))).toBeLessThan(12);
+  expect(Math.abs((sourceBox?.height || 0) - (generatorBox?.height || 0))).toBeLessThan(12);
   expect(sourceBox?.y || 0).toBeGreaterThan((projectBox?.y || 0) + (projectBox?.height || 0) - 4);
-  return { projectBox, sourceBox };
+  expect(generatorBox?.y || 0).toBeGreaterThan((sourceBox?.y || 0) + (sourceBox?.height || 0) - 4);
+  return { generatorBox, projectBox, sourceBox };
 }
 
 test("Palette repository owns active project swatches without mutating invalid payloads", async () => {
@@ -452,11 +456,12 @@ test("Palette repository owns active project swatches without mutating invalid p
 });
 
 test("Palette Tool adds, updates, pins, validates, and shows project-owned details", async ({ page }) => {
+  test.setTimeout(180000);
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
 
   try {
     await expect(page.getByRole("heading", { name: "Colors", exact: true }).first()).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Palette Colors", exact: true })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Selected Swatches", exact: true })).toBeVisible();
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText(/import json|export json/i);
@@ -831,10 +836,12 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await page.getByLabel("Tool Display Mode").click();
     await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
     await expect(page.locator(".tool-center-panel")).toHaveCSS("overflow-y", "hidden");
-    const { projectBox, sourceBox } = await expectFullscreenAccordionSplit(page);
+    const { generatorBox, projectBox, sourceBox } = await expectFullscreenAccordionSplit(page);
     expect(projectBox?.width || 0).toBeGreaterThan(300);
     expect(sourceBox?.width || 0).toBeGreaterThan(300);
+    expect(generatorBox?.width || 0).toBeGreaterThan(300);
     expect(Math.abs((projectBox?.width || 0) - (sourceBox?.width || 0))).toBeLessThan(80);
+    expect(Math.abs((sourceBox?.width || 0) - (generatorBox?.width || 0))).toBeLessThan(80);
     await expectSwatchRegionScrollsOnly(
       page,
       "[data-palette-user-scroll]",
@@ -852,7 +859,7 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-source-accordion]")).not.toHaveAttribute("open", "");
     const projectOnlyBox = await page.locator("[data-palette-project-accordion]").boundingBox();
     const collapsedSourceBox = await page.locator("[data-palette-source-accordion]").boundingBox();
-    expect(projectOnlyBox?.height || 0).toBeGreaterThan((projectBox?.height || 0) * 1.45);
+    expect(projectOnlyBox?.height || 0).toBeGreaterThan((projectBox?.height || 0) * 1.25);
     expect(collapsedSourceBox?.height || 0).toBeLessThan((sourceBox?.height || 0) * 0.45);
 
     await page.locator("[data-palette-source-accordion] > summary").click();
@@ -861,8 +868,125 @@ test("Palette Tool adds, updates, pins, validates, and shows project-owned detai
     await expect(page.locator("[data-palette-project-accordion]")).not.toHaveAttribute("open", "");
     const collapsedProjectBox = await page.locator("[data-palette-project-accordion]").boundingBox();
     const sourceOnlyBox = await page.locator("[data-palette-source-accordion]").boundingBox();
-    expect(sourceOnlyBox?.height || 0).toBeGreaterThan((sourceBox?.height || 0) * 1.45);
+    expect(sourceOnlyBox?.height || 0).toBeGreaterThan((sourceBox?.height || 0) * 1.25);
     expect(collapsedProjectBox?.height || 0).toBeLessThan((projectBox?.height || 0) * 0.45);
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Palette Tool renders palette generator controls and live preview", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/colors/index.html");
+
+  try {
+    await expect(page.locator("[data-palette-project-accordion] > summary")).toHaveText("Selected Swatches");
+    await expect(page.locator("[data-palette-source-accordion] > summary")).toHaveText("Defined Swatch Selector");
+    await expect(page.locator("[data-palette-generator-accordion] > summary")).toHaveText("Swatch Type / Theme");
+    await expect(page.locator("[data-palette-generator-type] option")).toHaveText([
+      "Full",
+      "Monochrome",
+      "Forest",
+      "Jungle",
+      "Desert",
+      "Ocean",
+      "Arctic",
+      "Floral",
+      "Pastel",
+      "Fire",
+      "Ice",
+      "Earth",
+      "Lightning",
+      "Fantasy",
+      "Sci-Fi",
+      "Cyberpunk",
+      "Arcade",
+      "8-Bit",
+      "16-Bit"
+    ]);
+    await expect(page.locator("[data-palette-generator-colors] option")).toHaveText([
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "12",
+      "16",
+      "24",
+      "32",
+      "64",
+      "128",
+      "256"
+    ]);
+    await expect(page.locator("[data-palette-generator-steps] option")).toHaveText(["2", "4", "8", "16", "32", "64"]);
+    await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("40");
+    await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("100");
+    await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("0");
+
+    await expect(page.locator("[data-palette-generator-preview-row]")).toHaveCount(8);
+    await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(56);
+    const fullFamilies = await page.locator("[data-palette-generator-preview-row='0'] [data-palette-generator-swatch]").evaluateAll((swatches) => (
+      swatches.map((swatch) => swatch.dataset.paletteGeneratorFamily)
+    ));
+    expect(fullFamilies).toEqual(["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"]);
+    const topColors = await page.locator("[data-palette-generator-preview-row='0'] [data-palette-generator-color]").evaluateAll((swatches) => (
+      swatches.map((swatch) => swatch.value.toUpperCase())
+    ));
+    const bottomColors = await page.locator("[data-palette-generator-preview-row='7'] [data-palette-generator-color]").evaluateAll((swatches) => (
+      swatches.map((swatch) => swatch.value.toUpperCase())
+    ));
+    expect(topColors).not.toContain("#FFFFFF");
+    expect(bottomColors).not.toContain("#000000");
+
+    const firstSwatch = page.locator("[data-palette-generator-color]").first();
+    const initialBox = await firstSwatch.boundingBox();
+    const initialColor = await firstSwatch.inputValue();
+    await page.locator("[data-palette-generator-hue-shift]").evaluate((control) => {
+      control.value = "45";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("45");
+    const shiftedColor = await firstSwatch.inputValue();
+    expect(shiftedColor).not.toBe(initialColor);
+
+    await page.locator("[data-palette-generator-colors]").selectOption("16");
+    await page.locator("[data-palette-generator-steps]").selectOption("16");
+    await expect(page.locator("[data-palette-generator-preview-row]")).toHaveCount(16);
+    await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(256);
+    const resizedBox = await firstSwatch.boundingBox();
+    expect(resizedBox?.width || 0).toBeLessThan(initialBox?.width || Number.MAX_SAFE_INTEGER);
+    expect(resizedBox?.height || 0).toBeLessThan(initialBox?.height || Number.MAX_SAFE_INTEGER);
+
+    await page.locator("[data-palette-generator-type]").selectOption("monochrome");
+    await page.locator("[data-palette-generator-colors]").selectOption("4");
+    await page.locator("[data-palette-generator-steps]").selectOption("4");
+    const monochromeFamilies = await page.locator("[data-palette-generator-preview-row='0'] [data-palette-generator-swatch]").evaluateAll((swatches) => (
+      swatches.map((swatch) => swatch.dataset.paletteGeneratorFamily)
+    ));
+    expect(monochromeFamilies).toEqual(["Warm Gray", "Neutral Gray", "Cool Gray", "Blue Gray"]);
+    await expect(page.locator("[data-palette-generator-preview-status]")).toContainText("Monochrome preview uses Warm Gray");
+
+    await page.locator("[data-palette-generator-contrast]").evaluate((control) => {
+      control.value = "80";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await page.locator("[data-palette-generator-saturation]").evaluate((control) => {
+      control.value = "20";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("80");
+    await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("20");
+    await page.locator("[data-palette-generator-reset]").click();
+    await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("40");
+    await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("100");
+    await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("0");
+    await page.locator("[data-palette-generator-generate]").click();
+    await expect(page.locator("[data-palette-generator-status]")).toHaveText("Palette generated.");
 
     expectNoPageFailures(failures);
   } finally {

@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -41,6 +42,19 @@ async function openRepoPage(page, pathName) {
   return { failedRequests, pageErrors, server };
 }
 
+async function setServerSession(server, userKey) {
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-mem" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  await fetch(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+}
+
 function normalizeMenuText(text) {
   return text.replace(/[▾▸]/g, "").trim();
 }
@@ -69,7 +83,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 6/38");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(1);
     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
@@ -108,8 +122,8 @@ test("root tools surface links current tool pages without old_* routes", async (
     });
     await expect(readyProjectWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/project-workspace/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(defaultToolLabels).toEqual(["Assets", "Game Configuration", "Game Design", "Project Workspace"]);
-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Ready", "Ready", "Ready", "Ready"]);
+    expect(defaultToolLabels).toEqual(["Assets", "Colors", "Game Configuration", "Game Design", "Project Journey", "Project Workspace"]);
+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Ready", "Ready", "Ready", "Ready", "Ready", "Ready"]);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Assistant$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
@@ -208,11 +222,12 @@ test("root tools surface links current tool pages without old_* routes", async (
     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 6/38");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+    await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 37/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 38/38");
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
     const adminLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(adminLabels).toEqual(expect.arrayContaining([
@@ -269,8 +284,9 @@ test("root tools surface links current tool pages without old_* routes", async (
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
+    await setServerSession(server, "");
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 4/37");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 6/38");
     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
     expect(pageErrors).toEqual([]);
   } finally {

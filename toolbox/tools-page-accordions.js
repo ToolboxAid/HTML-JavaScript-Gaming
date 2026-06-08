@@ -11,6 +11,7 @@ import {
     getToolRoute,
     toolRegistryMetadataDiagnostic
 } from "./tool-registry-api-client.js";
+import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
 
 (function () {
     const list = document.querySelector("[data-tools-accordion-list]");
@@ -30,6 +31,8 @@ import {
     const projectMemberRole = PROJECT_WORKSPACE_MEMBER_ROLES.includes(urlMemberRole)
         ? urlMemberRole
         : defaultProjectMemberRole;
+    const session = getSessionCurrent();
+    const adminSession = session?.isAdmin === true;
     let currentMode = searchParams.get("view") === "group" ? "grouped" : searchParams.get("view") === "build-path" ? "build-path" : "ascending";
     let targetGroupSlug = currentMode === "grouped" ? groupSlug(searchParams.get("group")) : "";
     const buildPathStatusIndicators = Object.freeze({
@@ -230,6 +233,9 @@ import {
     }
 
     function baseVisibleForCreator(tool) {
+        if (adminSession) {
+            return true;
+        }
         return tool.adminOnly !== true && tool.status === "Ready";
     }
 
@@ -238,10 +244,13 @@ import {
     }
 
     function isFocusedRoleView() {
-        return activeRoleFocus() !== "Owner";
+        return !adminSession && activeRoleFocus() !== "Owner";
     }
 
     function isVisibleForRole(tool) {
+        if (adminSession) {
+            return true;
+        }
         const focusedTools = roleFocusTools[activeRoleFocus()];
 
         if (!focusedTools) {

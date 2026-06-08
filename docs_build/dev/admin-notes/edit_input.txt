@@ -1,0 +1,2 @@
+[ ] We need to use the add button to add a row to a table.
+[ ] more like a table that is an in place editor
