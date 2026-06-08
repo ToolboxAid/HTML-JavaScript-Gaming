@@ -97,6 +97,18 @@ test("Admin Notes implementation is isolated under src/dev-runtime/admin", () =>
   );
 });
 
+test("Admin Notes local viewer page uses external dev-runtime JavaScript only", () => {
+  const viewerSource = fs.readFileSync(repoPath("src/dev-runtime/admin/admin-notes.html"), "utf8");
+  assert.doesNotMatch(viewerSource, /<script(?![^>]*\bsrc=)/i, "viewer page must not contain inline scripts");
+  assert.doesNotMatch(viewerSource, /<style\b/i, "viewer page must not contain style blocks");
+  assert.doesNotMatch(viewerSource, /\son[a-z]+\s*=/i, "viewer page must not contain inline event handlers");
+  assert.match(
+    viewerSource,
+    /<script type="module" src="\.\/admin-notes-viewer\.js"><\/script>/,
+    "viewer page loads its external dev-runtime viewer script",
+  );
+});
+
 test("production-facing paths do not link to dev Admin Notes files or implementation", () => {
   const headerSource = fs.readFileSync(repoPath("assets/theme-v2/partials/header-nav.html"), "utf8");
   assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|Admin Notes/);
