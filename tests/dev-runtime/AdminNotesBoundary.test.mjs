@@ -7,6 +7,7 @@ import {
   ADMIN_NOTES_LOCAL_MENU_LABEL,
   ADMIN_NOTES_LOCAL_SOURCE_PATH,
   ADMIN_NOTES_LOCAL_VIEWER_PATH,
+  ADMIN_MY_STUFF_MENU_LABEL,
   localAdminNotesHeaderPartialPath,
 } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
 
@@ -121,13 +122,13 @@ test("Admin Notes local viewer page uses external dev-runtime JavaScript only", 
 
 test("production-facing paths do not link to dev Admin Notes files or implementation", () => {
   const headerSource = fs.readFileSync(repoPath("assets/theme-v2/partials/header-nav.html"), "utf8");
-  assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|Admin Notes/);
+  assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
 
   const violations = productionRoots
     .flatMap(walkTextFiles)
     .filter((filePath) => {
       const source = fs.readFileSync(filePath, "utf8");
-      return /docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|admin-notes|Admin Notes/.test(source);
+      return /docs_build\/dev\/admin-notes|docs_build\\dev\\admin-notes|src\/dev-runtime\/admin|src\\dev-runtime\\admin|data-admin-my-stuff-menu|My Stuff|admin-notes|Admin Notes/.test(source);
     })
     .map(relativePath);
 
@@ -141,13 +142,21 @@ test("local dev server serves a dedicated Admin Notes header partial only", () =
   const servedHeader = fs.readFileSync(localHeaderPath, "utf8");
 
   assert.match(servedHeader, /data-admin-notes-local-menu/);
+  assert.match(servedHeader, /data-admin-my-stuff-menu/);
+  assert.match(servedHeader, /data-admin-my-stuff-separator/);
   assert.match(servedHeader, /data-nav-link data-admin-notes-local-menu/);
   assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
   assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
   assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_MENU_LABEL.replace(/[()]/g, "\\$&")));
+  assert.match(servedHeader, new RegExp(ADMIN_MY_STUFF_MENU_LABEL.replace(/[()]/g, "\\$&")));
   assert.ok(
-    servedHeader.indexOf("data-admin-notes-local-menu") < servedHeader.indexOf('data-route="admin-analytics"'),
-    "local Admin Notes menu entry is sorted before Analytics",
+    servedHeader.indexOf("data-admin-my-stuff-menu") < servedHeader.indexOf("data-admin-my-stuff-separator") &&
+      servedHeader.indexOf("data-admin-my-stuff-separator") < servedHeader.indexOf('data-route="admin-analytics"'),
+    "local My Stuff section is first with separator before Analytics",
+  );
+  assert.ok(
+    servedHeader.indexOf("data-admin-my-stuff-menu") < servedHeader.indexOf("data-admin-notes-local-menu"),
+    "local Notes entry is inside the My Stuff section",
   );
   assert.equal(relativePath(localHeaderPath), "src/dev-runtime/admin/header-nav.local.html");
   assert.doesNotMatch(source, /data-admin-notes-local-menu/);

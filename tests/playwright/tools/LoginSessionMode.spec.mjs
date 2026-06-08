@@ -412,6 +412,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
     await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeHidden();
+    await expect(page.locator("[data-admin-my-stuff-menu]")).toBeHidden();
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeHidden();
     await expectNoPageFailures(failures);
   } finally {
@@ -431,7 +432,20 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
-    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Admin Notes (Local Dev)");
+    const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
+    await expect(adminSubmenu.locator(":scope > [data-admin-my-stuff-menu]")).toBeVisible();
+    await expect(adminSubmenu.locator(":scope > [data-admin-my-stuff-separator]")).toBeVisible();
+    const firstAdminChildren = await adminSubmenu.evaluate((menu) => {
+      return Array.from(menu.children).slice(0, 2).map((child) => {
+        if (child.matches("[data-admin-my-stuff-menu]")) return "my-stuff";
+        if (child.matches("[data-admin-my-stuff-separator]")) return "separator";
+        return child.textContent?.trim() || "";
+      });
+    });
+    expect(firstAdminChildren).toEqual(["my-stuff", "separator"]);
+    await expect(adminSubmenu.locator("[data-admin-my-stuff-label]")).toContainText("My Stuff");
+    await adminSubmenu.locator("[data-admin-my-stuff-menu]").hover();
+    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Notes");
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
       "href",
@@ -455,7 +469,11 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
-    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Admin Notes (Local Dev)");
+    const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
+    await expect(adminSubmenu.locator(":scope > [data-admin-my-stuff-menu]")).toBeVisible();
+    await expect(adminSubmenu.locator(":scope > [data-admin-my-stuff-separator]")).toBeVisible();
+    await adminSubmenu.locator("[data-admin-my-stuff-menu]").hover();
+    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Notes");
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
       "href",
