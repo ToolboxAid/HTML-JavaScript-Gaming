@@ -138,6 +138,11 @@ const NUMERIC_VARIANT_COUNTS = Object.freeze({
   "4": 4
 });
 
+const PALETTE_SORTER = new Intl.Collator("en", {
+  numeric: true,
+  sensitivity: "base"
+});
+
 const CURATED_PALETTE_COLLECTIONS = Object.freeze([
   {
     name: "Nature",
@@ -712,6 +717,32 @@ function paletteCollectionsWithSwatches() {
   ));
 }
 
+function alphaName(left, right) {
+  return PALETTE_SORTER.compare(left.name || left.label || "", right.name || right.label || "");
+}
+
+function sortedPaletteCollections() {
+  return [...paletteCollectionsWithSwatches()].sort(alphaName);
+}
+
+function paletteTypesWithSwatches(collection) {
+  return (collection?.types || []).filter((type) => Array.isArray(type.swatches) && type.swatches.length > 0);
+}
+
+function sortedPaletteTypes(collection) {
+  return paletteTypesWithSwatches(collection).sort(alphaName);
+}
+
+function sortedPaletteVariants() {
+  const fullVariant = PALETTE_VARIANTS.find((variant) => variant.value === "full") || PALETTE_VARIANTS[0];
+  return [
+    fullVariant,
+    ...PALETTE_VARIANTS
+      .filter((variant) => variant !== fullVariant)
+      .sort(alphaName)
+  ];
+}
+
 function selectedThemeCollection() {
   const selected = elements.generatorCollection?.value;
   return paletteCollectionsWithSwatches().find((collection) => collection.name === selected)
@@ -721,8 +752,8 @@ function selectedThemeCollection() {
 
 function selectedPaletteType(collection = selectedThemeCollection()) {
   const selected = elements.generatorType?.value;
-  return collection?.types.find((type) => type.name === selected && type.swatches.length > 0)
-    || collection?.types.find((type) => type.swatches.length > 0)
+  return paletteTypesWithSwatches(collection).find((type) => type.name === selected)
+    || paletteTypesWithSwatches(collection)[0]
     || null;
 }
 
@@ -736,12 +767,16 @@ function renderThemeCollectionOptions() {
     return;
   }
   const current = elements.generatorCollection.value;
+  const collections = paletteCollectionsWithSwatches();
+  const preferred = current && collections.some((collection) => collection.name === current)
+    ? current
+    : collections[0]?.name;
   elements.generatorCollection.replaceChildren();
-  paletteCollectionsWithSwatches().forEach((collection) => {
+  sortedPaletteCollections().forEach((collection) => {
     elements.generatorCollection.append(createSelectOption(collection.name, collection.name));
   });
-  if (current && paletteCollectionsWithSwatches().some((collection) => collection.name === current)) {
-    elements.generatorCollection.value = current;
+  if (preferred) {
+    elements.generatorCollection.value = preferred;
   }
 }
 
@@ -751,14 +786,16 @@ function renderPaletteTypeOptions() {
   }
   const current = elements.generatorType.value;
   const collection = selectedThemeCollection();
+  const types = paletteTypesWithSwatches(collection);
+  const preferred = current && types.some((type) => type.name === current)
+    ? current
+    : types[0]?.name;
   elements.generatorType.replaceChildren();
-  collection?.types
-    .filter((type) => Array.isArray(type.swatches) && type.swatches.length > 0)
-    .forEach((type) => {
-      elements.generatorType.append(createSelectOption(type.name, type.name));
-    });
-  if (current && collection?.types.some((type) => type.name === current && type.swatches.length > 0)) {
-    elements.generatorType.value = current;
+  sortedPaletteTypes(collection).forEach((type) => {
+    elements.generatorType.append(createSelectOption(type.name, type.name));
+  });
+  if (preferred) {
+    elements.generatorType.value = preferred;
   }
 }
 
@@ -768,11 +805,13 @@ function renderPaletteVariantOptions() {
   }
   const current = elements.generatorVariant.value;
   elements.generatorVariant.replaceChildren();
-  PALETTE_VARIANTS.forEach((variant) => {
+  sortedPaletteVariants().forEach((variant) => {
     elements.generatorVariant.append(createSelectOption(variant.value, variant.label));
   });
   if (current && PALETTE_VARIANTS.some((variant) => variant.value === current)) {
     elements.generatorVariant.value = current;
+  } else {
+    elements.generatorVariant.value = "full";
   }
 }
 
@@ -781,10 +820,7 @@ function syncVariantColorCount() {
   if (!count || !elements.generatorColors) {
     return;
   }
-  const option = [...elements.generatorColors.options].find((item) => item.value === String(count));
-  if (option) {
-    elements.generatorColors.value = String(count);
-  }
+  elements.generatorColors.value = String(count);
 }
 
 function initializePaletteGeneratorSelectors() {
@@ -981,6 +1017,7 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   swatch.dataset.paletteGeneratorAvailability = options.available === false ? "unavailable" : "available";
   swatch.dataset.paletteGeneratorUnavailable = String(options.available === false);
   swatch.dataset.paletteGeneratorUnavailableReason = options.unavailableReason || "";
+  swatch.dataset.paletteGeneratorDuplicateHidden = String(Boolean(options.hideDuplicate));
   const swatchName = generatorSwatchName(settings, row, column, hex);
   const tooltipSwatch = {
     hex,
@@ -996,13 +1033,14 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   visual.classList.add("palette-generator-preview-color");
   visual.dataset.paletteGeneratorColor = hex;
   visual.dataset.paletteGeneratorFamily = label;
+  visual.dataset.paletteGeneratorVisibleColor = options.hideDuplicate ? "transparent" : hex;
   visual.setAttribute("aria-hidden", "true");
   visual.setAttribute("focusable", "false");
   visual.setAttribute("viewBox", "0 0 1 1");
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   rect.setAttribute("width", "1");
   rect.setAttribute("height", "1");
-  rect.setAttribute("fill", hex);
+  rect.setAttribute("fill", options.hideDuplicate ? "transparent" : hex);
   visual.append(rect);
 
   swatch.title = pickerTooltipText(tooltipSwatch, options.pickerSettings);
@@ -1036,6 +1074,7 @@ function appendPickerRows(fragment, allSwatches, settings) {
             pinnedSwatch: item.pinnedSwatch,
             selected: item.selected,
             unavailableReason: item.unavailableReason,
+            hideDuplicate: item.duplicateHidden,
             pickerSettings: currentPickerSettings(settings)
           }));
         }
@@ -1082,21 +1121,18 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   }
   const duplicateReasons = duplicatePickerHexReasons(allSwatches);
   let availableCount = 0;
-  const visibleSwatches = allSwatches.filter((swatch) => {
+  allSwatches.forEach((swatch) => {
     const unavailableReason = duplicateReasons.get(`${swatch.row}:${swatch.column}`) || "";
-    if (unavailableReason && !showDuplicates) {
-      return false;
-    }
     swatch.unavailableReason = unavailableReason;
     swatch.available = !unavailableReason;
+    swatch.duplicateHidden = Boolean(unavailableReason && !showDuplicates);
     if (swatch.available && !swatch.pinnedSwatch) {
       availableCount += 1;
     }
-    return true;
   });
 
   const fragment = document.createDocumentFragment();
-  appendPickerRows(fragment, visibleSwatches, settings);
+  appendPickerRows(fragment, allSwatches, settings);
 
   elements.generatorPreview.replaceChildren(fragment);
   setText(elements.generatorPreviewStatus, `Available Picker Swatches (${availableCount})`);
@@ -2028,6 +2064,7 @@ elements.generatorVariant?.addEventListener("change", () => {
 });
 
 elements.generatorSteps?.addEventListener("input", () => renderPaletteGeneratorPreview());
+elements.generatorColors?.addEventListener("input", () => renderPaletteGeneratorPreview());
 
 [
   elements.generatorContrast,

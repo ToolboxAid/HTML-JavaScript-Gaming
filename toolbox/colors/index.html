@@ -61,23 +61,7 @@
                                                         <div class="action-group action-group--tight">
                                                             <label class="field-inline" for="paletteGeneratorColors">
                                                                 <span>Colors</span>
-                                                                <select class="tool-form-control" id="paletteGeneratorColors" data-palette-generator-colors>
-                                                                    <option value="1">1</option>
-                                                                    <option value="2">2</option>
-                                                                    <option value="3">3</option>
-                                                                    <option value="4">4</option>
-                                                                    <option value="5">5</option>
-                                                                    <option value="6">6</option>
-                                                                    <option value="7">7</option>
-                                                                    <option value="8" selected>8</option>
-                                                                    <option value="12">12</option>
-                                                                    <option value="16">16</option>
-                                                                    <option value="24">24</option>
-                                                                    <option value="32">32</option>
-                                                                    <option value="64">64</option>
-                                                                    <option value="128">128</option>
-                                                                    <option value="256">256</option>
-                                                                </select>
+                                                                <input class="tool-form-control" id="paletteGeneratorColors" type="number" min="1" max="256" step="1" value="8" data-palette-generator-colors>
                                                             </label>
                                                             <label class="field-inline" for="paletteGeneratorSteps">
                                                                 <span>Steps</span>
@@ -90,16 +74,23 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="grid cols-3" aria-label="Picker swatch adjustment controls">
-                                        <label class="field-group" for="paletteGeneratorContrast">Contrast
-                                            <input class="tool-form-control" id="paletteGeneratorContrast" type="range" min="0" max="100" value="40" data-palette-generator-contrast>
-                                        </label>
-                                        <label class="field-group" for="paletteGeneratorSaturation">Saturation
-                                            <input class="tool-form-control" id="paletteGeneratorSaturation" type="range" min="0" max="100" value="100" data-palette-generator-saturation>
-                                        </label>
-                                        <label class="field-group" for="paletteGeneratorHueShift">Hue Shift
-                                            <input class="tool-form-control" id="paletteGeneratorHueShift" type="range" min="-180" max="180" value="0" data-palette-generator-hue-shift>
-                                        </label>
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Picker swatch adjustment controls" data-palette-generator-slider-controls>
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteGeneratorContrast">Contrast</label></th>
+                                                    <td><input class="tool-form-control" id="paletteGeneratorContrast" type="range" min="0" max="100" value="40" data-palette-generator-contrast></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteGeneratorSaturation">Saturation</label></th>
+                                                    <td><input class="tool-form-control" id="paletteGeneratorSaturation" type="range" min="0" max="100" value="100" data-palette-generator-saturation></td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="paletteGeneratorHueShift">Hue Shift</label></th>
+                                                    <td><input class="tool-form-control" id="paletteGeneratorHueShift" type="range" min="-180" max="180" value="0" data-palette-generator-hue-shift></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
                                     </div>
                                     <div class="hero-actions">
                                         <button class="btn" type="button" data-palette-generator-reset>Reset</button>
@@ -193,7 +184,7 @@
                                             </table>
                                         </div>
                                         <div class="hero-actions">
-                                            <button class="btn primary" type="submit" data-palette-add>Add</button>
+                                            <button class="btn" type="submit" data-palette-add>Add</button>
                                             <button class="btn" type="button" data-palette-update>Update</button>
                                             <button class="btn" type="button" data-palette-clear>Clear</button>
                                         </div>

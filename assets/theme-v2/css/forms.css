@@ -354,6 +354,10 @@ input[type="range"] {
   padding: var(--space-0)
 }
 
+.tool-column[class*="tool-group-"] input[type="range"] {
+  accent-color: var(--tool-group-color)
+}
+
 textarea {
   min-height: var(--size-textarea-min);
   resize: vertical
