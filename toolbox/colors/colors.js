@@ -910,9 +910,9 @@ function duplicatePickerHexReasons(swatches) {
     if (group.length <= 1) {
       return;
     }
-    const bottomRow = Math.max(...group.map((swatch) => swatch.row));
+    const topRow = Math.min(...group.map((swatch) => swatch.row));
     group.forEach((swatch) => {
-      if (swatch.row !== bottomRow) {
+      if (swatch.row !== topRow) {
         reasons.set(`${swatch.row}:${swatch.column}`, "Duplicate Hex in Column");
       }
     });

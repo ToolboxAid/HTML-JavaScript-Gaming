@@ -293,15 +293,14 @@ input[type="color"][data-palette-swatch-size="large"] {
 .palette-swatch-tile:focus-visible,
 .palette-generator-preview-swatch:focus-visible {
   outline: var(--border-width-sm) solid var(--gold);
-  outline-offset: var(--space-3)
+  outline-offset: calc(var(--space-3) * -1)
 }
 
 .palette-swatch-tile[data-palette-selected="true"],
 .palette-generator-preview-swatch[data-palette-selected="true"] {
   outline: var(--border-width-sm) solid var(--gold);
-  outline-offset: var(--space-3);
-  box-shadow: 0 0 0 var(--space-3) var(--gold-soft), 0 0 var(--space-18) var(--orange-shadow-color);
-  transform: scale(1.04)
+  outline-offset: calc(var(--space-3) * -1);
+  box-shadow: inset 0 0 0 var(--space-3) var(--gold-soft), 0 0 var(--space-18) var(--orange-shadow-color)
 }
 
 .palette-swatch-pin {
@@ -320,6 +319,10 @@ input[type="color"][data-palette-swatch-size="large"] {
 
 .palette-swatch-tile[data-palette-pinned="true"] .palette-swatch-pin,
 .palette-generator-preview-swatch[data-palette-pinned="true"] .palette-swatch-pin {
+  background: var(--green)
+}
+
+.palette-generator-preview-swatch[data-palette-generator-availability="available"] .palette-swatch-pin {
   background: var(--green)
 }
 

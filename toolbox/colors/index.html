@@ -181,10 +181,12 @@
                             <details class="vertical-accordion accordion-fill-panel" open data-palette-project-accordion>
                                 <summary>Project Swatches</summary>
                                 <div class="accordion-body content-stack accordion-scroll-body">
-                                    <div class="action-group" aria-label="Project Swatches controls" data-palette-user-controls>
+                                    <div class="grid cols-2" aria-label="Project Swatches controls" data-palette-user-controls>
                                         <div class="action-group" aria-label="Project Swatches sort" data-palette-user-sort></div>
-                                        <div class="action-group action-group--end" aria-label="Project Swatches size" data-palette-user-size></div>
-                                        <button class="btn btn--compact" type="button" data-palette-restore-picker-settings>Restore Picker Settings</button>
+                                        <div class="action-group action-group--end">
+                                            <div class="action-group action-group--end" aria-label="Project Swatches size" data-palette-user-size></div>
+                                            <button class="btn btn--compact" type="button" data-palette-restore-picker-settings>Restore Picker Settings</button>
+                                        </div>
                                     </div>
                                     <div class="palette-swatch-list-wrapper scroll-region" data-palette-user-scroll>
                                         <div class="palette-swatch-list" role="group" aria-label="Project Swatches colors" data-palette-user-list>
@@ -193,11 +195,10 @@
                                     </div>
                                 </div>
                             </details>
-                            <details class="vertical-accordion" open data-palette-preview-accordion>
-                                <summary>Picker Preview</summary>
-                                <div class="accordion-body content-stack">
-                                    <div class="palette-generator-preview" role="grid" aria-label="Picker Swatches" data-palette-generator-preview></div>
-                                    <p class="status" role="status" data-palette-generator-preview-status>Available Picker Swatches (0)</p>
+                            <details class="vertical-accordion accordion-fill-panel" open data-palette-preview-accordion>
+                                <summary><span>Picker Preview</span><span class="status" role="status" data-palette-generator-preview-status>Available Picker Swatches (0)</span></summary>
+                                <div class="accordion-body content-stack accordion-scroll-body">
+                                    <div class="palette-generator-preview scroll-region" role="grid" aria-label="Picker Swatches" data-palette-generator-preview></div>
                                 </div>
                             </details>
                         </div>

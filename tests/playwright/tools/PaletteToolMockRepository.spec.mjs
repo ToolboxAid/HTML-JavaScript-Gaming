@@ -346,6 +346,15 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
     await expect(heroTile).toHaveAttribute("data-palette-metadata-hex", "#123456AA");
     await expect(heroTile).toHaveAttribute("data-palette-metadata-theme-collection", "User Defined");
     await expect(heroTile).toHaveAttribute("data-palette-selected", "true");
+    const selectedOutline = await heroTile.evaluate((tile) => {
+      const computed = getComputedStyle(tile);
+      return {
+        outlineOffset: Number.parseFloat(computed.outlineOffset),
+        transform: computed.transform
+      };
+    });
+    expect(selectedOutline.outlineOffset).toBeLessThanOrEqual(0);
+    expect(selectedOutline.transform).toBe("none");
     await expectReadableDisabledField(page, "[data-palette-selected-hex]", "#123456AA");
     await expectReadableDisabledField(page, "[data-palette-selected-name]", "Hero Blue");
     await expect(page.locator("[data-palette-tags]")).toBeEnabled();
@@ -387,10 +396,8 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
 
   try {
-    await expect(page.locator("[data-palette-fullscreen-panels] > details > summary")).toHaveText([
-      "Project Swatches",
-      "Picker Preview"
-    ]);
+    await expect(page.locator("[data-palette-project-accordion] > summary")).toContainText("Project Swatches");
+    await expect(page.locator("[data-palette-preview-accordion] > summary > span").first()).toHaveText("Picker Preview");
     const accordionOrder = await page.locator("[data-palette-picker-accordion]").evaluate((pickerAccordion) => {
       const projectWorkspaceAccordion = pickerAccordion.previousElementSibling;
       return {
@@ -403,7 +410,9 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-project-accordion] [data-palette-generator-preview]")).toHaveCount(0);
     await expect(page.locator("[data-palette-picker-accordion] [data-palette-generator-preview]")).toHaveCount(0);
     await expect(page.locator("[data-palette-preview-accordion] [data-palette-generator-preview]")).toHaveCount(1);
-    await expect(page.locator("[data-palette-preview-accordion]")).not.toHaveClass(/accordion-fill-panel/);
+    await expect(page.locator("[data-palette-preview-accordion]")).toHaveClass(/accordion-fill-panel/);
+    await expect(page.locator("[data-palette-preview-accordion] summary [data-palette-generator-preview-status]")).toHaveText(/Available Picker Swatches \(\d+\)/);
+    await expect(page.locator("[data-palette-preview-accordion] > .accordion-body > [data-palette-generator-preview-status]")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Defined Swatch Selector" })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Swatch Type / Theme" })).toHaveCount(0);
     await expect(page.locator("[data-palette-source-select], [data-palette-source-search], [data-palette-source-pin-all]")).toHaveCount(0);
@@ -475,6 +484,23 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     });
     expect(undoRedoLayout.undoTop).toBe(undoRedoLayout.redoTop);
     expect(undoRedoLayout.undoLeft).toBeLessThan(undoRedoLayout.redoLeft);
+    const swatchControlsLayout = await page.locator("[data-palette-user-controls]").evaluate((controls) => {
+      const sort = controls.querySelector("[data-palette-user-sort]");
+      const size = controls.querySelector("[data-palette-user-size]");
+      const restore = controls.querySelector("[data-palette-restore-picker-settings]");
+      const controlsBox = controls.getBoundingClientRect();
+      const sortBox = sort.getBoundingClientRect();
+      const sizeBox = size.getBoundingClientRect();
+      const restoreBox = restore.getBoundingClientRect();
+      return {
+        controlsRight: Math.round(controlsBox.right),
+        restoreRight: Math.round(restoreBox.right),
+        sizeLeft: Math.round(sizeBox.left),
+        sortRight: Math.round(sortBox.right)
+      };
+    });
+    expect(swatchControlsLayout.sizeLeft).toBeGreaterThan(swatchControlsLayout.sortRight);
+    expect(swatchControlsLayout.controlsRight - swatchControlsLayout.restoreRight).toBeLessThanOrEqual(24);
     await expect(page.locator("[data-palette-user-sort] [data-palette-sort-key], [data-palette-user-size] [data-palette-size-key]")).toHaveText([
       "Hue ^",
       "Sat",
@@ -506,6 +532,36 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-collection", "Nature");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-type-name", "Forest");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-variant-name", "Full");
+    const accordionFillMetrics = await page.locator("[data-palette-fullscreen-panels]").evaluate((stack) => {
+      const project = stack.querySelector("[data-palette-project-accordion]");
+      const preview = stack.querySelector("[data-palette-preview-accordion]");
+      const projectScroll = project.querySelector("[data-palette-user-scroll]");
+      const previewGrid = preview.querySelector("[data-palette-generator-preview]");
+      const previewBody = preview.querySelector(".accordion-body");
+      return {
+        bodyDisplay: getComputedStyle(previewBody).display,
+        gridHeight: Math.round(previewGrid.getBoundingClientRect().height),
+        gridWidth: Math.round(previewGrid.getBoundingClientRect().width),
+        previewBodyHeight: Math.round(previewBody.getBoundingClientRect().height),
+        previewBodyWidth: Math.round(previewBody.getBoundingClientRect().width),
+        projectScrollHeight: Math.round(projectScroll.getBoundingClientRect().height)
+      };
+    });
+    expect(accordionFillMetrics.bodyDisplay).toBe("flex");
+    expect(accordionFillMetrics.gridHeight).toBeGreaterThan(accordionFillMetrics.previewBodyHeight * 0.8);
+    expect(accordionFillMetrics.gridWidth).toBeGreaterThan(accordionFillMetrics.previewBodyWidth * 0.9);
+    await page.locator("[data-palette-project-accordion] > summary").click();
+    const previewOnlyHeight = await page.locator("[data-palette-generator-preview]").evaluate((preview) => (
+      Math.round(preview.getBoundingClientRect().height)
+    ));
+    expect(previewOnlyHeight).toBeGreaterThan(accordionFillMetrics.gridHeight + 20);
+    await page.locator("[data-palette-project-accordion] > summary").click();
+    await page.locator("[data-palette-preview-accordion] > summary").click();
+    const projectOnlyHeight = await page.locator("[data-palette-user-scroll]").evaluate((scrollRegion) => (
+      Math.round(scrollRegion.getBoundingClientRect().height)
+    ));
+    expect(projectOnlyHeight).toBeGreaterThan(accordionFillMetrics.projectScrollHeight + 20);
+    await page.locator("[data-palette-preview-accordion] > summary").click();
 
     const topColors = await currentPreviewHexes(page, 0);
     const bottomColors = await currentPreviewHexes(page, 7);
@@ -636,7 +692,7 @@ test("Palette Tool preserves eight-column picker rows when swatches are unavaila
   }
 });
 
-test("Palette Tool blocks only earlier duplicate hexes within each picker column", async ({ page }) => {
+test("Palette Tool blocks only lower duplicate hexes within each picker column", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
 
   try {
@@ -668,29 +724,41 @@ test("Palette Tool blocks only earlier duplicate hexes within each picker column
     });
     expect(duplicateGroup.length).toBeGreaterThan(1);
 
-    const earlierDuplicate = duplicateGroup[0];
-    const bottomDuplicate = duplicateGroup.at(-1);
-    const earlierSwatch = page.locator(`[data-palette-generator-row='${earlierDuplicate.row}'][data-palette-generator-column='${earlierDuplicate.column}']`);
-    const bottomSwatch = page.locator(`[data-palette-generator-row='${bottomDuplicate.row}'][data-palette-generator-column='${bottomDuplicate.column}']`);
+    const topDuplicate = duplicateGroup[0];
+    const lowerDuplicate = duplicateGroup.at(-1);
+    const topSwatch = page.locator(`[data-palette-generator-row='${topDuplicate.row}'][data-palette-generator-column='${topDuplicate.column}']`);
+    const lowerSwatch = page.locator(`[data-palette-generator-row='${lowerDuplicate.row}'][data-palette-generator-column='${lowerDuplicate.column}']`);
 
-    await expect(earlierSwatch).toHaveAttribute("data-palette-generator-availability", "unavailable");
-    await expect(earlierSwatch).toHaveAttribute("data-palette-generator-unavailable-reason", "Duplicate Hex in Column");
-    await expect(earlierSwatch.locator("[data-palette-pin-indicator]")).toHaveCount(0);
-    const earlierVisual = await earlierSwatch.evaluate((swatch) => ({
+    await expect(lowerSwatch).toHaveAttribute("data-palette-generator-availability", "unavailable");
+    await expect(lowerSwatch).toHaveAttribute("data-palette-generator-unavailable-reason", "Duplicate Hex in Column");
+    await expect(lowerSwatch.locator("[data-palette-pin-indicator]")).toHaveCount(0);
+    const lowerVisual = await lowerSwatch.evaluate((swatch) => ({
       cursor: getComputedStyle(swatch).cursor,
       opacity: getComputedStyle(swatch).opacity,
       value: swatch.querySelector("input[type='color']").value
     }));
-    expect(earlierVisual.cursor).not.toBe("not-allowed");
-    expect(earlierVisual.opacity).toBe("1");
-    expect(earlierVisual.value.toUpperCase()).toBe(earlierDuplicate.hex.slice(0, 7).toUpperCase());
-    await earlierSwatch.click();
+    expect(lowerVisual.cursor).not.toBe("not-allowed");
+    expect(lowerVisual.opacity).toBe("1");
+    expect(lowerVisual.value.toUpperCase()).toBe(lowerDuplicate.hex.slice(0, 7).toUpperCase());
+    await lowerSwatch.click();
     await expect(page.locator("[data-palette-count]")).toHaveText("0");
     await expect(page.locator("[data-palette-log]")).toContainText("Duplicate Hex in Column picker swatch was not added.");
 
-    await expect(bottomSwatch).toHaveAttribute("data-palette-generator-availability", "available");
-    await expect(bottomSwatch.locator("[data-palette-pin-indicator]")).toHaveCount(1);
-    await bottomSwatch.click();
+    await expect(topSwatch).toHaveAttribute("data-palette-generator-availability", "available");
+    await expect(topSwatch.locator("[data-palette-pin-indicator]")).toHaveCount(1);
+    const topPinColor = await topSwatch.locator("[data-palette-pin-indicator]").evaluate((pin) => {
+      const probe = document.createElement("span");
+      probe.style.color = "var(--green)";
+      document.body.append(probe);
+      const green = getComputedStyle(probe).color;
+      probe.remove();
+      return {
+        green,
+        pin: getComputedStyle(pin).backgroundColor
+      };
+    });
+    expect(topPinColor.pin).toBe(topPinColor.green);
+    await topSwatch.click();
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
 
     const uniqueSwatchData = await page.locator("[data-palette-generator-swatch][data-palette-generator-availability='available']").evaluateAll((swatches) => {

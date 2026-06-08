@@ -202,3 +202,49 @@ body.tool-focus-mode .tool-center-panel>details.vertical-accordion[open]>.accord
   inset: var(--space-52) var(--space-0) var(--space-0);
   overflow: auto
 }
+
+body:not(.tool-focus-mode) .tool-center-panel:has(>.accordion-fill-stack) {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - var(--space-20));
+  min-height: var(--space-0);
+  overflow: hidden
+}
+
+body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack {
+  display: flex;
+  flex: 1 1 auto;
+  flex-direction: column;
+  min-height: var(--space-0)
+}
+
+body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack>.accordion-fill-panel {
+  flex: 0 0 auto;
+  min-height: var(--space-0)
+}
+
+body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack>.accordion-fill-panel[open] {
+  flex: 1 1 var(--space-0);
+  min-height: var(--space-0);
+  position: relative
+}
+
+body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack>.accordion-fill-panel[open]>summary {
+  min-block-size: var(--space-52);
+  min-height: var(--space-0)
+}
+
+body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack>.accordion-fill-panel[open]>.accordion-scroll-body {
+  position: absolute;
+  inset: var(--space-52) var(--space-0) var(--space-0);
+  display: flex;
+  flex-direction: column;
+  min-height: var(--space-0);
+  overflow: hidden
+}
+
+body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack>.accordion-fill-panel[open]>.accordion-scroll-body>.scroll-region {
+  flex: 1 1 var(--space-0);
+  min-height: var(--space-0);
+  overflow: auto
+}
