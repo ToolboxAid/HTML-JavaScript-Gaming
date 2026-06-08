@@ -40,12 +40,12 @@ const retiredProductionFiles = [
 ];
 
 const devOnlyAdminLabels = [
-  "Notes",
   "DB Viewer",
   "Design System",
   "Environments",
   "Game Migration",
   "Grouping Colors",
+  "Notes",
   "Tools Progress",
 ];
 
@@ -94,6 +94,12 @@ function walkTextFiles(root) {
 
 function relativePath(absolutePath) {
   return path.relative(repoRoot, absolutePath).replaceAll(path.sep, "/");
+}
+
+function extractAnchorLabels(source) {
+  return [...source.matchAll(/<a\b[^>]*>(.*?)<\/a>/g)].map((match) =>
+    match[1].replace(/<[^>]*>/g, "").trim()
+  );
 }
 
 test("Admin Notes dev files and local viewer entrypoint exist", () => {
@@ -185,6 +191,8 @@ test("local dev server serves a dedicated Admin Notes header partial only", () =
   const mainAdminEnd = servedHeader.indexOf("</div>\n      </div>\n    </nav>", mainAdminStart);
   const myStuffSource = servedHeader.slice(myStuffStart, separatorStart);
   const mainAdminSource = servedHeader.slice(mainAdminStart, mainAdminEnd);
+  assert.deepEqual(extractAnchorLabels(myStuffSource), devOnlyAdminLabels, "local My Stuff items are alphabetical");
+  assert.deepEqual(extractAnchorLabels(mainAdminSource), uatProdAdminLabels, "local main Admin items are alphabetical");
   for (const label of devOnlyAdminLabels) {
     assert.match(myStuffSource, new RegExp(`>${label}<\\/a>`), `local My Stuff contains ${label}`);
     assert.doesNotMatch(mainAdminSource, new RegExp(`>${label}<\\/a>`), `local main Admin list omits ${label}`);
@@ -204,4 +212,25 @@ test("local dev server serves a dedicated Admin Notes header partial only", () =
   assert.equal(relativePath(localHeaderPath), "src/dev-runtime/admin/header-nav.local.html");
   assert.doesNotMatch(source, /data-admin-notes-local-menu/);
   assert.equal(localAdminNotesHeaderPartialPath(repoRoot, repoPath("login.html")), repoPath("login.html"));
+});
+
+test("Admin page left menus are alphabetical UAT/PROD-safe lists", () => {
+  const adminDir = repoPath("admin");
+  const pages = fs.readdirSync(adminDir).filter((name) => name.endsWith(".html")).sort();
+  const checkedPages = [];
+
+  for (const pageName of pages) {
+    const source = fs.readFileSync(path.join(adminDir, pageName), "utf8");
+    const match = source.match(/<aside class="side-menu" aria-label="Admin pages">([\s\S]*?)<\/aside>/);
+    if (!match) {
+      continue;
+    }
+    checkedPages.push(pageName);
+    assert.deepEqual(extractAnchorLabels(match[1]), uatProdAdminLabels, `${pageName} left menu is alphabetical`);
+    for (const label of devOnlyAdminLabels) {
+      assert.doesNotMatch(match[1], new RegExp(`>${label}<\\/a>`), `${pageName} left menu omits ${label}`);
+    }
+  }
+
+  assert.ok(checkedPages.length > 0, "Admin pages with side menus were checked");
 });

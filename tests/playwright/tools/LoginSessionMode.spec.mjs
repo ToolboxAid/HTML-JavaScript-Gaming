@@ -27,12 +27,12 @@ test.afterAll(async () => {
 let localDbRunId = 0;
 
 const DEV_ONLY_ADMIN_LABELS = [
-  "Notes",
   "DB Viewer",
   "Design System",
   "Environments",
   "Game Migration",
   "Grouping Colors",
+  "Notes",
   "Tools Progress",
 ];
 
