@@ -1,0 +1,2745 @@
+﻿diff --git a/assets/theme-v2/css/forms.css b/assets/theme-v2/css/forms.css
+index af4763750..9934d4e43 100644
+--- a/assets/theme-v2/css/forms.css
++++ b/assets/theme-v2/css/forms.css
+@@ -184,8 +184,8 @@ input[type="color"][data-palette-swatch-size="large"] {
+ 
+ .palette-swatch-check {
+   position: absolute;
+-  top: calc(var(--space-8) * -1);
+-  left: calc(var(--space-8) * -1);
++  top: var(--space-3);
++  left: var(--space-3);
+   z-index: var(--z-index-md);
+   width: var(--space-14);
+   height: var(--space-14);
+diff --git a/src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js b/src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js
+index 012e99d0b..0e0b4b7fb 100644
+--- a/src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js
+@@ -53,16 +53,79 @@ const HARMONY_SOURCE_LABEL = "Harmony Scheme";
+ const SOURCE_ID_RENAMES = Object.freeze({
+   crayola: PALETTE_SOURCE_PALETTE_COLORS
+ });
+-const SYMBOL_CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*()-+=[]{};:,.?";
+ 
+-function cloneSwatch(swatch) {
++function clonePickerSettings(settings) {
++  if (!settings || typeof settings !== "object" || Array.isArray(settings)) {
++    return null;
++  }
+   return {
+-    symbol: swatch.symbol,
++    activeTags: Array.isArray(settings.activeTags) ? [...settings.activeTags] : [],
++    colors: settings.colors,
++    contrast: settings.contrast,
++    hueShift: settings.hueShift,
++    paletteType: settings.paletteType,
++    saturation: settings.saturation,
++    sortDirection: settings.sortDirection,
++    sortField: settings.sortField,
++    steps: settings.steps,
++    swatchSize: settings.swatchSize,
++    themeCollection: settings.themeCollection,
++    variant: settings.variant,
++    variantValue: settings.variantValue
++  };
++}
++
++function cloneColorMetadata(metadata) {
++  if (!metadata || typeof metadata !== "object" || Array.isArray(metadata)) {
++    return null;
++  }
++  const cloned = {
++    colors: metadata.colors,
++    contrast: metadata.contrast,
++    hex: metadata.hex,
++    hueShift: metadata.hueShift,
++    name: metadata.name,
++    paletteType: metadata.paletteType,
++    saturation: metadata.saturation,
++    sortDirection: metadata.sortDirection,
++    sortField: metadata.sortField,
++    source: metadata.source,
++    steps: metadata.steps,
++    swatchSize: metadata.swatchSize,
++    themeCollection: metadata.themeCollection,
++    variant: metadata.variant,
++    variantValue: metadata.variantValue
++  };
++  if (Array.isArray(metadata.activeTags)) {
++    cloned.activeTags = [...metadata.activeTags];
++  }
++  if (Array.isArray(metadata.tags)) {
++    cloned.tags = [...metadata.tags];
++  }
++  const pickerSettings = clonePickerSettings(metadata.pickerSettings);
++  if (pickerSettings) {
++    cloned.pickerSettings = pickerSettings;
++  }
++  return cloned;
++}
++
++function cloneSwatch(swatch) {
++  const cloned = {
++    key: swatch.key,
+     hex: swatch.hex,
+     name: swatch.name,
+     source: swatch.source,
+     tags: [...swatch.tags]
+   };
++  const pickerSettings = clonePickerSettings(swatch.pickerSettings);
++  if (pickerSettings) {
++    cloned.pickerSettings = pickerSettings;
++  }
++  const metadata = cloneColorMetadata(swatch.metadata);
++  if (metadata) {
++    cloned.metadata = metadata;
++  }
++  return cloned;
+ }
+ 
+ function cloneSourcePaletteRow(row) {
+@@ -156,10 +219,6 @@ function rgbKey(hex) {
+   return normalizeHex(hex).slice(0, 7);
+ }
+ 
+-function isOneCharacter(value) {
+-  return Array.from(value).length === 1;
+-}
+-
+ function normalizeTags(value) {
+   const rawTags = Array.isArray(value) ? value : normalizeText(value).split(",");
+   const tags = rawTags
+@@ -213,31 +272,41 @@ function duplicateIssue(field, label, value) {
+ 
+ export function normalizePaletteSwatchInput(input = {}, options = {}) {
+   const source = input && typeof input === "object" && !Array.isArray(input) ? input : {};
+-  const symbol = normalizeText(source.symbol);
++  const key = normalizeText(source.swatchKey || source.key);
+   const hex = normalizeHex(source.hex);
+   const name = normalizeText(source.name);
+   const tags = normalizeTags(source.tags);
++  const pickerSettings = clonePickerSettings(source.pickerSettings);
++  const metadata = cloneColorMetadata(source.metadata);
+ 
+-  return {
+-    symbol,
++  const swatch = {
++    key,
+     hex,
+     name,
+     source: normalizeSource(source.source || options.source),
+     tags
+   };
++  if (pickerSettings) {
++    swatch.pickerSettings = pickerSettings;
++  }
++  if (metadata) {
++    swatch.metadata = {
++      ...metadata,
++      hex,
++      name,
++      pickerSettings: pickerSettings || metadata.pickerSettings,
++      source: normalizeSource(source.source || options.source),
++      tags: [...tags]
++    };
++  }
++  return swatch;
+ }
+ 
+ export function validatePaletteSwatchInput(input = {}, existingSwatches = [], options = {}) {
+   const swatch = normalizePaletteSwatchInput(input, options);
+-  const excludeSymbol = normalizeText(options.excludeSymbol);
++  const excludeKey = normalizeText(options.excludeKey);
+   const issues = [];
+ 
+-  if (!swatch.symbol) {
+-    issues.push(createIssue("symbol", "Symbol", "Enter a symbol for this swatch."));
+-  } else if (!isOneCharacter(swatch.symbol)) {
+-    issues.push(createIssue("symbol", "Symbol", "Symbol must be exactly one character."));
+-  }
+-
+   if (!swatch.hex) {
+     issues.push(createIssue("hex", "Hex", "Enter #RRGGBB or #RRGGBBAA."));
+   }
+@@ -246,9 +315,9 @@ export function validatePaletteSwatchInput(input = {}, existingSwatches = [], op
+     issues.push(createIssue("name", "Name", "Enter a name for this swatch."));
+   }
+ 
+-  const comparableSwatches = existingSwatches.filter((existing) => existing.symbol !== excludeSymbol);
+-  if (swatch.symbol && comparableSwatches.some((existing) => existing.symbol === swatch.symbol)) {
+-    issues.push(duplicateIssue("symbol", "Duplicate Symbol", swatch.symbol));
++  const comparableSwatches = existingSwatches.filter((existing) => existing.key !== excludeKey);
++  if (swatch.key && comparableSwatches.some((existing) => existing.key === swatch.key)) {
++    issues.push(duplicateIssue("key", "Duplicate Key", swatch.key));
+   }
+ 
+   const nameKey = swatch.name.toLowerCase();
+@@ -337,7 +406,7 @@ function normalizeSourcePaletteRows(sourcePaletteRows = []) {
+     .map((row, index) => {
+       const normalizedSourceId = normalizeSourceId(row?.sourceId || row?.paletteId || row?.source);
+       const swatch = normalizePaletteSwatchInput(row, { source: normalizedSourceId });
+-      if (!normalizedSourceId || !swatch.symbol || !isOneCharacter(swatch.symbol) || !swatch.hex || !swatch.name) {
++      if (!normalizedSourceId || !swatch.key || !swatch.hex || !swatch.name) {
+         return null;
+       }
+       return {
+@@ -347,7 +416,7 @@ function normalizeSourcePaletteRows(sourcePaletteRows = []) {
+         name: swatch.name,
+         source: normalizedSourceId,
+         sourceLabel: sourceLabel(normalizedSourceId, row.sourceLabel || row.paletteLabel || row.label),
+-        symbol: swatch.symbol,
++        swatchKey: swatch.key,
+         tags: [...swatch.tags]
+       };
+     })
+@@ -368,8 +437,6 @@ function compareSwatches(sortKey, sortDirection = "asc") {
+       result = colorMetrics(left.hex).saturation - colorMetrics(right.hex).saturation || left.name.localeCompare(right.name);
+     } else if (sortKey === "source") {
+       result = left.source.localeCompare(right.source) || left.name.localeCompare(right.name);
+-    } else if (sortKey === "symbol") {
+-      result = left.symbol.localeCompare(right.symbol);
+     } else if (sortKey === "tag") {
+       result = (left.tags[0] || "\uffff").localeCompare(right.tags[0] || "\uffff") || left.name.localeCompare(right.name);
+     } else {
+@@ -534,8 +601,15 @@ function harmonyForSwatch(swatch, options = {}, sourcePaletteData = null) {
+   const scheme = schemeForId(options.schemeId);
+   const matchSource = matchSourceForId(options.matchSource);
+   const sourceId = normalizeSourceId(options.sourceId);
++  const providedMatchSwatches = Array.isArray(options.matchSwatches)
++    ? options.matchSwatches
++        .map((matchSwatch) => normalizePaletteSwatchInput(matchSwatch, { source: matchSwatch?.source || "generated" }))
++        .filter((matchSwatch) => matchSwatch.hex)
++    : [];
+   const sourcePalettes = sourcePaletteData?.palettes || {};
+-  const sourceSwatches = matchSource === "source"
++  const sourceSwatches = providedMatchSwatches.length
++    ? providedMatchSwatches
++    : matchSource === "source"
+     ? sourcePalettes[sourceId] || []
+     : Object.values(sourcePalettes).flat();
+ 
+@@ -565,11 +639,16 @@ function harmonyForSwatch(swatch, options = {}, sourcePaletteData = null) {
+   return withoutBaseColorSuggestions(uniqueSuggestions(calculated), swatch.hex, scheme.label);
+ }
+ 
+-function nextAvailableSymbol(existingSwatches, seedText = "") {
+-  const used = new Set(existingSwatches.map((swatch) => swatch.symbol));
+-  const seedCandidates = Array.from(normalizeText(seedText).toUpperCase().replace(/[^A-Z0-9]/g, ""));
+-  const candidates = [...seedCandidates, ...Array.from(SYMBOL_CANDIDATES)];
+-  return candidates.find((candidate) => !used.has(candidate)) || "";
++function nextAvailableSwatchKey(existingSwatches, seedText = "") {
++  const used = new Set(existingSwatches.map((swatch) => swatch.key));
++  const root = normalizeText(seedText).toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "") || "swatch";
++  let index = existingSwatches.length + 1;
++  let candidate = `${root}-${index}`;
++  while (used.has(candidate)) {
++    index += 1;
++    candidate = `${root}-${index}`;
++  }
++  return candidate;
+ }
+ 
+ function generatedHarmonyNameRoot(name) {
+@@ -594,8 +673,8 @@ function nextGeneratedHarmonyName(name, existingSwatches) {
+   return candidate;
+ }
+ 
+-function createUsageId(projectId, swatchSymbol, assetId) {
+-  return `${projectId || "project"}-${swatchSymbol || "swatch"}-${assetId || "asset"}`;
++function createUsageId(projectId, swatchKey, assetId) {
++  return `${projectId || "project"}-${swatchKey || "swatch"}-${assetId || "asset"}`;
+ }
+ 
+ export function createProjectWorkspacePaletteRepository(options = {}) {
+@@ -625,7 +704,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+   });
+   const undoStacks = new Map();
+   const redoStacks = new Map();
+-  let selectedSymbol = "";
++  let selectedSwatchKey = "";
+ 
+   function persistTables() {
+     saveMockDbTables(PALETTE_DB_OWNER, getTables(), options);
+@@ -651,9 +730,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       .filter((row) => row.projectId === projectId)
+       .map((row) => ({
+         hex: row.hex,
++        key: row.swatchKey,
++        metadata: cloneColorMetadata(row.metadata) || undefined,
+         name: row.name,
++        pickerSettings: clonePickerSettings(row.pickerSettings) || undefined,
+         source: row.source,
+-        symbol: row.symbol,
+         tags: [...row.tags]
+       }));
+   }
+@@ -662,7 +743,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     const existingRows = new Map(
+       paletteColorRows
+         .filter((row) => row.projectId === projectId)
+-        .map((row) => [row.symbol, row])
++        .map((row) => [row.swatchKey, row])
+     );
+     for (let index = paletteColorRows.length - 1; index >= 0; index -= 1) {
+       if (paletteColorRows[index].projectId === projectId) {
+@@ -671,7 +752,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     }
+     const timestamp = new Date().toISOString();
+     swatches.forEach((swatch, index) => {
+-      const existingRow = existingRows.get(swatch.symbol) || {};
++      const existingRow = existingRows.get(swatch.key) || {};
+       paletteColorRows.push({
+         ...rowAuditFields({
+           ...existingRow,
+@@ -680,10 +761,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+         }, index),
+         hex: swatch.hex,
+         id: `${projectId}-palette-color-${index + 1}`,
++        metadata: cloneColorMetadata(swatch.metadata) || undefined,
+         name: swatch.name,
++        pickerSettings: clonePickerSettings(swatch.pickerSettings) || undefined,
+         projectId,
+         source: swatch.source,
+-        symbol: swatch.symbol,
++        swatchKey: swatch.key,
+         tags: [...swatch.tags]
+       });
+     });
+@@ -752,11 +835,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     syncWorkspaceRecordFromColors(projectId);
+     const activeSwatches = swatchesFromColorRows(projectId);
+     if (optionsForReplace.selection === "clear") {
+-      selectedSymbol = "";
+-    } else if (optionsForReplace.selectedSymbol) {
+-      selectedSymbol = optionsForReplace.selectedSymbol;
+-    } else if (!activeSwatches.some((swatch) => swatch.symbol === selectedSymbol)) {
+-      selectedSymbol = optionsForReplace.selection === "preserve" ? "" : activeSwatches[0]?.symbol || "";
++      selectedSwatchKey = "";
++    } else if (optionsForReplace.selectedKey) {
++      selectedSwatchKey = optionsForReplace.selectedKey;
++    } else if (!activeSwatches.some((swatch) => swatch.key === selectedSwatchKey)) {
++      selectedSwatchKey = optionsForReplace.selection === "preserve" ? "" : activeSwatches[0]?.key || "";
+     }
+     persistTables();
+ 
+@@ -770,8 +853,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+   function saveSwatch(input = {}, optionsForSave = {}) {
+     const projectId = activeProjectId();
+     const swatches = getActiveSwatches();
+-    const validation = validatePaletteSwatchInput(input, swatches, {
+-      excludeSymbol: optionsForSave.excludeSymbol,
++    const inputWithKey = {
++      ...input,
++      key: normalizeText(input.key) || optionsForSave.excludeKey || nextAvailableSwatchKey(swatches, `${input.name || ""} ${input.hex || ""}`)
++    };
++    const validation = validatePaletteSwatchInput(inputWithKey, swatches, {
++      excludeKey: optionsForSave.excludeKey,
+       source: optionsForSave.source || PALETTE_SOURCE_USER
+     });
+ 
+@@ -793,12 +880,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       };
+     }
+ 
+-    const nextSwatches = optionsForSave.excludeSymbol
+-      ? swatches.map((swatch) => (swatch.symbol === optionsForSave.excludeSymbol ? validation.swatch : swatch))
++    const nextSwatches = optionsForSave.excludeKey
++      ? swatches.map((swatch) => (swatch.key === optionsForSave.excludeKey ? validation.swatch : swatch))
+       : [...swatches, validation.swatch];
+-    selectedSymbol = validation.swatch.symbol;
++    selectedSwatchKey = validation.swatch.key;
+     return replaceSwatches(projectId, nextSwatches, {
+-      selectedSymbol: validation.swatch.symbol
++      selectedKey: validation.swatch.key
+     });
+   }
+ 
+@@ -821,7 +908,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       };
+     }
+ 
+-    if (!swatches.some((swatch) => swatch.symbol === selectedSwatch.symbol)) {
++    if (!swatches.some((swatch) => swatch.key === selectedSwatch.key)) {
+       return {
+         issues: [createIssue("selectedSwatch", "Selected Swatch", "Selected swatch no longer exists.")],
+         ok: false,
+@@ -833,11 +920,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     return saveSwatch(
+       {
+         ...input,
++        key: selectedSwatch.key,
+         source: selectedSwatch.source || PALETTE_SOURCE_USER,
+         tags: [...selectedSwatch.tags]
+       },
+       {
+-        excludeSymbol: selectedSwatch.symbol,
++        excludeKey: selectedSwatch.key,
+         source: selectedSwatch.source || PALETTE_SOURCE_USER
+       }
+     );
+@@ -860,7 +948,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       ...selectedSwatch,
+       tags: normalizeTags(tags)
+     }, swatches, {
+-      excludeSymbol: selectedSwatch.symbol,
++      excludeKey: selectedSwatch.key,
+       source: selectedSwatch.source || PALETTE_SOURCE_USER
+     });
+     if (validation.issues.length) {
+@@ -873,7 +961,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     }
+ 
+     const result = replaceSwatches(projectId, swatches.map((swatch) => (
+-      swatch.symbol === selectedSwatch.symbol ? validation.swatch : swatch
++      swatch.key === selectedSwatch.key ? validation.swatch : swatch
+     )), { selection: "preserve" });
+     return {
+       ...result,
+@@ -881,12 +969,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     };
+   }
+ 
+-  function addTagToSwatches(symbols = [], tag = "") {
++  function addTagToSwatches(keys = [], tag = "") {
+     const projectId = activeProjectId();
+     const swatches = getActiveSwatches();
+     const normalizedTag = normalizeTags([tag])[0] || "";
+-    const targetSymbols = [...new Set(symbols.map(normalizeText))]
+-      .filter((symbol) => swatches.some((swatch) => swatch.symbol === symbol));
++    const targetKeys = [...new Set(keys.map(normalizeText))]
++      .filter((key) => swatches.some((swatch) => swatch.key === key));
+ 
+     if (!projectId) {
+       return {
+@@ -906,7 +994,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       };
+     }
+ 
+-    if (!targetSymbols.length) {
++    if (!targetKeys.length) {
+       return {
+         issues: [createIssue("checkedSwatches", "Checked Swatches", "Check at least one active project palette swatch before batch tagging.")],
+         ok: false,
+@@ -916,7 +1004,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     }
+ 
+     const nextSwatches = swatches.map((swatch) => (
+-      targetSymbols.includes(swatch.symbol)
++      targetKeys.includes(swatch.key)
+         ? { ...swatch, tags: normalizeTags([...swatch.tags, normalizedTag]) }
+         : swatch
+     ));
+@@ -924,15 +1012,15 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     return {
+       ...result,
+       message: result.ok
+-        ? `Added tag ${normalizedTag} to ${targetSymbols.length} checked swatch${targetSymbols.length === 1 ? "" : "es"}.`
++        ? `Added tag ${normalizedTag} to ${targetKeys.length} checked swatch${targetKeys.length === 1 ? "" : "es"}.`
+         : result.message
+     };
+   }
+ 
+-  function removeSwatch(symbol) {
++  function removeSwatch(key) {
+     const projectId = activeProjectId();
+-    const normalizedSymbol = normalizeText(symbol);
+-    const swatchToRemove = getActiveSwatches().find((swatch) => swatch.symbol === normalizedSymbol);
++    const normalizedKey = normalizeText(key);
++    const swatchToRemove = getActiveSwatches().find((swatch) => swatch.key === normalizedKey);
+     if (!projectId || !swatchToRemove) {
+       return {
+         issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a project palette swatch before removing.")],
+@@ -942,7 +1030,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       };
+     }
+ 
+-    const usage = getSwatchUsage(swatchToRemove.symbol);
++    const usage = getSwatchUsage(swatchToRemove.key);
+     if (usage.length) {
+       return {
+         issues: [createIssue("dependentTools", "Dependent Tools", `${swatchToRemove.name} is used by ${usage.map((row) => row.toolId).join(", ")}.`)],
+@@ -952,9 +1040,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       };
+     }
+ 
+-    const nextSwatches = getActiveSwatches().filter((swatch) => swatch.symbol !== swatchToRemove.symbol);
++    const nextSwatches = getActiveSwatches().filter((swatch) => swatch.key !== swatchToRemove.key);
+     const result = replaceSwatches(projectId, nextSwatches, {
+-      selection: selectedSymbol === swatchToRemove.symbol ? "clear" : "preserve"
++      selection: selectedSwatchKey === swatchToRemove.key ? "clear" : "preserve"
+     });
+     return {
+       ...result,
+@@ -973,19 +1061,19 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       };
+     }
+ 
+-    return removeSwatch(selectedSwatch.symbol);
++    return removeSwatch(selectedSwatch.key);
+   }
+ 
+-  function selectSwatch(symbol) {
+-    const normalizedSymbol = normalizeText(symbol);
+-    if (getActiveSwatches().some((swatch) => swatch.symbol === normalizedSymbol)) {
+-      selectedSymbol = normalizedSymbol;
++  function selectSwatch(key) {
++    const normalizedKey = normalizeText(key);
++    if (getActiveSwatches().some((swatch) => swatch.key === normalizedKey)) {
++      selectedSwatchKey = normalizedKey;
+     }
+     return getSnapshot();
+   }
+ 
+   function getSelectedSwatch() {
+-    return selectedSymbol ? getActiveSwatches().find((swatch) => swatch.symbol === selectedSymbol) || null : null;
++    return selectedSwatchKey ? getActiveSwatches().find((swatch) => swatch.key === selectedSwatchKey) || null : null;
+   }
+ 
+   function listSwatches(optionsForList = {}) {
+@@ -1017,9 +1105,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     const query = normalizeText(optionsForList.query).toLowerCase();
+     const swatches = sourceRowsForSource(sourceId).map((row) => ({
+       hex: row.hex,
++      key: row.swatchKey,
+       name: row.name,
+       source: row.source,
+-      symbol: row.symbol,
+       tags: [...row.tags]
+     }));
+     return swatches
+@@ -1027,7 +1115,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+         if (!query) {
+           return true;
+         }
+-        return [swatch.symbol, swatch.hex, swatch.name, swatch.source, ...swatch.tags]
++        return [swatch.key, swatch.hex, swatch.name, swatch.source, ...swatch.tags]
+           .join(" ")
+           .toLowerCase()
+           .includes(query);
+@@ -1067,7 +1155,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     const issues = [];
+     let added = 0;
+     let alreadyPinned = 0;
+-    let lastAddedSymbol = "";
++    let lastAddedKey = "";
+     let skipped = 0;
+ 
+     (Array.isArray(sourceSwatches) ? sourceSwatches : []).forEach((sourceSwatch) => {
+@@ -1076,7 +1164,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       });
+       swatch.tags = [];
+       const colorKey = rgbKey(swatch.hex);
+-      if (!swatch.symbol || !isOneCharacter(swatch.symbol) || !swatch.hex || !swatch.name) {
++      if (!swatch.key) {
++        swatch.key = nextAvailableSwatchKey(nextSwatches, `${swatch.name || ""} ${swatch.hex || ""}`);
++      }
++      if (!swatch.hex || !swatch.name) {
+         skipped += 1;
+         return;
+       }
+@@ -1094,7 +1185,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+ 
+       nextSwatches.push(validation.swatch);
+       added += 1;
+-      lastAddedSymbol = validation.swatch.symbol;
++      lastAddedKey = validation.swatch.key;
+     });
+ 
+     const message = `Pin All complete: ${added} pinned, ${alreadyPinned} already pinned, ${skipped} skipped.`;
+@@ -1108,7 +1199,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     }
+ 
+     const result = replaceSwatches(projectId, nextSwatches, {
+-      selectedSymbol: lastAddedSymbol
++      selectedKey: lastAddedKey
+     });
+     return {
+       ...result,
+@@ -1143,7 +1234,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+   function toggleSourceSwatchPin(sourceSwatch = {}) {
+     const pinnedSwatch = findPinnedSourceSwatch(sourceSwatch);
+     if (pinnedSwatch) {
+-      return removeSwatch(pinnedSwatch.symbol);
++      return removeSwatch(pinnedSwatch.key);
+     }
+     return pinSourceSwatch(sourceSwatch);
+   }
+@@ -1179,21 +1270,13 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     }
+ 
+     const name = nextGeneratedHarmonyName(suggestion.name, swatches);
+-    const symbol = nextAvailableSymbol(swatches, name);
+-    if (!symbol) {
+-      return {
+-        issues: [createIssue("symbol", "Symbol", "No available one-character palette symbol remains.")],
+-        ok: false,
+-        message: "Harmony color blocked: no available symbol.",
+-        snapshot: getSnapshot()
+-      };
+-    }
++    const key = nextAvailableSwatchKey(swatches, `${name} ${suggestion.hex || ""}`);
+ 
+     const validation = validatePaletteSwatchInput({
+       hex: suggestion.hex,
++      key,
+       name,
+       source: generatedHarmonyNameRoot(name),
+-      symbol,
+       tags: []
+     }, swatches, { source: generatedHarmonyNameRoot(name) });
+     if (validation.issues.length) {
+@@ -1206,7 +1289,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     }
+ 
+     return replaceSwatches(projectId, [...swatches, validation.swatch], {
+-      selectedSymbol: validation.swatch.symbol
++      selectedKey: validation.swatch.key
+     });
+   }
+ 
+@@ -1228,7 +1311,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+   function toggleHarmonySuggestionPin(suggestion = {}) {
+     const pinnedSwatch = findPinnedSourceSwatch(suggestion);
+     if (pinnedSwatch) {
+-      return removeSwatch(pinnedSwatch.symbol);
++      return removeSwatch(pinnedSwatch.key);
+     }
+     return addHarmonySuggestion(suggestion);
+   }
+@@ -1251,7 +1334,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     const previousSwatches = undoStack.pop();
+     replacePaletteColorRows(projectId, previousSwatches);
+     syncWorkspaceRecordFromColors(projectId);
+-    selectedSymbol = previousSwatches[0]?.symbol || "";
++    selectedSwatchKey = previousSwatches[0]?.key || "";
+     return {
+       ok: true,
+       message: "Palette undo applied.",
+@@ -1277,7 +1360,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     const nextSwatches = redoStack.pop();
+     replacePaletteColorRows(projectId, nextSwatches);
+     syncWorkspaceRecordFromColors(projectId);
+-    selectedSymbol = nextSwatches[0]?.symbol || "";
++    selectedSwatchKey = nextSwatches[0]?.key || "";
+     return {
+       ok: true,
+       message: "Palette redo applied.",
+@@ -1307,7 +1390,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+ 
+     replacePaletteColorRows(projectId, validation.normalized.tools[PALETTE_TOOL_KEY].swatches);
+     syncWorkspaceRecordFromColors(projectId);
+-    selectedSymbol = swatchesFromColorRows(projectId)[0]?.symbol || "";
++    selectedSwatchKey = swatchesFromColorRows(projectId)[0]?.key || "";
+     undoStacks.set(projectId, []);
+     redoStacks.set(projectId, []);
+     persistTables();
+@@ -1323,9 +1406,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       tools: {
+         [PALETTE_TOOL_KEY]: {
+           swatches: [
+-            { symbol: "H", hex: "#1F75FE", name: "Hero Blue", source: PALETTE_SOURCE_USER, tags: ["hero", "ui"] },
+-            { symbol: "A", hex: "#FF7538", name: "Accent Orange", source: PALETTE_SOURCE_USER, tags: ["accent"] },
+-            { symbol: "B", hex: "#232323", name: "Backdrop Black", source: PALETTE_SOURCE_USER, tags: ["background"] }
++            { key: "hero-blue", hex: "#1F75FE", name: "Hero Blue", source: PALETTE_SOURCE_USER, tags: ["hero", "ui"] },
++            { key: "accent-orange", hex: "#FF7538", name: "Accent Orange", source: PALETTE_SOURCE_USER, tags: ["accent"] },
++            { key: "backdrop-black", hex: "#232323", name: "Backdrop Black", source: PALETTE_SOURCE_USER, tags: ["background"] }
+           ]
+         }
+       }
+@@ -1334,7 +1417,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+ 
+   function recordSwatchUsage(input = {}) {
+     const projectId = activeProjectId();
+-    const swatch = findSwatch(input.symbol);
++    const swatch = findSwatch(input.key || input.swatchKey);
+     if (!projectId || !swatch) {
+       return {
+         ok: false,
+@@ -1343,7 +1426,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+       };
+     }
+ 
+-    const existingIndex = usageRows.findIndex((usage) => usage.id === createUsageId(projectId, swatch.symbol, input.assetId));
++    const existingIndex = usageRows.findIndex((usage) => usage.id === createUsageId(projectId, swatch.key, input.assetId));
+     const existingRow = existingIndex >= 0 ? usageRows[existingIndex] : {};
+     const timestamp = new Date().toISOString();
+     const row = {
+@@ -1353,11 +1436,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+         updatedBy: PALETTE_SYSTEM_USER_KEY
+       }),
+       assetId: normalizeText(input.assetId),
+-      id: createUsageId(projectId, swatch.symbol, input.assetId),
++      id: createUsageId(projectId, swatch.key, input.assetId),
+       projectId,
+       swatchHex: swatch.hex,
++      swatchKey: swatch.key,
+       swatchName: swatch.name,
+-      swatchSymbol: swatch.symbol,
+       toolId: normalizeText(input.toolId) || "assets"
+     };
+     if (existingIndex >= 0) {
+@@ -1373,17 +1456,17 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     };
+   }
+ 
+-  function getSwatchUsage(symbol) {
++  function getSwatchUsage(key) {
+     const projectId = activeProjectId();
+-    const normalizedSymbol = normalizeText(symbol);
++    const normalizedKey = normalizeText(key);
+     return usageRows
+-      .filter((row) => row.projectId === projectId && row.swatchSymbol === normalizedSymbol)
++      .filter((row) => row.projectId === projectId && row.swatchKey === normalizedKey)
+       .map((row) => ({ ...row }));
+   }
+ 
+-  function findSwatch(symbol) {
+-    const normalizedSymbol = normalizeText(symbol);
+-    return getActiveSwatches().find((swatch) => swatch.symbol === normalizedSymbol) || null;
++  function findSwatch(key) {
++    const normalizedKey = normalizeText(key);
++    return getActiveSwatches().find((swatch) => swatch.key === normalizedKey) || null;
+   }
+ 
+   function clearProjectData() {
+@@ -1391,7 +1474,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     paletteColorRows.splice(0);
+     usageRows.splice(0);
+     workspaceRecords.clear();
+-    selectedSymbol = "";
++    selectedSwatchKey = "";
+     persistTables();
+     return getSnapshot();
+   }
+@@ -1401,7 +1484,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
+     paletteColorRows.splice(0);
+     usageRows.splice(0);
+     workspaceRecords.clear();
+-    selectedSymbol = "";
++    selectedSwatchKey = "";
+     persistTables();
+     return getSnapshot();
+   }
+diff --git a/src/shared/schemas/tools/palette-browser.schema.json b/src/shared/schemas/tools/palette-browser.schema.json
+index 690c52fb3..e4091f92c 100644
+--- a/src/shared/schemas/tools/palette-browser.schema.json
++++ b/src/shared/schemas/tools/palette-browser.schema.json
+@@ -48,13 +48,12 @@
+   "$defs": {
+     "swatch": {
+       "type": "object",
+-      "required": ["symbol", "hex", "name"],
++      "required": ["key", "hex", "name"],
+       "additionalProperties": false,
+       "properties": {
+-        "symbol": {
++        "key": {
+           "type": "string",
+-          "minLength": 1,
+-          "maxLength": 1
++          "minLength": 1
+         },
+         "hex": {
+           "type": "string",
+diff --git a/tests/playwright/tools/PaletteToolMockRepository.spec.mjs b/tests/playwright/tools/PaletteToolMockRepository.spec.mjs
+index 7d349d6a2..bbabb18cb 100644
+--- a/tests/playwright/tools/PaletteToolMockRepository.spec.mjs
++++ b/tests/playwright/tools/PaletteToolMockRepository.spec.mjs
+@@ -2,7 +2,8 @@ import { expect, test } from "@playwright/test";
+ import {
+   PALETTE_WORKSPACE_PATH,
+   PALETTE_TOOL_TABLES,
+-  createProjectWorkspacePaletteRepository
++  createProjectWorkspacePaletteRepository,
++  validatePaletteWorkspacePayload
+ } from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+@@ -10,12 +11,13 @@ import { expectCompactToolFormControls } from "../../helpers/toolFormControlAsse
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+ 
+ const sourcePaletteRows = [
+-  { source: "reference", sourceLabel: "Reference", symbol: "R", hex: "#FF0000", name: "Reference Red", tags: ["warm"] },
+-  { source: "reference", sourceLabel: "Reference", symbol: "G", hex: "#00FF00", name: "Reference Green", tags: ["cool"] }
++  { source: "reference", sourceLabel: "Reference", swatchKey: "reference-red", hex: "#FF0000", name: "Reference Red", tags: ["warm"] },
++  { source: "reference", sourceLabel: "Reference", swatchKey: "reference-green", hex: "#00FF00", name: "Reference Green", tags: ["cool"] }
+ ];
+ 
+ const expectedThemeTypes = {
+   Nature: ["Forest", "Jungle", "Desert", "Mountain", "Arctic", "Swamp", "Ocean", "Tropical"],
++  ROYGBIV: ["ROYGBIV"],
+   Floral: ["Rose Garden", "Spring Bloom", "Wildflowers", "Lavender Field", "Autumn Harvest"],
+   Water: ["Deep Ocean", "Tropical Reef", "River", "Lake", "Storm Sea", "Frozen Water"],
+   Elements: ["Fire", "Ice", "Earth", "Air", "Lightning", "Poison", "Crystal"],
+@@ -32,9 +34,6 @@ const expectedThemeTypes = {
+ 
+ const expectedVariants = [
+   "Full",
+-  "256 colors",
+-  "128 colors",
+-  "64 colors",
+   "32 colors",
+   "16 colors",
+   "8 colors",
+@@ -129,27 +128,39 @@ async function expectUserHexPreview(page, state, value) {
+   }
+ }
+ 
+-async function fillUserSwatch(page, { hex, name, symbol }) {
+-  await page.locator("[data-palette-symbol]").fill(symbol);
++function swatchTileByName(page, name) {
++  const escapedName = String(name).replace(/\\/g, "\\\\").replace(/"/g, "\\\"");
++  return page.locator(`[data-palette-user-list] [data-palette-swatch-key][data-palette-swatch-name="${escapedName}"]`);
++}
++
++async function fillUserSwatch(page, { hex, name }) {
+   await page.locator("[data-palette-hex]").fill(hex);
+   await page.locator("[data-palette-name]").fill(name);
+ }
+ 
+ async function addUserSwatch(page, swatch) {
+   await fillUserSwatch(page, swatch);
+-  await expect(page.getByRole("button", { name: "Add User Defined" })).toBeEnabled();
+-  await page.getByRole("button", { name: "Add User Defined" }).click();
+-  await expect(page.locator(`[data-palette-swatch-row='${swatch.symbol}']`)).toHaveAttribute("data-palette-swatch-name", swatch.name);
++  await expect(page.locator("[data-palette-add]")).toBeEnabled();
++  await page.locator("[data-palette-add]").click();
++  await expect(swatchTileByName(page, swatch.name)).toHaveCount(1);
+ }
+ 
+ async function currentPreviewHexes(page, row) {
+-  return page.locator(`[data-palette-generator-preview-row='${row}'] [data-palette-generator-color]`).evaluateAll((swatches) => (
++  return page.locator(`[data-palette-picker-group='available'][data-palette-generator-preview-row='${row}'] [data-palette-generator-color]`).evaluateAll((swatches) => (
+     swatches.map((swatch) => swatch.value.toUpperCase())
+   ));
+ }
+ 
++async function expectPickerRowsToHaveColumnCount(page, group, columns) {
++  const counts = await page.locator(`[data-palette-picker-group='${group}']`).evaluateAll((rows) => (
++    rows.map((row) => row.children.length)
++  ));
++  expect(counts.length).toBeGreaterThan(0);
++  expect(counts).toEqual(counts.map(() => columns));
++}
++
+ async function visiblePaletteNames(page) {
+-  return page.locator("[data-palette-user-list] [data-palette-swatch-row]").evaluateAll((swatches) => (
++  return page.locator("[data-palette-user-list] [data-palette-swatch-key]").evaluateAll((swatches) => (
+     swatches.map((swatch) => swatch.dataset.paletteSwatchName)
+   ));
+ }
+@@ -157,11 +168,20 @@ async function visiblePaletteNames(page) {
+ async function expectSortToggle(page, key, label) {
+   const button = page.locator(`[data-palette-user-sort] [data-palette-sort-key='${key}']`);
+   await button.click();
+-  await expect(button).toHaveText(`${label} ^`);
+-  const ascending = await visiblePaletteNames(page);
+-  await button.click();
+-  await expect(button).toHaveText(`${label} v`);
+-  const descending = await visiblePaletteNames(page);
++  let ascending = [];
++  let descending = [];
++  if ((await button.textContent())?.includes("^")) {
++    ascending = await visiblePaletteNames(page);
++    await button.click();
++    await expect(button).toHaveText(`${label} v`);
++    descending = await visiblePaletteNames(page);
++  } else {
++    await expect(button).toHaveText(`${label} v`);
++    descending = await visiblePaletteNames(page);
++    await button.click();
++    await expect(button).toHaveText(`${label} ^`);
++    ascending = await visiblePaletteNames(page);
++  }
+   expect(ascending).toEqual([...descending].reverse());
+ }
+ 
+@@ -179,15 +199,17 @@ test("Palette repository owns project swatches and protects invalid payloads", a
+   expect(baseline.workspace.tools["palette-browser"].swatches).toEqual([]);
+   expect(baseline.validation.status).toBe("Ready");
+ 
+-  const invalidInput = { symbol: "AB", hex: "#112233", name: "Invalid Symbol", tags: ["Hero"] };
++  const invalidInput = { hex: "#12", name: "", tags: ["Hero"] };
+   const invalidResult = repository.addSwatch(invalidInput);
+   expect(invalidResult.ok).toBe(false);
+-  expect(invalidResult.issues.map((issue) => issue.label)).toContain("Symbol");
++  expect(invalidResult.issues.map((issue) => issue.label)).toEqual(expect.arrayContaining(["Hex", "Name"]));
+   expect(invalidInput.tags).toEqual(["Hero"]);
+   expect(repository.getSnapshot().workspace.tools["palette-browser"].swatches).toEqual([]);
+ 
+-  expect(repository.addSwatch({ symbol: "H", hex: "#123456AA", name: "Hero Blue" }).ok).toBe(true);
+-  expect(repository.getSnapshot().selectedSwatch).toMatchObject({ name: "Hero Blue", symbol: "H" });
++  expect(repository.addSwatch({ hex: "#123456AA", name: "Hero Blue" }).ok).toBe(true);
++  expect(repository.getSnapshot().selectedSwatch).toMatchObject({ name: "Hero Blue" });
++  const heroKey = repository.getSnapshot().selectedSwatch.key;
++  expect(heroKey).toBeTruthy();
+   expect(repository.getTables().palette_colors).toHaveLength(1);
+   expect(repository.getSnapshot().tableCounts).toEqual(expect.arrayContaining([
+     expect.objectContaining({ rows: 1, table: "palette_colors" })
+@@ -196,19 +218,52 @@ test("Palette repository owns project swatches and protects invalid payloads", a
+   const sourceSwatch = repository.listSourceSwatches({ sourceId: "reference", sortKey: "hue" })[0];
+   const pinResult = repository.pinSourceSwatch(sourceSwatch);
+   expect(pinResult.ok).toBe(true);
+-  expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", source: "reference", tags: [] });
++  expect(repository.findSwatch("reference-red")).toMatchObject({ name: "Reference Red", source: "reference", tags: [] });
+   expect(repository.displaySource("reference")).toBe("Reference");
+ 
+-  const tagResult = repository.addTagToSwatches(["H", "R"], "batch");
++  const tagResult = repository.addTagToSwatches([heroKey, "reference-red"], "batch");
+   expect(tagResult.ok).toBe(true);
+-  expect(repository.findSwatch("H")).toMatchObject({ name: "Hero Blue", tags: ["batch"] });
+-  expect(repository.findSwatch("R")).toMatchObject({ name: "Reference Red", tags: ["batch"] });
+-  expect(repository.findSwatch("G")).toBeNull();
++  expect(repository.findSwatch(heroKey)).toMatchObject({ name: "Hero Blue", tags: ["batch"] });
++  expect(repository.findSwatch("reference-red")).toMatchObject({ name: "Reference Red", tags: ["batch"] });
++  expect(repository.findSwatch("reference-green")).toBeNull();
++
++  const noSymbolPayloadValidation = validatePaletteWorkspacePayload({
++    tools: {
++      "palette-browser": {
++        swatches: [
++          { key: "symbol-free-swatch", hex: "#224466", name: "Symbol Free Swatch", tags: [] }
++        ]
++      }
++    }
++  });
++  expect(noSymbolPayloadValidation.valid).toBe(true);
++  expect(noSymbolPayloadValidation.normalized.tools["palette-browser"].swatches[0]).toMatchObject({
++    hex: "#224466",
++    key: "symbol-free-swatch",
++    name: "Symbol Free Swatch"
++  });
++
++  const lifecycleRepository = createProjectWorkspacePaletteRepository({ sourcePaletteRows });
++  const lifecycleAdd = lifecycleRepository.addSwatch({ hex: "#224466", name: "Lifecycle Blue" });
++  expect(lifecycleAdd.ok).toBe(true);
++  const lifecycleKey = lifecycleAdd.snapshot.selectedSwatch.key;
++  expect(lifecycleRepository.updateSelectedSwatch({ hex: "#224477", name: "Lifecycle Updated" }).ok).toBe(true);
++  expect(lifecycleRepository.findSwatch(lifecycleKey)).toMatchObject({ hex: "#224477", name: "Lifecycle Updated" });
++  expect(lifecycleRepository.removeSwatch(lifecycleKey).ok).toBe(true);
++  expect(lifecycleRepository.findSwatch(lifecycleKey)).toBeNull();
++  const lifecycleSourceSwatch = lifecycleRepository.listSourceSwatches({ sourceId: "reference" })[0];
++  expect(lifecycleRepository.pinSourceSwatch(lifecycleSourceSwatch).ok).toBe(true);
++  expect(lifecycleRepository.findSwatch(lifecycleSourceSwatch.key)).toMatchObject({ name: lifecycleSourceSwatch.name });
++  expect(lifecycleRepository.removeSwatch(lifecycleSourceSwatch.key).ok).toBe(true);
++  expect(lifecycleRepository.findSwatch(lifecycleSourceSwatch.key)).toBeNull();
++  lifecycleRepository.addSwatch({ hex: "#667788", name: "Clearable Swatch" });
++  lifecycleRepository.clearProjectData();
++  expect(lifecycleRepository.getTables().palette_colors).toEqual([]);
+ 
+   const invalidPayload = {
+     tools: {
+       "palette-browser": {
+-        swatches: [{ symbol: "XX", hex: "#FFFFFF", name: "Invalid" }]
++        swatches: [{ hex: "#12", name: "" }]
+       }
+     }
+   };
+@@ -224,7 +279,8 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches",
+ 
+   try {
+     await expect(page.getByRole("heading", { name: "Colors" }).first()).toBeVisible();
+-    await expect(page.getByRole("heading", { name: "Selected Swatches", exact: true })).toBeVisible();
++    await expect(page.getByRole("heading", { name: "Palette", exact: true })).toBeVisible();
++    await expect(page.getByRole("heading", { name: "Selected Swatches", exact: true })).toHaveCount(0);
+     await expect(page.locator(".tool-workspace")).toBeVisible();
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+     await expect(page.locator("body")).not.toContainText(/import json|export json|Crayola/i);
+@@ -239,11 +295,9 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches",
+     await expect(page.locator("[data-palette-clear-checked]")).toBeDisabled();
+ 
+     await expectCompactToolFormControls(page, [
+-      "[data-palette-selected-symbol]",
+       "[data-palette-selected-hex]",
+       "[data-palette-selected-name]",
+       "[data-palette-tags]",
+-      "[data-palette-symbol]",
+       "[data-palette-hex]",
+       "[data-palette-name]",
+       "[data-palette-theme-collection]",
+@@ -256,51 +310,54 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches",
+     ]);
+ 
+     await expectUserHexPreview(page, "invalid", "#ffffff");
+-    await expect(page.getByRole("button", { name: "Add User Defined" })).toBeDisabled();
+-    await expect(page.getByRole("button", { name: "Update Selected" })).toBeDisabled();
++    await expect(page.locator("[data-palette-add]")).toBeDisabled();
++    await expect(page.locator("[data-palette-update]")).toBeDisabled();
++    await expect(page.locator("[data-palette-clear]")).toBeEnabled();
+     await expect(page.locator("[data-palette-tags]")).toBeDisabled();
+ 
+-    await fillUserSwatch(page, { symbol: "HH", hex: "#12", name: "" });
+-    await expect(page.getByRole("button", { name: "Add User Defined" })).toBeDisabled();
++    await fillUserSwatch(page, { hex: "#12", name: "" });
++    await expect(page.locator("[data-palette-add]")).toBeDisabled();
+     await expectUserHexPreview(page, "invalid", "#ffffff");
+     await expect(page.locator("[data-palette-validation-overlay]")).toBeVisible();
+-    await expect(page.locator("[data-palette-validation-list]")).toContainText("Symbol");
+     await expect(page.locator("[data-palette-validation-list]")).toContainText("Hex");
+     await expect(page.locator("[data-palette-validation-list]")).toContainText("Name");
+ 
+-    await addUserSwatch(page, { symbol: "H", hex: "#123456aa", name: "Hero Blue" });
++    await addUserSwatch(page, { hex: "#123456aa", name: "Hero Blue" });
+     await expect(page.locator("[data-palette-count]")).toHaveText("1");
+-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-hex", "#123456AA");
+-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("title", "Name: Hero Blue\nHex: #123456AA\nSource: custom");
+-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-selected", "true");
+-    await expectReadableDisabledField(page, "[data-palette-selected-symbol]", "H");
++    const heroTile = swatchTileByName(page, "Hero Blue");
++    await expect(heroTile).toHaveAttribute("data-palette-swatch-hex", "#123456AA");
++    await expect(heroTile).toHaveAttribute("title", "Name: Hero Blue\nHex: #123456AA\nTheme: User Defined\nPalette Type: Custom");
++    await expect(heroTile).toHaveAttribute("data-palette-metadata-hex", "#123456AA");
++    await expect(heroTile).toHaveAttribute("data-palette-metadata-theme-collection", "User Defined");
++    await expect(heroTile).toHaveAttribute("data-palette-selected", "true");
+     await expectReadableDisabledField(page, "[data-palette-selected-hex]", "#123456AA");
+     await expectReadableDisabledField(page, "[data-palette-selected-name]", "Hero Blue");
+     await expect(page.locator("[data-palette-tags]")).toBeEnabled();
+-    await expect(page.getByRole("button", { name: "Update Selected" })).toBeEnabled();
++    await expect(page.locator("[data-palette-update]")).toBeEnabled();
+ 
+     await page.locator("[data-palette-tags]").fill("hero");
+     await page.locator("[data-palette-tags]").press("Enter");
+-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-tags", "hero");
++    await expect(heroTile).toHaveAttribute("data-palette-swatch-tags", "hero");
+     await page.locator("[data-palette-tags]").fill("ui");
+     await page.locator("[data-palette-tags]").press("Enter");
+-    await expect(page.locator("[data-palette-swatch-row='H']")).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
++    await expect(heroTile).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
+     await expect(page.locator("[data-palette-editor-tags-list] [data-palette-tag-value]")).toHaveText(["hero", "ui"]);
+ 
+-    await page.locator("[data-palette-symbol]").fill("J");
+     await page.locator("[data-palette-hex]").fill("#ABCDEF");
+     await page.locator("[data-palette-name]").fill("Hero Updated");
+-    await page.getByRole("button", { name: "Update Selected" }).click();
+-    await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-swatch-name", "Hero Updated");
+-    await expect(page.locator("[data-palette-swatch-row='J']")).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
++    await page.locator("[data-palette-update]").click();
++    await expect(swatchTileByName(page, "Hero Updated")).toHaveAttribute("data-palette-swatch-name", "Hero Updated");
++    await expect(swatchTileByName(page, "Hero Updated")).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
+     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Hero Updated");
+     await expect(page.locator("[data-palette-table-counts]")).toContainText("palette_colors");
+ 
++    await page.locator("[data-palette-harmony-match]").selectOption("all");
+     await page.locator("[data-palette-harmony-scheme]").selectOption("triadic");
+-    await expect(page.locator("[data-palette-harmony-choice]")).toHaveCount(2);
+-    await page.locator("[data-palette-harmony-choice='1']").click();
++    await expect(page.locator("[data-palette-harmony-choice]").first()).toBeVisible();
++    await expect(page.locator("[data-palette-harmony-choice]").first()).toHaveAttribute("title", /Nature Forest Full/);
++    await page.locator("[data-palette-harmony-choice]").first().click();
+     await expect(page.locator("[data-palette-count]")).toHaveText("2");
+-    await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Triadic 2");
++    await expect(page.locator("[data-palette-selected-summary]")).toContainText("Triadic");
+ 
+     expectNoPageFailures(failures);
+   } finally {
+@@ -314,11 +371,24 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
+   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
+ 
+   try {
+-    await expect(page.locator("[data-palette-project-accordion] > summary")).toHaveText("Selected Swatches");
+-    await expect(page.locator("[data-palette-source-accordion] > summary")).toHaveText("Defined Swatch Selector");
+-    await expect(page.locator("[data-palette-generator-accordion] > summary")).toHaveText("Swatch Type / Theme");
+-    await expect(page.locator("[data-palette-project-accordion] [data-palette-generator-preview]")).toHaveCount(1);
+-    await expect(page.locator("[data-palette-generator-accordion] [data-palette-generator-preview]")).toHaveCount(0);
++    await expect(page.locator("[data-palette-fullscreen-panels] > details > summary")).toHaveText([
++      "Project Swatches",
++      "Picker Swatches",
++      "Picker Preview"
++    ]);
++    const accordionOrder = await page.locator("[data-palette-project-accordion]").evaluate((projectAccordion) => {
++      const pickerAccordion = document.querySelector("[data-palette-picker-accordion]");
++      return {
++        pickerTop: Math.round(pickerAccordion.getBoundingClientRect().top),
++        projectTop: Math.round(projectAccordion.getBoundingClientRect().top)
++      };
++    });
++    expect(accordionOrder.projectTop).toBeLessThan(accordionOrder.pickerTop);
++    await expect(page.locator("[data-palette-project-accordion] [data-palette-generator-preview]")).toHaveCount(0);
++    await expect(page.locator("[data-palette-picker-accordion] [data-palette-generator-preview]")).toHaveCount(0);
++    await expect(page.locator("[data-palette-preview-accordion] [data-palette-generator-preview]")).toHaveCount(1);
++    await expect(page.getByRole("heading", { name: "Defined Swatch Selector" })).toBeVisible();
++    await expect(page.getByRole("heading", { name: "Swatch Type / Theme" })).toBeVisible();
+     await expect(page.locator("[data-palette-source-select], [data-palette-source-search], [data-palette-source-pin-all]")).toHaveCount(0);
+ 
+     await expect(page.locator("[data-palette-theme-collection] option")).toHaveText(Object.keys(expectedThemeTypes));
+@@ -345,9 +415,45 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
+     await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("40");
+     await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("100");
+     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("0");
++    expect(await page.locator("[data-palette-generator-variant] option").allTextContents()).not.toEqual(expect.arrayContaining(["64 colors", "128 colors", "256 colors"]));
++
++    const selectorLayout = await page.locator("[data-palette-picker-accordion] .grid.cols-3").first().evaluate((grid) => (
++      Array.from(grid.querySelectorAll("select")).map((select) => Math.round(select.getBoundingClientRect().top))
++    ));
++    expect(new Set(selectorLayout).size).toBe(1);
++    const sliderLayout = await page.locator("[aria-label='Palette generator sliders']").evaluate((grid) => (
++      Array.from(grid.querySelectorAll("input[type='range']")).map((slider) => Math.round(slider.getBoundingClientRect().top))
++    ));
++    expect(new Set(sliderLayout).size).toBe(1);
++    const undoRedoLayout = await page.locator("[data-palette-undo]").evaluate((undo) => {
++      const redo = document.querySelector("[data-palette-redo]");
++      return {
++        redoLeft: Math.round(redo.getBoundingClientRect().left),
++        undoLeft: Math.round(undo.getBoundingClientRect().left),
++        undoTop: Math.round(undo.getBoundingClientRect().top),
++        redoTop: Math.round(redo.getBoundingClientRect().top)
++      };
++    });
++    expect(undoRedoLayout.undoTop).toBe(undoRedoLayout.redoTop);
++    expect(undoRedoLayout.undoLeft).toBeLessThan(undoRedoLayout.redoLeft);
++    await expect(page.locator("[data-palette-user-sort] [data-palette-sort-key], [data-palette-user-size] [data-palette-size-key]")).toHaveText([
++      "Hue ^",
++      "Sat",
++      "Brit",
++      "Name",
++      "Tag",
++      "Small",
++      "Medium",
++      "Large"
++    ]);
+ 
+     await expect(page.locator("[data-palette-generator-preview-row]")).toHaveCount(8);
+     await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(64);
++    await expect(page.locator("[data-palette-include-already-project-swatches]")).not.toBeChecked();
++    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("Already in Project swatches are listed");
++    await expect(page.locator("[data-palette-picker-group-label='available']")).toHaveText("Available Picker Swatches (64)");
++    await expect(page.locator("[data-palette-picker-group-label='unavailable']")).toHaveText("Already in Project (0)");
++    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(0);
+     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-collection", "Nature");
+     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-type-name", "Forest");
+     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-variant-name", "Full");
+@@ -368,6 +474,23 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
+     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("45");
+     expect(await firstSwatch.inputValue()).not.toBe(initialColor);
+ 
++    await page.locator("[data-palette-theme-collection]").selectOption("ROYGBIV");
++    await expect(page.locator("[data-palette-generator-type] option")).toHaveText(["ROYGBIV"]);
++    await page.locator("[data-palette-generator-colors]").selectOption("7");
++    await page.locator("[data-palette-generator-steps]").selectOption("2");
++    await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(14);
++    const royNames = await page.locator("[data-palette-generator-swatch]").evaluateAll((swatches) => (
++      swatches.slice(0, 7).map((swatch) => swatch.dataset.paletteGeneratorName)
++    ));
++    expect(royNames.join(" ")).toContain("Red");
++    expect(royNames.join(" ")).toContain("Orange");
++    expect(royNames.join(" ")).toContain("Yellow");
++    expect(royNames.join(" ")).toContain("Green");
++    expect(royNames.join(" ")).toContain("Blue");
++    expect(royNames.join(" ")).toContain("Indigo");
++    expect(royNames.join(" ")).toContain("Violet");
++
++    await page.locator("[data-palette-generator-steps]").selectOption("8");
+     await page.locator("[data-palette-theme-collection]").selectOption("Sci-Fi");
+     await expect(page.locator("[data-palette-generator-type] option")).toHaveText(expectedThemeTypes["Sci-Fi"]);
+     await page.locator("[data-palette-generator-type]").selectOption("Cyberpunk");
+@@ -408,6 +531,8 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
+       await expect(page.locator("[data-palette-generator-type] option")).toHaveText(types);
+       for (const type of types) {
+         await page.locator("[data-palette-generator-type]").selectOption(type);
++        await page.locator("[data-palette-generator-colors]").selectOption("4");
++        await page.locator("[data-palette-generator-steps]").selectOption("2");
+         await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(8);
+         await expect(page.locator("[data-palette-generator-preview-status]")).toContainText(`${collection} / ${type}`);
+       }
+@@ -424,16 +549,88 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
+   }
+ });
+ 
++test("Palette Tool preserves eight-column picker rows when swatches are unavailable", async ({ page }) => {
++  const failures = await openRepoPage(page, "/toolbox/colors/index.html");
++
++  try {
++    await page.locator("[data-palette-generator-colors]").selectOption("8");
++    await page.locator("[data-palette-generator-steps]").selectOption("2");
++    await expectPickerRowsToHaveColumnCount(page, "available", 8);
++    const firstAvailableEightColumnSwatch = page.locator("[data-palette-generator-swatch][data-palette-generator-availability='available']").first();
++    const eightColumnHex = await firstAvailableEightColumnSwatch.getAttribute("data-palette-generator-hex");
++    await firstAvailableEightColumnSwatch.click();
++    await expect(page.locator("[data-palette-count]")).toHaveText("1");
++
++    await expectPickerRowsToHaveColumnCount(page, "available", 8);
++    await expectPickerRowsToHaveColumnCount(page, "unavailable", 8);
++    const unavailableEightColumnSwatch = page.locator(`[data-palette-generator-swatch][data-palette-generator-hex='${eightColumnHex}'][data-palette-generator-availability='unavailable']`);
++    await expect(unavailableEightColumnSwatch).toHaveAttribute("data-palette-generator-unavailable-reason", "Already in Project");
++    const unavailableEightColumnVisual = await unavailableEightColumnSwatch.evaluate((swatch) => ({
++      cursor: getComputedStyle(swatch).cursor,
++      opacity: getComputedStyle(swatch).opacity,
++      value: swatch.querySelector("input[type='color']").value
++    }));
++    expect(unavailableEightColumnVisual.cursor).not.toBe("not-allowed");
++    expect(unavailableEightColumnVisual.opacity).toBe("1");
++    expect(unavailableEightColumnVisual.value.toUpperCase()).toBe((eightColumnHex || "").slice(0, 7).toUpperCase());
++
++    await unavailableEightColumnSwatch.click();
++    await expect(page.locator("[data-palette-count]")).toHaveText("1");
++    await expect(page.locator("[data-palette-log]")).toContainText("Already in Project picker swatch was not added");
++    await page.locator("[data-palette-generator-swatch][data-palette-generator-availability='available']").first().click();
++    await expect(page.locator("[data-palette-count]")).toHaveText("2");
++
++    expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
++
+ test("Palette Tool generated grid swatches can be selected, pinned, and refreshed", async ({ page }) => {
+   test.setTimeout(120000);
+   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
+ 
+   try {
++    await page.locator("[data-palette-generator-colors]").selectOption("4");
++    await page.locator("[data-palette-generator-steps]").selectOption("2");
++    await expect(page.locator("[data-palette-generator-swatch]")).toHaveCount(8);
++    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(0);
++    const pickerCursors = await page.locator("[data-palette-generator-swatch]").evaluateAll((swatches) => (
++      swatches.map((swatch) => getComputedStyle(swatch).cursor)
++    ));
++    expect(pickerCursors.every((cursor) => cursor !== "not-allowed")).toBe(true);
++    for (let index = 0; index < 8; index += 1) {
++      await page.locator("[data-palette-generator-swatch][data-palette-generator-availability='available']").first().click();
++    }
++    await expect(page.locator("[data-palette-count]")).toHaveText("8");
++
++    await page.locator("[data-palette-generator-reset]").click();
+     const firstGenerated = page.locator("[data-palette-generator-swatch]").first();
++    await page.locator("[data-palette-theme-collection]").selectOption("Sci-Fi");
++    await page.locator("[data-palette-generator-type]").selectOption("Cyberpunk");
++    await page.locator("[data-palette-generator-variant]").selectOption("16");
++    await page.locator("[data-palette-generator-colors]").selectOption("16");
++    await page.locator("[data-palette-generator-steps]").selectOption("4");
++    await page.locator("[data-palette-generator-contrast]").evaluate((control) => {
++      control.value = "72";
++      control.dispatchEvent(new Event("input", { bubbles: true }));
++    });
++    await page.locator("[data-palette-generator-saturation]").evaluate((control) => {
++      control.value = "58";
++      control.dispatchEvent(new Event("input", { bubbles: true }));
++    });
++    await page.locator("[data-palette-generator-hue-shift]").evaluate((control) => {
++      control.value = "-35";
++      control.dispatchEvent(new Event("input", { bubbles: true }));
++    });
+     await expect(firstGenerated).toHaveAttribute("data-palette-pinned", "false");
+     const generatedName = await firstGenerated.getAttribute("data-palette-generator-name");
+-    const generatedSymbol = await firstGenerated.getAttribute("data-palette-generator-symbol");
+     const generatedHex = await firstGenerated.getAttribute("data-palette-generator-hex");
++    await expect(firstGenerated).toHaveAttribute("title", /Name: Sci-Fi Cyberpunk 16 colors[\s\S]*Hex: #[0-9A-F]{6}[\s\S]*Theme: Sci-Fi[\s\S]*Palette Type: Cyberpunk/);
++    const pickerTooltip = await firstGenerated.getAttribute("title");
++    expect(pickerTooltip?.split("\n")).toHaveLength(4);
++    expect(pickerTooltip).not.toContain("Contrast:");
+ 
+     const gridSpacing = await page.locator("[data-palette-generator-preview]").evaluate((preview) => {
+       const firstRow = preview.querySelector("[data-palette-generator-preview-row]");
+@@ -451,37 +648,87 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
+     expect(Math.abs(gridSpacing.xGap)).toBeLessThanOrEqual(1);
+ 
+     await firstGenerated.click();
+-    await expect(page.locator("[data-palette-count]")).toHaveText("1");
+-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-name", generatedName || "");
+-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-hex", generatedHex || "");
+-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-selected", "true");
+-    await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-pinned", "true");
+-    await expect(page.locator("[data-palette-generator-swatch]").first().locator("[data-palette-pin-indicator]")).toHaveCount(1);
+-    await expect(page.locator("[data-palette-log]")).toContainText("Pinned generated swatch");
+-
+-    await page.locator("[data-palette-theme-collection]").selectOption("Sci-Fi");
+-    await page.locator("[data-palette-generator-type]").selectOption("Cyberpunk");
++    await expect(page.locator("[data-palette-count]")).toHaveText("9");
++    await expect(page.locator("[data-palette-log]")).toContainText("Added picker swatch");
++    const generatedTile = swatchTileByName(page, generatedName || "");
++    await expect(generatedTile).toHaveAttribute("data-palette-swatch-name", generatedName || "");
++    await expect(generatedTile).toHaveAttribute("data-palette-swatch-hex", generatedHex || "");
++    await expect(generatedTile).toHaveAttribute("data-palette-selected", "true");
++    await expect(generatedTile).toHaveAttribute("title", `Name: ${generatedName}\nHex: ${generatedHex}\nTheme: Sci-Fi\nPalette Type: Cyberpunk`);
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-theme-collection", "Sci-Fi");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-palette-type", "Cyberpunk");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-variant", "16 colors");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-colors", "16");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-steps", "4");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-contrast", "72");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-saturation", "58");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-hue-shift", "-35");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-sort-field", "hue");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-sort-direction", "asc");
++    await expect(generatedTile).toHaveAttribute("data-palette-metadata-swatch-size", "medium");
++    const unavailablePickerSwatch = page.locator(`[data-palette-generator-swatch][data-palette-generator-hex='${generatedHex}']`);
++    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-pinned", "true");
++    await expect(unavailablePickerSwatch.locator("[data-palette-pin-indicator]")).toHaveCount(1);
++    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-availability", "unavailable");
++    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-unavailable-reason", "Already in Project");
++    await expect(unavailablePickerSwatch).not.toBeDisabled();
++    await expect(page.locator("[data-palette-picker-group-label='available']")).toHaveText("Available Picker Swatches (63)");
++    await expect(page.locator("[data-palette-picker-group-label='unavailable']")).toHaveText("Already in Project (1)");
++    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(1);
++    await expectPickerRowsToHaveColumnCount(page, "available", 16);
++    await expectPickerRowsToHaveColumnCount(page, "unavailable", 16);
++    const unavailableVisual = await unavailablePickerSwatch.evaluate((swatch) => ({
++      cursor: getComputedStyle(swatch).cursor,
++      opacity: getComputedStyle(swatch).opacity,
++      value: swatch.querySelector("input[type='color']").value
++    }));
++    expect(unavailableVisual.cursor).not.toBe("not-allowed");
++    expect(unavailableVisual.opacity).toBe("1");
++    expect(unavailableVisual.value.toUpperCase()).toBe((generatedHex || "").slice(0, 7).toUpperCase());
++    await unavailablePickerSwatch.click();
++    await expect(page.locator("[data-palette-count]")).toHaveText("9");
++    await expect(page.locator("[data-palette-log]")).toContainText("Already in Project picker swatch was not added");
++    await page.locator("[data-palette-include-already-project-swatches]").check();
++    await expect(page.locator("[data-palette-picker-disabled-reason]")).toContainText("included in the available section");
++    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-availability", "available");
++    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(0);
++    await page.locator("[data-palette-include-already-project-swatches]").uncheck();
++    await expect(unavailablePickerSwatch).toHaveAttribute("data-palette-generator-availability", "unavailable");
++    await expect(page.locator("[data-palette-generator-swatch][data-palette-generator-unavailable='true']")).toHaveCount(1);
++
++    await page.locator("[data-palette-theme-collection]").selectOption("Nature");
++    await page.locator("[data-palette-generator-type]").selectOption("Forest");
+     await page.locator("[data-palette-generator-variant]").selectOption("High Contrast");
+     await page.locator("[data-palette-generator-colors]").selectOption("12");
+     await page.locator("[data-palette-generator-steps]").selectOption("16");
+     await page.locator("[data-palette-generator-contrast]").evaluate((control) => {
+-      control.value = "72";
++      control.value = "40";
+       control.dispatchEvent(new Event("input", { bubbles: true }));
+     });
+     await page.locator("[data-palette-generator-saturation]").evaluate((control) => {
+-      control.value = "58";
++      control.value = "100";
+       control.dispatchEvent(new Event("input", { bubbles: true }));
+     });
+     await page.locator("[data-palette-generator-hue-shift]").evaluate((control) => {
+-      control.value = "-35";
++      control.value = "0";
+       control.dispatchEvent(new Event("input", { bubbles: true }));
+     });
+-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-name", generatedName || "");
+-    await expect(page.locator("[data-palette-count]")).toHaveText("1");
++    await expect(generatedTile).toHaveAttribute("data-palette-swatch-name", generatedName || "");
++    await expect(page.locator("[data-palette-count]")).toHaveText("9");
++
++    await page.locator("[data-palette-restore-picker-settings]").click();
++    await expect(page.locator("[data-palette-theme-collection]")).toHaveValue("Sci-Fi");
++    await expect(page.locator("[data-palette-generator-type]")).toHaveValue("Cyberpunk");
++    await expect(page.locator("[data-palette-generator-variant]")).toHaveValue("16");
++    await expect(page.locator("[data-palette-generator-colors]")).toHaveValue("16");
++    await expect(page.locator("[data-palette-generator-steps]")).toHaveValue("4");
++    await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("72");
++    await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("58");
++    await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("-35");
+ 
+     await page.locator("[data-palette-generator-generate]").click();
+-    await expect(page.locator("[data-palette-log]")).toContainText("Generated palette grid: Sci-Fi / Cyberpunk / High Contrast, 12 colors x 16 steps.");
+-    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-name", generatedName || "");
++    await expect(page.locator("[data-palette-log]")).toContainText("Generated palette grid: Sci-Fi / Cyberpunk / 16 colors, 16 colors x 4 steps.");
++    await expect(generatedTile).toHaveAttribute("data-palette-swatch-name", generatedName || "");
+ 
+     expectNoPageFailures(failures);
+   } finally {
+@@ -498,9 +745,9 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
+     await expect(page.getByText("Swatch Editor")).toHaveCount(0);
+     await expect(page.locator("[data-palette-clear-checked]")).toBeDisabled();
+ 
+-    await addUserSwatch(page, { symbol: "A", hex: "#111111", name: "Anchor" });
+-    await addUserSwatch(page, { symbol: "B", hex: "#6B4F2A", name: "Brownstone" });
+-    await addUserSwatch(page, { symbol: "C", hex: "#264EA4", name: "Bluegate" });
++    await addUserSwatch(page, { hex: "#111111", name: "Anchor" });
++    await addUserSwatch(page, { hex: "#6B4F2A", name: "Brownstone" });
++    await addUserSwatch(page, { hex: "#264EA4", name: "Bluegate" });
+     await expect(page.locator("[data-palette-count]")).toHaveText("3");
+     await expect(page.locator("[data-palette-swatch-check]")).toHaveCount(3);
+ 
+@@ -513,9 +760,9 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
+     const blueItem = page.locator("[data-palette-swatch-item]", {
+       has: page.locator("[data-palette-swatch-name='Bluegate']")
+     });
+-    const anchorTile = anchorItem.locator("[data-palette-swatch-row]");
+-    const brownTile = brownItem.locator("[data-palette-swatch-row]");
+-    const blueTile = blueItem.locator("[data-palette-swatch-row]");
++    const anchorTile = anchorItem.locator("[data-palette-swatch-key]");
++    const brownTile = brownItem.locator("[data-palette-swatch-key]");
++    const blueTile = blueItem.locator("[data-palette-swatch-key]");
+     const anchorCheck = anchorItem.locator("[data-palette-swatch-check]");
+     const brownCheck = brownItem.locator("[data-palette-swatch-check]");
+ 
+@@ -523,8 +770,12 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
+     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Anchor");
+     const checkBox = await anchorCheck.boundingBox();
+     const tileBox = await anchorTile.boundingBox();
+-    expect((checkBox?.x || 0) - (tileBox?.x || 0)).toBeLessThan(10);
+-    expect((checkBox?.y || 0) - (tileBox?.y || 0)).toBeLessThan(10);
++    const checkboxLeftInset = (checkBox?.x || 0) - (tileBox?.x || 0);
++    const checkboxTopInset = (checkBox?.y || 0) - (tileBox?.y || 0);
++    expect(checkboxLeftInset).toBeGreaterThanOrEqual(2);
++    expect(checkboxLeftInset).toBeLessThanOrEqual(6);
++    expect(checkboxTopInset).toBeGreaterThanOrEqual(2);
++    expect(checkboxTopInset).toBeLessThanOrEqual(6);
+ 
+     await page.locator("[data-palette-tags]").fill("solo");
+     await page.locator("[data-palette-tags]").press("Enter");
+@@ -552,6 +803,12 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
+     await expect(brownTile).toHaveAttribute("data-palette-swatch-tags", "batch");
+     await expect(blueTile).toHaveAttribute("data-palette-swatch-tags", "");
+ 
++    await page.locator("[data-palette-tags]").fill("pla");
++    await expect(page.locator("#paletteTagSuggestions option[value='Player']")).toHaveCount(1);
++    await page.locator("[data-palette-tags]").fill("Player");
++    await page.locator("[data-palette-tags]").press("Enter");
++    await expect(anchorTile).toHaveAttribute("data-palette-swatch-tags", "solo, batch, afterclear, player");
++
+     await expectSortToggle(page, "hue", "Hue");
+     await expectSortToggle(page, "saturation", "Sat");
+     await expectSortToggle(page, "brightness", "Brit");
+@@ -560,19 +817,36 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
+ 
+     const tagFilters = page.locator("[data-palette-tag-filter]");
+     const tagFilterItems = page.locator("[data-palette-tags-list] li");
+-    await expect(tagFilters).toHaveCount(3);
+-    await expect(tagFilterItems).toHaveText(["afterclear", "batch", "solo"]);
++    await expect(tagFilters).toHaveCount(4);
++    await expect(tagFilterItems).toHaveText(["afterclear", "batch", "player", "solo"]);
++    await expect(page.getByRole("button", { name: "Deselect All" })).toHaveCount(0);
++    await expect(page.getByRole("button", { name: "Clear Filters" })).toBeDisabled();
++    await expect(page.getByRole("radio", { name: "Any selected tag" })).toBeChecked();
++    await expect(page.getByRole("radio", { name: "All selected tags" })).not.toBeChecked();
++
+     await page.locator("[data-palette-tag-filter='batch']").check();
++    await expect(page.getByRole("button", { name: "Clear Filters" })).toBeEnabled();
+     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
+     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(1);
+     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Bluegate']")).toHaveCount(0);
+     await page.locator("[data-palette-tag-filter='solo']").check();
+     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
++    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(1);
++    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Bluegate']")).toHaveCount(0);
++    await page.getByRole("radio", { name: "All selected tags" }).check();
++    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
+     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(0);
+     await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Bluegate']")).toHaveCount(0);
+-    await page.locator("[data-palette-tag-filter='batch']").uncheck();
+-    await page.locator("[data-palette-tag-filter='solo']").uncheck();
+-    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-row]")).toHaveCount(3);
++    await page.locator("[data-palette-tag-filter='solo']").click();
++    await expect(page.locator("[data-palette-tag-filter='solo']")).not.toBeChecked();
++    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
++    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(1);
++    await page.locator("[data-palette-tag-filter='solo']").check();
++    await page.getByRole("button", { name: "Clear Filters" }).click();
++    await expect(page.locator("[data-palette-tag-filter='batch']")).not.toBeChecked();
++    await expect(page.locator("[data-palette-tag-filter='solo']")).not.toBeChecked();
++    await expect(page.getByRole("button", { name: "Clear Filters" })).toBeDisabled();
++    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-key]")).toHaveCount(3);
+ 
+     expectNoPageFailures(failures);
+   } finally {
+@@ -586,7 +860,8 @@ test("Palette Tool rejects invalid payloads before render and blocks editing wit
+ 
+   try {
+     await expect(page.locator("[data-palette-log]")).toContainText("Invalid palette payload rejected before render");
+-    await expect(page.locator("[data-palette-validation-list]")).toContainText("Symbol must be exactly one character.");
++    await expect(page.locator("[data-palette-validation-list]")).toContainText("Hex");
++    await expect(page.locator("[data-palette-validation-list]")).toContainText("Name");
+     await expect(page.locator("[data-palette-count]")).toHaveText("0");
+     expectNoPageFailures(invalidFailures);
+   } finally {
+@@ -599,8 +874,8 @@ test("Palette Tool rejects invalid payloads before render and blocks editing wit
+   try {
+     await expect(page.locator("[data-palette-active-project]")).toHaveText("No active project.");
+     await expect(page.locator("[data-palette-project-overlay]")).toBeVisible();
+-    await expect(page.getByRole("button", { name: "Add User Defined" })).toBeDisabled();
+-    await expect(page.getByRole("button", { name: "Update Selected" })).toBeDisabled();
++    await expect(page.locator("[data-palette-add]")).toBeDisabled();
++    await expect(page.locator("[data-palette-update]")).toBeDisabled();
+     await expect(page.locator("[data-palette-validation-list]")).toContainText("Active Project");
+     expectNoPageFailures(missingProjectFailures);
+   } finally {
+diff --git a/toolbox/colors/colors.js b/toolbox/colors/colors.js
+index ac47e72a6..3fad3767c 100644
+--- a/toolbox/colors/colors.js
++++ b/toolbox/colors/colors.js
+@@ -35,6 +35,73 @@ const SIZE_OPTIONS = Object.freeze([
+   { key: "large", label: "Large" }
+ ]);
+ 
++const SUGGESTED_TAGS = Object.freeze([
++  "UI",
++  "Main Palette",
++  "Panel Background",
++  "Panel Border",
++  "Primary Button",
++  "Secondary Button",
++  "Warning",
++  "Success",
++  "Error",
++  "Info",
++  "Menu",
++  "HUD",
++  "Health",
++  "Mana",
++  "Stamina",
++  "Score",
++  "Timer",
++  "Player",
++  "Enemy",
++  "Boss",
++  "NPC",
++  "Item",
++  "Pickup",
++  "Power Up",
++  "Terrain",
++  "Grass",
++  "Dirt",
++  "Stone",
++  "Metal",
++  "Wood",
++  "Water",
++  "Fire",
++  "Ice",
++  "Poison",
++  "Lightning",
++  "Shadow",
++  "Highlight",
++  "Outline",
++  "Sprite",
++  "Tile",
++  "Background",
++  "Foreground",
++  "Platform",
++  "Door",
++  "Key",
++  "Trap",
++  "Projectile",
++  "Particle",
++  "Explosion",
++  "Winter",
++  "Summer",
++  "Night",
++  "Day",
++  "Cave",
++  "Castle",
++  "Forest",
++  "Jungle",
++  "Desert",
++  "Ocean",
++  "Space",
++  "Cyberpunk",
++  "Retro",
++  "8-Bit",
++  "16-Bit"
++]);
++
+ const PALETTE_GENERATOR_DEFAULTS = Object.freeze({
+   contrast: 40,
+   saturation: 100,
+@@ -47,9 +114,6 @@ function swatches(values) {
+ 
+ const PALETTE_VARIANTS = Object.freeze([
+   { label: "Full", value: "full" },
+-  { label: "256 colors", value: "256" },
+-  { label: "128 colors", value: "128" },
+-  { label: "64 colors", value: "64" },
+   { label: "32 colors", value: "32" },
+   { label: "16 colors", value: "16" },
+   { label: "8 colors", value: "8" },
+@@ -67,9 +131,6 @@ const PALETTE_VARIANTS = Object.freeze([
+ ]);
+ 
+ const NUMERIC_VARIANT_COUNTS = Object.freeze({
+-  "256": 256,
+-  "128": 128,
+-  "64": 64,
+   "32": 32,
+   "16": 16,
+   "8": 8,
+@@ -90,6 +151,16 @@ const CURATED_PALETTE_COLLECTIONS = Object.freeze([
+       { name: "Tropical", swatches: swatches("#006C70 #00A39B #32C56F #9FD356 #F4D35E #F29E4C #E85D75 #7F4AC8") }
+     ])
+   },
++  {
++    name: "ROYGBIV",
++    types: Object.freeze([
++      {
++        name: "ROYGBIV",
++        names: Object.freeze(["Red", "Orange", "Yellow", "Green", "Blue", "Indigo", "Violet"]),
++        swatches: swatches("#FF0000 #FFA500 #FFFF00 #008000 #0000FF #4B0082 #EE82EE")
++      }
++    ])
++  },
+   {
+     name: "Floral",
+     types: Object.freeze([
+@@ -218,19 +289,21 @@ let selectedSourceSwatch = null;
+ let sourceSwatchRows = [];
+ const sourceSortState = { direction: "asc", key: "name" };
+ let sourceSizeState = "medium";
+-const userSortState = { direction: "asc", key: "name" };
++const userSortState = { direction: "asc", key: "hue" };
+ let userSizeState = "medium";
+-const checkedSwatchSymbols = new Set();
++let includeAlreadyProjectSwatches = false;
++const checkedSwatchKeys = new Set();
+ const selectedTagFilters = new Set();
++let tagMatchMode = "any";
+ const invalidHexPreviewValue = "#FFFFFF";
+ const GENERATED_SWATCH_SOURCE = "generated";
+-const GENERATED_SYMBOL_CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*()-+=[]{};:,.?";
+ 
+ const elements = {
+   activeProject: document.querySelector("[data-palette-active-project]"),
+   add: document.querySelector("[data-palette-add]"),
+   clear: document.querySelector("[data-palette-clear]"),
+   clearChecked: document.querySelector("[data-palette-clear-checked]"),
++  clearTagFilters: document.querySelector("[data-palette-clear-tag-filters]"),
+   count: document.querySelector("[data-palette-count]"),
+   editorDiagnostic: document.querySelector("[data-palette-editor-diagnostic]"),
+   form: document.querySelector("[data-palette-user-swatch-form]"),
+@@ -242,6 +315,7 @@ const elements = {
+   generatorColors: document.querySelector("[data-palette-generator-colors]"),
+   generatorCollection: document.querySelector("[data-palette-theme-collection]"),
+   generatorContrast: document.querySelector("[data-palette-generator-contrast]"),
++  includeAlreadyProjectSwatches: document.querySelector("[data-palette-include-already-project-swatches]"),
+   generatorGenerate: document.querySelector("[data-palette-generator-generate]"),
+   generatorHueShift: document.querySelector("[data-palette-generator-hue-shift]"),
+   generatorPreview: document.querySelector("[data-palette-generator-preview]"),
+@@ -256,13 +330,14 @@ const elements = {
+   hexPreview: document.querySelector("[data-palette-user-hex-preview]"),
+   log: document.querySelector("[data-palette-log]"),
+   name: document.querySelector("[data-palette-name]"),
++  pickerDisabledReason: document.querySelector("[data-palette-picker-disabled-reason]"),
+   projectDiagnostic: document.querySelector("[data-palette-project-diagnostic]"),
+   projectOverlay: document.querySelector("[data-palette-project-overlay]"),
+   redo: document.querySelector("[data-palette-redo]"),
++  restorePickerSettings: document.querySelector("[data-palette-restore-picker-settings]"),
+   selectedSummary: document.querySelector("[data-palette-selected-summary]"),
+   selectedHex: document.querySelector("[data-palette-selected-hex]"),
+   selectedName: document.querySelector("[data-palette-selected-name]"),
+-  selectedSymbol: document.querySelector("[data-palette-selected-symbol]"),
+   sourceList: document.querySelector("[data-palette-source-list]"),
+   sourcePinAll: document.querySelector("[data-palette-source-pin-all]"),
+   sourceSearch: document.querySelector("[data-palette-source-search]"),
+@@ -270,10 +345,10 @@ const elements = {
+   sourceSize: document.querySelector("[data-palette-source-size]"),
+   sourceSort: document.querySelector("[data-palette-source-sort]"),
+   storagePath: document.querySelector("[data-palette-storage-path]"),
+-  symbol: document.querySelector("[data-palette-symbol]"),
+   tableCounts: document.querySelector("[data-palette-table-counts]"),
+   tags: document.querySelector("[data-palette-tags]"),
+   tagSuggestions: document.querySelector("[data-palette-tag-suggestions]"),
++  tagMatchModes: document.querySelectorAll("[data-palette-tag-match-mode]"),
+   editorTagsList: document.querySelector("[data-palette-editor-tags-list]"),
+   tagsList: document.querySelector("[data-palette-tags-list]"),
+   undo: document.querySelector("[data-palette-undo]"),
+@@ -341,6 +416,10 @@ function createStatusMessage(text) {
+   return message;
+ }
+ 
++function swatchKey(swatch) {
++  return swatch?.key || "";
++}
++
+ function sortDirectionCaret(direction) {
+   return direction === "desc" ? "v" : "^";
+ }
+@@ -492,6 +571,27 @@ function swatchColorKey(hex) {
+   return String(hex || "").trim().toUpperCase().slice(0, 7);
+ }
+ 
++function colorFamilyName(hex) {
++  const rgb = hexToRgb(hex);
++  if (!rgb) {
++    return "Generated Color";
++  }
++  const hsl = rgbToHsl(rgb);
++  if (hsl.saturation < 8) {
++    return hsl.lightness < 30 ? "Dark Gray" : hsl.lightness > 72 ? "Light Gray" : "Neutral Gray";
++  }
++  const hue = positiveHue(hsl.hue);
++  if (hue < 20 || hue >= 340) return "Red";
++  if (hue < 45) return "Orange";
++  if (hue < 70) return "Yellow";
++  if (hue < 165) return "Green";
++  if (hue < 195) return "Cyan";
++  if (hue < 255) return "Blue";
++  if (hue < 290) return "Violet";
++  if (hue < 340) return "Magenta";
++  return "Generated Color";
++}
++
+ function pinnedSwatchForHex(hex, snapshot = repository.getSnapshot()) {
+   const colorKey = swatchColorKey(hex);
+   if (!colorKey) {
+@@ -500,12 +600,80 @@ function pinnedSwatchForHex(hex, snapshot = repository.getSnapshot()) {
+   return snapshot.swatches.find((swatch) => swatchColorKey(swatch.hex) === colorKey) || null;
+ }
+ 
+-function nextGeneratedSymbol(snapshot, reservedSymbols) {
+-  const usedSymbols = new Set([
+-    ...snapshot.swatches.map((swatch) => swatch.symbol),
+-    ...reservedSymbols
+-  ]);
+-  return Array.from(GENERATED_SYMBOL_CANDIDATES).find((symbol) => !usedSymbols.has(symbol)) || "";
++function selectedOptionText(element) {
++  return element?.selectedOptions?.[0]?.textContent || element?.value || "";
++}
++
++function currentPickerSettings(settings = readPaletteGeneratorSettings()) {
++  return {
++    activeTags: [...selectedTagFilters],
++    colors: settings.colors,
++    contrast: settings.contrast,
++    hueShift: settings.hueShift,
++    paletteType: settings.paletteType?.name || selectedOptionText(elements.generatorType),
++    saturation: settings.saturation,
++    sortDirection: userSortState.direction,
++    sortField: userSortState.key,
++    steps: settings.steps,
++    swatchSize: userSizeState,
++    themeCollection: settings.collection?.name || selectedOptionText(elements.generatorCollection),
++    variant: settings.variant?.label || selectedOptionText(elements.generatorVariant),
++    variantValue: settings.variant?.value || elements.generatorVariant?.value || ""
++  };
++}
++
++function metadataFromPickerSettings(swatch, settings = null) {
++  const stored = settings && typeof settings === "object" ? settings : {};
++  return {
++    activeTags: Array.isArray(stored.activeTags) ? [...stored.activeTags] : [],
++    colors: stored.colors ?? "",
++    contrast: stored.contrast ?? "",
++    hex: swatch?.hex || "",
++    hueShift: stored.hueShift ?? "",
++    name: swatch?.name || "",
++    paletteType: stored.paletteType || "Custom",
++    pickerSettings: stored,
++    saturation: stored.saturation ?? "",
++    sortDirection: stored.sortDirection || "",
++    sortField: stored.sortField || "",
++    source: swatch?.source || "",
++    steps: stored.steps ?? "",
++    swatchSize: stored.swatchSize || "",
++    tags: Array.isArray(swatch?.tags) ? [...swatch.tags] : [],
++    themeCollection: stored.themeCollection || "User Defined",
++    variant: stored.variant || "",
++    variantValue: stored.variantValue || ""
++  };
++}
++
++function swatchMetadata(swatch, sourceLabel = "") {
++  const metadata = swatch?.metadata && typeof swatch.metadata === "object" ? swatch.metadata : {};
++  const pickerSettings = swatch?.pickerSettings || metadata.pickerSettings || null;
++  return {
++    ...metadataFromPickerSettings({
++      hex: swatch?.hex || metadata.hex,
++      name: swatch?.name || metadata.name,
++      source: sourceLabel || swatch?.source || metadata.source,
++      tags: Array.isArray(swatch?.tags) ? swatch.tags : metadata.tags
++    }, pickerSettings),
++    ...metadata,
++    hex: swatch?.hex || metadata.hex || "",
++    name: swatch?.name || metadata.name || "",
++    paletteType: metadata.paletteType || pickerSettings?.paletteType || "Custom",
++    source: sourceLabel || metadata.source || swatch?.source || "",
++    tags: Array.isArray(swatch?.tags) ? [...swatch.tags] : Array.isArray(metadata.tags) ? [...metadata.tags] : [],
++    themeCollection: metadata.themeCollection || pickerSettings?.themeCollection || "User Defined"
++  };
++}
++
++function pickerTooltipText(swatch, settings = swatch?.pickerSettings) {
++  const metadata = swatchMetadata({ ...swatch, pickerSettings: settings });
++  return [
++    `Name: ${metadata.name || "Generated color"}`,
++    `Hex: ${metadata.hex || "Not stored"}`,
++    `Theme: ${metadata.themeCollection || "User Defined"}`,
++    `Palette Type: ${metadata.paletteType || "Custom"}`
++  ].join("\n");
+ }
+ 
+ function interpolateHex(swatchesToInterpolate, column, columns) {
+@@ -716,14 +884,59 @@ function readPaletteGeneratorSettings() {
+ }
+ 
+ function generatorSwatchName(settings, row, column, hex) {
+-  return `${settings.paletteType?.name || "Generated"} ${row + 1}-${column + 1} ${hex}`;
++  const collection = settings.collection?.name || "Palette";
++  const type = settings.paletteType?.name || "Generated";
++  const variant = settings.variant?.label || "Full";
++  const curatedNames = Array.isArray(settings.paletteType?.names) ? settings.paletteType.names : [];
++  const family = settings.colors === curatedNames.length && curatedNames[column]
++    ? curatedNames[column]
++    : colorFamilyName(hex);
++  return `${collection} ${type} ${variant} ${family} R${row + 1} C${column + 1}`;
++}
++
++function pickerUnavailableReason(pinnedSwatch) {
++  return pinnedSwatch ? "Already in Project" : "";
++}
++
++function generatedPickerSwatches(settings = readPaletteGeneratorSettings()) {
++  if (!settings.collection || !settings.paletteType) {
++    return [];
++  }
++  const pickerSettings = currentPickerSettings(settings);
++  const swatches = [];
++  for (let row = 0; row < settings.steps; row += 1) {
++    for (let column = 0; column < settings.colors; column += 1) {
++      const baseHex = interpolateHex(settings.paletteType.swatches, column, settings.colors);
++      const baseHsl = rgbToHsl(hexToRgb(baseHex));
++      const adjusted = variantAdjustedHsl({
++        hue: baseHsl.hue + settings.hueShift,
++        saturation: baseHsl.saturation * (settings.saturation / 100),
++        lightness: generatorLightness(baseHsl.lightness, row, settings.steps, settings.contrast)
++      }, settings.variant, column, settings.colors);
++      const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
++      const swatch = {
++        hex,
++        name: generatorSwatchName(settings, row, column, hex),
++        pickerSettings,
++        source: GENERATED_SWATCH_SOURCE,
++        tags: []
++      };
++      swatches.push({
++        ...swatch,
++        column,
++        label: settings.paletteType.name,
++        metadata: metadataFromPickerSettings(swatch, pickerSettings),
++        row
++      });
++    }
++  }
++  return swatches;
+ }
+ 
+ function createGeneratorPreviewInput(hex, label, row, column, settings, options = {}) {
+   const swatch = document.createElement("button");
+   swatch.className = "palette-generator-preview-swatch";
+   swatch.type = "button";
+-  swatch.disabled = Boolean(options.disabled);
+   swatch.dataset.paletteGeneratorSwatch = "";
+   swatch.dataset.paletteGeneratorRow = String(row);
+   swatch.dataset.paletteGeneratorColumn = String(column);
+@@ -732,12 +945,21 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options
+   swatch.dataset.paletteGeneratorTypeName = settings.paletteType?.name || "";
+   swatch.dataset.paletteGeneratorVariantName = settings.variant?.label || "";
+   swatch.dataset.paletteGeneratorHex = hex;
+-  swatch.dataset.paletteGeneratorSymbol = options.symbol || "";
+   swatch.dataset.palettePinned = String(Boolean(options.pinned));
+   swatch.dataset.paletteSelected = String(Boolean(options.selected));
++  swatch.dataset.paletteGeneratorName = options.pinnedSwatch?.name || generatorSwatchName(settings, row, column, hex);
++  swatch.dataset.paletteGeneratorAvailability = options.available === false ? "unavailable" : "available";
++  swatch.dataset.paletteGeneratorUnavailable = String(options.available === false);
++  swatch.dataset.paletteGeneratorUnavailableReason = options.unavailableReason || "";
+   const swatchName = generatorSwatchName(settings, row, column, hex);
+-  swatch.dataset.paletteGeneratorName = options.pinnedSwatch?.name || swatchName;
+-  swatch.setAttribute("aria-label", `${options.pinned ? "Unpin" : "Pin"} generated swatch ${swatchName}`);
++  const tooltipSwatch = {
++    hex,
++    name: options.pinnedSwatch?.name || swatchName,
++    pickerSettings: options.pickerSettings
++  };
++  swatch.setAttribute("aria-label", options.available === false
++    ? `${options.unavailableReason || "Unavailable"} picker swatch ${swatchName}`
++    : `${options.pinned ? "Remove" : "Add"} picker swatch ${swatchName}`);
+   swatch.setAttribute("aria-pressed", String(Boolean(options.pinned)));
+   if (options.selected) {
+     swatch.setAttribute("aria-current", "true");
+@@ -749,14 +971,81 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options
+   input.value = hex;
+   input.dataset.paletteGeneratorColor = hex;
+   input.dataset.paletteGeneratorFamily = label;
+-  input.setAttribute("aria-label", `${label} generated swatch ${hex}`);
++  input.setAttribute("aria-label", `${label} picker swatch ${hex}`);
+   input.title = `${swatchName}${options.pinned ? " pinned" : ""}`;
+ 
+-  swatch.title = `${swatchName}\nHex: ${hex}\nSource: generated${options.pinned ? "\nPinned in Selected Swatches" : ""}`;
++  swatch.title = pickerTooltipText(tooltipSwatch, options.pickerSettings);
+   swatch.append(input, createPinIndicator(Boolean(options.pinned)));
+   return swatch;
+ }
+ 
++function createPickerGroupLabel(group, count) {
++  const label = document.createElement("p");
++  label.className = "status";
++  label.dataset.palettePickerGroupLabel = group;
++  label.textContent = group === "available"
++    ? `Available Picker Swatches (${count})`
++    : `Already in Project (${count})`;
++  return label;
++}
++
++function createPickerGridPlaceholder(row, column) {
++  const placeholder = document.createElement("span");
++  placeholder.className = "palette-generator-preview-swatch";
++  placeholder.dataset.paletteGeneratorPlaceholder = "true";
++  placeholder.dataset.paletteGeneratorRow = String(row);
++  placeholder.dataset.paletteGeneratorColumn = String(column);
++  placeholder.setAttribute("aria-hidden", "true");
++  return placeholder;
++}
++
++function appendPickerGroupRows(fragment, group, allSwatches, settings) {
++  const items = allSwatches.filter((item) => (
++    group === "available" ? item.available : !item.available
++  ));
++  fragment.append(createPickerGroupLabel(group, items.length));
++  if (!items.length) {
++    const message = document.createElement("p");
++    message.className = "status";
++    message.dataset.palettePickerGroupEmpty = group;
++    message.textContent = group === "available"
++      ? "No available picker swatches for the current settings."
++      : "No picker swatches are already in Project Swatches.";
++    fragment.append(message);
++    return;
++  }
++
++  const rows = new Map();
++  items.forEach((item) => {
++    const rowItems = rows.get(item.row) || new Map();
++    rowItems.set(item.column, item);
++    rows.set(item.row, rowItems);
++  });
++  [...rows.entries()]
++    .sort(([left], [right]) => left - right)
++    .forEach(([row, rowItems]) => {
++      const rowElement = document.createElement("div");
++      rowElement.className = "palette-generator-preview-row";
++      rowElement.setAttribute("role", "row");
++      rowElement.dataset.paletteGeneratorPreviewRow = String(row);
++      rowElement.dataset.palettePickerGroup = group;
++      for (let column = 0; column < settings.colors; column += 1) {
++        const item = rowItems.get(column);
++        rowElement.append(item
++          ? createGeneratorPreviewInput(item.hex, settings.paletteType.name, item.row, item.column, settings, {
++            available: item.available,
++            pinned: Boolean(item.pinnedSwatch),
++            pinnedSwatch: item.pinnedSwatch,
++            selected: item.selected,
++            unavailableReason: item.unavailableReason,
++            pickerSettings: currentPickerSettings(settings)
++          })
++          : createPickerGridPlaceholder(row, column));
++      }
++      fragment.append(rowElement);
++    });
++}
++
+ function paletteGeneratorSummary(settings) {
+   if (!settings.collection || !settings.paletteType) {
+     return "Palette preview unavailable: no curated swatches resolved.";
+@@ -774,17 +1063,13 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
+   if (!settings.collection || !settings.paletteType) {
+     elements.generatorPreview.replaceChildren();
+     setText(elements.generatorPreviewStatus, "No curated palette swatches are available for the selected collection and type.");
++    setText(elements.pickerDisabledReason, "No picker swatches are available to enable for the selected collection and type.");
+     setText(elements.generatorStatus, "Palette generator missing curated swatches.");
+     return;
+   }
+ 
+-  const fragment = document.createDocumentFragment();
+-  const reservedSymbols = new Set();
++  const allSwatches = [];
+   for (let row = 0; row < settings.steps; row += 1) {
+-    const rowElement = document.createElement("div");
+-    rowElement.className = "palette-generator-preview-row";
+-    rowElement.setAttribute("role", "row");
+-    rowElement.dataset.paletteGeneratorPreviewRow = String(row);
+     for (let column = 0; column < settings.colors; column += 1) {
+       const baseHex = interpolateHex(settings.paletteType.swatches, column, settings.colors);
+       const baseHsl = rgbToHsl(hexToRgb(baseHex));
+@@ -795,23 +1080,29 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
+       }, settings.variant, column, settings.colors);
+       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
+       const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
+-      const symbol = pinnedSwatch?.symbol || nextGeneratedSymbol(snapshot, reservedSymbols);
+-      if (symbol) {
+-        reservedSymbols.add(symbol);
+-      }
+-      rowElement.append(createGeneratorPreviewInput(hex, settings.paletteType.name, row, column, settings, {
+-        disabled: !symbol && !pinnedSwatch,
+-        pinned: Boolean(pinnedSwatch),
++      const unavailableReason = pickerUnavailableReason(pinnedSwatch);
++      const available = !unavailableReason || includeAlreadyProjectSwatches;
++      allSwatches.push({
++        available,
++        column,
++        hex,
+         pinnedSwatch,
+-        selected: Boolean(pinnedSwatch && snapshot.selectedSwatch?.symbol === pinnedSwatch.symbol),
+-        symbol
+-      }));
++        row,
++        selected: Boolean(pinnedSwatch && swatchKey(snapshot.selectedSwatch) === swatchKey(pinnedSwatch)),
++        unavailableReason
++      });
+     }
+-    fragment.append(rowElement);
+   }
+ 
++  const fragment = document.createDocumentFragment();
++  appendPickerGroupRows(fragment, "available", allSwatches, settings);
++  appendPickerGroupRows(fragment, "unavailable", allSwatches, settings);
++
+   elements.generatorPreview.replaceChildren(fragment);
+   setText(elements.generatorPreviewStatus, paletteGeneratorSummary(settings));
++  setText(elements.pickerDisabledReason, includeAlreadyProjectSwatches
++    ? "Already in Project swatches are included in the available section so they can be toggled from the picker."
++    : "Already in Project swatches are listed in the bottom section and cannot be added again.");
+   setText(elements.generatorStatus, action);
+ }
+ 
+@@ -824,13 +1115,29 @@ function paletteGeneratorActionSummary(prefix = "Palette generator preview updat
+ }
+ 
+ function generatedSwatchFromTile(tile) {
+-  return {
++  const pickerSettings = currentPickerSettings();
++  const swatch = {
+     hex: tile.dataset.paletteGeneratorHex,
+     name: tile.dataset.paletteGeneratorName,
++    pickerSettings,
+     source: GENERATED_SWATCH_SOURCE,
+-    symbol: tile.dataset.paletteGeneratorSymbol,
+     tags: []
+   };
++  return {
++    ...swatch,
++    metadata: metadataFromPickerSettings(swatch, pickerSettings)
++  };
++}
++
++function currentHarmonyMatchSwatches() {
++  return generatedPickerSwatches(readPaletteGeneratorSettings()).map((swatch) => ({
++    hex: swatch.hex,
++    metadata: swatch.metadata,
++    name: swatch.name,
++    pickerSettings: swatch.pickerSettings,
++    source: GENERATED_SWATCH_SOURCE,
++    tags: swatch.tags
++  }));
+ }
+ 
+ function resetPaletteGeneratorControls() {
+@@ -846,6 +1153,51 @@ function resetPaletteGeneratorControls() {
+   renderPaletteGeneratorPreview("Palette generator controls reset.");
+ }
+ 
++function setSelectValueByTextOrValue(select, preferredValue, preferredText) {
++  if (!select) {
++    return false;
++  }
++  const option = [...select.options].find((item) => (
++    item.value === String(preferredValue || "") || item.textContent === String(preferredText || "")
++  ));
++  if (!option) {
++    return false;
++  }
++  select.value = option.value;
++  return true;
++}
++
++function applyPickerSettings(settings = null) {
++  if (!settings || typeof settings !== "object") {
++    setText(elements.log, "Restore Picker Settings unavailable: selected swatch has no stored picker settings.");
++    return;
++  }
++  setSelectValueByTextOrValue(elements.generatorCollection, settings.themeCollection, settings.themeCollection);
++  renderPaletteTypeOptions();
++  setSelectValueByTextOrValue(elements.generatorType, settings.paletteType, settings.paletteType);
++  renderPaletteVariantOptions();
++  setSelectValueByTextOrValue(elements.generatorVariant, settings.variantValue, settings.variant);
++  if (elements.generatorColors && settings.colors) elements.generatorColors.value = String(settings.colors);
++  if (elements.generatorSteps && settings.steps) elements.generatorSteps.value = String(settings.steps);
++  if (elements.generatorContrast && settings.contrast !== undefined) elements.generatorContrast.value = String(settings.contrast);
++  if (elements.generatorSaturation && settings.saturation !== undefined) elements.generatorSaturation.value = String(settings.saturation);
++  if (elements.generatorHueShift && settings.hueShift !== undefined) elements.generatorHueShift.value = String(settings.hueShift);
++  if (settings.sortField && SORT_OPTIONS.some((option) => option.key === settings.sortField)) {
++    userSortState.key = settings.sortField;
++  }
++  if (["asc", "desc"].includes(settings.sortDirection)) {
++    userSortState.direction = settings.sortDirection;
++  }
++  if (settings.swatchSize && SIZE_OPTIONS.some((option) => option.key === settings.swatchSize)) {
++    userSizeState = settings.swatchSize;
++  }
++  selectedTagFilters.clear();
++  (Array.isArray(settings.activeTags) ? settings.activeTags : []).forEach((tag) => selectedTagFilters.add(tag));
++  render();
++  renderPaletteGeneratorPreview(`Restored picker settings from ${settings.paletteType || "selected swatch"}.`);
++  setText(elements.log, `Restored picker settings from ${settings.themeCollection || "stored"} / ${settings.paletteType || "palette"} / ${settings.variant || "variant"}.`);
++}
++
+ function createPinIndicator(pinned) {
+   const indicator = document.createElement("span");
+   indicator.className = "palette-swatch-pin";
+@@ -859,11 +1211,12 @@ function swatchTileLabel(swatch, action) {
+ }
+ 
+ function swatchTooltipText(swatch, sourceLabel = "") {
++  const metadata = swatchMetadata(swatch, sourceLabel);
+   return [
+-    `Name: ${swatch.name}`,
+-    `Hex: ${swatch.hex}`,
+-    `Source: ${sourceLabel || repository.displaySource(swatch.source)}`,
+-    swatch.tags.length ? `Tags: ${swatch.tags.join(", ")}` : ""
++    `Name: ${metadata.name || swatch.name}`,
++    `Hex: ${metadata.hex || swatch.hex}`,
++    `Theme: ${metadata.themeCollection || "User Defined"}`,
++    `Palette Type: ${metadata.paletteType || "Custom"}`
+   ].filter(Boolean).join("\n");
+ }
+ 
+@@ -880,6 +1233,14 @@ function createSwatchTile(swatch, options = {}) {
+   const sourceLabel = options.sourceLabel || repository.displaySource(swatch.source);
+   tile.dataset.paletteSwatchSource = sourceLabel;
+   tile.dataset.paletteSwatchTags = swatch.tags.join(", ");
++  const metadata = swatchMetadata(swatch, sourceLabel);
++  Object.entries(metadata).forEach(([key, value]) => {
++    if (Array.isArray(value) || (value && typeof value === "object")) {
++      tile.dataset[`paletteMetadata${key[0].toUpperCase()}${key.slice(1)}`] = JSON.stringify(value);
++    } else {
++      tile.dataset[`paletteMetadata${key[0].toUpperCase()}${key.slice(1)}`] = String(value ?? "");
++    }
++  });
+   tile.setAttribute("aria-label", options.label || `${selected ? "Selected. " : ""}${swatchTileLabel(swatch, options.action || "Select palette color")}`);
+   tile.setAttribute("aria-pressed", String(Boolean(options.pressed)));
+   tile.title = options.tooltip || swatchTooltipText(swatch, sourceLabel);
+@@ -888,7 +1249,7 @@ function createSwatchTile(swatch, options = {}) {
+   }
+ 
+   if (options.swatchRow) {
+-    tile.dataset.paletteSwatchRow = swatch.symbol;
++    tile.dataset.paletteSwatchKey = swatchKey(swatch);
+   }
+   if (Number.isInteger(options.sourceIndex)) {
+     tile.dataset.paletteSourceIndex = String(options.sourceIndex);
+@@ -907,17 +1268,17 @@ function createSwatchTile(swatch, options = {}) {
+ function createCheckedSwatchTile(swatch, options = {}) {
+   const wrapper = document.createElement("span");
+   wrapper.className = "palette-swatch-item";
+-  wrapper.dataset.paletteSwatchItem = swatch.symbol;
++  wrapper.dataset.paletteSwatchItem = swatchKey(swatch);
+ 
+   const checkbox = document.createElement("input");
+   checkbox.className = "palette-swatch-check";
+   checkbox.type = "checkbox";
+-  checkbox.checked = checkedSwatchSymbols.has(swatch.symbol);
+-  checkbox.dataset.paletteSwatchCheck = swatch.symbol;
++  checkbox.checked = checkedSwatchKeys.has(swatchKey(swatch));
++  checkbox.dataset.paletteSwatchCheck = swatchKey(swatch);
+   checkbox.setAttribute("aria-label", `Apply Project Palette Tags to ${swatch.name}`);
+   checkbox.title = `Apply Project Palette Tags to ${swatch.name}`;
+ 
+-  wrapper.append(checkbox, createSwatchTile(swatch, options));
++  wrapper.append(createSwatchTile(swatch, options), checkbox);
+   return wrapper;
+ }
+ 
+@@ -926,15 +1287,19 @@ function normalizeTag(value) {
+ }
+ 
+ function readUserSwatchForm() {
+-  return {
++  const swatch = {
+     hex: elements.hex?.value,
+     name: elements.name?.value,
+-    symbol: elements.symbol?.value
++    source: PALETTE_SOURCE_USER,
++    tags: []
++  };
++  return {
++    ...swatch,
++    metadata: metadataFromPickerSettings(swatch, null)
+   };
+ }
+ 
+ function fillUserSwatchForm(swatch) {
+-  if (elements.symbol) elements.symbol.value = swatch?.symbol || "";
+   if (elements.hex) elements.hex.value = swatch?.hex || "";
+   if (elements.name) elements.name.value = swatch?.name || "";
+   renderUserHexPreview();
+@@ -962,14 +1327,14 @@ function selectedTagControls() {
+   ].filter(Boolean);
+ }
+ 
+-function checkedSwatchSymbolsFromSnapshot(snapshot) {
+-  const activeSymbols = new Set(snapshot.swatches.map((swatch) => swatch.symbol));
+-  [...checkedSwatchSymbols].forEach((symbol) => {
+-    if (!activeSymbols.has(symbol)) {
+-      checkedSwatchSymbols.delete(symbol);
++function checkedSwatchKeysFromSnapshot(snapshot) {
++  const activeKeys = new Set(snapshot.swatches.map(swatchKey));
++  [...checkedSwatchKeys].forEach((key) => {
++    if (!activeKeys.has(key)) {
++      checkedSwatchKeys.delete(key);
+     }
+   });
+-  return [...checkedSwatchSymbols];
++  return [...checkedSwatchKeys];
+ }
+ 
+ function userDefinedLocked(snapshot) {
+@@ -1012,7 +1377,7 @@ function renderUserDefinedControlState(snapshot) {
+   const selectedSwatch = snapshot.selectedSwatch;
+   const userSwatch = selectedUserDefinedSwatch(snapshot);
+   const locked = userDefinedLocked(snapshot);
+-  setDisabled([elements.hex, elements.name, elements.symbol, elements.clear], locked);
++  setDisabled([elements.hex, elements.name, elements.clear], locked);
+   setDisabled(elements.add, locked || !userDefinedAddReady(snapshot));
+   setDisabled(elements.update, locked || !userSwatch);
+   setText(
+@@ -1055,9 +1420,14 @@ function renderTagSuggestions() {
+     return;
+   }
+   const query = normalizeTag(elements.tags?.value);
++  const suggestions = [...new Map(
++    [...activeTags(), ...SUGGESTED_TAGS]
++      .map((tag) => [normalizeTag(tag), tag])
++      .filter(([tag]) => tag && !editorTags.includes(tag))
++  ).values()];
+   elements.tagSuggestions.replaceChildren();
+-  activeTags()
+-    .filter((tag) => query && tag.includes(query) && !editorTags.includes(tag))
++  suggestions
++    .filter((tag) => query && normalizeTag(tag).includes(query))
+     .forEach((tag) => {
+       const option = document.createElement("option");
+       option.value = tag;
+@@ -1071,18 +1441,18 @@ function acceptTagFromInput() {
+     return;
+   }
+   const snapshot = repository.getSnapshot();
+-  const checkedSymbols = checkedSwatchSymbolsFromSnapshot(snapshot);
+-  if (!snapshot.selectedSwatch && !checkedSymbols.length) {
++  const checkedKeys = checkedSwatchKeysFromSnapshot(snapshot);
++  if (!snapshot.selectedSwatch && !checkedKeys.length) {
+     editorIssues = [{
+-      action: "Select a Palette Colors swatch before adding tags.",
++      action: "Select a Project Swatches color before adding tags.",
+       field: "tags",
+       label: "Tags"
+     }];
+     render();
+     return;
+   }
+-  const result = checkedSymbols.length
+-    ? repository.addTagToSwatches(checkedSymbols, tag)
++  const result = checkedKeys.length
++    ? repository.addTagToSwatches(checkedKeys, tag)
+     : repository.updateSelectedSwatchTags([...editorTags, tag]);
+   if (elements.tags) {
+     elements.tags.value = "";
+@@ -1147,20 +1517,20 @@ function renderProject(snapshot) {
+ 
+ function renderSelectedSwatchEditor(snapshot) {
+   const selectedSwatch = snapshot.selectedSwatch;
+-  if (elements.selectedSymbol) elements.selectedSymbol.value = selectedSwatch?.symbol || "";
+   if (elements.selectedHex) elements.selectedHex.value = selectedSwatch?.hex || "";
+   if (elements.selectedName) elements.selectedName.value = selectedSwatch?.name || "";
+   if (elements.tags) elements.tags.value = "";
+   editorTags = Array.isArray(selectedSwatch?.tags) ? [...selectedSwatch.tags] : [];
+-  setDisabled([elements.selectedSymbol, elements.selectedHex, elements.selectedName], true);
+-  const checkedSymbols = checkedSwatchSymbolsFromSnapshot(snapshot);
+-  setDisabled(selectedTagControls(), snapshot.projectRequired || snapshot.validation.status === "Reject" || (!selectedSwatch && !checkedSymbols.length));
+-  setDisabled(elements.clearChecked, checkedSymbols.length === 0);
++  setDisabled([elements.selectedHex, elements.selectedName], true);
++  const checkedKeys = checkedSwatchKeysFromSnapshot(snapshot);
++  setDisabled(selectedTagControls(), snapshot.projectRequired || snapshot.validation.status === "Reject" || (!selectedSwatch && !checkedKeys.length));
++  setDisabled(elements.clearChecked, checkedKeys.length === 0);
++  setDisabled(elements.restorePickerSettings, !selectedSwatch?.pickerSettings);
+   setText(
+     elements.editorDiagnostic,
+-    checkedSymbols.length
+-      ? `Adding tags to ${checkedSymbols.length} checked swatch${checkedSymbols.length === 1 ? "" : "es"}.`
+-      : selectedSwatch ? `Editing tags for ${selectedSwatch.name}.` : "Select a Palette Colors swatch to edit tags."
++    checkedKeys.length
++      ? `Adding tags to ${checkedKeys.length} checked swatch${checkedKeys.length === 1 ? "" : "es"}.`
++      : selectedSwatch ? `Editing tags for ${selectedSwatch.name}.` : "Select a Project Swatches color to edit tags."
+   );
+ }
+ 
+@@ -1187,29 +1557,35 @@ function renderUserPalette(snapshot) {
+ 
+   elements.userList.replaceChildren();
+   const activeFilters = [...selectedTagFilters];
++  const matchesTagFilters = (swatch) => {
++    if (!activeFilters.length) {
++      return true;
++    }
++    return tagMatchMode === "all"
++      ? activeFilters.every((tag) => swatch.tags.includes(tag))
++      : activeFilters.some((tag) => swatch.tags.includes(tag));
++  };
+   const swatches = repository.listSwatches({
+     sortDirection: userSortState.direction,
+     sortKey: userSortState.key
+-  }).filter((swatch) => (
+-    activeFilters.length === 0 || activeFilters.every((tag) => swatch.tags.includes(tag))
+-  ));
++  }).filter(matchesTagFilters);
+   if (swatches.length === 0) {
+     const message = document.createElement("p");
+     message.className = "status";
+     message.textContent = snapshot.projectRequired
+       ? "Open a project before editing palette colors."
+-      : activeFilters.length ? "No project palette colors match checked tags." : "No project palette colors yet.";
++      : activeFilters.length ? "No Project Swatches colors match checked tags." : "No Project Swatches colors yet.";
+     elements.userList.append(message);
+     return;
+   }
+ 
+-  checkedSwatchSymbolsFromSnapshot(snapshot);
++  checkedSwatchKeysFromSnapshot(snapshot);
+   swatches.forEach((swatch) => {
+     elements.userList.append(createCheckedSwatchTile(swatch, {
+       action: "Select palette color",
+       pinned: true,
+-      pressed: snapshot.selectedSwatch?.symbol === swatch.symbol,
+-      selected: snapshot.selectedSwatch?.symbol === swatch.symbol,
++      pressed: swatchKey(snapshot.selectedSwatch) === swatchKey(swatch),
++      selected: swatchKey(snapshot.selectedSwatch) === swatchKey(swatch),
+       size: userSizeState,
+       swatchRow: true
+     }));
+@@ -1218,7 +1594,7 @@ function renderUserPalette(snapshot) {
+ 
+ function sourcePaletteDiagnostic(snapshot) {
+   return snapshot.sourcePaletteRecordCount > 0 && snapshot.sourcePaletteOptions.length === 0
+-    ? "Source palette records exist, but the source dropdown is empty. Check palette_source_swatches mock-DB records for valid source, symbol, hex, and name fields."
++    ? "Source palette records exist, but the source dropdown is empty. Check palette_source_swatches mock-DB records for valid source, palette key, hex, and name fields."
+     : "";
+ }
+ 
+@@ -1264,6 +1640,10 @@ function renderTags(snapshot) {
+     return;
+   }
+ 
++  setDisabled(elements.clearTagFilters, selectedTagFilters.size === 0);
++  elements.tagMatchModes?.forEach((control) => {
++    control.checked = control.value === tagMatchMode;
++  });
+   const tags = [...new Set(snapshot.swatches.flatMap((swatch) => swatch.tags))].sort((left, right) => left.localeCompare(right));
+   [...selectedTagFilters].forEach((tag) => {
+     if (!tags.includes(tag)) {
+@@ -1283,7 +1663,7 @@ function renderTags(snapshot) {
+     checkbox.type = "checkbox";
+     checkbox.checked = selectedTagFilters.has(tag);
+     checkbox.dataset.paletteTagFilter = tag;
+-    checkbox.setAttribute("aria-label", `Filter Selected Swatches by tag ${tag}`);
++    checkbox.setAttribute("aria-label", `Filter Project Swatches by tag ${tag}`);
+     const text = document.createElement("span");
+     text.textContent = tag;
+     label.append(checkbox, text);
+@@ -1302,6 +1682,7 @@ function renderHarmony(snapshot) {
+   const sourceId = elements.sourceSelect?.value || "";
+   harmonyRows = baseSwatch
+     ? repository.createHarmonySuggestions(baseSwatch, {
++        matchSwatches: currentHarmonyMatchSwatches(),
+         matchSource: elements.harmonyMatch?.value || "calculated",
+         schemeId: elements.harmonyScheme?.value || "complementary",
+         sourceId
+@@ -1332,7 +1713,6 @@ function renderHarmony(snapshot) {
+       hex: suggestion.hex,
+       name: suggestion.name,
+       source: suggestion.source,
+-      symbol: String(index + 1),
+       tags: []
+     }, {
+       action: pinned ? "Remove harmony swatch" : "Add harmony swatch",
+@@ -1386,7 +1766,7 @@ function render() {
+     return;
+   }
+ 
+-  checkedSwatchSymbolsFromSnapshot(snapshot);
++  checkedSwatchKeysFromSnapshot(snapshot);
+   renderSourceOptions(snapshot);
+   renderPaletteControls();
+   renderProject(snapshot);
+@@ -1421,7 +1801,7 @@ function validateUserSwatch() {
+     editorIssues = validatePaletteSwatchInput(
+       readUserSwatchForm(),
+       snapshot.swatches,
+-      { excludeSymbol: snapshot.selectedSwatch?.symbol || "" }
++    { excludeKey: swatchKey(snapshot.selectedSwatch) }
+     ).issues;
+   }
+   renderUserDefinedControlState(snapshot);
+@@ -1442,7 +1822,7 @@ function runInitialQueryState() {
+       tools: {
+         [PALETTE_TOOL_KEY]: {
+           swatches: [
+-            { symbol: "AB", hex: "#112233", name: "Invalid Symbol" }
++            { hex: "#12", name: "" }
+           ]
+         }
+       }
+@@ -1498,7 +1878,7 @@ elements.update?.addEventListener("click", () => {
+ elements.clear?.addEventListener("click", clearUserSwatchForm);
+ 
+ elements.clearChecked?.addEventListener("click", () => {
+-  checkedSwatchSymbols.clear();
++  checkedSwatchKeys.clear();
+   setText(elements.log, "Cleared checked palette swatches.");
+   setText(elements.editorDiagnostic, "Cleared checked palette swatches.");
+   render();
+@@ -1512,6 +1892,10 @@ elements.redo?.addEventListener("click", () => {
+   applyResult(repository.redo());
+ });
+ 
++elements.restorePickerSettings?.addEventListener("click", () => {
++  applyPickerSettings(repository.getSnapshot().selectedSwatch?.pickerSettings);
++});
++
+ elements.userSort?.addEventListener("click", (event) => {
+   const button = event.target.closest("[data-palette-sort-key]");
+   if (!button) {
+@@ -1534,6 +1918,12 @@ elements.userSize?.addEventListener("click", (event) => {
+ 
+ elements.sourceSelect?.addEventListener("change", render);
+ elements.sourceSearch?.addEventListener("input", renderSourceSwatches);
++elements.includeAlreadyProjectSwatches?.addEventListener("change", () => {
++  includeAlreadyProjectSwatches = Boolean(elements.includeAlreadyProjectSwatches.checked);
++  renderPaletteGeneratorPreview(includeAlreadyProjectSwatches
++    ? "Already in Project swatches included."
++    : "Already in Project swatches unavailable.");
++});
+ 
+ elements.sourcePinAll?.addEventListener("click", () => {
+   applyResult(repository.pinSourceSwatches(sourceSwatchRows));
+@@ -1566,24 +1956,20 @@ elements.generatorPreview?.addEventListener("click", (event) => {
+   if (!tile) {
+     return;
+   }
+-  if (tile.disabled) {
+-    editorIssues = [{
+-      action: "No one-character palette symbol is available for this generated swatch.",
+-      field: "generatedSwatch",
+-      label: "Generated Swatch"
+-    }];
+-    renderValidation(repository.getSnapshot());
+-    setText(elements.log, "Generated swatch blocked: no available symbol.");
++  if (tile.dataset.paletteGeneratorUnavailable === "true") {
++    const reason = tile.dataset.paletteGeneratorUnavailableReason || "Unavailable";
++    setText(elements.log, `${reason} picker swatch was not added.`);
++    setText(elements.generatorStatus, `Use Include already in Project swatches to toggle ${reason.toLowerCase()} swatches from the picker.`);
+     return;
+   }
+   const swatch = generatedSwatchFromTile(tile);
+   const result = tile.dataset.palettePinned === "true"
+-    ? repository.removeSwatch(swatch.symbol)
++    ? repository.removeSwatch(swatchKey(pinnedSwatchForHex(swatch.hex)))
+     : repository.pinSourceSwatch(swatch);
+   applyResult({
+     ...result,
+     message: result.ok && tile.dataset.palettePinned !== "true"
+-      ? `Pinned generated swatch ${swatch.name} to Selected Swatches.`
++      ? `Added picker swatch ${swatch.name} to Project Swatches.`
+       : result.message
+   });
+ });
+@@ -1657,7 +2043,7 @@ elements.harmonyAddAll?.addEventListener("click", () => {
+ });
+ 
+ elements.userList?.addEventListener("click", (event) => {
+-  const tile = event.target.closest("[data-palette-swatch-row]");
++  const tile = event.target.closest("[data-palette-swatch-key]");
+   if (!tile) {
+     return;
+   }
+@@ -1665,7 +2051,7 @@ elements.userList?.addEventListener("click", (event) => {
+   const pin = event.target.closest("[data-palette-pin-indicator]");
+   if (pin) {
+     const deletingSelected = tile.dataset.paletteSelected === "true";
+-    const result = repository.removeSwatch(tile.dataset.paletteSwatchRow);
++    const result = repository.removeSwatch(tile.dataset.paletteSwatchKey);
+     selectedSourceSwatch = null;
+     if (deletingSelected || !result.snapshot.selectedSwatch) {
+       fillUserSwatchForm(selectedUserDefinedSwatch(result.snapshot));
+@@ -1674,7 +2060,7 @@ elements.userList?.addEventListener("click", (event) => {
+     return;
+   }
+ 
+-  const snapshot = repository.selectSwatch(tile.dataset.paletteSwatchRow);
++  const snapshot = repository.selectSwatch(tile.dataset.paletteSwatchKey);
+   fillUserSwatchForm(selectedUserDefinedSwatch(snapshot));
+   selectedSourceSwatch = null;
+   editorIssues = [];
+@@ -1688,9 +2074,9 @@ elements.userList?.addEventListener("change", (event) => {
+   }
+ 
+   if (checkbox.checked) {
+-    checkedSwatchSymbols.add(checkbox.dataset.paletteSwatchCheck);
++    checkedSwatchKeys.add(checkbox.dataset.paletteSwatchCheck);
+   } else {
+-    checkedSwatchSymbols.delete(checkbox.dataset.paletteSwatchCheck);
++    checkedSwatchKeys.delete(checkbox.dataset.paletteSwatchCheck);
+   }
+   render();
+ });
+@@ -1708,13 +2094,31 @@ elements.tagsList?.addEventListener("change", (event) => {
+   setText(
+     elements.log,
+     selectedTagFilters.size
+-      ? `Filtered Selected Swatches by ${[...selectedTagFilters].join(", ")}.`
+-      : "Cleared Selected Swatches tag filters."
++      ? `Filtered Project Swatches by ${[...selectedTagFilters].join(", ")}.`
++      : "Cleared Project Swatches tag filters."
+   );
+   render();
+   renderPaletteGeneratorPreview("Palette generator preview refreshed.");
+ });
+ 
++elements.clearTagFilters?.addEventListener("click", () => {
++  selectedTagFilters.clear();
++  setText(elements.log, "Cleared Project Swatches tag filters.");
++  render();
++  renderPaletteGeneratorPreview("Palette generator preview refreshed.");
++});
++
++elements.tagMatchModes?.forEach((control) => {
++  control.addEventListener("change", () => {
++    if (!control.checked) {
++      return;
++    }
++    tagMatchMode = control.value === "all" ? "all" : "any";
++    setText(elements.log, `Project Swatches tag match mode: ${control.nextElementSibling?.textContent || control.value}.`);
++    render();
++  });
++});
++
+ elements.sourceList?.addEventListener("click", (event) => {
+   const tile = event.target.closest("[data-palette-source-index]");
+   if (!tile) {
+diff --git a/toolbox/colors/index.html b/toolbox/colors/index.html
+index 4ddab58d4..a4bdf5e3a 100644
+--- a/toolbox/colors/index.html
++++ b/toolbox/colors/index.html
+@@ -44,10 +44,6 @@
+                                         <div class="table-wrapper">
+                                             <table class="data-table tool-form-table" aria-label="Selected palette swatch tag editor fields">
+                                                 <tbody>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="paletteSelectedSymbolInput">Symbol</label></th>
+-                                                        <td><input class="field-value--readable-disabled tool-form-control" id="paletteSelectedSymbolInput" maxlength="2" type="text" data-palette-selected-symbol readonly disabled></td>
+-                                                    </tr>
+                                                     <tr>
+                                                         <th scope="row"><label for="paletteSelectedHexInput">Hex</label></th>
+                                                         <td><input class="field-value--readable-disabled tool-form-control" id="paletteSelectedHexInput" type="text" data-palette-selected-hex readonly disabled></td>
+@@ -71,7 +67,7 @@
+                                                         </td>
+                                                     </tr>
+                                                     <tr>
+-                                                        <td colspan="2" data-palette-editor-diagnostic>Select a Palette Colors swatch to edit tags.</td>
++                                                        <td colspan="2" data-palette-editor-diagnostic>Select a Project Swatches color to edit tags.</td>
+                                                     </tr>
+                                                 </tbody>
+                                             </table>
+@@ -89,10 +85,6 @@
+                                         <div class="table-wrapper">
+                                             <table class="data-table tool-form-table" aria-label="User defined swatch fields">
+                                                 <tbody>
+-                                                    <tr>
+-                                                        <th scope="row"><label for="paletteSymbolInput">Symbol</label></th>
+-                                                        <td><input class="tool-form-control" id="paletteSymbolInput" maxlength="2" type="text" data-palette-symbol></td>
+-                                                    </tr>
+                                                     <tr>
+                                                         <th scope="row">
+                                                             <span class="field-inline">
+@@ -115,27 +107,29 @@
+                                             </table>
+                                         </div>
+                                         <div class="hero-actions">
+-                                            <button class="btn primary" type="submit" data-palette-add>Add User Defined</button>
+-                                            <button class="btn" type="button" data-palette-update>Update Selected</button>
+-                                            <button class="btn" type="button" data-palette-clear>Clear Form</button>
++                                        <button class="btn primary" type="submit" data-palette-add>Add</button>
++                                        <button class="btn" type="button" data-palette-update>Update</button>
++                                        <button class="btn" type="button" data-palette-clear>Clear</button>
+                                         </div>
+                                     </form>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+                                 <summary>History</summary>
+-                                <div class="accordion-body content-stack">
++                                <div class="accordion-body">
++                                    <div class="action-group">
+                                     <button class="btn" type="button" data-palette-undo>Undo</button>
+                                     <button class="btn" type="button" data-palette-redo>Redo</button>
++                                    </div>
+                                 </div>
+                             </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="colors" data-tool-icon-src="assets/theme-v2/images/badges/colors.png" data-tool-character-src="assets/theme-v2/images/characters/palette-manager.png"></div>
+                     <section class="tool-center-panel">
+-                        <h2>Selected Swatches</h2>
++                        <h2>Palette</h2>
+                         <div class="grid cols-3" aria-label="Palette summary">
+-                            <article class="mini-stat"><strong data-palette-count>0</strong>Palette Colors</article>
++                            <article class="mini-stat"><strong data-palette-count>0</strong>Project Swatches</article>
+                             <article class="mini-stat"><strong data-palette-selected-summary>None</strong>Selected</article>
+                             <article class="mini-stat"><strong data-palette-validation-status>Blocked</strong>Validation</article>
+                         </div>
+@@ -151,48 +145,40 @@
+                         </article>
+                         <div class="content-stack accordion-fill-stack" data-palette-fullscreen-panels>
+                             <details class="vertical-accordion accordion-fill-panel" open data-palette-project-accordion>
+-                                <summary>Selected Swatches</summary>
++                                <summary>Project Swatches</summary>
+                                 <div class="accordion-body content-stack accordion-scroll-body">
+-                                    <div class="palette-generator-preview" role="grid" aria-label="Generated palette preview" data-palette-generator-preview></div>
+-                                    <p class="status" role="status" data-palette-generator-preview-status>Curated palette preview ready.</p>
+-                                    <div class="grid cols-2" aria-label="Active project palette controls">
+-                                        <div class="action-group" aria-label="Active project palette sort" data-palette-user-sort></div>
+-                                        <div class="action-group action-group--end" aria-label="Active project palette size" data-palette-user-size></div>
++                                    <div class="action-group" aria-label="Project Swatches controls" data-palette-user-controls>
++                                        <div class="action-group" aria-label="Project Swatches sort" data-palette-user-sort></div>
++                                        <div class="action-group action-group--end" aria-label="Project Swatches size" data-palette-user-size></div>
++                                        <button class="btn btn--compact" type="button" data-palette-restore-picker-settings>Restore Picker Settings</button>
+                                     </div>
+                                     <div class="palette-swatch-list-wrapper scroll-region" data-palette-user-scroll>
+-                                        <div class="palette-swatch-list" role="group" aria-label="Active project palette colors" data-palette-user-list>
++                                        <div class="palette-swatch-list" role="group" aria-label="Project Swatches colors" data-palette-user-list>
+                                             <p class="status">No project palette colors yet.</p>
+                                         </div>
+                                     </div>
+                                 </div>
+                             </details>
+-                            <details class="vertical-accordion accordion-fill-panel" open data-palette-source-accordion>
+-                                <summary>Defined Swatch Selector</summary>
+-                                <div class="accordion-body content-stack">
+-                                    <div class="table-wrapper">
+-                                        <table class="data-table tool-form-table" aria-label="Defined swatch selector controls">
+-                                            <tbody>
+-                                                <tr>
+-                                                    <th scope="row"><label for="paletteThemeCollection">Theme Collection</label></th>
+-                                                    <td><select class="tool-form-control" id="paletteThemeCollection" data-palette-theme-collection></select></td>
+-                                                </tr>
+-                                                <tr>
+-                                                    <th scope="row"><label for="paletteGeneratorType">Palette Type</label></th>
+-                                                    <td><select class="tool-form-control" id="paletteGeneratorType" data-palette-generator-type></select></td>
+-                                                </tr>
+-                                                <tr>
+-                                                    <th scope="row"><label for="paletteGeneratorVariant">Variant</label></th>
+-                                                    <td><select class="tool-form-control" id="paletteGeneratorVariant" data-palette-generator-variant></select></td>
+-                                                </tr>
+-                                            </tbody>
+-                                        </table>
+-                                    </div>
+-                                </div>
+-                            </details>
+-                            <details class="vertical-accordion accordion-fill-panel" open data-palette-generator-accordion>
+-                                <summary>Swatch Type / Theme</summary>
++                            <details class="vertical-accordion accordion-fill-panel" open data-palette-picker-accordion>
++                                <summary>Picker Swatches</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <div class="table-wrapper">
++                                    <section class="content-stack" aria-labelledby="palette-defined-swatch-selector-title">
++                                        <h3 id="palette-defined-swatch-selector-title">Defined Swatch Selector</h3>
++                                        <div class="grid cols-3" aria-label="Defined swatch selector controls">
++                                        <label class="field-group" for="paletteThemeCollection">Theme Collection
++                                            <select class="tool-form-control" id="paletteThemeCollection" data-palette-theme-collection></select>
++                                        </label>
++                                        <label class="field-group" for="paletteGeneratorType">Palette Type
++                                            <select class="tool-form-control" id="paletteGeneratorType" data-palette-generator-type></select>
++                                        </label>
++                                        <label class="field-group" for="paletteGeneratorVariant">Variant
++                                            <select class="tool-form-control" id="paletteGeneratorVariant" data-palette-generator-variant></select>
++                                        </label>
++                                        </div>
++                                    </section>
++                                    <section class="content-stack" aria-labelledby="palette-swatch-type-theme-title">
++                                        <h3 id="palette-swatch-type-theme-title">Swatch Type / Theme</h3>
++                                        <div class="table-wrapper">
+                                         <table class="data-table tool-form-table" aria-label="Swatch type and theme controls">
+                                             <tbody>
+                                                 <tr>
+@@ -230,25 +216,37 @@
+                                                         </select>
+                                                     </td>
+                                                 </tr>
+-                                                <tr>
+-                                                    <th scope="row"><label for="paletteGeneratorContrast">Contrast</label></th>
+-                                                    <td><input class="tool-form-control" id="paletteGeneratorContrast" type="range" min="0" max="100" value="40" data-palette-generator-contrast></td>
+-                                                </tr>
+-                                                <tr>
+-                                                    <th scope="row"><label for="paletteGeneratorSaturation">Saturation</label></th>
+-                                                    <td><input class="tool-form-control" id="paletteGeneratorSaturation" type="range" min="0" max="100" value="100" data-palette-generator-saturation></td>
+-                                                </tr>
+-                                                <tr>
+-                                                    <th scope="row"><label for="paletteGeneratorHueShift">Hue Shift</label></th>
+-                                                    <td><input class="tool-form-control" id="paletteGeneratorHueShift" type="range" min="-180" max="180" value="0" data-palette-generator-hue-shift></td>
+-                                                </tr>
+                                             </tbody>
+                                         </table>
+                                     </div>
++                                    <div class="grid cols-3" aria-label="Palette generator sliders">
++                                        <label class="field-group" for="paletteGeneratorContrast">Contrast
++                                            <input class="tool-form-control" id="paletteGeneratorContrast" type="range" min="0" max="100" value="40" data-palette-generator-contrast>
++                                        </label>
++                                        <label class="field-group" for="paletteGeneratorSaturation">Saturation
++                                            <input class="tool-form-control" id="paletteGeneratorSaturation" type="range" min="0" max="100" value="100" data-palette-generator-saturation>
++                                        </label>
++                                        <label class="field-group" for="paletteGeneratorHueShift">Hue Shift
++                                            <input class="tool-form-control" id="paletteGeneratorHueShift" type="range" min="-180" max="180" value="0" data-palette-generator-hue-shift>
++                                        </label>
++                                    </div>
+                                     <div class="hero-actions">
+                                         <button class="btn primary" type="button" data-palette-generator-generate>Generate</button>
+                                         <button class="btn" type="button" data-palette-generator-reset>Reset</button>
+                                     </div>
++                                    </section>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion accordion-fill-panel" open data-palette-preview-accordion>
++                                <summary>Picker Preview</summary>
++                                <div class="accordion-body content-stack">
++                                    <label class="field-group">
++                                        <input type="checkbox" data-palette-include-already-project-swatches>
++                                        Include already in Project swatches
++                                    </label>
++                                    <p class="status" role="status" data-palette-picker-disabled-reason>Already in Project swatches are shown in the bottom section and cannot be added again.</p>
++                                    <div class="palette-generator-preview" role="grid" aria-label="Picker Swatches" data-palette-generator-preview></div>
++                                    <p class="status" role="status" data-palette-generator-preview-status>Curated Picker Swatches ready.</p>
+                                 </div>
+                             </details>
+                         </div>
+@@ -312,9 +310,23 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Tags</summary>
+                                 <div class="accordion-body content-stack">
++                                    <fieldset class="content-stack" data-palette-tag-match-mode-group>
++                                        <legend>Match Mode</legend>
++                                        <label class="field-inline" for="paletteTagMatchAny">
++                                            <input id="paletteTagMatchAny" type="radio" name="paletteTagMatchMode" value="any" data-palette-tag-match-mode checked>
++                                            <span>Any selected tag</span>
++                                        </label>
++                                        <label class="field-inline" for="paletteTagMatchAll">
++                                            <input id="paletteTagMatchAll" type="radio" name="paletteTagMatchMode" value="all" data-palette-tag-match-mode>
++                                            <span>All selected tags</span>
++                                        </label>
++                                    </fieldset>
+                                     <ul data-palette-tags-list>
+                                         <li>No tags in active palette.</li>
+                                     </ul>
++                                    <div class="action-group action-group--end">
++                                        <button class="btn btn--compact" type="button" data-palette-clear-tag-filters>Clear Filters</button>
++                                    </div>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+diff --git a/toolbox/colors/palette-api-client.js b/toolbox/colors/palette-api-client.js
+index 49aa8c8a7..4b512877c 100644
+--- a/toolbox/colors/palette-api-client.js
++++ b/toolbox/colors/palette-api-client.js
+@@ -19,6 +19,6 @@ export function normalizePaletteSwatchInput(input) {
+   return callServerToolFunction("palette", "normalizePaletteSwatchInput", input);
+ }
+ 
+-export function validatePaletteSwatchInput(input, options) {
+-  return callServerToolFunction("palette", "validatePaletteSwatchInput", input, options);
++export function validatePaletteSwatchInput(input, existingSwatches, options) {
++  return callServerToolFunction("palette", "validatePaletteSwatchInput", input, existingSwatches, options);
+ }
