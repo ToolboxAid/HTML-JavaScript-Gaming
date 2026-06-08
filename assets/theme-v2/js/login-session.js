@@ -14,8 +14,20 @@ const modeDisabledMessage = document.querySelector("[data-login-mode-disabled-me
 const userControls = document.querySelector("[data-login-user-controls]");
 const userStatus = document.querySelector("[data-login-user-status]");
 const continueLink = document.querySelector("[data-login-continue]");
-const apiBackedLoginDiagnostic = "Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html.";
-const staticModeDisabledMessage = "Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html. Local Mem and Local DB are disabled until the local API server is running.";
+const localApiStartCommand = "npm run dev:local-api";
+const localApiLoginUrl = "http://127.0.0.1:5501/login.html";
+const expectedSessionEndpoint = "/api/session/current";
+const apiBackedLoginDiagnostic = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}.`;
+const staticModeDisabledMessage = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}. Local Mem and Local DB are disabled until the local API server is running.`;
+const localStatusFields = {
+  api: document.querySelector("[data-login-status-api]"),
+  apiUrl: document.querySelector("[data-login-status-api-url]"),
+  command: document.querySelector("[data-login-status-command]"),
+  currentUrl: document.querySelector("[data-login-status-current-url]"),
+  disabledReason: document.querySelector("[data-login-status-disabled-reason]"),
+  endpoint: document.querySelector("[data-login-status-endpoint]"),
+  serverMode: document.querySelector("[data-login-status-server-mode]"),
+};
 
 function currentReturnTo() {
   const params = new URLSearchParams(window.location.search);
@@ -29,6 +41,30 @@ function currentReturnTo() {
 function updateContinueLink() {
   if (continueLink) {
     continueLink.href = currentReturnTo();
+  }
+}
+
+function updateLocalDevelopmentStatus({ apiAvailability, disabledReason, serverMode }) {
+  if (localStatusFields.currentUrl) {
+    localStatusFields.currentUrl.textContent = window.location.href;
+  }
+  if (localStatusFields.serverMode) {
+    localStatusFields.serverMode.textContent = serverMode;
+  }
+  if (localStatusFields.api) {
+    localStatusFields.api.textContent = apiAvailability;
+  }
+  if (localStatusFields.disabledReason) {
+    localStatusFields.disabledReason.textContent = disabledReason;
+  }
+  if (localStatusFields.endpoint) {
+    localStatusFields.endpoint.textContent = expectedSessionEndpoint;
+  }
+  if (localStatusFields.apiUrl) {
+    localStatusFields.apiUrl.textContent = localApiLoginUrl;
+  }
+  if (localStatusFields.command) {
+    localStatusFields.command.textContent = localApiStartCommand;
   }
 }
 
@@ -105,6 +141,12 @@ function isStaticLocalEntrypoint() {
 
 function renderError(error) {
   const message = errorMessage(error);
+  const serverMode = isStaticLocalEntrypoint()
+    ? "Static-only local server"
+    : "Local server without session API";
+  const disabledReason = message === apiBackedLoginDiagnostic
+    ? staticModeDisabledMessage
+    : `Local Mem and Local DB are disabled because ${message}`;
   modeButtons.forEach((button) => {
     button.disabled = true;
     button.setAttribute("aria-disabled", "true");
@@ -130,6 +172,11 @@ function renderError(error) {
   if (userStatus) {
     userStatus.textContent = "No local users are available until /api/session responds.";
   }
+  updateLocalDevelopmentStatus({
+    apiAvailability: `Unavailable: ${message}`,
+    disabledReason,
+    serverMode,
+  });
   updateContinueLink();
 }
 
@@ -164,6 +211,11 @@ function render() {
       }
       modeStatus.textContent = statusParts.join(". ") + ".";
     }
+    updateLocalDevelopmentStatus({
+      apiAvailability: `Available: ${expectedSessionEndpoint} responded through the local API server.`,
+      disabledReason: "Local Mem and Local DB are enabled because the Local API is available.",
+      serverMode: `API-backed local server (${mode.label || session.mode})`,
+    });
     if (modeDisabledMessage) {
       modeDisabledMessage.hidden = true;
       modeDisabledMessage.textContent = "";

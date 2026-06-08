@@ -48,6 +48,24 @@
                         </div>
                     </div>
                 </div>
+                <hr>
+                <section class="card" aria-labelledby="login-local-status-title">
+                    <div class="card-body content-stack">
+                        <div>
+                            <div class="kicker">Diagnostics</div>
+                            <h2 id="login-local-status-title">Local Development Status</h2>
+                        </div>
+                        <div class="content-stack" data-login-local-status>
+                            <p><strong>Current URL:</strong> <span data-login-status-current-url>Checking...</span></p>
+                            <p><strong>Detected server mode:</strong> <span data-login-status-server-mode>Checking...</span></p>
+                            <p><strong>Local API availability:</strong> <span data-login-status-api>Checking...</span></p>
+                            <p><strong>Disabled reason:</strong> <span data-login-status-disabled-reason>Checking...</span></p>
+                            <p><strong>Expected API endpoint:</strong> <span data-login-status-endpoint>/api/session/current</span></p>
+                            <p><strong>Correct local URL:</strong> <span data-login-status-api-url>http://127.0.0.1:5501/login.html</span></p>
+                            <p><strong>Startup command:</strong> <span data-login-status-command>npm run dev:local-api</span></p>
+                        </div>
+                    </div>
+                </section>
             </div>
         </section>
     </main>

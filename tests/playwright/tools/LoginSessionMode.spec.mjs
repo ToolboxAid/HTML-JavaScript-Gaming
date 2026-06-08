@@ -121,6 +121,16 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-mode]")).toHaveText(["Local Mem", "Local DB"]);
     await expect(page.locator("[data-login-mode='local-mem']")).toBeEnabled();
     await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
+    await expect(page.locator("main hr")).toHaveCount(1);
+    await expect(page.getByRole("heading", { name: "Local Development Status", level: 2 })).toBeVisible();
+    await expect(page.locator("[data-login-status-current-url]")).toContainText(`${failures.server.baseUrl}/login.html`);
+    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local Mem)");
+    await expect(page.locator("[data-login-status-api]")).toContainText("Available");
+    await expect(page.locator("[data-login-status-api]")).toContainText("/api/session/current");
+    await expect(page.locator("[data-login-status-disabled-reason]")).toHaveText("Local Mem and Local DB are enabled because the Local API is available.");
+    await expect(page.locator("[data-login-status-endpoint]")).toHaveText("/api/session/current");
+    await expect(page.locator("[data-login-status-api-url]")).toHaveText("http://127.0.0.1:5501/login.html");
+    await expect(page.locator("[data-login-status-command]")).toHaveText("npm run dev:local-api");
     await expect(page.getByRole("button", { name: "DEV" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
@@ -148,6 +158,8 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-mode-status]")).toContainText("Environment: Local DB");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Persistence: Local DB");
     await expect(page.locator("[data-login-mode-status]")).not.toContainText("Local DB adapter not configured");
+    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local DB)");
+    await expect(page.locator("[data-login-status-api]")).toContainText("Available");
     await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "Admin"]);
     await expect(page.locator("[data-login-user-controls]")).toBeVisible();
     await expect(page.locator("[data-login-user-status]")).toHaveText("Guest is unauthenticated and is not stored in the users table.");

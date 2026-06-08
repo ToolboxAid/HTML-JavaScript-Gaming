@@ -14,7 +14,7 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (0%) Toolbox Index - not exercised by this Playwright run
 (0%) Tool Template V2 - not exercised by this Playwright run
-(70%) Theme V2 Shared JS - exercised 2 runtime JS files
+(71%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
@@ -22,7 +22,7 @@ Changed runtime JS files covered:
 Files with executed line/function counts where available:
 (7%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 1/14
 (13%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 1/8
-(59%) assets/theme-v2/js/login-session.js - executed lines 192/192; executed functions 10/17
+(61%) assets/theme-v2/js/login-session.js - executed lines 243/243; executed functions 11/18
 (75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 442/442; executed functions 30/40
 
 Uncovered or low-coverage changed JS files:
@@ -31,6 +31,7 @@ Uncovered or low-coverage changed JS files:
 Changed JS files considered:
 (0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs - changed JS file not collected as browser runtime coverage
-(59%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
+(61%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
 (75%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage

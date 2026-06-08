@@ -115,6 +115,17 @@ test("static 127.0.0.1:5500 login requires the API-backed local server", async (
     await expect(page.locator("[data-login-mode-status]")).toContainText("Use the API-backed local server for login.");
     await expect(page.locator("[data-login-mode-status]")).toContainText("npm run dev:local-api");
     await expect(page.locator("[data-login-mode-status]")).toContainText("http://127.0.0.1:5501/login.html");
+    await expect(page.locator("main hr")).toHaveCount(1);
+    await expect(page.getByRole("heading", { name: "Local Development Status", level: 2 })).toBeVisible();
+    await expect(page.locator("[data-login-status-current-url]")).toContainText(`${server.baseUrl}/login.html`);
+    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("Static-only local server");
+    await expect(page.locator("[data-login-status-api]")).toContainText("Unavailable");
+    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("Local Mem and Local DB are disabled");
+    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("npm run dev:local-api");
+    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("http://127.0.0.1:5501/login.html");
+    await expect(page.locator("[data-login-status-endpoint]")).toHaveText("/api/session/current");
+    await expect(page.locator("[data-login-status-api-url]")).toHaveText("http://127.0.0.1:5501/login.html");
+    await expect(page.locator("[data-login-status-command]")).toHaveText("npm run dev:local-api");
     await expect(page.locator("[data-login-user]")).toHaveCount(0);
     await expect(page.locator("[data-login-user-status]")).toContainText("No local users are available until /api/session responds");
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
