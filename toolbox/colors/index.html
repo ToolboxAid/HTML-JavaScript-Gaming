@@ -74,23 +74,19 @@
                                             </tbody>
                                         </table>
                                     </div>
-                                    <div class="table-wrapper">
-                                        <table class="data-table tool-form-table" aria-label="Picker swatch adjustment controls" data-palette-generator-slider-controls>
-                                            <tbody>
-                                                <tr>
-                                                    <th scope="row"><label for="paletteGeneratorContrast">Contrast</label></th>
-                                                    <td><input class="tool-form-control" id="paletteGeneratorContrast" type="range" min="0" max="100" value="40" data-palette-generator-contrast></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="paletteGeneratorSaturation">Saturation</label></th>
-                                                    <td><input class="tool-form-control" id="paletteGeneratorSaturation" type="range" min="0" max="100" value="100" data-palette-generator-saturation></td>
-                                                </tr>
-                                                <tr>
-                                                    <th scope="row"><label for="paletteGeneratorHueShift">Hue Shift</label></th>
-                                                    <td><input class="tool-form-control" id="paletteGeneratorHueShift" type="range" min="-180" max="180" value="0" data-palette-generator-hue-shift></td>
-                                                </tr>
-                                            </tbody>
-                                        </table>
+                                    <div class="content-stack" aria-label="Picker swatch adjustment controls" data-palette-generator-slider-controls>
+                                        <label class="palette-generator-slider-row" for="paletteGeneratorContrast">
+                                            <span>Contrast</span>
+                                            <input class="tool-form-control" id="paletteGeneratorContrast" type="range" min="0" max="100" value="40" data-palette-generator-contrast>
+                                        </label>
+                                        <label class="palette-generator-slider-row" for="paletteGeneratorSaturation">
+                                            <span>Saturation</span>
+                                            <input class="tool-form-control" id="paletteGeneratorSaturation" type="range" min="0" max="100" value="100" data-palette-generator-saturation>
+                                        </label>
+                                        <label class="palette-generator-slider-row" for="paletteGeneratorHueShift">
+                                            <span>Hue Shift</span>
+                                            <input class="tool-form-control" id="paletteGeneratorHueShift" type="range" min="-180" max="180" value="0" data-palette-generator-hue-shift>
+                                        </label>
                                     </div>
                                     <div class="hero-actions">
                                         <button class="btn" type="button" data-palette-generator-reset>Reset</button>

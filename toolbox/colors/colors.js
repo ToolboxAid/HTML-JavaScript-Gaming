@@ -1036,6 +1036,7 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   visual.dataset.paletteGeneratorVisibleColor = options.hideDuplicate ? "transparent" : hex;
   visual.setAttribute("aria-hidden", "true");
   visual.setAttribute("focusable", "false");
+  visual.setAttribute("preserveAspectRatio", "none");
   visual.setAttribute("viewBox", "0 0 1 1");
   const rect = document.createElementNS("http://www.w3.org/2000/svg", "rect");
   rect.setAttribute("width", "1");

@@ -269,6 +269,8 @@ input[type="color"][data-palette-swatch-size="large"] {
 
 .palette-generator-preview-color {
   box-sizing: border-box;
+  display: block;
+  flex: 1 1 auto;
   width: 100%;
   min-width: var(--space-0);
   height: 100%;
@@ -356,6 +358,17 @@ input[type="range"] {
 
 .tool-column[class*="tool-group-"] input[type="range"] {
   accent-color: var(--tool-group-color)
+}
+
+[data-palette-generator-slider-controls] input[type="range"] {
+  width: 100%
+}
+
+.palette-generator-slider-row {
+  display: grid;
+  grid-template-columns: calc(var(--space-78) + var(--space-22)) minmax(var(--space-0), calc(var(--space-78) * 2));
+  align-items: center;
+  gap: var(--space-12)
 }
 
 textarea {

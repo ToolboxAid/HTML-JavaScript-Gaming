@@ -473,9 +473,16 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
       const sliders = ["paletteGeneratorContrast", "paletteGeneratorSaturation", "paletteGeneratorHueShift"].map((id) => {
         const input = accordion.querySelector(`#${id}`);
         const label = accordion.querySelector(`label[for='${id}']`);
+        const labelText = label.querySelector("span");
+        const inputBox = input.getBoundingClientRect();
+        const labelBox = labelText.getBoundingClientRect();
         return {
-          inputTop: Math.round(input.getBoundingClientRect().top),
-          labelTop: Math.round(label.getBoundingClientRect().top)
+          inputLeft: Math.round(inputBox.left),
+          inputRight: Math.round(inputBox.right),
+          inputTop: Math.round(inputBox.top),
+          inputWidth: Math.round(inputBox.width),
+          labelRight: Math.round(labelBox.right),
+          labelTop: Math.round(labelBox.top)
         };
       });
       const summary = accordion.querySelector("[data-palette-generator-grid-summary]");
@@ -483,6 +490,7 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
         rowAlignment: rows.map((row) => Math.abs(row.controlTop - row.labelTop)),
         sliderPositions: sliders.map((slider) => slider.inputTop),
         sliderLabelPositions: sliders.map((slider) => slider.labelTop),
+        sliderRows: sliders,
         slidersShareLabelRows: sliders.map((slider) => Math.abs(slider.labelTop - slider.inputTop) <= 4),
         summaryText: summary.textContent.trim()
       };
@@ -492,6 +500,8 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     expect(pickerLayout.sliderPositions[0]).toBeLessThan(pickerLayout.sliderPositions[1]);
     expect(pickerLayout.sliderPositions[1]).toBeLessThan(pickerLayout.sliderPositions[2]);
     expect(pickerLayout.slidersShareLabelRows.every(Boolean)).toBe(true);
+    expect(pickerLayout.sliderRows.every((slider) => slider.labelRight < slider.inputLeft)).toBe(true);
+    expect(pickerLayout.sliderRows.every((slider) => slider.inputWidth <= 170)).toBe(true);
     const sliderAccentColors = await page.locator("[data-palette-picker-accordion]").evaluate((accordion) => {
       const column = accordion.closest(".tool-column");
       const probe = document.createElement("span");
@@ -723,6 +733,9 @@ test("Palette Tool uses green pins to remove already-added picker swatches", asy
     const eightColumnHex = await firstAvailableEightColumnSwatch.getAttribute("data-palette-generator-hex");
     await firstAvailableEightColumnSwatch.click();
     await expect(page.locator("[data-palette-count]")).toHaveText("1");
+    const addedEightColumnSwatch = page.locator(`[data-palette-user-list] [data-palette-swatch-key][data-palette-swatch-hex='${eightColumnHex}']`).first();
+    await expect(addedEightColumnSwatch).toHaveAttribute("data-palette-selected", "true");
+    await expect(page.locator("[data-palette-selected-summary]")).toHaveText(await addedEightColumnSwatch.getAttribute("data-palette-swatch-name") || "");
 
     await expectPickerRowsToHaveColumnCount(page, 8);
     const pinnedEightColumnSwatch = page.locator(`[data-palette-generator-swatch][data-palette-generator-hex='${eightColumnHex}']`).first();
@@ -958,21 +971,31 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
       const rowHeightTotal = rows.reduce((total, row) => total + row.getBoundingClientRect().height, 0);
       const leftBox = cells[0].getBoundingClientRect();
       const rightBox = cells[1].getBoundingClientRect();
+      const visual = cells[0].querySelector("[data-palette-generator-color]");
+      const visualBox = visual.getBoundingClientRect();
       return {
         columnGap: getComputedStyle(firstRow).columnGap,
+        preserveAspectRatio: visual.getAttribute("preserveAspectRatio"),
         previewHeight: Math.round(previewBox.height),
         previewWidth: Math.round(previewBox.width),
         previewGap: getComputedStyle(preview).rowGap,
         rowHeightTotal: Math.round(rowHeightTotal),
         rowWidth: Math.round(rowBox.width),
+        swatchHeight: Math.round(leftBox.height),
+        swatchWidth: Math.round(leftBox.width),
+        visualHeight: Math.round(visualBox.height),
+        visualWidth: Math.round(visualBox.width),
         xGap: Math.round(rightBox.left - leftBox.right)
       };
     });
     expect(gridSpacing.previewGap).toBe("0px");
     expect(gridSpacing.columnGap).toBe("0px");
+    expect(gridSpacing.preserveAspectRatio).toBe("none");
     expect(Math.abs(gridSpacing.xGap)).toBeLessThanOrEqual(1);
     expect(Math.abs(gridSpacing.rowWidth - gridSpacing.previewWidth)).toBeLessThanOrEqual(1);
     expect(Math.abs(gridSpacing.rowHeightTotal - gridSpacing.previewHeight)).toBeLessThanOrEqual(2);
+    expect(Math.abs(gridSpacing.visualWidth - gridSpacing.swatchWidth)).toBeLessThanOrEqual(1);
+    expect(Math.abs(gridSpacing.visualHeight - gridSpacing.swatchHeight)).toBeLessThanOrEqual(1);
 
     await firstGenerated.click();
     await expect(page.locator("[data-palette-count]")).toHaveText("9");

@@ -17,14 +17,14 @@ Exercised tool entry points detected:
 (64%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(86%) toolbox/colors/colors.js - executed lines 2012/2012; executed functions 177/206
+(86%) toolbox/colors/colors.js - executed lines 2013/2013; executed functions 177/206
 
 Files with executed line/function counts where available:
 (58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
 (64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 525/525; executed functions 28/44
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 9/14
 (78%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 21/27
-(86%) toolbox/colors/colors.js - executed lines 2012/2012; executed functions 177/206
+(86%) toolbox/colors/colors.js - executed lines 2013/2013; executed functions 177/206
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
 Uncovered or low-coverage changed JS files:
