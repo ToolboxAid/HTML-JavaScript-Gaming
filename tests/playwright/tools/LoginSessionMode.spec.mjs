@@ -26,6 +26,29 @@ test.afterAll(async () => {
 
 let localDbRunId = 0;
 
+const DEV_ONLY_ADMIN_LABELS = [
+  "Notes",
+  "DB Viewer",
+  "Design System",
+  "Environments",
+  "Game Migration",
+  "Grouping Colors",
+  "Tools Progress",
+];
+
+const UAT_PROD_ADMIN_LABELS = [
+  "Analytics",
+  "Branding",
+  "Controls",
+  "Moderation",
+  "Platform Settings",
+  "Ratings",
+  "Roles",
+  "Site Settings",
+  "Themes",
+  "Users",
+];
+
 function nextLocalDbStoragePath() {
   localDbRunId += 1;
   return path.join(process.cwd(), "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.sqlite`);
@@ -159,6 +182,51 @@ async function closeWithCoverage(page, failures) {
 async function closeFixedLocalApiPage(page, failures) {
   await workspaceV2CoverageReporter.stop(page);
   await failures.server.close();
+}
+
+async function expectLocalAdminMyStuffMenu(page) {
+  const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
+  const myStuffMenu = adminSubmenu.locator(":scope > [data-admin-my-stuff-menu]");
+  const separator = adminSubmenu.locator(":scope > [data-admin-my-stuff-separator]");
+  await expect(myStuffMenu).toBeVisible();
+  await expect(separator).toBeVisible();
+  await expect(separator).toHaveAttribute("role", "separator");
+  await expect(separator).toHaveAttribute("aria-disabled", "true");
+  const firstAdminChildren = await adminSubmenu.evaluate((menu) => {
+    return Array.from(menu.children).slice(0, 2).map((child) => {
+      if (child.matches("[data-admin-my-stuff-menu]")) return "my-stuff";
+      if (child.matches("[data-admin-my-stuff-separator]")) return "separator";
+      return child.textContent?.trim() || "";
+    });
+  });
+  expect(firstAdminChildren).toEqual(["my-stuff", "separator"]);
+  const separatorFillsWidth = await separator.evaluate((node) => {
+    const parent = node.parentElement;
+    if (!parent) return false;
+    const separatorBox = node.getBoundingClientRect();
+    const parentBox = parent.getBoundingClientRect();
+    return separatorBox.width >= parentBox.width * 0.85;
+  });
+  expect(separatorFillsWidth).toBe(true);
+
+  const mainAdminLabels = await adminSubmenu.evaluate((menu) => {
+    return Array.from(menu.children)
+      .filter((child) => child.matches("a[data-nav-link]"))
+      .map((child) => child.textContent?.trim() || "");
+  });
+  expect(mainAdminLabels).toEqual(UAT_PROD_ADMIN_LABELS);
+
+  await expect(adminSubmenu.locator("[data-admin-my-stuff-label]")).toContainText("My Stuff");
+  await myStuffMenu.hover();
+  const myStuffSubmenu = myStuffMenu.locator("[data-admin-my-stuff-submenu]");
+  await expect(myStuffSubmenu).toBeVisible();
+  await expect(myStuffSubmenu.locator("a")).toHaveText(DEV_ONLY_ADMIN_LABELS);
+  await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Notes");
+  await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
+  await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
+    "href",
+    /\/admin\/admin-notes\.html$/,
+  );
 }
 
 async function mockDbSessionSnapshot(page) {
@@ -432,25 +500,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
-    const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
-    await expect(adminSubmenu.locator(":scope > [data-admin-my-stuff-menu]")).toBeVisible();
-    await expect(adminSubmenu.locator(":scope > [data-admin-my-stuff-separator]")).toBeVisible();
-    const firstAdminChildren = await adminSubmenu.evaluate((menu) => {
-      return Array.from(menu.children).slice(0, 2).map((child) => {
-        if (child.matches("[data-admin-my-stuff-menu]")) return "my-stuff";
-        if (child.matches("[data-admin-my-stuff-separator]")) return "separator";
-        return child.textContent?.trim() || "";
-      });
-    });
-    expect(firstAdminChildren).toEqual(["my-stuff", "separator"]);
-    await expect(adminSubmenu.locator("[data-admin-my-stuff-label]")).toContainText("My Stuff");
-    await adminSubmenu.locator("[data-admin-my-stuff-menu]").hover();
-    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Notes");
-    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
-    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
-      "href",
-      /\/admin\/admin-notes\.html$/,
-    );
+    await expectLocalAdminMyStuffMenu(page);
     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
     await expect(page).toHaveURL(/\/admin\/admin-notes\.html$/);
     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
@@ -469,16 +519,7 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("Admin");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
-    const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
-    await expect(adminSubmenu.locator(":scope > [data-admin-my-stuff-menu]")).toBeVisible();
-    await expect(adminSubmenu.locator(":scope > [data-admin-my-stuff-separator]")).toBeVisible();
-    await adminSubmenu.locator("[data-admin-my-stuff-menu]").hover();
-    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Notes");
-    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
-    await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
-      "href",
-      "/admin/admin-notes.html",
-    );
+    await expectLocalAdminMyStuffMenu(page);
     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
     await expect(page).toHaveURL("http://127.0.0.1:5501/admin/admin-notes.html");
     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();

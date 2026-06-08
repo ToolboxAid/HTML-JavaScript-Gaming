@@ -39,6 +39,29 @@ const retiredProductionFiles = [
   "docs_build/dev/admin-notes/notes/Other/index.txt",
 ];
 
+const devOnlyAdminLabels = [
+  "Notes",
+  "DB Viewer",
+  "Design System",
+  "Environments",
+  "Game Migration",
+  "Grouping Colors",
+  "Tools Progress",
+];
+
+const uatProdAdminLabels = [
+  "Analytics",
+  "Branding",
+  "Controls",
+  "Moderation",
+  "Platform Settings",
+  "Ratings",
+  "Roles",
+  "Site Settings",
+  "Themes",
+  "Users",
+];
+
 function repoPath(relativePath) {
   return path.join(repoRoot, relativePath);
 }
@@ -123,6 +146,12 @@ test("Admin Notes local viewer page uses external dev-runtime JavaScript only", 
 test("production-facing paths do not link to dev Admin Notes files or implementation", () => {
   const headerSource = fs.readFileSync(repoPath("assets/theme-v2/partials/header-nav.html"), "utf8");
   assert.doesNotMatch(headerSource, /docs_build\/dev\/admin-notes|admin-notes-dev|data-admin-notes-local-menu|data-admin-my-stuff-menu|My Stuff|Admin Notes/);
+  for (const label of uatProdAdminLabels) {
+    assert.match(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu keeps ${label}`);
+  }
+  for (const label of devOnlyAdminLabels) {
+    assert.doesNotMatch(headerSource, new RegExp(`>${label}<\\/a>`), `production Admin menu omits dev-only ${label}`);
+  }
 
   const violations = productionRoots
     .flatMap(walkTextFiles)
@@ -144,11 +173,25 @@ test("local dev server serves a dedicated Admin Notes header partial only", () =
   assert.match(servedHeader, /data-admin-notes-local-menu/);
   assert.match(servedHeader, /data-admin-my-stuff-menu/);
   assert.match(servedHeader, /data-admin-my-stuff-separator/);
+  assert.match(servedHeader, /data-admin-my-stuff-separator role="separator" aria-disabled="true" tabindex="-1"/);
   assert.match(servedHeader, /data-nav-link data-admin-notes-local-menu/);
   assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_VIEWER_PATH.replace(/\//g, "\\/")));
   assert.doesNotMatch(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_SOURCE_PATH.replace(/\//g, "\\/")));
   assert.match(servedHeader, new RegExp(ADMIN_NOTES_LOCAL_MENU_LABEL.replace(/[()]/g, "\\$&")));
   assert.match(servedHeader, new RegExp(ADMIN_MY_STUFF_MENU_LABEL.replace(/[()]/g, "\\$&")));
+  const myStuffStart = servedHeader.indexOf("data-admin-my-stuff-submenu");
+  const separatorStart = servedHeader.indexOf("data-admin-my-stuff-separator");
+  const mainAdminStart = separatorStart;
+  const mainAdminEnd = servedHeader.indexOf("</div>\n      </div>\n    </nav>", mainAdminStart);
+  const myStuffSource = servedHeader.slice(myStuffStart, separatorStart);
+  const mainAdminSource = servedHeader.slice(mainAdminStart, mainAdminEnd);
+  for (const label of devOnlyAdminLabels) {
+    assert.match(myStuffSource, new RegExp(`>${label}<\\/a>`), `local My Stuff contains ${label}`);
+    assert.doesNotMatch(mainAdminSource, new RegExp(`>${label}<\\/a>`), `local main Admin list omits ${label}`);
+  }
+  for (const label of uatProdAdminLabels) {
+    assert.match(mainAdminSource, new RegExp(`>${label}<\\/a>`), `local main Admin list keeps ${label}`);
+  }
   assert.ok(
     servedHeader.indexOf("data-admin-my-stuff-menu") < servedHeader.indexOf("data-admin-my-stuff-separator") &&
       servedHeader.indexOf("data-admin-my-stuff-separator") < servedHeader.indexOf('data-route="admin-analytics"'),

@@ -401,6 +401,13 @@ body.tool-focus-mode .tool-column:last-of-type {
   background: var(--orange-soft-strong)
 }
 
+.site-header .sub-menu hr {
+  width: 100%;
+  margin: var(--space-4) var(--space-0);
+  border: var(--space-0);
+  border-top: var(--border-standard)
+}
+
 .site-header .sub-menu--toolbox {
   align-content: start
 }
