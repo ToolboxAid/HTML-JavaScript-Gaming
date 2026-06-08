@@ -221,7 +221,10 @@ let sourceSizeState = "medium";
 const userSortState = { direction: "asc", key: "name" };
 let userSizeState = "medium";
 const checkedSwatchSymbols = new Set();
+const selectedTagFilters = new Set();
 const invalidHexPreviewValue = "#FFFFFF";
+const GENERATED_SWATCH_SOURCE = "generated";
+const GENERATED_SYMBOL_CANDIDATES = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@$%^&*()-+=[]{};:,.?";
 
 const elements = {
   activeProject: document.querySelector("[data-palette-active-project]"),
@@ -485,6 +488,26 @@ function rgbToHsl({ red, green, blue }) {
   };
 }
 
+function swatchColorKey(hex) {
+  return String(hex || "").trim().toUpperCase().slice(0, 7);
+}
+
+function pinnedSwatchForHex(hex, snapshot = repository.getSnapshot()) {
+  const colorKey = swatchColorKey(hex);
+  if (!colorKey) {
+    return null;
+  }
+  return snapshot.swatches.find((swatch) => swatchColorKey(swatch.hex) === colorKey) || null;
+}
+
+function nextGeneratedSymbol(snapshot, reservedSymbols) {
+  const usedSymbols = new Set([
+    ...snapshot.swatches.map((swatch) => swatch.symbol),
+    ...reservedSymbols
+  ]);
+  return Array.from(GENERATED_SYMBOL_CANDIDATES).find((symbol) => !usedSymbols.has(symbol)) || "";
+}
+
 function interpolateHex(swatchesToInterpolate, column, columns) {
   if (!Array.isArray(swatchesToInterpolate) || swatchesToInterpolate.length === 0) {
     return "#000000";
@@ -692,9 +715,15 @@ function readPaletteGeneratorSettings() {
   };
 }
 
-function createGeneratorPreviewInput(hex, label, row, column, settings) {
-  const swatch = document.createElement("span");
+function generatorSwatchName(settings, row, column, hex) {
+  return `${settings.paletteType?.name || "Generated"} ${row + 1}-${column + 1} ${hex}`;
+}
+
+function createGeneratorPreviewInput(hex, label, row, column, settings, options = {}) {
+  const swatch = document.createElement("button");
   swatch.className = "palette-generator-preview-swatch";
+  swatch.type = "button";
+  swatch.disabled = Boolean(options.disabled);
   swatch.dataset.paletteGeneratorSwatch = "";
   swatch.dataset.paletteGeneratorRow = String(row);
   swatch.dataset.paletteGeneratorColumn = String(column);
@@ -702,6 +731,17 @@ function createGeneratorPreviewInput(hex, label, row, column, settings) {
   swatch.dataset.paletteGeneratorCollection = settings.collection?.name || "";
   swatch.dataset.paletteGeneratorTypeName = settings.paletteType?.name || "";
   swatch.dataset.paletteGeneratorVariantName = settings.variant?.label || "";
+  swatch.dataset.paletteGeneratorHex = hex;
+  swatch.dataset.paletteGeneratorSymbol = options.symbol || "";
+  swatch.dataset.palettePinned = String(Boolean(options.pinned));
+  swatch.dataset.paletteSelected = String(Boolean(options.selected));
+  const swatchName = generatorSwatchName(settings, row, column, hex);
+  swatch.dataset.paletteGeneratorName = options.pinnedSwatch?.name || swatchName;
+  swatch.setAttribute("aria-label", `${options.pinned ? "Unpin" : "Pin"} generated swatch ${swatchName}`);
+  swatch.setAttribute("aria-pressed", String(Boolean(options.pinned)));
+  if (options.selected) {
+    swatch.setAttribute("aria-current", "true");
+  }
 
   const input = document.createElement("input");
   input.type = "color";
@@ -710,9 +750,10 @@ function createGeneratorPreviewInput(hex, label, row, column, settings) {
   input.dataset.paletteGeneratorColor = hex;
   input.dataset.paletteGeneratorFamily = label;
   input.setAttribute("aria-label", `${label} generated swatch ${hex}`);
-  input.title = `${label} ${hex}`;
+  input.title = `${swatchName}${options.pinned ? " pinned" : ""}`;
 
-  swatch.append(input);
+  swatch.title = `${swatchName}\nHex: ${hex}\nSource: generated${options.pinned ? "\nPinned in Selected Swatches" : ""}`;
+  swatch.append(input, createPinIndicator(Boolean(options.pinned)));
   return swatch;
 }
 
@@ -729,6 +770,7 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   }
 
   const settings = readPaletteGeneratorSettings();
+  const snapshot = repository.getSnapshot();
   if (!settings.collection || !settings.paletteType) {
     elements.generatorPreview.replaceChildren();
     setText(elements.generatorPreviewStatus, "No curated palette swatches are available for the selected collection and type.");
@@ -737,6 +779,7 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   }
 
   const fragment = document.createDocumentFragment();
+  const reservedSymbols = new Set();
   for (let row = 0; row < settings.steps; row += 1) {
     const rowElement = document.createElement("div");
     rowElement.className = "palette-generator-preview-row";
@@ -751,7 +794,18 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
         lightness: generatorLightness(baseHsl.lightness, row, settings.steps, settings.contrast)
       }, settings.variant, column, settings.colors);
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
-      rowElement.append(createGeneratorPreviewInput(hex, settings.paletteType.name, row, column, settings));
+      const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
+      const symbol = pinnedSwatch?.symbol || nextGeneratedSymbol(snapshot, reservedSymbols);
+      if (symbol) {
+        reservedSymbols.add(symbol);
+      }
+      rowElement.append(createGeneratorPreviewInput(hex, settings.paletteType.name, row, column, settings, {
+        disabled: !symbol && !pinnedSwatch,
+        pinned: Boolean(pinnedSwatch),
+        pinnedSwatch,
+        selected: Boolean(pinnedSwatch && snapshot.selectedSwatch?.symbol === pinnedSwatch.symbol),
+        symbol
+      }));
     }
     fragment.append(rowElement);
   }
@@ -759,6 +813,24 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   elements.generatorPreview.replaceChildren(fragment);
   setText(elements.generatorPreviewStatus, paletteGeneratorSummary(settings));
   setText(elements.generatorStatus, action);
+}
+
+function paletteGeneratorActionSummary(prefix = "Palette generator preview updated") {
+  const settings = readPaletteGeneratorSettings();
+  if (!settings.collection || !settings.paletteType) {
+    return `${prefix}: no curated swatches resolved.`;
+  }
+  return `${prefix}: ${settings.collection.name} / ${settings.paletteType.name} / ${settings.variant.label}, ${settings.colors} colors x ${settings.steps} steps.`;
+}
+
+function generatedSwatchFromTile(tile) {
+  return {
+    hex: tile.dataset.paletteGeneratorHex,
+    name: tile.dataset.paletteGeneratorName,
+    source: GENERATED_SWATCH_SOURCE,
+    symbol: tile.dataset.paletteGeneratorSymbol,
+    tags: []
+  };
 }
 
 function resetPaletteGeneratorControls() {
@@ -1114,16 +1186,19 @@ function renderUserPalette(snapshot) {
   }
 
   elements.userList.replaceChildren();
+  const activeFilters = [...selectedTagFilters];
   const swatches = repository.listSwatches({
     sortDirection: userSortState.direction,
     sortKey: userSortState.key
-  });
+  }).filter((swatch) => (
+    activeFilters.length === 0 || activeFilters.every((tag) => swatch.tags.includes(tag))
+  ));
   if (swatches.length === 0) {
     const message = document.createElement("p");
     message.className = "status";
     message.textContent = snapshot.projectRequired
       ? "Open a project before editing palette colors."
-      : "No project palette colors yet.";
+      : activeFilters.length ? "No project palette colors match checked tags." : "No project palette colors yet.";
     elements.userList.append(message);
     return;
   }
@@ -1190,12 +1265,31 @@ function renderTags(snapshot) {
   }
 
   const tags = [...new Set(snapshot.swatches.flatMap((swatch) => swatch.tags))].sort((left, right) => left.localeCompare(right));
+  [...selectedTagFilters].forEach((tag) => {
+    if (!tags.includes(tag)) {
+      selectedTagFilters.delete(tag);
+    }
+  });
   elements.tagsList.replaceChildren();
   if (!tags.length) {
     elements.tagsList.append(createListItem("No tags in active palette."));
     return;
   }
-  tags.forEach((tag) => elements.tagsList.append(createListItem(tag)));
+  tags.forEach((tag) => {
+    const item = document.createElement("li");
+    const label = document.createElement("label");
+    label.className = "field-inline";
+    const checkbox = document.createElement("input");
+    checkbox.type = "checkbox";
+    checkbox.checked = selectedTagFilters.has(tag);
+    checkbox.dataset.paletteTagFilter = tag;
+    checkbox.setAttribute("aria-label", `Filter Selected Swatches by tag ${tag}`);
+    const text = document.createElement("span");
+    text.textContent = tag;
+    label.append(checkbox, text);
+    item.append(label);
+    elements.tagsList.append(item);
+  });
 }
 
 function renderHarmony(snapshot) {
@@ -1316,6 +1410,7 @@ function applyResult(result) {
   setText(elements.log, result.message);
   setText(elements.userSwatchDiagnostic, result.message);
   render();
+  renderPaletteGeneratorPreview("Palette generator preview refreshed.");
 }
 
 function validateUserSwatch() {
@@ -1466,6 +1561,33 @@ elements.sourceSize?.addEventListener("click", (event) => {
   renderSizeButtons(elements.sourceSize, sourceSizeState, "Source swatches");
 });
 
+elements.generatorPreview?.addEventListener("click", (event) => {
+  const tile = event.target.closest("[data-palette-generator-swatch]");
+  if (!tile) {
+    return;
+  }
+  if (tile.disabled) {
+    editorIssues = [{
+      action: "No one-character palette symbol is available for this generated swatch.",
+      field: "generatedSwatch",
+      label: "Generated Swatch"
+    }];
+    renderValidation(repository.getSnapshot());
+    setText(elements.log, "Generated swatch blocked: no available symbol.");
+    return;
+  }
+  const swatch = generatedSwatchFromTile(tile);
+  const result = tile.dataset.palettePinned === "true"
+    ? repository.removeSwatch(swatch.symbol)
+    : repository.pinSourceSwatch(swatch);
+  applyResult({
+    ...result,
+    message: result.ok && tile.dataset.palettePinned !== "true"
+      ? `Pinned generated swatch ${swatch.name} to Selected Swatches.`
+      : result.message
+  });
+});
+
 elements.generatorCollection?.addEventListener("change", () => {
   renderPaletteTypeOptions();
   renderPaletteGeneratorPreview();
@@ -1494,7 +1616,9 @@ elements.generatorVariant?.addEventListener("change", () => {
 });
 
 elements.generatorGenerate?.addEventListener("click", () => {
-  renderPaletteGeneratorPreview("Palette generated.");
+  const message = paletteGeneratorActionSummary("Generated palette grid");
+  renderPaletteGeneratorPreview(message);
+  setText(elements.log, message);
 });
 
 elements.generatorReset?.addEventListener("click", resetPaletteGeneratorControls);
@@ -1569,6 +1693,26 @@ elements.userList?.addEventListener("change", (event) => {
     checkedSwatchSymbols.delete(checkbox.dataset.paletteSwatchCheck);
   }
   render();
+});
+
+elements.tagsList?.addEventListener("change", (event) => {
+  const checkbox = event.target.closest("[data-palette-tag-filter]");
+  if (!checkbox) {
+    return;
+  }
+  if (checkbox.checked) {
+    selectedTagFilters.add(checkbox.dataset.paletteTagFilter);
+  } else {
+    selectedTagFilters.delete(checkbox.dataset.paletteTagFilter);
+  }
+  setText(
+    elements.log,
+    selectedTagFilters.size
+      ? `Filtered Selected Swatches by ${[...selectedTagFilters].join(", ")}.`
+      : "Cleared Selected Swatches tag filters."
+  );
+  render();
+  renderPaletteGeneratorPreview("Palette generator preview refreshed.");
 });
 
 elements.sourceList?.addEventListener("click", (event) => {

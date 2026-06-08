@@ -148,6 +148,23 @@ async function currentPreviewHexes(page, row) {
   ));
 }
 
+async function visiblePaletteNames(page) {
+  return page.locator("[data-palette-user-list] [data-palette-swatch-row]").evaluateAll((swatches) => (
+    swatches.map((swatch) => swatch.dataset.paletteSwatchName)
+  ));
+}
+
+async function expectSortToggle(page, key, label) {
+  const button = page.locator(`[data-palette-user-sort] [data-palette-sort-key='${key}']`);
+  await button.click();
+  await expect(button).toHaveText(`${label} ^`);
+  const ascending = await visiblePaletteNames(page);
+  await button.click();
+  await expect(button).toHaveText(`${label} v`);
+  const descending = await visiblePaletteNames(page);
+  expect(ascending).toEqual([...descending].reverse());
+}
+
 test("Palette repository owns project swatches and protects invalid payloads", async () => {
   const repository = createProjectWorkspacePaletteRepository({ sourcePaletteRows });
   const baseline = repository.getSnapshot();
@@ -398,6 +415,73 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
 
     await page.locator("[data-palette-generator-generate]").click();
     await expect(page.locator("[data-palette-generator-preview-status]")).toContainText("Computer / Amiga");
+    await expect(page.locator("[data-palette-log]")).toContainText("Generated palette grid: Computer / Amiga");
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Palette Tool generated grid swatches can be selected, pinned, and refreshed", async ({ page }) => {
+  test.setTimeout(120000);
+  const failures = await openRepoPage(page, "/toolbox/colors/index.html");
+
+  try {
+    const firstGenerated = page.locator("[data-palette-generator-swatch]").first();
+    await expect(firstGenerated).toHaveAttribute("data-palette-pinned", "false");
+    const generatedName = await firstGenerated.getAttribute("data-palette-generator-name");
+    const generatedSymbol = await firstGenerated.getAttribute("data-palette-generator-symbol");
+    const generatedHex = await firstGenerated.getAttribute("data-palette-generator-hex");
+
+    const gridSpacing = await page.locator("[data-palette-generator-preview]").evaluate((preview) => {
+      const firstRow = preview.querySelector("[data-palette-generator-preview-row]");
+      const cells = Array.from(firstRow.querySelectorAll("[data-palette-generator-swatch]")).slice(0, 2);
+      const leftBox = cells[0].getBoundingClientRect();
+      const rightBox = cells[1].getBoundingClientRect();
+      return {
+        columnGap: getComputedStyle(firstRow).columnGap,
+        previewGap: getComputedStyle(preview).rowGap,
+        xGap: Math.round(rightBox.left - leftBox.right)
+      };
+    });
+    expect(gridSpacing.previewGap).toBe("0px");
+    expect(gridSpacing.columnGap).toBe("0px");
+    expect(Math.abs(gridSpacing.xGap)).toBeLessThanOrEqual(1);
+
+    await firstGenerated.click();
+    await expect(page.locator("[data-palette-count]")).toHaveText("1");
+    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-name", generatedName || "");
+    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-hex", generatedHex || "");
+    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-selected", "true");
+    await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-pinned", "true");
+    await expect(page.locator("[data-palette-generator-swatch]").first().locator("[data-palette-pin-indicator]")).toHaveCount(1);
+    await expect(page.locator("[data-palette-log]")).toContainText("Pinned generated swatch");
+
+    await page.locator("[data-palette-theme-collection]").selectOption("Sci-Fi");
+    await page.locator("[data-palette-generator-type]").selectOption("Cyberpunk");
+    await page.locator("[data-palette-generator-variant]").selectOption("High Contrast");
+    await page.locator("[data-palette-generator-colors]").selectOption("12");
+    await page.locator("[data-palette-generator-steps]").selectOption("16");
+    await page.locator("[data-palette-generator-contrast]").evaluate((control) => {
+      control.value = "72";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await page.locator("[data-palette-generator-saturation]").evaluate((control) => {
+      control.value = "58";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await page.locator("[data-palette-generator-hue-shift]").evaluate((control) => {
+      control.value = "-35";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-name", generatedName || "");
+    await expect(page.locator("[data-palette-count]")).toHaveText("1");
+
+    await page.locator("[data-palette-generator-generate]").click();
+    await expect(page.locator("[data-palette-log]")).toContainText("Generated palette grid: Sci-Fi / Cyberpunk / High Contrast, 12 colors x 16 steps.");
+    await expect(page.locator(`[data-palette-swatch-row='${generatedSymbol}']`)).toHaveAttribute("data-palette-swatch-name", generatedName || "");
 
     expectNoPageFailures(failures);
   } finally {
@@ -467,6 +551,28 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
     await expect(anchorTile).toHaveAttribute("data-palette-swatch-tags", "solo, batch, afterclear");
     await expect(brownTile).toHaveAttribute("data-palette-swatch-tags", "batch");
     await expect(blueTile).toHaveAttribute("data-palette-swatch-tags", "");
+
+    await expectSortToggle(page, "hue", "Hue");
+    await expectSortToggle(page, "saturation", "Sat");
+    await expectSortToggle(page, "brightness", "Brit");
+    await expectSortToggle(page, "name", "Name");
+    await expectSortToggle(page, "tag", "Tag");
+
+    const tagFilters = page.locator("[data-palette-tag-filter]");
+    const tagFilterItems = page.locator("[data-palette-tags-list] li");
+    await expect(tagFilters).toHaveCount(3);
+    await expect(tagFilterItems).toHaveText(["afterclear", "batch", "solo"]);
+    await page.locator("[data-palette-tag-filter='batch']").check();
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Bluegate']")).toHaveCount(0);
+    await page.locator("[data-palette-tag-filter='solo']").check();
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Anchor']")).toHaveCount(1);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Brownstone']")).toHaveCount(0);
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Bluegate']")).toHaveCount(0);
+    await page.locator("[data-palette-tag-filter='batch']").uncheck();
+    await page.locator("[data-palette-tag-filter='solo']").uncheck();
+    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-row]")).toHaveCount(3);
 
     expectNoPageFailures(failures);
   } finally {
