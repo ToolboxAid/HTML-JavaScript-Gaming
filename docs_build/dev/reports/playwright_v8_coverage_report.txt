@@ -17,8 +17,7 @@ Exercised tool entry points detected:
 (64%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(86%) toolbox/colors/colors.js - executed lines 2093/2093; executed functions 177/206
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
@@ -29,9 +28,7 @@ Files with executed line/function counts where available:
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(86%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
+(100%) none - no changed JS files
