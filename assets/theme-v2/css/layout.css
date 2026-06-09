@@ -364,7 +364,7 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
 }
 
 body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-region .data-table thead th {
-  background: var(--card-background);
+  background: var(--panel);
   position: sticky;
   top: var(--space-0);
   z-index: var(--z-index-sm)

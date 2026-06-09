@@ -1,0 +1,3 @@
+[ ] all Admin pages should have a single importable admin menu loaded on the lefts side of the screen
+
+admin/tool-votes.html

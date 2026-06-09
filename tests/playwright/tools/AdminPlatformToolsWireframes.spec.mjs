@@ -164,6 +164,9 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
       const scrollRegionBox = scrollRegion?.getBoundingClientRect();
       const sortButtonBox = sortButton?.getBoundingClientRect();
       const firstBodyRowBox = scrollRegion?.querySelector("tbody tr")?.getBoundingClientRect();
+      const stickyHeaderCell = sortButton?.closest("th");
+      const stickyHeaderStyle = stickyHeaderCell ? getComputedStyle(stickyHeaderCell) : null;
+      const sortButtonStyle = sortButton ? getComputedStyle(sortButton) : null;
       return {
         bodyOverflowY: getComputedStyle(document.body).overflowY,
         bodyScrollAfter: document.scrollingElement?.scrollTop || 0,
@@ -187,8 +190,12 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
         scrollRegionScrollTop: scrollRegion ? scrollRegion.scrollTop : 0,
         scrollRegionVerticalScrollable: scrollRegion ? scrollRegion.scrollHeight > scrollRegion.clientHeight : false,
         scrollRegionOverflowY: scrollRegion ? getComputedStyle(scrollRegion).overflowY : "",
+        stickyHeaderBackgroundColor: stickyHeaderStyle?.backgroundColor || "",
+        stickyHeaderBackgroundImage: stickyHeaderStyle?.backgroundImage || "",
+        sortButtonBackgroundColor: sortButtonStyle?.backgroundColor || "",
         sortButtonBottom: sortButtonBox ? Math.round(sortButtonBox.bottom) : 0,
-        sortButtonPosition: sortButton ? getComputedStyle(sortButton.closest("th")).position : "",
+        sortButtonColor: sortButtonStyle?.color || "",
+        sortButtonPosition: stickyHeaderStyle?.position || "",
         sortButtonText: sortButton ? sortButton.textContent.trim() : "",
         sortButtonTop: sortButtonBox ? Math.round(sortButtonBox.top) : 0,
         scrollRegionTop: scrollRegionBox ? Math.round(scrollRegionBox.top) : 0,
@@ -215,6 +222,11 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
     expect(fullscreenMetrics.horizontalScrollLeft).toBeGreaterThan(0);
     expect(fullscreenMetrics.scrollRegionBottom).toBeLessThanOrEqual(fullscreenMetrics.footerTop);
     expect(fullscreenMetrics.sortButtonPosition).toBe("sticky");
+    expect(fullscreenMetrics.stickyHeaderBackgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+    expect(fullscreenMetrics.stickyHeaderBackgroundColor).not.toBe("transparent");
+    expect(fullscreenMetrics.stickyHeaderBackgroundImage).toBe("none");
+    expect(fullscreenMetrics.sortButtonColor).not.toBe("rgba(0, 0, 0, 0)");
+    expect(fullscreenMetrics.sortButtonColor).not.toBe(fullscreenMetrics.sortButtonBackgroundColor);
     expect(fullscreenMetrics.sortButtonText).toContain("Tool");
     expect(fullscreenMetrics.sortButtonTop).toBeGreaterThanOrEqual(fullscreenMetrics.scrollRegionTop);
     expect(fullscreenMetrics.sortButtonBottom).toBeLessThanOrEqual(fullscreenMetrics.scrollRegionBottom);
