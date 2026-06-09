@@ -29,3 +29,13 @@ export function updateToolboxVoteOrder(toolId, order) {
     "Toolbox vote order update",
   );
 }
+
+export function reorderToolboxVoteRows(toolIds) {
+  return requireServerApiData(
+    safeRequestServerApi("/toolbox/votes/order-list", {
+      body: { toolIds },
+      method: "POST",
+    }),
+    "Toolbox vote row reorder",
+  );
+}

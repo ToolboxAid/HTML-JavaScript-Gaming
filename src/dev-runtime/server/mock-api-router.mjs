@@ -814,7 +814,8 @@ class LocalDevMockDataSource {
   toolboxVoteOrder(toolId, fallbackOrder) {
     const orderRow = this.toolboxVoteOrderRows().find((row) => row.toolId === toolId);
     const order = Number(orderRow?.order);
-    return Number.isFinite(order) ? order : fallbackOrder;
+    const resolvedOrder = Number.isFinite(order) ? order : fallbackOrder;
+    return Math.max(1, Math.round(Number(resolvedOrder) || 1));
   }
 
   toolboxVoteSnapshot() {
@@ -892,10 +893,11 @@ class LocalDevMockDataSource {
     if (!tool || tool.visibleInToolsList !== true) {
       throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
     }
-    const order = Number(orderValue);
-    if (!Number.isFinite(order)) {
+    const rawOrder = Number(orderValue);
+    if (!Number.isFinite(rawOrder)) {
       throw new Error("Toolbox vote order must be a number.");
     }
+    const order = Math.max(1, Math.round(rawOrder));
 
     const rows = this.toolboxVoteOrderRows();
     const existingRow = rows.find((row) => row.toolId === normalizedToolId);
@@ -914,6 +916,50 @@ class LocalDevMockDataSource {
     }
     this.cleared = false;
     this.persistCurrentAdapterState("Persisting Toolbox vote order");
+    return this.toolboxVoteSnapshot();
+  }
+
+  reorderToolboxVoteRows(toolIds) {
+    const session = this.currentSession();
+    if (!session.isAdmin || !session.userKey) {
+      throw new Error("Admin role required to reorder Toolbox vote rows.");
+    }
+    if (!Array.isArray(toolIds)) {
+      throw new Error("Toolbox vote reorder requires an ordered tool list.");
+    }
+    const visibleTools = getActiveToolRegistry().filter((tool) => tool.visibleInToolsList === true);
+    const visibleToolIds = visibleTools.map((tool) => tool.id);
+    const visibleToolIdSet = new Set(visibleToolIds);
+    const orderedToolIds = toolIds.map((toolId) => String(toolId || "")).filter(Boolean);
+    const uniqueToolIds = [...new Set(orderedToolIds)];
+    if (uniqueToolIds.length !== visibleToolIds.length) {
+      throw new Error("Toolbox vote reorder must include each visible Toolbox tool exactly once.");
+    }
+    const unknownToolId = uniqueToolIds.find((toolId) => !visibleToolIdSet.has(toolId));
+    if (unknownToolId) {
+      throw new Error(`Unknown Toolbox vote tool: ${unknownToolId}.`);
+    }
+
+    const rows = this.toolboxVoteOrderRows();
+    uniqueToolIds.forEach((toolId, index) => {
+      const order = index + 1;
+      const audit = createMockDbAuditFields(0, session.userKey);
+      const existingRow = rows.find((row) => row.toolId === toolId);
+      if (existingRow) {
+        existingRow.order = order;
+        existingRow.updatedAt = audit.updatedAt;
+        existingRow.updatedBy = audit.updatedBy;
+      } else {
+        rows.push({
+          key: this.toolboxVoteOrderKey(toolId),
+          toolId,
+          order,
+          ...audit,
+        });
+      }
+    });
+    this.cleared = false;
+    this.persistCurrentAdapterState("Persisting Toolbox vote row order");
     return this.toolboxVoteSnapshot();
   }
 
@@ -1213,6 +1259,11 @@ export function createMockApiRouter() {
         if (request.method === "POST" && parts[2] === "votes" && parts[3] === "order") {
           const body = await readRequestJson(request);
           ok(response, dataSource.updateToolboxVoteOrder(body.toolId, body.order));
+          return true;
+        }
+        if (request.method === "POST" && parts[2] === "votes" && parts[3] === "order-list") {
+          const body = await readRequestJson(request);
+          ok(response, dataSource.reorderToolboxVoteRows(body.toolIds));
           return true;
         }
         if (request.method === "GET" && parts[2] === "registry" && parts[3] === "snapshot") {

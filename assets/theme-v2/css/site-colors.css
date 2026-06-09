@@ -1,80 +1,11 @@
+@import url("colors.css");
+
+/*
+  Compatibility helpers for older Theme V2 references.
+  Core Theme V2 color tokens are owned by colors.css.
+*/
+
 :root {
-  /* Theme Colors */
-  --iron-black: #121212;
-  --foundry-space: #070a12;
-  --panel-slate: #0f172a;
-  --steel-gray: #6b7280;
-  --molten-orange: #ff7a00;
-  --forge-orange: #ff8a2a;
-  --forge-gold: #ffc857;
-  --electric-blue: #4da3ff;
-  --arcade-cyan: #22d3ee;
-  --bot-cyan: #20d6ff;
-  --purple: #b877ff;
-  --green: #7dd957;
-  --pink: #ff4f8b;
-  --red: #ff4d4d;
-  --deep-red: #ff5757;
-  --mint: #22c55e;
-  --white: #ffffff;
-  --button-primary-end: #b83b00;
-  --button-cyan-start: #0891b2;
-  --button-cyan-end: #0e7490;
-  --switch-off: #1f2937;
-  --tool-image-bg: #080d14;
-  --dialog-bg: #0c111a;
-
-  /* Surface Colors */
-  --bg: #090b0f;
-  --panel: #111722;
-  --panel2: #151b25;
-  --panel-soft: rgba(255, 255, 255, .04);
-  --panel-soft-strong: rgba(255, 255, 255, .055);
-  --panel-soft-subtle: rgba(255, 255, 255, .025);
-  --panel-overlay: rgba(7, 10, 18, .48);
-  --panel-overlay-strong: rgba(7, 10, 18, .58);
-  --header-bg: rgba(9, 11, 15, .82);
-  --submenu-bg: rgba(9, 11, 15, .98);
-  --orange-soft: rgba(255, 122, 0, .08);
-  --orange-soft-medium: rgba(255, 122, 0, .10);
-  --orange-soft-strong: rgba(255, 122, 0, .14);
-  --gold-soft: rgba(255, 200, 87, .10);
-  --blue-soft: rgba(77, 163, 255, .10);
-  --cyan-soft: rgba(34, 211, 238, .10);
-  --purple-soft: rgba(184, 119, 255, .08);
-  --steel-soft: rgba(107, 114, 128, .14);
-  --transparent: transparent;
-  --body-background: radial-gradient(circle at 20% 0%, rgba(255, 122, 0, .16), var(--transparent) 28%), radial-gradient(circle at 80% 10%, rgba(32, 214, 255, .10), var(--transparent) 24%), var(--bg);
-  --card-background: linear-gradient(180deg, var(--panel-soft-strong), var(--panel-soft-subtle));
-  --game-art-background: linear-gradient(135deg, rgba(255, 122, 0, .22), rgba(77, 163, 255, .15));
-  --cta-background: linear-gradient(135deg, rgba(255, 122, 0, .18), rgba(77, 163, 255, .11));
-  --icon-background: linear-gradient(135deg, rgba(255, 122, 0, .28), rgba(77, 163, 255, .16));
-  --forgebot-stage-background: radial-gradient(circle at 50% 55%, rgba(255, 122, 0, .25), var(--transparent) 48%), linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025));
-  --button-primary-background: linear-gradient(135deg, var(--orange), var(--button-primary-end));
-  --button-cyan-background: linear-gradient(135deg, var(--button-cyan-start), var(--button-cyan-end));
-
-  /* Text Colors */
-  --text: #f5f7fb;
-  --muted: #aeb6c2;
-  --orange: var(--molten-orange);
-  --gold: var(--forge-gold);
-  --cyan: var(--bot-cyan);
-
-  /* Border Colors */
-  --line: rgba(255, 255, 255, .12);
-  --swatch-border: rgba(255, 255, 255, .28);
-  --swatch-shadow-color: rgba(0, 0, 0, .16);
-  --shadow-color: rgba(0, 0, 0, .28);
-  --shadow-color-strong: rgba(0, 0, 0, .45);
-  --orange-shadow-color: rgba(255, 122, 0, .24);
-  --orange-border: rgba(255, 122, 0, .38);
-  --orange-border-strong: rgba(255, 122, 0, .60);
-  --orange-border-muted: rgba(255, 122, 0, .35);
-  --gold-border-muted: rgba(255, 200, 87, .35);
-  --cyan-border-muted: rgba(32, 214, 255, .35);
-  --forgebot-stage-border: rgba(255, 122, 0, .32);
-
-  /* Tool Group Colors */
   --gf-assets-color: var(--green);
   --gf-assets-accent: var(--green);
   --gf-building-color: var(--green);
@@ -87,252 +18,128 @@
   --gf-technology-accent: var(--steel-gray);
   --gf-admin-color: var(--orange);
   --gf-admin-accent: var(--orange);
-
-  /* Status Colors */
-  --meaning-molten-orange-soft: rgba(255, 122, 0, .14);
-  --meaning-molten-orange-border: rgba(255, 122, 0, .48);
-  --meaning-electric-blue-soft: rgba(77, 163, 255, .14);
-  --meaning-electric-blue-border: rgba(77, 163, 255, .48);
-  --meaning-forge-gold-soft: rgba(255, 200, 87, .14);
-  --meaning-forge-gold-border: rgba(255, 200, 87, .48);
-  --meaning-arcade-cyan-soft: rgba(34, 211, 238, .14);
-  --meaning-arcade-cyan-border: rgba(34, 211, 238, .48);
-  --meaning-purple-soft: rgba(184, 119, 255, .14);
-  --meaning-purple-border: rgba(184, 119, 255, .48);
-  --meaning-steel-gray-soft: rgba(107, 114, 128, .18);
-  --meaning-steel-gray-border: rgba(107, 114, 128, .56);
-}
-
-.meaning-molten-orange {
-  --meaning-color: var(--molten-orange);
-  --meaning-soft: var(--meaning-molten-orange-soft);
-  --meaning-border: var(--meaning-molten-orange-border)
-}
-
-.meaning-electric-blue {
-  --meaning-color: var(--electric-blue);
-  --meaning-soft: var(--meaning-electric-blue-soft);
-  --meaning-border: var(--meaning-electric-blue-border)
-}
-
-.meaning-forge-gold {
-  --meaning-color: var(--forge-gold);
-  --meaning-soft: var(--meaning-forge-gold-soft);
-  --meaning-border: var(--meaning-forge-gold-border)
-}
-
-.meaning-arcade-cyan {
-  --meaning-color: var(--arcade-cyan);
-  --meaning-soft: var(--meaning-arcade-cyan-soft);
-  --meaning-border: var(--meaning-arcade-cyan-border)
-}
-
-.meaning-purple {
-  --meaning-color: var(--purple);
-  --meaning-soft: var(--meaning-purple-soft);
-  --meaning-border: var(--meaning-purple-border)
-}
-
-.meaning-steel-gray {
-  --meaning-color: var(--steel-gray);
-  --meaning-soft: var(--meaning-steel-gray-soft);
-  --meaning-border: var(--meaning-steel-gray-border)
 }
 
 #molten-orange {
-  --brand-color: var(--molten-orange)
+  --brand-color: var(--molten-orange);
 }
 
 #electric-blue {
-  --brand-color: var(--electric-blue)
+  --brand-color: var(--electric-blue);
 }
 
 #forge-gold {
-  --brand-color: var(--forge-gold)
+  --brand-color: var(--forge-gold);
 }
 
 #arcade-cyan {
-  --brand-color: var(--arcade-cyan)
+  --brand-color: var(--arcade-cyan);
 }
 
 #purple {
-  --brand-color: var(--purple)
+  --brand-color: var(--purple);
 }
 
 #steel-gray {
-  --brand-color: var(--steel-gray)
+  --brand-color: var(--steel-gray);
 }
 
 #iron-black {
-  --brand-color: var(--iron-black)
+  --brand-color: var(--iron-black);
 }
 
 #foundry-space {
-  --brand-color: var(--foundry-space)
+  --brand-color: var(--foundry-space);
 }
 
 #panel-slate {
-  --brand-color: var(--panel-slate)
+  --brand-color: var(--panel-slate);
 }
 
 .brand-color-molten-orange {
-  color: var(--molten-orange)
+  color: var(--molten-orange);
 }
 
 .brand-color-electric-blue {
-  color: var(--electric-blue)
+  color: var(--electric-blue);
 }
 
 .brand-color-forge-gold {
-  color: var(--forge-gold)
+  color: var(--forge-gold);
 }
 
 .brand-color-arcade-cyan {
-  color: var(--arcade-cyan)
+  color: var(--arcade-cyan);
 }
 
 .brand-color-purple {
-  color: var(--purple)
+  color: var(--purple);
 }
 
 .brand-color-steel-gray {
-  color: var(--steel-gray)
+  color: var(--steel-gray);
 }
 
 .brand-color-iron-black {
-  color: var(--iron-black)
+  color: var(--iron-black);
 }
 
 .brand-color-foundry-space {
-  color: var(--foundry-space)
+  color: var(--foundry-space);
 }
 
 .brand-color-panel-slate {
-  color: var(--panel-slate)
+  color: var(--panel-slate);
 }
 
 .brand-background-molten-orange {
-  background: var(--molten-orange)
+  background: var(--molten-orange);
 }
 
 .brand-background-electric-blue {
-  background: var(--electric-blue)
+  background: var(--electric-blue);
 }
 
 .brand-background-forge-gold {
-  background: var(--forge-gold)
+  background: var(--forge-gold);
 }
 
 .brand-background-arcade-cyan {
-  background: var(--arcade-cyan)
+  background: var(--arcade-cyan);
 }
 
 .brand-background-purple {
-  background: var(--purple)
+  background: var(--purple);
 }
 
 .brand-background-steel-gray {
-  background: var(--steel-gray)
+  background: var(--steel-gray);
 }
 
 .brand-background-iron-black {
-  background: var(--iron-black)
+  background: var(--iron-black);
 }
 
 .brand-background-foundry-space {
-  background: var(--foundry-space)
+  background: var(--foundry-space);
 }
 
 .brand-background-panel-slate {
-  background: var(--panel-slate)
-}
-
-.tool-column-header.molten-orange {
-  background: var(--orange-soft-medium)
-}
-
-.tool-column-header.electric-blue {
-  background: var(--blue-soft)
-}
-
-.tool-column-header.forge-gold {
-  background: var(--gold-soft)
-}
-
-.tool-column-header.arcade-cyan {
-  background: var(--cyan-soft)
-}
-
-.tool-column-header.purple {
-  background: var(--purple-soft)
-}
-
-.tool-column-header.steel-gray {
-  background: var(--steel-soft)
-}
-
-.tool-column-header.molten-orange h2,
-.tool-column-header.molten-orange h3 {
-  color: var(--molten-orange)
-}
-
-.tool-column-header.electric-blue h2,
-.tool-column-header.electric-blue h3 {
-  color: var(--electric-blue)
-}
-
-.tool-column-header.forge-gold h2,
-.tool-column-header.forge-gold h3 {
-  color: var(--forge-gold)
-}
-
-.tool-column-header.arcade-cyan h2,
-.tool-column-header.arcade-cyan h3 {
-  color: var(--arcade-cyan)
-}
-
-.tool-column-header.purple h2,
-.tool-column-header.purple h3 {
-  color: var(--purple)
-}
-
-.tool-column-header.steel-gray h2,
-.tool-column-header.steel-gray h3 {
-  color: var(--steel-gray)
-}
-
-.side-orange {
-  --accent: var(--orange)
-}
-
-.side-gold {
-  --accent: var(--gold)
-}
-
-.side-blue {
-  --accent: var(--electric-blue)
-}
-
-.side-cyan {
-  --accent: var(--cyan)
+  background: var(--panel-slate);
 }
 
 .side-mint {
-  --accent: var(--mint)
+  --accent: var(--mint);
 }
 
 .side-purple {
-  --accent: var(--purple)
-}
-
-.side-pink {
-  --accent: var(--pink)
+  --accent: var(--purple);
 }
 
 .side-steel {
-  --accent: var(--muted)
+  --accent: var(--muted);
 }
 
 .side-red {
-  --accent: var(--deep-red)
+  --accent: var(--deep-red);
 }

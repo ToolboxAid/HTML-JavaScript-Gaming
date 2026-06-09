@@ -29,6 +29,13 @@ const SORT_OPTIONS = Object.freeze([
   { key: "tag", label: "Tag" }
 ]);
 
+const PICKER_PREVIEW_SORT_OPTIONS = Object.freeze([
+  { key: "hue", label: "Hue" },
+  { key: "saturation", label: "Sat" },
+  { key: "brightness", label: "Brit" },
+  { key: "default", label: "Default" }
+]);
+
 const SIZE_OPTIONS = Object.freeze([
   { key: "small", label: "Small" },
   { key: "medium", label: "Medium" },
@@ -359,6 +366,7 @@ let sourceSwatchRows = [];
 const sourceSortState = { direction: "asc", key: "name" };
 let sourceSizeState = "medium";
 const userSortState = { direction: "asc", key: "hue" };
+const previewSortState = { direction: "asc", key: "default" };
 let userSizeState = "medium";
 let lastGeneratorPointerActivation = { at: 0, tile: null };
 const checkedSwatchKeys = new Set();
@@ -521,6 +529,26 @@ function renderSortButtons(container, state, label) {
     button.setAttribute("aria-label", `${label} sort ${option.label}${active ? ` ${state.direction}` : ""}`);
     button.setAttribute("aria-pressed", String(active));
     container.append(button);
+  });
+}
+
+function renderPickerPreviewSortButtons() {
+  if (!elements.previewControls) {
+    return;
+  }
+  elements.previewControls.replaceChildren();
+  PICKER_PREVIEW_SORT_OPTIONS.forEach((option) => {
+    const button = document.createElement("button");
+    const active = previewSortState.key === option.key;
+    button.className = active ? "btn btn--compact primary" : "btn btn--compact";
+    button.type = "button";
+    button.dataset.palettePreviewSortKey = option.key;
+    button.textContent = active && option.key !== "default"
+      ? `${option.label} ${sortDirectionCaret(previewSortState.direction)}`
+      : option.label;
+    button.setAttribute("aria-label", `Picker Preview sort ${option.label}${active ? ` ${previewSortState.direction}` : ""}`);
+    button.setAttribute("aria-pressed", String(active));
+    elements.previewControls.append(button);
   });
 }
 
@@ -697,8 +725,8 @@ function currentPickerSettings(settings = readPaletteGeneratorSettings()) {
     previewHue: settings.previewHue,
     previewSaturation: settings.previewSaturation,
     saturation: settings.saturation,
-    sortDirection: userSortState.direction,
-    sortField: userSortState.key,
+    sortDirection: previewSortState.direction,
+    sortField: previewSortState.key,
     stepRange: settings.stepRange,
     steps: settings.steps,
     swatchSize: userSizeState,
@@ -1183,12 +1211,55 @@ function createGeneratorPreviewInput(hex, label, row, column, settings, options 
   return swatch;
 }
 
+function pickerPreviewSortValue(swatch, key) {
+  if (key === "default") {
+    return (swatch.row * 1000) + swatch.column;
+  }
+  const hsl = rgbToHsl(hexToRgb(swatch.hex));
+  if (key === "hue") {
+    return positiveHue(hsl.hue);
+  }
+  if (key === "saturation") {
+    return hsl.saturation;
+  }
+  if (key === "brightness") {
+    return hsl.lightness;
+  }
+  return (swatch.row * 1000) + swatch.column;
+}
+
+function sortedPickerPreviewSwatches(swatches, settings) {
+  if (previewSortState.key === "default") {
+    return swatches.map((swatch) => ({
+      ...swatch,
+      displayColumn: swatch.column,
+      displayRow: swatch.row
+    }));
+  }
+  const direction = previewSortState.direction === "desc" ? -1 : 1;
+  return [...swatches]
+    .sort((left, right) => {
+      const primary = pickerPreviewSortValue(left, previewSortState.key) - pickerPreviewSortValue(right, previewSortState.key);
+      if (primary !== 0) {
+        return primary * direction;
+      }
+      return ((left.row * settings.colors) + left.column) - ((right.row * settings.colors) + right.column);
+    })
+    .map((swatch, index) => ({
+      ...swatch,
+      displayColumn: index % settings.colors,
+      displayRow: Math.floor(index / settings.colors)
+    }));
+}
+
 function appendPickerRows(fragment, allSwatches, settings) {
   const rows = new Map();
   allSwatches.forEach((item) => {
-    const rowItems = rows.get(item.row) || new Map();
-    rowItems.set(item.column, item);
-    rows.set(item.row, rowItems);
+    const displayRow = item.displayRow ?? item.row;
+    const displayColumn = item.displayColumn ?? item.column;
+    const rowItems = rows.get(displayRow) || new Map();
+    rowItems.set(displayColumn, item);
+    rows.set(displayRow, rowItems);
   });
   [...rows.entries()]
     .sort(([left], [right]) => left - right)
@@ -1200,7 +1271,7 @@ function appendPickerRows(fragment, allSwatches, settings) {
       for (let column = 0; column < settings.colors; column += 1) {
         const item = rowItems.get(column);
         if (item) {
-          rowElement.append(createGeneratorPreviewInput(item.hex, settings.paletteType.name, item.row, item.column, settings, {
+          rowElement.append(createGeneratorPreviewInput(item.hex, settings.paletteType.name, item.displayRow ?? item.row, item.displayColumn ?? item.column, settings, {
             available: item.available,
             pinned: Boolean(item.pinnedSwatch),
             pinnedSwatch: item.pinnedSwatch,
@@ -1266,7 +1337,7 @@ function renderPaletteGeneratorPreview(action = "Picker Preview updated.") {
   });
 
   const fragment = document.createDocumentFragment();
-  appendPickerRows(fragment, allSwatches, settings);
+  appendPickerRows(fragment, sortedPickerPreviewSwatches(allSwatches, settings), settings);
 
   elements.generatorPreview.replaceChildren(fragment);
   setText(elements.generatorPreviewStatus, `Available Picker Swatches (${availableCount})`);
@@ -1410,11 +1481,11 @@ function applyPickerSettings(settings = null) {
   if (elements.previewHue && settings.previewHue !== undefined) elements.previewHue.value = String(settings.previewHue);
   if (elements.previewSaturation && settings.previewSaturation !== undefined) elements.previewSaturation.value = String(settings.previewSaturation);
   if (elements.previewBrightness && settings.previewBrightness !== undefined) elements.previewBrightness.value = String(settings.previewBrightness);
-  if (settings.sortField && SORT_OPTIONS.some((option) => option.key === settings.sortField)) {
-    userSortState.key = settings.sortField;
+  if (settings.sortField && PICKER_PREVIEW_SORT_OPTIONS.some((option) => option.key === settings.sortField)) {
+    previewSortState.key = settings.sortField;
   }
   if (["asc", "desc"].includes(settings.sortDirection)) {
-    userSortState.direction = settings.sortDirection;
+    previewSortState.direction = settings.sortDirection;
   }
   if (settings.swatchSize && SIZE_OPTIONS.some((option) => option.key === settings.swatchSize)) {
     userSizeState = settings.swatchSize;
@@ -1730,6 +1801,7 @@ function renderSourceOptions(snapshot) {
 function renderPaletteControls() {
   renderSortButtons(elements.userSort, userSortState, "Project Swatches");
   renderSizeButtons(elements.userSize, userSizeState, "Project Swatches");
+  renderPickerPreviewSortButtons();
   renderSortButtons(elements.sourceSort, sourceSortState, "Source swatches");
   renderSizeButtons(elements.sourceSize, sourceSizeState, "Source swatches");
 }
@@ -2243,20 +2315,22 @@ elements.showDuplicates?.addEventListener("change", (event) => {
 
 elements.previewControls?.addEventListener("click", (event) => {
   event.stopPropagation();
-});
-
-[
-  elements.previewHue,
-  elements.previewSaturation,
-  elements.previewBrightness
-].forEach((control) => {
-  control?.addEventListener("input", () => renderPaletteGeneratorPreview("Picker Preview controls updated."));
-  control?.addEventListener("dblclick", () => resetPaletteGeneratorSlider(control));
-});
-
-elements.previewReset?.addEventListener("click", (event) => {
-  event.stopPropagation();
-  resetPickerPreviewControls();
+  const button = event.target.closest("[data-palette-preview-sort-key]");
+  if (!button) {
+    return;
+  }
+  const nextKey = button.dataset.palettePreviewSortKey;
+  if (nextKey === "default") {
+    previewSortState.key = "default";
+    previewSortState.direction = "asc";
+  } else if (previewSortState.key === nextKey) {
+    previewSortState.direction = previewSortState.direction === "asc" ? "desc" : "asc";
+  } else {
+    previewSortState.key = nextKey;
+    previewSortState.direction = "asc";
+  }
+  renderPaletteControls();
+  renderPaletteGeneratorPreview(`Picker Preview sorted by ${button.textContent.trim()}.`);
 });
 
 elements.generatorCollection?.addEventListener("change", () => {

@@ -335,7 +335,21 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { level: 1, name: "Tool Votes" })).toBeVisible();
     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("DavidQ");
+    await expect(page.locator("[data-toolbox-votes-sort]")).toHaveText([
+      "Tool",
+      "Order ↑",
+      "Group",
+      "Path",
+      "State",
+      "Votes Up",
+      "Votes Down",
+      "Current User Vote",
+    ]);
+    await expect(page.locator("[data-toolbox-votes-order-input]")).toHaveCount(0);
     const adminBuildVoteRow = page.locator("[data-toolbox-votes-tool-id='build-game']");
+    await expect(adminBuildVoteRow.locator("td").first().locator("a")).toHaveText("Build Game");
+    await expect(adminBuildVoteRow.locator("td").first().locator("a")).toHaveAttribute("href", /toolbox\/build-game\/index\.html$/);
+    await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText(String(REGISTRY_BY_ID.get("build-game").order));
     await expect(adminBuildVoteRow.locator("td").nth(5)).toHaveText("2");
     await expect(adminBuildVoteRow.locator("td").nth(6)).toHaveText("0");
     await expect(adminBuildVoteRow.locator("td").nth(7)).toHaveText("None");
@@ -343,10 +357,39 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(page.locator("[data-toolbox-votes-selected-order]")).not.toHaveText("None");
     await expect(page.locator("[data-toolbox-votes-selected-group]")).not.toHaveText("None");
     await expect(page.locator("[data-toolbox-votes-selected-path]")).toContainText("toolbox/build-game/index.html");
-    await adminBuildVoteRow.locator("[data-toolbox-votes-order-input='build-game']").fill("7");
-    await adminBuildVoteRow.locator("[data-toolbox-votes-order-input='build-game']").blur();
-    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Build Game order updated to 7.");
-    await expect(page.locator("[data-toolbox-votes-selected-order]")).toHaveText("7");
+    await page.locator("[data-toolbox-votes-sort='toolName']").click();
+    await expect(page.locator("[data-toolbox-votes-sort-header='toolName']")).toHaveAttribute("aria-sort", "ascending");
+    await expect(page.locator("[data-toolbox-votes-sort='toolName']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-toolbox-votes-drag-status]")).toContainText("disabled while sorted by Tool");
+    await expect(adminBuildVoteRow).toHaveAttribute("draggable", "false");
+    await page.locator("[data-toolbox-votes-sort='order']").click();
+    await expect(page.locator("[data-toolbox-votes-sort-header='order']")).toHaveAttribute("aria-sort", "ascending");
+    await expect(page.locator("[data-toolbox-votes-drag-status]")).toContainText("enabled while sorted by Order");
+    await expect(adminBuildVoteRow).toHaveAttribute("draggable", "true");
+    await page.evaluate(() => {
+      const source = document.querySelector("[data-toolbox-votes-tool-id='build-game']");
+      const target = document.querySelector("[data-toolbox-votes-tool-id='project-workspace']");
+      if (!source || !target) {
+        throw new Error("Toolbox vote drag/drop rows were not available.");
+      }
+      const targetBox = target.getBoundingClientRect();
+      const dataTransfer = new DataTransfer();
+      source.dispatchEvent(new DragEvent("dragstart", { bubbles: true, dataTransfer }));
+      target.dispatchEvent(new DragEvent("dragover", {
+        bubbles: true,
+        clientY: targetBox.top + 1,
+        dataTransfer,
+      }));
+      target.dispatchEvent(new DragEvent("drop", {
+        bubbles: true,
+        clientY: targetBox.top + 1,
+        dataTransfer,
+      }));
+      source.dispatchEvent(new DragEvent("dragend", { bubbles: true, dataTransfer }));
+    });
+    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Rows were renumbered with whole-number order values.");
+    await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText("2");
+    await expect(page.locator("[data-toolbox-votes-selected-order]")).toHaveText("2");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("1");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("up");
     await expect(page.locator("[data-route='admin-tool-votes']")).toHaveCount(1);
@@ -370,9 +413,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
         userKey: MOCK_DB_KEYS.users.user2,
       }),
     ]));
+    expect(mockDbToolboxTables.voteOrders.every((row) => Number.isInteger(row.order))).toBe(true);
     expect(mockDbToolboxTables.voteOrders).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        order: 7,
+        order: 2,
         toolId: "build-game",
       }),
     ]));
@@ -501,7 +545,7 @@ test("toolbox Build Path status filters support multi-select registry-matched to
   }
 });
 
-test("Colors Picker Preview header controls update live and reset to defaults", async ({ page }) => {
+test("Colors Picker Preview header sort buttons reorder the grid", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
   const pageErrors = [];
@@ -527,20 +571,20 @@ test("Colors Picker Preview header controls update live and reset to defaults", 
     }
   });
 
-  async function setSlider(selector, value) {
-    await page.locator(selector).evaluate((input, nextValue) => {
-      input.value = String(nextValue);
-      input.dispatchEvent(new Event("input", { bubbles: true }));
-    }, value);
+  async function previewHexes(limit = 16) {
+    return page.locator("[data-palette-generator-swatch]").evaluateAll((swatches, max) => (
+      swatches.slice(0, max).map((swatch) => swatch.dataset.paletteGeneratorHex)
+    ), limit);
   }
 
-  async function firstPreviewFill() {
-    return page.locator("[data-palette-generator-preview-row]")
-      .first()
-      .locator("[data-palette-generator-swatch]")
-      .first()
-      .locator("rect")
-      .getAttribute("fill");
+  function lightness(hex) {
+    const value = hex.replace("#", "");
+    const red = Number.parseInt(value.slice(0, 2), 16) / 255;
+    const green = Number.parseInt(value.slice(2, 4), 16) / 255;
+    const blue = Number.parseInt(value.slice(4, 6), 16) / 255;
+    const max = Math.max(red, green, blue);
+    const min = Math.min(red, green, blue);
+    return (max + min) / 2;
   }
 
   try {
@@ -559,40 +603,28 @@ test("Colors Picker Preview header controls update live and reset to defaults", 
     expect(summaryOrder).toEqual(["Picker Preview", "preview-controls", "preview-status"]);
 
     const previewControls = page.locator("[data-palette-preview-controls]");
-    await expect(previewControls.locator("[data-palette-preview-hue]")).toBeVisible();
-    await expect(previewControls.locator("[data-palette-preview-saturation]")).toBeVisible();
-    await expect(previewControls.locator("[data-palette-preview-brightness]")).toBeVisible();
-    await expect(previewControls.locator("[data-palette-preview-reset]")).toHaveText("Default");
-    await expect(page.locator("[data-palette-preview-hue-value]")).toContainText("0");
-    await expect(page.locator("[data-palette-preview-saturation-value]")).toHaveText("100%");
-    await expect(page.locator("[data-palette-preview-brightness-value]")).toHaveText("100%");
+    await expect(previewControls.locator("[data-palette-preview-sort-key]")).toHaveText(["Hue", "Sat", "Brit", "Default"]);
+    await expect(previewControls.locator("[data-palette-preview-sort-key='default']")).toHaveClass(/primary/);
+    await expect(previewControls.locator("input[type='range']")).toHaveCount(0);
+    await expect(page.locator("[data-palette-preview-hue]")).toHaveCount(0);
+    await expect(page.locator("[data-palette-preview-saturation]")).toHaveCount(0);
+    await expect(page.locator("[data-palette-preview-brightness]")).toHaveCount(0);
+    await expect(page.locator("[data-palette-preview-reset]")).toHaveCount(0);
 
     await expect(page.locator("[data-palette-generator-swatch]").first()).toBeVisible();
-    const initialFill = await firstPreviewFill();
-    await setSlider("[data-palette-preview-hue]", 45);
-    await expect(page.locator("[data-palette-preview-hue-value]")).toContainText("+45");
-    await expect.poll(firstPreviewFill).not.toBe(initialFill);
-    const hueAdjustedFill = await firstPreviewFill();
-
-    await setSlider("[data-palette-preview-saturation]", 50);
-    await expect(page.locator("[data-palette-preview-saturation-value]")).toHaveText("50%");
-    await expect.poll(firstPreviewFill).not.toBe(hueAdjustedFill);
-    const saturationAdjustedFill = await firstPreviewFill();
-
-    await setSlider("[data-palette-preview-brightness]", 75);
-    await expect(page.locator("[data-palette-preview-brightness-value]")).toHaveText("75%");
-    await expect.poll(firstPreviewFill).not.toBe(saturationAdjustedFill);
-
-    await page.locator("[data-palette-preview-hue]").dblclick();
-    await expect(page.locator("[data-palette-preview-hue-value]")).toContainText("0");
-
-    await setSlider("[data-palette-preview-hue]", 90);
-    await setSlider("[data-palette-preview-saturation]", 25);
-    await setSlider("[data-palette-preview-brightness]", 125);
-    await page.locator("[data-palette-preview-reset]").click();
-    await expect(page.locator("[data-palette-preview-hue-value]")).toContainText("0");
-    await expect(page.locator("[data-palette-preview-saturation-value]")).toHaveText("100%");
-    await expect(page.locator("[data-palette-preview-brightness-value]")).toHaveText("100%");
+    const initialHexes = await previewHexes();
+    await previewControls.locator("[data-palette-preview-sort-key='brightness']").click();
+    await expect(previewControls.locator("[data-palette-preview-sort-key='brightness']")).toHaveText("Brit ^");
+    await expect(previewControls.locator("[data-palette-preview-sort-key='brightness']")).toHaveClass(/primary/);
+    await expect.poll(previewHexes).not.toEqual(initialHexes);
+    const brightnessSortedHexes = await previewHexes();
+    const lightnessValues = brightnessSortedHexes.map(lightness);
+    expect(lightnessValues).toEqual([...lightnessValues].sort((left, right) => left - right));
+    await previewControls.locator("[data-palette-preview-sort-key='brightness']").click();
+    await expect(previewControls.locator("[data-palette-preview-sort-key='brightness']")).toHaveText("Brit v");
+    await previewControls.locator("[data-palette-preview-sort-key='default']").click();
+    await expect(previewControls.locator("[data-palette-preview-sort-key='default']")).toHaveClass(/primary/);
+    await expect.poll(previewHexes).toEqual(initialHexes);
     await expect(page.locator("[data-palette-preview-accordion]")).toHaveJSProperty("open", true);
 
     expect(failedRequests).toEqual([]);
