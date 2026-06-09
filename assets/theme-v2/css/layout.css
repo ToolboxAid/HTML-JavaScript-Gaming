@@ -363,6 +363,13 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
   overscroll-behavior: contain
 }
 
+body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-region .data-table thead th {
+  background: var(--card-background);
+  position: sticky;
+  top: var(--space-0);
+  z-index: var(--z-index-sm)
+}
+
 .account-panel {
   display: grid;
   grid-template-columns: var(--admin-panel-columns);

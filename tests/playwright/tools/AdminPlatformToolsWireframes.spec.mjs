@@ -139,6 +139,7 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
       const center = workspace.querySelector("[data-toolbox-votes-panel]");
       const right = workspace.querySelector(".tool-column:last-of-type");
       const scrollRegion = workspace.querySelector("[data-toolbox-votes-scroll-region]");
+      const sortButton = scrollRegion?.querySelector("thead [data-toolbox-votes-sort='toolName']");
       const header = document.querySelector("header.site-header");
       const footer = document.querySelector("footer.footer");
       const bodyScrollBefore = document.scrollingElement?.scrollTop || 0;
@@ -160,6 +161,9 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
       }
       const headerBox = header?.getBoundingClientRect();
       const footerBox = footer?.getBoundingClientRect();
+      const scrollRegionBox = scrollRegion?.getBoundingClientRect();
+      const sortButtonBox = sortButton?.getBoundingClientRect();
+      const firstBodyRowBox = scrollRegion?.querySelector("tbody tr")?.getBoundingClientRect();
       return {
         bodyOverflowY: getComputedStyle(document.body).overflowY,
         bodyScrollAfter: document.scrollingElement?.scrollTop || 0,
@@ -170,16 +174,24 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
         footerPosition: footer ? getComputedStyle(footer).position : "",
         footerScrollable: footer ? footer.scrollHeight > footer.clientHeight : false,
         footerScrollTop: footer ? footer.scrollTop : 0,
+        footerTop: footerBox ? Math.round(footerBox.top) : 0,
         headerPosition: header ? getComputedStyle(header).position : "",
         headerTop: headerBox ? Math.round(headerBox.top) : 0,
         horizontalScrollLeft: scrollRegion ? scrollRegion.scrollLeft : 0,
         horizontalScrollable: scrollRegion ? scrollRegion.scrollWidth > scrollRegion.clientWidth : false,
+        firstBodyRowBottom: firstBodyRowBox ? Math.round(firstBodyRowBox.bottom) : 0,
         leftOverflowY: left ? getComputedStyle(left).overflowY : "",
         rightOverflowY: right ? getComputedStyle(right).overflowY : "",
+        scrollRegionBottom: scrollRegionBox ? Math.round(scrollRegionBox.bottom) : 0,
         scrollRegionHeight: scrollRegion ? scrollRegion.clientHeight : 0,
         scrollRegionScrollTop: scrollRegion ? scrollRegion.scrollTop : 0,
         scrollRegionVerticalScrollable: scrollRegion ? scrollRegion.scrollHeight > scrollRegion.clientHeight : false,
         scrollRegionOverflowY: scrollRegion ? getComputedStyle(scrollRegion).overflowY : "",
+        sortButtonBottom: sortButtonBox ? Math.round(sortButtonBox.bottom) : 0,
+        sortButtonPosition: sortButton ? getComputedStyle(sortButton.closest("th")).position : "",
+        sortButtonText: sortButton ? sortButton.textContent.trim() : "",
+        sortButtonTop: sortButtonBox ? Math.round(sortButtonBox.top) : 0,
+        scrollRegionTop: scrollRegionBox ? Math.round(scrollRegionBox.top) : 0,
         viewportHeight: window.innerHeight,
       };
     });
@@ -201,6 +213,13 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
     expect(fullscreenMetrics.scrollRegionScrollTop).toBeGreaterThan(0);
     expect(fullscreenMetrics.horizontalScrollable).toBe(true);
     expect(fullscreenMetrics.horizontalScrollLeft).toBeGreaterThan(0);
+    expect(fullscreenMetrics.scrollRegionBottom).toBeLessThanOrEqual(fullscreenMetrics.footerTop);
+    expect(fullscreenMetrics.sortButtonPosition).toBe("sticky");
+    expect(fullscreenMetrics.sortButtonText).toContain("Tool");
+    expect(fullscreenMetrics.sortButtonTop).toBeGreaterThanOrEqual(fullscreenMetrics.scrollRegionTop);
+    expect(fullscreenMetrics.sortButtonBottom).toBeLessThanOrEqual(fullscreenMetrics.scrollRegionBottom);
+    expect(fullscreenMetrics.sortButtonBottom).toBeLessThan(fullscreenMetrics.footerBottom);
+    expect(fullscreenMetrics.firstBodyRowBottom).toBeLessThanOrEqual(fullscreenMetrics.sortButtonTop);
 
     await expectNoPageFailures(failures);
   } finally {
