@@ -1,3 +1,27 @@
+
+[ ] Before UAT, add a milestone:
+
+Security Gate 1
+
+Requirements:
+
+Server-side session
+Server-side auth
+Server-side role checks
+Server-side ownership checks
+API layer between UI and DB
+No direct browser DB writes
+
+Scoring it today 2026-06-06:
+Data Model      8/10
+Role Model      8/10
+UI Protection   7/10
+Real Security   1/10
+
+because true security doesn't exist until the server validates every request.
+
+-------------------------------------------------------------
+
 Project Workspace
 → Object / Entity Config
 → Backing Game Config
@@ -51,3 +75,4 @@ publish candidate snapshot
 ```
 
 That gives you a real MVP path instead of just “saved data exists.”
+

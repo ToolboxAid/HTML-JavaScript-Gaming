@@ -1,60 +1,8 @@
-[ ] Start the server
+[.] Start the server
 npm run dev:local-api
 
-[x] moved fonts
-assets\theme-v2\fonts\0xProtoNerdFont\
-assets\theme-v2\fonts\vector_battle\
-src\assets\ removed after move
+[x] move 
+src\assets\fonts\0xProtoNerdFont\ to assets\theme-v2\fonts\
+src\assets\fonts\vector_battle\ to assets\theme-v2\fonts\
+delete src\assets\
 
-[ ] Project Life Cycle
-
-
-[ ] Palette updates
-- tone (earthy, human, water, floral, TV Age, console age, arcade)
-
-[ ] Picker
-- left to right
-- Middle Gray ROYGBIV
-- step sizes (2-255)
-
-[ ] Project dificullty
-- left to right easiest to hardest
-- build off of, type, enemy, heros, levels, etc.
-
-[.] Admin notes
-- reads txt file (this one) and displays
-- if a note has [subnote] it should be a link on the page and display [subnote].txt
-- example [other] should display other.txt, 
-- at the top of subnote pages, have a return take you to note.txt
-- name is up for discuttion  (this is my ideas, things I want to fix, undecided question)
-[ ] Correction Notes update
-[subnote] should be /[subnote]/note.txt
-
-
-[ ] Test/Debug Performance
-- use the game engine hooks to track performance
-- each section of the loop(draw, physics, move, etc)
-- each section will have a start end time
-- The test/debug page will be the location for test, 
-- only on when run from test
-
-[ ] Before UAT, add a milestone:
-
-Security Gate 1
-
-Requirements:
-
-Server-side session
-Server-side auth
-Server-side role checks
-Server-side ownership checks
-API layer between UI and DB
-No direct browser DB writes
-
-Scoring it today 2026-06-06:
-Data Model      8/10
-Role Model      8/10
-UI Protection   7/10
-Real Security   1/10
-
-because true security doesn't exist until the server validates every request.

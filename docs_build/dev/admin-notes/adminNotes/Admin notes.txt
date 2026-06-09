@@ -1,0 +1,9 @@
+
+[.] Admin notes
+- reads txt file (this one) and displays
+- if a note has [subnote] it should be a link on the page and display [subnote].txt
+- example [other] should display other.txt, 
+- at the top of subnote pages, have a return take you to note.txt
+- name is up for discuttion  (this is my ideas, things I want to fix, undecided question)
+[ ] Correction Notes update
+[subnote] should be /[subnote]/note.txt

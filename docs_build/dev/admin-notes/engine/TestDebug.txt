@@ -1,0 +1,6 @@
+[ ] Test/Debug Performance
+- use the game engine hooks to track performance
+- each section of the loop(draw, physics, move, etc)
+- each section will have a start end time
+- The test/debug page will be the location for test, 
+- only on when run from test

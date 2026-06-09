@@ -1,0 +1,3 @@
+[ ] Project dificullty
+- left to right easiest to hardest
+- build off of, type, enemy, heros, levels, etc.
