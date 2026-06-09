@@ -122,13 +122,38 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
 
   try {
     await expectAdminHeaderMenu(page);
-    const sideMenuLabels = await page.locator(".side-menu a").allTextContents();
-    ADMIN_TOOL_MENU_LABELS.forEach((label) => {
-      expect(sideMenuLabels).toContain(label);
+    await expect(page.locator(".tool-workspace.tool-workspace--wide")).toBeVisible();
+    await expect(page.locator(".tool-workspace > .tool-column")).toHaveCount(2);
+    await expect(page.locator(".tool-center-panel")).toBeVisible();
+    await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(ADMIN_TOOL_MENU_LABELS);
+    await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText("Tool Votes");
+    await expect(page.locator("[data-admin-tool-menu] a[href='/admin/environments.html']")).toHaveText("Environments");
+    await expect(page.locator("[data-admin-tool-menu] a[href='/admin/game-migration.html']")).toHaveText("Game Migration");
+    await expect(page.locator("[data-admin-tool-menu] a[href='/admin/platform-settings.html']")).toHaveText("Platform Settings");
+    await page.getByLabel("Tool Display Mode").click();
+    await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
+    await expect(page.locator("header.site-header")).toBeVisible();
+    await expect(page.locator("footer.footer")).toBeVisible();
+    const fullscreenMetrics = await page.locator("[data-toolbox-votes-layout]").evaluate((workspace) => {
+      const left = workspace.querySelector(".tool-column:first-of-type");
+      const center = workspace.querySelector("[data-toolbox-votes-panel]");
+      const right = workspace.querySelector(".tool-column:last-of-type");
+      const scrollRegion = workspace.querySelector("[data-toolbox-votes-scroll-region]");
+      return {
+        bodyOverflowY: getComputedStyle(document.body).overflowY,
+        centerOverflowY: center ? getComputedStyle(center).overflowY : "",
+        leftOverflowY: left ? getComputedStyle(left).overflowY : "",
+        rightOverflowY: right ? getComputedStyle(right).overflowY : "",
+        scrollRegionHeight: scrollRegion ? scrollRegion.clientHeight : 0,
+        scrollRegionOverflowY: scrollRegion ? getComputedStyle(scrollRegion).overflowY : "",
+      };
     });
-    await expect(page.locator(".side-menu a[href='/admin/environments.html']")).toHaveText("Environments");
-    await expect(page.locator(".side-menu a[href='/admin/game-migration.html']")).toHaveText("Game Migration");
-    await expect(page.locator(".side-menu a[href='/admin/platform-settings.html']")).toHaveText("Platform Settings");
+    expect(fullscreenMetrics.bodyOverflowY).toBe("hidden");
+    expect(fullscreenMetrics.leftOverflowY).toBe("hidden");
+    expect(fullscreenMetrics.centerOverflowY).toBe("hidden");
+    expect(fullscreenMetrics.rightOverflowY).toBe("hidden");
+    expect(fullscreenMetrics.scrollRegionOverflowY).toBe("auto");
+    expect(fullscreenMetrics.scrollRegionHeight).toBeGreaterThan(0);
 
     await expectNoPageFailures(failures);
   } finally {

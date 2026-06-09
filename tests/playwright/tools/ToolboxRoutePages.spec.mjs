@@ -382,21 +382,36 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       "Down %",
       "Current User Vote",
     ]);
-    await expect(page.locator("[data-toolbox-votes-width-toggle]")).toHaveAttribute("aria-expanded", "false");
-    await expect(page.locator("[data-toolbox-votes-layout] > .side-menu")).toBeVisible();
-    await page.locator("[data-toolbox-votes-width-toggle]").click();
-    await expect(page.locator("[data-toolbox-votes-width-toggle]")).toHaveAttribute("aria-expanded", "true");
-    await expect(page.locator("[data-toolbox-votes-width-status]")).toContainText("Expanded table width");
-    await expect(page.locator("[data-toolbox-votes-layout]")).toHaveAttribute("data-toolbox-votes-expanded", "true");
-    await expect(page.locator("[data-toolbox-votes-layout] > .side-menu")).not.toBeVisible();
-    await page.locator("[data-toolbox-votes-width-toggle]").click();
-    await expect(page.locator("[data-toolbox-votes-width-toggle]")).toHaveAttribute("aria-expanded", "false");
-    await expect(page.locator("[data-toolbox-votes-layout] > .side-menu")).toBeVisible();
+    await expect(page.locator("[data-toolbox-votes-layout].tool-workspace.tool-workspace--wide")).toBeVisible();
+    await expect(page.locator("[data-toolbox-votes-layout] > .tool-column")).toHaveCount(2);
+    await expect(page.locator("[data-admin-tool-menu] a")).toHaveText([
+      "Tool Votes",
+      "Environments",
+      "Users",
+      "Game Migration",
+      "Platform Settings",
+    ]);
+    await expect(page.locator("[data-toolbox-votes-width-toggle]")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-votes-width-status]")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-votes-selected-order]")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-votes-selected-group]")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-votes-selected-path]")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-votes-order-input]")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-votes-group-edit]")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-votes-path-edit]")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-votes-status-edit]")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-votes-metadata-save]")).toHaveCount(0);
     const adminBuildVoteRow = page.locator("[data-toolbox-votes-tool-id='build-game']");
     await expect(adminBuildVoteRow.locator("td").first().locator("a")).toHaveText("Build Game");
     await expect(adminBuildVoteRow.locator("td").first().locator("a")).toHaveAttribute("href", /toolbox\/build-game\/index\.html$/);
     await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText(String(REGISTRY_BY_ID.get("build-game").order));
+    await expect(adminBuildVoteRow.locator("[data-toolbox-votes-state='build-game']")).toHaveValue("wireframe");
+    await expect(adminBuildVoteRow.locator("[data-toolbox-votes-state='build-game'] option")).toHaveText([
+      "Planned",
+      "Wireframe",
+      "Beta",
+      "Complete",
+    ]);
     await expect(adminBuildVoteRow.locator("td").nth(5)).toHaveText("2");
     await expect(adminBuildVoteRow.locator("td").nth(6)).toHaveText("0");
     await expect(adminBuildVoteRow.locator("td").nth(7)).toHaveText("2");
@@ -404,9 +419,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(adminBuildVoteRow.locator("td").nth(9)).toHaveText("0%");
     await expect(adminBuildVoteRow.locator("td").nth(10)).toHaveText("None");
     await adminBuildVoteRow.click();
-    await expect(page.locator("[data-toolbox-votes-selected-order]")).not.toHaveText("None");
-    await expect(page.locator("[data-toolbox-votes-selected-group]")).not.toHaveText("None");
-    await expect(page.locator("[data-toolbox-votes-selected-path]")).toContainText("toolbox/build-game/index.html");
+    await expect(adminBuildVoteRow).toHaveAttribute("aria-selected", "true");
     await page.locator("[data-toolbox-votes-sort='toolName']").click();
     await expect(page.locator("[data-toolbox-votes-sort-header='toolName']")).toHaveAttribute("aria-sort", "ascending");
     await expect(page.locator("[data-toolbox-votes-sort='toolName']")).toHaveClass(/primary/);
@@ -439,7 +452,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     });
     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Rows were renumbered with whole-number order values.");
     await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText("2");
-    await expect(page.locator("[data-toolbox-votes-selected-order]")).toHaveText("2");
+    await expect(adminBuildVoteRow).toHaveAttribute("aria-selected", "true");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("1");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("1");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(8)).toHaveText("100%");
@@ -448,14 +461,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     const colorsVoteRow = page.locator("[data-toolbox-votes-tool-id='colors']");
     await colorsVoteRow.click();
-    await page.locator("[data-toolbox-votes-group-edit]").selectOption("Platform");
-    await page.locator("[data-toolbox-votes-path-edit]").fill("toolbox/colors/index.html?source=vote-review");
-    await page.locator("[data-toolbox-votes-status-edit]").selectOption("beta");
-    await page.locator("[data-toolbox-votes-metadata-save]").click();
-    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Toolbox metadata updated");
-    await expect(colorsVoteRow.locator("td").nth(2)).toHaveText("Platform");
-    await expect(colorsVoteRow.locator("td").nth(3)).toHaveText("toolbox/colors/index.html?source=vote-review");
-    await expect(colorsVoteRow.locator("td").nth(4)).toHaveText("Beta");
+    await expect(colorsVoteRow.locator("[data-toolbox-votes-state='colors']")).toHaveValue("complete");
+    await colorsVoteRow.locator("[data-toolbox-votes-state='colors']").selectOption("beta");
+    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Colors state updated to Beta");
+    await expect(colorsVoteRow.locator("[data-toolbox-votes-state='colors']")).toHaveValue("beta");
 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await page.locator("[data-tools-view='build-path']").click();
@@ -464,11 +473,11 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.locator("[data-toolbox-status-filter='beta']").click();
     const colorsBuildPathRow = page.locator("[data-build-path-tool='Colors']");
     await expect(colorsBuildPathRow).toBeVisible();
-    await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-group", "Platform");
-    await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-path", "toolbox/colors/index.html?source=vote-review");
+    await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-group", "Design");
+    await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-path", "toolbox/colors/index.html");
     await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-release-channel", "beta");
     await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-metadata-source", "toolbox_tool_metadata");
-    await expect(colorsBuildPathRow.locator("[data-build-path-tool-link='Colors']")).toHaveAttribute("href", /toolbox\/colors\/index\.html\?source=vote-review$/);
+    await expect(colorsBuildPathRow.locator("[data-build-path-tool-link='Colors']")).toHaveAttribute("href", /toolbox\/colors\/index\.html$/);
 
     await expect(page.locator("[data-route='admin-tool-votes']")).toHaveCount(1);
     const mockDbToolboxTables = await page.evaluate(async () => {
@@ -498,8 +507,8 @@ test("toolbox status kickers, filters, card order, and voting controls work from
         toolId: "build-game",
       }),
       expect.objectContaining({
-        group: "Platform",
-        path: "toolbox/colors/index.html?source=vote-review",
+        group: "Design",
+        path: "toolbox/colors/index.html",
         releaseChannel: "beta",
         toolId: "colors",
       }),

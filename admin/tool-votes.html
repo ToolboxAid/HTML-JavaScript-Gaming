@@ -22,47 +22,40 @@
             </div>
         </section>
         <section class="section">
-            <div class="container account-panel" data-toolbox-votes-layout>
-                <aside class="side-menu" aria-label="Admin pages">
-                    <a href="/admin/analytics.html">Analytics</a>
-                    <a href="/admin/branding.html">Branding</a>
-                    <a href="/admin/controls.html">Controls</a>
-                    <a href="/admin/environments.html">Environments</a>
-                    <a href="/admin/game-migration.html">Game Migration</a>
-                    <a href="/admin/moderation.html">Moderation</a>
-                    <a href="/admin/platform-settings.html">Platform Settings</a>
-                    <a href="/admin/ratings.html">Ratings</a>
-                    <a href="/admin/roles.html">Roles</a>
-                    <a href="/admin/site-settings.html">Site Settings</a>
-                    <a href="/admin/themes.html">Themes</a>
-                    <a class="active" aria-current="page" href="/admin/tool-votes.html">Tool Votes</a>
-                    <a href="/admin/users.html">Users</a>
-                </aside>
-                <div class="card">
-                    <div class="card-body content-stack">
+            <div class="container container--tool-wide">
+                <div class="tool-workspace tool-workspace--wide tool-workspace--fullscreen-chrome tool-workspace--table-scroll-focus" data-toolbox-votes-layout>
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Admin</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Admin Tools</summary>
+                                <nav class="accordion-body content-stack" aria-label="Admin tool pages" data-admin-tool-menu>
+                                    <a class="btn btn--compact primary" aria-current="page" href="/admin/tool-votes.html">Tool Votes</a>
+                                    <a class="btn btn--compact" href="/admin/environments.html">Environments</a>
+                                    <a class="btn btn--compact" href="/admin/users.html">Users</a>
+                                    <a class="btn btn--compact" href="/admin/game-migration.html">Game Migration</a>
+                                    <a class="btn btn--compact" href="/admin/platform-settings.html">Platform Settings</a>
+                                </nav>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Review Scope</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Rows, votes, ordering, sorting, and state edits use the same server API data source as Toolbox Build Path.</p>
+                                    <p>Drag/drop order changes are available while the table is sorted by Order.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-tool-votes" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                    <section class="tool-center-panel content-stack" aria-labelledby="admin-tool-votes-title" data-toolbox-votes-panel>
                         <div>
                             <div class="kicker">Shared Toolbox Data</div>
-                            <h2>Vote Review</h2>
+                            <h2 id="admin-tool-votes-title">Vote Review</h2>
                         </div>
                         <p>Vote totals and order values are read from the server API data source used by Toolbox tiles.</p>
-                        <p class="status" role="status" data-toolbox-votes-status>Loading Toolbox vote totals.</p>
-                        <p class="status" role="status" data-toolbox-votes-drag-status>Drag/drop is available when sorted by Order.</p>
-                        <div class="content-cluster">
-                            <button class="btn btn--compact" type="button" data-toolbox-votes-width-toggle aria-expanded="false">Expand Table Width</button>
-                            <span class="status" role="status" data-toolbox-votes-width-status>Standard table width.</span>
-                        </div>
-                        <div class="content-cluster" aria-label="Selected Toolbox vote item">
-                            <span class="pill">Selected Order: <span data-toolbox-votes-selected-order>None</span></span>
-                            <span class="pill">Selected Group: <span data-toolbox-votes-selected-group>None</span></span>
-                            <span class="pill">Selected Path: <span data-toolbox-votes-selected-path>None</span></span>
-                        </div>
-                        <div class="content-cluster" aria-label="Selected Toolbox metadata editor">
-                            <label>Group <select data-toolbox-votes-group-edit disabled></select></label>
-                            <label>Path <input type="text" data-toolbox-votes-path-edit disabled></label>
-                            <label>Status <select data-toolbox-votes-status-edit disabled></select></label>
-                            <button class="btn btn--compact" type="button" data-toolbox-votes-metadata-save disabled>Update Metadata</button>
-                        </div>
-                        <div class="table-wrapper">
+                        <div class="table-wrapper tool-table-scroll-region" data-toolbox-votes-scroll-region>
                             <table class="data-table" aria-label="Toolbox vote totals">
                                 <caption>Toolbox Vote Totals</caption>
                                 <thead>
@@ -83,13 +76,35 @@
                                 <tbody data-toolbox-votes-body></tbody>
                             </table>
                         </div>
-                    </div>
+                    </section>
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Vote Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Status</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status" role="status" data-toolbox-votes-status>Loading Toolbox vote totals.</p>
+                                    <p class="status" role="status" data-toolbox-votes-drag-status>Drag/drop is available when sorted by Order.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Diagnostics</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>State edits are limited to planned, wireframe, beta, and complete.</p>
+                                    <p>Tool links open the current Toolbox route stored in shared metadata.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
                 </div>
             </div>
         </section>
     </main>
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
     <script type="module" src="admin/tool-votes.js"></script>
 </body>
 

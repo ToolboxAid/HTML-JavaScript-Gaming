@@ -7,18 +7,8 @@ import {
 const status = document.querySelector("[data-toolbox-votes-status]");
 const dragStatus = document.querySelector("[data-toolbox-votes-drag-status]");
 const body = document.querySelector("[data-toolbox-votes-body]");
-const selectedOrder = document.querySelector("[data-toolbox-votes-selected-order]");
-const selectedGroup = document.querySelector("[data-toolbox-votes-selected-group]");
-const selectedPath = document.querySelector("[data-toolbox-votes-selected-path]");
 const sortButtons = Array.from(document.querySelectorAll("[data-toolbox-votes-sort]"));
 const sortHeaders = Array.from(document.querySelectorAll("[data-toolbox-votes-sort-header]"));
-const widthLayout = document.querySelector("[data-toolbox-votes-layout]");
-const widthToggle = document.querySelector("[data-toolbox-votes-width-toggle]");
-const widthStatus = document.querySelector("[data-toolbox-votes-width-status]");
-const groupEdit = document.querySelector("[data-toolbox-votes-group-edit]");
-const pathEdit = document.querySelector("[data-toolbox-votes-path-edit]");
-const statusEdit = document.querySelector("[data-toolbox-votes-status-edit]");
-const metadataSave = document.querySelector("[data-toolbox-votes-metadata-save]");
 const sortButtonLabels = new Map(sortButtons.map((button) => [
   button.dataset.toolboxVotesSort,
   button.textContent.trim(),
@@ -30,6 +20,7 @@ const RELEASE_CHANNEL_OPTIONS = Object.freeze([
   ["beta", "Beta"],
   ["complete", "Complete"],
 ]);
+const RELEASE_CHANNEL_LABELS = new Map(RELEASE_CHANNEL_OPTIONS);
 
 const SORT_TYPES = Object.freeze({
   down: "number",
@@ -97,6 +88,53 @@ function orderCell(voteRow) {
   return cell;
 }
 
+function releaseChannelLabel(value) {
+  return RELEASE_CHANNEL_LABELS.get(value) || RELEASE_CHANNEL_LABELS.get("planned");
+}
+
+function stateCell(voteRow) {
+  const cell = document.createElement("td");
+  const select = document.createElement("select");
+  const currentState = RELEASE_CHANNEL_LABELS.has(voteRow.releaseChannel) ? voteRow.releaseChannel : "planned";
+  select.dataset.toolboxVotesState = voteRow.toolId;
+  select.setAttribute("aria-label", `State for ${voteRow.toolName}`);
+  RELEASE_CHANNEL_OPTIONS.forEach(([value, label]) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = label;
+    select.append(option);
+  });
+  select.value = currentState;
+  select.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+  select.addEventListener("change", () => {
+    handleStateChange(voteRow, select);
+  });
+  cell.append(select);
+  return cell;
+}
+
+function handleStateChange(voteRow, select) {
+  const nextState = select.value;
+  if (nextState === voteRow.releaseChannel) {
+    return;
+  }
+  try {
+    const snapshot = updateToolboxVoteMetadata(voteRow.toolId, {
+      group: voteRow.group,
+      path: voteRow.path,
+      releaseChannel: nextState,
+    });
+    renderSnapshot(snapshot, `${voteRow.toolName} state updated to ${releaseChannelLabel(nextState)}. Toolbox Build Path uses the same metadata.`);
+    selectRow(voteRow.toolId);
+  } catch (error) {
+    select.value = RELEASE_CHANNEL_LABELS.has(voteRow.releaseChannel) ? voteRow.releaseChannel : "planned";
+    const message = error instanceof Error ? error.message : String(error || "Toolbox state update unavailable.");
+    setStatus(`${voteRow.toolName} state could not be updated. ${message}`);
+  }
+}
+
 function sortValue(voteRow, key) {
   if (key === "currentUserVote") {
     return voteRow.currentUserVote || "None";
@@ -145,74 +183,8 @@ function updateDragStatus() {
   dragStatus.textContent = `Drag/drop row ordering is disabled while sorted by ${sortLabel(sortState.key)}. Sort by Order to reorder.`;
 }
 
-function setSelectedDetails(voteRow) {
-  if (selectedOrder) {
-    selectedOrder.textContent = voteRow ? String(wholeNumberOrder(voteRow.order)) : "None";
-  }
-  if (selectedGroup) {
-    selectedGroup.textContent = voteRow?.group || "None";
-  }
-  if (selectedPath) {
-    selectedPath.textContent = voteRow?.path || "None";
-  }
-  setMetadataEditor(voteRow);
-}
-
-function option(value, label = value) {
-  const node = document.createElement("option");
-  node.value = value;
-  node.textContent = label;
-  return node;
-}
-
-function populateGroupOptions(rows) {
-  if (!groupEdit) {
-    return;
-  }
-  const selectedValue = groupEdit.value;
-  const groups = [...new Set(rows.map((row) => row.group).filter(Boolean))].sort((left, right) => left.localeCompare(right));
-  groupEdit.replaceChildren(...groups.map((group) => option(group)));
-  if (groups.includes(selectedValue)) {
-    groupEdit.value = selectedValue;
-  }
-}
-
-function populateStatusOptions() {
-  if (!statusEdit || statusEdit.childElementCount) {
-    return;
-  }
-  statusEdit.replaceChildren(...RELEASE_CHANNEL_OPTIONS.map(([value, label]) => option(value, label)));
-}
-
-function setMetadataEditor(voteRow) {
-  populateStatusOptions();
-  const disabled = !voteRow;
-  [groupEdit, pathEdit, statusEdit, metadataSave].forEach((control) => {
-    if (control) {
-      control.disabled = disabled;
-    }
-  });
-  if (!voteRow) {
-    if (groupEdit) groupEdit.value = "";
-    if (pathEdit) pathEdit.value = "";
-    if (statusEdit) statusEdit.value = "planned";
-    return;
-  }
-  if (groupEdit) {
-    groupEdit.value = voteRow.group || "";
-  }
-  if (pathEdit) {
-    pathEdit.value = voteRow.path || "";
-  }
-  if (statusEdit) {
-    statusEdit.value = voteRow.releaseChannel || "planned";
-  }
-}
-
 function selectRow(toolId) {
   selectedToolId = String(toolId || "");
-  const selectedRow = snapshotRows.find((row) => row.toolId === selectedToolId);
-  setSelectedDetails(selectedRow);
   body?.querySelectorAll("tr[data-toolbox-votes-tool-id]").forEach((row) => {
     row.setAttribute("aria-selected", String(row.dataset.toolboxVotesToolId === selectedToolId));
   });
@@ -280,7 +252,6 @@ function renderRows(rows) {
     return;
   }
   snapshotRows = rows;
-  populateGroupOptions(snapshotRows);
   updateSortHeaders();
   updateDragStatus();
   const displayRows = sortedRows();
@@ -291,7 +262,7 @@ function renderRows(rows) {
     cell.textContent = "No Toolbox vote rows are available.";
     row.append(cell);
     body.replaceChildren(row);
-    setSelectedDetails(null);
+    selectedToolId = "";
     return;
   }
 
@@ -320,7 +291,7 @@ function renderRows(rows) {
       orderCell(voteRow),
       tableCell(voteRow.group),
       tableCell(voteRow.path),
-      tableCell(voteRow.releaseChannelLabel),
+      stateCell(voteRow),
       tableCell(voteRow.up),
       tableCell(voteRow.down),
       tableCell(voteRow.totalVotes),
@@ -369,39 +340,6 @@ sortButtons.forEach((button) => {
     }
     renderRows(snapshotRows);
   });
-});
-
-widthToggle?.addEventListener("click", () => {
-  const expanded = widthToggle.getAttribute("aria-expanded") !== "true";
-  widthToggle.setAttribute("aria-expanded", String(expanded));
-  widthToggle.textContent = expanded ? "Collapse Table Width" : "Expand Table Width";
-  if (widthLayout) {
-    widthLayout.dataset.toolboxVotesExpanded = String(expanded);
-  }
-  if (widthStatus) {
-    widthStatus.textContent = expanded
-      ? "Expanded table width; Admin side menu is collapsed."
-      : "Standard table width.";
-  }
-});
-
-metadataSave?.addEventListener("click", () => {
-  if (!selectedToolId) {
-    setStatus("Select a Toolbox row before updating metadata.");
-    return;
-  }
-  try {
-    const snapshot = updateToolboxVoteMetadata(selectedToolId, {
-      group: groupEdit?.value || "",
-      path: pathEdit?.value || "",
-      releaseChannel: statusEdit?.value || "planned",
-    });
-    renderSnapshot(snapshot, "Toolbox metadata updated. Reload Toolbox Build Path to see the SSoT values.");
-    selectRow(selectedToolId);
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error || "Toolbox metadata update unavailable.");
-    setStatus(`Toolbox metadata could not be updated. ${message}`);
-  }
 });
 
 renderToolboxVotes();
