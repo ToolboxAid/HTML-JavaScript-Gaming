@@ -2,6 +2,7 @@ import { expect, test } from "@playwright/test";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const TOOL_ROUTE_SMOKE_CASES = [
   { heading: "Project Journey", route: "/tools/project-journey/index.html" },
@@ -12,6 +13,10 @@ const TOOL_ROUTE_SMOKE_CASES = [
   { heading: "Saved Data", route: "/tools/saved-data/index.html" },
   { heading: "Languages", route: "/tools/languages/index.html" },
 ];
+
+test.afterAll(async () => {
+  await workspaceV2CoverageReporter.writeReport();
+});
 
 async function setServerSession(server, userKey) {
   await fetch(`${server.baseUrl}/api/session/mode`, {
@@ -53,6 +58,7 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
   });
 
   try {
+    await workspaceV2CoverageReporter.start(page);
     for (const { heading, route } of TOOL_ROUTE_SMOKE_CASES) {
       await page.goto(`${server.baseUrl}${route}`, { waitUntil: "networkidle" });
       await expect(page.getByRole("heading", { level: 1, name: heading })).toBeVisible();
@@ -63,6 +69,7 @@ test("tools route aliases render toolbox tool pages", async ({ page }) => {
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   } finally {
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });
@@ -94,6 +101,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
   });
 
   try {
+    await workspaceV2CoverageReporter.start(page);
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toHaveCount(0);
@@ -126,6 +134,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   } finally {
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });
@@ -157,11 +166,12 @@ test("toolbox status kickers, filters, card order, and voting controls work from
   });
 
   try {
+    await workspaceV2CoverageReporter.start(page);
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (0)",
+      "Planned (28)",
       "Wireframe (4)",
       "Beta (5)",
       "Complete (1)",
@@ -174,6 +184,29 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       buttons.map((button) => Math.round(button.getBoundingClientRect().top))
     ));
     expect(new Set(statusFilterTopPositions).size).toBe(1);
+
+    await page.locator("[data-tools-view='build-path']").click();
+    await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+      "Planned (28)",
+      "Wireframe (4)",
+      "Beta (5)",
+      "Complete (1)",
+    ]);
+    await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("[data-toolbox-status-filter='wireframe']")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("[data-toolbox-status-filter='beta']")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-build-path-table='workflow'] th")).toHaveText(["Order", "Tool", "Status"]);
+    await expect(page.locator("[data-build-path-tool='Colors']")).toBeVisible();
+    await expect(page.locator("[data-build-path-tool='Colors']")).toHaveAttribute("data-build-path-release-channel", "complete");
+    await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
+    await page.locator("[data-toolbox-status-filter='wireframe']").click();
+    await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
+    await page.locator("[data-tools-order]").click();
+    await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("[data-toolbox-status-filter='wireframe']")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-toolbox-status-filter='beta']")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveAttribute("aria-pressed", "true");
 
     for (const toolName of ["Assets", "Game Configuration", "Game Design", "Project Journey", "Project Workspace"]) {
       const betaCard = page.locator(`[data-toolbox-tool-card='${toolName}']`);
@@ -237,6 +270,32 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(buildDownVote).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("[data-toolbox-launch-status]")).toHaveText("Build Game down vote recorded for Admin review.");
 
+    await page.goto(`${server.baseUrl}/toolbox/index.html?view=group`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    const restoredBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
+    await expect(restoredBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 0");
+    await expect(restoredBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
+    await expect(restoredBuildVotes.locator("[data-toolbox-vote='down']")).toHaveAttribute("aria-pressed", "true");
+
+    await setServerSession(server, MOCK_DB_KEYS.users.user2);
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    const userTwoBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
+    await userTwoBuildVotes.locator("[data-toolbox-vote='up']").click();
+    await expect(userTwoBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 1");
+    await expect(userTwoBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
+    await expect(userTwoBuildVotes.locator("[data-toolbox-vote='up']")).toHaveAttribute("aria-pressed", "true");
+
+    await setServerSession(server, MOCK_DB_KEYS.users.user1);
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    const userOneReturnedBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
+    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 1");
+    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
+    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveAttribute("aria-pressed", "true");
+    await userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']").click();
+    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 2");
+    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 0");
+    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveAttribute("aria-pressed", "true");
+
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-tool-card='Publish']")).toHaveCount(0);
@@ -274,11 +333,47 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { level: 1, name: "Tool Votes" })).toBeVisible();
     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("DavidQ");
-    await expect(page.locator("[data-toolbox-votes-tool-id='build-game'] td").nth(4)).toHaveText("1");
-    await expect(page.locator("[data-toolbox-votes-tool-id='build-game'] td").nth(5)).toHaveText("None");
-    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(3)).toHaveText("1");
-    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("up");
+    const adminBuildVoteRow = page.locator("[data-toolbox-votes-tool-id='build-game']");
+    await expect(adminBuildVoteRow.locator("td").nth(5)).toHaveText("2");
+    await expect(adminBuildVoteRow.locator("td").nth(6)).toHaveText("0");
+    await expect(adminBuildVoteRow.locator("td").nth(7)).toHaveText("None");
+    await adminBuildVoteRow.click();
+    await expect(page.locator("[data-toolbox-votes-selected-order]")).not.toHaveText("None");
+    await expect(page.locator("[data-toolbox-votes-selected-group]")).not.toHaveText("None");
+    await expect(page.locator("[data-toolbox-votes-selected-path]")).toContainText("toolbox/build-game/index.html");
+    await adminBuildVoteRow.locator("[data-toolbox-votes-order-input='build-game']").fill("7");
+    await adminBuildVoteRow.locator("[data-toolbox-votes-order-input='build-game']").blur();
+    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Build Game order updated to 7.");
+    await expect(page.locator("[data-toolbox-votes-selected-order]")).toHaveText("7");
+    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("1");
+    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("up");
     await expect(page.locator("[data-route='admin-tool-votes']")).toHaveCount(1);
+    const mockDbToolboxTables = await page.evaluate(async () => {
+      const response = await fetch("/api/mock-db/snapshot");
+      const payload = await response.json();
+      return {
+        voteOrders: payload.data.tables.toolbox_vote_order,
+        votes: payload.data.tables.toolbox_votes,
+      };
+    });
+    expect(mockDbToolboxTables.votes).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        direction: "up",
+        toolId: "build-game",
+        userKey: MOCK_DB_KEYS.users.user1,
+      }),
+      expect.objectContaining({
+        direction: "up",
+        toolId: "build-game",
+        userKey: MOCK_DB_KEYS.users.user2,
+      }),
+    ]));
+    expect(mockDbToolboxTables.voteOrders).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        order: 7,
+        toolId: "build-game",
+      }),
+    ]));
 
     const toolboxSource = await page.evaluate(async () => {
       const response = await fetch("/toolbox/index.html");
@@ -292,6 +387,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   } finally {
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });
@@ -323,6 +419,7 @@ test("wireframe-only pages expose left center right accordion controls without r
   });
 
   try {
+    await workspaceV2CoverageReporter.start(page);
     const cases = [
       { heading: "Achievements", route: "/toolbox/achievements/index.html", left: "Achievement Setup", center: "Achievement Board", right: "Validation" },
       { heading: "Build Game", route: "/toolbox/build-game/index.html", left: "Build Setup", center: "Publish Candidate Checklist", right: "Readiness" },
@@ -353,6 +450,7 @@ test("wireframe-only pages expose left center right accordion controls without r
     expect(pageErrors).toEqual([]);
     expect(consoleErrors).toEqual([]);
   } finally {
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });
@@ -360,6 +458,7 @@ test("wireframe-only pages expose left center right accordion controls without r
 test("local dev port guard redirects human localhost pages to port 5501", async ({ page }) => {
   const server = await startRepoServer();
   try {
+    await workspaceV2CoverageReporter.start(page);
     await page.addInitScript(() => {
       Object.defineProperty(Navigator.prototype, "webdriver", {
         configurable: true,
@@ -376,6 +475,7 @@ test("local dev port guard redirects human localhost pages to port 5501", async 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "domcontentloaded" });
     await expect(page).toHaveURL(/http:\/\/127\.0\.0\.1:5501\/toolbox\/index\.html$/);
   } finally {
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });

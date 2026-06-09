@@ -102,6 +102,8 @@ function humanToolStateSampleRows() {
 
 export function createServerSeedTables() {
   const tables = getStandaloneMockDbSeedTables();
+  tables.toolbox_votes = [];
+  tables.toolbox_vote_order = [];
   tables.tool_state_samples = [
     ...guestToolStateSampleRows(),
     ...humanToolStateSampleRows(),

@@ -44,8 +44,10 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     let currentMode = searchParams.get("view") === "group" ? "grouped" : searchParams.get("view") === "build-path" ? "build-path" : "ascending";
     let targetGroupSlug = currentMode === "grouped" ? groupSlug(searchParams.get("group")) : "";
     const releaseChannelOrder = Object.freeze(["planned", "wireframe", "beta", "complete"]);
-    const defaultReleaseChannels = Object.freeze(["wireframe", "beta", "complete"]);
-    const visibleReleaseChannels = new Set(defaultReleaseChannels);
+    const toolboxDefaultReleaseChannels = Object.freeze(["wireframe", "beta", "complete"]);
+    const buildPathDefaultReleaseChannels = Object.freeze(["complete"]);
+    const visibleReleaseChannels = new Set(toolboxDefaultReleaseChannels);
+    let releaseFilterMode = "";
     const releaseChannelLabels = Object.freeze({
         complete: "Complete",
         beta: "Beta",
@@ -66,21 +68,6 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         Hidden: "planned",
         Deprecated: "planned"
     });
-    const buildPathStatusIndicators = Object.freeze({
-        complete: "\u{1F7E2} Complete",
-        "in-progress": "\u{1F7E1} In Progress",
-        "not-started": "\u{1F534} Not Started",
-        "not-applicable": "\u26AA N/A"
-    });
-    const buildPathAlwaysRequired = Object.freeze([
-        "Project Workspace",
-        "Project Journey",
-        "Game Design",
-        "Game Configuration",
-        "Build Game",
-        "Game Testing",
-        "Publish"
-    ]);
     const roleFocusTools = Object.freeze({
         Owner: null,
         Designer: ["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"],
@@ -389,6 +376,18 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         return visibleReleaseChannels.has(tool.releaseChannel);
     }
 
+    function applyReleaseFilterDefaults(mode) {
+        if (releaseFilterMode === mode) {
+            return;
+        }
+        visibleReleaseChannels.clear();
+        const defaults = mode === "build-path" ? buildPathDefaultReleaseChannels : toolboxDefaultReleaseChannels;
+        defaults.forEach((channel) => {
+            visibleReleaseChannels.add(channel);
+        });
+        releaseFilterMode = mode;
+    }
+
     function filteredRoleAwareTools() {
         return roleAwareTools().filter(isVisibleForStatusFilter);
     }
@@ -460,67 +459,21 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         return registryTool ? enrichTool(registryTool) : null;
     }
 
-    function isRequiredForCurrentBuildPath(tool) {
-        if (tool.title === "Publish") {
-            return true;
-        }
-        if (buildPathAlwaysRequired.includes(tool.title)) {
-            return true;
-        }
-        if (!isFocusedRoleView()) {
-            return true;
-        }
-        const focusTools = roleFocusTools[activeRoleFocus()];
-        return !Array.isArray(focusTools) || focusTools.includes(tool.title);
-    }
-
-    function buildPathStatusForTool(tool, activeProject) {
-        if (!isRequiredForCurrentBuildPath(tool)) {
-            return "not-applicable";
-        }
-        if (tool.title === "Project Workspace") {
-            return activeProject ? "complete" : "not-started";
-        }
-        if (!activeProject) {
-            return "not-started";
-        }
-        if (tool.status === "Complete") {
-            return "complete";
-        }
-        if (tool.status === "Ready" || tool.status === "Wireframe" || tool.status === "Under Construction") {
-            return "in-progress";
-        }
-        return "not-started";
-    }
-
-    function buildPathCompleteLabel(status) {
-        if (status === "complete") {
-            return "Yes";
-        }
-        if (status === "not-applicable") {
-            return "N/A";
-        }
-        return "No";
-    }
-
     function getBuildPathRows() {
-        const activeProject = projectWorkspaceRepository.getActiveProject();
         let order = 0;
         return buildPathGroups.flatMap((group) => group.tools.map((title) => {
             const tool = sourceToolByTitle(title);
             if (!tool) {
                 return null;
             }
-            const status = buildPathStatusForTool(tool, activeProject);
             order += 1;
             return {
-                complete: buildPathCompleteLabel(status),
                 order,
-                status,
-                statusLabel: buildPathStatusIndicators[status],
+                status: tool.releaseChannel,
+                statusLabel: tool.releaseChannelLabel,
                 tool
             };
-        }).filter(Boolean));
+        }).filter(Boolean)).filter((row) => isVisibleForStatusFilter(row.tool));
     }
 
     function createBuildPathSummary() {
@@ -621,22 +574,29 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
 
         const head = document.createElement("thead");
         const headRow = document.createElement("tr");
-        ["Order", "Tool", "Status", "Complete"].forEach((heading) => {
+        ["Order", "Tool", "Status"].forEach((heading) => {
             headRow.append(createTableCell("th", heading));
         });
         head.append(headRow);
 
         const body = document.createElement("tbody");
-        getBuildPathRows().forEach((row) => {
+        const rows = getBuildPathRows();
+        if (!rows.length) {
+            const tableRow = document.createElement("tr");
+            const cell = createTableCell("td", "No Build Path tools match the selected status filters.");
+            cell.colSpan = 3;
+            tableRow.append(cell);
+            body.append(tableRow);
+        }
+        rows.forEach((row) => {
             const tableRow = document.createElement("tr");
             tableRow.dataset.buildPathTool = row.tool.title;
+            tableRow.dataset.buildPathReleaseChannel = row.status;
             tableRow.dataset.buildPathStatus = row.statusLabel;
-            tableRow.dataset.buildPathComplete = row.complete;
             tableRow.append(
                 createTableCell("td", String(row.order)),
                 createBuildPathToolCell(row.tool),
-                createTableCell("td", row.statusLabel),
-                createTableCell("td", row.complete)
+                createTableCell("td", row.statusLabel)
             );
             body.append(tableRow);
         });
@@ -689,9 +649,12 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
 
     function releaseChannelCounts() {
         const counts = Object.fromEntries(releaseChannelOrder.map((channel) => [channel, 0]));
-        roleAwareTools().forEach((tool) => {
-            counts[tool.releaseChannel] = (counts[tool.releaseChannel] || 0) + 1;
-        });
+        registryTools
+            .filter((tool) => tool.visibleInToolsList === true)
+            .map((tool) => enrichTool(tool))
+            .forEach((tool) => {
+                counts[tool.releaseChannel] = (counts[tool.releaseChannel] || 0) + 1;
+            });
         return counts;
     }
 
@@ -1161,6 +1124,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function render(mode) {
+        applyReleaseFilterDefaults(mode);
         if (mode === "grouped") {
             const accordions = getGroupedTools().map((group, position) => {
                 const groupIsTargeted = targetGroupSlug ? groupSlug(group.title) === targetGroupSlug : position === 0;

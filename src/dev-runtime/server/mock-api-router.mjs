@@ -66,6 +66,7 @@ const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
 const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
+const TOOLBOX_TABLES = ["toolbox_votes", "toolbox_vote_order"];
 
 const DB_ADAPTER_CONTRACT = Object.freeze({
   contract: "GameFoundryDbAdapter",
@@ -295,6 +296,15 @@ const WORKSPACE_PROJECT_KEYS = Object.freeze({
 
 function workspaceProjectKey(projectId) {
   return WORKSPACE_PROJECT_KEYS[projectId] || projectId || "";
+}
+
+function serverGeneratedUlid(source) {
+  const text = String(source || "");
+  let hash = 0;
+  for (let index = 0; index < text.length; index += 1) {
+    hash = ((hash << 5) - hash + text.charCodeAt(index)) >>> 0;
+  }
+  return `01K2GFSJ0Y${String(9_000_000_000 + hash).padStart(16, "0")}`;
 }
 
 function snapshotAuditFields(index = 0, userKey = MOCK_DB_KEYS.users.forgeBot) {
@@ -598,7 +608,6 @@ class LocalDevMockDataSource {
     this.repositoryById = new Map();
     this.sessionModeId = LOCAL_MEM_MODE_ID;
     this.sessionUserKey = "";
-    this.toolboxVoteState = new Map();
     this.adapterByModeId = new Map(
       MOCK_DB_SESSION_MODES.map((mode) => [
         mode.id,
@@ -635,6 +644,11 @@ class LocalDevMockDataSource {
       : createServerSeedTables();
     this.standaloneTables = clone(sourceTables);
     IDENTITY_TABLES.forEach((tableName) => {
+      if (!Array.isArray(this.standaloneTables[tableName])) {
+        this.standaloneTables[tableName] = [];
+      }
+    });
+    TOOLBOX_TABLES.forEach((tableName) => {
       if (!Array.isArray(this.standaloneTables[tableName])) {
         this.standaloneTables[tableName] = [];
       }
@@ -767,45 +781,68 @@ class LocalDevMockDataSource {
     ];
   }
 
-  toolboxVoteVoterKey() {
-    const session = this.currentSession();
-    return session.userKey || "guest";
+  toolboxVoteRows() {
+    if (!Array.isArray(this.standaloneTables.toolbox_votes)) {
+      this.standaloneTables.toolbox_votes = [];
+    }
+    return this.standaloneTables.toolbox_votes;
   }
 
-  toolboxVoteRecord(toolId) {
-    const key = String(toolId || "");
-    if (!this.toolboxVoteState.has(key)) {
-      this.toolboxVoteState.set(key, {
-        down: 0,
-        up: 0,
-        voters: new Map(),
-      });
+  toolboxVoteOrderRows() {
+    if (!Array.isArray(this.standaloneTables.toolbox_vote_order)) {
+      this.standaloneTables.toolbox_vote_order = [];
     }
-    return this.toolboxVoteState.get(key);
+    return this.standaloneTables.toolbox_vote_order;
+  }
+
+  toolboxVoteVoterKey() {
+    const session = this.currentSession();
+    if (!session.userKey) {
+      throw new Error("Login required to record Toolbox votes.");
+    }
+    return session.userKey;
+  }
+
+  toolboxVoteKey(toolId, voterKey) {
+    return serverGeneratedUlid(`toolbox-vote:${toolId}:${voterKey}`);
+  }
+
+  toolboxVoteOrderKey(toolId) {
+    return serverGeneratedUlid(`toolbox-vote-order:${toolId}`);
+  }
+
+  toolboxVoteOrder(toolId, fallbackOrder) {
+    const orderRow = this.toolboxVoteOrderRows().find((row) => row.toolId === toolId);
+    const order = Number(orderRow?.order);
+    return Number.isFinite(order) ? order : fallbackOrder;
   }
 
   toolboxVoteSnapshot() {
     const session = this.currentSession();
-    const voterKey = this.toolboxVoteVoterKey();
+    const voterKey = session.userKey || "";
+    const votes = this.toolboxVoteRows();
     return {
       currentUserKey: session.userKey || "",
       currentUserName: session.displayName || "Guest",
       rows: getActiveToolRegistry()
         .filter((tool) => tool.visibleInToolsList === true)
-        .map((tool) => {
-          const record = this.toolboxVoteRecord(tool.id);
+        .map((tool, index) => {
           const releaseChannel = getToolReleaseChannel(tool);
+          const toolVotes = votes.filter((row) => row.toolId === tool.id);
           return {
-            currentUserVote: record.voters.get(voterKey) || "",
-            down: record.down,
+            currentUserVote: toolVotes.find((row) => row.userKey === voterKey)?.direction || "",
+            down: toolVotes.filter((row) => row.direction === "down").length,
             group: tool.category || "",
+            order: this.toolboxVoteOrder(tool.id, tool.order ?? index + 1),
+            path: getToolRoute(tool) || "",
             releaseChannel,
             releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
             toolId: tool.id,
             toolName: tool.displayName || tool.name || tool.id,
-            up: record.up,
+            up: toolVotes.filter((row) => row.direction === "up").length,
           };
-        }),
+        })
+        .sort((left, right) => left.order - right.order || left.toolName.localeCompare(right.toolName)),
     };
   }
 
@@ -820,20 +857,63 @@ class LocalDevMockDataSource {
       throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
     }
 
-    const record = this.toolboxVoteRecord(normalizedToolId);
     const voterKey = this.toolboxVoteVoterKey();
-    const previousDirection = record.voters.get(voterKey);
-    if (previousDirection !== normalizedDirection) {
-      if (previousDirection === "up") {
-        record.up = Math.max(0, record.up - 1);
+    const rows = this.toolboxVoteRows();
+    const existingRow = rows.find((row) => row.toolId === normalizedToolId && row.userKey === voterKey);
+    if (existingRow?.direction !== normalizedDirection) {
+      const audit = createMockDbAuditFields(0, voterKey);
+      if (existingRow) {
+        existingRow.direction = normalizedDirection;
+        existingRow.updatedAt = audit.updatedAt;
+        existingRow.updatedBy = audit.updatedBy;
+      } else {
+        rows.push({
+          key: this.toolboxVoteKey(normalizedToolId, voterKey),
+          toolId: normalizedToolId,
+          userKey: voterKey,
+          direction: normalizedDirection,
+          ...audit,
+        });
       }
-      if (previousDirection === "down") {
-        record.down = Math.max(0, record.down - 1);
-      }
-      record[normalizedDirection] += 1;
-      record.voters.set(voterKey, normalizedDirection);
+      this.cleared = false;
+      this.persistCurrentAdapterState("Persisting Toolbox vote");
     }
 
+    return this.toolboxVoteSnapshot();
+  }
+
+  updateToolboxVoteOrder(toolId, orderValue) {
+    const session = this.currentSession();
+    if (!session.isAdmin || !session.userKey) {
+      throw new Error("Admin role required to update Toolbox vote order.");
+    }
+    const normalizedToolId = String(toolId || "");
+    const tool = getActiveToolRegistry().find((candidate) => candidate.id === normalizedToolId);
+    if (!tool || tool.visibleInToolsList !== true) {
+      throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
+    }
+    const order = Number(orderValue);
+    if (!Number.isFinite(order)) {
+      throw new Error("Toolbox vote order must be a number.");
+    }
+
+    const rows = this.toolboxVoteOrderRows();
+    const existingRow = rows.find((row) => row.toolId === normalizedToolId);
+    const audit = createMockDbAuditFields(0, session.userKey);
+    if (existingRow) {
+      existingRow.order = order;
+      existingRow.updatedAt = audit.updatedAt;
+      existingRow.updatedBy = audit.updatedBy;
+    } else {
+      rows.push({
+        key: this.toolboxVoteOrderKey(normalizedToolId),
+        toolId: normalizedToolId,
+        order,
+        ...audit,
+      });
+    }
+    this.cleared = false;
+    this.persistCurrentAdapterState("Persisting Toolbox vote order");
     return this.toolboxVoteSnapshot();
   }
 
@@ -981,6 +1061,8 @@ class LocalDevMockDataSource {
     const schemas = getMockDbTableSchemas();
     const toolGroups = getMockDbToolGroups();
     const owners = {
+      toolbox_vote_order: "standalone",
+      toolbox_votes: "standalone",
       tool_state_samples: "standalone",
       users: "standalone",
       roles: "standalone",
@@ -1001,6 +1083,8 @@ class LocalDevMockDataSource {
         owners,
         schemas,
         tables: {
+          toolbox_vote_order: [],
+          toolbox_votes: [],
           tool_state_samples: [],
           users: [],
           roles: [],
@@ -1124,6 +1208,11 @@ export function createMockApiRouter() {
         if (request.method === "POST" && parts[2] === "votes" && parts[3] === "cast") {
           const body = await readRequestJson(request);
           ok(response, dataSource.castToolboxVote(body.toolId, body.direction));
+          return true;
+        }
+        if (request.method === "POST" && parts[2] === "votes" && parts[3] === "order") {
+          const body = await readRequestJson(request);
+          ok(response, dataSource.updateToolboxVoteOrder(body.toolId, body.order));
           return true;
         }
         if (request.method === "GET" && parts[2] === "registry" && parts[3] === "snapshot") {

@@ -118,6 +118,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   users: Object.freeze(["key", "displayName", "email", "authProvider", "authProviderUserId", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   roles: Object.freeze(["key", "roleSlug", "name", "description", "isSystemRole", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   user_roles: Object.freeze(["key", "userKey", "roleKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  toolbox_votes: Object.freeze(["key", "toolId", "userKey", "direction", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  toolbox_vote_order: Object.freeze(["key", "toolId", "order", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   workspace_projects: Object.freeze(["key", "name", "status", "ownerKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   workspace_progress: Object.freeze(["key", "projectKey", "currentFocus", "projectProgress", "publishingProgress", "recommendedNextTool", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_design_documents: Object.freeze(["key", "projectKey", "title", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
@@ -145,6 +147,8 @@ const DEFAULT_TABLE_OWNERS = Object.freeze(Object.fromEntries([
   ["users", "standalone"],
   ["roles", "standalone"],
   ["user_roles", "standalone"],
+  ["toolbox_votes", "standalone"],
+  ["toolbox_vote_order", "standalone"],
   ["tool_state_samples", "standalone"],
   ...Object.entries(MOCK_DB_TOOL_GROUPS).flatMap(([ownerId, group]) =>
     group.tableNames.map((tableName) => [tableName, ownerId]),

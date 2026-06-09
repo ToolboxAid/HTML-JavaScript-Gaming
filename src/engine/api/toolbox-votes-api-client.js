@@ -20,3 +20,12 @@ export function castToolboxVote(toolId, direction) {
   );
 }
 
+export function updateToolboxVoteOrder(toolId, order) {
+  return requireServerApiData(
+    safeRequestServerApi("/toolbox/votes/order", {
+      body: { order, toolId },
+      method: "POST",
+    }),
+    "Toolbox vote order update",
+  );
+}
