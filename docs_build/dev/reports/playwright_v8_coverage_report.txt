@@ -14,21 +14,26 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (85%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(64%) Theme V2 Shared JS - exercised 2 runtime JS files
+(76%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
-(100%) none changed - no changed runtime JS files
+(86%) toolbox/colors/colors.js - executed lines 2111/2111; executed functions 180/209
+(91%) assets/theme-v2/js/account-controls.js - executed lines 39/39; executed functions 10/11
 
 Files with executed line/function counts where available:
 (58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 525/525; executed functions 28/44
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 9/14
+(76%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 525/525; executed functions 35/46
 (78%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 21/27
-(86%) toolbox/colors/colors.js - executed lines 2093/2093; executed functions 177/206
+(86%) toolbox/colors/colors.js - executed lines 2111/2111; executed functions 180/209
+(91%) assets/theme-v2/js/account-controls.js - executed lines 39/39; executed functions 10/11
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
 Uncovered or low-coverage changed JS files:
-(100%) none changed - no changed runtime JS files
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(100%) none - no changed JS files
+(0%) tests/helpers/playwrightV8CoverageReporter.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+(86%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
+(91%) assets/theme-v2/js/account-controls.js - changed JS file with browser V8 coverage

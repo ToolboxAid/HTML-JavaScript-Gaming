@@ -378,13 +378,17 @@ const elements = {
   generatorColors: document.querySelector("[data-palette-generator-colors]"),
   generatorCollection: document.querySelector("[data-palette-theme-collection]"),
   generatorContrast: document.querySelector("[data-palette-generator-contrast]"),
+  generatorContrastValue: document.querySelector("[data-palette-generator-contrast-value]"),
   generatorGridSummary: document.querySelector("[data-palette-generator-grid-summary]"),
   generatorHueShift: document.querySelector("[data-palette-generator-hue-shift]"),
+  generatorHueShiftValue: document.querySelector("[data-palette-generator-hue-shift-value]"),
   generatorPreview: document.querySelector("[data-palette-generator-preview]"),
   generatorPreviewStatus: document.querySelector("[data-palette-generator-preview-status]"),
   generatorReset: document.querySelector("[data-palette-generator-reset]"),
   generatorSaturation: document.querySelector("[data-palette-generator-saturation]"),
+  generatorSaturationValue: document.querySelector("[data-palette-generator-saturation-value]"),
   generatorStepRange: document.querySelector("[data-palette-generator-step-range]"),
+  generatorStepRangeValue: document.querySelector("[data-palette-generator-step-range-value]"),
   generatorStatus: document.querySelector("[data-palette-generator-status]"),
   generatorSteps: document.querySelector("[data-palette-generator-steps]"),
   generatorType: document.querySelector("[data-palette-generator-type]"),
@@ -998,6 +1002,22 @@ function readPaletteGeneratorSettings() {
   };
 }
 
+function formatPercentSliderValue(value) {
+  return `${Math.round(Number(value) || 0)}%`;
+}
+
+function formatHueShiftSliderValue(value) {
+  const rounded = Math.round(Number(value) || 0);
+  return `${rounded > 0 ? "+" : ""}${rounded}°`;
+}
+
+function renderPaletteGeneratorSliderValues(settings = readPaletteGeneratorSettings()) {
+  setText(elements.generatorContrastValue, formatPercentSliderValue(settings.contrast));
+  setText(elements.generatorSaturationValue, formatPercentSliderValue(settings.saturation));
+  setText(elements.generatorHueShiftValue, formatHueShiftSliderValue(settings.hueShift));
+  setText(elements.generatorStepRangeValue, formatPercentSliderValue(settings.stepRange));
+}
+
 function generatorSwatchName(settings, row, column, hex) {
   const collection = settings.collection?.name || "Palette";
   const type = settings.paletteType?.name || "Generated";
@@ -1165,6 +1185,7 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   }
 
   const settings = readPaletteGeneratorSettings();
+  renderPaletteGeneratorSliderValues(settings);
   const rows = actualPaletteGeneratorRows(settings.steps);
   const showDuplicates = showDuplicatePickerSwatches();
   const snapshot = repository.getSnapshot();

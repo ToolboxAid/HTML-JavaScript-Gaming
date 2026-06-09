@@ -101,6 +101,37 @@ Required report output:
 - Current branch
 - Branch validation PASS/FAIL
 
+## SLIDER VALUE VISIBILITY REQUIREMENT
+
+All user-adjustable slider controls must display their current value while being adjusted.
+
+Rules:
+- Value display must update live during drag/input.
+- Users must not need to release the slider to see the value.
+- Value display must remain visible at all times.
+- Value display must not rely solely on browser-native tooltips.
+- Sliders should prefer:
+  - Label + Slider + Current Value
+- Example:
+  - `Contrast    [------^------] 40%`
+  - `Saturation  [------^------] 75%`
+  - `Hue Shift   [------^------] +15°`
+- Units should be displayed when meaningful:
+  - `%`
+  - degrees
+  - pixels
+  - milliseconds
+  - volume
+  - opacity
+- Floating thumb tooltips are optional.
+- Persistent visible values are required.
+- Applies to:
+  - Toolbox tools
+  - Project Workspace controls
+  - Account/Admin pages
+  - Theme V2 controls
+  - Future tools and pages
+
 ## RULE PRECEDENCE
 
 Newer appended sections override earlier overlapping rules.

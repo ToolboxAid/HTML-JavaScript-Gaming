@@ -364,11 +364,29 @@ input[type="range"] {
   width: 100%
 }
 
-.palette-generator-slider-row {
+.slider-value-row {
   display: grid;
-  grid-template-columns: calc(var(--space-78) + var(--space-22)) minmax(var(--space-0), calc(var(--space-78) * 2));
+  grid-template-columns: minmax(calc(var(--space-78) + var(--space-22)), max-content) minmax(var(--space-0), calc(var(--space-78) * 2)) minmax(var(--space-44), max-content);
   align-items: center;
   gap: var(--space-12)
+}
+
+.control-row--with-value {
+  grid-template-columns: var(--control-row-columns) minmax(var(--space-44), max-content)
+}
+
+.slider-current-value {
+  justify-self: end;
+  min-width: var(--space-44);
+  color: var(--text);
+  font-weight: var(--font-weight-bold);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap
+}
+
+.palette-generator-slider-row {
+  grid-template-columns: minmax(calc(var(--space-78) + var(--space-22)), max-content) minmax(var(--space-0), calc(var(--space-78) * 2)) minmax(var(--space-44), max-content)
 }
 
 textarea {

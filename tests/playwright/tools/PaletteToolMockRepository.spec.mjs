@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import {
   PALETTE_WORKSPACE_PATH,
   PALETTE_TOOL_TABLES,
@@ -75,7 +76,7 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-async function openRepoPage(page, pathName) {
+async function openRepoPage(page, pathName, options = {}) {
   const server = await startRepoServer();
   const failedRequests = [];
   const pageErrors = [];
@@ -97,6 +98,19 @@ async function openRepoPage(page, pathName) {
   page.on("requestfailed", (request) => {
     failedRequests.push(`FAILED ${request.url()}`);
   });
+
+  if (options.sessionUserKey !== undefined) {
+    await fetch(`${server.baseUrl}/api/session/mode`, {
+      body: JSON.stringify({ modeId: options.sessionModeId || "local-mem" }),
+      headers: { "content-type": "application/json" },
+      method: "POST"
+    });
+    await fetch(`${server.baseUrl}/api/session/user`, {
+      body: JSON.stringify({ userKey: options.sessionUserKey || "" }),
+      headers: { "content-type": "application/json" },
+      method: "POST"
+    });
+  }
 
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
@@ -488,6 +502,10 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("100");
     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("0");
     await expect(page.locator("[data-palette-generator-step-range]")).toHaveValue("50");
+    await expect(page.locator("[data-palette-generator-contrast-value]")).toHaveText("40%");
+    await expect(page.locator("[data-palette-generator-saturation-value]")).toHaveText("100%");
+    await expect(page.locator("[data-palette-generator-hue-shift-value]")).toHaveText("0°");
+    await expect(page.locator("[data-palette-generator-step-range-value]")).toHaveText("50%");
     await expect(page.locator("[data-palette-generator-step-range]")).toHaveAttribute("type", "range");
     await expect(page.locator("[data-palette-generator-generate]")).toHaveCount(0);
     await expect(page.locator("[data-palette-show-duplicates]")).toBeChecked();
@@ -673,6 +691,7 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
       control.value = "0";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
+    await expect(page.locator("[data-palette-generator-step-range-value]")).toHaveText("0%");
     const tightStepRangeSpread = await columnLightnessSpread(page, stepRangeEvidenceColumn);
     expect(tightStepRangeSpread.topDistance).toBeGreaterThan(0);
     expect(tightStepRangeSpread.bottomDistance).toBeGreaterThan(0);
@@ -684,6 +703,7 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
       control.value = "100";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
+    await expect(page.locator("[data-palette-generator-step-range-value]")).toHaveText("100%");
     const wideStepRangeSpread = await columnLightnessSpread(page, stepRangeEvidenceColumn);
     expect(wideStepRangeSpread.spread).toBeGreaterThan(defaultStepRangeSpread.spread);
     expect(wideStepRangeSpread.topLightness).toBeGreaterThan(defaultStepRangeSpread.topLightness);
@@ -695,6 +715,7 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
       control.value = "50";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
+    await expect(page.locator("[data-palette-generator-step-range-value]")).toHaveText("50%");
     const restoredStepRangeSpread = await columnLightnessSpread(page, stepRangeEvidenceColumn);
     expect(restoredStepRangeSpread.top).toBe(defaultStepRangeSpread.top);
     expect(restoredStepRangeSpread.center).toBe(defaultStepRangeSpread.center);
@@ -709,6 +730,7 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("45");
+    await expect(page.locator("[data-palette-generator-hue-shift-value]")).toHaveText("+45°");
     expect(await firstSwatch.getAttribute("data-palette-generator-color")).not.toBe(initialColor);
 
     await page.locator("[data-palette-theme-collection]").selectOption("ROYGBIV");
@@ -825,11 +847,17 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     });
     await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("80");
     await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("20");
+    await expect(page.locator("[data-palette-generator-contrast-value]")).toHaveText("80%");
+    await expect(page.locator("[data-palette-generator-saturation-value]")).toHaveText("20%");
     await page.locator("[data-palette-generator-reset]").click();
     await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("40");
     await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("100");
     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("0");
     await expect(page.locator("[data-palette-generator-step-range]")).toHaveValue("50");
+    await expect(page.locator("[data-palette-generator-contrast-value]")).toHaveText("40%");
+    await expect(page.locator("[data-palette-generator-saturation-value]")).toHaveText("100%");
+    await expect(page.locator("[data-palette-generator-hue-shift-value]")).toHaveText("0°");
+    await expect(page.locator("[data-palette-generator-step-range-value]")).toHaveText("50%");
 
     await setGeneratorColors(page, "4");
     await setGeneratorSteps(page, "2");
@@ -1090,6 +1118,10 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
       control.value = "70";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
+    await expect(page.locator("[data-palette-generator-contrast-value]")).toHaveText("72%");
+    await expect(page.locator("[data-palette-generator-saturation-value]")).toHaveText("58%");
+    await expect(page.locator("[data-palette-generator-hue-shift-value]")).toHaveText("-35°");
+    await expect(page.locator("[data-palette-generator-step-range-value]")).toHaveText("70%");
     await expect(firstGenerated).toHaveAttribute("data-palette-pinned", "false");
     const generatedName = await firstGenerated.getAttribute("data-palette-generator-name");
     const generatedHex = await firstGenerated.getAttribute("data-palette-generator-hex");
@@ -1230,6 +1262,10 @@ test("Palette Tool generated grid swatches can be selected, pinned, and refreshe
     await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("58");
     await expect(page.locator("[data-palette-generator-step-range]")).toHaveValue("70");
     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("-35");
+    await expect(page.locator("[data-palette-generator-contrast-value]")).toHaveText("72%");
+    await expect(page.locator("[data-palette-generator-saturation-value]")).toHaveText("58%");
+    await expect(page.locator("[data-palette-generator-step-range-value]")).toHaveText("70%");
+    await expect(page.locator("[data-palette-generator-hue-shift-value]")).toHaveText("-35°");
 
     await expect(page.locator("[data-palette-generator-generate]")).toHaveCount(0);
     await expect(generatedTile).toHaveAttribute("data-palette-swatch-name", generatedName || "");
@@ -1385,5 +1421,27 @@ test("Palette Tool rejects invalid payloads before render and blocks editing wit
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await missingProjectFailures.server.close();
+  }
+});
+
+test("Theme V2 Admin Controls range slider displays a live persistent value", async ({ page }) => {
+  const failures = await openRepoPage(page, "/admin/controls.html", {
+    sessionUserKey: MOCK_DB_KEYS.users.admin
+  });
+
+  try {
+    await expect(page.getByRole("heading", { name: "Controls.", level: 1 })).toBeVisible();
+    await expect(page.locator("#range")).toHaveValue("68");
+    await expect(page.locator("[data-slider-value-for='range']")).toHaveText("68");
+    await page.locator("#range").evaluate((control) => {
+      control.value = "42";
+      control.dispatchEvent(new Event("input", { bubbles: true }));
+    });
+    await expect(page.locator("[data-slider-value-for='range']")).toHaveText("42");
+    await expect(page.locator("[oninput], [onchange], [onclick]")).toHaveCount(0);
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
   }
 });
