@@ -128,6 +128,14 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Project Journey']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Project Workspace']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 10/38");
+    await page.locator("[data-toolbox-status-filter='planned']").click();
+    await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(28);
+    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(38);
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 38/38");
+    await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
 
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -248,18 +256,27 @@ test("toolbox status kickers, filters, card order, and voting controls work from
         return child.tagName.toLowerCase();
       })
     ));
-    expect(actionOrder).toEqual(["badge", "Open Tool", "group"]);
+    expect(actionOrder).toEqual(["badge", "Open Tool"]);
     const bodyOrder = await wireframeCard.locator(".card-body").evaluate((body) => (
       Array.from(body.children).map((child) => {
         if (child.hasAttribute("data-toolbox-tile-action-row")) return "action";
+        if (child.hasAttribute("data-toolbox-group-badge")) return "group";
         if (child.hasAttribute("data-toolbox-vote-controls")) return "feedback";
         if (child.hasAttribute("data-toolbox-plan-details")) return "plan-details";
         if (child.hasAttribute("data-toolbox-state-badge")) return "state";
         return child.tagName.toLowerCase();
       })
     ));
-    expect(bodyOrder.slice(2, 6)).toEqual(["action", "feedback", "plan-details", "state"]);
-    expect(bodyOrder.at(-1)).toBe("state");
+    expect(bodyOrder.slice(2, 7)).toEqual(["action", "group", "state", "feedback", "plan-details"]);
+    const groupAndStateTop = await wireframeCard.locator(".card-body").evaluate((body) => {
+      const group = body.querySelector("[data-toolbox-group-badge]");
+      const state = body.querySelector("[data-toolbox-state-badge]");
+      return {
+        group: Math.round(group.getBoundingClientRect().top),
+        state: Math.round(state.getBoundingClientRect().top),
+      };
+    });
+    expect(groupAndStateTop.state).toBeGreaterThan(groupAndStateTop.group);
 
     const buildVotes = wireframeCard.locator("[data-toolbox-vote-controls='Build Game']");
     await expect(buildVotes).toBeVisible();
@@ -345,9 +362,9 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(designGroupLabel).toHaveCSS("background-color", "rgb(255, 79, 139)");
     await expect(designGroupLabel).toHaveCSS("color", "rgb(255, 255, 255)");
     const designActionRow = page.locator("[data-toolbox-tile-action-row='Colors']");
-    await expect(designActionRow.locator("[data-toolbox-group-label='Design']")).toHaveCSS("background-color", "rgb(255, 79, 139)");
-    await expect(designActionRow.locator("[data-toolbox-group-label='Design']")).toHaveCount(1);
-    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > :last-child")).toHaveAttribute("data-toolbox-state-badge", "complete");
+    await expect(designActionRow.locator("[data-toolbox-group-label='Design']")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-group-badge] [data-toolbox-group-label='Design']")).toHaveCSS("background-color", "rgb(255, 79, 139)");
+    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > [data-toolbox-state-badge]")).toHaveAttribute("data-toolbox-state-badge", "complete");
 
     await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { level: 1, name: "Tool Votes" })).toBeVisible();

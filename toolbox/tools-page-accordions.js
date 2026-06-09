@@ -310,7 +310,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         return tool.adminOnly !== true && (
             tool.releaseChannel === "complete" ||
             tool.releaseChannel === "beta" ||
-            tool.releaseChannel === "wireframe"
+            tool.releaseChannel === "wireframe" ||
+            (tool.releaseChannel === "planned" && visibleReleaseChannels.has("planned"))
         );
     }
 
@@ -900,7 +901,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
         }
 
-        row.append(badge, link, createGroupLabel(tool.group));
+        row.append(badge, link);
         return row;
     }
 
@@ -1069,6 +1070,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const description = document.createElement("p");
         description.textContent = tool.description;
         const actionRow = createToolActionRow(tool, registryTool, body);
+        const groupLabel = createGroupLabel(tool.group);
         const voteControls = createToolVoteControls(tool);
         const plannedDetails = createPlanDetails(tool);
         const values = createToolValues(tool, options);
@@ -1082,6 +1084,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             cardParts.push(statusDiagnostic);
         }
         cardParts.push(actionRow);
+        cardParts.push(groupLabel);
+        cardParts.push(stateBadge);
         if (voteControls) {
             cardParts.push(voteControls);
         }
@@ -1091,7 +1095,6 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         if (values) {
             cardParts.push(values);
         }
-        cardParts.push(stateBadge);
 
         body.append(...cardParts);
         article.append(media, body);
