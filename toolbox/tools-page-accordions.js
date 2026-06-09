@@ -3,6 +3,10 @@ import {
     createProjectWorkspaceApiRepository
 } from "./project-workspace/project-workspace-api-client.js";
 import {
+    castToolboxVote,
+    readToolboxVoteSnapshot
+} from "../src/engine/api/toolbox-votes-api-client.js";
+import {
     TOOL_IMAGE_FALLBACK,
     getActiveToolRegistry,
     getToolRegistryApiDiagnostic,
@@ -55,8 +59,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         complete: "Production ready and fully supported."
     });
     const releaseChannelByStatus = Object.freeze({
-        Ready: "complete",
-        Wireframe: "wireframe",
+        Ready: "beta",
+        Wireframe: "planned",
         "Under Construction": "beta",
         Planned: "planned",
         Hidden: "planned",
@@ -131,7 +135,21 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         beta: "swatch-gold",
         complete: "swatch-green"
     };
-    const voteStateByTool = new Map();
+    const voteRowsByToolId = new Map();
+    let voteDiagnostic = "";
+
+    function applyToolboxVoteSnapshot(snapshot) {
+        voteRowsByToolId.clear();
+        (snapshot?.rows || []).forEach((row) => {
+            voteRowsByToolId.set(row.toolId, row);
+        });
+    }
+
+    try {
+        applyToolboxVoteSnapshot(readToolboxVoteSnapshot());
+    } catch (error) {
+        voteDiagnostic = error instanceof Error ? error.message : String(error || "Toolbox vote data unavailable.");
+    }
     function getProjectProgressSummary() {
         const activeProject = projectWorkspaceRepository.getActiveProject();
         const progress = projectWorkspaceRepository.getProjectProgress();
@@ -917,7 +935,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
         }
 
-        row.append(badge, link, createGroupLabel(tool.group), createStateLabel(tool));
+        row.append(badge, link, createGroupLabel(tool.group));
         return row;
     }
 
@@ -929,6 +947,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const row = document.createElement("div");
         row.className = "content-cluster";
         row.dataset.toolboxVoteControls = tool.title;
+        row.dataset.toolboxVoteToolId = tool.id || "";
 
         const label = document.createElement("span");
         label.textContent = "Feedback";
@@ -948,23 +967,16 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         downVote.dataset.toolboxVoteCount = "down";
 
         function voteRecord() {
-            if (!voteStateByTool.has(tool.title)) {
-                voteStateByTool.set(tool.title, {
-                    down: 0,
-                    up: 0,
-                    voters: new Map()
-                });
-            }
-            return voteStateByTool.get(tool.title);
-        }
-
-        function voterKey() {
-            return session?.userKey || session?.displayName || "guest";
+            return voteRowsByToolId.get(tool.id) || {
+                currentUserVote: "",
+                down: 0,
+                up: 0
+            };
         }
 
         function updateVoteDisplay() {
             const record = voteRecord();
-            const selectedDirection = record.voters.get(voterKey()) || "";
+            const selectedDirection = record.currentUserVote || "";
             upVote.textContent = `Up ${record.up}`;
             downVote.textContent = `Down ${record.down}`;
             upVote.setAttribute("aria-pressed", String(selectedDirection === "up"));
@@ -972,22 +984,14 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         }
 
         function castVote(direction) {
-            const record = voteRecord();
-            const key = voterKey();
-            const previousDirection = record.voters.get(key);
-            if (previousDirection === direction) {
-                return;
+            try {
+                applyToolboxVoteSnapshot(castToolboxVote(tool.id, direction));
+                updateVoteDisplay();
+                announceToolboxStatus(`${tool.title} ${direction} vote recorded for Admin review.`);
+            } catch (error) {
+                const message = error instanceof Error ? error.message : String(error || "Toolbox vote data unavailable.");
+                announceToolboxStatus(`${tool.title} vote could not be recorded. ${message}`);
             }
-            if (previousDirection === "up") {
-                record.up = Math.max(0, record.up - 1);
-            }
-            if (previousDirection === "down") {
-                record.down = Math.max(0, record.down - 1);
-            }
-            record[direction] += 1;
-            record.voters.set(key, direction);
-            updateVoteDisplay();
-            announceToolboxStatus(`${tool.title} ${direction} vote noted as a non-persistent ${tool.releaseChannel} control.`);
         }
 
         [upVote, downVote].forEach((button) => {
@@ -998,6 +1002,14 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         });
 
         updateVoteDisplay();
+        if (voteDiagnostic) {
+            const diagnostic = document.createElement("span");
+            diagnostic.className = "status";
+            diagnostic.dataset.toolboxVoteDiagnostic = tool.title;
+            diagnostic.textContent = voteDiagnostic;
+            row.append(label, diagnostic);
+            return row;
+        }
         row.append(label, upVote, downVote);
         return row;
     }
@@ -1081,6 +1093,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const voteControls = createToolVoteControls(tool);
         const plannedDetails = createPlanDetails(tool);
         const values = createToolValues(tool, options);
+        const stateBadge = createStateLabel(tool);
 
         const cardParts = [title, description];
         if (imageDiagnostic) {
@@ -1099,6 +1112,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         if (values) {
             cardParts.push(values);
         }
+        cardParts.push(stateBadge);
 
         body.append(...cardParts);
         article.append(media, body);

@@ -53,8 +53,8 @@ const READINESS_BY_STATUS = Object.freeze({
 });
 
 const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
-  Ready: "complete",
-  Wireframe: "wireframe",
+  Ready: "beta",
+  Wireframe: "planned",
   "Under Construction": "beta",
   Planned: "planned",
   Hidden: "planned",
@@ -297,6 +297,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPublish": true,
     "requires": [],
     "status": "Ready",
+    "releaseChannel": "complete",
     "progressChecklist": [
       "Project palette runtime available",
       "Curated collection/type/variant swatches available",
@@ -657,6 +658,7 @@ export const TOOL_REGISTRY = Object.freeze([
       "game-configuration"
     ],
     "status": "Wireframe",
+    "releaseChannel": "wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -783,6 +785,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPublish": false,
     "requires": [],
     "status": "Wireframe",
+    "releaseChannel": "wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -1008,6 +1011,7 @@ export const TOOL_REGISTRY = Object.freeze([
       "publish"
     ],
     "status": "Wireframe",
+    "releaseChannel": "wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static planned text only"
@@ -1039,6 +1043,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPublish": false,
     "requires": [],
     "status": "Wireframe",
+    "releaseChannel": "wireframe",
     "progressChecklist": [
       "Review readiness",
       "Static planned text only"

@@ -13,6 +13,8 @@ import {
   getToolImageDiagnostics,
   getToolImageSource,
   getToolProgressReadiness,
+  getToolReleaseChannel,
+  getToolReleaseChannelLabel,
   getToolRegistry,
   getToolRoute,
   toolRegistryMetadataDiagnostic,
@@ -596,6 +598,7 @@ class LocalDevMockDataSource {
     this.repositoryById = new Map();
     this.sessionModeId = LOCAL_MEM_MODE_ID;
     this.sessionUserKey = "";
+    this.toolboxVoteState = new Map();
     this.adapterByModeId = new Map(
       MOCK_DB_SESSION_MODES.map((mode) => [
         mode.id,
@@ -762,6 +765,76 @@ class LocalDevMockDataSource {
         .map((user) => sessionUserFromKey(this.standaloneTables, user.key, this.sessionModeId))
         .filter((user) => user.authenticated && !user.roleSlugs.includes("system")),
     ];
+  }
+
+  toolboxVoteVoterKey() {
+    const session = this.currentSession();
+    return session.userKey || "guest";
+  }
+
+  toolboxVoteRecord(toolId) {
+    const key = String(toolId || "");
+    if (!this.toolboxVoteState.has(key)) {
+      this.toolboxVoteState.set(key, {
+        down: 0,
+        up: 0,
+        voters: new Map(),
+      });
+    }
+    return this.toolboxVoteState.get(key);
+  }
+
+  toolboxVoteSnapshot() {
+    const session = this.currentSession();
+    const voterKey = this.toolboxVoteVoterKey();
+    return {
+      currentUserKey: session.userKey || "",
+      currentUserName: session.displayName || "Guest",
+      rows: getActiveToolRegistry()
+        .filter((tool) => tool.visibleInToolsList === true)
+        .map((tool) => {
+          const record = this.toolboxVoteRecord(tool.id);
+          const releaseChannel = getToolReleaseChannel(tool);
+          return {
+            currentUserVote: record.voters.get(voterKey) || "",
+            down: record.down,
+            group: tool.category || "",
+            releaseChannel,
+            releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+            toolId: tool.id,
+            toolName: tool.displayName || tool.name || tool.id,
+            up: record.up,
+          };
+        }),
+    };
+  }
+
+  castToolboxVote(toolId, direction) {
+    const normalizedToolId = String(toolId || "");
+    const normalizedDirection = String(direction || "").toLowerCase();
+    if (!["up", "down"].includes(normalizedDirection)) {
+      throw new Error("Toolbox vote direction must be up or down.");
+    }
+    const tool = getActiveToolRegistry().find((candidate) => candidate.id === normalizedToolId);
+    if (!tool || tool.visibleInToolsList !== true) {
+      throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
+    }
+
+    const record = this.toolboxVoteRecord(normalizedToolId);
+    const voterKey = this.toolboxVoteVoterKey();
+    const previousDirection = record.voters.get(voterKey);
+    if (previousDirection !== normalizedDirection) {
+      if (previousDirection === "up") {
+        record.up = Math.max(0, record.up - 1);
+      }
+      if (previousDirection === "down") {
+        record.down = Math.max(0, record.down - 1);
+      }
+      record[normalizedDirection] += 1;
+      record.voters.set(voterKey, normalizedDirection);
+    }
+
+    return this.toolboxVoteSnapshot();
   }
 
   repositoryForTool(toolId) {
@@ -1044,6 +1117,15 @@ export function createMockApiRouter() {
       }
 
       if (parts[1] === "toolbox") {
+        if (request.method === "GET" && parts[2] === "votes" && parts[3] === "snapshot") {
+          ok(response, dataSource.toolboxVoteSnapshot());
+          return true;
+        }
+        if (request.method === "POST" && parts[2] === "votes" && parts[3] === "cast") {
+          const body = await readRequestJson(request);
+          ok(response, dataSource.castToolboxVote(body.toolId, body.direction));
+          return true;
+        }
         if (request.method === "GET" && parts[2] === "registry" && parts[3] === "snapshot") {
           ok(response, toolRegistrySnapshot());
           return true;

@@ -17,17 +17,20 @@ Exercised tool entry points detected:
 (72%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 545/545; executed functions 30/46
-(75%) toolbox/tools-page-accordions.js - executed lines 1054/1054; executed functions 77/103
+(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 547/547; executed functions 30/46
+(67%) src/engine/api/toolbox-votes-api-client.js - executed lines 19/19; executed functions 2/3
+(75%) toolbox/tools-page-accordions.js - executed lines 1067/1067; executed functions 78/104
 (93%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 13/14
 
 Files with executed line/function counts where available:
 (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
 (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
-(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 545/545; executed functions 30/46
+(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 547/547; executed functions 30/46
+(67%) src/engine/api/toolbox-votes-api-client.js - executed lines 19/19; executed functions 2/3
 (71%) toolbox/project-workspace/project-workspace.js - executed lines 264/264; executed functions 17/24
-(75%) toolbox/tools-page-accordions.js - executed lines 1054/1054; executed functions 77/103
+(75%) toolbox/tools-page-accordions.js - executed lines 1067/1067; executed functions 78/104
 (78%) toolbox/game-configuration/game-configuration.js - executed lines 169/169; executed functions 14/18
 (91%) toolbox/game-design/game-design.js - executed lines 242/242; executed functions 20/22
 (93%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 13/14
@@ -37,11 +40,15 @@ Files with executed line/function counts where available:
 (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) toolbox/toolRegistry.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) admin/tool-votes.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) toolbox/toolRegistry.js - changed JS file not collected as browser runtime coverage
 (65%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(67%) src/engine/api/toolbox-votes-api-client.js - changed JS file with browser V8 coverage
 (75%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
 (93%) assets/theme-v2/js/tool-display-mode.js - changed JS file with browser V8 coverage

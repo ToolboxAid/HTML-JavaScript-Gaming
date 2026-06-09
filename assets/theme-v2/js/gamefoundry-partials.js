@@ -102,6 +102,7 @@
         "admin-ratings": "admin/ratings.html",
         "admin-users": "admin/users.html",
         "admin-roles": "admin/roles.html",
+        "admin-tool-votes": "admin/tool-votes.html",
         "admin-moderation": "admin/moderation.html",
         "admin-analytics": "admin/analytics.html",
         "admin-tools-progress": "admin/tools-progress.html",
@@ -144,6 +145,7 @@
         Object.freeze({ label: "Roles", route: "admin-roles" }),
         Object.freeze({ label: "Site Settings", route: "admin-site-settings" }),
         Object.freeze({ label: "Themes", route: "admin-themes" }),
+        Object.freeze({ label: "Tool Votes", route: "admin-tool-votes" }),
         Object.freeze({ label: "Users", route: "admin-users" })
     ]);
     const localAdminMyStuffItems = Object.freeze([

@@ -96,11 +96,14 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
   try {
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-tool-name-link='Colors']")).toBeVisible();
-    await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-tool-name-link='Assets']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Saved Data']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Languages']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Achievements']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Configuration']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Design']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Project Journey']")).toBeVisible();
@@ -111,10 +114,11 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-tool-name-link='Colors']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Colors']")).toHaveAttribute("href", "/toolbox/colors/index.html");
-    await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toBeVisible();
     const colorsCard = page.locator("[data-toolbox-tool-name-link='Colors']").locator("xpath=ancestor::article[1]");
     await expect(colorsCard.locator("[data-toolbox-readiness]")).toHaveText("Complete");
 
@@ -157,10 +161,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      /Planned \(\d+\)/,
-      /Wireframe \(\d+\)/,
-      /Beta \(\d+\)/,
-      /Complete \(\d+\)/,
+      "Planned (0)",
+      "Wireframe (4)",
+      "Beta (5)",
+      "Complete (1)",
     ]);
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
     await expect(page.locator("[data-toolbox-status-filter='wireframe']")).toHaveAttribute("aria-pressed", "true");
@@ -197,20 +201,21 @@ test("toolbox status kickers, filters, card order, and voting controls work from
         if (child.tagName.toLowerCase() === "img") return "badge";
         if (child.tagName.toLowerCase() === "a") return child.textContent.trim();
         if (child.hasAttribute("data-toolbox-group-badge")) return "group";
-        if (child.hasAttribute("data-toolbox-state-badge")) return "state";
         return child.tagName.toLowerCase();
       })
     ));
-    expect(actionOrder).toEqual(["badge", "Open Tool", "group", "state"]);
+    expect(actionOrder).toEqual(["badge", "Open Tool", "group"]);
     const bodyOrder = await wireframeCard.locator(".card-body").evaluate((body) => (
       Array.from(body.children).map((child) => {
         if (child.hasAttribute("data-toolbox-tile-action-row")) return "action";
         if (child.hasAttribute("data-toolbox-vote-controls")) return "feedback";
         if (child.hasAttribute("data-toolbox-plan-details")) return "plan-details";
+        if (child.hasAttribute("data-toolbox-state-badge")) return "state";
         return child.tagName.toLowerCase();
       })
     ));
-    expect(bodyOrder.slice(2, 5)).toEqual(["action", "feedback", "plan-details"]);
+    expect(bodyOrder.slice(2, 6)).toEqual(["action", "feedback", "plan-details", "state"]);
+    expect(bodyOrder.at(-1)).toBe("state");
 
     const buildVotes = wireframeCard.locator("[data-toolbox-vote-controls='Build Game']");
     await expect(buildVotes).toBeVisible();
@@ -230,6 +235,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await buildDownVote.click();
     await expect(buildDownVote).toHaveText("Down 1");
     await expect(buildDownVote).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-toolbox-launch-status]")).toHaveText("Build Game down vote recorded for Admin review.");
 
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -242,18 +248,15 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(plannedCard.locator("[data-toolbox-kicker]")).toHaveAttribute("title", "Idea exists.\nNot yet available.");
     await expect(plannedCard.locator("[data-toolbox-vote-controls='Publish']")).toBeVisible();
     await plannedCard.locator("[data-toolbox-vote-controls='Publish'] [data-toolbox-vote='up']").click();
-    await expect(page.locator("[data-toolbox-launch-status]")).toHaveText("Publish up vote noted as a non-persistent planned control.");
+    await expect(page.locator("[data-toolbox-launch-status]")).toHaveText("Publish up vote recorded for Admin review.");
     await plannedCard.locator("[data-toolbox-tile-action-row='Publish'] a.btn").click();
     await expect(page).toHaveURL(/\/toolbox\/index\.html$/);
     await expect(page.locator("[data-toolbox-launch-status]")).toContainText("Publish is planned.");
 
-    const fontWireframeCard = page.locator("[data-toolbox-tool-card='Fonts']");
-    await expect(fontWireframeCard.locator("[data-toolbox-kicker]")).toHaveText("Wireframe");
-    await expect(fontWireframeCard.locator("[data-toolbox-kicker]")).toHaveAttribute(
-      "title",
-      "Preview the planned workflow and layout.\nHelp shape the design before development begins.",
-    );
-    await expect(fontWireframeCard.locator("[data-toolbox-vote-controls='Fonts']")).toBeVisible();
+    const plannedFontCard = page.locator("[data-toolbox-tool-card='Fonts']");
+    await expect(plannedFontCard.locator("[data-toolbox-kicker]")).toHaveText("Planned");
+    await expect(plannedFontCard.locator("[data-toolbox-kicker]")).toHaveAttribute("title", "Idea exists.\nNot yet available.");
+    await expect(plannedFontCard.locator("[data-toolbox-vote-controls='Fonts']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-card='Colors'] [data-toolbox-kicker]")).toHaveAttribute(
       "title",
       "Production ready and fully supported.",
@@ -266,7 +269,16 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     const designActionRow = page.locator("[data-toolbox-tile-action-row='Colors']");
     await expect(designActionRow.locator("[data-toolbox-group-label='Design']")).toHaveCSS("background-color", "rgb(255, 79, 139)");
     await expect(designActionRow.locator("[data-toolbox-group-label='Design']")).toHaveCount(1);
-    await expect(designActionRow.locator("[data-toolbox-state-badge='complete']")).toHaveCount(1);
+    await expect(page.locator("[data-toolbox-tool-card='Colors'] .card-body > :last-child")).toHaveAttribute("data-toolbox-state-badge", "complete");
+
+    await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
+    await expect(page.getByRole("heading", { level: 1, name: "Tool Votes" })).toBeVisible();
+    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("DavidQ");
+    await expect(page.locator("[data-toolbox-votes-tool-id='build-game'] td").nth(4)).toHaveText("1");
+    await expect(page.locator("[data-toolbox-votes-tool-id='build-game'] td").nth(5)).toHaveText("None");
+    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(3)).toHaveText("1");
+    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("up");
+    await expect(page.locator("[data-route='admin-tool-votes']")).toHaveCount(1);
 
     const toolboxSource = await page.evaluate(async () => {
       const response = await fetch("/toolbox/index.html");
