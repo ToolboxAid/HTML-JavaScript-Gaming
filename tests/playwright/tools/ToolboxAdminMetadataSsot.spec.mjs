@@ -1,0 +1,217 @@
+import { expect, test } from "@playwright/test";
+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
+const EXPECTED_TOOL_COUNT = 43;
+const REQUIRED_ADMIN_TOOLS = [
+  "Environments",
+  "Game Migration",
+  "Platform Settings",
+  "Users",
+];
+const REQUIRED_RESTORED_TOOLS = [
+  "AI Assistant",
+  "Creator Learning",
+];
+const STATUS_VALUES = new Set(["planned", "wireframe", "beta", "complete"]);
+
+test.beforeEach(async ({ page }) => {
+  await installPlaywrightStorageIsolation(page, {
+    lane: "toolbox-admin-metadata-ssot",
+    surface: "Toolbox/Admin Tool Votes metadata SSoT",
+  });
+});
+
+test.afterEach(async ({ page }) => {
+  await clearPlaywrightStorage(page);
+});
+
+test.afterAll(async () => {
+  await workspaceV2CoverageReporter.writeReport();
+});
+
+async function setServerSession(server, userKey) {
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-mem" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  await fetch(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+}
+
+async function fetchApiData(server, path, options = {}) {
+  const response = await fetch(`${server.baseUrl}${path}`, {
+    headers: { "content-type": "application/json" },
+    ...options,
+  });
+  const payload = await response.json();
+  expect(response.ok, JSON.stringify(payload)).toBe(true);
+  expect(payload.ok, JSON.stringify(payload)).toBe(true);
+  return payload.data;
+}
+
+function countByStatus(rows) {
+  return rows.reduce((counts, row) => {
+    const status = row.status || row.releaseChannel || "planned";
+    counts[status] = (counts[status] || 0) + 1;
+    return counts;
+  }, {});
+}
+
+async function openTrackedPage(page, server, pathName) {
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("pageerror", (error) => {
+    pageErrors.push(error.message);
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error") {
+      consoleErrors.push(message.text());
+    }
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+
+  await workspaceV2CoverageReporter.start(page);
+  await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
+  return { consoleErrors, failedRequests, pageErrors };
+}
+
+async function expectNoPageFailures(failures) {
+  expect(failures.failedRequests).toEqual([]);
+  expect(failures.pageErrors).toEqual([]);
+  expect(failures.consoleErrors).toEqual([]);
+}
+
+async function activateBuildPathAllStatusFilters(page) {
+  await page.getByRole("button", { name: "Build Path" }).click();
+  for (const status of STATUS_VALUES) {
+    const button = page.locator(`[data-toolbox-status-filter='${status}']`);
+    if ((await button.getAttribute("aria-pressed")) !== "true") {
+      await button.click();
+    }
+  }
+}
+
+test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata", async ({ page }) => {
+  const server = await startRepoServer();
+  await setServerSession(server, MOCK_DB_KEYS.users.admin);
+  const failures = await openTrackedPage(page, server, "/admin/tool-votes.html");
+
+  try {
+    const snapshot = await fetchApiData(server, "/api/toolbox/votes/snapshot");
+    expect(snapshot.rows).toHaveLength(EXPECTED_TOOL_COUNT);
+    expect(new Set(snapshot.rows.map((row) => row.toolKey || row.toolId)).size).toBe(EXPECTED_TOOL_COUNT);
+
+    for (const row of snapshot.rows) {
+      expect(row.toolKey, row.toolName).toBeTruthy();
+      expect(row.toolName, row.toolKey).toBeTruthy();
+      expect(row.group, row.toolName).toBeTruthy();
+      expect(row.path, row.toolName).toBeTruthy();
+      expect(Number.isInteger(Number(row.order)), row.toolName).toBe(true);
+      expect(STATUS_VALUES.has(row.status || row.releaseChannel), row.toolName).toBe(true);
+    }
+
+    const snapshotNames = snapshot.rows.map((row) => row.toolName).sort((left, right) => left.localeCompare(right));
+    expect(snapshotNames).toEqual(expect.arrayContaining([...REQUIRED_ADMIN_TOOLS, ...REQUIRED_RESTORED_TOOLS]));
+    const counts = countByStatus(snapshot.rows);
+    expect(counts).toMatchObject({
+      beta: 5,
+      complete: 1,
+      planned: 33,
+      wireframe: 4,
+    });
+
+    await expect(page.locator("[data-toolbox-votes-tool-id]")).toHaveCount(EXPECTED_TOOL_COUNT);
+    const adminNames = (await page.locator("[data-toolbox-votes-tool-id]").evaluateAll((rows) => (
+      rows.map((row) => row.children[0]?.textContent.trim() || "")
+    ))).sort((left, right) => left.localeCompare(right));
+    expect(adminNames).toEqual(snapshotNames);
+
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    await activateBuildPathAllStatusFilters(page);
+    await expect(page.locator("[data-build-path-tool]")).toHaveCount(EXPECTED_TOOL_COUNT);
+    await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+      `Planned (${counts.planned})`,
+      `Wireframe (${counts.wireframe})`,
+      `Beta (${counts.beta})`,
+      `Complete (${counts.complete})`,
+    ]);
+    const buildPathNames = (await page.locator("[data-build-path-tool]").evaluateAll((rows) => (
+      rows.map((row) => row.dataset.buildPathTool || "")
+    ))).sort((left, right) => left.localeCompare(right));
+    expect(buildPathNames).toEqual(snapshotNames);
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("Admin state edits update the same metadata used by Toolbox after reload", async ({ page }) => {
+  const server = await startRepoServer();
+  await setServerSession(server, MOCK_DB_KEYS.users.admin);
+  const failures = await openTrackedPage(page, server, "/admin/tool-votes.html");
+
+  try {
+    const creatorLearningRow = page.locator("[data-toolbox-votes-tool-id='learn']");
+    await expect(creatorLearningRow).toBeVisible();
+    await creatorLearningRow.locator("[data-toolbox-votes-state='learn']").selectOption("beta");
+    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Creator Learning state updated to Beta");
+
+    const updatedSnapshot = await fetchApiData(server, "/api/toolbox/votes/snapshot");
+    const creatorLearning = updatedSnapshot.rows.find((row) => (row.toolKey || row.toolId) === "learn");
+    expect(creatorLearning).toEqual(expect.objectContaining({
+      status: "beta",
+      releaseChannel: "beta",
+      toolName: "Creator Learning",
+    }));
+
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    await page.getByRole("button", { name: "Build Path" }).click();
+    const betaFilter = page.locator("[data-toolbox-status-filter='beta']");
+    if ((await betaFilter.getAttribute("aria-pressed")) !== "true") {
+      await betaFilter.click();
+    }
+    const buildPathRow = page.locator("[data-build-path-tool='Creator Learning']");
+    await expect(buildPathRow).toBeVisible();
+    await expect(buildPathRow).toHaveAttribute("data-build-path-metadata-source", "toolbox_tool_metadata");
+    await expect(buildPathRow).toHaveAttribute("data-build-path-release-channel", "beta");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("Toolbox page does not own hardcoded tool count text", async () => {
+  const server = await startRepoServer();
+
+  try {
+    const [html, script] = await Promise.all([
+      fetch(`${server.baseUrl}/toolbox/index.html`).then((response) => response.text()),
+      fetch(`${server.baseUrl}/toolbox/tools-page-accordions.js`).then((response) => response.text()),
+    ]);
+    expect(html).not.toMatch(/Planned \(\d+\)|Wireframe \(\d+\)|Beta \(\d+\)|Complete \(\d+\)/);
+    expect(script).not.toMatch(/Planned \(\d+\)|Wireframe \(\d+\)|Beta \(\d+\)|Complete \(\d+\)/);
+    expect(script).not.toMatch(/Tool Count: \d+\/\d+/);
+  } finally {
+    await server.close();
+  }
+});

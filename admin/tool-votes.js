@@ -72,7 +72,8 @@ function percentCell(value) {
 function toolNameCell(voteRow) {
   const cell = document.createElement("td");
   const link = document.createElement("a");
-  link.href = voteRow.path || "#";
+  const path = String(voteRow.path || "").trim().replace(/^\/+/, "");
+  link.href = path ? `/${path}` : "#";
   link.textContent = voteRow.toolName;
   link.setAttribute("aria-label", `Open ${voteRow.toolName}`);
   cell.append(link);
@@ -92,10 +93,15 @@ function releaseChannelLabel(value) {
   return RELEASE_CHANNEL_LABELS.get(value) || RELEASE_CHANNEL_LABELS.get("planned");
 }
 
+function rowReleaseChannel(voteRow) {
+  const value = String(voteRow.status || voteRow.releaseChannel || "").trim().toLowerCase();
+  return RELEASE_CHANNEL_LABELS.has(value) ? value : "planned";
+}
+
 function stateCell(voteRow) {
   const cell = document.createElement("td");
   const select = document.createElement("select");
-  const currentState = RELEASE_CHANNEL_LABELS.has(voteRow.releaseChannel) ? voteRow.releaseChannel : "planned";
+  const currentState = rowReleaseChannel(voteRow);
   select.dataset.toolboxVotesState = voteRow.toolId;
   select.setAttribute("aria-label", `State for ${voteRow.toolName}`);
   RELEASE_CHANNEL_OPTIONS.forEach(([value, label]) => {
@@ -117,19 +123,20 @@ function stateCell(voteRow) {
 
 function handleStateChange(voteRow, select) {
   const nextState = select.value;
-  if (nextState === voteRow.releaseChannel) {
+  if (nextState === rowReleaseChannel(voteRow)) {
     return;
   }
   try {
     const snapshot = updateToolboxVoteMetadata(voteRow.toolId, {
       group: voteRow.group,
       path: voteRow.path,
+      status: nextState,
       releaseChannel: nextState,
     });
     renderSnapshot(snapshot, `${voteRow.toolName} state updated to ${releaseChannelLabel(nextState)}. Toolbox Build Path uses the same metadata.`);
     selectRow(voteRow.toolId);
   } catch (error) {
-    select.value = RELEASE_CHANNEL_LABELS.has(voteRow.releaseChannel) ? voteRow.releaseChannel : "planned";
+    select.value = rowReleaseChannel(voteRow);
     const message = error instanceof Error ? error.message : String(error || "Toolbox state update unavailable.");
     setStatus(`${voteRow.toolName} state could not be updated. ${message}`);
   }

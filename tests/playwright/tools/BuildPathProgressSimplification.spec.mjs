@@ -103,7 +103,7 @@ test("Toolbox removes Progress view and renders the DB-backed Build Path table",
     await expect(page.getByText("Work top-to-bottom and left-to-right through the workflow table.")).toBeVisible();
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (28)",
+      "Planned (29)",
       "Wireframe (4)",
       "Beta (5)",
       "Complete (1)",

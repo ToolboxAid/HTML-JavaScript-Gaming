@@ -104,16 +104,18 @@ function humanToolStateSampleRows() {
 
 function toolboxToolMetadataRows() {
   return getActiveToolRegistry()
-    .filter((tool) => tool.visibleInToolsList === true)
     .map((tool, index) => {
       const releaseChannel = getToolReleaseChannel(tool);
+      const toolKey = tool.id;
       return {
         key: serverSeedUlid(8_401 + index),
-        toolId: tool.id,
+        toolKey,
         toolName: tool.displayName || tool.name || tool.id,
-        order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
         group: tool.category || "Platform",
         path: getToolRoute(tool) || "",
+        order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
+        status: releaseChannel,
+        toolId: toolKey,
         releaseChannel,
         releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
         ...serverSeedAuditFields(60 + index, MOCK_DB_KEYS.users.forgeBot),

@@ -1312,6 +1312,39 @@ export const TOOL_REGISTRY = Object.freeze([
     "subgroup": "Hidden planned"
   },
   {
+    "id": "learn",
+    "name": "Creator Learning",
+    "displayName": "Creator Learning",
+    "shortDescription": "Plan tutorials, examples, docs, and creator guidance workflows.",
+    "shortLabel": "Creator Learning",
+    "path": "learn",
+    "folderName": "learn",
+    "entryPoint": "learn/index.html",
+    "route": "learn/index.html",
+    "badge": "/assets/theme-v2/images/badges/learn.png",
+    "tool": "/assets/theme-v2/images/tools/learn.png",
+    "description": "Plan tutorials, examples, docs, and creator guidance workflows.",
+    "category": "Marketplace",
+    "colorGroup": "tool-group-marketplace",
+    "active": true,
+    "order": 39,
+    "requiredForPlayable": false,
+    "requiredForTestable": false,
+    "requiredForPublish": false,
+    "requires": [],
+    "status": "Planned",
+    "progressChecklist": [
+      "Creator learning hub available",
+      "Static planned text only"
+    ],
+    "deferred": true,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Share",
+    "subgroup": "Planned"
+  },
+  {
     "id": "users",
     "name": "Users",
     "displayName": "Users",
@@ -1326,7 +1359,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "category": "Platform",
     "colorGroup": "tool-group-platform",
     "active": true,
-    "order": 39,
+    "order": 40,
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
@@ -1358,7 +1391,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "category": "Platform",
     "colorGroup": "tool-group-platform",
     "active": true,
-    "order": 40,
+    "order": 41,
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
@@ -1390,7 +1423,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "category": "Platform",
     "colorGroup": "tool-group-platform",
     "active": true,
-    "order": 41,
+    "order": 42,
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
@@ -1422,7 +1455,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "category": "Platform",
     "colorGroup": "tool-group-platform",
     "active": true,
-    "order": 42,
+    "order": 43,
     "requiredForPlayable": false,
     "requiredForTestable": false,
     "requiredForPublish": false,
@@ -1796,6 +1829,9 @@ export function getVisibleActiveToolRegistry() {
 }
 
 export function getToolRoute(tool) {
+  if (typeof tool?.route === "string" && tool.route.trim() !== "") {
+    return tool.route.trim().replace(/^\/+/, "");
+  }
   if (!tool || typeof tool.entryPoint !== "string" || tool.entryPoint.trim() === "") {
     return "";
   }

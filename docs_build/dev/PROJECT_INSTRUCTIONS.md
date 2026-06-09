@@ -288,6 +288,29 @@ The Mock DB viewer must render live adapter state and table schemas, including e
 
 Audit ownership is users-only: every shared table record uses `key`, `createdAt`, `updatedAt`, `createdBy`, and `updatedBy`; the ownership fields reference `users.key`. Roles are modeled with `roles` and `user_roles`.
 
+## DB-BACKED PRODUCT DATA SSOT GOVERNANCE
+
+Web UI must access product data only through API or service contracts backed by DB adapters.
+
+Allowed production flow:
+- Web UI -> API/Service Contract -> Server DB
+
+Allowed dev/UAT/test flow:
+- Web UI -> API/Service Contract -> DB Adapter
+- The DB Adapter may be MEM DB, Local DB, Test DB, or Server DB.
+
+Prohibited product-data ownership:
+- page-local product data arrays
+- page-local metadata registries
+- hardcoded product counts
+- duplicated status, group, path, or order data
+- duplicated lookup maps that compete with DB-backed metadata
+- browser storage as the product source of truth
+- UI-only vote, order, or status state
+- direct DB-shaped product data embedded in HTML or browser JavaScript pages
+
+Toolbox and Admin tool metadata must use a shared DB-backed tool metadata source for `toolKey`, `toolName`, `group`, `path`, `order`, and `status`. Browser pages may render metadata returned by the API/service contract, but they must not own a separate runtime copy of that metadata.
+
 ## DEV RUNTIME BOUNDARY
 
 All mock/dev-only runtime implementation must live under `src/dev-runtime/`.

@@ -822,24 +822,27 @@ class LocalDevMockDataSource {
 
   defaultToolboxMetadata(tool, index) {
     const releaseChannel = getToolReleaseChannel(tool);
+    const toolKey = tool.id;
     return {
       group: tool.category || "Platform",
       order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
       path: getToolRoute(tool) || "",
+      status: releaseChannel,
+      toolId: toolKey,
+      toolKey,
       releaseChannel,
       releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
-      toolId: tool.id,
       toolName: tool.displayName || tool.name || tool.id,
     };
   }
 
   ensureToolboxToolMetadataRows() {
     const rows = this.toolboxToolMetadataRows();
-    const visibleTools = getActiveToolRegistry().filter((tool) => tool.visibleInToolsList === true);
+    const activeTools = getActiveToolRegistry();
     let changed = false;
-    visibleTools.forEach((tool, index) => {
+    activeTools.forEach((tool, index) => {
       const defaults = this.defaultToolboxMetadata(tool, index);
-      const existingRow = rows.find((row) => row.toolId === tool.id);
+      const existingRow = rows.find((row) => (row.toolKey || row.toolId) === tool.id);
       if (!existingRow) {
         rows.push({
           key: this.toolboxToolMetadataKey(tool.id),
@@ -850,12 +853,15 @@ class LocalDevMockDataSource {
         return;
       }
 
-      const releaseChannel = getToolReleaseChannel(existingRow.releaseChannel || defaults.releaseChannel);
+      const releaseChannel = getToolReleaseChannel(existingRow.status || existingRow.releaseChannel || defaults.releaseChannel);
       const normalizedOrder = Math.max(1, Math.round(Number(existingRow.order) || defaults.order));
       const normalizedValues = {
         group: existingRow.group || defaults.group,
         order: normalizedOrder,
         path: existingRow.path || defaults.path,
+        status: releaseChannel,
+        toolId: existingRow.toolId || defaults.toolId,
+        toolKey: existingRow.toolKey || existingRow.toolId || defaults.toolKey,
         releaseChannel,
         releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
         toolName: existingRow.toolName || defaults.toolName,
@@ -882,10 +888,9 @@ class LocalDevMockDataSource {
       currentUserKey: session.userKey || "",
       currentUserName: session.displayName || "Guest",
       rows: getActiveToolRegistry()
-        .filter((tool) => tool.visibleInToolsList === true)
         .map((tool, index) => {
-          const metadata = metadataRows.find((row) => row.toolId === tool.id) || this.defaultToolboxMetadata(tool, index);
-          const releaseChannel = getToolReleaseChannel(metadata.releaseChannel);
+          const metadata = metadataRows.find((row) => (row.toolKey || row.toolId) === tool.id) || this.defaultToolboxMetadata(tool, index);
+          const releaseChannel = getToolReleaseChannel(metadata.status || metadata.releaseChannel);
           const toolVotes = votes.filter((row) => row.toolId === tool.id);
           const up = toolVotes.filter((row) => row.direction === "up").length;
           const down = toolVotes.filter((row) => row.direction === "down").length;
@@ -897,6 +902,8 @@ class LocalDevMockDataSource {
             group: metadata.group || "",
             order: Math.max(1, Math.round(Number(metadata.order) || index + 1)),
             path: metadata.path || "",
+            status: releaseChannel,
+            toolKey: metadata.toolKey || metadata.toolId || tool.id,
             releaseChannel,
             releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
             toolId: tool.id,
@@ -917,7 +924,7 @@ class LocalDevMockDataSource {
       throw new Error("Toolbox vote direction must be up or down.");
     }
     const tool = getActiveToolRegistry().find((candidate) => candidate.id === normalizedToolId);
-    if (!tool || tool.visibleInToolsList !== true) {
+    if (!tool) {
       throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
     }
 
@@ -953,7 +960,7 @@ class LocalDevMockDataSource {
     }
     const normalizedToolId = String(toolId || "");
     const tool = getActiveToolRegistry().find((candidate) => candidate.id === normalizedToolId);
-    if (!tool || tool.visibleInToolsList !== true) {
+    if (!tool) {
       throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
     }
     const rawOrder = Number(orderValue);
@@ -963,7 +970,7 @@ class LocalDevMockDataSource {
     const order = Math.max(1, Math.round(rawOrder));
 
     const rows = this.ensureToolboxToolMetadataRows();
-    const existingRow = rows.find((row) => row.toolId === normalizedToolId);
+    const existingRow = rows.find((row) => (row.toolKey || row.toolId) === normalizedToolId);
     const audit = createMockDbAuditFields(0, session.userKey);
     if (existingRow) {
       existingRow.order = order;
@@ -990,17 +997,17 @@ class LocalDevMockDataSource {
     }
     const normalizedToolId = String(toolId || "");
     const tool = getActiveToolRegistry().find((candidate) => candidate.id === normalizedToolId);
-    if (!tool || tool.visibleInToolsList !== true) {
+    if (!tool) {
       throw new Error(`Unknown Toolbox metadata tool: ${normalizedToolId || "missing"}.`);
     }
     const rows = this.ensureToolboxToolMetadataRows();
-    const row = rows.find((candidate) => candidate.toolId === normalizedToolId);
+    const row = rows.find((candidate) => (candidate.toolKey || candidate.toolId) === normalizedToolId);
     if (!row) {
       throw new Error(`Toolbox metadata row missing for ${normalizedToolId}.`);
     }
     const group = String(updates.group || "").trim();
     const pathValue = String(updates.path || "").trim().replace(/^\/+/, "");
-    const releaseChannel = getToolReleaseChannel(updates.releaseChannel);
+    const releaseChannel = getToolReleaseChannel(updates.status || updates.releaseChannel);
     if (!group) {
       throw new Error("Toolbox metadata group is required.");
     }
@@ -1010,6 +1017,9 @@ class LocalDevMockDataSource {
     const audit = createMockDbAuditFields(0, session.userKey);
     row.group = group;
     row.path = pathValue;
+    row.status = releaseChannel;
+    row.toolKey = row.toolKey || row.toolId || normalizedToolId;
+    row.toolId = row.toolId || row.toolKey || normalizedToolId;
     row.releaseChannel = releaseChannel;
     row.releaseChannelLabel = getToolReleaseChannelLabel(releaseChannel);
     row.updatedAt = audit.updatedAt;
@@ -1027,7 +1037,7 @@ class LocalDevMockDataSource {
     if (!Array.isArray(toolIds)) {
       throw new Error("Toolbox vote reorder requires an ordered tool list.");
     }
-    const visibleTools = getActiveToolRegistry().filter((tool) => tool.visibleInToolsList === true);
+    const visibleTools = getActiveToolRegistry();
     const visibleToolIds = visibleTools.map((tool) => tool.id);
     const visibleToolIdSet = new Set(visibleToolIds);
     const orderedToolIds = toolIds.map((toolId) => String(toolId || "")).filter(Boolean);
@@ -1044,7 +1054,7 @@ class LocalDevMockDataSource {
     uniqueToolIds.forEach((toolId, index) => {
       const order = index + 1;
       const audit = createMockDbAuditFields(0, session.userKey);
-      const existingRow = rows.find((row) => row.toolId === toolId);
+      const existingRow = rows.find((row) => (row.toolKey || row.toolId) === toolId);
       if (existingRow) {
         existingRow.order = order;
         existingRow.updatedAt = audit.updatedAt;

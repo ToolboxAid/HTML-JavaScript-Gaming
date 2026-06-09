@@ -128,12 +128,12 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Project Journey']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Project Workspace']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 10/38");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 10/39");
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
-    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(28);
-    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(38);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 38/38");
+    await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(29);
+    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(39);
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 39/39");
     await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
 
@@ -190,7 +190,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (28)",
+      "Planned (29)",
       "Wireframe (4)",
       "Beta (5)",
       "Complete (1)",
@@ -206,7 +206,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await page.locator("[data-tools-view='build-path']").click();
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (28)",
+      "Planned (29)",
       "Wireframe (4)",
       "Beta (5)",
       "Complete (1)",
@@ -671,7 +671,7 @@ test("toolbox Build Path status filters support multi-select registry-matched to
     await expect(page.locator("[data-tools-sort='grouped']")).not.toHaveClass(/primary/);
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      "Planned (28)",
+      "Planned (29)",
       "Wireframe (4)",
       "Beta (5)",
       "Complete (1)",
@@ -683,26 +683,26 @@ test("toolbox Build Path status filters support multi-select registry-matched to
 
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expectActiveFilters(["planned", "complete"]);
-    await expectBuildPathChannels(["planned", "complete"], 29);
+    await expectBuildPathChannels(["planned", "complete"], 30);
     await expect(page.locator("[data-build-path-tool='AI Assistant']")).toBeVisible();
     await expectBuildPathOrder("AI Assistant", REGISTRY_BY_ID.get("ai-assistant").order);
     await expectBuildPathOrder("Colors", REGISTRY_BY_ID.get("colors").order);
 
     await page.locator("[data-toolbox-status-filter='complete']").click();
     await expectActiveFilters(["planned"]);
-    await expectBuildPathChannels(["planned"], 28);
+    await expectBuildPathChannels(["planned"], 29);
     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
     await expect(page.locator("[data-build-path-tool='AI Assistant']")).toBeVisible();
 
     await page.locator("[data-toolbox-status-filter='wireframe']").click();
     await expectActiveFilters(["planned", "wireframe"]);
-    await expectBuildPathChannels(["planned", "wireframe"], 32);
+    await expectBuildPathChannels(["planned", "wireframe"], 33);
     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
     await expectBuildPathOrder("Build Game", REGISTRY_BY_ID.get("build-game").order);
 
     await page.locator("[data-toolbox-status-filter='beta']").click();
     await expectActiveFilters(["planned", "wireframe", "beta"]);
-    await expectBuildPathChannels(["planned", "wireframe", "beta"], 37);
+    await expectBuildPathChannels(["planned", "wireframe", "beta"], 38);
 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);

@@ -98,13 +98,14 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         "Media",
         "Test",
         "Share",
-        "Account"
+        "Account",
+        "Admin"
     ]);
     const toolGroups = toolboxGroupOrder
         .map((group) => ({
             group,
             tools: registryTools
-                .filter((tool) => tool.toolboxGroup === group && tool.visibleInToolsList === true)
+                .filter((tool) => tool.toolboxGroup === group && includeToolInToolboxInventory(tool))
                 .sort((left, right) => (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER))
         }))
         .filter((group) => group.tools.length > 0);
@@ -131,7 +132,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         voteRowsByToolId.clear();
         toolboxVoteRows = snapshot?.rows || [];
         toolboxVoteRows.forEach((row) => {
-            voteRowsByToolId.set(row.toolId, row);
+            voteRowsByToolId.set(row.toolKey || row.toolId, row);
         });
     }
 
@@ -151,82 +152,6 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             recommendedNextTool: progress.recommendedNextTool
         };
     }
-    const buildPathGroups = [
-        {
-                "title": "Project Workspace",
-                "groupClass": "tool-group-build",
-                "note": "Start with the single project surface that coordinates current focus, readiness, and recommended next tool.",
-                "tools": [
-                        "Project Workspace",
-                        "Project Journey"
-                ]
-        },
-        {
-                "title": "Game Design",
-                "groupClass": "tool-group-design",
-                "note": "Define gameplay, rules, player experience, and the requirements that shape the build path.",
-                "tools": [
-                        "Game Design"
-                ]
-        },
-        {
-                "title": "Game Configuration",
-                "groupClass": "tool-group-build",
-                "note": "Complete playable setup from a valid Game Design handoff before Assets and Build Game readiness.",
-                "tools": [
-                        "Game Configuration"
-                ]
-        },
-        {
-                "title": "Required Tool Path",
-                "groupClass": "tool-group-design",
-                "note": "Use readiness fields to identify creator-facing blockers before a playable build.",
-                "tools": [
-                        "Colors",
-                        "Controls",
-                        "Assets",
-                        "Sprites",
-                        "Characters",
-                        "Objects",
-                        "Worlds",
-                        "Animations",
-                        "Audio"
-                ]
-        },
-        {
-                "title": "Build Game",
-                "groupClass": "tool-group-build",
-                "note": "Build Game is the package and playable-output checkpoint for this planned tool path.",
-                "tools": [
-                        "Build Game"
-                ]
-        },
-        {
-                "title": "Game Testing",
-                "groupClass": "tool-group-play",
-                "note": "Game Testing collects test readiness, hitboxes, debug policy, performance checks, and event review.",
-                "tools": [
-                        "Game Testing",
-                        "Hitboxes",
-                        "Debug",
-                        "Performance",
-                        "Events"
-                ]
-        },
-        {
-                "title": "Publish",
-                "groupClass": "tool-group-marketplace",
-                "note": "Publish is required for public release; Marketplace, Community, Languages, Achievements, and Ratings support Share readiness.",
-                "tools": [
-                        "Publish",
-                        "Marketplace",
-                        "Community",
-                        "Languages",
-                        "Achievements",
-                        "Ratings"
-                ]
-        }
-];
     function compareByTitle(left, right) {
         return left.title.localeCompare(right.title);
     }
@@ -255,6 +180,14 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         return releaseChannelHelpText[channel] || releaseChannelHelpText.planned;
     }
 
+    function includeToolInToolboxInventory(tool) {
+        return tool?.visibleInToolsList === true || (adminSession && tool?.adminOnly === true);
+    }
+
+    function toolboxInventoryTools() {
+        return registryTools.filter(includeToolInToolboxInventory);
+    }
+
     function hasSessionRole(roleName) {
         return sessionRoles.includes(roleName);
     }
@@ -275,7 +208,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const route = getToolRoute(registryTool);
         const path = String(metadata?.path || route || "").replace(/^\/+/, "");
         const title = registryTool.displayName || registryTool.name || tool.title || "Tool";
-        const releaseChannel = releaseChannelForTool(metadata?.releaseChannel || registryTool);
+        const releaseChannel = releaseChannelForTool(metadata?.status || metadata?.releaseChannel || registryTool);
         return {
             ...tool,
             capabilityLabel: registryTool.capabilityLabel,
@@ -290,6 +223,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             subgroup: registryTool.subgroup,
             theme: registryTool.category === "Audio" ? "bot" : "forge",
             title,
+            toolKey: metadata?.toolKey || metadata?.toolId || registryTool.id,
             adminOnly: registryTool?.adminOnly === true,
             group: metadata?.group || groupName,
             hidden: registryTool?.hidden === true,
@@ -471,17 +405,12 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         }));
     }
 
-    function sourceToolByTitle(title) {
-        const registryTool = registryToolsByTitle.get(title);
-        return registryTool ? enrichTool(registryTool) : null;
-    }
-
     function getBuildPathRows() {
         if (voteDiagnostic) {
             return [];
         }
         return registryTools
-            .filter((tool) => tool.visibleInToolsList === true)
+            .filter(includeToolInToolboxInventory)
             .map((tool) => enrichTool(tool))
             .filter(isVisibleForStatusFilter)
             .sort((left, right) => (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER) || left.title.localeCompare(right.title))
@@ -665,14 +594,13 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             return;
         }
         const visibleCount = filteredRoleAwareTools().length;
-        const totalCount = toolGroups.flatMap((group) => group.tools).length;
+        const totalCount = toolboxInventoryTools().length;
         toolCount.textContent = `Tool Count: ${visibleCount}/${totalCount}`;
     }
 
     function releaseChannelCounts() {
         const counts = Object.fromEntries(releaseChannelOrder.map((channel) => [channel, 0]));
-        registryTools
-            .filter((tool) => tool.visibleInToolsList === true)
+        toolboxInventoryTools()
             .map((tool) => enrichTool(tool))
             .forEach((tool) => {
                 counts[tool.releaseChannel] = (counts[tool.releaseChannel] || 0) + 1;
