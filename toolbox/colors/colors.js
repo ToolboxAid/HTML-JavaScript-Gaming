@@ -262,8 +262,29 @@ const CURATED_PALETTE_COLLECTIONS = Object.freeze([
       },
       {
         name: "Human",
-        names: Object.freeze(["Deep Skin", "Medium Skin", "Light Skin", "Dark Hair", "Auburn Hair", "Eye Blue", "Cloth Navy", "Warm Highlight"]),
-        swatches: swatches("#4B2A1E #8A5A3D #E2B891 #1A120F #8A4A2C #3B6EA5 #273D5F #F2D3B8")
+        names: Object.freeze([
+          "Deep Skin",
+          "Dark Skin",
+          "Medium Skin",
+          "Olive Skin",
+          "Light Skin",
+          "Pale Skin",
+          "Warm Highlight",
+          "Cool Shadow",
+          "Black Hair",
+          "Brown Hair",
+          "Auburn Hair",
+          "Blonde Hair",
+          "Gray Hair",
+          "Eye Blue",
+          "Eye Green",
+          "Eye Brown",
+          "Cloth Navy",
+          "Cloth Red",
+          "Cloth Green",
+          "Cloth Neutral"
+        ]),
+        swatches: swatches("#3A2118 #5A3224 #8A5A3D #9A7B4F #D7A982 #F0D1BA #FFE0C2 #2A2E38 #0D0A08 #4B2C1A #8A3E24 #C6A15D #B8B8B2 #3B6EA5 #3F7A52 #5A321E #273D5F #8F2F3D #4F6B45 #B2A08A")
       }
     ])
   },
@@ -868,7 +889,7 @@ function initializePaletteGeneratorSelectors() {
   renderPaletteVariantOptions();
 }
 
-function variantAdjustedHsl(hsl, variant, column, columns) {
+function variantAdjustedHsl(hsl, variant, column, columns, lightnessBounds = { minimum: 0, maximum: 100 }) {
   const safeHueSequence = [210, 35, 265, 175, 45, 320, 95, 15];
   const colorBlindHue = safeHueSequence[column % safeHueSequence.length];
   const variantTransforms = {
@@ -929,20 +950,31 @@ function variantAdjustedHsl(hsl, variant, column, columns) {
   return {
     hue: positiveHue(transformed.hue),
     saturation: clampNumber(transformed.saturation, 0, 100),
-    lightness: clampNumber(transformed.lightness, 10, 90)
+    lightness: clampNumber(transformed.lightness, lightnessBounds.minimum, lightnessBounds.maximum)
   };
 }
 
 function generatorLightness(baseLightness, row, rows, contrast, stepRange = PALETTE_GENERATOR_DEFAULTS.stepRange) {
   if (rows <= 1) {
-    return clampNumber(baseLightness, 10, 90);
+    return clampNumber(baseLightness, 0, 100);
   }
   const rowPosition = (row / (rows - 1)) * 2 - 1;
   const normalizedStepRange = clampNumber(stepRange, 0, 100);
-  const distance = (2 + clampNumber(contrast, 0, 100) * 0.31) * (normalizedStepRange / PALETTE_GENERATOR_DEFAULTS.stepRange);
-  const lightnessMinimum = normalizedStepRange >= 100 ? 0 : 10;
-  const lightnessMaximum = normalizedStepRange >= 100 ? 100 : 90;
-  return clampNumber(baseLightness - rowPosition * distance, lightnessMinimum, lightnessMaximum);
+  const magnitude = Math.abs(rowPosition);
+  if (magnitude === 0) {
+    return clampNumber(baseLightness, 0, 100);
+  }
+  const direction = rowPosition < 0 ? 1 : -1;
+  const defaultDistance = 2 + clampNumber(contrast, 0, 100) * 0.31;
+  const subtleTarget = clampNumber(baseLightness + direction * 2 * magnitude, 10, 90);
+  const defaultTarget = clampNumber(baseLightness + direction * defaultDistance * magnitude, 10, 90);
+  const extremeTarget = baseLightness + direction * (direction > 0 ? 100 - baseLightness : baseLightness) * magnitude;
+  if (normalizedStepRange <= PALETTE_GENERATOR_DEFAULTS.stepRange) {
+    const defaultRatio = normalizedStepRange / PALETTE_GENERATOR_DEFAULTS.stepRange;
+    return subtleTarget + (defaultTarget - subtleTarget) * defaultRatio;
+  }
+  const extremeRatio = (normalizedStepRange - PALETTE_GENERATOR_DEFAULTS.stepRange) / PALETTE_GENERATOR_DEFAULTS.stepRange;
+  return defaultTarget + (extremeTarget - defaultTarget) * extremeRatio;
 }
 
 function actualPaletteGeneratorRows(steps) {

@@ -181,18 +181,24 @@ function hexLightness(hex) {
   return (max + min) / 2;
 }
 
-async function firstColumnLightnessSpread(page) {
+async function columnLightnessSpread(page, column = 0) {
   const rows = await page.locator("[data-palette-generator-preview-row]").count();
-  const top = (await currentPreviewHexes(page, 0))[0];
-  const center = (await currentPreviewHexes(page, Math.floor(rows / 2)))[0];
-  const bottom = (await currentPreviewHexes(page, rows - 1))[0];
+  const top = (await currentPreviewHexes(page, 0))[column];
+  const center = (await currentPreviewHexes(page, Math.floor(rows / 2)))[column];
+  const bottom = (await currentPreviewHexes(page, rows - 1))[column];
+  const topLightness = hexLightness(top);
+  const centerLightness = hexLightness(center);
+  const bottomLightness = hexLightness(bottom);
   return {
     bottom,
-    bottomDistance: Math.abs(hexLightness(center) - hexLightness(bottom)),
+    bottomDistance: Math.abs(centerLightness - bottomLightness),
+    bottomLightness,
     center,
-    spread: Math.abs(hexLightness(top) - hexLightness(bottom)),
+    centerLightness,
+    spread: Math.abs(topLightness - bottomLightness),
     top,
-    topDistance: Math.abs(hexLightness(top) - hexLightness(center))
+    topDistance: Math.abs(topLightness - centerLightness),
+    topLightness
   };
 }
 
@@ -661,24 +667,35 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     const bottomColors = await currentPreviewHexes(page, 2);
     expect(topColors).not.toContain("#FFFFFF");
     expect(bottomColors).not.toContain("#000000");
-    const defaultStepRangeSpread = await firstColumnLightnessSpread(page);
+    const stepRangeEvidenceColumn = 3;
+    const defaultStepRangeSpread = await columnLightnessSpread(page, stepRangeEvidenceColumn);
     await page.locator("[data-palette-generator-step-range]").evaluate((control) => {
       control.value = "0";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
-    const tightStepRangeSpread = await firstColumnLightnessSpread(page);
+    const tightStepRangeSpread = await columnLightnessSpread(page, stepRangeEvidenceColumn);
+    expect(tightStepRangeSpread.topDistance).toBeGreaterThan(0);
+    expect(tightStepRangeSpread.bottomDistance).toBeGreaterThan(0);
     expect(tightStepRangeSpread.spread).toBeLessThan(defaultStepRangeSpread.spread);
+    expect(tightStepRangeSpread.topLightness).toBeLessThan(defaultStepRangeSpread.topLightness);
+    expect(tightStepRangeSpread.bottomLightness).toBeGreaterThan(defaultStepRangeSpread.bottomLightness);
+    expect(tightStepRangeSpread.center).toBe(defaultStepRangeSpread.center);
     await page.locator("[data-palette-generator-step-range]").evaluate((control) => {
       control.value = "100";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
-    const wideStepRangeSpread = await firstColumnLightnessSpread(page);
+    const wideStepRangeSpread = await columnLightnessSpread(page, stepRangeEvidenceColumn);
     expect(wideStepRangeSpread.spread).toBeGreaterThan(defaultStepRangeSpread.spread);
+    expect(wideStepRangeSpread.topLightness).toBeGreaterThan(defaultStepRangeSpread.topLightness);
+    expect(wideStepRangeSpread.bottomLightness).toBeLessThan(defaultStepRangeSpread.bottomLightness);
+    expect(wideStepRangeSpread.topLightness).toBeGreaterThan(0.98);
+    expect(wideStepRangeSpread.bottomLightness).toBeLessThan(0.02);
+    expect(wideStepRangeSpread.center).toBe(defaultStepRangeSpread.center);
     await page.locator("[data-palette-generator-step-range]").evaluate((control) => {
       control.value = "50";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
-    const restoredStepRangeSpread = await firstColumnLightnessSpread(page);
+    const restoredStepRangeSpread = await columnLightnessSpread(page, stepRangeEvidenceColumn);
     expect(restoredStepRangeSpread.top).toBe(defaultStepRangeSpread.top);
     expect(restoredStepRangeSpread.center).toBe(defaultStepRangeSpread.center);
     expect(restoredStepRangeSpread.bottom).toBe(defaultStepRangeSpread.bottom);
@@ -726,11 +743,57 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     expect(humanSkinHexes).toEqual(["#3A2118", "#5A3224", "#7A4B35", "#9D6B4D", "#B88661", "#D0A37A", "#E4BF9D", "#F3D8C4"]);
     await page.locator("[data-palette-generator-type]").selectOption("Human");
     await expect(page.locator("[data-palette-generator-swatch]").first()).toHaveAttribute("data-palette-generator-type-name", "Human");
+    await setGeneratorColors(page, "20");
     const humanCombinedNames = await page.locator("[data-palette-generator-swatch]").evaluateAll((swatches) => (
       swatches.map((swatch) => swatch.dataset.paletteGeneratorName)
     ));
-    expect(humanCombinedNames.join(" ")).toContain("Deep Skin");
-    expect(humanCombinedNames.join(" ")).toContain("Cloth Navy");
+    const humanCombinedHexes = await currentPreviewHexes(page, 0);
+    expect(humanCombinedHexes).toEqual([
+      "#3A2118",
+      "#5A3224",
+      "#8A5A3D",
+      "#9A7B4F",
+      "#D7A982",
+      "#F0D1BA",
+      "#FFE0C2",
+      "#2A2E38",
+      "#0D0A08",
+      "#4B2C1A",
+      "#8A3E24",
+      "#C6A15D",
+      "#B8B8B2",
+      "#3B6EA5",
+      "#3F7A52",
+      "#5A321E",
+      "#273D5F",
+      "#8F2F3D",
+      "#4F6B45",
+      "#B2A08A"
+    ]);
+    [
+      "Deep Skin",
+      "Dark Skin",
+      "Medium Skin",
+      "Olive Skin",
+      "Light Skin",
+      "Pale Skin",
+      "Warm Highlight",
+      "Cool Shadow",
+      "Black Hair",
+      "Brown Hair",
+      "Auburn Hair",
+      "Blonde Hair",
+      "Gray Hair",
+      "Eye Blue",
+      "Eye Green",
+      "Eye Brown",
+      "Cloth Navy",
+      "Cloth Red",
+      "Cloth Green",
+      "Cloth Neutral"
+    ].forEach((name) => {
+      expect(humanCombinedNames.join(" ")).toContain(name);
+    });
 
     await setGeneratorSteps(page, "8");
     await page.locator("[data-palette-theme-collection]").selectOption("Sci-Fi");
