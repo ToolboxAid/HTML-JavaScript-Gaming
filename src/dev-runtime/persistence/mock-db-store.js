@@ -21,6 +21,7 @@ export const MOCK_DB_KEYS = Object.freeze({
     user: makeMockUlid(72),
     admin: makeMockUlid(73),
     system: makeMockUlid(74),
+    beta: makeMockUlid(75),
   }),
   userRoles: Object.freeze({
     user1User: makeMockUlid(82),
@@ -29,6 +30,7 @@ export const MOCK_DB_KEYS = Object.freeze({
     adminUser: makeMockUlid(85),
     adminAdmin: makeMockUlid(86),
     forgeBotSystem: makeMockUlid(87),
+    user2Beta: makeMockUlid(88),
   }),
 });
 
@@ -730,14 +732,24 @@ export function getStandaloneMockDbSeedTables() {
         isActive: true,
         ...standaloneAudit(8),
       },
+      {
+        key: MOCK_DB_KEYS.roles.beta,
+        roleSlug: "beta",
+        name: "beta",
+        description: "Local beta access tester.",
+        isSystemRole: false,
+        isActive: true,
+        ...standaloneAudit(9),
+      },
     ],
     user_roles: [
-      { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(9) },
-      { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(10) },
-      { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(11) },
-      { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(12) },
-      { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...standaloneAudit(13) },
-      { key: MOCK_DB_KEYS.userRoles.forgeBotSystem, userKey: MOCK_DB_KEYS.users.forgeBot, roleKey: MOCK_DB_KEYS.roles.system, ...standaloneAudit(14) },
+      { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(10) },
+      { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(11) },
+      { key: MOCK_DB_KEYS.userRoles.user2Beta, userKey: MOCK_DB_KEYS.users.user2, roleKey: MOCK_DB_KEYS.roles.beta, ...standaloneAudit(12) },
+      { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(13) },
+      { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(14) },
+      { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...standaloneAudit(15) },
+      { key: MOCK_DB_KEYS.userRoles.forgeBotSystem, userKey: MOCK_DB_KEYS.users.forgeBot, roleKey: MOCK_DB_KEYS.roles.system, ...standaloneAudit(16) },
     ],
   };
 }

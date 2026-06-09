@@ -23,6 +23,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     const groupedButton = document.querySelector("[data-tools-sort='grouped']");
     const buildPathButton = document.querySelector("[data-tools-view='build-path']");
     const toolCount = document.querySelector("[data-tools-count]");
+    const statusFilterList = document.querySelector("[data-toolbox-status-filters]");
+    const launchStatus = document.querySelector("[data-toolbox-launch-status]");
     const searchParams = new URLSearchParams(window.location.search);
     const projectWorkspaceRepository = createProjectWorkspaceApiRepository();
     projectWorkspaceRepository.resetProjectData();
@@ -33,8 +35,33 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         : defaultProjectMemberRole;
     const session = getSessionCurrent();
     const adminSession = session?.isAdmin === true;
+    const sessionRoles = Array.isArray(session?.roleSlugs) ? session.roleSlugs : [];
+    const betaSession = sessionRoles.includes("beta");
     let currentMode = searchParams.get("view") === "group" ? "grouped" : searchParams.get("view") === "build-path" ? "build-path" : "ascending";
     let targetGroupSlug = currentMode === "grouped" ? groupSlug(searchParams.get("group")) : "";
+    const releaseChannelOrder = Object.freeze(["complete", "beta", "wireframe", "planned"]);
+    const defaultReleaseChannels = Object.freeze(["complete", "beta", "wireframe"]);
+    const visibleReleaseChannels = new Set(defaultReleaseChannels);
+    const releaseChannelLabels = Object.freeze({
+        complete: "Complete",
+        beta: "Beta",
+        wireframe: "Wireframe",
+        planned: "Planned"
+    });
+    const releaseChannelHelpText = Object.freeze({
+        planned: "Idea exists.\nNot yet available.",
+        wireframe: "Preview the planned workflow and layout.\nHelp shape the design before development begins.",
+        beta: "Ready to try.\nFeatures, layout, and workflows may change based on feedback.",
+        complete: "Production ready and fully supported."
+    });
+    const releaseChannelByStatus = Object.freeze({
+        Ready: "complete",
+        Wireframe: "wireframe",
+        "Under Construction": "beta",
+        Planned: "planned",
+        Hidden: "planned",
+        Deprecated: "planned"
+    });
     const buildPathStatusIndicators = Object.freeze({
         complete: "\u{1F7E2} Complete",
         "in-progress": "\u{1F7E1} In Progress",
@@ -193,6 +220,32 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         return left.group.localeCompare(right.group);
     }
 
+    function releaseChannelForTool(tool) {
+        const explicitChannel = typeof tool?.releaseChannel === "string" ? tool.releaseChannel.trim().toLowerCase() : "";
+        if (releaseChannelOrder.includes(explicitChannel)) {
+            return explicitChannel;
+        }
+        return releaseChannelByStatus[tool?.status] || "planned";
+    }
+
+    function releaseChannelLabel(channel) {
+        return releaseChannelLabels[channel] || releaseChannelLabels.planned;
+    }
+
+    function releaseChannelHelp(channel) {
+        return releaseChannelHelpText[channel] || releaseChannelHelpText.planned;
+    }
+
+    function hasSessionRole(roleName) {
+        return sessionRoles.includes(roleName);
+    }
+
+    function announceToolboxStatus(message) {
+        if (launchStatus) {
+            launchStatus.textContent = message;
+        }
+    }
+
     function colorGroupForTool(tool) {
         return tool.category || "Platform";
     }
@@ -201,6 +254,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const registryTool = registryToolForCard(tool) || tool;
         const route = getToolRoute(registryTool);
         const title = registryTool.displayName || registryTool.name || tool.title || "Tool";
+        const releaseChannel = releaseChannelForTool(registryTool);
         return {
             ...tool,
             capabilityLabel: registryTool.capabilityLabel,
@@ -222,8 +276,12 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             missingStatusMetadata: registryTool?.missingStatusMetadata !== false,
             progressChecklist: registryTool?.progressChecklist || [],
             readiness: registryTool?.readiness || "No",
+            releaseChannel,
+            releaseChannelHelpText: registryTool.releaseChannelHelpText || releaseChannelHelp(releaseChannel),
+            releaseChannelLabel: registryTool.releaseChannelLabel || releaseChannelLabel(releaseChannel),
             requiredForPublish: registryTool?.requiredForPublish === true,
             requiredForTestable: registryTool?.requiredForTestable === true,
+            requiredRole: typeof registryTool?.requiredRole === "string" ? registryTool.requiredRole : "",
             requires: registryTool?.requires || [],
             status: registryTool?.status || "Missing Metadata",
             statusDiagnostic: registryTool
@@ -236,7 +294,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         if (adminSession) {
             return true;
         }
-        return tool.adminOnly !== true && tool.status === "Ready";
+        return tool.adminOnly !== true && (tool.releaseChannel === "complete" || tool.releaseChannel === "beta");
     }
 
     function activeRoleFocus() {
@@ -298,6 +356,23 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         return visibleToolGroups().flatMap((group) => group.tools);
     }
 
+    function isVisibleForStatusFilter(tool) {
+        return visibleReleaseChannels.has(tool.releaseChannel);
+    }
+
+    function filteredRoleAwareTools() {
+        return roleAwareTools().filter(isVisibleForStatusFilter);
+    }
+
+    function filteredVisibleToolGroups() {
+        return visibleToolGroups()
+            .map((group) => ({
+                ...group,
+                tools: group.tools.filter(isVisibleForStatusFilter)
+            }))
+            .filter((group) => group.tools.length > 0);
+    }
+
     function groupClass(groupName) {
         return registryTools.find((tool) => tool.category === groupName)?.colorGroup || "";
     }
@@ -328,7 +403,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function getOrderedTools(mode) {
-        const tools = roleAwareTools();
+        const tools = filteredRoleAwareTools();
         tools.sort((left, right) => left.title.localeCompare(right.title));
         if (mode === "descending") {
             tools.reverse();
@@ -337,7 +412,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function getGroupedTools() {
-        return visibleToolGroups().map((toolGroup) => ({
+        return filteredVisibleToolGroups().map((toolGroup) => ({
             title: toolGroup.group,
             tools: toolGroup.tools.map((tool) => ({
                 ...tool,
@@ -574,9 +649,51 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         if (!toolCount) {
             return;
         }
-        const visibleCount = roleAwareTools().length;
+        const visibleCount = filteredRoleAwareTools().length;
         const totalCount = toolGroups.flatMap((group) => group.tools).length;
         toolCount.textContent = `Tool Count: ${visibleCount}/${totalCount}`;
+    }
+
+    function releaseChannelCounts() {
+        const counts = Object.fromEntries(releaseChannelOrder.map((channel) => [channel, 0]));
+        roleAwareTools().forEach((tool) => {
+            counts[tool.releaseChannel] = (counts[tool.releaseChannel] || 0) + 1;
+        });
+        return counts;
+    }
+
+    function renderStatusFilters() {
+        if (!statusFilterList) {
+            return;
+        }
+
+        const counts = releaseChannelCounts();
+        const buttons = releaseChannelOrder.map((channel) => {
+            const button = document.createElement("button");
+            button.className = visibleReleaseChannels.has(channel) ? "btn btn--compact primary" : "btn btn--compact";
+            button.type = "button";
+            button.dataset.toolboxStatusFilter = channel;
+            button.setAttribute("aria-pressed", String(visibleReleaseChannels.has(channel)));
+            button.title = releaseChannelHelp(channel);
+            button.textContent = `${releaseChannelLabel(channel)} (${counts[channel] || 0})`;
+            button.addEventListener("click", () => {
+                if (visibleReleaseChannels.has(channel)) {
+                    visibleReleaseChannels.delete(channel);
+                } else {
+                    visibleReleaseChannels.add(channel);
+                }
+                const activeLabels = releaseChannelOrder
+                    .filter((item) => visibleReleaseChannels.has(item))
+                    .map(releaseChannelLabel);
+                announceToolboxStatus(activeLabels.length
+                    ? `Showing ${activeLabels.join(", ")} tools.`
+                    : "No status filters are selected.");
+                render(currentMode);
+            });
+            return button;
+        });
+
+        statusFilterList.replaceChildren(...buttons);
     }
 
     function createGroupSwatch(groupName) {
@@ -630,6 +747,50 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         return route ? "/" + route.replace(/^\/+/, "") : "";
     }
 
+    function betaAccessBlocked(tool) {
+        return tool.releaseChannel === "beta" &&
+            tool.requiredRole === "beta" &&
+            !adminSession &&
+            !betaSession &&
+            !hasSessionRole("beta");
+    }
+
+    function plannedLaunchBlocked(tool) {
+        return tool.releaseChannel === "planned";
+    }
+
+    function launchBlockedMessage(tool) {
+        if (betaAccessBlocked(tool)) {
+            return "This tool is in beta. Request beta access to try it.";
+        }
+        if (plannedLaunchBlocked(tool)) {
+            return `${tool.title} is planned. Vote or review planned details here before runtime work begins.`;
+        }
+        return "";
+    }
+
+    function configureToolLaunchLink(link, tool) {
+        if (!link || !tool) {
+            return;
+        }
+        link.dataset.toolboxLaunchLink = tool.title;
+        link.dataset.toolboxReleaseChannel = tool.releaseChannel;
+        if (betaAccessBlocked(tool)) {
+            link.dataset.toolboxLaunchBlocked = "beta";
+        }
+        if (plannedLaunchBlocked(tool)) {
+            link.dataset.toolboxLaunchBlocked = "planned";
+        }
+        link.addEventListener("click", (event) => {
+            const message = launchBlockedMessage(tool);
+            if (!message) {
+                return;
+            }
+            event.preventDefault();
+            announceToolboxStatus(message);
+        });
+    }
+
     function createToolNameHeading(tool, registryTool) {
         const title = document.createElement("h3");
         const href = registryToolHref(registryTool);
@@ -645,6 +806,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         link.dataset.registeredToolRoute = route;
         link.dataset.toolboxToolNameLink = tool.title;
         link.textContent = tool.title;
+        configureToolLaunchLink(link, tool);
         title.append(link);
         return title;
     }
@@ -717,15 +879,75 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const link = document.createElement("a");
         link.className = "btn";
         link.href = tool.href;
-        link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
+        configureToolLaunchLink(link, tool);
+        if (tool.releaseChannel === "planned") {
+            link.textContent = "Planned Details";
+        } else if (tool.releaseChannel === "wireframe") {
+            link.textContent = "Open Preview";
+        } else {
+            link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
+        }
 
         const readiness = document.createElement("span");
         readiness.className = "pill";
-        readiness.dataset.toolboxReadiness = tool.status;
-        readiness.textContent = tool.status;
+        readiness.dataset.toolboxReadiness = tool.releaseChannelLabel;
+        readiness.dataset.toolboxReleaseChannel = tool.releaseChannel;
+        readiness.dataset.toolboxKicker = tool.releaseChannelLabel;
+        readiness.title = tool.releaseChannelHelpText;
+        readiness.setAttribute("aria-label", `${tool.releaseChannelLabel}: ${tool.releaseChannelHelpText.replace(/\s+/g, " ")}`);
+        readiness.textContent = tool.releaseChannelLabel;
 
         row.append(badge, link, createGroupSwatch(tool.group), readiness);
         return row;
+    }
+
+    function createToolVoteControls(tool) {
+        if (tool.releaseChannel !== "planned" && tool.releaseChannel !== "wireframe") {
+            return null;
+        }
+
+        const row = document.createElement("div");
+        row.className = "content-cluster";
+        row.dataset.toolboxVoteControls = tool.title;
+
+        const label = document.createElement("span");
+        label.textContent = "Feedback";
+
+        const upVote = document.createElement("button");
+        upVote.className = "btn btn--compact";
+        upVote.type = "button";
+        upVote.dataset.toolboxVote = "up";
+        upVote.setAttribute("aria-label", `Up vote ${tool.title}`);
+        upVote.textContent = "Up";
+
+        const downVote = document.createElement("button");
+        downVote.className = "btn btn--compact";
+        downVote.type = "button";
+        downVote.dataset.toolboxVote = "down";
+        downVote.setAttribute("aria-label", `Down vote ${tool.title}`);
+        downVote.textContent = "Down";
+
+        [upVote, downVote].forEach((button) => {
+            button.addEventListener("click", () => {
+                const direction = button.dataset.toolboxVote === "up" ? "up" : "down";
+                announceToolboxStatus(`${tool.title} ${direction} vote noted as a non-persistent wireframe control.`);
+            });
+        });
+
+        row.append(label, upVote, downVote);
+        return row;
+    }
+
+    function createPlannedDetails(tool) {
+        if (tool.releaseChannel !== "planned") {
+            return null;
+        }
+        const details = document.createElement("p");
+        details.className = "status";
+        details.dataset.toolboxPlannedDetails = tool.title;
+        details.setAttribute("role", "status");
+        details.textContent = "Planned details and vote controls are shown here; runtime launch is not available yet.";
+        return details;
     }
 
     function createToolValues(tool, options = {}) {
@@ -759,6 +981,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const article = document.createElement("article");
         article.className = `control-card ${groupClass(tool.group)}`;
         article.dataset.mascot = tool.mascot;
+        article.dataset.toolboxReleaseChannel = tool.releaseChannel;
+        article.dataset.toolboxToolCard = tool.title;
         article.dataset.toolboxRole = tool.adminOnly ? "admin" : tool.hidden ? "hidden" : tool.planned ? "planned" : "creator";
 
         const body = document.createElement("div");
@@ -770,6 +994,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         mediaLink.className = "card-media-link";
         mediaLink.href = tool.href;
         mediaLink.setAttribute("aria-label", "Open " + tool.title);
+        configureToolLaunchLink(mediaLink, tool);
         const image = document.createElement("img");
         image.src = registryImageSource(registryTool, "tool");
         image.alt = tool.title + " preview";
@@ -787,6 +1012,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const description = document.createElement("p");
         description.textContent = tool.description;
         const actionRow = createToolActionRow(tool, registryTool, body);
+        const voteControls = createToolVoteControls(tool);
+        const plannedDetails = createPlannedDetails(tool);
         const values = createToolValues(tool, options);
 
         const cardParts = [title, description];
@@ -797,6 +1024,12 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             cardParts.push(statusDiagnostic);
         }
         cardParts.push(actionRow);
+        if (voteControls) {
+            cardParts.push(voteControls);
+        }
+        if (plannedDetails) {
+            cardParts.push(plannedDetails);
+        }
         if (values) {
             cardParts.push(values);
         }
@@ -864,6 +1097,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         currentMode = mode;
         setActiveButton(mode);
         updateToolCount();
+        renderStatusFilters();
     }
 
     if (orderButton) {

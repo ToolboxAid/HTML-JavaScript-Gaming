@@ -9,6 +9,27 @@ export const TOOL_STATUS_MODEL = Object.freeze([
   "Deprecated"
 ]);
 
+export const TOOL_RELEASE_CHANNELS = Object.freeze([
+  "planned",
+  "wireframe",
+  "beta",
+  "complete"
+]);
+
+export const TOOL_RELEASE_CHANNEL_LABELS = Object.freeze({
+  planned: "Planned",
+  wireframe: "Wireframe",
+  beta: "Beta",
+  complete: "Complete"
+});
+
+export const TOOL_RELEASE_CHANNEL_HELP_TEXT = Object.freeze({
+  planned: "Idea exists.\nNot yet available.",
+  wireframe: "Preview the planned workflow and layout.\nHelp shape the design before development begins.",
+  beta: "Ready to try.\nFeatures, layout, and workflows may change based on feedback.",
+  complete: "Production ready and fully supported."
+});
+
 export const TOOL_REGISTRY_REQUIRED_METADATA_FIELDS = Object.freeze([
   "adminOnly",
   "deferred",
@@ -29,6 +50,15 @@ const READINESS_BY_STATUS = Object.freeze({
   Planned: "No",
   Hidden: "No",
   Deprecated: "No"
+});
+
+const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
+  Ready: "complete",
+  Wireframe: "wireframe",
+  "Under Construction": "beta",
+  Planned: "planned",
+  Hidden: "planned",
+  Deprecated: "planned"
 });
 
 export const TOOL_REGISTRY = Object.freeze([
@@ -53,6 +83,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForPublish": false,
     "requires": [],
     "status": "Wireframe",
+    "releaseChannel": "beta",
+    "requiredRole": "beta",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"
@@ -1574,6 +1606,28 @@ export function getToolProgressReadiness(status) {
   return READINESS_BY_STATUS[status] || "No";
 }
 
+export function getToolReleaseChannel(toolOrChannel) {
+  if (typeof toolOrChannel === "string") {
+    const normalizedChannel = toolOrChannel.trim().toLowerCase();
+    return TOOL_RELEASE_CHANNELS.includes(normalizedChannel) ? normalizedChannel : "planned";
+  }
+  const explicitChannel = typeof toolOrChannel?.releaseChannel === "string"
+    ? toolOrChannel.releaseChannel.trim().toLowerCase()
+    : "";
+  if (TOOL_RELEASE_CHANNELS.includes(explicitChannel)) {
+    return explicitChannel;
+  }
+  return RELEASE_CHANNEL_BY_STATUS[toolOrChannel?.status] || "planned";
+}
+
+export function getToolReleaseChannelLabel(toolOrChannel) {
+  return TOOL_RELEASE_CHANNEL_LABELS[getToolReleaseChannel(toolOrChannel)] || TOOL_RELEASE_CHANNEL_LABELS.planned;
+}
+
+export function getToolReleaseChannelHelpText(toolOrChannel) {
+  return TOOL_RELEASE_CHANNEL_HELP_TEXT[getToolReleaseChannel(toolOrChannel)] || TOOL_RELEASE_CHANNEL_HELP_TEXT.planned;
+}
+
 export function getMissingToolRegistryFields(tool) {
   if (!tool) {
     return [...TOOL_REGISTRY_REQUIRED_METADATA_FIELDS];
@@ -1593,6 +1647,7 @@ export function getMissingToolRegistryFields(tool) {
 export function applyToolRegistryMetadata(tool) {
   const missingFields = getMissingToolRegistryFields(tool);
   const hasMissingMetadata = missingFields.length > 0;
+  const releaseChannel = getToolReleaseChannel(tool);
   return {
     ...tool,
     adminOnly: tool?.adminOnly === true || hasMissingMetadata,
@@ -1602,9 +1657,13 @@ export function applyToolRegistryMetadata(tool) {
     missingStatusMetadata: hasMissingMetadata,
     progressChecklist: Array.isArray(tool?.progressChecklist) ? [...tool.progressChecklist] : [],
     readiness: getToolProgressReadiness(tool?.status),
+    releaseChannel,
+    releaseChannelHelpText: getToolReleaseChannelHelpText(releaseChannel),
+    releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
     requiredForPlayable: tool?.requiredForPlayable === true,
     requiredForPublish: tool?.requiredForPublish === true,
     requiredForTestable: tool?.requiredForTestable === true,
+    requiredRole: typeof tool?.requiredRole === "string" ? tool.requiredRole.trim().toLowerCase() : "",
     requires: Array.isArray(tool?.requires) ? [...tool.requires] : [],
     status: TOOL_STATUS_MODEL.includes(tool?.status) ? tool.status : "Missing Metadata",
     visibility: {

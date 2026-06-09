@@ -1,0 +1,4 @@
+[ ] context disable
+[ ] windows key disable
+[ ] disable keyboard special (function key, not fuction key actions
+[ ]public or private
