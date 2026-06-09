@@ -1,4 +1,9 @@
 
-- Remove-Item .\directory-name -Recurse -Force
+- Start server:
+npm run dev:local-api
 
-- tree /f
+- Delete directory recursivly
+Remove-Item .\directory-name -Recurse -Force
+
+- display directory, subdirectories and files
+tree /f
