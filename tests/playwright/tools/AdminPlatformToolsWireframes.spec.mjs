@@ -139,21 +139,68 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
       const center = workspace.querySelector("[data-toolbox-votes-panel]");
       const right = workspace.querySelector(".tool-column:last-of-type");
       const scrollRegion = workspace.querySelector("[data-toolbox-votes-scroll-region]");
+      const header = document.querySelector("header.site-header");
+      const footer = document.querySelector("footer.footer");
+      const bodyScrollBefore = document.scrollingElement?.scrollTop || 0;
+      const tableBody = scrollRegion?.querySelector("tbody");
+      const sourceRow = tableBody?.querySelector("tr");
+      if (tableBody && sourceRow) {
+        for (let index = 0; index < 90; index += 1) {
+          const clone = sourceRow.cloneNode(true);
+          clone.dataset.toolboxVotesLargeCountRow = String(index + 1);
+          tableBody.append(clone);
+        }
+      }
+      if (scrollRegion) {
+        scrollRegion.scrollTop = scrollRegion.scrollHeight;
+        scrollRegion.scrollLeft = scrollRegion.scrollWidth;
+      }
+      if (footer) {
+        footer.scrollTop = footer.scrollHeight;
+      }
+      const headerBox = header?.getBoundingClientRect();
+      const footerBox = footer?.getBoundingClientRect();
       return {
         bodyOverflowY: getComputedStyle(document.body).overflowY,
+        bodyScrollAfter: document.scrollingElement?.scrollTop || 0,
+        bodyScrollBefore,
         centerOverflowY: center ? getComputedStyle(center).overflowY : "",
+        footerBottom: footerBox ? Math.round(footerBox.bottom) : 0,
+        footerOverflowY: footer ? getComputedStyle(footer).overflowY : "",
+        footerPosition: footer ? getComputedStyle(footer).position : "",
+        footerScrollable: footer ? footer.scrollHeight > footer.clientHeight : false,
+        footerScrollTop: footer ? footer.scrollTop : 0,
+        headerPosition: header ? getComputedStyle(header).position : "",
+        headerTop: headerBox ? Math.round(headerBox.top) : 0,
+        horizontalScrollLeft: scrollRegion ? scrollRegion.scrollLeft : 0,
+        horizontalScrollable: scrollRegion ? scrollRegion.scrollWidth > scrollRegion.clientWidth : false,
         leftOverflowY: left ? getComputedStyle(left).overflowY : "",
         rightOverflowY: right ? getComputedStyle(right).overflowY : "",
         scrollRegionHeight: scrollRegion ? scrollRegion.clientHeight : 0,
+        scrollRegionScrollTop: scrollRegion ? scrollRegion.scrollTop : 0,
+        scrollRegionVerticalScrollable: scrollRegion ? scrollRegion.scrollHeight > scrollRegion.clientHeight : false,
         scrollRegionOverflowY: scrollRegion ? getComputedStyle(scrollRegion).overflowY : "",
+        viewportHeight: window.innerHeight,
       };
     });
     expect(fullscreenMetrics.bodyOverflowY).toBe("hidden");
+    expect(fullscreenMetrics.bodyScrollAfter).toBe(fullscreenMetrics.bodyScrollBefore);
+    expect(fullscreenMetrics.headerPosition).toBe("fixed");
+    expect(fullscreenMetrics.headerTop).toBe(0);
+    expect(fullscreenMetrics.footerPosition).toBe("fixed");
+    expect(fullscreenMetrics.footerBottom).toBeLessThanOrEqual(fullscreenMetrics.viewportHeight);
+    expect(fullscreenMetrics.footerOverflowY).toBe("auto");
+    expect(fullscreenMetrics.footerScrollable).toBe(true);
+    expect(fullscreenMetrics.footerScrollTop).toBeGreaterThan(0);
     expect(fullscreenMetrics.leftOverflowY).toBe("hidden");
     expect(fullscreenMetrics.centerOverflowY).toBe("hidden");
     expect(fullscreenMetrics.rightOverflowY).toBe("hidden");
     expect(fullscreenMetrics.scrollRegionOverflowY).toBe("auto");
     expect(fullscreenMetrics.scrollRegionHeight).toBeGreaterThan(0);
+    expect(fullscreenMetrics.scrollRegionVerticalScrollable).toBe(true);
+    expect(fullscreenMetrics.scrollRegionScrollTop).toBeGreaterThan(0);
+    expect(fullscreenMetrics.horizontalScrollable).toBe(true);
+    expect(fullscreenMetrics.horizontalScrollLeft).toBeGreaterThan(0);
 
     await expectNoPageFailures(failures);
   } finally {

@@ -12,8 +12,12 @@
 | --- | --- | --- |
 | Convert Admin > Tool Votes from standalone page into Tool Template V2-based admin tool. | `admin/tool-votes.html` now uses `container--tool-wide`, `tool-workspace tool-workspace--wide`, left/right `tool-column` panels, `tool-center-panel`, and `tool-display-mode.js`. | PASS |
 | Preserve Admin placement and left-column Admin navigation. | Left Admin Tools accordion keeps Tool Votes, Environments, Users, Game Migration, and Platform Settings with Tool Votes active. | PASS |
-| Fullscreen keeps header and footer visible. | Reusable `tool-workspace--fullscreen-chrome` rules in `assets/theme-v2/css/layout.css`; Playwright asserts `header.site-header` and `footer.footer` visible in focus mode. | PASS |
-| In fullscreen, only the data/table area should scroll. | Reusable `tool-workspace--table-scroll-focus` plus `tool-table-scroll-region`; Playwright asserts side/center panels are hidden overflow and table region owns `overflow-y:auto`. | PASS |
+| Fullscreen keeps header visible and fixed at top. | Reusable `tool-workspace--fullscreen-chrome` rules in `assets/theme-v2/css/layout.css`; Playwright asserts `header.site-header` is visible, `position: fixed`, and top-aligned at `0`. | PASS |
+| Fullscreen keeps footer visible and fixed at bottom. | Playwright asserts `footer.footer` is visible, `position: fixed`, bottom-aligned inside the viewport, and has its own `overflow-y:auto` when content needs a footer scrollbar. | PASS |
+| Fullscreen does not scroll the entire page. | Playwright asserts `document.body` keeps `overflow-y:hidden` and page scroll position does not change during table scroll testing. | PASS |
+| In fullscreen, only the data/table area should scroll vertically. | Reusable `tool-workspace--table-scroll-focus` plus `tool-table-scroll-region`; Playwright injects additional table rows, scrolls the table region, and verifies side/center panels remain hidden overflow. | PASS |
+| Preserve horizontal scrolling for wide Tool Vote tables. | Playwright verifies the table wrapper is horizontally scrollable and `scrollLeft` moves for the wide table. | PASS |
+| Verify Tool Vote table remains usable with large tool counts. | Playwright clones 90 extra rows in the test DOM, verifies vertical scrolling is owned by `data-toolbox-votes-scroll-region`, and keeps the body locked. | PASS |
 | Remove old page-specific table width controls. | Removed Expand Table Width, Standard table width, and old `data-toolbox-votes-expanded` CSS. Static search found no active page/script/CSS matches. | PASS |
 | Remove old selected metadata controls. | Removed Selected Order, Selected Group, Selected Path, Group field, Path field, Status field, and Update Metadata from HTML/JS. Static search found no active page/script/CSS matches. | PASS |
 | Keep table rows, votes, ordering, sorting, and tool links. | `admin/tool-votes.js` preserves row rendering, vote columns, drag/drop ordering, sort buttons, and tool link cells; Playwright verified row links, sorting, and drag/drop reorder. | PASS |
@@ -28,9 +32,7 @@
 Targeted Admin Tool Vote validation only:
 - `node --check admin/tool-votes.js`
 - `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-- `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
 - `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Tool Votes"`
-- `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --grep "toolbox status kickers"`
 - `git diff --check`
 - Static `rg` checks for removed controls and inline script/style/event handlers
 
@@ -40,4 +42,4 @@ Full samples validation was skipped as requested. No samples, shared sample load
 
 ## Manual Test Notes
 
-The targeted Playwright lane verified the converted Tool Template V2 structure, Admin navigation, fullscreen chrome/table-scroll behavior, removed controls, editable State, sorting, ordering, and tool links. It also verified State edits flow into Toolbox Build Path through the existing DB-backed metadata source.
+The targeted Playwright lane verified the converted Tool Template V2 structure, Admin navigation, fixed fullscreen header/footer, footer scrollbar access, locked page scrolling, independent vertical table scrolling with large row counts, horizontal table scrolling, and removed controls. Earlier PR_26160_067 validation also verified editable State, sorting, ordering, tool links, and State edits flowing into Toolbox Build Path through the existing DB-backed metadata source.

@@ -283,34 +283,63 @@ body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) .footer {
 }
 
 body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh
+  --tool-focus-header-reserve: var(--space-78);
+  --tool-focus-footer-reserve: calc(var(--space-78) + var(--space-78));
+  min-height: 100vh;
+  padding-block: var(--tool-focus-header-reserve) var(--tool-focus-footer-reserve)
+}
+
+body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) .site-header {
+  inset-block-start: var(--space-0);
+  inset-inline: var(--space-0);
+  max-height: var(--tool-focus-header-reserve);
+  overflow: visible;
+  position: fixed;
+  z-index: var(--z-index-lg)
+}
+
+body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) .footer {
+  inset-block-end: var(--space-0);
+  inset-inline: var(--space-0);
+  margin-top: var(--space-0);
+  max-height: var(--tool-focus-footer-reserve);
+  overflow: auto;
+  padding-block: var(--space-10);
+  position: fixed;
+  z-index: var(--z-index-lg)
 }
 
 body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) main {
   display: flex;
   flex: 1 1 auto;
   flex-direction: column;
-  min-height: var(--space-0)
+  height: calc(100vh - var(--tool-focus-header-reserve) - var(--tool-focus-footer-reserve));
+  min-height: var(--space-0);
+  overflow: hidden
 }
 
 body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) .section {
   display: flex;
   flex: 1 1 auto;
   min-height: var(--space-0);
+  overflow: hidden;
   padding: var(--space-8) var(--space-0)
 }
 
 body.tool-focus-mode:has(.tool-workspace--fullscreen-chrome) .section>.container {
   display: flex;
   flex: 1 1 auto;
-  min-height: var(--space-0)
+  height: 100%;
+  max-height: 100%;
+  min-height: var(--space-0);
+  overflow: hidden
 }
 
 body.tool-focus-mode .tool-workspace--fullscreen-chrome {
+  flex: 1 1 auto;
   height: 100%;
   max-height: 100%;
+  min-height: var(--space-0);
   width: 100%
 }
 
@@ -330,7 +359,8 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-center-panel {
 body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-region {
   flex: 1 1 auto;
   min-height: var(--space-0);
-  overflow: auto
+  overflow: auto;
+  overscroll-behavior: contain
 }
 
 .account-panel {
