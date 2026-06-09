@@ -46,12 +46,51 @@ function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
+async function expectFullscreenColumnsInsideViewport(page) {
+  const metrics = await page.locator(".tool-workspace").evaluate((workspace) => {
+    const left = workspace.querySelector(".tool-column:first-of-type");
+    const center = workspace.querySelector(".tool-center-panel");
+    const right = workspace.querySelector(".tool-column:last-of-type");
+    const centerScrollBody = center?.querySelector(".accordion-scroll-body") ||
+      center?.querySelector(":scope > details.vertical-accordion > .accordion-body");
+    const boxes = [left, center, right].map((node) => {
+      const box = node.getBoundingClientRect();
+      return {
+        bottom: Math.round(box.bottom),
+        top: Math.round(box.top)
+      };
+    });
+    return {
+      bodyOverflowY: getComputedStyle(document.body).overflowY,
+      centerScrollBodyOverflowY: centerScrollBody ? getComputedStyle(centerScrollBody).overflowY : "",
+      centerOverflowY: center ? getComputedStyle(center).overflowY : "",
+      columns: boxes,
+      documentOverflow: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight,
+      leftOverflowY: left ? getComputedStyle(left).overflowY : "",
+      rightOverflowY: right ? getComputedStyle(right).overflowY : "",
+      viewportHeight: Math.round(window.innerHeight)
+    };
+  });
+
+  expect(metrics.bodyOverflowY).toBe("hidden");
+  expect(metrics.leftOverflowY).toBe("auto");
+  expect(["auto", "hidden"]).toContain(metrics.centerOverflowY);
+  expect(metrics.centerScrollBodyOverflowY).toBe("auto");
+  expect(metrics.rightOverflowY).toBe("auto");
+  expect(metrics.documentOverflow).toBeLessThanOrEqual(2);
+  metrics.columns.forEach((box) => {
+    expect(box.top).toBeGreaterThanOrEqual(0);
+    expect(box.bottom).toBeLessThanOrEqual(metrics.viewportHeight + 1);
+  });
+}
+
 async function expectToolCenterAccordionFlex(page) {
   const centerPanel = page.locator(".tool-center-panel");
   const accordions = centerPanel.locator("> details.vertical-accordion");
   await expect(accordions).toHaveCount(2);
   await page.getByLabel("Tool Display Mode").click();
   await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
+  await expectFullscreenColumnsInsideViewport(page);
   await expect(centerPanel).toHaveCSS("overflow-y", "hidden");
 
   await accordions.nth(1).locator("summary").click();

@@ -414,6 +414,7 @@ const elements = {
   storagePath: document.querySelector("[data-palette-storage-path]"),
   tableCounts: document.querySelector("[data-palette-table-counts]"),
   tags: document.querySelector("[data-palette-tags]"),
+  tagsHelpList: document.querySelector("[data-palette-tags-help-list]"),
   tagSuggestions: document.querySelector("[data-palette-tag-suggestions]"),
   tagMatchModes: document.querySelectorAll("[data-palette-tag-match-mode]"),
   editorTagsList: document.querySelector("[data-palette-editor-tags-list]"),
@@ -1604,6 +1605,16 @@ function renderTagSuggestions() {
     });
 }
 
+function renderTagHelpSuggestions() {
+  if (!elements.tagsHelpList) {
+    return;
+  }
+  elements.tagsHelpList.replaceChildren();
+  SUGGESTED_TAGS.forEach((tag) => {
+    elements.tagsHelpList.append(createListItem(tag));
+  });
+}
+
 function acceptTagFromInput() {
   const tag = normalizeTag(elements.tags?.value);
   if (!tag) {
@@ -1959,6 +1970,7 @@ function render() {
   renderTables(snapshot);
   renderEditorTags();
   renderTagSuggestions();
+  renderTagHelpSuggestions();
 }
 
 function applyResult(result) {

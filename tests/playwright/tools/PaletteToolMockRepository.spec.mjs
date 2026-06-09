@@ -1375,6 +1375,16 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
     await expect(brownTile).toHaveAttribute("data-palette-swatch-tags", "batch");
     await expect(blueTile).toHaveAttribute("data-palette-swatch-tags", "");
 
+    const tagFilterCountBeforeHelp = await page.locator("[data-palette-tag-filter]").count();
+    await page.locator("[data-palette-tags-help] > summary").click();
+    await expect(page.locator("[data-palette-tags-help]")).toHaveAttribute("open", "");
+    await expect(page.locator("[data-palette-tags-help-list] li")).toHaveCount(64);
+    await expect(page.locator("[data-palette-tags-help-list]")).toContainText("UI");
+    await expect(page.locator("[data-palette-tags-help-list]")).toContainText("16-Bit");
+    await expect(page.locator("[data-palette-tag-filter]")).toHaveCount(tagFilterCountBeforeHelp);
+    await page.locator("[data-palette-tags-help] > summary").click();
+    await expect(page.locator("[data-palette-tags-help]")).not.toHaveAttribute("open", "");
+
     await page.locator("[data-palette-tags]").fill("pla");
     await expect(page.locator("#paletteTagSuggestions option[value='Player']")).toHaveCount(1);
     await page.locator("[data-palette-tags]").fill("Player");

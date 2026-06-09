@@ -137,7 +137,16 @@
                                                     <tr data-palette-editor-tags-input-row>
                                                         <th scope="row" rowspan="2"><label for="paletteTagsInput">Tags</label></th>
                                                         <td>
-                                                            <input class="tool-form-control" id="paletteTagsInput" type="text" list="paletteTagSuggestions" data-palette-tags>
+                                                            <div class="action-group action-group--tight">
+                                                                <input class="tool-form-control" id="paletteTagsInput" type="text" list="paletteTagSuggestions" data-palette-tags>
+                                                                <details data-palette-tags-help>
+                                                                    <summary class="btn btn--compact" aria-label="Show suggested tags">?</summary>
+                                                                    <div class="callout content-stack" role="group" aria-label="Suggested tags">
+                                                                        <p class="status">Suggested tags are examples only. Add or select a tag to use it.</p>
+                                                                        <ul data-palette-tags-help-list></ul>
+                                                                    </div>
+                                                                </details>
+                                                            </div>
                                                             <datalist id="paletteTagSuggestions" data-palette-tag-suggestions></datalist>
                                                         </td>
                                                     </tr>

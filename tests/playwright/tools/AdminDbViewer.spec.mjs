@@ -668,7 +668,7 @@ test("Palette and Asset raw Local Mem DB tables are DB-shaped before viewer rend
   ]);
 });
 
-test("Local Mem DB audit normalization rejects invalid users outside seed initialization", () => {
+test("Local Mem DB audit normalization rejects invalid and missing audit users", () => {
   expect(() => normalizeMockDbTables("standalone", {
     users: [{
       key: MOCK_DB_KEYS.users.user1,
@@ -680,20 +680,23 @@ test("Local Mem DB audit normalization rejects invalid users outside seed initia
     }],
   })).toThrow(/Invalid mock DB audit user key/);
 
-  const diagnostics = [];
-  const seedTables = normalizeMockDbTables("standalone", {
+  expect(() => normalizeMockDbTables("standalone", {
     users: [{
       key: MOCK_DB_KEYS.users.user1,
       displayName: "Seed Repair",
     }],
-  }, {
-    allowSeedAuditFallback: true,
-    diagnostics,
-    seedFallbackContext: "test seed initialization",
-    userKey: MOCK_DB_KEYS.users.forgeBot,
-  });
+  })).toThrow(/Add explicit createdBy and updatedBy values/);
 
+  const seedTables = normalizeMockDbTables("standalone", {
+    users: [{
+      key: MOCK_DB_KEYS.users.user1,
+      displayName: "Seed Repair",
+      createdAt: "2026-06-06T09:00:00.000Z",
+      updatedAt: "2026-06-06T09:00:00.000Z",
+      createdBy: MOCK_DB_KEYS.users.forgeBot,
+      updatedBy: MOCK_DB_KEYS.users.forgeBot,
+    }],
+  });
   expect(seedTables.users[0].createdBy).toBe(MOCK_DB_KEYS.users.forgeBot);
   expect(seedTables.users[0].updatedBy).toBe(MOCK_DB_KEYS.users.forgeBot);
-  expect(diagnostics.join("\n")).toContain("seed-only audit fallback");
 });

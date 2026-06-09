@@ -17,26 +17,35 @@ Exercised tool entry points detected:
 (77%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
+(0%) src/dev-runtime/guest-seeds/palette-source-mock-db.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(86%) toolbox/colors/colors.js - executed lines 2136/2136; executed functions 183/212
-(92%) assets/theme-v2/js/account-controls.js - executed lines 47/47; executed functions 12/13
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(86%) toolbox/colors/colors.js - executed lines 2147/2147; executed functions 185/214
 
 Files with executed line/function counts where available:
 (58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 201/201; executed functions 9/14
 (76%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 525/525; executed functions 35/46
 (78%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 21/27
-(86%) toolbox/colors/colors.js - executed lines 2136/2136; executed functions 183/212
+(86%) toolbox/colors/colors.js - executed lines 2147/2147; executed functions 185/214
 (92%) assets/theme-v2/js/account-controls.js - executed lines 47/47; executed functions 12/13
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
 Uncovered or low-coverage changed JS files:
+(0%) src/dev-runtime/guest-seeds/palette-source-mock-db.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) src/dev-runtime/guest-seeds/palette-source-mock-db.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/GameConfigurationMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolCenterFullscreenAccordion.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs - changed JS file not collected as browser runtime coverage
 (86%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
-(92%) assets/theme-v2/js/account-controls.js - changed JS file with browser V8 coverage

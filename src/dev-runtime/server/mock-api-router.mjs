@@ -50,6 +50,7 @@ import {
 import {
   MOCK_DB_KEYS,
   MOCK_DB_SESSION_MODES,
+  createMockDbAuditFields,
   getMockDbTableSchemas,
   getMockDbToolGroups,
   normalizeMockDbTables,
@@ -280,27 +281,40 @@ function sessionUserFromKey(tables, userKey, modeId) {
 }
 
 function normalizeOwnedTables(ownerId, tables) {
-  return normalizeMockDbTables(ownerId, tables, {
-    allowSeedAuditFallback: true,
-    fallbackUserKey: MOCK_DB_KEYS.users.forgeBot,
-    seedFallbackContext: `${ownerId} server data source snapshot`,
-  });
+  return normalizeMockDbTables(ownerId, tables);
+}
+
+const WORKSPACE_PROJECT_KEYS = Object.freeze({
+  "camera-follow-demo": "01K2GFSJ0Y0000000080002104",
+  "collision-demo": "01K2GFSJ0Y0000000080002103",
+  "demo-project": PROJECT_JOURNEY_KEYS.project,
+  "gravity-demo": "01K2GFSJ0Y0000000080002102",
+});
+
+function workspaceProjectKey(projectId) {
+  return WORKSPACE_PROJECT_KEYS[projectId] || projectId || "";
+}
+
+function snapshotAuditFields(index = 0, userKey = MOCK_DB_KEYS.users.forgeBot) {
+  return createMockDbAuditFields(index, userKey);
 }
 
 function workspaceTables(repository) {
   const tables = repository.getTables();
   const activeProject = repository.getActiveProject();
   const progress = repository.getProjectProgress();
-  const workspaceProjects = tables.projects.map((project) => ({
-    key: project.id === "demo-project" ? PROJECT_JOURNEY_KEYS.project : project.id,
+  const workspaceProjects = tables.projects.map((project, index) => ({
+    ...snapshotAuditFields(index + 20, MOCK_DB_KEYS.users.user1),
+    key: workspaceProjectKey(project.id),
     name: project.name,
     ownerKey: MOCK_DB_KEYS.users.user1,
     status: project.status,
   }));
-  const activeProjectKey = activeProject?.id === "demo-project" ? PROJECT_JOURNEY_KEYS.project : activeProject?.id || "";
+  const activeProjectKey = workspaceProjectKey(activeProject?.id);
   return normalizeOwnedTables("workspace", {
     workspace_projects: workspaceProjects,
     workspace_progress: activeProject ? [{
+      ...snapshotAuditFields(80, MOCK_DB_KEYS.users.user1),
       key: "01K2GFSJ0Y0000000080001001",
       projectKey: activeProjectKey,
       currentFocus: progress.currentFocus,
@@ -314,16 +328,39 @@ function workspaceTables(repository) {
 function gameDesignTables(repository) {
   const tables = repository.getTables();
   return normalizeOwnedTables("game-design", {
-    game_design_documents: tables.game_design_documents || [],
-    game_design_validation_items: tables.game_design_validation_items || [],
+    game_design_documents: (tables.game_design_documents || []).map((record, index) => ({
+      ...snapshotAuditFields(index + 100, MOCK_DB_KEYS.users.user1),
+      key: record.key,
+      projectKey: workspaceProjectKey(record.projectKey || record.projectId),
+      status: record.status,
+      title: record.title || `${record.projectPurpose || "Game"} Design`,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
+      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
+    })),
+    game_design_validation_items: (tables.game_design_validation_items || []).map((record, index) => ({
+      ...snapshotAuditFields(index + 140, MOCK_DB_KEYS.users.user1),
+      key: record.key,
+      projectKey: workspaceProjectKey(record.projectKey || record.projectId),
+      label: record.label,
+      status: record.status,
+      action: record.action,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
+      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
+    })),
   });
 }
 
 function gameConfigurationTables(repository) {
   const tables = repository.getTables();
   return normalizeOwnedTables("game-configuration", {
-    game_configuration_records: (tables.game_configuration_documents || []).map((record) => ({
-      ...record,
+    game_configuration_records: (tables.game_configuration_documents || []).map((record, index) => ({
+      ...snapshotAuditFields(index + 180, MOCK_DB_KEYS.users.user1),
+      key: record.key,
+      projectKey: workspaceProjectKey(record.projectKey || record.projectId),
       status: record.readinessStatus || "Ready",
       summary: [
         record.sceneTemplate,
@@ -331,8 +368,23 @@ function gameConfigurationTables(repository) {
         record.physicsProfile,
         record.cameraMode,
       ].filter(Boolean).join(", "),
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
+      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
     })),
-    game_configuration_validation_items: tables.game_configuration_validation_items || [],
+    game_configuration_validation_items: (tables.game_configuration_validation_items || []).map((record, index) => ({
+      ...snapshotAuditFields(index + 220, MOCK_DB_KEYS.users.user1),
+      key: record.key,
+      projectKey: workspaceProjectKey(record.projectKey || record.projectId),
+      label: record.label,
+      status: record.status,
+      action: record.action,
+      createdAt: record.createdAt,
+      updatedAt: record.updatedAt,
+      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
+      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
+    })),
   });
 }
 
@@ -796,7 +848,15 @@ class LocalDevMockDataSource {
       } else if (paletteOptions.sourceMode === "invalid") {
         paletteOptions.tables = {
           palette_source_swatches: [
-            { key: "invalid-source-row", source: "broken-source", swatchKey: "invalid-source-row", hex: "not-a-hex", name: "", tags: ["diagnostic"] },
+            {
+              ...snapshotAuditFields(320, MOCK_DB_KEYS.users.forgeBot),
+              key: "invalid-source-row",
+              source: "broken-source",
+              swatchKey: "invalid-source-row",
+              hex: "not-a-hex",
+              name: "",
+              tags: ["diagnostic"],
+            },
           ],
         };
         delete paletteOptions.sourceMode;

@@ -1,3 +1,8 @@
+import {
+  MOCK_DB_KEYS,
+  createMockDbAuditFields
+} from "../persistence/mock-db-store.js";
+
 const MOCK_DB_SOURCE_GROUPS = Object.freeze([
   {
     label: "8-color set",
@@ -917,7 +922,9 @@ function tagForLabel(label) {
 }
 
 export function createPaletteSourceMockDbRows() {
+  let auditIndex = 0;
   return MOCK_DB_SOURCE_GROUPS.flatMap((definition) => definition.swatches.map(([hex, name], index) => ({
+    ...createMockDbAuditFields(auditIndex += 1, MOCK_DB_KEYS.users.forgeBot),
     hex,
     id: `${definition.source}-source-swatch-${index + 1}`,
     name,

@@ -457,37 +457,13 @@ export function setMockDbSessionUser(userKey, options = {}) {
   return clone(sessionUser);
 }
 
-function defaultAuditUserKey(options = {}) {
-  return options.userKey || MOCK_DB_SYSTEM_USER.userKey;
-}
-
-const seedFallbackDiagnostics = new Set();
-
-function emitSeedAuditFallbackDiagnostic(message, options = {}) {
-  if (Array.isArray(options.diagnostics)) {
-    options.diagnostics.push(message);
-  }
-  if (typeof console !== "undefined" && !seedFallbackDiagnostics.has(message)) {
-    seedFallbackDiagnostics.add(message);
-    console.warn(message);
-  }
-}
-
 function normalizeUserKey(value, fieldName, options = {}) {
   const key = String(value || "");
   if (isUlidKey(key)) {
     return key;
   }
-  if (options.allowSeedAuditFallback && isUlidKey(options.fallbackUserKey)) {
-    const context = options.seedFallbackContext || `${options.ownerId || "mock DB"} seed normalization`;
-    emitSeedAuditFallbackDiagnostic(
-      `${context}: ${options.tableName || "record"} ${fieldName} used seed-only audit fallback.`,
-      options,
-    );
-    return options.fallbackUserKey;
-  }
   throw new Error(
-    `Invalid mock DB audit user key for ${options.tableName || "record"}.${fieldName}: ${key || "(empty)"}.`,
+    `Invalid mock DB audit user key for ${options.tableName || "record"}.${fieldName}: ${key || "(empty)"}. Add explicit createdBy and updatedBy values that reference users.key.`,
   );
 }
 
@@ -520,17 +496,14 @@ function normalizeRecord(tableName, record, index, options = {}) {
     tableName,
     record && typeof record === "object" && !Array.isArray(record) ? record : {},
   );
-  const fallbackUserKey = defaultAuditUserKey(options);
   const createdAt = source.createdAt || timestampForIndex(index);
   const updatedAt = source.updatedAt || createdAt;
   const createdBy = normalizeUserKey(source.createdBy, "createdBy", {
     ...options,
-    fallbackUserKey,
     tableName,
   });
   const updatedBy = normalizeUserKey(source.updatedBy, "updatedBy", {
     ...options,
-    fallbackUserKey: createdBy,
     tableName,
   });
   return {
@@ -586,12 +559,7 @@ function ensureKnownTables(state) {
 
 export function loadMockDbTables(ownerId, seedTables = {}, options = {}) {
   const state = readStoredState(options);
-  const normalizedSeeds = normalizeTables(seedTables, {
-    ...options,
-    allowSeedAuditFallback: true,
-    ownerId,
-    seedFallbackContext: `${ownerId} seed table initialization`,
-  });
+  const normalizedSeeds = normalizeTables(seedTables, { ...options, ownerId });
   const tableNames = Object.keys(normalizedSeeds);
   const persisted = tableNames.some((tableName) => Object.hasOwn(state.tables, tableName));
   let changed = false;
@@ -671,11 +639,7 @@ export function clearMockDbTables(options = {}) {
 export function seedMockDbTables(options = {}) {
   const state = emptyState();
   Object.entries(getStandaloneMockDbSeedTables()).forEach(([tableName, rows]) => {
-    state.tables[tableName] = normalizeTableRows(tableName, rows, {
-      ...options,
-      allowSeedAuditFallback: true,
-      seedFallbackContext: "standalone seed table initialization",
-    });
+    state.tables[tableName] = normalizeTableRows(tableName, rows, options);
     state.owners[tableName] = "standalone";
   });
   writeStoredState(state, options);

@@ -133,6 +133,36 @@ async function expectToolDisplayModeFullscreenBadge(page) {
   if (await centerDescription.count()) {
     await expect(centerDescription).toBeHidden();
   }
+  const fullscreenLayout = await page.locator(".tool-workspace").evaluate((workspace) => {
+    const left = workspace.querySelector(".tool-column:first-of-type");
+    const center = workspace.querySelector(".tool-center-panel");
+    const right = workspace.querySelector(".tool-column:last-of-type");
+    const boxes = [left, center, right].map((node) => {
+      const box = node.getBoundingClientRect();
+      return {
+        bottom: Math.round(box.bottom),
+        top: Math.round(box.top)
+      };
+    });
+    return {
+      bodyOverflowY: getComputedStyle(document.body).overflowY,
+      centerOverflowY: center ? getComputedStyle(center).overflowY : "",
+      columns: boxes,
+      documentOverflow: Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight,
+      leftOverflowY: left ? getComputedStyle(left).overflowY : "",
+      rightOverflowY: right ? getComputedStyle(right).overflowY : "",
+      viewportHeight: Math.round(window.innerHeight)
+    };
+  });
+  expect(fullscreenLayout.bodyOverflowY).toBe("hidden");
+  expect(fullscreenLayout.leftOverflowY).toBe("auto");
+  expect(fullscreenLayout.centerOverflowY).toBe("auto");
+  expect(fullscreenLayout.rightOverflowY).toBe("auto");
+  expect(fullscreenLayout.documentOverflow).toBeLessThanOrEqual(2);
+  fullscreenLayout.columns.forEach((box) => {
+    expect(box.top).toBeGreaterThanOrEqual(0);
+    expect(box.bottom).toBeLessThanOrEqual(fullscreenLayout.viewportHeight + 1);
+  });
   const badgeSize = await page.locator(".tool-display-mode__badge").evaluate((badge) => {
     const box = badge.getBoundingClientRect();
     return {
