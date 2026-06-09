@@ -30,14 +30,110 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Build Setup</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Build setup controls">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="buildTarget">Target</label></th>
+                                                    <td>
+                                                        <select id="buildTarget">
+                                                            <option>Web playable</option>
+                                                            <option>Desktop package</option>
+                                                            <option>Mobile web wrapper</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="buildProfile">Profile</label></th>
+                                                    <td>
+                                                        <select id="buildProfile">
+                                                            <option>Preview</option>
+                                                            <option>Candidate</option>
+                                                            <option>Public release</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="buildLabel">Build Label</label></th>
+                                                    <td><input id="buildLabel" type="text" value="candidate-001"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Package Options</summary>
+                                <div class="accordion-body content-stack">
+                                    <label><input type="checkbox" checked> Include manifest validation report</label>
+                                    <label><input type="checkbox" checked> Strip debug-only settings before publish</label>
+                                    <label><input type="checkbox"> Include source maps for tester builds</label>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Wireframe Actions</summary>
+                                <div class="accordion-body">
+                                    <div class="content-cluster">
+                                        <button class="btn" type="button">Validate Manifest</button>
+                                        <button class="btn" type="button">Prepare Candidate</button>
+                                    </div>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="build-game" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Plan build packaging and playable output readiness. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="build-game" data-tool-icon-src="assets/theme-v2/images/badges/build-game.png" data-tool-character-src="assets/theme-v2/images/tools/build-game.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Build Workspace</h2>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Publish Candidate Checklist</summary>
+                                <div class="accordion-body content-stack">
+                                    <label><input type="checkbox" checked> Project identity is complete</label>
+                                    <label><input type="checkbox" checked> Game configuration has no blocking errors</label>
+                                    <label><input type="checkbox"> Required assets are attached</label>
+                                    <label><input type="checkbox"> Public play URL is reserved</label>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Build Queue Preview</summary>
+                                <div class="accordion-body">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Step</th>
+                                                <th>Owner</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Manifest validation</td>
+                                                <td>Build Game</td>
+                                                <td>Wireframe</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Asset collection</td>
+                                                <td>Assets</td>
+                                                <td>Waiting</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Playable packaging</td>
+                                                <td>Build Game</td>
+                                                <td>Not wired</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Artifact Preview</summary>
+                                <div class="accordion-body">
+                                    <p>Generated build artifacts will be listed here in a later implementation PR. This page only sketches the required review surface.</p>
+                                </div>
+                            </details>
+                        </div>
                     </section>
                     <aside class="tool-column tool-group-build">
                         <div class="tool-column-header">
@@ -45,8 +141,27 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Readiness</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status" role="status">Build Game is a wireframe planning surface.</p>
+                                    <p>Playable deployment is intentionally not implemented here.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Diagnostics</summary>
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Manifest validation rules must exist before runtime build work.</li>
+                                        <li>Debug settings must be rejected for public release.</li>
+                                        <li>Publish Candidate must be explicit before deployment.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <p class="status" role="status">Build controls are placeholders and do not create artifacts.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>

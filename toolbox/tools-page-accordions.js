@@ -39,22 +39,24 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     const betaSession = sessionRoles.includes("beta");
     let currentMode = searchParams.get("view") === "group" ? "grouped" : searchParams.get("view") === "build-path" ? "build-path" : "ascending";
     let targetGroupSlug = currentMode === "grouped" ? groupSlug(searchParams.get("group")) : "";
-    const releaseChannelOrder = Object.freeze(["complete", "beta", "planned"]);
-    const defaultReleaseChannels = Object.freeze(["complete", "beta"]);
+    const releaseChannelOrder = Object.freeze(["planned", "wireframe", "beta", "complete"]);
+    const defaultReleaseChannels = Object.freeze(["wireframe", "beta", "complete"]);
     const visibleReleaseChannels = new Set(defaultReleaseChannels);
     const releaseChannelLabels = Object.freeze({
         complete: "Complete",
         beta: "Beta",
+        wireframe: "Wireframe",
         planned: "Planned"
     });
     const releaseChannelHelpText = Object.freeze({
         planned: "Idea exists.\nNot yet available.",
+        wireframe: "Preview the planned workflow and layout.\nHelp shape the design before development begins.",
         beta: "Ready to try.\nFeatures, layout, and workflows may change based on feedback.",
         complete: "Production ready and fully supported."
     });
     const releaseChannelByStatus = Object.freeze({
         Ready: "complete",
-        Wireframe: "planned",
+        Wireframe: "wireframe",
         "Under Construction": "beta",
         Planned: "planned",
         Hidden: "planned",
@@ -123,6 +125,13 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         "Platform": "swatch-blue",
         "Play": "swatch-green"
     };
+    const stateSwatchMap = {
+        planned: "swatch-gray",
+        wireframe: "swatch-blue",
+        beta: "swatch-gold",
+        complete: "swatch-green"
+    };
+    const voteStateByTool = new Map();
     function getProjectProgressSummary() {
         const activeProject = projectWorkspaceRepository.getActiveProject();
         const progress = projectWorkspaceRepository.getProjectProgress();
@@ -292,7 +301,11 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         if (adminSession) {
             return true;
         }
-        return tool.adminOnly !== true && (tool.releaseChannel === "complete" || tool.releaseChannel === "beta");
+        return tool.adminOnly !== true && (
+            tool.releaseChannel === "complete" ||
+            tool.releaseChannel === "beta" ||
+            tool.releaseChannel === "wireframe"
+        );
     }
 
     function activeRoleFocus() {
@@ -377,6 +390,10 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
 
     function groupSwatch(groupName) {
         return groupSwatchMap[groupName] || "swatch-orange";
+    }
+
+    function stateSwatch(channel) {
+        return stateSwatchMap[channel] || "swatch-gray";
     }
 
     function groupSlug(groupName) {
@@ -706,6 +723,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     function createGroupLabel(groupName, visibleText = groupName) {
         const label = document.createElement("span");
         label.className = "content-cluster";
+        label.dataset.toolboxGroupBadge = visibleText;
 
         const text = document.createElement("span");
         text.className = "swatch-label " + groupSwatch(groupName);
@@ -713,6 +731,19 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         text.textContent = visibleText;
 
         label.append(createGroupSwatch(groupName), text);
+        return label;
+    }
+
+    function createStateLabel(tool) {
+        const label = document.createElement("span");
+        label.className = "swatch-label " + stateSwatch(tool.releaseChannel);
+        label.dataset.toolboxReadiness = tool.releaseChannelLabel;
+        label.dataset.toolboxReleaseChannel = tool.releaseChannel;
+        label.dataset.toolboxKicker = tool.releaseChannelLabel;
+        label.dataset.toolboxStateBadge = tool.releaseChannel;
+        label.title = tool.releaseChannelHelpText;
+        label.setAttribute("aria-label", `${tool.releaseChannelLabel}: ${tool.releaseChannelHelpText.replace(/\s+/g, " ")}`);
+        label.textContent = tool.releaseChannelLabel;
         return label;
     }
 
@@ -886,21 +917,12 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
         }
 
-        const readiness = document.createElement("span");
-        readiness.className = "pill";
-        readiness.dataset.toolboxReadiness = tool.releaseChannelLabel;
-        readiness.dataset.toolboxReleaseChannel = tool.releaseChannel;
-        readiness.dataset.toolboxKicker = tool.releaseChannelLabel;
-        readiness.title = tool.releaseChannelHelpText;
-        readiness.setAttribute("aria-label", `${tool.releaseChannelLabel}: ${tool.releaseChannelHelpText.replace(/\s+/g, " ")}`);
-        readiness.textContent = tool.releaseChannelLabel;
-
-        row.append(badge, link, createGroupLabel(tool.group), readiness);
+        row.append(badge, link, createGroupLabel(tool.group), createStateLabel(tool));
         return row;
     }
 
     function createToolVoteControls(tool) {
-        if (tool.releaseChannel !== "planned") {
+        if (tool.releaseChannel !== "planned" && tool.releaseChannel !== "wireframe") {
             return null;
         }
 
@@ -916,35 +938,81 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         upVote.type = "button";
         upVote.dataset.toolboxVote = "up";
         upVote.setAttribute("aria-label", `Up vote ${tool.title}`);
-        upVote.textContent = "Up";
+        upVote.dataset.toolboxVoteCount = "up";
 
         const downVote = document.createElement("button");
         downVote.className = "btn btn--compact";
         downVote.type = "button";
         downVote.dataset.toolboxVote = "down";
         downVote.setAttribute("aria-label", `Down vote ${tool.title}`);
-        downVote.textContent = "Down";
+        downVote.dataset.toolboxVoteCount = "down";
+
+        function voteRecord() {
+            if (!voteStateByTool.has(tool.title)) {
+                voteStateByTool.set(tool.title, {
+                    down: 0,
+                    up: 0,
+                    voters: new Map()
+                });
+            }
+            return voteStateByTool.get(tool.title);
+        }
+
+        function voterKey() {
+            return session?.userKey || session?.displayName || "guest";
+        }
+
+        function updateVoteDisplay() {
+            const record = voteRecord();
+            const selectedDirection = record.voters.get(voterKey()) || "";
+            upVote.textContent = `Up ${record.up}`;
+            downVote.textContent = `Down ${record.down}`;
+            upVote.setAttribute("aria-pressed", String(selectedDirection === "up"));
+            downVote.setAttribute("aria-pressed", String(selectedDirection === "down"));
+        }
+
+        function castVote(direction) {
+            const record = voteRecord();
+            const key = voterKey();
+            const previousDirection = record.voters.get(key);
+            if (previousDirection === direction) {
+                return;
+            }
+            if (previousDirection === "up") {
+                record.up = Math.max(0, record.up - 1);
+            }
+            if (previousDirection === "down") {
+                record.down = Math.max(0, record.down - 1);
+            }
+            record[direction] += 1;
+            record.voters.set(key, direction);
+            updateVoteDisplay();
+            announceToolboxStatus(`${tool.title} ${direction} vote noted as a non-persistent ${tool.releaseChannel} control.`);
+        }
 
         [upVote, downVote].forEach((button) => {
             button.addEventListener("click", () => {
                 const direction = button.dataset.toolboxVote === "up" ? "up" : "down";
-                announceToolboxStatus(`${tool.title} ${direction} vote noted as a non-persistent planned control.`);
+                castVote(direction);
             });
         });
 
+        updateVoteDisplay();
         row.append(label, upVote, downVote);
         return row;
     }
 
-    function createPlannedDetails(tool) {
-        if (tool.releaseChannel !== "planned") {
+    function createPlanDetails(tool) {
+        if (tool.releaseChannel !== "planned" && tool.releaseChannel !== "wireframe") {
             return null;
         }
         const details = document.createElement("p");
         details.className = "status";
-        details.dataset.toolboxPlannedDetails = tool.title;
+        details.dataset.toolboxPlanDetails = tool.title;
         details.setAttribute("role", "status");
-        details.textContent = "Planned details and vote controls are shown here; runtime launch is not available yet.";
+        details.textContent = tool.releaseChannel === "planned"
+            ? "Planned details and vote controls are shown here; runtime launch is not available yet."
+            : "Wireframe details and vote controls are shown here; controls are not wired to runtime behavior yet.";
         return details;
     }
 
@@ -1011,7 +1079,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         description.textContent = tool.description;
         const actionRow = createToolActionRow(tool, registryTool, body);
         const voteControls = createToolVoteControls(tool);
-        const plannedDetails = createPlannedDetails(tool);
+        const plannedDetails = createPlanDetails(tool);
         const values = createToolValues(tool, options);
 
         const cardParts = [title, description];

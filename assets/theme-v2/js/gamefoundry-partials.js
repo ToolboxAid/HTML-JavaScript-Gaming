@@ -1,4 +1,28 @@
 (function () {
+    const localDevExpectedPort = "5501";
+    const localDevHostnames = new Set(["127.0.0.1", "localhost", "::1"]);
+
+    function shouldRedirectLocalDevPort() {
+        return window.location.protocol === "http:" &&
+            localDevHostnames.has(window.location.hostname) &&
+            window.location.port !== localDevExpectedPort &&
+            window.navigator?.webdriver !== true;
+    }
+
+    function redirectLocalDevPort() {
+        if (!shouldRedirectLocalDevPort()) {
+            return false;
+        }
+        const target = new URL(window.location.href);
+        target.port = localDevExpectedPort;
+        window.location.replace(target.href);
+        return true;
+    }
+
+    if (redirectLocalDevPort()) {
+        return;
+    }
+
     const routeMap = {
         home: "index.html",
         toolbox: "toolbox/index.html",

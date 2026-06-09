@@ -30,14 +30,109 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Achievement Setup</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Achievement setup controls">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="achievementUnlockTrigger">Unlock Trigger</label></th>
+                                                    <td>
+                                                        <select id="achievementUnlockTrigger">
+                                                            <option>Score threshold</option>
+                                                            <option>Level completion</option>
+                                                            <option>Collection milestone</option>
+                                                            <option>Secret discovery</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="achievementVisibility">Visibility</label></th>
+                                                    <td>
+                                                        <select id="achievementVisibility">
+                                                            <option>Public</option>
+                                                            <option>Hidden until unlocked</option>
+                                                            <option>Secret</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="achievementName">Name</label></th>
+                                                    <td><input id="achievementName" type="text" value="First Spark"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Definition Draft</summary>
+                                <div class="accordion-body content-stack">
+                                    <label for="achievementDescription">Description</label>
+                                    <textarea id="achievementDescription" rows="5">Unlock when the player completes the first challenge without taking damage.</textarea>
+                                    <label><input type="checkbox" checked> Count toward completion total</label>
+                                    <label><input type="checkbox"> Allow repeat progress after unlock</label>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Wireframe Actions</summary>
+                                <div class="accordion-body">
+                                    <div class="content-cluster">
+                                        <button class="btn" type="button">Add Draft</button>
+                                        <button class="btn" type="button">Review Unlock</button>
+                                    </div>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="achievements" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Plan achievement definitions and creator-facing unlock review. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="achievements" data-tool-icon-src="assets/theme-v2/images/badges/achievement.png" data-tool-character-src="assets/theme-v2/images/tools/achievement.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Achievement Workspace</h2>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Achievement Board</summary>
+                                <div class="accordion-body">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Trigger</th>
+                                                <th>Visibility</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>First Spark</td>
+                                                <td>Challenge complete</td>
+                                                <td>Public</td>
+                                                <td>Wireframe</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Hidden Path</td>
+                                                <td>Secret discovery</td>
+                                                <td>Secret</td>
+                                                <td>Wireframe</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Unlock Criteria</summary>
+                                <div class="accordion-body content-stack">
+                                    <label><input type="checkbox" checked> Requires an event hook</label>
+                                    <label><input type="checkbox" checked> Requires player-facing copy</label>
+                                    <label><input type="checkbox"> Requires platform trophy mapping</label>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Wireframe Notes</summary>
+                                <div class="accordion-body">
+                                    <p>Achievement controls are placeholders for planning only. Runtime unlocks, persistence, and platform integrations are intentionally not wired.</p>
+                                </div>
+                            </details>
+                        </div>
                     </section>
                     <aside class="tool-column tool-group-play">
                         <div class="tool-column-header">
@@ -45,8 +140,29 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Validation</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status" role="status">Wireframe ready. No runtime validation is active.</p>
+                                    <ul>
+                                        <li>Confirm unlock trigger exists.</li>
+                                        <li>Confirm player-facing copy exists.</li>
+                                        <li>Confirm visibility rules are intentional.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Output Preview</summary>
+                                <div class="accordion-body content-stack">
+                                    <p><strong>Card:</strong> First Spark</p>
+                                    <p><strong>Unlock:</strong> Challenge complete</p>
+                                    <p><strong>Display:</strong> Public achievement tile</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <p class="status" role="status">Achievement wireframe controls are visible only.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>

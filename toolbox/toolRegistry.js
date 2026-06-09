@@ -11,18 +11,21 @@ export const TOOL_STATUS_MODEL = Object.freeze([
 
 export const TOOL_RELEASE_CHANNELS = Object.freeze([
   "planned",
+  "wireframe",
   "beta",
   "complete"
 ]);
 
 export const TOOL_RELEASE_CHANNEL_LABELS = Object.freeze({
   planned: "Planned",
+  wireframe: "Wireframe",
   beta: "Beta",
   complete: "Complete"
 });
 
 export const TOOL_RELEASE_CHANNEL_HELP_TEXT = Object.freeze({
   planned: "Idea exists.\nNot yet available.",
+  wireframe: "Preview the planned workflow and layout.\nHelp shape the design before development begins.",
   beta: "Ready to try.\nFeatures, layout, and workflows may change based on feedback.",
   complete: "Production ready and fully supported."
 });
@@ -51,7 +54,7 @@ const READINESS_BY_STATUS = Object.freeze({
 
 const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
   Ready: "complete",
-  Wireframe: "planned",
+  Wireframe: "wireframe",
   "Under Construction": "beta",
   Planned: "planned",
   Hidden: "planned",
@@ -653,10 +656,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requires": [
       "game-configuration"
     ],
-    "status": "Planned",
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
-      "Static planned text only"
+      "Static wireframe text only"
     ],
     "deferred": false,
     "hidden": false,
@@ -686,10 +689,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requires": [
       "build-game"
     ],
-    "status": "Planned",
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
-      "Static planned text only"
+      "Static wireframe text only"
     ],
     "deferred": false,
     "hidden": false,
@@ -779,10 +782,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": false,
     "requiredForPublish": false,
     "requires": [],
-    "status": "Planned",
+    "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
-      "Static planned text only"
+      "Static wireframe text only"
     ],
     "deferred": false,
     "hidden": false,
@@ -813,7 +816,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
-      "Static planned text only"
+      "Static wireframe text only"
     ],
     "deferred": false,
     "hidden": false,
@@ -844,7 +847,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "status": "Wireframe",
     "progressChecklist": [
       "Review readiness",
-      "Static planned text only"
+      "Static wireframe text only"
     ],
     "deferred": false,
     "hidden": false,

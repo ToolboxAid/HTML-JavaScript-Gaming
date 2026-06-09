@@ -30,14 +30,111 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Localization Setup</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Language setup controls">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="languageSourceLocale">Source Locale</label></th>
+                                                    <td>
+                                                        <select id="languageSourceLocale">
+                                                            <option>English (US)</option>
+                                                            <option>English (UK)</option>
+                                                            <option>Spanish</option>
+                                                            <option>French</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="languageTargetLocale">Target Locale</label></th>
+                                                    <td>
+                                                        <select id="languageTargetLocale">
+                                                            <option>Spanish</option>
+                                                            <option>French</option>
+                                                            <option>German</option>
+                                                            <option>Japanese</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="languageStringKey">String Key</label></th>
+                                                    <td><input id="languageStringKey" type="text" value="menu.start"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>String Workflow</summary>
+                                <div class="accordion-body content-stack">
+                                    <label><input type="checkbox" checked> Include menus and HUD</label>
+                                    <label><input type="checkbox" checked> Include tutorial copy</label>
+                                    <label><input type="checkbox"> Include marketing copy</label>
+                                    <label for="languageTranslatorNote">Translator Note</label>
+                                    <textarea id="languageTranslatorNote" rows="4">Keep button labels short enough for compact HUD layouts.</textarea>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Wireframe Actions</summary>
+                                <div class="accordion-body">
+                                    <div class="content-cluster">
+                                        <button class="btn" type="button">Add String</button>
+                                        <button class="btn" type="button">Queue Review</button>
+                                    </div>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="languages" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Plan game language coverage and translation review workflows. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="languages" data-tool-icon-src="assets/theme-v2/images/badges/languages.png" data-tool-character-src="assets/theme-v2/images/tools/languages.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Languages Workspace</h2>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Translation Matrix</summary>
+                                <div class="accordion-body">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Key</th>
+                                                <th>Source</th>
+                                                <th>Target</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>menu.start</td>
+                                                <td>Start</td>
+                                                <td>Iniciar</td>
+                                                <td>Wireframe</td>
+                                            </tr>
+                                            <tr>
+                                                <td>hud.score</td>
+                                                <td>Score</td>
+                                                <td>Puntuacion</td>
+                                                <td>Needs review</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Review Queue</summary>
+                                <div class="accordion-body content-stack">
+                                    <label><input type="checkbox" checked> Check missing translations</label>
+                                    <label><input type="checkbox" checked> Check string length</label>
+                                    <label><input type="checkbox"> Check cultural review notes</label>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Glossary</summary>
+                                <div class="accordion-body">
+                                    <p>Future glossary terms should live in a shared localization data source. This wireframe only shows the planned review surface.</p>
+                                </div>
+                            </details>
+                        </div>
                     </section>
                     <aside class="tool-column tool-group-platform">
                         <div class="tool-column-header">
@@ -45,8 +142,28 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Coverage</summary>
+                                <div class="accordion-body content-stack">
+                                    <p><strong>Source strings:</strong> 2</p>
+                                    <p><strong>Queued targets:</strong> 1</p>
+                                    <p><strong>Runtime export:</strong> Not wired</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Diagnostics</summary>
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>Language pack export requires a manifest contract.</li>
+                                        <li>Runtime locale switching is intentionally not implemented.</li>
+                                        <li>Missing translation handling must fail visibly in a future PR.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <p class="status" role="status">Languages controls are placeholders and do not create locale files.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>

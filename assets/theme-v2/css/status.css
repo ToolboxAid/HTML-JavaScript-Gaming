@@ -48,3 +48,10 @@
   padding: var(--space-3) var(--space-10);
   text-shadow: 0 1px 2px var(--shadow-color-strong)
 }
+
+.swatch-label.swatch-cyan,
+.swatch-label.swatch-gold,
+.swatch-label.swatch-green {
+  color: var(--bg);
+  text-shadow: none
+}

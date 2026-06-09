@@ -30,14 +30,107 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Save Scope</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="table-wrapper">
+                                        <table class="data-table tool-form-table" aria-label="Saved Data scope controls">
+                                            <tbody>
+                                                <tr>
+                                                    <th scope="row"><label for="savedDataScope">Scope</label></th>
+                                                    <td>
+                                                        <select id="savedDataScope">
+                                                            <option>Project saves</option>
+                                                            <option>Player profile</option>
+                                                            <option>Tool state records</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="savedDataRetention">Retention</label></th>
+                                                    <td>
+                                                        <select id="savedDataRetention">
+                                                            <option>Keep latest</option>
+                                                            <option>Keep all versions</option>
+                                                            <option>Archive old versions</option>
+                                                        </select>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <th scope="row"><label for="savedDataName">Record Name</label></th>
+                                                    <td><input id="savedDataName" type="text" value="Demo Project save slot"></td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Data Types</summary>
+                                <div class="accordion-body content-stack">
+                                    <label><input type="checkbox" checked> Project metadata</label>
+                                    <label><input type="checkbox" checked> Tool state payload</label>
+                                    <label><input type="checkbox"> Player progress snapshot</label>
+                                    <label><input type="checkbox"> Cloud sync metadata</label>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Wireframe Actions</summary>
+                                <div class="accordion-body">
+                                    <div class="content-cluster">
+                                        <button class="btn" type="button">Inspect Slot</button>
+                                        <button class="btn" type="button">Plan Export</button>
+                                    </div>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="saved-data" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Inspect and manage saves, local storage, and game data. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="saved-data" data-tool-icon-src="assets/theme-v2/images/badges/saved-data.png" data-tool-character-src="assets/theme-v2/images/tools/saved-data.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Saved Data Workspace</h2>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Save Slots</summary>
+                                <div class="accordion-body">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>Slot</th>
+                                                <th>Data Type</th>
+                                                <th>Owner</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>Demo Project save slot</td>
+                                                <td>Project metadata</td>
+                                                <td>User 1</td>
+                                                <td>Wireframe</td>
+                                            </tr>
+                                            <tr>
+                                                <td>Tool state draft</td>
+                                                <td>Tool state payload</td>
+                                                <td>Guest preview</td>
+                                                <td>Not wired</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Data Map</summary>
+                                <div class="accordion-body content-stack">
+                                    <p><span class="pill">Source</span> Project Workspace, Project Journey, and tool state payloads.</p>
+                                    <p><span class="pill">Review</span> Saved Data should expose owners, retention, and privacy-sensitive fields before runtime work begins.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Retention Notes</summary>
+                                <div class="accordion-body">
+                                    <p>Retention controls are placeholders. No saved records are read, written, exported, deleted, or synced from this wireframe.</p>
+                                </div>
+                            </details>
+                        </div>
                     </section>
                     <aside class="tool-column tool-group-platform">
                         <div class="tool-column-header">
@@ -45,8 +138,26 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Validation</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status" role="status">Saved Data is not connected to storage.</p>
+                                    <ul>
+                                        <li>Require owner visibility before write/delete workflows.</li>
+                                        <li>Require retention policy before sync/export workflows.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Privacy</summary>
+                                <div class="accordion-body">
+                                    <p>Future implementation must mark personal, project, and runtime-only fields separately.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <p class="status" role="status">Saved Data controls are placeholders and do not touch storage.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>

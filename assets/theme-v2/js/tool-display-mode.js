@@ -26,6 +26,15 @@
             return publicAssetRoot + "/image-missing.svg";
         }
 
+        const cleanPath = source.split("#")[0].split("?")[0].replace(/\\/g, "/");
+        const assetIndex = cleanPath.indexOf("/assets/theme-v2/images/");
+        if (assetIndex >= 0) {
+            return cleanPath.slice(assetIndex);
+        }
+        if (cleanPath.indexOf("assets/theme-v2/images/") === 0) {
+            return "/" + cleanPath;
+        }
+
         return publicAssetRoot + "/" + folder + "/" + fileName;
     }
 
