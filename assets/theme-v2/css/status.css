@@ -55,3 +55,9 @@
   color: var(--bg);
   text-shadow: none
 }
+
+.swatch-label.toolbox-group-marketplace,
+.swatch-label.toolbox-group-play {
+  color: var(--bg);
+  text-shadow: none
+}

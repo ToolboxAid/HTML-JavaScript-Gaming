@@ -438,6 +438,81 @@ test("toolbox status kickers, filters, card order, and voting controls work from
   }
 });
 
+test("toolbox group labels match Admin Tool Votes assignments and restored group colors", async ({ page }) => {
+  const server = await startRepoServer();
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+  page.on("pageerror", (error) => {
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) {
+      pageErrors.push(error.message);
+    }
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
+      consoleErrors.push(message.text());
+    }
+  });
+
+  try {
+    await workspaceV2CoverageReporter.start(page);
+    await setServerSession(server, MOCK_DB_KEYS.users.admin);
+    await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
+    const adminGroupsByTool = await page.locator("[data-toolbox-votes-tool-id]").evaluateAll((rows) => (
+      Object.fromEntries(rows.map((row) => [
+        row.querySelector("td")?.textContent.trim(),
+        row.querySelectorAll("td")[2]?.textContent.trim(),
+      ]))
+    ));
+
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    const plannedFilter = page.locator("[data-toolbox-status-filter='planned']");
+    if (await plannedFilter.getAttribute("aria-pressed") !== "true") {
+      await plannedFilter.click();
+    }
+    const toolboxGroupsByTool = await page.locator("[data-toolbox-tool-card]").evaluateAll((cards) => (
+      Object.fromEntries(cards.map((card) => [
+        card.getAttribute("data-toolbox-tool-card"),
+        card.querySelector("[data-toolbox-group-label]")?.textContent.trim() || "",
+      ]))
+    ));
+    expect(Object.keys(toolboxGroupsByTool).sort()).toEqual(Object.keys(adminGroupsByTool).sort());
+    expect(toolboxGroupsByTool).toEqual(adminGroupsByTool);
+
+    const expectedGroupColors = {
+      "AI": "rgb(184, 119, 255)",
+      "Audio": "rgb(255, 122, 0)",
+      "Build/Create": "rgb(255, 77, 77)",
+      "Design": "rgb(255, 79, 139)",
+      "Marketplace": "rgb(255, 200, 87)",
+      "Platform": "rgb(77, 163, 255)",
+      "Play": "rgb(125, 217, 87)",
+    };
+    for (const [groupName, expectedColor] of Object.entries(expectedGroupColors)) {
+      await expect(page.locator(`[data-toolbox-group-label='${groupName}']`).first()).toHaveCSS("background-color", expectedColor);
+    }
+    await expect(page.locator("[data-toolbox-group-label='Marketplace']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
+    await expect(page.locator("[data-toolbox-group-label='Play']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
+
+    expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
 test("toolbox Build Path status filters support multi-select registry-matched tool rows", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];

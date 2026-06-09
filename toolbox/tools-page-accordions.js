@@ -108,13 +108,13 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         }))
         .filter((group) => group.tools.length > 0);
     const groupSwatchMap = {
-        "AI": "swatch-purple",
-        "Audio": "swatch-orange",
-        "Build/Create": "swatch-red",
-        "Design": "swatch-pink",
-        "Marketplace": "swatch-gold",
-        "Platform": "swatch-blue",
-        "Play": "swatch-green"
+        "AI": "toolbox-group-ai",
+        "Audio": "toolbox-group-audio",
+        "Build/Create": "toolbox-group-build",
+        "Design": "toolbox-group-design",
+        "Marketplace": "toolbox-group-marketplace",
+        "Platform": "toolbox-group-platform",
+        "Play": "toolbox-group-play"
     };
     const stateSwatchMap = {
         planned: "swatch-gray",

@@ -52,6 +52,13 @@
   --meaning-purple-border: rgba(184, 119, 255, .48);
   --meaning-steel-gray-soft: rgba(107, 114, 128, .18);
   --meaning-steel-gray-border: rgba(107, 114, 128, .56);
+  --toolbox-group-ai-color: var(--purple);
+  --toolbox-group-audio-color: var(--orange);
+  --toolbox-group-build-color: #ff4d4d;
+  --toolbox-group-design-color: var(--pink);
+  --toolbox-group-marketplace-color: var(--gold);
+  --toolbox-group-platform-color: var(--electric-blue);
+  --toolbox-group-play-color: var(--green);
   --transparent: transparent;
   --body-background: radial-gradient(circle at 20% 0%, rgba(255, 122, 0, .16), var(--transparent) 28%), radial-gradient(circle at 80% 10%, rgba(32, 214, 255, .10), var(--transparent) 24%), var(--bg);
   --card-background: linear-gradient(180deg, var(--panel-soft-strong), var(--panel-soft-subtle));
@@ -124,6 +131,34 @@
   background: var(--steel-gray)
 }
 
+.toolbox-group-ai {
+  background: var(--toolbox-group-ai-color)
+}
+
+.toolbox-group-audio {
+  background: var(--toolbox-group-audio-color)
+}
+
+.toolbox-group-build {
+  background: var(--toolbox-group-build-color)
+}
+
+.toolbox-group-design {
+  background: var(--toolbox-group-design-color)
+}
+
+.toolbox-group-marketplace {
+  background: var(--toolbox-group-marketplace-color)
+}
+
+.toolbox-group-platform {
+  background: var(--toolbox-group-platform-color)
+}
+
+.toolbox-group-play {
+  background: var(--toolbox-group-play-color)
+}
+
 .side-orange {
   --accent: var(--orange)
 }
@@ -149,38 +184,38 @@
 }
 
 .tool-group-ai {
-  --tool-group-color: var(--purple);
-  --tool-group-accent: var(--purple)
+  --tool-group-color: var(--toolbox-group-ai-color);
+  --tool-group-accent: var(--toolbox-group-ai-color)
 }
 
 .tool-group-audio {
-  --tool-group-color: var(--orange);
-  --tool-group-accent: var(--orange)
+  --tool-group-color: var(--toolbox-group-audio-color);
+  --tool-group-accent: var(--toolbox-group-audio-color)
 }
 
 .tool-group-build {
-  --tool-group-color: var(--red);
-  --tool-group-accent: var(--red)
+  --tool-group-color: var(--toolbox-group-build-color);
+  --tool-group-accent: var(--toolbox-group-build-color)
 }
 
 .tool-group-design {
-  --tool-group-color: var(--pink);
-  --tool-group-accent: var(--pink)
+  --tool-group-color: var(--toolbox-group-design-color);
+  --tool-group-accent: var(--toolbox-group-design-color)
 }
 
 .tool-group-marketplace {
-  --tool-group-color: var(--gold);
-  --tool-group-accent: var(--gold)
+  --tool-group-color: var(--toolbox-group-marketplace-color);
+  --tool-group-accent: var(--toolbox-group-marketplace-color)
 }
 
 .tool-group-platform {
-  --tool-group-color: var(--electric-blue);
-  --tool-group-accent: var(--electric-blue)
+  --tool-group-color: var(--toolbox-group-platform-color);
+  --tool-group-accent: var(--toolbox-group-platform-color)
 }
 
 .tool-group-play {
-  --tool-group-color: var(--green);
-  --tool-group-accent: var(--green)
+  --tool-group-color: var(--toolbox-group-play-color);
+  --tool-group-accent: var(--toolbox-group-play-color)
 }
 
 .meaning-molten-orange {
