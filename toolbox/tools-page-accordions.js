@@ -460,20 +460,17 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function getBuildPathRows() {
-        let order = 0;
-        return buildPathGroups.flatMap((group) => group.tools.map((title) => {
-            const tool = sourceToolByTitle(title);
-            if (!tool) {
-                return null;
-            }
-            order += 1;
-            return {
-                order,
+        return registryTools
+            .filter((tool) => tool.visibleInToolsList === true)
+            .map((tool) => enrichTool(tool))
+            .filter(isVisibleForStatusFilter)
+            .sort((left, right) => (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER) || left.title.localeCompare(right.title))
+            .map((tool, index) => ({
+                order: index + 1,
                 status: tool.releaseChannel,
                 statusLabel: tool.releaseChannelLabel,
                 tool
-            };
-        }).filter(Boolean)).filter((row) => isVisibleForStatusFilter(row.tool));
+            }));
     }
 
     function createBuildPathSummary() {
@@ -673,7 +670,10 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             button.title = releaseChannelHelp(channel);
             button.textContent = `${releaseChannelLabel(channel)} (${counts[channel] || 0})`;
             button.addEventListener("click", () => {
-                if (visibleReleaseChannels.has(channel)) {
+                if (currentMode === "build-path") {
+                    visibleReleaseChannels.clear();
+                    visibleReleaseChannels.add(channel);
+                } else if (visibleReleaseChannels.has(channel)) {
                     visibleReleaseChannels.delete(channel);
                 } else {
                     visibleReleaseChannels.add(channel);

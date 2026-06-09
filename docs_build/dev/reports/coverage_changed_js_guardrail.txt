@@ -6,17 +6,15 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
+(0%) admin/tool-votes.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 547/547; executed functions 37/48
-(96%) toolbox/tools-page-accordions.js - executed lines 1033/1033; executed functions 108/113
-(100%) admin/tool-votes.js - executed lines 120/120; executed functions 16/16
-(100%) src/engine/api/toolbox-votes-api-client.js - executed lines 28/28; executed functions 4/4
+(50%) src/engine/api/toolbox-votes-api-client.js - executed lines 28/28; executed functions 2/4
+(85%) toolbox/tools-page-accordions.js - executed lines 1033/1033; executed functions 93/109
 
 Guardrail warnings:
+(0%) admin/tool-votes.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only

@@ -392,6 +392,88 @@ test("toolbox status kickers, filters, card order, and voting controls work from
   }
 });
 
+test("toolbox Build Path status filters show registry-matched tool rows", async ({ page }) => {
+  const server = await startRepoServer();
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+  page.on("pageerror", (error) => {
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) {
+      pageErrors.push(error.message);
+    }
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
+      consoleErrors.push(message.text());
+    }
+  });
+
+  async function expectBuildPathChannel(channel, expectedCount) {
+    await expect(page.locator("[data-build-path-tool]")).toHaveCount(expectedCount);
+    await expect(page.locator("[data-build-path-release-channel]")).toHaveCount(expectedCount);
+    const releaseChannels = await page.locator("[data-build-path-release-channel]").evaluateAll((rows) => (
+      rows.map((row) => row.getAttribute("data-build-path-release-channel"))
+    ));
+    expect(releaseChannels.every((releaseChannel) => releaseChannel === channel)).toBe(true);
+  }
+
+  async function selectBuildPathFilter(channel) {
+    await page.locator(`[data-toolbox-status-filter='${channel}']`).click();
+    for (const releaseChannel of ["planned", "wireframe", "beta", "complete"]) {
+      await expect(page.locator(`[data-toolbox-status-filter='${releaseChannel}']`)).toHaveAttribute(
+        "aria-pressed",
+        String(releaseChannel === channel),
+      );
+    }
+  }
+
+  try {
+    await workspaceV2CoverageReporter.start(page);
+    await setServerSession(server, MOCK_DB_KEYS.users.user1);
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    await page.locator("[data-tools-view='build-path']").click();
+
+    await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+      "Planned (28)",
+      "Wireframe (4)",
+      "Beta (5)",
+      "Complete (1)",
+    ]);
+    await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("[data-toolbox-status-filter='wireframe']")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("[data-toolbox-status-filter='beta']")).toHaveAttribute("aria-pressed", "false");
+    await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-build-path-tool='Colors']")).toBeVisible();
+    await expectBuildPathChannel("complete", 1);
+
+    await selectBuildPathFilter("planned");
+    await expectBuildPathChannel("planned", 28);
+
+    await selectBuildPathFilter("wireframe");
+    await expectBuildPathChannel("wireframe", 4);
+
+    await selectBuildPathFilter("beta");
+    await expectBuildPathChannel("beta", 5);
+
+    expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
 test("wireframe-only pages expose left center right accordion controls without runtime wiring", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
