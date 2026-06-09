@@ -1,0 +1,119 @@
+🎨 Game Design Studio
+
+Purpose: Define the game.
+
+This is where the creator answers:
+
+What is the game?
+What genre is it?
+Who are the players?
+What are the goals?
+What are the rules?
+What are the objects?
+How does scoring work?
+How does progression work?
+What assets are needed?
+What sounds are needed?
+What screens are needed?
+
+Think of it as:
+
+Game Idea → GDD → Manifest Generation
+
+-----------------------------------------
+
+PR_26151_008-design-build-publish-page-wireframes
+
+Changes:
+- Update Game Design Studio page content.
+- Update Game Builder page content.
+- Update Publish Studio page content.
+
+Game Design Studio:
+- Position as "What game are we building?"
+- Show wireframe sections only (no JavaScript).
+- Purpose:
+  - Genre
+  - Players
+  - Story
+  - Objectives
+  - Win Conditions
+  - Lose Conditions
+  - Rules
+  - Characters
+  - Progression
+  - Economy
+  - Monetization
+  - Asset Requirements
+  - Sound Requirements
+- Show output:
+  - game.gdd.json
+- Include AI → GDD workflow explanation.
+- Include Architect / Blueprint analogy.
+
+Game Builder:
+- Position as "How is the game assembled?"
+- Show wireframe sections only (no JavaScript).
+- Purpose:
+  - Screens
+  - Levels
+  - Objects
+  - Assets
+  - Audio
+  - Input Mapping
+  - Physics
+  - Behaviors
+  - Object Types
+  - State Transitions
+- Show examples:
+  - Hero = Dynamic Killable
+  - Enemy = Dynamic Killable
+  - Ice Block = Static Breakable
+  - Water = Damage Volume
+- Show output:
+  - game.manifest.json
+- Include GDD → Manifest workflow explanation.
+
+
+- Include Construction Crew analogy.
+
+Publish Studio:
+- Position as "How is the game released?"
+- Show wireframe sections only (no JavaScript).
+- Purpose:
+  - Version
+  - Screenshots
+  - Trailer
+  - Categories
+  - Tags
+  - Age Rating
+  - Release Notes
+  - Visibility
+  - Pricing
+  - Marketplace Information
+- Show outputs:
+  - Release Package
+  - Marketplace Listing
+  - Published Game Record
+- Include Manifest → Publish workflow explanation.
+- Include Real Estate Agent / Product Release analogy.
+
+General:
+- No JavaScript.
+- No runtime implementation.
+- No save logic.
+- No publishing logic.
+- Static wireframe controls only.
+- Follow existing tool page layout and accordion patterns.
+- Use current badge and character header format.
+
+Validation:
+- Static HTML validation only.
+- Verify no inline JavaScript.
+- Verify no runtime behavior added.
+- Verify content clearly differentiates Design, Build, and Publish.
+
+Required reports:
+- docs/dev/reports/codex_review.diff
+- docs/dev/reports/codex_changed_files.txt
+- docs/dev/reports/PR_26151_008-validation.md

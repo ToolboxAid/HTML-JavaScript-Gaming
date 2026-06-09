@@ -7,3 +7,21 @@ Remove-Item .\directory-name -Recurse -Force
 
 - display directory, subdirectories and files
 tree /f
+
+- resize images:
+-- output may not be 64x64 if not a square
+magick "image1.png" -resize 64x64 "image2.png"
+
+-- force the output to be exactly 64×64 regardless of aspect ratio:
+magick "image1.png" -resize 64x64! "image2.png"
+
+-- batch-convert all PNG files in a folder from 1024×1024 to 64×64:
+Get-ChildItem *.png | ForEach-Object {
+    magick $_.FullName -resize 64x64 $_.Name.Replace(".png","-64.png")
+}
+
+-- preserving transparency and producing exact icon-sized badges:
+magick "badges\game-design-1024.png" `
+    -background none `
+    -resize 64x64 `
+    "badges\game-design-64.png"

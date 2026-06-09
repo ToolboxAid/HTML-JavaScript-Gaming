@@ -39,24 +39,22 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     const betaSession = sessionRoles.includes("beta");
     let currentMode = searchParams.get("view") === "group" ? "grouped" : searchParams.get("view") === "build-path" ? "build-path" : "ascending";
     let targetGroupSlug = currentMode === "grouped" ? groupSlug(searchParams.get("group")) : "";
-    const releaseChannelOrder = Object.freeze(["complete", "beta", "wireframe", "planned"]);
-    const defaultReleaseChannels = Object.freeze(["complete", "beta", "wireframe"]);
+    const releaseChannelOrder = Object.freeze(["complete", "beta", "planned"]);
+    const defaultReleaseChannels = Object.freeze(["complete", "beta"]);
     const visibleReleaseChannels = new Set(defaultReleaseChannels);
     const releaseChannelLabels = Object.freeze({
         complete: "Complete",
         beta: "Beta",
-        wireframe: "Wireframe",
         planned: "Planned"
     });
     const releaseChannelHelpText = Object.freeze({
         planned: "Idea exists.\nNot yet available.",
-        wireframe: "Preview the planned workflow and layout.\nHelp shape the design before development begins.",
         beta: "Ready to try.\nFeatures, layout, and workflows may change based on feedback.",
         complete: "Production ready and fully supported."
     });
     const releaseChannelByStatus = Object.freeze({
         Ready: "complete",
-        Wireframe: "wireframe",
+        Wireframe: "planned",
         "Under Construction": "beta",
         Planned: "planned",
         Hidden: "planned",
@@ -181,7 +179,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         {
                 "title": "Build Game",
                 "groupClass": "tool-group-build",
-                "note": "Build Game is the package and playable-output checkpoint for this wireframe.",
+                "note": "Build Game is the package and playable-output checkpoint for this planned tool path.",
                 "tools": [
                         "Build Game"
                 ]
@@ -629,7 +627,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const summary = document.createElement("p");
         summary.textContent = activeRoleFocus() === "Viewer"
             ? "Viewer focus shows preview-safe read-only tiles only."
-            : "This wireframe focuses the Toolbox on tools this project role can work on.";
+            : "This planned view focuses the Toolbox on tools this project role can work on.";
 
         const explanation = document.createElement("p");
         explanation.textContent = unavailableTools.length
@@ -710,6 +708,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         label.className = "content-cluster";
 
         const text = document.createElement("span");
+        text.className = "swatch-label " + groupSwatch(groupName);
+        text.dataset.toolboxGroupLabel = visibleText;
         text.textContent = visibleText;
 
         label.append(createGroupSwatch(groupName), text);
@@ -882,8 +882,6 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         configureToolLaunchLink(link, tool);
         if (tool.releaseChannel === "planned") {
             link.textContent = "Planned Details";
-        } else if (tool.releaseChannel === "wireframe") {
-            link.textContent = "Open Preview";
         } else {
             link.textContent = tool.href.indexOf("toolbox/") === 0 || tool.href.indexOf("../toolbox/") === 0 ? "Open Tool" : "Open Page";
         }
@@ -897,12 +895,12 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         readiness.setAttribute("aria-label", `${tool.releaseChannelLabel}: ${tool.releaseChannelHelpText.replace(/\s+/g, " ")}`);
         readiness.textContent = tool.releaseChannelLabel;
 
-        row.append(badge, link, createGroupSwatch(tool.group), readiness);
+        row.append(badge, link, createGroupLabel(tool.group), readiness);
         return row;
     }
 
     function createToolVoteControls(tool) {
-        if (tool.releaseChannel !== "planned" && tool.releaseChannel !== "wireframe") {
+        if (tool.releaseChannel !== "planned") {
             return null;
         }
 
@@ -930,7 +928,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         [upVote, downVote].forEach((button) => {
             button.addEventListener("click", () => {
                 const direction = button.dataset.toolboxVote === "up" ? "up" : "down";
-                announceToolboxStatus(`${tool.title} ${direction} vote noted as a non-persistent wireframe control.`);
+                announceToolboxStatus(`${tool.title} ${direction} vote noted as a non-persistent planned control.`);
             });
         });
 

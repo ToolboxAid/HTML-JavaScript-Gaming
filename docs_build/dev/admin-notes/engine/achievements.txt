@@ -1,0 +1,285 @@
+# Account → Achievements Page Summary
+
+## Purpose
+
+Create a new Account page:
+
+```text
+Account
+ └─ Achievements
+```
+
+The page is an activity, analytics, and gamification dashboard based on the Game Foundry Studio north star:
+
+```text
+Build · Play · Share
+```
+
+It is **not just badges**.
+
+The page should combine:
+
+* Statistics
+* Achievements
+* Activity History
+* Creator Analytics
+
+---
+
+# Top Navigation
+
+Use the same style as:
+
+```text
+toolbox/index.html#build-path-wireframe
+```
+
+Example:
+
+```text
++--------------------------------------------------+
+| [ Build ] [ Play ] [ Share ]                     |
++--------------------------------------------------+
+```
+
+All buttons are active.
+
+No grayed-out controls.
+
+No disabled buttons.
+
+---
+
+# Build Tab
+
+## Purpose
+
+Show games the user created.
+
+---
+
+## Layout
+
+```text
++--------------------------------------------------+
+| Games Created | Total Plays | Avg Rating | Fans |
++--------------------------------------------------+
+|      12       |   18,421    |    4.8     |  642 |
++--------------------------------------------------+
+```
+
+---
+
+## Achievements
+
+```text
+🏆 First Game Created
+🏆 Published First Game
+🏆 1,000 Total Plays
+🏆 10 Games Created
+🏆 Community Favorite
+```
+
+---
+
+## Game List
+
+```text
++---------------------------------------------------------------+
+| Game            | Status   | Plays | Rating | Updated         |
++---------------------------------------------------------------+
+| King Iceberg    | Shared   | 8421  | 4.8    | 2 days ago      |
+| Asteroids DX    | Playable | 1124  | 4.5    | 5 days ago      |
+| Space Rescue    | Draft    | 0     | --     | Today           |
++---------------------------------------------------------------+
+```
+
+---
+
+## Actions
+
+```text
+[ Open ]
+[ Statistics ]
+[ Share ]
+```
+
+---
+
+# Play Tab
+
+## Purpose
+
+Show games the user has played.
+
+---
+
+## Layout
+
+```text
++-----------------------------------------------------------+
+| Games Played | Favorites | Reviews | Hours Played        |
++-----------------------------------------------------------+
+|     143      |    27     |    12   |     84 hrs          |
++-----------------------------------------------------------+
+```
+
+---
+
+## Achievements
+
+```text
+🏆 First Game Played
+🏆 10 Games Played
+🏆 100 Games Played
+🏆 Reviewer
+🏆 Collector
+```
+
+---
+
+## Played Games
+
+```text
++--------------------------------------------------------------------+
+| Game            | Progress | Rating | Favorite | Shared | Last Play|
++--------------------------------------------------------------------+
+| King Iceberg    | 100%     | 5 Star | ♥        | ✓      | Yesterday|
+| Frogger         | 85%      | 4 Star | ♥        | ✓      | Today    |
++--------------------------------------------------------------------+
+```
+
+---
+
+## Actions
+
+```text
+[ Continue ]
+[ Favorite ]
+[ Share ]
+```
+
+---
+
+# Share Tab
+
+## Purpose
+
+Show sharing activity from both perspectives:
+
+### Creator
+
+People sharing your games.
+
+### Player
+
+Games you shared.
+
+---
+
+# Creator Analytics
+
+## Summary Cards
+
+```text
++----------------------------------------------------------------+
+| Shared By Others | Unique Sharers | Share Plays | Favorites    |
++----------------------------------------------------------------+
+|      1,248       |      312       |    8,421    |     983      |
++----------------------------------------------------------------+
+```
+
+---
+
+## Achievements
+
+```text
+🏆 First Shared Game
+🏆 100 Shares
+🏆 1,000 Share Plays
+🏆 Viral Game
+🏆 Community Favorite
+```
+
+---
+
+## Creator Share Table
+
+```text
++------------------------------------------------------------------------+
+| Game             | Shares | Sharers | Plays From Share | Rating       |
++------------------------------------------------------------------------+
+| King Iceberg     | 412    | 98      | 2144             | 4.8          |
+| Asteroids DX     | 223    | 57      | 1010             | 4.6          |
++------------------------------------------------------------------------+
+```
+
+---
+
+# Games I Shared
+
+```text
++---------------------------------------------------------------+
+| Game             | Shared Date | Clicks | Plays Generated    |
++---------------------------------------------------------------+
+| King Iceberg     | Jun 1       | 42     | 15                 |
+| Frogger          | Jun 3       | 18     | 7                  |
++---------------------------------------------------------------+
+```
+
+---
+
+## Actions
+
+```text
+[ Share Again ]
+[ Copy Link ]
+[ View Analytics ]
+```
+
+---
+
+# Page Structure
+
+Recommended overall layout:
+
+```text
++--------------------------------------------------------------+
+| Account > Achievements                                       |
++--------------------------------------------------------------+
+
++--------------------------------------------------------------+
+| [ Build ] [ Play ] [ Share ]                                |
++--------------------------------------------------------------+
+
++--------------------------------------------------------------+
+| Summary Cards                                               |
++--------------------------------------------------------------+
+
++--------------------------------------------------------------+
+| Achievement Badges                                          |
++--------------------------------------------------------------+
+
++--------------------------------------------------------------+
+| Activity Table                                              |
++--------------------------------------------------------------+
+
++--------------------------------------------------------------+
+| Actions                                                     |
++--------------------------------------------------------------+
+```
+
+---
+
+# Design Decisions Agreed
+
+* Achievements is an **Account page**, not a Toolbox tool.
+* Build / Play / Share are top-level tabs.
+* All controls are active in the wireframe.
+* Nothing should appear disabled or grayed out.
+* Statistics cards appear before badges.
+* Badges appear before detailed tables.
+* Share focuses heavily on creator analytics.
+* Creators can see when other players share their games.
+* Long-term this becomes DB-backed.
+* Initial implementation is a clickable wireframe using existing Theme V2 patterns only.

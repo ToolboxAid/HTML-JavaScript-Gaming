@@ -1,0 +1,21 @@
+🎨 Game Design Studio
+
+Purpose: Define the game.
+
+This is where the creator answers:
+
+What is the game?
+What genre is it?
+Who are the players?
+What are the goals?
+What are the rules?
+What are the objects?
+How does scoring work?
+How does progression work?
+What assets are needed?
+What sounds are needed?
+What screens are needed?
+
+Think of it as:
+
+Game Idea → GDD → Manifest Generation

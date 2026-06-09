@@ -34,3 +34,17 @@
   font-size: var(--font-size-sm);
   line-height: var(--line-height-copy)
 }
+
+.swatch-label {
+  border: var(--border-standard);
+  border-color: var(--swatch-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+  color: var(--white);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: var(--space-24);
+  padding: var(--space-3) var(--space-10);
+  text-shadow: 0 1px 2px var(--shadow-color-strong)
+}
