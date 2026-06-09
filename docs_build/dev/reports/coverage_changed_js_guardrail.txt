@@ -12,8 +12,7 @@ Changed runtime JS files considered:
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/shared/toolbox/platformShell.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(62%) admin/tool-votes.js - executed lines 383/383; executed functions 29/47
-(88%) toolbox/tools-page-accordions.js - executed lines 997/997; executed functions 94/107
+(92%) admin/tool-votes.js - executed lines 383/383; executed functions 46/50
 
 Guardrail warnings:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
