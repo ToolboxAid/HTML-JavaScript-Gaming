@@ -1,12 +1,9 @@
-[x] Add a human theme
-[x] How do we adjust the step size
-
 
 [.] Palette updates
 - tones 
 -- [x] earthy
 -- [x] human
--- [x] water
+-- [x] water - tone (earthy, human, water, floral, TV Age, console age, arcade)
 -- [x] floral
 -- [ ] TV Age
 -- [x] console age
@@ -16,3 +13,5 @@
 - left to right
 - Middle Gray ROYGBIV
 - step sizes (2-255)
+
+[x] Adjust the step size white/black from center

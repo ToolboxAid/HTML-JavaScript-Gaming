@@ -7,3 +7,35 @@ src\assets\fonts\0xProtoNerdFont\ to assets\theme-v2\fonts\
 src\assets\fonts\vector_battle\ to assets\theme-v2\fonts\
 delete src\assets\
 
+
+
+
+# Admin Notes Ownership
+
+Admin Notes are dev-only documentation artifacts.
+
+Owned paths:
+- `docs_build/dev/admin-notes/index.txt` is the root admin note.
+- `docs_build/dev/admin-notes/other/index.txt` is the simple subnote fixture.
+- `docs_build/dev/admin-notes/quick-reference.txt` is a linked text-note fixture.
+- `docs_build/dev/admin-notes/sample.txt` is a root-relative link example note.
+- `docs_build/dev/admin-notes/notes/index.txt` is retained historical admin-note content.
+
+Runtime boundary:
+- Admin Notes viewer implementation, when needed for local/dev inspection, belongs under `src/dev-runtime/admin/`.
+- Local/dev viewer access belongs under `src/dev-runtime/admin/`.
+- Public user navigation, Admin/public route pages, toolbox pages, root pages, and production runtime bundles must not link to or fetch Admin Notes content.
+- UAT/PROD bundles must not import `src/dev-runtime/admin/`.
+
+
+
+[.] Admin notes
+- reads txt file (this one) and displays
+- if a note has [subnote] it should be a link on the page and display [subnote].txt
+- example [other] should display other.txt, 
+- at the top of subnote pages, have a return take you to note.txt
+- name is up for discuttion  (this is my ideas, things I want to fix, undecided question)
+[ ] Correction Notes update
+[subnote] should be /[subnote]/note.txt
+
+
