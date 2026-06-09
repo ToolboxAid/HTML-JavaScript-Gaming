@@ -1,16 +1,8 @@
 import { expect, test } from "@playwright/test";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
-import {
-  TOOL_IMAGE_FALLBACK,
-  TOOL_REGISTRY,
-  getToolImageSource,
-  getToolRoute,
-} from "../../../toolbox/toolRegistry.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-
-const registryToolsByDisplayName = new Map(TOOL_REGISTRY.map((tool) => [tool.displayName, tool]));
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -66,6 +58,16 @@ async function setServerSession(server, userKey) {
     headers: { "content-type": "application/json" },
     method: "POST",
   });
+}
+
+async function fetchApiData(server, pathName) {
+  const response = await fetch(`${server.baseUrl}${pathName}`, {
+    headers: { "content-type": "application/json" },
+  });
+  const payload = await response.json();
+  expect(response.ok, JSON.stringify(payload)).toBe(true);
+  expect(payload.ok, JSON.stringify(payload)).toBe(true);
+  return payload.data;
 }
 
 async function expectNoPageFailures(failures) {
@@ -163,21 +165,23 @@ test("Build Path tool names link to registered routes and render badge images", 
 
     const row = rows.first();
     const toolName = await row.getAttribute("data-build-path-tool");
+    const registrySnapshot = await fetchApiData(failures.server, "/api/toolbox/registry/snapshot");
+    const registryToolsByDisplayName = new Map(registrySnapshot.activeTools.map((tool) => [tool.displayName, tool]));
     const registryTool = registryToolsByDisplayName.get(toolName);
     expect(registryTool, `Registry entry missing for ${toolName}`).toBeTruthy();
-    const route = getToolRoute(registryTool);
+    const route = registryTool.route;
 
     await expect(row.locator("[data-build-path-tool-link]")).toHaveText(toolName);
     await expect(row.locator("[data-build-path-tool-link]")).toHaveAttribute("data-registered-tool-route", route);
     await expect(row.locator("[data-build-path-tool-link]")).toHaveAttribute("href", "/" + route);
-    await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("src", getToolImageSource(registryTool, "badge"));
+    await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("src", registryTool.imageSources.badge);
     await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("alt", toolName + " badge");
     await expect(row.locator("[data-tool-image-diagnostic]")).toHaveCount(0);
 
     await row.locator("[data-build-path-badge]").evaluate((image) => {
       image.dispatchEvent(new Event("error"));
     });
-    await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("src", TOOL_IMAGE_FALLBACK);
+    await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("src", registrySnapshot.imageFallback);
     await expect(row.locator("[data-tool-image-diagnostic]")).toContainText("Badge image missing; fallback shown.");
 
     await row.locator("[data-build-path-tool-link]").click();

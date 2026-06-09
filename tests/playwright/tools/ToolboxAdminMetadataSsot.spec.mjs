@@ -163,23 +163,53 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata", a
   }
 });
 
-test("Admin state edits update the same metadata used by Toolbox after reload", async ({ page }) => {
+test("Admin metadata edits update the same DB-backed metadata used by Toolbox after reload", async ({ page }) => {
   const server = await startRepoServer();
   await setServerSession(server, MOCK_DB_KEYS.users.admin);
   const failures = await openTrackedPage(page, server, "/admin/tool-votes.html");
 
   try {
+    const initialSnapshot = await fetchApiData(server, "/api/toolbox/votes/snapshot");
+    const initialToolIds = initialSnapshot.rows.map((row) => row.toolKey || row.toolId);
     const creatorLearningRow = page.locator("[data-toolbox-votes-tool-id='learn']");
     await expect(creatorLearningRow).toBeVisible();
+    const groupSelect = creatorLearningRow.locator("[data-toolbox-votes-group='learn']");
+    const nextGroup = (await groupSelect.inputValue()) === "Design" ? "AI" : "Design";
+    await groupSelect.selectOption(nextGroup);
+    await expect(page.locator("[data-toolbox-votes-status]")).toContainText(`Creator Learning group updated to ${nextGroup}`);
+
+    const nextPath = "learn/index.html?metadata=ssot";
+    const pathInput = page.locator("[data-toolbox-votes-path='learn']");
+    await pathInput.fill(nextPath);
+    await pathInput.dispatchEvent("change");
+    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Creator Learning path updated");
+
     await creatorLearningRow.locator("[data-toolbox-votes-state='learn']").selectOption("beta");
     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Creator Learning state updated to Beta");
+
+    const reorderedIds = ["learn", ...initialToolIds.filter((toolId) => toolId !== "learn")];
+    await fetchApiData(server, "/api/toolbox/votes/order-list", {
+      body: JSON.stringify({ toolIds: reorderedIds }),
+      method: "POST",
+    });
 
     const updatedSnapshot = await fetchApiData(server, "/api/toolbox/votes/snapshot");
     const creatorLearning = updatedSnapshot.rows.find((row) => (row.toolKey || row.toolId) === "learn");
     expect(creatorLearning).toEqual(expect.objectContaining({
+      group: nextGroup,
+      order: 1,
+      path: nextPath,
       status: "beta",
       releaseChannel: "beta",
       toolName: "Creator Learning",
+    }));
+    const registrySnapshot = await fetchApiData(server, "/api/toolbox/registry/snapshot");
+    const registryCreatorLearning = registrySnapshot.activeTools.find((tool) => tool.id === "learn");
+    expect(registryCreatorLearning).toEqual(expect.objectContaining({
+      category: nextGroup,
+      order: 1,
+      releaseChannel: "beta",
+      route: nextPath,
     }));
 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -192,6 +222,13 @@ test("Admin state edits update the same metadata used by Toolbox after reload", 
     await expect(buildPathRow).toBeVisible();
     await expect(buildPathRow).toHaveAttribute("data-build-path-metadata-source", "toolbox_tool_metadata");
     await expect(buildPathRow).toHaveAttribute("data-build-path-release-channel", "beta");
+    await expect(buildPathRow).toHaveAttribute("data-build-path-group", nextGroup);
+    await expect(buildPathRow).toHaveAttribute("data-build-path-path", nextPath);
+    await expect(buildPathRow.locator("td").first()).toHaveText("1");
+    await expect(buildPathRow.locator("[data-build-path-tool-link='Creator Learning']")).toHaveAttribute(
+      "href",
+      /learn\/index\.html\?metadata=ssot$/,
+    );
 
     await expectNoPageFailures(failures);
   } finally {
@@ -212,6 +249,28 @@ test("Toolbox page does not own hardcoded tool count text", async () => {
     expect(script).not.toMatch(/Planned \(\d+\)|Wireframe \(\d+\)|Beta \(\d+\)|Complete \(\d+\)/);
     expect(script).not.toMatch(/Tool Count: \d+\/\d+/);
   } finally {
+    await server.close();
+  }
+});
+
+test("Toolbox and Admin pages do not request the retired browser registry module", async ({ page }) => {
+  const server = await startRepoServer();
+  await setServerSession(server, MOCK_DB_KEYS.users.admin);
+  const registryRequests = [];
+
+  page.on("request", (request) => {
+    if (new URL(request.url()).pathname === "/toolbox/toolRegistry.js") {
+      registryRequests.push(request.url());
+    }
+  });
+
+  try {
+    await workspaceV2CoverageReporter.start(page);
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
+    expect(registryRequests).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
     await server.close();
   }
 });

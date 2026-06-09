@@ -21,6 +21,15 @@ const RELEASE_CHANNEL_OPTIONS = Object.freeze([
   ["complete", "Complete"],
 ]);
 const RELEASE_CHANNEL_LABELS = new Map(RELEASE_CHANNEL_OPTIONS);
+const GROUP_OPTIONS = Object.freeze([
+  "AI",
+  "Audio",
+  "Build/Create",
+  "Design",
+  "Marketplace",
+  "Platform",
+  "Play",
+]);
 
 const SORT_TYPES = Object.freeze({
   down: "number",
@@ -89,6 +98,76 @@ function orderCell(voteRow) {
   return cell;
 }
 
+function updateMetadata(voteRow, updates, successLabel) {
+  const nextGroup = updates.group ?? voteRow.group;
+  const nextPath = updates.path ?? voteRow.path;
+  const nextState = updates.status ?? rowReleaseChannel(voteRow);
+  try {
+    const snapshot = updateToolboxVoteMetadata(voteRow.toolId, {
+      group: nextGroup,
+      path: nextPath,
+      status: nextState,
+      releaseChannel: nextState,
+    });
+    window.setTimeout(() => {
+      renderSnapshot(snapshot, `${voteRow.toolName} ${successLabel}. Toolbox Build Path uses the same metadata.`);
+      selectRow(voteRow.toolId);
+    }, 0);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error || "Toolbox metadata update unavailable.");
+    setStatus(`${voteRow.toolName} metadata could not be updated. ${message}`);
+    renderRows(snapshotRows);
+  }
+}
+
+function groupCell(voteRow) {
+  const cell = document.createElement("td");
+  const select = document.createElement("select");
+  const currentGroup = String(voteRow.group || "").trim();
+  const options = GROUP_OPTIONS.includes(currentGroup) || !currentGroup
+    ? GROUP_OPTIONS
+    : [...GROUP_OPTIONS, currentGroup];
+  select.dataset.toolboxVotesGroup = voteRow.toolId;
+  select.setAttribute("aria-label", `Group for ${voteRow.toolName}`);
+  options.forEach((group) => {
+    const option = document.createElement("option");
+    option.value = group;
+    option.textContent = group;
+    select.append(option);
+  });
+  select.value = currentGroup || GROUP_OPTIONS[0];
+  select.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+  select.addEventListener("change", () => {
+    if (select.value !== currentGroup) {
+      updateMetadata(voteRow, { group: select.value }, `group updated to ${select.value}`);
+    }
+  });
+  cell.append(select);
+  return cell;
+}
+
+function pathCell(voteRow) {
+  const cell = document.createElement("td");
+  const input = document.createElement("input");
+  input.dataset.toolboxVotesPath = voteRow.toolId;
+  input.setAttribute("aria-label", `Path for ${voteRow.toolName}`);
+  input.type = "text";
+  input.value = voteRow.path || "";
+  input.addEventListener("click", (event) => {
+    event.stopPropagation();
+  });
+  input.addEventListener("change", () => {
+    const nextPath = input.value.trim().replace(/^\/+/, "");
+    if (nextPath !== voteRow.path) {
+      updateMetadata(voteRow, { path: nextPath }, "path updated");
+    }
+  });
+  cell.append(input);
+  return cell;
+}
+
 function releaseChannelLabel(value) {
   return RELEASE_CHANNEL_LABELS.get(value) || RELEASE_CHANNEL_LABELS.get("planned");
 }
@@ -126,20 +205,7 @@ function handleStateChange(voteRow, select) {
   if (nextState === rowReleaseChannel(voteRow)) {
     return;
   }
-  try {
-    const snapshot = updateToolboxVoteMetadata(voteRow.toolId, {
-      group: voteRow.group,
-      path: voteRow.path,
-      status: nextState,
-      releaseChannel: nextState,
-    });
-    renderSnapshot(snapshot, `${voteRow.toolName} state updated to ${releaseChannelLabel(nextState)}. Toolbox Build Path uses the same metadata.`);
-    selectRow(voteRow.toolId);
-  } catch (error) {
-    select.value = rowReleaseChannel(voteRow);
-    const message = error instanceof Error ? error.message : String(error || "Toolbox state update unavailable.");
-    setStatus(`${voteRow.toolName} state could not be updated. ${message}`);
-  }
+  updateMetadata(voteRow, { status: nextState }, `state updated to ${releaseChannelLabel(nextState)}`);
 }
 
 function sortValue(voteRow, key) {
@@ -296,8 +362,8 @@ function renderRows(rows) {
     row.append(
       toolNameCell(voteRow),
       orderCell(voteRow),
-      tableCell(voteRow.group),
-      tableCell(voteRow.path),
+      groupCell(voteRow),
+      pathCell(voteRow),
       stateCell(voteRow),
       tableCell(voteRow.up),
       tableCell(voteRow.down),

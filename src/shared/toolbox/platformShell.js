@@ -277,18 +277,18 @@ function buildToolHeaderIntroData(currentTool) {
   const headerDescriptor = toolDescription || toolShortDescription;
   const headerText = toolName && headerDescriptor
     ? `${toolName} - ${headerDescriptor}`
-    : `Configuration error: ${toolId} header requires tool.displayName/tool.name and tool.description/tool.shortDescription in toolbox/toolRegistry.js.`;
+    : `Configuration error: ${toolId} header requires displayName/name and description/shortDescription from the Toolbox metadata API record.`;
   const introText = toolName && toolDescription
     ? `${toolName}: ${toolDescription}`
-    : `Configuration error: ${toolId} intro requires tool.displayName/tool.name and tool.description in toolbox/toolRegistry.js.`;
+    : `Configuration error: ${toolId} intro requires displayName/name and description from the Toolbox metadata API record.`;
   const hasHeaderError = !(toolName && headerDescriptor);
   const hasIntroError = !(toolName && toolDescription);
   const diagnosticParts = [];
   if (hasHeaderError) {
-    diagnosticParts.push(`Configuration error: ${toolId} header requires tool.displayName/tool.name and tool.description/tool.shortDescription in toolbox/toolRegistry.js.`);
+    diagnosticParts.push(`Configuration error: ${toolId} header requires displayName/name and description/shortDescription from the Toolbox metadata API record.`);
   }
   if (hasIntroError) {
-    diagnosticParts.push(`Configuration error: ${toolId} intro requires tool.displayName/tool.name and tool.description in toolbox/toolRegistry.js.`);
+    diagnosticParts.push(`Configuration error: ${toolId} intro requires displayName/name and description from the Toolbox metadata API record.`);
   }
   const headerDisplayText = hasHeaderError
     ? `${toolName || toolId} \u2014 Configuration error (open title for details)`
@@ -1753,10 +1753,10 @@ function renderHeaderMarkup(currentTool, isHeaderExpanded) {
   const hasStandardizedIntroConfig = Boolean(standardizedToolName && standardizedToolHelpText);
   const standardizedHeaderText = hasStandardizedHeaderConfig
     ? `${standardizedToolName} - ${standardizedHeaderDescriptor}`
-    : `Configuration error: ${currentTool?.id || "tool"} header requires tool.displayName/tool.name and tool.description/tool.shortDescription in toolbox/toolRegistry.js.`;
+    : `Configuration error: ${currentTool?.id || "tool"} header requires displayName/name and description/shortDescription from the Toolbox metadata API record.`;
   const standardizedIntroText = hasStandardizedIntroConfig
     ? `${standardizedToolName}: ${standardizedToolHelpText}`
-    : `Configuration error: ${currentTool?.id || "tool"} intro requires tool.name and tool.description in toolbox/toolRegistry.js.`;
+    : `Configuration error: ${currentTool?.id || "tool"} intro requires name and description from the Toolbox metadata API record.`;
   const meta = isLanding
     ? `${getToolRegistry().filter((entry) => entry.active === true && entry.visibleInToolsList === true).length} active tools | hubCommon.css theme`
     : "Shared shell, engine theme, and workspace context applied from the active tool registry";

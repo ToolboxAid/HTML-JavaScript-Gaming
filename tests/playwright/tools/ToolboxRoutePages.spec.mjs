@@ -1,6 +1,5 @@
 import { expect, test } from "@playwright/test";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
-import { getActiveToolRegistry } from "../../../toolbox/toolRegistry.js";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -14,7 +13,6 @@ const TOOL_ROUTE_SMOKE_CASES = [
   { heading: "Saved Data", route: "/tools/saved-data/index.html" },
   { heading: "Languages", route: "/tools/languages/index.html" },
 ];
-const REGISTRY_BY_ID = new Map(getActiveToolRegistry().map((tool) => [tool.id, tool]));
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
@@ -31,6 +29,21 @@ async function setServerSession(server, userKey) {
     headers: { "content-type": "application/json" },
     method: "POST",
   });
+}
+
+async function fetchApiData(server, pathName) {
+  const response = await fetch(`${server.baseUrl}${pathName}`, {
+    headers: { "content-type": "application/json" },
+  });
+  const payload = await response.json();
+  expect(response.ok, JSON.stringify(payload)).toBe(true);
+  expect(payload.ok, JSON.stringify(payload)).toBe(true);
+  return payload.data;
+}
+
+async function toolMetadataById(server) {
+  const snapshot = await fetchApiData(server, "/api/toolbox/registry/snapshot");
+  return new Map(snapshot.activeTools.map((tool) => [tool.id, tool]));
 }
 
 test("tools route aliases render toolbox tool pages", async ({ page }) => {
@@ -401,10 +414,11 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(page.locator("[data-toolbox-votes-path-edit]")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-votes-status-edit]")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-votes-metadata-save]")).toHaveCount(0);
+    const registryById = await toolMetadataById(server);
     const adminBuildVoteRow = page.locator("[data-toolbox-votes-tool-id='build-game']");
     await expect(adminBuildVoteRow.locator("td").first().locator("a")).toHaveText("Build Game");
     await expect(adminBuildVoteRow.locator("td").first().locator("a")).toHaveAttribute("href", /toolbox\/build-game\/index\.html$/);
-    await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText(String(REGISTRY_BY_ID.get("build-game").order));
+    await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText(String(registryById.get("build-game").order));
     await expect(adminBuildVoteRow.locator("[data-toolbox-votes-state='build-game']")).toHaveValue("wireframe");
     await expect(adminBuildVoteRow.locator("[data-toolbox-votes-state='build-game'] option")).toHaveText([
       "Planned",
@@ -418,7 +432,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(adminBuildVoteRow.locator("td").nth(8)).toHaveText("100%");
     await expect(adminBuildVoteRow.locator("td").nth(9)).toHaveText("0%");
     await expect(adminBuildVoteRow.locator("td").nth(10)).toHaveText("None");
-    await adminBuildVoteRow.click();
+    await adminBuildVoteRow.locator("td").nth(1).click();
     await expect(adminBuildVoteRow).toHaveAttribute("aria-selected", "true");
     await page.locator("[data-toolbox-votes-sort='toolName']").click();
     await expect(page.locator("[data-toolbox-votes-sort-header='toolName']")).toHaveAttribute("aria-sort", "ascending");
@@ -564,7 +578,7 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
     const adminGroupsByTool = await page.locator("[data-toolbox-votes-tool-id]").evaluateAll((rows) => (
       Object.fromEntries(rows.map((row) => [
         row.querySelector("td")?.textContent.trim(),
-        row.querySelectorAll("td")[2]?.textContent.trim(),
+        row.querySelector("[data-toolbox-votes-group]")?.value || "",
       ]))
     ));
 
@@ -661,6 +675,7 @@ test("toolbox Build Path status filters support multi-select registry-matched to
   try {
     await workspaceV2CoverageReporter.start(page);
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
+    const registryById = await toolMetadataById(server);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tools-order]")).toHaveClass(/primary/);
     await page.locator("[data-tools-sort='grouped']").click();
@@ -679,14 +694,14 @@ test("toolbox Build Path status filters support multi-select registry-matched to
     await expectActiveFilters(["complete"]);
     await expect(page.locator("[data-build-path-tool='Colors']")).toBeVisible();
     await expectBuildPathChannels(["complete"], 1);
-    await expectBuildPathOrder("Colors", REGISTRY_BY_ID.get("colors").order);
+    await expectBuildPathOrder("Colors", registryById.get("colors").order);
 
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expectActiveFilters(["planned", "complete"]);
     await expectBuildPathChannels(["planned", "complete"], 30);
     await expect(page.locator("[data-build-path-tool='AI Assistant']")).toBeVisible();
-    await expectBuildPathOrder("AI Assistant", REGISTRY_BY_ID.get("ai-assistant").order);
-    await expectBuildPathOrder("Colors", REGISTRY_BY_ID.get("colors").order);
+    await expectBuildPathOrder("AI Assistant", registryById.get("ai-assistant").order);
+    await expectBuildPathOrder("Colors", registryById.get("colors").order);
 
     await page.locator("[data-toolbox-status-filter='complete']").click();
     await expectActiveFilters(["planned"]);
@@ -698,7 +713,7 @@ test("toolbox Build Path status filters support multi-select registry-matched to
     await expectActiveFilters(["planned", "wireframe"]);
     await expectBuildPathChannels(["planned", "wireframe"], 33);
     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
-    await expectBuildPathOrder("Build Game", REGISTRY_BY_ID.get("build-game").order);
+    await expectBuildPathOrder("Build Game", registryById.get("build-game").order);
 
     await page.locator("[data-toolbox-status-filter='beta']").click();
     await expectActiveFilters(["planned", "wireframe", "beta"]);

@@ -15,10 +15,8 @@ import {
   getToolProgressReadiness,
   getToolReleaseChannel,
   getToolReleaseChannelLabel,
-  getToolRegistry,
   getToolRoute,
-  toolRegistryMetadataDiagnostic,
-} from "../../../toolbox/toolRegistry.js";
+} from "../guest-seeds/tool-metadata-inventory.js";
 import {
   PALETTE_SOURCE_USER,
   PALETTE_TOOL_KEY,
@@ -111,25 +109,67 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
-function serverRegistryTool(tool) {
-  return {
-    ...tool,
-    imageDiagnostics: getToolImageDiagnostics(tool),
-    imageSources: {
-      badge: getToolImageSource(tool, "badge"),
-      tool: getToolImageSource(tool, "tool"),
-    },
-    route: getToolRoute(tool),
-    statusDiagnostic: toolRegistryMetadataDiagnostic(tool),
-  };
+function valueOrDefault(value, fallback) {
+  return value === undefined || value === null || value === "" ? fallback : value;
 }
 
-function toolRegistrySnapshot() {
+function booleanOrDefault(value, fallback) {
+  return typeof value === "boolean" ? value : fallback;
+}
+
+function normalizedToolKey(row) {
+  return String(row?.toolKey || row?.toolId || row?.id || "").trim();
+}
+
+function requiredToolMetadataDiagnostics(row) {
+  const missing = ["toolKey", "toolName", "group", "path", "order", "status"].filter((field) => {
+    const value = field === "toolKey" ? normalizedToolKey(row) : row?.[field];
+    return value === undefined || value === null || value === "";
+  });
+  return missing.length ? `Missing DB-backed Toolbox metadata: ${missing.join(", ")}.` : "";
+}
+
+function serverRegistryTool(tool, index = 0) {
+  const toolKey = normalizedToolKey(tool);
+  const toolName = tool.toolName || tool.displayName || tool.name || toolKey;
+  const releaseChannel = getToolReleaseChannel(tool.status || tool.releaseChannel);
+  const route = String(tool.path || tool.route || getToolRoute(tool) || "").replace(/^\/+/, "");
+  const badgePath = tool.badge || tool.imageSources?.badge || "";
+  const toolImagePath = tool.toolImage || tool.tool || tool.imageSources?.tool || "";
+  const imageProbe = {
+    badge: badgePath,
+    tool: toolImagePath,
+  };
   return {
-    activeTools: getActiveToolRegistry().map(serverRegistryTool),
-    imageFallback: TOOL_IMAGE_FALLBACK,
-    readinessByStatus: Object.fromEntries(TOOL_STATUS_MODEL.map((status) => [status, getToolProgressReadiness(status)])),
-    tools: getToolRegistry().map(serverRegistryTool),
+    ...tool,
+    active: booleanOrDefault(tool.active, true),
+    adminOnly: tool.adminOnly === true,
+    badge: badgePath,
+    category: tool.category || tool.group || "Platform",
+    colorGroup: tool.colorGroup || "",
+    deferred: tool.deferred === true,
+    description: tool.description || tool.shortDescription || "",
+    displayName: toolName,
+    hidden: tool.hidden === true,
+    id: toolKey,
+    imageDiagnostics: getToolImageDiagnostics(imageProbe),
+    imageSources: {
+      badge: getToolImageSource(imageProbe, "badge"),
+      tool: getToolImageSource(imageProbe, "tool"),
+    },
+    name: toolName,
+    order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
+    path: route,
+    releaseChannel,
+    releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+    route,
+    shortDescription: tool.shortDescription || tool.description || "",
+    shortLabel: tool.shortLabel || toolName,
+    status: releaseChannel,
+    statusDiagnostic: tool.statusDiagnostic || requiredToolMetadataDiagnostics(tool),
+    tool: toolImagePath,
+    toolboxGroup: tool.toolboxGroup || "",
+    visibleInToolsList: tool.visibleInToolsList === true,
   };
 }
 
@@ -824,12 +864,36 @@ class LocalDevMockDataSource {
     const releaseChannel = getToolReleaseChannel(tool);
     const toolKey = tool.id;
     return {
+      active: tool.active !== false,
+      adminOnly: tool.adminOnly === true,
+      badge: tool.badge || "",
+      capabilityLabel: tool.capabilityLabel || "",
+      category: tool.category || "Platform",
+      childCapabilities: Array.isArray(tool.childCapabilities) ? [...tool.childCapabilities] : [],
+      colorGroup: tool.colorGroup || "",
+      deferred: tool.deferred === true,
+      description: tool.description || tool.shortDescription || "",
       group: tool.category || "Platform",
+      hidden: tool.hidden === true,
       order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
       path: getToolRoute(tool) || "",
+      progressChecklist: Array.isArray(tool.progressChecklist) ? [...tool.progressChecklist] : [],
+      readiness: tool.readiness || "",
+      requiredForPlayable: tool.requiredForPlayable === true,
+      requiredForPublish: tool.requiredForPublish === true,
+      requiredForTestable: tool.requiredForTestable === true,
+      requiredRole: typeof tool.requiredRole === "string" ? tool.requiredRole : "",
+      requires: Array.isArray(tool.requires) ? [...tool.requires] : [],
+      shortDescription: tool.shortDescription || tool.description || "",
+      shortLabel: tool.shortLabel || tool.displayName || tool.name || tool.id,
       status: releaseChannel,
+      statusDiagnostic: tool.statusDiagnostic || "",
+      subgroup: tool.subgroup || "",
       toolId: toolKey,
+      toolImage: tool.tool || "",
       toolKey,
+      toolboxGroup: tool.toolboxGroup || "",
+      visibleInToolsList: tool.visibleInToolsList === true,
       releaseChannel,
       releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
       toolName: tool.displayName || tool.name || tool.id,
@@ -856,12 +920,36 @@ class LocalDevMockDataSource {
       const releaseChannel = getToolReleaseChannel(existingRow.status || existingRow.releaseChannel || defaults.releaseChannel);
       const normalizedOrder = Math.max(1, Math.round(Number(existingRow.order) || defaults.order));
       const normalizedValues = {
+        active: booleanOrDefault(existingRow.active, defaults.active),
+        adminOnly: booleanOrDefault(existingRow.adminOnly, defaults.adminOnly),
+        badge: valueOrDefault(existingRow.badge, defaults.badge),
+        capabilityLabel: valueOrDefault(existingRow.capabilityLabel, defaults.capabilityLabel),
+        category: valueOrDefault(existingRow.category, defaults.category),
+        childCapabilities: Array.isArray(existingRow.childCapabilities) ? existingRow.childCapabilities : defaults.childCapabilities,
+        colorGroup: valueOrDefault(existingRow.colorGroup, defaults.colorGroup),
+        deferred: booleanOrDefault(existingRow.deferred, defaults.deferred),
+        description: valueOrDefault(existingRow.description, defaults.description),
         group: existingRow.group || defaults.group,
+        hidden: booleanOrDefault(existingRow.hidden, defaults.hidden),
         order: normalizedOrder,
         path: existingRow.path || defaults.path,
+        progressChecklist: Array.isArray(existingRow.progressChecklist) ? existingRow.progressChecklist : defaults.progressChecklist,
+        readiness: valueOrDefault(existingRow.readiness, defaults.readiness),
+        requiredForPlayable: booleanOrDefault(existingRow.requiredForPlayable, defaults.requiredForPlayable),
+        requiredForPublish: booleanOrDefault(existingRow.requiredForPublish, defaults.requiredForPublish),
+        requiredForTestable: booleanOrDefault(existingRow.requiredForTestable, defaults.requiredForTestable),
+        requiredRole: valueOrDefault(existingRow.requiredRole, defaults.requiredRole),
+        requires: Array.isArray(existingRow.requires) ? existingRow.requires : defaults.requires,
+        shortDescription: valueOrDefault(existingRow.shortDescription, defaults.shortDescription),
+        shortLabel: valueOrDefault(existingRow.shortLabel, defaults.shortLabel),
         status: releaseChannel,
+        statusDiagnostic: valueOrDefault(existingRow.statusDiagnostic, defaults.statusDiagnostic),
+        subgroup: valueOrDefault(existingRow.subgroup, defaults.subgroup),
         toolId: existingRow.toolId || defaults.toolId,
+        toolImage: valueOrDefault(existingRow.toolImage, defaults.toolImage),
         toolKey: existingRow.toolKey || existingRow.toolId || defaults.toolKey,
+        toolboxGroup: valueOrDefault(existingRow.toolboxGroup, defaults.toolboxGroup),
+        visibleInToolsList: booleanOrDefault(existingRow.visibleInToolsList, defaults.visibleInToolsList),
         releaseChannel,
         releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
         toolName: existingRow.toolName || defaults.toolName,
@@ -887,11 +975,12 @@ class LocalDevMockDataSource {
     return {
       currentUserKey: session.userKey || "",
       currentUserName: session.displayName || "Guest",
-      rows: getActiveToolRegistry()
-        .map((tool, index) => {
-          const metadata = metadataRows.find((row) => (row.toolKey || row.toolId) === tool.id) || this.defaultToolboxMetadata(tool, index);
+      rows: metadataRows
+        .filter((metadata) => metadata.active !== false)
+        .map((metadata, index) => {
+          const toolKey = normalizedToolKey(metadata);
           const releaseChannel = getToolReleaseChannel(metadata.status || metadata.releaseChannel);
-          const toolVotes = votes.filter((row) => row.toolId === tool.id);
+          const toolVotes = votes.filter((row) => row.toolId === toolKey);
           const up = toolVotes.filter((row) => row.direction === "up").length;
           const down = toolVotes.filter((row) => row.direction === "down").length;
           const totalVotes = up + down;
@@ -903,11 +992,11 @@ class LocalDevMockDataSource {
             order: Math.max(1, Math.round(Number(metadata.order) || index + 1)),
             path: metadata.path || "",
             status: releaseChannel,
-            toolKey: metadata.toolKey || metadata.toolId || tool.id,
+            toolKey,
             releaseChannel,
             releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
-            toolId: tool.id,
-            toolName: metadata.toolName || tool.displayName || tool.name || tool.id,
+            toolId: toolKey,
+            toolName: metadata.toolName || toolKey,
             totalVotes,
             up,
             upPercent: votePercent(up, totalVotes),
@@ -917,14 +1006,26 @@ class LocalDevMockDataSource {
     };
   }
 
+  toolRegistrySnapshot() {
+    const tools = this.ensureToolboxToolMetadataRows()
+      .map((row, index) => serverRegistryTool(row, index))
+      .sort((left, right) => left.order - right.order || left.displayName.localeCompare(right.displayName));
+    return {
+      activeTools: tools.filter((tool) => tool.active !== false),
+      imageFallback: TOOL_IMAGE_FALLBACK,
+      readinessByStatus: Object.fromEntries(TOOL_STATUS_MODEL.map((status) => [status, getToolProgressReadiness(status)])),
+      tools,
+    };
+  }
+
   castToolboxVote(toolId, direction) {
     const normalizedToolId = String(toolId || "");
     const normalizedDirection = String(direction || "").toLowerCase();
     if (!["up", "down"].includes(normalizedDirection)) {
       throw new Error("Toolbox vote direction must be up or down.");
     }
-    const tool = getActiveToolRegistry().find((candidate) => candidate.id === normalizedToolId);
-    if (!tool) {
+    const metadataRows = this.ensureToolboxToolMetadataRows();
+    if (!metadataRows.some((row) => normalizedToolKey(row) === normalizedToolId)) {
       throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
     }
 
@@ -959,8 +1060,9 @@ class LocalDevMockDataSource {
       throw new Error("Admin role required to update Toolbox vote order.");
     }
     const normalizedToolId = String(toolId || "");
-    const tool = getActiveToolRegistry().find((candidate) => candidate.id === normalizedToolId);
-    if (!tool) {
+    const rows = this.ensureToolboxToolMetadataRows();
+    const existingRow = rows.find((row) => normalizedToolKey(row) === normalizedToolId);
+    if (!existingRow) {
       throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
     }
     const rawOrder = Number(orderValue);
@@ -969,22 +1071,10 @@ class LocalDevMockDataSource {
     }
     const order = Math.max(1, Math.round(rawOrder));
 
-    const rows = this.ensureToolboxToolMetadataRows();
-    const existingRow = rows.find((row) => (row.toolKey || row.toolId) === normalizedToolId);
     const audit = createMockDbAuditFields(0, session.userKey);
-    if (existingRow) {
-      existingRow.order = order;
-      existingRow.updatedAt = audit.updatedAt;
-      existingRow.updatedBy = audit.updatedBy;
-    } else {
-      const defaults = this.defaultToolboxMetadata(tool, 0);
-      rows.push({
-        key: this.toolboxToolMetadataKey(normalizedToolId),
-        ...defaults,
-        order,
-        ...audit,
-      });
-    }
+    existingRow.order = order;
+    existingRow.updatedAt = audit.updatedAt;
+    existingRow.updatedBy = audit.updatedBy;
     this.cleared = false;
     this.persistCurrentAdapterState("Persisting Toolbox tool metadata order");
     return this.toolboxVoteSnapshot();
@@ -996,12 +1086,8 @@ class LocalDevMockDataSource {
       throw new Error("Admin role required to update Toolbox tool metadata.");
     }
     const normalizedToolId = String(toolId || "");
-    const tool = getActiveToolRegistry().find((candidate) => candidate.id === normalizedToolId);
-    if (!tool) {
-      throw new Error(`Unknown Toolbox metadata tool: ${normalizedToolId || "missing"}.`);
-    }
     const rows = this.ensureToolboxToolMetadataRows();
-    const row = rows.find((candidate) => (candidate.toolKey || candidate.toolId) === normalizedToolId);
+    const row = rows.find((candidate) => normalizedToolKey(candidate) === normalizedToolId);
     if (!row) {
       throw new Error(`Toolbox metadata row missing for ${normalizedToolId}.`);
     }
@@ -1016,6 +1102,7 @@ class LocalDevMockDataSource {
     }
     const audit = createMockDbAuditFields(0, session.userKey);
     row.group = group;
+    row.category = group;
     row.path = pathValue;
     row.status = releaseChannel;
     row.toolKey = row.toolKey || row.toolId || normalizedToolId;
@@ -1037,8 +1124,8 @@ class LocalDevMockDataSource {
     if (!Array.isArray(toolIds)) {
       throw new Error("Toolbox vote reorder requires an ordered tool list.");
     }
-    const visibleTools = getActiveToolRegistry();
-    const visibleToolIds = visibleTools.map((tool) => tool.id);
+    const metadataRows = this.ensureToolboxToolMetadataRows().filter((row) => row.active !== false);
+    const visibleToolIds = metadataRows.map((row) => normalizedToolKey(row));
     const visibleToolIdSet = new Set(visibleToolIds);
     const orderedToolIds = toolIds.map((toolId) => String(toolId || "")).filter(Boolean);
     const uniqueToolIds = [...new Set(orderedToolIds)];
@@ -1059,15 +1146,6 @@ class LocalDevMockDataSource {
         existingRow.order = order;
         existingRow.updatedAt = audit.updatedAt;
         existingRow.updatedBy = audit.updatedBy;
-      } else {
-        const tool = visibleTools.find((candidate) => candidate.id === toolId);
-        const defaults = this.defaultToolboxMetadata(tool, index);
-        rows.push({
-          key: this.toolboxToolMetadataKey(toolId),
-          ...defaults,
-          order,
-          ...audit,
-        });
       }
     });
     this.cleared = false;
@@ -1384,7 +1462,7 @@ export function createMockApiRouter() {
           return true;
         }
         if (request.method === "GET" && parts[2] === "registry" && parts[3] === "snapshot") {
-          ok(response, toolRegistrySnapshot());
+          ok(response, dataSource.toolRegistrySnapshot());
           return true;
         }
         const toolId = parts[2];
