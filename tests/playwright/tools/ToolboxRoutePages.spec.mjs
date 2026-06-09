@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+import { getActiveToolRegistry } from "../../../toolbox/toolRegistry.js";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -13,6 +14,7 @@ const TOOL_ROUTE_SMOKE_CASES = [
   { heading: "Saved Data", route: "/tools/saved-data/index.html" },
   { heading: "Languages", route: "/tools/languages/index.html" },
 ];
+const REGISTRY_BY_ID = new Map(getActiveToolRegistry().map((tool) => [tool.id, tool]));
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
@@ -392,7 +394,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
   }
 });
 
-test("toolbox Build Path status filters show registry-matched tool rows", async ({ page }) => {
+test("toolbox Build Path status filters support multi-select registry-matched tool rows", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
   const pageErrors = [];
@@ -418,30 +420,43 @@ test("toolbox Build Path status filters show registry-matched tool rows", async 
     }
   });
 
-  async function expectBuildPathChannel(channel, expectedCount) {
+  async function expectActiveFilters(activeChannels) {
+    for (const releaseChannel of ["planned", "wireframe", "beta", "complete"]) {
+      const filter = page.locator(`[data-toolbox-status-filter='${releaseChannel}']`);
+      const active = activeChannels.includes(releaseChannel);
+      await expect(filter).toHaveAttribute("aria-pressed", String(active));
+      if (active) {
+        await expect(filter).toHaveClass(/primary/);
+      } else {
+        await expect(filter).not.toHaveClass(/primary/);
+      }
+    }
+  }
+
+  async function expectBuildPathChannels(expectedChannels, expectedCount) {
     await expect(page.locator("[data-build-path-tool]")).toHaveCount(expectedCount);
     await expect(page.locator("[data-build-path-release-channel]")).toHaveCount(expectedCount);
     const releaseChannels = await page.locator("[data-build-path-release-channel]").evaluateAll((rows) => (
       rows.map((row) => row.getAttribute("data-build-path-release-channel"))
     ));
-    expect(releaseChannels.every((releaseChannel) => releaseChannel === channel)).toBe(true);
+    expect(releaseChannels.every((releaseChannel) => expectedChannels.includes(releaseChannel))).toBe(true);
   }
 
-  async function selectBuildPathFilter(channel) {
-    await page.locator(`[data-toolbox-status-filter='${channel}']`).click();
-    for (const releaseChannel of ["planned", "wireframe", "beta", "complete"]) {
-      await expect(page.locator(`[data-toolbox-status-filter='${releaseChannel}']`)).toHaveAttribute(
-        "aria-pressed",
-        String(releaseChannel === channel),
-      );
-    }
+  async function expectBuildPathOrder(toolTitle, expectedOrder) {
+    await expect(page.locator(`[data-build-path-tool='${toolTitle}'] td`).first()).toHaveText(String(expectedOrder));
   }
 
   try {
     await workspaceV2CoverageReporter.start(page);
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-tools-order]")).toHaveClass(/primary/);
+    await page.locator("[data-tools-sort='grouped']").click();
+    await expect(page.locator("[data-tools-sort='grouped']")).toHaveClass(/primary/);
     await page.locator("[data-tools-view='build-path']").click();
+    await expect(page.locator("[data-tools-view='build-path']")).toHaveClass(/primary/);
+    await expect(page.locator("[data-tools-order]")).not.toHaveClass(/primary/);
+    await expect(page.locator("[data-tools-sort='grouped']")).not.toHaveClass(/primary/);
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
       "Planned (28)",
@@ -449,21 +464,136 @@ test("toolbox Build Path status filters show registry-matched tool rows", async 
       "Beta (5)",
       "Complete (1)",
     ]);
-    await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("[data-toolbox-status-filter='wireframe']")).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("[data-toolbox-status-filter='beta']")).toHaveAttribute("aria-pressed", "false");
-    await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveAttribute("aria-pressed", "true");
+    await expectActiveFilters(["complete"]);
     await expect(page.locator("[data-build-path-tool='Colors']")).toBeVisible();
-    await expectBuildPathChannel("complete", 1);
+    await expectBuildPathChannels(["complete"], 1);
+    await expectBuildPathOrder("Colors", REGISTRY_BY_ID.get("colors").order);
 
-    await selectBuildPathFilter("planned");
-    await expectBuildPathChannel("planned", 28);
+    await page.locator("[data-toolbox-status-filter='planned']").click();
+    await expectActiveFilters(["planned", "complete"]);
+    await expectBuildPathChannels(["planned", "complete"], 29);
+    await expect(page.locator("[data-build-path-tool='AI Assistant']")).toBeVisible();
+    await expectBuildPathOrder("AI Assistant", REGISTRY_BY_ID.get("ai-assistant").order);
+    await expectBuildPathOrder("Colors", REGISTRY_BY_ID.get("colors").order);
 
-    await selectBuildPathFilter("wireframe");
-    await expectBuildPathChannel("wireframe", 4);
+    await page.locator("[data-toolbox-status-filter='complete']").click();
+    await expectActiveFilters(["planned"]);
+    await expectBuildPathChannels(["planned"], 28);
+    await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
+    await expect(page.locator("[data-build-path-tool='AI Assistant']")).toBeVisible();
 
-    await selectBuildPathFilter("beta");
-    await expectBuildPathChannel("beta", 5);
+    await page.locator("[data-toolbox-status-filter='wireframe']").click();
+    await expectActiveFilters(["planned", "wireframe"]);
+    await expectBuildPathChannels(["planned", "wireframe"], 32);
+    await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
+    await expectBuildPathOrder("Build Game", REGISTRY_BY_ID.get("build-game").order);
+
+    await page.locator("[data-toolbox-status-filter='beta']").click();
+    await expectActiveFilters(["planned", "wireframe", "beta"]);
+    await expectBuildPathChannels(["planned", "wireframe", "beta"], 37);
+
+    expect(failedRequests).toEqual([]);
+    expect(pageErrors).toEqual([]);
+    expect(consoleErrors).toEqual([]);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await server.close();
+  }
+});
+
+test("Colors Picker Preview header controls update live and reset to defaults", async ({ page }) => {
+  const server = await startRepoServer();
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+  page.on("pageerror", (error) => {
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) {
+      pageErrors.push(error.message);
+    }
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
+      consoleErrors.push(message.text());
+    }
+  });
+
+  async function setSlider(selector, value) {
+    await page.locator(selector).evaluate((input, nextValue) => {
+      input.value = String(nextValue);
+      input.dispatchEvent(new Event("input", { bubbles: true }));
+    }, value);
+  }
+
+  async function firstPreviewFill() {
+    return page.locator("[data-palette-generator-preview-row]")
+      .first()
+      .locator("[data-palette-generator-swatch]")
+      .first()
+      .locator("rect")
+      .getAttribute("fill");
+  }
+
+  try {
+    await workspaceV2CoverageReporter.start(page);
+    await setServerSession(server, MOCK_DB_KEYS.users.user1);
+    await page.goto(`${server.baseUrl}/toolbox/colors/index.html`, { waitUntil: "networkidle" });
+
+    const previewSummary = page.locator("[data-palette-preview-accordion] summary");
+    const summaryOrder = await previewSummary.evaluate((summary) => (
+      Array.from(summary.children).map((child) => {
+        if (child.hasAttribute("data-palette-preview-controls")) return "preview-controls";
+        if (child.querySelector("[data-palette-generator-preview-status]")) return "preview-status";
+        return child.textContent.trim();
+      })
+    ));
+    expect(summaryOrder).toEqual(["Picker Preview", "preview-controls", "preview-status"]);
+
+    const previewControls = page.locator("[data-palette-preview-controls]");
+    await expect(previewControls.locator("[data-palette-preview-hue]")).toBeVisible();
+    await expect(previewControls.locator("[data-palette-preview-saturation]")).toBeVisible();
+    await expect(previewControls.locator("[data-palette-preview-brightness]")).toBeVisible();
+    await expect(previewControls.locator("[data-palette-preview-reset]")).toHaveText("Default");
+    await expect(page.locator("[data-palette-preview-hue-value]")).toContainText("0");
+    await expect(page.locator("[data-palette-preview-saturation-value]")).toHaveText("100%");
+    await expect(page.locator("[data-palette-preview-brightness-value]")).toHaveText("100%");
+
+    await expect(page.locator("[data-palette-generator-swatch]").first()).toBeVisible();
+    const initialFill = await firstPreviewFill();
+    await setSlider("[data-palette-preview-hue]", 45);
+    await expect(page.locator("[data-palette-preview-hue-value]")).toContainText("+45");
+    await expect.poll(firstPreviewFill).not.toBe(initialFill);
+    const hueAdjustedFill = await firstPreviewFill();
+
+    await setSlider("[data-palette-preview-saturation]", 50);
+    await expect(page.locator("[data-palette-preview-saturation-value]")).toHaveText("50%");
+    await expect.poll(firstPreviewFill).not.toBe(hueAdjustedFill);
+    const saturationAdjustedFill = await firstPreviewFill();
+
+    await setSlider("[data-palette-preview-brightness]", 75);
+    await expect(page.locator("[data-palette-preview-brightness-value]")).toHaveText("75%");
+    await expect.poll(firstPreviewFill).not.toBe(saturationAdjustedFill);
+
+    await page.locator("[data-palette-preview-hue]").dblclick();
+    await expect(page.locator("[data-palette-preview-hue-value]")).toContainText("0");
+
+    await setSlider("[data-palette-preview-hue]", 90);
+    await setSlider("[data-palette-preview-saturation]", 25);
+    await setSlider("[data-palette-preview-brightness]", 125);
+    await page.locator("[data-palette-preview-reset]").click();
+    await expect(page.locator("[data-palette-preview-hue-value]")).toContainText("0");
+    await expect(page.locator("[data-palette-preview-saturation-value]")).toHaveText("100%");
+    await expect(page.locator("[data-palette-preview-brightness-value]")).toHaveText("100%");
+    await expect(page.locator("[data-palette-preview-accordion]")).toHaveJSProperty("open", true);
 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);

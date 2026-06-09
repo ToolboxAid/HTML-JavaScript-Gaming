@@ -139,6 +139,30 @@ details.vertical-accordion summary .action-group--end {
   margin-left: auto
 }
 
+.accordion-summary-controls {
+  flex: 0 1 auto;
+  flex-wrap: nowrap;
+  justify-content: flex-end;
+  margin-left: auto;
+  min-width: var(--space-0);
+  overflow-x: auto
+}
+
+.accordion-summary-controls .field-inline {
+  flex: 0 0 auto;
+  gap: var(--space-6)
+}
+
+.accordion-summary-controls input[type="range"] {
+  flex: 0 0 var(--space-78);
+  width: var(--space-78);
+  min-width: var(--space-44)
+}
+
+.accordion-summary-controls .slider-current-value {
+  min-width: var(--space-34)
+}
+
 details.vertical-accordion[open] summary:active:after {
   background-image: linear-gradient(45deg, transparent 50%, currentColor 50%), linear-gradient(135deg, currentColor 50%, transparent 50%)
 }

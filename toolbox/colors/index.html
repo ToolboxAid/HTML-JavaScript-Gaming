@@ -250,6 +250,24 @@
                             <details class="vertical-accordion accordion-fill-panel" open data-palette-preview-accordion>
                                 <summary>
                                     <span>Picker Preview</span>
+                                    <span class="accordion-summary-controls action-group action-group--tight" aria-label="Color Picker Preview controls" data-palette-preview-controls>
+                                        <label class="field-inline" for="palettePreviewHue">
+                                            <span>Hue</span>
+                                            <input class="tool-form-control" id="palettePreviewHue" type="range" min="-180" max="180" value="0" title="Double-click to reset to default 0Â°." data-palette-preview-hue>
+                                            <output class="slider-current-value" for="palettePreviewHue" data-palette-preview-hue-value>0Â°</output>
+                                        </label>
+                                        <label class="field-inline" for="palettePreviewSaturation">
+                                            <span>Sat</span>
+                                            <input class="tool-form-control" id="palettePreviewSaturation" type="range" min="0" max="200" value="100" title="Double-click to reset to default 100%." data-palette-preview-saturation>
+                                            <output class="slider-current-value" for="palettePreviewSaturation" data-palette-preview-saturation-value>100%</output>
+                                        </label>
+                                        <label class="field-inline" for="palettePreviewBrightness">
+                                            <span>Brit</span>
+                                            <input class="tool-form-control" id="palettePreviewBrightness" type="range" min="0" max="200" value="100" title="Double-click to reset to default 100%." data-palette-preview-brightness>
+                                            <output class="slider-current-value" for="palettePreviewBrightness" data-palette-preview-brightness-value>100%</output>
+                                        </label>
+                                        <button class="btn btn--compact" type="button" data-palette-preview-reset>Default</button>
+                                    </span>
                                     <span class="action-group action-group--end action-group--tight">
                                         <span class="status" role="status" data-palette-generator-preview-status>Available Picker Swatches (0)</span>
                                         <label class="field-inline" for="paletteShowDuplicates">

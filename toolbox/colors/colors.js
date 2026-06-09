@@ -110,6 +110,12 @@ const PALETTE_GENERATOR_DEFAULTS = Object.freeze({
   hueShift: 0
 });
 
+const PICKER_PREVIEW_DEFAULTS = Object.freeze({
+  brightness: 100,
+  hue: 0,
+  saturation: 100
+});
+
 function swatches(values) {
   return Object.freeze(values.split(/\s+/).filter(Boolean));
 }
@@ -399,6 +405,14 @@ const elements = {
   name: document.querySelector("[data-palette-name]"),
   projectDiagnostic: document.querySelector("[data-palette-project-diagnostic]"),
   projectOverlay: document.querySelector("[data-palette-project-overlay]"),
+  previewBrightness: document.querySelector("[data-palette-preview-brightness]"),
+  previewBrightnessValue: document.querySelector("[data-palette-preview-brightness-value]"),
+  previewControls: document.querySelector("[data-palette-preview-controls]"),
+  previewHue: document.querySelector("[data-palette-preview-hue]"),
+  previewHueValue: document.querySelector("[data-palette-preview-hue-value]"),
+  previewReset: document.querySelector("[data-palette-preview-reset]"),
+  previewSaturation: document.querySelector("[data-palette-preview-saturation]"),
+  previewSaturationValue: document.querySelector("[data-palette-preview-saturation-value]"),
   redo: document.querySelector("[data-palette-redo]"),
   restorePickerSettings: document.querySelector("[data-palette-restore-picker-settings]"),
   selectedSummary: document.querySelector("[data-palette-selected-summary]"),
@@ -679,6 +693,9 @@ function currentPickerSettings(settings = readPaletteGeneratorSettings()) {
     contrast: settings.contrast,
     hueShift: settings.hueShift,
     paletteType: settings.paletteType?.name || selectedOptionText(elements.generatorType),
+    previewBrightness: settings.previewBrightness,
+    previewHue: settings.previewHue,
+    previewSaturation: settings.previewSaturation,
     saturation: settings.saturation,
     sortDirection: userSortState.direction,
     sortField: userSortState.key,
@@ -702,6 +719,9 @@ function metadataFromPickerSettings(swatch, settings = null) {
     name: swatch?.name || "",
     paletteType: stored.paletteType || "Custom",
     pickerSettings: stored,
+    previewBrightness: stored.previewBrightness ?? "",
+    previewHue: stored.previewHue ?? "",
+    previewSaturation: stored.previewSaturation ?? "",
     saturation: stored.saturation ?? "",
     sortDirection: stored.sortDirection || "",
     sortField: stored.sortField || "",
@@ -999,7 +1019,10 @@ function readPaletteGeneratorSettings() {
     contrast: clampNumber(parseGeneratorNumber(elements.generatorContrast, PALETTE_GENERATOR_DEFAULTS.contrast), 0, 100),
     saturation: clampNumber(parseGeneratorNumber(elements.generatorSaturation, PALETTE_GENERATOR_DEFAULTS.saturation), 0, 100),
     hueShift: clampNumber(parseGeneratorNumber(elements.generatorHueShift, PALETTE_GENERATOR_DEFAULTS.hueShift), -180, 180),
-    stepRange: clampNumber(parseGeneratorNumber(elements.generatorStepRange, PALETTE_GENERATOR_DEFAULTS.stepRange), 0, 100)
+    stepRange: clampNumber(parseGeneratorNumber(elements.generatorStepRange, PALETTE_GENERATOR_DEFAULTS.stepRange), 0, 100),
+    previewHue: clampNumber(parseGeneratorNumber(elements.previewHue, PICKER_PREVIEW_DEFAULTS.hue), -180, 180),
+    previewSaturation: clampNumber(parseGeneratorNumber(elements.previewSaturation, PICKER_PREVIEW_DEFAULTS.saturation), 0, 200),
+    previewBrightness: clampNumber(parseGeneratorNumber(elements.previewBrightness, PICKER_PREVIEW_DEFAULTS.brightness), 0, 200)
   };
 }
 
@@ -1017,6 +1040,17 @@ function renderPaletteGeneratorSliderValues(settings = readPaletteGeneratorSetti
   setText(elements.generatorSaturationValue, formatPercentSliderValue(settings.saturation));
   setText(elements.generatorHueShiftValue, formatHueShiftSliderValue(settings.hueShift));
   setText(elements.generatorStepRangeValue, formatPercentSliderValue(settings.stepRange));
+  setText(elements.previewHueValue, formatHueShiftSliderValue(settings.previewHue));
+  setText(elements.previewSaturationValue, formatPercentSliderValue(settings.previewSaturation));
+  setText(elements.previewBrightnessValue, formatPercentSliderValue(settings.previewBrightness));
+}
+
+function pickerPreviewAdjustedHsl(hsl, settings) {
+  return {
+    hue: positiveHue(hsl.hue + settings.previewHue),
+    saturation: clampNumber(hsl.saturation * (settings.previewSaturation / 100), 0, 100),
+    lightness: clampNumber(hsl.lightness * (settings.previewBrightness / 100), 0, 100)
+  };
 }
 
 function generatorSwatchName(settings, row, column, hex) {
@@ -1074,7 +1108,8 @@ function generatedPickerSwatches(settings = readPaletteGeneratorSettings()) {
         saturation: baseHsl.saturation * (settings.saturation / 100),
         lightness: generatorLightness(baseHsl.lightness, row, rows, settings.contrast, settings.stepRange)
       }, settings.variant, column, settings.colors);
-      const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
+      const previewAdjusted = pickerPreviewAdjustedHsl(adjusted, settings);
+      const hex = hslToHex(previewAdjusted.hue, previewAdjusted.saturation, previewAdjusted.lightness);
       const swatch = {
         hex,
         name: generatorSwatchName(settings, row, column, hex),
@@ -1207,7 +1242,8 @@ function renderPaletteGeneratorPreview(action = "Picker Preview updated.") {
         saturation: baseHsl.saturation * (settings.saturation / 100),
         lightness: generatorLightness(baseHsl.lightness, row, rows, settings.contrast, settings.stepRange)
       }, settings.variant, column, settings.colors);
-      const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
+      const previewAdjusted = pickerPreviewAdjustedHsl(adjusted, settings);
+      const hex = hslToHex(previewAdjusted.hue, previewAdjusted.saturation, previewAdjusted.lightness);
       const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
       allSwatches.push({
         column,
@@ -1306,6 +1342,19 @@ function resetPaletteGeneratorControls() {
   renderPaletteGeneratorPreview("Picker controls reset.");
 }
 
+function resetPickerPreviewControls() {
+  if (elements.previewHue) {
+    elements.previewHue.value = String(PICKER_PREVIEW_DEFAULTS.hue);
+  }
+  if (elements.previewSaturation) {
+    elements.previewSaturation.value = String(PICKER_PREVIEW_DEFAULTS.saturation);
+  }
+  if (elements.previewBrightness) {
+    elements.previewBrightness.value = String(PICKER_PREVIEW_DEFAULTS.brightness);
+  }
+  renderPaletteGeneratorPreview("Picker Preview controls reset to default.");
+}
+
 function resetPaletteGeneratorSlider(control) {
   if (!control) {
     return;
@@ -1318,6 +1367,12 @@ function resetPaletteGeneratorSlider(control) {
     control.value = String(PALETTE_GENERATOR_DEFAULTS.hueShift);
   } else if (control === elements.generatorStepRange) {
     control.value = String(PALETTE_GENERATOR_DEFAULTS.stepRange);
+  } else if (control === elements.previewHue) {
+    control.value = String(PICKER_PREVIEW_DEFAULTS.hue);
+  } else if (control === elements.previewSaturation) {
+    control.value = String(PICKER_PREVIEW_DEFAULTS.saturation);
+  } else if (control === elements.previewBrightness) {
+    control.value = String(PICKER_PREVIEW_DEFAULTS.brightness);
   }
   renderPaletteGeneratorPreview(`${control.labels?.[0]?.textContent || "Slider"} reset to default.`);
 }
@@ -1352,6 +1407,9 @@ function applyPickerSettings(settings = null) {
   if (elements.generatorSaturation && settings.saturation !== undefined) elements.generatorSaturation.value = String(settings.saturation);
   if (elements.generatorHueShift && settings.hueShift !== undefined) elements.generatorHueShift.value = String(settings.hueShift);
   if (elements.generatorStepRange && settings.stepRange !== undefined) elements.generatorStepRange.value = String(settings.stepRange);
+  if (elements.previewHue && settings.previewHue !== undefined) elements.previewHue.value = String(settings.previewHue);
+  if (elements.previewSaturation && settings.previewSaturation !== undefined) elements.previewSaturation.value = String(settings.previewSaturation);
+  if (elements.previewBrightness && settings.previewBrightness !== undefined) elements.previewBrightness.value = String(settings.previewBrightness);
   if (settings.sortField && SORT_OPTIONS.some((option) => option.key === settings.sortField)) {
     userSortState.key = settings.sortField;
   }
@@ -2181,6 +2239,24 @@ elements.showDuplicates?.addEventListener("change", (event) => {
   renderPaletteGeneratorPreview(event.target.checked
     ? "Showing duplicate picker swatches."
     : "Hiding duplicate picker swatches.");
+});
+
+elements.previewControls?.addEventListener("click", (event) => {
+  event.stopPropagation();
+});
+
+[
+  elements.previewHue,
+  elements.previewSaturation,
+  elements.previewBrightness
+].forEach((control) => {
+  control?.addEventListener("input", () => renderPaletteGeneratorPreview("Picker Preview controls updated."));
+  control?.addEventListener("dblclick", () => resetPaletteGeneratorSlider(control));
+});
+
+elements.previewReset?.addEventListener("click", (event) => {
+  event.stopPropagation();
+  resetPickerPreviewControls();
 });
 
 elements.generatorCollection?.addEventListener("change", () => {

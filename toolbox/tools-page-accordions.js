@@ -423,14 +423,18 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
 
     function setActiveButton(mode) {
         if (orderButton) {
-            orderButton.setAttribute("aria-pressed", String(mode === "ascending" || mode === "descending"));
+            const orderIsActive = mode === "ascending" || mode === "descending";
+            orderButton.setAttribute("aria-pressed", String(orderIsActive));
+            orderButton.classList.toggle("primary", orderIsActive);
             orderButton.textContent = `Order ${orderButton.dataset.toolsOrder === "ascending" ? "A-Z" : "Z-A"}`;
         }
         if (groupedButton) {
             groupedButton.setAttribute("aria-pressed", String(mode === "grouped"));
+            groupedButton.classList.toggle("primary", mode === "grouped");
         }
         if (buildPathButton) {
             buildPathButton.setAttribute("aria-pressed", String(mode === "build-path"));
+            buildPathButton.classList.toggle("primary", mode === "build-path");
         }
     }
 
@@ -465,8 +469,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             .map((tool) => enrichTool(tool))
             .filter(isVisibleForStatusFilter)
             .sort((left, right) => (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER) || left.title.localeCompare(right.title))
-            .map((tool, index) => ({
-                order: index + 1,
+            .map((tool) => ({
+                order: tool.order ?? "",
                 status: tool.releaseChannel,
                 statusLabel: tool.releaseChannelLabel,
                 tool
@@ -670,10 +674,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             button.title = releaseChannelHelp(channel);
             button.textContent = `${releaseChannelLabel(channel)} (${counts[channel] || 0})`;
             button.addEventListener("click", () => {
-                if (currentMode === "build-path") {
-                    visibleReleaseChannels.clear();
-                    visibleReleaseChannels.add(channel);
-                } else if (visibleReleaseChannels.has(channel)) {
+                if (visibleReleaseChannels.has(channel)) {
                     visibleReleaseChannels.delete(channel);
                 } else {
                     visibleReleaseChannels.add(channel);
