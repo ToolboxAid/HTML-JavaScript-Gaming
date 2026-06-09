@@ -75,6 +75,32 @@ User:
 - Do not expand scope beyond the PR
 - Do not modify `start_of_day` folders unless requested
 
+## MAIN BRANCH EXECUTION GUARD
+
+Before any BUILD execution, Codex must verify the current git branch.
+
+Rules:
+- The required execution branch is:
+  - `main`
+- If the current branch is not `main`:
+  - HARD STOP.
+  - Do not create code changes.
+  - Do not create implementation PRs.
+  - Do not create ZIP artifacts.
+  - Do not continue execution.
+- Codex must report:
+  - current branch
+  - expected branch (`main`)
+  - local branches found
+- Codex may continue only after the user explicitly returns to `main`.
+
+Exception:
+- Explicit branch-audit or branch-comparison PRs may inspect non-main branches but must not perform implementation work on them.
+
+Required report output:
+- Current branch
+- Branch validation PASS/FAIL
+
 ## RULE PRECEDENCE
 
 Newer appended sections override earlier overlapping rules.

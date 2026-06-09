@@ -104,6 +104,7 @@ const SUGGESTED_TAGS = Object.freeze([
 
 const PALETTE_GENERATOR_DEFAULTS = Object.freeze({
   contrast: 40,
+  stepRange: 50,
   steps: 1,
   saturation: 100,
   hueShift: 0
@@ -232,6 +233,41 @@ const CURATED_PALETTE_COLLECTIONS = Object.freeze([
     ])
   },
   {
+    name: "Human",
+    types: Object.freeze([
+      {
+        name: "Skin Tones",
+        names: Object.freeze(["Deep Umber", "Rich Brown", "Warm Chestnut", "Golden Brown", "Olive Tan", "Warm Beige", "Peach Fair", "Porcelain"]),
+        swatches: swatches("#3A2118 #5A3224 #7A4B35 #9D6B4D #B88661 #D0A37A #E4BF9D #F3D8C4")
+      },
+      {
+        name: "Hair Tones",
+        names: Object.freeze(["Black", "Soft Black", "Dark Brown", "Chestnut", "Auburn", "Copper", "Dark Blonde", "Silver Gray"]),
+        swatches: swatches("#0D0A08 #1B1410 #352217 #5A3823 #7B3F25 #A75B2C #C8A260 #D1D1C8")
+      },
+      {
+        name: "Eye Tones",
+        names: Object.freeze(["Deep Brown", "Amber", "Hazel", "Olive Green", "Green", "Blue Gray", "Blue", "Violet Gray"]),
+        swatches: swatches("#2B160F #704214 #8A6B2F #5F6F3A #3E7552 #5B7A91 #3B6EA5 #6B5B85")
+      },
+      {
+        name: "Clothing Support",
+        names: Object.freeze(["Canvas", "Linen", "Denim", "Navy", "Charcoal", "Burgundy", "Olive", "Leather"]),
+        swatches: swatches("#E6D8C3 #C7B79C #4E6A86 #1F2F4A #2C2F33 #7A2535 #5B6336 #6B3F26")
+      },
+      {
+        name: "Shadow Highlight Support",
+        names: Object.freeze(["Deep Shadow", "Warm Shadow", "Cool Shadow", "Soft Shadow", "Neutral Mid", "Warm Highlight", "Cool Highlight", "Specular"]),
+        swatches: swatches("#1B1210 #3A2922 #28323A #6F6258 #9B8B7F #D9BFA4 #D7E1EA #FFF1DC")
+      },
+      {
+        name: "Human",
+        names: Object.freeze(["Deep Skin", "Medium Skin", "Light Skin", "Dark Hair", "Auburn Hair", "Eye Blue", "Cloth Navy", "Warm Highlight"]),
+        swatches: swatches("#4B2A1E #8A5A3D #E2B891 #1A120F #8A4A2C #3B6EA5 #273D5F #F2D3B8")
+      }
+    ])
+  },
+  {
     name: "Modern",
     types: Object.freeze([
       { name: "City", swatches: swatches("#15191E #2E3740 #52616B #7B8794 #AEB6BF #E0E4E7 #DDA15E #3A86FF") },
@@ -327,6 +363,7 @@ const elements = {
   generatorPreviewStatus: document.querySelector("[data-palette-generator-preview-status]"),
   generatorReset: document.querySelector("[data-palette-generator-reset]"),
   generatorSaturation: document.querySelector("[data-palette-generator-saturation]"),
+  generatorStepRange: document.querySelector("[data-palette-generator-step-range]"),
   generatorStatus: document.querySelector("[data-palette-generator-status]"),
   generatorSteps: document.querySelector("[data-palette-generator-steps]"),
   generatorType: document.querySelector("[data-palette-generator-type]"),
@@ -619,6 +656,7 @@ function currentPickerSettings(settings = readPaletteGeneratorSettings()) {
     saturation: settings.saturation,
     sortDirection: userSortState.direction,
     sortField: userSortState.key,
+    stepRange: settings.stepRange,
     steps: settings.steps,
     swatchSize: userSizeState,
     themeCollection: settings.collection?.name || selectedOptionText(elements.generatorCollection),
@@ -642,6 +680,7 @@ function metadataFromPickerSettings(swatch, settings = null) {
     sortDirection: stored.sortDirection || "",
     sortField: stored.sortField || "",
     source: swatch?.source || "",
+    stepRange: stored.stepRange ?? "",
     steps: stored.steps ?? "",
     swatchSize: stored.swatchSize || "",
     tags: Array.isArray(swatch?.tags) ? [...swatch.tags] : [],
@@ -894,13 +933,16 @@ function variantAdjustedHsl(hsl, variant, column, columns) {
   };
 }
 
-function generatorLightness(baseLightness, row, rows, contrast) {
+function generatorLightness(baseLightness, row, rows, contrast, stepRange = PALETTE_GENERATOR_DEFAULTS.stepRange) {
   if (rows <= 1) {
     return clampNumber(baseLightness, 10, 90);
   }
   const rowPosition = (row / (rows - 1)) * 2 - 1;
-  const distance = 2 + clampNumber(contrast, 0, 100) * 0.31;
-  return clampNumber(baseLightness - rowPosition * distance, 10, 90);
+  const normalizedStepRange = clampNumber(stepRange, 0, 100);
+  const distance = (2 + clampNumber(contrast, 0, 100) * 0.31) * (normalizedStepRange / PALETTE_GENERATOR_DEFAULTS.stepRange);
+  const lightnessMinimum = normalizedStepRange >= 100 ? 0 : 10;
+  const lightnessMaximum = normalizedStepRange >= 100 ? 100 : 90;
+  return clampNumber(baseLightness - rowPosition * distance, lightnessMinimum, lightnessMaximum);
 }
 
 function actualPaletteGeneratorRows(steps) {
@@ -919,7 +961,8 @@ function readPaletteGeneratorSettings() {
     steps: Math.round(clampNumber(parseGeneratorNumber(elements.generatorSteps, PALETTE_GENERATOR_DEFAULTS.steps), 0, 64)),
     contrast: clampNumber(parseGeneratorNumber(elements.generatorContrast, PALETTE_GENERATOR_DEFAULTS.contrast), 0, 100),
     saturation: clampNumber(parseGeneratorNumber(elements.generatorSaturation, PALETTE_GENERATOR_DEFAULTS.saturation), 0, 100),
-    hueShift: clampNumber(parseGeneratorNumber(elements.generatorHueShift, PALETTE_GENERATOR_DEFAULTS.hueShift), -180, 180)
+    hueShift: clampNumber(parseGeneratorNumber(elements.generatorHueShift, PALETTE_GENERATOR_DEFAULTS.hueShift), -180, 180),
+    stepRange: clampNumber(parseGeneratorNumber(elements.generatorStepRange, PALETTE_GENERATOR_DEFAULTS.stepRange), 0, 100)
   };
 }
 
@@ -976,7 +1019,7 @@ function generatedPickerSwatches(settings = readPaletteGeneratorSettings()) {
       const adjusted = variantAdjustedHsl({
         hue: baseHsl.hue + settings.hueShift,
         saturation: baseHsl.saturation * (settings.saturation / 100),
-        lightness: generatorLightness(baseHsl.lightness, row, rows, settings.contrast)
+        lightness: generatorLightness(baseHsl.lightness, row, rows, settings.contrast, settings.stepRange)
       }, settings.variant, column, settings.colors);
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
       const swatch = {
@@ -1108,7 +1151,7 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
       const adjusted = variantAdjustedHsl({
         hue: baseHsl.hue + settings.hueShift,
         saturation: baseHsl.saturation * (settings.saturation / 100),
-        lightness: generatorLightness(baseHsl.lightness, row, rows, settings.contrast)
+        lightness: generatorLightness(baseHsl.lightness, row, rows, settings.contrast, settings.stepRange)
       }, settings.variant, column, settings.colors);
       const hex = hslToHex(adjusted.hue, adjusted.saturation, adjusted.lightness);
       const pinnedSwatch = pinnedSwatchForHex(hex, snapshot);
@@ -1203,6 +1246,9 @@ function resetPaletteGeneratorControls() {
   if (elements.generatorHueShift) {
     elements.generatorHueShift.value = String(PALETTE_GENERATOR_DEFAULTS.hueShift);
   }
+  if (elements.generatorStepRange) {
+    elements.generatorStepRange.value = String(PALETTE_GENERATOR_DEFAULTS.stepRange);
+  }
   renderPaletteGeneratorPreview("Palette generator controls reset.");
 }
 
@@ -1235,6 +1281,7 @@ function applyPickerSettings(settings = null) {
   if (elements.generatorContrast && settings.contrast !== undefined) elements.generatorContrast.value = String(settings.contrast);
   if (elements.generatorSaturation && settings.saturation !== undefined) elements.generatorSaturation.value = String(settings.saturation);
   if (elements.generatorHueShift && settings.hueShift !== undefined) elements.generatorHueShift.value = String(settings.hueShift);
+  if (elements.generatorStepRange && settings.stepRange !== undefined) elements.generatorStepRange.value = String(settings.stepRange);
   if (settings.sortField && SORT_OPTIONS.some((option) => option.key === settings.sortField)) {
     userSortState.key = settings.sortField;
   }
@@ -2070,7 +2117,8 @@ elements.generatorColors?.addEventListener("input", () => renderPaletteGenerator
 [
   elements.generatorContrast,
   elements.generatorSaturation,
-  elements.generatorHueShift
+  elements.generatorHueShift,
+  elements.generatorStepRange
 ].forEach((control) => {
   control?.addEventListener("input", () => renderPaletteGeneratorPreview());
 });
