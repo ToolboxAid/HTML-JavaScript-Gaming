@@ -29,8 +29,6 @@ let localDbRunId = 0;
 const DEV_ONLY_ADMIN_LABELS = [
   "DB Viewer",
   "Design System",
-  "Environments",
-  "Game Migration",
   "Grouping Colors",
   "Notes",
 ];
@@ -39,12 +37,15 @@ const UAT_PROD_ADMIN_LABELS = [
   "Analytics",
   "Branding",
   "Controls",
+  "Environments",
+  "Game Migration",
   "Moderation",
   "Platform Settings",
   "Ratings",
   "Roles",
   "Site Settings",
   "Themes",
+  "Tool Votes",
   "Users",
 ];
 

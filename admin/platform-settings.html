@@ -5,20 +5,20 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Users - GameFoundryStudio</title>
-    <meta name="description" content="Admin wireframe for user review, account status, and role assignment planning.">
+    <title>Platform Settings - GameFoundryStudio</title>
+    <meta name="description" content="Admin wireframe for platform settings, feature flags, and publishing defaults.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
 
 <body class="meaning-molten-orange">
     <div data-partial="header-nav"></div>
-    <main data-admin-only="true" data-admin-wireframe="users">
+    <main data-admin-only="true" data-admin-wireframe="platform-settings">
         <section class="page-title">
             <div class="container">
                 <div class="kicker">Admin Wireframe</div>
-                <h1>Users</h1>
-                <p class="lede">Plan user review, role assignment, and support workflows without connecting runtime account operations.</p>
+                <h1>Platform Settings</h1>
+                <p class="lede">Plan platform-wide settings, flags, and release controls without connecting settings persistence.</p>
             </div>
         </section>
         <section class="section">
@@ -34,43 +34,42 @@
                                 <nav class="accordion-body content-stack" aria-label="Admin tool pages" data-admin-tool-menu>
                                     <a class="btn btn--compact" href="/admin/tool-votes.html">Tool Votes</a>
                                     <a class="btn btn--compact" href="/admin/environments.html">Environments</a>
-                                    <a class="btn btn--compact primary" aria-current="page" href="/admin/users.html">Users</a>
+                                    <a class="btn btn--compact" href="/admin/users.html">Users</a>
                                     <a class="btn btn--compact" href="/admin/game-migration.html">Game Migration</a>
-                                    <a class="btn btn--compact" href="/admin/platform-settings.html">Platform Settings</a>
+                                    <a class="btn btn--compact primary" aria-current="page" href="/admin/platform-settings.html">Platform Settings</a>
                                 </nav>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>User Filters</summary>
+                                <summary>Setting Preview</summary>
                                 <div class="accordion-body content-stack">
-                                    <label>Search <input type="search" placeholder="User name or email" disabled></label>
-                                    <label>Role <select disabled><option>Any role</option><option>User</option><option>Admin</option><option>System</option></select></label>
-                                    <button class="btn btn--compact" type="button" disabled>Preview Filter</button>
+                                    <label>Setting Area <select disabled><option>Feature flags</option><option>Publishing defaults</option><option>Maintenance notices</option></select></label>
+                                    <label>Visibility <select disabled><option>Admin only</option><option>Creator visible</option><option>Public notice</option></select></label>
+                                    <button class="btn btn--compact" type="button" disabled>Preview Setting</button>
                                 </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-users" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel content-stack" aria-labelledby="admin-users-title">
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-platform-settings" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                    <section class="tool-center-panel content-stack" aria-labelledby="admin-platform-settings-title">
                         <div>
                             <div class="kicker">Work Surface</div>
-                            <h2 id="admin-users-title">User Review</h2>
+                            <h2 id="admin-platform-settings-title">Settings Board</h2>
                         </div>
-                        <p>This Tool Template V2-style Admin wireframe reserves space for account review, role visibility, and support notes.</p>
+                        <p>This wireframe reserves the future board for platform defaults, release toggles, and operational notices.</p>
                         <div class="table-wrapper">
-                            <table class="data-table" aria-label="User administration wireframe">
-                                <caption>User Review Planning</caption>
+                            <table class="data-table" aria-label="Platform settings wireframe">
+                                <caption>Platform Settings Planning</caption>
                                 <thead>
                                     <tr>
-                                        <th scope="col">User</th>
-                                        <th scope="col">Roles</th>
-                                        <th scope="col">Account State</th>
-                                        <th scope="col">Support Note</th>
+                                        <th scope="col">Area</th>
+                                        <th scope="col">Example Control</th>
+                                        <th scope="col">Current State</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>User 1</td><td>User</td><td>Active</td><td>Placeholder</td></tr>
-                                    <tr><td>User 2</td><td>User</td><td>Active</td><td>Placeholder</td></tr>
-                                    <tr><td>DavidQ</td><td>User, Admin</td><td>Active</td><td>Placeholder</td></tr>
+                                    <tr><td>Feature Flags</td><td>Enable beta tools</td><td>Wireframe</td></tr>
+                                    <tr><td>Publishing Defaults</td><td>Default public visibility</td><td>Wireframe</td></tr>
+                                    <tr><td>Maintenance</td><td>Notice banner</td><td>Wireframe</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -83,13 +82,13 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" role="status">Wireframe only. User records are not changed from this page.</p>
+                                    <p class="status" role="status">Wireframe only. Platform settings are not read or written.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
                                 <summary>Logging</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Future logs will show role changes, access reviews, and support workflow notes.</p>
+                                    <p>Future logs will show setting previews, publish gate changes, and audit review entries.</p>
                                 </div>
                             </details>
                         </div>

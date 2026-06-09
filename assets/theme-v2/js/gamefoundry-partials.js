@@ -98,7 +98,10 @@
         "admin-design-system": "admin/design-system.html",
         "admin-controls": "admin/controls.html",
         "admin-db-viewer": "admin/db-viewer.html",
+        "admin-environments": "admin/environments.html",
+        "admin-game-migration": "admin/game-migration.html",
         "admin-grouping-colors": "admin/grouping-colors.html",
+        "admin-platform-settings": "admin/platform-settings.html",
         "admin-ratings": "admin/ratings.html",
         "admin-users": "admin/users.html",
         "admin-roles": "admin/roles.html",
@@ -138,8 +141,10 @@
         Object.freeze({ label: "Analytics", route: "admin-analytics" }),
         Object.freeze({ label: "Branding", route: "admin-branding" }),
         Object.freeze({ label: "Controls", route: "admin-controls" }),
+        Object.freeze({ label: "Environments", route: "admin-environments" }),
+        Object.freeze({ label: "Game Migration", route: "admin-game-migration" }),
         Object.freeze({ label: "Moderation", route: "admin-moderation" }),
-        Object.freeze({ label: "Platform Settings", route: "platform-settings" }),
+        Object.freeze({ label: "Platform Settings", route: "admin-platform-settings" }),
         Object.freeze({ label: "Ratings", route: "admin-ratings" }),
         Object.freeze({ label: "Roles", route: "admin-roles" }),
         Object.freeze({ label: "Site Settings", route: "admin-site-settings" }),
@@ -150,8 +155,6 @@
     const localAdminMyStuffItems = Object.freeze([
         Object.freeze({ label: "DB Viewer", route: "admin-db-viewer" }),
         Object.freeze({ label: "Design System", route: "admin-design-system" }),
-        Object.freeze({ label: "Environments", route: "environments" }),
-        Object.freeze({ label: "Game Migration", route: "game-migration" }),
         Object.freeze({ label: "Grouping Colors", route: "admin-grouping-colors" }),
         Object.freeze({ label: "Notes", href: "/admin/admin-notes.html", localNotes: true })
     ]);
