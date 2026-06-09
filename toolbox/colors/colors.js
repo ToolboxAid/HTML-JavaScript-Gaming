@@ -1305,6 +1305,22 @@ function resetPaletteGeneratorControls() {
   renderPaletteGeneratorPreview("Palette generator controls reset.");
 }
 
+function resetPaletteGeneratorSlider(control) {
+  if (!control) {
+    return;
+  }
+  if (control === elements.generatorContrast) {
+    control.value = String(PALETTE_GENERATOR_DEFAULTS.contrast);
+  } else if (control === elements.generatorSaturation) {
+    control.value = String(PALETTE_GENERATOR_DEFAULTS.saturation);
+  } else if (control === elements.generatorHueShift) {
+    control.value = String(PALETTE_GENERATOR_DEFAULTS.hueShift);
+  } else if (control === elements.generatorStepRange) {
+    control.value = String(PALETTE_GENERATOR_DEFAULTS.stepRange);
+  }
+  renderPaletteGeneratorPreview(`${control.labels?.[0]?.textContent || "Slider"} reset to default.`);
+}
+
 function setSelectValueByTextOrValue(select, preferredValue, preferredText) {
   if (!select) {
     return false;
@@ -2174,6 +2190,7 @@ elements.generatorColors?.addEventListener("input", () => renderPaletteGenerator
   elements.generatorStepRange
 ].forEach((control) => {
   control?.addEventListener("input", () => renderPaletteGeneratorPreview());
+  control?.addEventListener("dblclick", () => resetPaletteGeneratorSlider(control));
 });
 
 elements.generatorReset?.addEventListener("click", resetPaletteGeneratorControls);

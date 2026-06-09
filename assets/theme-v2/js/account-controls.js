@@ -27,6 +27,10 @@
         return `${prefix}${slider.value}${unit}`;
     }
 
+    function sliderDefaultValue(slider) {
+        return slider.dataset.sliderDefault || slider.defaultValue || slider.min || "0";
+    }
+
     document.querySelectorAll("[data-slider-value-for]").forEach((output) => {
         const slider = document.getElementById(output.dataset.sliderValueFor);
         if (!slider) {
@@ -41,6 +45,11 @@
 
         slider.addEventListener("input", updateOutput);
         slider.addEventListener("change", updateOutput);
+        slider.addEventListener("dblclick", function () {
+            slider.value = sliderDefaultValue(slider);
+            updateOutput();
+            slider.dispatchEvent(new Event("input", { bubbles: true }));
+        });
         updateOutput();
     });
 }());

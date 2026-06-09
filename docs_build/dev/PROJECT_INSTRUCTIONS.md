@@ -132,6 +132,24 @@ Rules:
   - Theme V2 controls
   - Future tools and pages
 
+## SLIDER RESET BEHAVIOR REQUIREMENT
+
+All user-adjustable sliders must support reset-to-default behavior.
+
+Rules:
+- Double-clicking a slider resets it to its default value.
+- Reset must occur immediately.
+- Reset value must be visible through the live value display.
+- Users must not need a separate reset button for individual sliders.
+- Tool-specific Reset buttons may still exist for resetting multiple controls.
+- Slider tooltips/help text should identify the default value when practical.
+- Applies to:
+  - Toolbox tools
+  - Project Workspace controls
+  - Account/Admin pages
+  - Theme V2 controls
+  - Future tools and pages
+
 ## RULE PRECEDENCE
 
 Newer appended sections override earlier overlapping rules.

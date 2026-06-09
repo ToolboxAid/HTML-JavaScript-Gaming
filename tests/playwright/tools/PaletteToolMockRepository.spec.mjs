@@ -506,6 +506,10 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-generator-saturation-value]")).toHaveText("100%");
     await expect(page.locator("[data-palette-generator-hue-shift-value]")).toHaveText("0°");
     await expect(page.locator("[data-palette-generator-step-range-value]")).toHaveText("50%");
+    await expect(page.locator("[data-palette-generator-contrast]")).toHaveAttribute("title", /default 40%/);
+    await expect(page.locator("[data-palette-generator-saturation]")).toHaveAttribute("title", /default 100%/);
+    await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveAttribute("title", /default 0/);
+    await expect(page.locator("[data-palette-generator-step-range]")).toHaveAttribute("title", /default 50%/);
     await expect(page.locator("[data-palette-generator-step-range]")).toHaveAttribute("type", "range");
     await expect(page.locator("[data-palette-generator-generate]")).toHaveCount(0);
     await expect(page.locator("[data-palette-show-duplicates]")).toBeChecked();
@@ -712,8 +716,7 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     expect(wideStepRangeSpread.bottomLightness).toBeLessThan(0.02);
     expect(wideStepRangeSpread.center).toBe(defaultStepRangeSpread.center);
     await page.locator("[data-palette-generator-step-range]").evaluate((control) => {
-      control.value = "50";
-      control.dispatchEvent(new Event("input", { bubbles: true }));
+      control.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
     });
     await expect(page.locator("[data-palette-generator-step-range-value]")).toHaveText("50%");
     const restoredStepRangeSpread = await columnLightnessSpread(page, stepRangeEvidenceColumn);
@@ -732,6 +735,11 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("45");
     await expect(page.locator("[data-palette-generator-hue-shift-value]")).toHaveText("+45°");
     expect(await firstSwatch.getAttribute("data-palette-generator-color")).not.toBe(initialColor);
+    await page.locator("[data-palette-generator-hue-shift]").evaluate((control) => {
+      control.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    });
+    await expect(page.locator("[data-palette-generator-hue-shift]")).toHaveValue("0");
+    await expect(page.locator("[data-palette-generator-hue-shift-value]")).toHaveText("0°");
 
     await page.locator("[data-palette-theme-collection]").selectOption("ROYGBIV");
     await expect(page.locator("[data-palette-generator-type] option")).toHaveText(["ROYGBIV"]);
@@ -849,6 +857,16 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("20");
     await expect(page.locator("[data-palette-generator-contrast-value]")).toHaveText("80%");
     await expect(page.locator("[data-palette-generator-saturation-value]")).toHaveText("20%");
+    await page.locator("[data-palette-generator-contrast]").evaluate((control) => {
+      control.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    });
+    await page.locator("[data-palette-generator-saturation]").evaluate((control) => {
+      control.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    });
+    await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("40");
+    await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("100");
+    await expect(page.locator("[data-palette-generator-contrast-value]")).toHaveText("40%");
+    await expect(page.locator("[data-palette-generator-saturation-value]")).toHaveText("100%");
     await page.locator("[data-palette-generator-reset]").click();
     await expect(page.locator("[data-palette-generator-contrast]")).toHaveValue("40");
     await expect(page.locator("[data-palette-generator-saturation]")).toHaveValue("100");
@@ -1432,12 +1450,19 @@ test("Theme V2 Admin Controls range slider displays a live persistent value", as
   try {
     await expect(page.getByRole("heading", { name: "Controls.", level: 1 })).toBeVisible();
     await expect(page.locator("#range")).toHaveValue("68");
+    await expect(page.locator("#range")).toHaveAttribute("data-slider-default", "68");
+    await expect(page.locator("#range")).toHaveAttribute("title", "Double-click to reset to default 68.");
     await expect(page.locator("[data-slider-value-for='range']")).toHaveText("68");
     await page.locator("#range").evaluate((control) => {
       control.value = "42";
       control.dispatchEvent(new Event("input", { bubbles: true }));
     });
     await expect(page.locator("[data-slider-value-for='range']")).toHaveText("42");
+    await page.locator("#range").evaluate((control) => {
+      control.dispatchEvent(new MouseEvent("dblclick", { bubbles: true }));
+    });
+    await expect(page.locator("#range")).toHaveValue("68");
+    await expect(page.locator("[data-slider-value-for='range']")).toHaveText("68");
     await expect(page.locator("[oninput], [onchange], [onclick]")).toHaveCount(0);
     expectNoPageFailures(failures);
   } finally {
