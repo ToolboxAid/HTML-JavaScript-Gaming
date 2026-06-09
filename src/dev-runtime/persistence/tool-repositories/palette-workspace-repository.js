@@ -24,8 +24,8 @@ const PALETTE_SYSTEM_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
 
 export const PALETTE_HARMONY_MATCH_SOURCES = Object.freeze([
   { id: "calculated", label: "Calculated" },
-  { id: "source", label: "Source Palette Closest Match" },
-  { id: "all", label: "All Palettes Closest Match" }
+  { id: "source", label: "Current Source Closest Match" },
+  { id: "all", label: "All Sources Closest Match" }
 ]);
 
 export const PALETTE_HARMONY_SCHEMES = Object.freeze([
@@ -269,7 +269,7 @@ function createIssue(field, label, action) {
 }
 
 function duplicateIssue(field, label, value) {
-  return createIssue(field, label, `${value} already exists in the active project palette.`);
+  return createIssue(field, label, `${value} already exists in Project Swatches.`);
 }
 
 export function normalizePaletteSwatchInput(input = {}, options = {}) {
@@ -347,15 +347,15 @@ export function validatePaletteWorkspacePayload(payload = {}) {
   const swatches = paletteSection?.swatches;
 
   if (!source) {
-    issues.push(createIssue("payload", "Palette Payload", "Palette payload must be an object."));
+    issues.push(createIssue("payload", "Colors Payload", "Colors payload must be an object."));
   }
 
   if (!tools || typeof tools !== "object" || Array.isArray(tools)) {
-    issues.push(createIssue("tools", "Workspace Tools", `Palette payload must contain ${PALETTE_WORKSPACE_PATH}.`));
+    issues.push(createIssue("tools", "Workspace Tools", "Colors payload must contain active project swatches."));
   }
 
   if (!paletteSection || typeof paletteSection !== "object" || Array.isArray(paletteSection)) {
-    issues.push(createIssue(PALETTE_TOOL_KEY, "Palette Section", `Palette section must be an object at tools.${PALETTE_TOOL_KEY}.`));
+    issues.push(createIssue(PALETTE_TOOL_KEY, "Colors Section", "Colors section must be an object in the active project tool data."));
   }
 
   if (!Array.isArray(swatches)) {
@@ -793,7 +793,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
     const payloadValidation = validatePaletteWorkspacePayload(record);
     if (!payloadValidation.valid) {
-      throw new Error(`Invalid active palette payload rejected before render: ${payloadValidation.issues.map((issue) => issue.action).join(" ")}`);
+      throw new Error(`Invalid active Colors payload rejected before render: ${payloadValidation.issues.map((issue) => issue.action).join(" ")}`);
     }
     return record.tools[PALETTE_TOOL_KEY].swatches;
   }
@@ -802,7 +802,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     if (!projectId) {
       return {
         ok: false,
-        message: "Palette edit blocked: no active project.",
+        message: "Colors edit blocked: no active project.",
         snapshot: getSnapshot()
       };
     }
@@ -821,7 +821,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       return {
         issues: validation.issues,
         ok: false,
-        message: `Invalid palette payload rejected before render at ${PALETTE_WORKSPACE_PATH}.`,
+        message: "Invalid Colors payload rejected before render.",
         snapshot: getSnapshot()
       };
     }
@@ -866,9 +866,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
 
     if (!projectId) {
       return {
-        issues: [createIssue("activeProject", "Active Project", "Open a project before editing palette swatches.")],
+        issues: [createIssue("activeProject", "Active Project", "Open a project before editing Project Swatches.")],
         ok: false,
-        message: "Palette edit blocked: no active project.",
+        message: "Colors edit blocked: no active project.",
         snapshot: getSnapshot()
       };
     }
@@ -877,7 +877,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       return {
         issues: validation.issues,
         ok: false,
-        message: `Palette swatch blocked by ${validation.issues.length} validation item${validation.issues.length === 1 ? "" : "s"}.`,
+        message: `Project Swatches update blocked by ${validation.issues.length} validation item${validation.issues.length === 1 ? "" : "s"}.`,
         snapshot: getSnapshot()
       };
     }
@@ -903,9 +903,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const selectedSwatch = getSelectedSwatch();
     if (!selectedSwatch) {
       return {
-        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a project palette swatch before updating.")],
+        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a Project Swatches color before updating.")],
         ok: false,
-        message: "Palette update blocked: no selected swatch.",
+        message: "Project Swatches update blocked: no selected swatch.",
         snapshot: getSnapshot()
       };
     }
@@ -914,7 +914,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       return {
         issues: [createIssue("selectedSwatch", "Selected Swatch", "Selected swatch no longer exists.")],
         ok: false,
-        message: "Palette update blocked: selected swatch no longer exists.",
+        message: "Project Swatches update blocked: selected swatch no longer exists.",
         snapshot: getSnapshot()
       };
     }
@@ -939,9 +939,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const selectedSwatch = getSelectedSwatch();
     if (!projectId || !selectedSwatch) {
       return {
-        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a project palette swatch before editing tags.")],
+        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a Project Swatches color before editing tags.")],
         ok: false,
-        message: "Palette tag update blocked: no selected swatch.",
+        message: "Project Swatches tag update blocked: no selected swatch.",
         snapshot: getSnapshot()
       };
     }
@@ -957,7 +957,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       return {
         issues: validation.issues,
         ok: false,
-        message: `Palette tag update blocked by ${validation.issues.length} validation item${validation.issues.length === 1 ? "" : "s"}.`,
+        message: `Project Swatches tag update blocked by ${validation.issues.length} validation item${validation.issues.length === 1 ? "" : "s"}.`,
         snapshot: getSnapshot()
       };
     }
@@ -980,9 +980,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
 
     if (!projectId) {
       return {
-        issues: [createIssue("activeProject", "Active Project", "Open a project before editing palette swatches.")],
+        issues: [createIssue("activeProject", "Active Project", "Open a project before editing Project Swatches.")],
         ok: false,
-        message: "Palette tag update blocked: no active project.",
+        message: "Project Swatches tag update blocked: no active project.",
         snapshot: getSnapshot()
       };
     }
@@ -991,16 +991,16 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       return {
         issues: [createIssue("tags", "Tags", "Enter a tag before updating checked swatches.")],
         ok: false,
-        message: "Palette tag update blocked: no tag entered.",
+        message: "Project Swatches tag update blocked: no tag entered.",
         snapshot: getSnapshot()
       };
     }
 
     if (!targetKeys.length) {
       return {
-        issues: [createIssue("checkedSwatches", "Checked Swatches", "Check at least one active project palette swatch before batch tagging.")],
+        issues: [createIssue("checkedSwatches", "Checked Swatches", "Check at least one Project Swatches color before batch tagging.")],
         ok: false,
-        message: "Palette tag update blocked: no checked swatches.",
+        message: "Project Swatches tag update blocked: no checked swatches.",
         snapshot: getSnapshot()
       };
     }
@@ -1025,9 +1025,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const swatchToRemove = getActiveSwatches().find((swatch) => swatch.key === normalizedKey);
     if (!projectId || !swatchToRemove) {
       return {
-        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a project palette swatch before removing.")],
+        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a Project Swatches color before removing.")],
         ok: false,
-        message: "Palette removal blocked: no selected swatch.",
+        message: "Project Swatches removal blocked: no selected swatch.",
         snapshot: getSnapshot()
       };
     }
@@ -1037,7 +1037,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       return {
         issues: [createIssue("dependentTools", "Dependent Tools", `${swatchToRemove.name} is used by ${usage.map((row) => row.toolId).join(", ")}.`)],
         ok: false,
-        message: "Palette removal blocked: swatch is used by dependent tools.",
+        message: "Project Swatches removal blocked: swatch is used by dependent tools.",
         snapshot: getSnapshot()
       };
     }
@@ -1048,7 +1048,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     });
     return {
       ...result,
-      message: result.ok ? `Removed ${swatchToRemove.name} from the active project palette.` : result.message
+      message: result.ok ? `Removed ${swatchToRemove.name} from Project Swatches.` : result.message
     };
   }
 
@@ -1056,9 +1056,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const selectedSwatch = getSelectedSwatch();
     if (!selectedSwatch) {
       return {
-        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a project palette swatch before removing.")],
+        issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a Project Swatches color before removing.")],
         ok: false,
-        message: "Palette removal blocked: no selected swatch.",
+        message: "Project Swatches removal blocked: no selected swatch.",
         snapshot: getSnapshot()
       };
     }
@@ -1146,7 +1146,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const projectId = activeProjectId();
     if (!projectId) {
       return {
-        issues: [createIssue("activeProject", "Active Project", "Open a project before pinning source palette swatches.")],
+        issues: [createIssue("activeProject", "Active Project", "Open a project before pinning source swatches.")],
         ok: false,
         message: "Pin All blocked: no active project.",
         snapshot: getSnapshot()
@@ -1266,7 +1266,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       return {
         issues: [],
         ok: false,
-        message: "Harmony color already exists in the active project palette.",
+        message: "Harmony color already exists in Project Swatches.",
         snapshot: getSnapshot()
       };
     }
@@ -1375,9 +1375,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     const validation = validatePaletteWorkspacePayload(payload);
     if (!projectId) {
       return {
-        issues: [createIssue("activeProject", "Active Project", "Open a project before loading palette payloads.")],
+        issues: [createIssue("activeProject", "Active Project", "Open a project before loading Colors payloads.")],
         ok: false,
-        message: "Palette payload rejected: no active project.",
+        message: "Colors payload rejected: no active project.",
         snapshot: getSnapshot()
       };
     }
@@ -1385,7 +1385,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       return {
         issues: validation.issues,
         ok: false,
-        message: `Invalid palette payload rejected before render at ${PALETTE_WORKSPACE_PATH}.`,
+        message: "Invalid Colors payload rejected before render.",
         snapshot: getSnapshot()
       };
     }
@@ -1398,7 +1398,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     persistTables();
     return {
       ok: true,
-      message: `Palette payload loaded into ${PALETTE_WORKSPACE_PATH}.`,
+      message: "Colors payload loaded into the active project.",
       snapshot: getSnapshot()
     };
   }
@@ -1423,7 +1423,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     if (!projectId || !swatch) {
       return {
         ok: false,
-        message: "Swatch usage not recorded: active project palette swatch is missing.",
+        message: "Swatch usage not recorded: Project Swatches color is missing.",
         snapshot: getSnapshot()
       };
     }
@@ -1534,7 +1534,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         : [];
     } else {
       validation = {
-        findings: [createIssue("activeProject", "Active Project", "Open a project before editing palette swatches.")],
+        findings: [createIssue("activeProject", "Active Project", "Open a project before editing Project Swatches.")],
         status: "Blocked"
       };
     }

@@ -37,7 +37,7 @@ const SIZE_OPTIONS = Object.freeze([
 
 const SUGGESTED_TAGS = Object.freeze([
   "UI",
-  "Main Palette",
+  "Main Colors",
   "Panel Background",
   "Panel Border",
   "Primary Button",
@@ -1019,7 +1019,7 @@ function renderPaletteGeneratorSliderValues(settings = readPaletteGeneratorSetti
 }
 
 function generatorSwatchName(settings, row, column, hex) {
-  const collection = settings.collection?.name || "Palette";
+  const collection = settings.collection?.name || "Colors";
   const type = settings.paletteType?.name || "Generated";
   const variant = settings.variant?.label || "Full";
   const curatedNames = Array.isArray(settings.paletteType?.names) ? settings.paletteType.names : [];
@@ -1179,7 +1179,7 @@ function appendPickerRows(fragment, allSwatches, settings) {
     });
 }
 
-function renderPaletteGeneratorPreview(action = "Palette generator preview updated.") {
+function renderPaletteGeneratorPreview(action = "Picker Preview updated.") {
   if (!elements.generatorPreview) {
     return;
   }
@@ -1191,8 +1191,8 @@ function renderPaletteGeneratorPreview(action = "Palette generator preview updat
   const snapshot = repository.getSnapshot();
   if (!settings.collection || !settings.paletteType) {
     elements.generatorPreview.replaceChildren();
-    setText(elements.generatorPreviewStatus, "No curated palette swatches are available for the selected collection and type.");
-    setText(elements.generatorStatus, "Palette generator missing curated swatches.");
+    setText(elements.generatorPreviewStatus, "No curated picker swatches are available for the selected collection and type.");
+    setText(elements.generatorStatus, "Picker Preview missing curated swatches.");
     return;
   }
 
@@ -1302,7 +1302,7 @@ function resetPaletteGeneratorControls() {
   if (elements.generatorStepRange) {
     elements.generatorStepRange.value = String(PALETTE_GENERATOR_DEFAULTS.stepRange);
   }
-  renderPaletteGeneratorPreview("Palette generator controls reset.");
+  renderPaletteGeneratorPreview("Picker controls reset.");
 }
 
 function resetPaletteGeneratorSlider(control) {
@@ -1364,7 +1364,7 @@ function applyPickerSettings(settings = null) {
   (Array.isArray(settings.activeTags) ? settings.activeTags : []).forEach((tag) => selectedTagFilters.add(tag));
   render();
   renderPaletteGeneratorPreview(`Restored picker settings from ${settings.paletteType || "selected swatch"}.`);
-  setText(elements.log, `Restored picker settings from ${settings.themeCollection || "stored"} / ${settings.paletteType || "palette"} / ${settings.variant || "variant"}.`);
+  setText(elements.log, `Restored picker settings from ${settings.themeCollection || "stored"} / ${settings.paletteType || "type"} / ${settings.variant || "variant"}.`);
 }
 
 function createPinIndicator(pinned) {
@@ -1410,7 +1410,7 @@ function createSwatchTile(swatch, options = {}) {
       tile.dataset[`paletteMetadata${key[0].toUpperCase()}${key.slice(1)}`] = String(value ?? "");
     }
   });
-  tile.setAttribute("aria-label", options.label || `${selected ? "Selected. " : ""}${swatchTileLabel(swatch, options.action || "Select palette color")}`);
+  tile.setAttribute("aria-label", options.label || `${selected ? "Selected. " : ""}${swatchTileLabel(swatch, options.action || "Select color")}`);
   tile.setAttribute("aria-pressed", String(Boolean(options.pressed)));
   tile.title = options.tooltip || swatchTooltipText(swatch, sourceLabel);
   if (selected) {
@@ -1639,7 +1639,7 @@ function renderSourceOptions(snapshot) {
   if (!snapshot.sourcePaletteOptions.length) {
     const option = document.createElement("option");
     option.value = "";
-    option.textContent = snapshot.sourcePaletteRecordCount ? "Source palettes unavailable" : "No source palette";
+    option.textContent = snapshot.sourcePaletteRecordCount ? "Source swatches unavailable" : "No source swatches";
     elements.sourceSelect.append(option);
     elements.sourceSelect.value = "";
     elements.sourceSelect.disabled = true;
@@ -1659,8 +1659,8 @@ function renderSourceOptions(snapshot) {
 }
 
 function renderPaletteControls() {
-  renderSortButtons(elements.userSort, userSortState, "Active project palette");
-  renderSizeButtons(elements.userSize, userSizeState, "Active project palette");
+  renderSortButtons(elements.userSort, userSortState, "Project Swatches");
+  renderSizeButtons(elements.userSize, userSizeState, "Project Swatches");
   renderSortButtons(elements.sourceSort, sourceSortState, "Source swatches");
   renderSizeButtons(elements.sourceSize, sourceSizeState, "Source swatches");
 }
@@ -1675,7 +1675,7 @@ function renderProject(snapshot) {
   );
   setText(
     elements.projectDiagnostic,
-    activeProject ? `Palette edits save live to ${PALETTE_WORKSPACE_PATH}.` : "Active project required."
+    activeProject ? "Colors edits save live to the active project." : "Active project required."
   );
   setHidden(elements.projectOverlay, !snapshot.projectRequired);
   if (selectedSwatch && !userSwatch) {
@@ -1716,7 +1716,7 @@ function renderValidation(snapshot) {
   }
   setHidden(elements.validationOverlay, findings.length === 0);
   setText(elements.validationStatus, findings.length ? "Needs Input" : snapshot.validation.status);
-  setText(elements.storagePath, snapshot.palettePath);
+  setText(elements.storagePath, "Colors storage contract active.");
 }
 
 function renderUserPalette(snapshot) {
@@ -1742,7 +1742,7 @@ function renderUserPalette(snapshot) {
     const message = document.createElement("p");
     message.className = "status";
     message.textContent = snapshot.projectRequired
-      ? "Open a project before editing palette colors."
+      ? "Open a project before editing project swatches."
       : activeFilters.length ? "No Project Swatches colors match checked tags." : "No Project Swatches colors yet.";
     elements.userList.append(message);
     return;
@@ -1751,7 +1751,7 @@ function renderUserPalette(snapshot) {
   checkedSwatchKeysFromSnapshot(snapshot);
   swatches.forEach((swatch) => {
     elements.userList.append(createCheckedSwatchTile(swatch, {
-      action: "Select palette color",
+      action: "Select Project Swatches color",
       pinned: true,
       pressed: swatchKey(snapshot.selectedSwatch) === swatchKey(swatch),
       selected: swatchKey(snapshot.selectedSwatch) === swatchKey(swatch),
@@ -1763,7 +1763,7 @@ function renderUserPalette(snapshot) {
 
 function sourcePaletteDiagnostic(snapshot) {
   return snapshot.sourcePaletteRecordCount > 0 && snapshot.sourcePaletteOptions.length === 0
-    ? "Source palette records exist, but the source dropdown is empty. Check palette_source_swatches mock-DB records for valid source, palette key, hex, and name fields."
+    ? "Source swatch records exist, but the source dropdown is empty. Check Colors source records for valid source, swatch key, hex, and name fields."
     : "";
 }
 
@@ -1787,7 +1787,7 @@ function renderSourceSwatches(snapshot = repository.getSnapshot()) {
     message.className = "status";
     message.textContent = sourcePaletteDiagnostic(snapshot) || (snapshot.sourcePaletteOptions.length
       ? "No source colors match the current filter."
-      : "No source palette found. Add palette_source_swatches mock-DB records to browse source colors.");
+      : "No source swatches found. Add Colors source records to browse source colors.");
     elements.sourceList.append(message);
     return;
   }
@@ -1795,7 +1795,7 @@ function renderSourceSwatches(snapshot = repository.getSnapshot()) {
   sourceSwatchRows.forEach((swatch, index) => {
     const pinned = repository.isSourceSwatchPinned(swatch);
     elements.sourceList.append(createSwatchTile(swatch, {
-      action: pinned ? "Unpin source palette color" : "Pin source palette color",
+      action: pinned ? "Unpin source color" : "Pin source color",
       pinned,
       pressed: pinned,
       size: sourceSizeState,
@@ -1821,7 +1821,7 @@ function renderTags(snapshot) {
   });
   elements.tagsList.replaceChildren();
   if (!tags.length) {
-    elements.tagsList.append(createListItem("No tags in active palette."));
+    elements.tagsList.append(createListItem("No tags in Project Swatches."));
     return;
   }
   tags.forEach((tag) => {
@@ -1859,15 +1859,15 @@ function renderHarmony(snapshot) {
     : [];
 
   if (!baseSwatch) {
-    elements.harmonyList.append(createStatusMessage("Select a project or source palette color to view scheme suggestions."));
-    setText(elements.harmonyGuidance, "Select a project or source palette color to view scheme suggestions.");
+    elements.harmonyList.append(createStatusMessage("Select a project or source color to view scheme suggestions."));
+    setText(elements.harmonyGuidance, "Select a project or source color to view scheme suggestions.");
     setDisabled(elements.harmonyAddAll, true);
     return;
   }
 
   if (harmonyRows.length === 0) {
     elements.harmonyList.append(createStatusMessage("No harmony scheme colors available."));
-    setText(elements.harmonyGuidance, "No harmony scheme colors are available for the selected palette color.");
+    setText(elements.harmonyGuidance, "No harmony scheme colors are available for the selected color.");
     setDisabled(elements.harmonyAddAll, true);
     return;
   }
@@ -1903,9 +1903,19 @@ function renderTables(snapshot) {
   elements.tableCounts.replaceChildren();
   snapshot.tableCounts.forEach((count) => {
     const row = document.createElement("tr");
-    row.append(createCell(count.table), createCell(String(count.rows)));
+    row.append(createCell(displayColorsTableName(count.table)), createCell(String(count.rows)));
     elements.tableCounts.append(row);
   });
+}
+
+function displayColorsTableName(tableName) {
+  const names = {
+    palette_colors: "Project Swatches",
+    palette_source_swatches: "Source Swatches",
+    palette_swatch_usages: "Swatch Usage",
+    project_workspace_palette_globals: "Project Swatch Settings"
+  };
+  return names[tableName] || tableName;
 }
 
 function renderSummary(snapshot) {
@@ -1929,9 +1939,9 @@ function render() {
     editorIssues = [{
       action: error.message,
       field: "payload",
-      label: "Invalid Palette Payload"
+      label: "Invalid Colors Payload"
     }];
-    setText(elements.log, "Invalid palette payload rejected before render.");
+    setText(elements.log, "Invalid Colors payload rejected before render.");
     return;
   }
 
@@ -1959,7 +1969,7 @@ function applyResult(result) {
   setText(elements.log, result.message);
   setText(elements.userSwatchDiagnostic, result.message);
   render();
-  renderPaletteGeneratorPreview("Palette generator preview refreshed.");
+  renderPaletteGeneratorPreview("Picker Preview refreshed.");
 }
 
 function validateUserSwatch() {
@@ -2048,8 +2058,8 @@ elements.clear?.addEventListener("click", clearUserSwatchForm);
 
 elements.clearChecked?.addEventListener("click", () => {
   checkedSwatchKeys.clear();
-  setText(elements.log, "Cleared checked palette swatches.");
-  setText(elements.editorDiagnostic, "Cleared checked palette swatches.");
+  setText(elements.log, "Cleared checked Project Swatches.");
+  setText(elements.editorDiagnostic, "Cleared checked Project Swatches.");
   render();
 });
 
@@ -2218,7 +2228,7 @@ elements.harmonyList?.addEventListener("click", (event) => {
 elements.harmonyAddAll?.addEventListener("click", () => {
   if (!harmonyRows.length) {
     editorIssues = [{
-      action: "Select a project or source palette color before adding harmony colors.",
+      action: "Select a project or source color before adding harmony colors.",
       field: "harmony",
       label: "Harmony"
     }];
@@ -2284,14 +2294,14 @@ elements.tagsList?.addEventListener("change", (event) => {
       : "Cleared Project Swatches tag filters."
   );
   render();
-  renderPaletteGeneratorPreview("Palette generator preview refreshed.");
+  renderPaletteGeneratorPreview("Picker Preview refreshed.");
 });
 
 elements.clearTagFilters?.addEventListener("click", () => {
   selectedTagFilters.clear();
   setText(elements.log, "Cleared Project Swatches tag filters.");
   render();
-  renderPaletteGeneratorPreview("Palette generator preview refreshed.");
+  renderPaletteGeneratorPreview("Picker Preview refreshed.");
 });
 
 elements.tagMatchModes?.forEach((control) => {
@@ -2321,4 +2331,4 @@ elements.sourceList?.addEventListener("click", (event) => {
 initializePaletteGeneratorSelectors();
 runInitialQueryState();
 render();
-renderPaletteGeneratorPreview("Palette generator preview ready.");
+renderPaletteGeneratorPreview("Picker Preview ready.");

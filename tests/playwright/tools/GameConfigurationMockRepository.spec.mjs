@@ -107,6 +107,26 @@ test("Game Configuration saves and updates creator-facing sections with readable
     await expect(page.locator("[data-game-configuration-handoff-overlay]")).toBeHidden();
     await expect(page.locator("[data-game-configuration-form-card]")).toBeVisible();
     await expect(page.locator(".tool-center-panel [data-game-configuration-form]")).toBeVisible();
+    const formCardSpacing = await page.locator("[data-game-configuration-form-card] > .card-body.content-stack").evaluate((body) => {
+      const computed = getComputedStyle(body);
+      const firstChild = body.firstElementChild;
+      return {
+        firstChildTopGap: Math.round(firstChild.getBoundingClientRect().top - body.getBoundingClientRect().top),
+        marginBottom: computed.marginBottom,
+        marginLeft: computed.marginLeft,
+        marginRight: computed.marginRight,
+        marginTop: computed.marginTop,
+        paddingTop: computed.paddingTop
+      };
+    });
+    expect(formCardSpacing).toMatchObject({
+      marginBottom: "8px",
+      marginLeft: "8px",
+      marginRight: "8px",
+      marginTop: "8px"
+    });
+    expect(Number.parseInt(formCardSpacing.paddingTop, 10)).toBeGreaterThanOrEqual(8);
+    expect(formCardSpacing.firstChildTopGap).toBeGreaterThanOrEqual(8);
     await expect(page.locator("[data-game-configuration-playable-setup-table]")).toBeVisible();
     await expect(page.locator("[data-game-configuration-playable-setup-table] th")).toHaveText([
       "Game Basics",

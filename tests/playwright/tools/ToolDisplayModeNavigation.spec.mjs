@@ -120,8 +120,19 @@ async function expectToolDisplayModeVisualLayout(page) {
 }
 
 async function expectToolDisplayModeFullscreenBadge(page) {
+  const centerHeading = page.locator(".tool-center-panel > h2").first();
+  const centerDescription = page.locator(".tool-center-panel > h2 + p").first();
+  await expect(centerHeading).toBeVisible();
+  if (await centerDescription.count()) {
+    await expect(centerDescription).toBeVisible();
+  }
+
   await page.locator("#toolDisplayMode summary").click();
   await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);
+  await expect(centerHeading).toBeHidden();
+  if (await centerDescription.count()) {
+    await expect(centerDescription).toBeHidden();
+  }
   const badgeSize = await page.locator(".tool-display-mode__badge").evaluate((badge) => {
     const box = badge.getBoundingClientRect();
     return {
@@ -130,6 +141,13 @@ async function expectToolDisplayModeFullscreenBadge(page) {
     };
   });
   expect(badgeSize).toEqual({ height: 32, width: 32 });
+
+  await page.locator("#toolDisplayMode summary").click();
+  await expect(page.locator("body")).not.toHaveClass(/tool-focus-mode/);
+  await expect(centerHeading).toBeVisible();
+  if (await centerDescription.count()) {
+    await expect(centerDescription).toBeVisible();
+  }
 }
 
 test("Game Design renders identity and navigation rows with registry anchor links", async ({ page }) => {
@@ -146,8 +164,8 @@ test("Game Design renders identity and navigation rows with registry anchor link
 
     const previous = page.locator("[data-tool-nav-previous]");
     const next = page.locator("[data-tool-nav-next]");
-    await expect(previous).toHaveText("Previous: Project Workspace");
-    await expect(previous).toHaveAttribute("href", "toolbox/project-workspace/index.html");
+    await expect(previous).toHaveText("Previous: Project Journey");
+    await expect(previous).toHaveAttribute("href", "toolbox/project-journey/index.html");
     await expect(next).toHaveText("Next: Game Configuration");
     await expect(next).toHaveAttribute("href", "toolbox/game-configuration/index.html");
     await expectPlainNavigationLinks(page);
@@ -167,8 +185,8 @@ test("Project Workspace and Game Configuration use registry order without page h
     await expect(page.locator("[data-tool-display-mode-row='identity']")).toContainText("Project Workspace");
     await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: AI Assistant");
     await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/ai-assistant/index.html");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Game Design");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/game-design/index.html");
+    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Project Journey");
+    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/project-journey/index.html");
 
     await page.goto(`${failures.server.baseUrl}/toolbox/game-configuration/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tool-display-mode-row='identity']")).toContainText("Game Configuration");

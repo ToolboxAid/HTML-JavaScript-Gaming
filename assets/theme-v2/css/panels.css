@@ -38,6 +38,10 @@
   padding: var(--space-18)
 }
 
+.tool-workspace article.card>.card-body.content-stack {
+  margin: var(--space-8)
+}
+
 .surface {
   border: var(--border-standard);
   border-radius: var(--radius-lg);

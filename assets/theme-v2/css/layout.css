@@ -255,6 +255,11 @@ body.tool-focus-mode .tool-center-panel {
   grid-row: 2
 }
 
+body.tool-focus-mode .tool-center-panel>h2,
+body.tool-focus-mode .tool-center-panel>h2+p {
+  display: none
+}
+
 body.tool-focus-mode .tool-column:last-of-type {
   grid-column: 3;
   grid-row: 1 / span 2

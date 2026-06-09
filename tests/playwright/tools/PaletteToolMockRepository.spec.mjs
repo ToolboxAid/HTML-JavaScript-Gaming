@@ -64,7 +64,7 @@ const expectedVariants = [
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "palette-tool",
-    surface: "Palette Tool project palette runtime"
+    surface: "Colors project swatches runtime"
   });
 });
 
@@ -338,24 +338,37 @@ test("Palette repository owns project swatches and protects invalid payloads", a
   expect(invalidPayload).toEqual(invalidPayloadCopy);
 });
 
-test("Palette Tool adds, updates, validates, and shows project-owned swatches", async ({ page }) => {
+test("Colors adds, updates, validates, and shows project-owned swatches", async ({ page }) => {
   test.setTimeout(120000);
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
 
   try {
-    await expect(page.getByRole("heading", { name: "Colors" }).first()).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Palette", exact: true })).toBeVisible();
+    await expect(page).toHaveTitle("Colors - GameFoundryStudio");
+    await expect(page.getByRole("heading", { name: "Colors", level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Colors", level: 2 })).toHaveCount(2);
+    await expect(page.getByRole("heading", { name: "Palette", exact: true })).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Selected Swatches", exact: true })).toHaveCount(0);
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("body")).not.toContainText(/import json|export json|Crayola/i);
+    await expect(page.getByText("Palette Tool")).toHaveCount(0);
+    await expect(page.getByText("Palette Browser")).toHaveCount(0);
+    await expect(page.getByText("Palette Generator")).toHaveCount(0);
+    await expect(page.getByText("Palette Preview")).toHaveCount(0);
+    await expect(page.getByText("Palette Validation")).toHaveCount(0);
+    await expect(page.locator("body")).not.toContainText("tools.palette-browser");
     await expect(page.locator("[data-palette-source-select], [data-palette-source-search], [data-palette-source-pin-all]")).toHaveCount(0);
     await expect(page.locator("[data-palette-active-project]")).toHaveText("Demo Project - Game Project");
-    await expect(page.locator("[data-palette-storage-path]")).toHaveText("tools.palette-browser.swatches");
+    await expect(page.locator("[data-palette-storage-path]")).toHaveText("Colors storage contract active.");
     await expect(page.locator("[data-palette-count]")).toHaveText("0");
     await expect(page.locator("[data-palette-editor-form] button")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Remove Selected" })).toHaveCount(0);
     await expect(page.getByText("Project Palette Tags")).toHaveCount(0);
+    await expect(page.getByText("Defined Swatch Selector", { exact: true })).toBeVisible();
+    await expect(page.getByText("Picker Swatches", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-palette-project-accordion] > summary")).toContainText("Project Swatches");
+    await expect(page.locator("[data-palette-preview-accordion] > summary > span").first()).toHaveText("Picker Preview");
+    await expect(page.locator(".tool-column:last-child details.vertical-accordion > summary").filter({ hasText: "Swatch Validation" })).toHaveCount(1);
     await expect(page.locator("[data-palette-tags-list]")).toBeVisible();
     await expect(page.getByText("Swatch Editor")).toHaveCount(0);
     await expect(page.locator("[data-palette-clear-checked]")).toBeDisabled();
@@ -442,7 +455,8 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
     await expect(swatchTileByName(page, "Hero Updated")).toHaveAttribute("data-palette-swatch-name", "Hero Updated");
     await expect(swatchTileByName(page, "Hero Updated")).toHaveAttribute("data-palette-swatch-tags", "hero, ui");
     await expect(page.locator("[data-palette-selected-summary]")).toHaveText("Hero Updated");
-    await expect(page.locator("[data-palette-table-counts]")).toContainText("palette_colors");
+    await expect(page.locator("[data-palette-table-counts]")).toContainText("Project Swatches");
+    await expect(page.locator("[data-palette-table-counts]")).not.toContainText("palette_colors");
 
     await page.locator("[data-palette-harmony-match]").selectOption("all");
     await page.locator("[data-palette-harmony-scheme]").selectOption("triadic");
@@ -459,7 +473,7 @@ test("Palette Tool adds, updates, validates, and shows project-owned swatches", 
   }
 });
 
-test("Palette Tool renders curated swatch selector controls and live preview", async ({ page }) => {
+test("Colors renders curated swatch selector controls and live preview", async ({ page }) => {
   test.setTimeout(120000);
   const failures = await openRepoPage(page, "/toolbox/colors/index.html");
 
@@ -485,7 +499,7 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
     ));
     expect(Number.parseInt(previewStatusWeight, 10)).toBeLessThan(700);
     await expect(page.locator("[data-palette-preview-accordion] > .accordion-body > [data-palette-generator-preview-status]")).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Defined Swatch Selector" })).toHaveCount(0);
+    await expect(page.getByText("Defined Swatch Selector")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Swatch Type / Theme" })).toHaveCount(0);
     await expect(page.locator("[data-palette-source-select], [data-palette-source-search], [data-palette-source-pin-all]")).toHaveCount(0);
 
@@ -576,7 +590,7 @@ test("Palette Tool renders curated swatch selector controls and live preview", a
         .find((summary) => summary.textContent.trim() === "User Defined Swatch");
       const history = workspace.querySelector("[data-palette-history-accordion]");
       const validationSummary = [...workspace.querySelectorAll(".tool-column:last-child details.vertical-accordion summary")]
-        .find((summary) => summary.textContent.trim() === "Validation");
+        .find((summary) => summary.textContent.trim() === "Swatch Validation");
       return {
         historyLeft: Math.round(history.getBoundingClientRect().left),
         historyTop: Math.round(history.getBoundingClientRect().top),
@@ -1413,11 +1427,11 @@ test("Palette Tool batch tags checked project palette swatches", async ({ page }
   }
 });
 
-test("Palette Tool rejects invalid payloads before render and blocks editing without an active project", async ({ page }) => {
+test("Colors rejects invalid payloads before render and blocks editing without an active project", async ({ page }) => {
   const invalidFailures = await openRepoPage(page, "/toolbox/colors/index.html?palette=invalid");
 
   try {
-    await expect(page.locator("[data-palette-log]")).toContainText("Invalid palette payload rejected before render");
+    await expect(page.locator("[data-palette-log]")).toContainText("Invalid Colors payload rejected before render");
     await expect(page.locator("[data-palette-validation-list]")).toContainText("Hex");
     await expect(page.locator("[data-palette-validation-list]")).toContainText("Name");
     await expect(page.locator("[data-palette-count]")).toHaveText("0");
