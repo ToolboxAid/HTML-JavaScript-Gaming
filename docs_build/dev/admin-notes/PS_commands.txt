@@ -1,0 +1,4 @@
+
+- Remove-Item .\directory-name -Recurse -Force
+
+- tree /f
