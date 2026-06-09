@@ -139,6 +139,26 @@ details.vertical-accordion summary .action-group--end {
   margin-left: auto
 }
 
+details.vertical-accordion summary.accordion-summary--control-grid {
+  display: grid;
+  grid-template-columns: max-content minmax(var(--space-0), 1fr) max-content max-content;
+  align-items: center
+}
+
+details.vertical-accordion summary.accordion-summary--control-grid:after {
+  justify-self: end
+}
+
+details.vertical-accordion summary.accordion-summary--control-grid .action-group--end,
+details.vertical-accordion summary.accordion-summary--control-grid .accordion-summary-controls {
+  margin-left: var(--space-0)
+}
+
+details.vertical-accordion summary.accordion-summary--control-grid .accordion-summary-controls {
+  justify-content: flex-start;
+  max-width: 100%
+}
+
 .accordion-summary-controls {
   flex: 0 1 auto;
   flex-wrap: nowrap;
@@ -187,6 +207,8 @@ body.tool-focus-mode .accordion-fill-stack>.accordion-fill-panel {
 }
 
 body.tool-focus-mode .accordion-fill-stack>.accordion-fill-panel[open] {
+  display: grid;
+  grid-template-rows: auto minmax(var(--space-0), 1fr);
   flex: 1 1 var(--space-0);
   min-height: var(--space-0);
   position: relative
@@ -198,11 +220,12 @@ body.tool-focus-mode .accordion-fill-panel[open]>summary {
 }
 
 body.tool-focus-mode .accordion-fill-panel[open]>.accordion-scroll-body {
-  position: absolute;
-  inset: var(--space-52) var(--space-0) var(--space-0);
+  position: static;
   display: flex;
   flex-direction: column;
+  align-self: stretch;
   gap: var(--space-18);
+  height: 100%;
   min-height: var(--space-0);
   overflow: hidden
 }
@@ -256,6 +279,8 @@ body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack>.accordion-f
 }
 
 body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack>.accordion-fill-panel[open] {
+  display: grid;
+  grid-template-rows: auto minmax(var(--space-0), 1fr);
   flex: 1 1 var(--space-0);
   min-height: var(--space-0);
   position: relative
@@ -267,10 +292,11 @@ body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack>.accordion-f
 }
 
 body:not(.tool-focus-mode) .tool-center-panel>.accordion-fill-stack>.accordion-fill-panel[open]>.accordion-scroll-body {
-  position: absolute;
-  inset: var(--space-52) var(--space-0) var(--space-0);
+  position: static;
   display: flex;
   flex-direction: column;
+  align-self: stretch;
+  height: 100%;
   min-height: var(--space-0);
   overflow: hidden
 }
