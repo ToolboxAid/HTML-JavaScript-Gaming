@@ -123,12 +123,14 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         beta: "swatch-gold",
         complete: "swatch-green"
     };
+    let toolboxVoteRows = [];
     const voteRowsByToolId = new Map();
     let voteDiagnostic = "";
 
     function applyToolboxVoteSnapshot(snapshot) {
         voteRowsByToolId.clear();
-        (snapshot?.rows || []).forEach((row) => {
+        toolboxVoteRows = snapshot?.rows || [];
+        toolboxVoteRows.forEach((row) => {
             voteRowsByToolId.set(row.toolId, row);
         });
     }
@@ -234,6 +236,10 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function releaseChannelForTool(tool) {
+        if (typeof tool === "string") {
+            const explicitChannel = tool.trim().toLowerCase();
+            return releaseChannelOrder.includes(explicitChannel) ? explicitChannel : "planned";
+        }
         const explicitChannel = typeof tool?.releaseChannel === "string" ? tool.releaseChannel.trim().toLowerCase() : "";
         if (releaseChannelOrder.includes(explicitChannel)) {
             return explicitChannel;
@@ -265,33 +271,38 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
 
     function enrichTool(tool, groupName = colorGroupForTool(tool)) {
         const registryTool = registryToolForCard(tool) || tool;
+        const metadata = voteRowsByToolId.get(registryTool.id) || null;
         const route = getToolRoute(registryTool);
+        const path = String(metadata?.path || route || "").replace(/^\/+/, "");
         const title = registryTool.displayName || registryTool.name || tool.title || "Tool";
-        const releaseChannel = releaseChannelForTool(registryTool);
+        const releaseChannel = releaseChannelForTool(metadata?.releaseChannel || registryTool);
         return {
             ...tool,
             capabilityLabel: registryTool.capabilityLabel,
             childCapabilities: registryTool.childCapabilities || [],
             colorGroup: registryTool.colorGroup,
             description: registryTool.description || registryTool.shortDescription || tool.description || "",
-            href: route ? `../${route}` : "",
+            href: path ? `../${path}` : "",
             id: registryTool.id,
             mascot: "foundry-bot",
+            metadataSource: metadata ? "toolbox_tool_metadata" : "registry-default",
             role: registryTool.adminOnly ? "Admin Preview" : registryTool.hidden ? "Hidden Preview" : "Foundry Bot",
             subgroup: registryTool.subgroup,
             theme: registryTool.category === "Audio" ? "bot" : "forge",
             title,
             adminOnly: registryTool?.adminOnly === true,
-            group: groupName,
+            group: metadata?.group || groupName,
             hidden: registryTool?.hidden === true,
+            order: metadata?.order ?? registryTool.order,
+            path,
             planned: registryTool?.deferred === true || registryTool?.status === "Planned",
             missingStatusFields: registryTool?.missingStatusFields || [],
             missingStatusMetadata: registryTool?.missingStatusMetadata !== false,
             progressChecklist: registryTool?.progressChecklist || [],
             readiness: registryTool?.readiness || "No",
             releaseChannel,
-            releaseChannelHelpText: registryTool.releaseChannelHelpText || releaseChannelHelp(releaseChannel),
-            releaseChannelLabel: registryTool.releaseChannelLabel || releaseChannelLabel(releaseChannel),
+            releaseChannelHelpText: releaseChannelHelp(releaseChannel),
+            releaseChannelLabel: metadata?.releaseChannelLabel || releaseChannelLabel(releaseChannel),
             requiredForPublish: registryTool?.requiredForPublish === true,
             requiredForTestable: registryTool?.requiredForTestable === true,
             requiredRole: typeof registryTool?.requiredRole === "string" ? registryTool.requiredRole : "",
@@ -466,6 +477,9 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function getBuildPathRows() {
+        if (voteDiagnostic) {
+            return [];
+        }
         return registryTools
             .filter((tool) => tool.visibleInToolsList === true)
             .map((tool) => enrichTool(tool))
@@ -525,8 +539,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     function createBuildPathToolCell(tool) {
         const cell = document.createElement("td");
         const registryTool = registryToolForCard(tool);
-        const route = registryToolRoute(registryTool);
-        const href = registryToolHref(registryTool);
+        const route = String(tool.path || registryToolRoute(registryTool) || "").replace(/^\/+/, "");
+        const href = route ? "/" + route : registryToolHref(registryTool);
 
         const content = document.createElement("span");
         content.className = "content-cluster";
@@ -586,7 +600,9 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const rows = getBuildPathRows();
         if (!rows.length) {
             const tableRow = document.createElement("tr");
-            const cell = createTableCell("td", "No Build Path tools match the selected status filters.");
+            const cell = createTableCell("td", voteDiagnostic
+                ? `Toolbox Vote Review metadata unavailable: ${voteDiagnostic}`
+                : "No Build Path tools match the selected status filters.");
             cell.colSpan = 3;
             tableRow.append(cell);
             body.append(tableRow);
@@ -594,6 +610,9 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         rows.forEach((row) => {
             const tableRow = document.createElement("tr");
             tableRow.dataset.buildPathTool = row.tool.title;
+            tableRow.dataset.buildPathGroup = row.tool.group;
+            tableRow.dataset.buildPathMetadataSource = row.tool.metadataSource;
+            tableRow.dataset.buildPathPath = row.tool.path;
             tableRow.dataset.buildPathReleaseChannel = row.status;
             tableRow.dataset.buildPathStatus = row.statusLabel;
             tableRow.append(

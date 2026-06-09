@@ -1,0 +1,43 @@
+Order,Tool,Group,Status,Complete
+1,AI Assistant,AI,Wireframe,No
+2,Project Workspace,Build/Create,Ready,Yes
+3,Project Journey,Build/Create,Ready,Yes
+4,Game Design,Design,Ready,Yes
+5,Game Configuration,Build/Create,Ready,Yes
+6,Assets,Design,Ready,Yes
+7,Colors,Design,Ready,Yes
+8,Fonts,Design,Wireframe,No
+9,Sprites,Design,Wireframe,No
+10,Characters,Design,Wireframe,No
+11,Objects,Design,Wireframe,No
+12,Worlds,Design,Wireframe,No
+13,Animations,Design,Wireframe,No
+14,Audio,Audio,Wireframe,No
+15,Music,Audio,Wireframe,No
+16,Voices,Audio,Wireframe,No
+17,Videos,Audio,Wireframe,No
+18,Build Game,Build/Create,Wireframe,No
+19,Game Testing,Play,Wireframe,No
+20,Controls,Platform,Wireframe,No
+21,Hitboxes,Platform,Wireframe,No
+22,Saved Data,Platform,Wireframe,No
+23,Debug,Platform,Wireframe,No
+24,Performance,Platform,Wireframe,No
+25,Events,Platform,Wireframe,No
+26,Publish,Marketplace,Planned,No
+27,Marketplace,Marketplace,Wireframe,No
+28,Community,Marketplace,Wireframe,No
+29,Languages,Platform,Wireframe,No
+30,Achievements,Play,Wireframe,No
+31,Ratings,Play,Wireframe,No
+32,Cloud,Platform,Hidden,No
+33,Custom Extensions,Build/Create,Hidden,No
+34,MIDI,Audio,Hidden,No
+35,Particles,Audio,Hidden,No
+36,Audio Effects,Audio,Hidden,No
+37,Voice Capture,Audio,Hidden,No
+38,Voice Output,Audio,Hidden,No
+39,Users,Platform,Planned,No
+40,Environments,Platform,Planned,No
+41,Game Migration,Platform,Planned,No
+42,Platform Settings,Platform,Planned,No

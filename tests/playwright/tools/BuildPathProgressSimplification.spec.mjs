@@ -1,9 +1,10 @@
 import { expect, test } from "@playwright/test";
+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import {
   TOOL_IMAGE_FALLBACK,
   TOOL_REGISTRY,
   getToolImageSource,
-  getToolRoute
+  getToolRoute,
 } from "../../../toolbox/toolRegistry.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
@@ -14,7 +15,7 @@ const registryToolsByDisplayName = new Map(TOOL_REGISTRY.map((tool) => [tool.dis
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "build-path",
-    surface: "toolbox build path simplification"
+    surface: "toolbox build path SSoT",
   });
 });
 
@@ -54,6 +55,19 @@ async function openRepoPage(page, pathName) {
   return { consoleErrors, failedRequests, pageErrors, server };
 }
 
+async function setServerSession(server, userKey) {
+  await fetch(`${server.baseUrl}/api/session/mode`, {
+    body: JSON.stringify({ modeId: "local-mem" }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  await fetch(`${server.baseUrl}/api/session/user`, {
+    body: JSON.stringify({ userKey }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+}
+
 async function expectNoPageFailures(failures) {
   expect(failures.failedRequests).toEqual([]);
   expect(failures.pageErrors).toEqual([]);
@@ -63,15 +77,18 @@ async function expectNoPageFailures(failures) {
 async function buildPathRows(page) {
   return page.locator("[data-build-path-table='workflow'] tbody tr").evaluateAll((rows) => (
     rows.map((row) => ({
-      complete: row.dataset.buildPathComplete,
+      group: row.dataset.buildPathGroup,
+      metadataSource: row.dataset.buildPathMetadataSource,
       order: Number(row.children[0].textContent.trim()),
+      path: row.dataset.buildPathPath,
+      releaseChannel: row.dataset.buildPathReleaseChannel,
       status: row.dataset.buildPathStatus,
-      tool: row.dataset.buildPathTool
+      tool: row.dataset.buildPathTool,
     }))
   ));
 }
 
-test("Toolbox removes Progress view and renders Build Path workflow table", async ({ page }) => {
+test("Toolbox removes Progress view and renders the DB-backed Build Path table", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
@@ -80,29 +97,27 @@ test("Toolbox removes Progress view and renders Build Path workflow table", asyn
 
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-    await expect(page.locator("[data-build-path-table='workflow'] th")).toHaveText(["Order", "Tool", "Status", "Complete"]);
+    await expect(page.locator("[data-build-path-table='workflow'] th")).toHaveText(["Order", "Tool", "Status"]);
     await expect(page.getByText("What should I do next? Game Configuration")).toBeVisible();
     await expect(page.getByText("Project Completion: Demo Project identity ready")).toBeVisible();
     await expect(page.getByText("Work top-to-bottom and left-to-right through the workflow table.")).toBeVisible();
 
-    const rows = await buildPathRows(page);
-    expect(rows.slice(0, 6).map((row) => row.tool)).toEqual([
-      "Project Workspace",
-      "Game Design",
-      "Game Configuration",
-      "Colors",
-      "Controls",
-      "Assets"
+    await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
+      "Planned (28)",
+      "Wireframe (4)",
+      "Beta (5)",
+      "Complete (1)",
     ]);
-    expect(rows.map((row) => row.order)).toEqual(rows.map((_, index) => index + 1));
-    expect(rows.map((row) => row.status)).toEqual(expect.arrayContaining([
-      "🟢 Complete",
-      "🟡 In Progress",
-      "🔴 Not Started"
-    ]));
-    const publishRow = rows.find((row) => row.tool === "Publish");
-    expect(publishRow.status).not.toBe("⚪ N/A");
-    expect(publishRow.complete).not.toBe("N/A");
+    const rows = await buildPathRows(page);
+    expect(rows).toEqual([
+      expect.objectContaining({
+        metadataSource: "toolbox_tool_metadata",
+        order: 7,
+        releaseChannel: "complete",
+        status: "Complete",
+        tool: "Colors",
+      }),
+    ]);
 
     await expectNoPageFailures(failures);
   } finally {
@@ -111,23 +126,25 @@ test("Toolbox removes Progress view and renders Build Path workflow table", asyn
   }
 });
 
-test("Build Path shows N/A only for non-required contributor-focused tools", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/index.html?memberRole=Audio%20Creator");
+test("Build Path preserves DB order across selected status filters", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
     await page.getByRole("button", { name: "Build Path" }).click();
-    await expect(page.locator("[data-toolbox-role-focus='Audio Creator']")).toBeVisible();
+    await page.locator("[data-toolbox-status-filter='beta']").click();
 
     const rows = await buildPathRows(page);
-    const colorsRow = rows.find((row) => row.tool === "Colors");
-    const audioRow = rows.find((row) => row.tool === "Audio");
-    const publishRow = rows.find((row) => row.tool === "Publish");
-
-    expect(colorsRow.status).toBe("⚪ N/A");
-    expect(colorsRow.complete).toBe("N/A");
-    expect(audioRow.status).not.toBe("⚪ N/A");
-    expect(publishRow.status).not.toBe("⚪ N/A");
-    expect(publishRow.complete).not.toBe("N/A");
+    expect(rows.map((row) => row.tool)).toEqual([
+      "Project Workspace",
+      "Project Journey",
+      "Game Design",
+      "Game Configuration",
+      "Assets",
+      "Colors",
+    ]);
+    expect(rows.map((row) => row.order)).toEqual([2, 3, 4, 5, 6, 7]);
+    expect(rows.map((row) => row.releaseChannel)).toEqual(["beta", "beta", "beta", "beta", "beta", "complete"]);
+    expect(rows.every((row) => row.metadataSource === "toolbox_tool_metadata")).toBe(true);
 
     await expectNoPageFailures(failures);
   } finally {
@@ -142,34 +159,30 @@ test("Build Path tool names link to registered routes and render badge images", 
   try {
     await page.getByRole("button", { name: "Build Path" }).click();
     const rows = page.locator("[data-build-path-table='workflow'] tbody tr");
-    const rowCount = await rows.count();
-    expect(rowCount).toBeGreaterThan(0);
+    await expect(rows).toHaveCount(1);
 
-    for (let index = 0; index < rowCount; index += 1) {
-      const row = rows.nth(index);
-      const toolName = await row.getAttribute("data-build-path-tool");
-      const registryTool = registryToolsByDisplayName.get(toolName);
-      expect(registryTool, `Registry entry missing for ${toolName}`).toBeTruthy();
-      const route = getToolRoute(registryTool);
+    const row = rows.first();
+    const toolName = await row.getAttribute("data-build-path-tool");
+    const registryTool = registryToolsByDisplayName.get(toolName);
+    expect(registryTool, `Registry entry missing for ${toolName}`).toBeTruthy();
+    const route = getToolRoute(registryTool);
 
-      await expect(row.locator("[data-build-path-tool-link]")).toHaveText(toolName);
-      await expect(row.locator("[data-build-path-tool-link]")).toHaveAttribute("data-registered-tool-route", route);
-      await expect(row.locator("[data-build-path-tool-link]")).toHaveAttribute("href", "/" + route);
-      await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("src", getToolImageSource(registryTool, "badge"));
-      await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("alt", toolName + " badge");
-      await expect(row.locator("[data-tool-image-diagnostic]")).toHaveCount(0);
-    }
+    await expect(row.locator("[data-build-path-tool-link]")).toHaveText(toolName);
+    await expect(row.locator("[data-build-path-tool-link]")).toHaveAttribute("data-registered-tool-route", route);
+    await expect(row.locator("[data-build-path-tool-link]")).toHaveAttribute("href", "/" + route);
+    await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("src", getToolImageSource(registryTool, "badge"));
+    await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("alt", toolName + " badge");
+    await expect(row.locator("[data-tool-image-diagnostic]")).toHaveCount(0);
 
-    const gameDesignRow = page.locator("[data-build-path-tool='Game Design']");
-    await gameDesignRow.locator("[data-build-path-badge]").evaluate((image) => {
+    await row.locator("[data-build-path-badge]").evaluate((image) => {
       image.dispatchEvent(new Event("error"));
     });
-    await expect(gameDesignRow.locator("[data-build-path-badge]")).toHaveAttribute("src", TOOL_IMAGE_FALLBACK);
-    await expect(gameDesignRow.locator("[data-tool-image-diagnostic]")).toContainText("Badge image missing; fallback shown.");
+    await expect(row.locator("[data-build-path-badge]")).toHaveAttribute("src", TOOL_IMAGE_FALLBACK);
+    await expect(row.locator("[data-tool-image-diagnostic]")).toContainText("Badge image missing; fallback shown.");
 
-    await gameDesignRow.locator("[data-build-path-tool-link]").click();
-    await page.waitForURL(/\/toolbox\/game-design\/index\.html$/);
-    await expect(page.locator(".page-title h1")).toHaveText("Game Design");
+    await row.locator("[data-build-path-tool-link]").click();
+    await page.waitForURL(/\/toolbox\/colors\/index\.html$/);
+    await expect(page.locator(".page-title h1")).toHaveText("Colors");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -178,20 +191,24 @@ test("Build Path tool names link to registered routes and render badge images", 
   }
 });
 
-test("Admin navigation exposes Tools Progress and removes Project Progress", async ({ page }) => {
+test("Admin navigation exposes Tool Votes and removes Tools Progress", async ({ page }) => {
   const failures = await openRepoPage(page, "/index.html");
 
   try {
+    await setServerSession(failures.server, MOCK_DB_KEYS.users.admin);
+    await page.goto(`${failures.server.baseUrl}/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(1);
     await expect(page.locator("[data-toolbox-menu]").getByText("Admin", { exact: true })).toHaveCount(0);
-    await expect(page.locator("nav.nav-links a[data-route='admin-tools-progress']")).toHaveText("Tools Progress");
+    await expect(page.locator("nav.nav-links a[data-route='admin-tool-votes']")).toHaveText("Tool Votes");
+    await expect(page.locator("nav.nav-links a[data-route='admin-tools-progress']")).toHaveCount(0);
+    await expect(page.locator("nav.nav-links").getByText("Tools Progress", { exact: true })).toHaveCount(0);
     await expect(page.locator("nav.nav-links").getByText("Project Progress", { exact: true })).toHaveCount(0);
 
-    await page.goto(`${failures.server.baseUrl}/admin/tools-progress.html`, { waitUntil: "networkidle" });
-    await expect(page.getByRole("heading", { name: "Tools Progress" })).toBeVisible();
-    await expect(page.locator("[data-tools-progress-next]")).toContainText("What should I build next for the platform?");
-    await expect(page.getByText("Project completion belongs in Project Build Path, not here.")).toBeVisible();
+    await page.goto(`${failures.server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
+    await expect(page.getByRole("heading", { name: "Tool Votes" })).toBeVisible();
+    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Showing Toolbox vote totals");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    await expect(page.locator("nav.nav-links").getByText("Tools Progress", { exact: true })).toHaveCount(0);
     await expect(page.locator("nav.nav-links").getByText("Project Progress", { exact: true })).toHaveCount(0);
 
     await expectNoPageFailures(failures);

@@ -46,7 +46,6 @@ const devOnlyAdminLabels = [
   "Game Migration",
   "Grouping Colors",
   "Notes",
-  "Tools Progress",
 ];
 
 const uatProdAdminLabels = [

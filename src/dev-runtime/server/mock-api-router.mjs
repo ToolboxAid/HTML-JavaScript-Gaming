@@ -66,7 +66,7 @@ const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
 const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
-const TOOLBOX_TABLES = ["toolbox_votes", "toolbox_vote_order"];
+const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_votes"];
 
 const DB_ADAPTER_CONTRACT = Object.freeze({
   contract: "GameFoundryDbAdapter",
@@ -797,11 +797,11 @@ class LocalDevMockDataSource {
     return this.standaloneTables.toolbox_votes;
   }
 
-  toolboxVoteOrderRows() {
-    if (!Array.isArray(this.standaloneTables.toolbox_vote_order)) {
-      this.standaloneTables.toolbox_vote_order = [];
+  toolboxToolMetadataRows() {
+    if (!Array.isArray(this.standaloneTables.toolbox_tool_metadata)) {
+      this.standaloneTables.toolbox_tool_metadata = [];
     }
-    return this.standaloneTables.toolbox_vote_order;
+    return this.standaloneTables.toolbox_tool_metadata;
   }
 
   toolboxVoteVoterKey() {
@@ -816,28 +816,76 @@ class LocalDevMockDataSource {
     return serverGeneratedUlid(`toolbox-vote:${toolId}:${voterKey}`);
   }
 
-  toolboxVoteOrderKey(toolId) {
-    return serverGeneratedUlid(`toolbox-vote-order:${toolId}`);
+  toolboxToolMetadataKey(toolId) {
+    return serverGeneratedUlid(`toolbox-tool-metadata:${toolId}`);
   }
 
-  toolboxVoteOrder(toolId, fallbackOrder) {
-    const orderRow = this.toolboxVoteOrderRows().find((row) => row.toolId === toolId);
-    const order = Number(orderRow?.order);
-    const resolvedOrder = Number.isFinite(order) ? order : fallbackOrder;
-    return Math.max(1, Math.round(Number(resolvedOrder) || 1));
+  defaultToolboxMetadata(tool, index) {
+    const releaseChannel = getToolReleaseChannel(tool);
+    return {
+      group: tool.category || "Platform",
+      order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
+      path: getToolRoute(tool) || "",
+      releaseChannel,
+      releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+      toolId: tool.id,
+      toolName: tool.displayName || tool.name || tool.id,
+    };
+  }
+
+  ensureToolboxToolMetadataRows() {
+    const rows = this.toolboxToolMetadataRows();
+    const visibleTools = getActiveToolRegistry().filter((tool) => tool.visibleInToolsList === true);
+    let changed = false;
+    visibleTools.forEach((tool, index) => {
+      const defaults = this.defaultToolboxMetadata(tool, index);
+      const existingRow = rows.find((row) => row.toolId === tool.id);
+      if (!existingRow) {
+        rows.push({
+          key: this.toolboxToolMetadataKey(tool.id),
+          ...defaults,
+          ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+        });
+        changed = true;
+        return;
+      }
+
+      const releaseChannel = getToolReleaseChannel(existingRow.releaseChannel || defaults.releaseChannel);
+      const normalizedOrder = Math.max(1, Math.round(Number(existingRow.order) || defaults.order));
+      const normalizedValues = {
+        group: existingRow.group || defaults.group,
+        order: normalizedOrder,
+        path: existingRow.path || defaults.path,
+        releaseChannel,
+        releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+        toolName: existingRow.toolName || defaults.toolName,
+      };
+      Object.entries(normalizedValues).forEach(([key, value]) => {
+        if (existingRow[key] !== value) {
+          existingRow[key] = value;
+          changed = true;
+        }
+      });
+    });
+    if (changed) {
+      this.persistCurrentAdapterState("Syncing Toolbox tool metadata");
+    }
+    return rows;
   }
 
   toolboxVoteSnapshot() {
     const session = this.currentSession();
     const voterKey = session.userKey || "";
     const votes = this.toolboxVoteRows();
+    const metadataRows = this.ensureToolboxToolMetadataRows();
     return {
       currentUserKey: session.userKey || "",
       currentUserName: session.displayName || "Guest",
       rows: getActiveToolRegistry()
         .filter((tool) => tool.visibleInToolsList === true)
         .map((tool, index) => {
-          const releaseChannel = getToolReleaseChannel(tool);
+          const metadata = metadataRows.find((row) => row.toolId === tool.id) || this.defaultToolboxMetadata(tool, index);
+          const releaseChannel = getToolReleaseChannel(metadata.releaseChannel);
           const toolVotes = votes.filter((row) => row.toolId === tool.id);
           const up = toolVotes.filter((row) => row.direction === "up").length;
           const down = toolVotes.filter((row) => row.direction === "down").length;
@@ -846,13 +894,13 @@ class LocalDevMockDataSource {
             currentUserVote: toolVotes.find((row) => row.userKey === voterKey)?.direction || "",
             down,
             downPercent: votePercent(down, totalVotes),
-            group: tool.category || "",
-            order: this.toolboxVoteOrder(tool.id, tool.order ?? index + 1),
-            path: getToolRoute(tool) || "",
+            group: metadata.group || "",
+            order: Math.max(1, Math.round(Number(metadata.order) || index + 1)),
+            path: metadata.path || "",
             releaseChannel,
             releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
             toolId: tool.id,
-            toolName: tool.displayName || tool.name || tool.id,
+            toolName: metadata.toolName || tool.displayName || tool.name || tool.id,
             totalVotes,
             up,
             upPercent: votePercent(up, totalVotes),
@@ -914,7 +962,7 @@ class LocalDevMockDataSource {
     }
     const order = Math.max(1, Math.round(rawOrder));
 
-    const rows = this.toolboxVoteOrderRows();
+    const rows = this.ensureToolboxToolMetadataRows();
     const existingRow = rows.find((row) => row.toolId === normalizedToolId);
     const audit = createMockDbAuditFields(0, session.userKey);
     if (existingRow) {
@@ -922,15 +970,52 @@ class LocalDevMockDataSource {
       existingRow.updatedAt = audit.updatedAt;
       existingRow.updatedBy = audit.updatedBy;
     } else {
+      const defaults = this.defaultToolboxMetadata(tool, 0);
       rows.push({
-        key: this.toolboxVoteOrderKey(normalizedToolId),
-        toolId: normalizedToolId,
+        key: this.toolboxToolMetadataKey(normalizedToolId),
+        ...defaults,
         order,
         ...audit,
       });
     }
     this.cleared = false;
-    this.persistCurrentAdapterState("Persisting Toolbox vote order");
+    this.persistCurrentAdapterState("Persisting Toolbox tool metadata order");
+    return this.toolboxVoteSnapshot();
+  }
+
+  updateToolboxToolMetadata(toolId, updates = {}) {
+    const session = this.currentSession();
+    if (!session.isAdmin || !session.userKey) {
+      throw new Error("Admin role required to update Toolbox tool metadata.");
+    }
+    const normalizedToolId = String(toolId || "");
+    const tool = getActiveToolRegistry().find((candidate) => candidate.id === normalizedToolId);
+    if (!tool || tool.visibleInToolsList !== true) {
+      throw new Error(`Unknown Toolbox metadata tool: ${normalizedToolId || "missing"}.`);
+    }
+    const rows = this.ensureToolboxToolMetadataRows();
+    const row = rows.find((candidate) => candidate.toolId === normalizedToolId);
+    if (!row) {
+      throw new Error(`Toolbox metadata row missing for ${normalizedToolId}.`);
+    }
+    const group = String(updates.group || "").trim();
+    const pathValue = String(updates.path || "").trim().replace(/^\/+/, "");
+    const releaseChannel = getToolReleaseChannel(updates.releaseChannel);
+    if (!group) {
+      throw new Error("Toolbox metadata group is required.");
+    }
+    if (!pathValue) {
+      throw new Error("Toolbox metadata path is required.");
+    }
+    const audit = createMockDbAuditFields(0, session.userKey);
+    row.group = group;
+    row.path = pathValue;
+    row.releaseChannel = releaseChannel;
+    row.releaseChannelLabel = getToolReleaseChannelLabel(releaseChannel);
+    row.updatedAt = audit.updatedAt;
+    row.updatedBy = audit.updatedBy;
+    this.cleared = false;
+    this.persistCurrentAdapterState("Persisting Toolbox tool metadata");
     return this.toolboxVoteSnapshot();
   }
 
@@ -955,7 +1040,7 @@ class LocalDevMockDataSource {
       throw new Error(`Unknown Toolbox vote tool: ${unknownToolId}.`);
     }
 
-    const rows = this.toolboxVoteOrderRows();
+    const rows = this.ensureToolboxToolMetadataRows();
     uniqueToolIds.forEach((toolId, index) => {
       const order = index + 1;
       const audit = createMockDbAuditFields(0, session.userKey);
@@ -965,16 +1050,18 @@ class LocalDevMockDataSource {
         existingRow.updatedAt = audit.updatedAt;
         existingRow.updatedBy = audit.updatedBy;
       } else {
+        const tool = visibleTools.find((candidate) => candidate.id === toolId);
+        const defaults = this.defaultToolboxMetadata(tool, index);
         rows.push({
-          key: this.toolboxVoteOrderKey(toolId),
-          toolId,
+          key: this.toolboxToolMetadataKey(toolId),
+          ...defaults,
           order,
           ...audit,
         });
       }
     });
     this.cleared = false;
-    this.persistCurrentAdapterState("Persisting Toolbox vote row order");
+    this.persistCurrentAdapterState("Persisting Toolbox tool metadata row order");
     return this.toolboxVoteSnapshot();
   }
 
@@ -1122,7 +1209,7 @@ class LocalDevMockDataSource {
     const schemas = getMockDbTableSchemas();
     const toolGroups = getMockDbToolGroups();
     const owners = {
-      toolbox_vote_order: "standalone",
+      toolbox_tool_metadata: "standalone",
       toolbox_votes: "standalone",
       tool_state_samples: "standalone",
       users: "standalone",
@@ -1144,7 +1231,7 @@ class LocalDevMockDataSource {
         owners,
         schemas,
         tables: {
-          toolbox_vote_order: [],
+          toolbox_tool_metadata: [],
           toolbox_votes: [],
           tool_state_samples: [],
           users: [],
@@ -1279,6 +1366,11 @@ export function createMockApiRouter() {
         if (request.method === "POST" && parts[2] === "votes" && parts[3] === "order-list") {
           const body = await readRequestJson(request);
           ok(response, dataSource.reorderToolboxVoteRows(body.toolIds));
+          return true;
+        }
+        if (request.method === "POST" && parts[2] === "votes" && parts[3] === "metadata") {
+          const body = await readRequestJson(request);
+          ok(response, dataSource.updateToolboxToolMetadata(body.toolId, body));
           return true;
         }
         if (request.method === "GET" && parts[2] === "registry" && parts[3] === "snapshot") {

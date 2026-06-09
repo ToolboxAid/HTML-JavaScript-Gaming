@@ -4,15 +4,12 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
-const expectedTools = [...TOOL_REGISTRY]
-  .filter((tool) => tool.active === true)
-  .sort((left, right) => left.order - right.order);
 const registryToolsByDisplayName = new Map(TOOL_REGISTRY.map((tool) => [tool.displayName, tool]));
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "tool-navigation",
-    surface: "Admin Tools Progress links and Tool Display Mode navigation"
+    surface: "Toolbox card links and Tool Display Mode navigation"
   });
 });
 
@@ -57,46 +54,6 @@ function expectNoPageFailures(failures) {
   expect(failures.pageErrors).toEqual([]);
   expect(failures.consoleErrors).toEqual([]);
 }
-
-test("Admin Tools Progress links routed tools and marks route-less tools as planned", async ({ page }) => {
-  const failures = await openRepoPage(page, "/admin/tools-progress.html");
-
-  try {
-    for (const tool of expectedTools) {
-      const row = page.locator(`[data-tools-progress-tool='${tool.displayName}']`);
-      const route = getToolRoute(tool);
-      const link = row.locator("[data-tools-progress-route]");
-
-      if (route) {
-        await expect(link).toHaveText(tool.displayName);
-        await expect(link).toHaveAttribute("href", route);
-      } else {
-        await expect(link).toHaveCount(0);
-        await expect(row).toContainText("Route pending");
-      }
-    }
-
-    const routeLessTool = await page.evaluate(async () => {
-      const module = await import("/admin/tools-progress.js");
-      const node = module.createToolNameNode({
-        displayName: "Route Pending Tool",
-        entryPoint: "",
-        status: "Planned"
-      });
-      return {
-        linkCount: node.querySelectorAll("a").length,
-        text: node.textContent
-      };
-    });
-    expect(routeLessTool.linkCount).toBe(0);
-    expect(routeLessTool.text).toContain("Route Pending Tool");
-    expect(routeLessTool.text).toContain("Planned - Route pending");
-    await expectNoPageFailures(failures);
-  } finally {
-    await workspaceV2CoverageReporter.stop(page);
-    await failures.server.close();
-  }
-});
 
 test("Toolbox card names link to registered tool routes without duplicating launch actions", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html");

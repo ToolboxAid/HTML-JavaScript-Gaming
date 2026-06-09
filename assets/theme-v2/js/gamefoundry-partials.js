@@ -105,7 +105,6 @@
         "admin-tool-votes": "admin/tool-votes.html",
         "admin-moderation": "admin/moderation.html",
         "admin-analytics": "admin/analytics.html",
-        "admin-tools-progress": "admin/tools-progress.html",
         "cookie-policy": "legal/cookie-policy.html",
         disclaimer: "legal/disclaimer.html",
         "privacy-policy": "legal/privacy-policy.html",
@@ -154,8 +153,7 @@
         Object.freeze({ label: "Environments", route: "environments" }),
         Object.freeze({ label: "Game Migration", route: "game-migration" }),
         Object.freeze({ label: "Grouping Colors", route: "admin-grouping-colors" }),
-        Object.freeze({ label: "Notes", href: "/admin/admin-notes.html", localNotes: true }),
-        Object.freeze({ label: "Tools Progress", route: "admin-tools-progress" })
+        Object.freeze({ label: "Notes", href: "/admin/admin-notes.html", localNotes: true })
     ]);
 
     function assetUrl(path) {

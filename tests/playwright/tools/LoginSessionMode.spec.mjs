@@ -33,7 +33,6 @@ const DEV_ONLY_ADMIN_LABELS = [
   "Game Migration",
   "Grouping Colors",
   "Notes",
-  "Tools Progress",
 ];
 
 const UAT_PROD_ADMIN_LABELS = [

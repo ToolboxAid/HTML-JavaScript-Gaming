@@ -39,3 +39,13 @@ export function reorderToolboxVoteRows(toolIds) {
     "Toolbox vote row reorder",
   );
 }
+
+export function updateToolboxVoteMetadata(toolId, metadata) {
+  return requireServerApiData(
+    safeRequestServerApi("/toolbox/votes/metadata", {
+      body: { ...metadata, toolId },
+      method: "POST",
+    }),
+    "Toolbox vote metadata update",
+  );
+}

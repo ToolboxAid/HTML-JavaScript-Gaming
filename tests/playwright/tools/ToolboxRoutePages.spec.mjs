@@ -445,12 +445,37 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(8)).toHaveText("100%");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(9)).toHaveText("0%");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(10)).toHaveText("up");
+
+    const colorsVoteRow = page.locator("[data-toolbox-votes-tool-id='colors']");
+    await colorsVoteRow.click();
+    await page.locator("[data-toolbox-votes-group-edit]").selectOption("Platform");
+    await page.locator("[data-toolbox-votes-path-edit]").fill("toolbox/colors/index.html?source=vote-review");
+    await page.locator("[data-toolbox-votes-status-edit]").selectOption("beta");
+    await page.locator("[data-toolbox-votes-metadata-save]").click();
+    await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Toolbox metadata updated");
+    await expect(colorsVoteRow.locator("td").nth(2)).toHaveText("Platform");
+    await expect(colorsVoteRow.locator("td").nth(3)).toHaveText("toolbox/colors/index.html?source=vote-review");
+    await expect(colorsVoteRow.locator("td").nth(4)).toHaveText("Beta");
+
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    await page.locator("[data-tools-view='build-path']").click();
+    await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveText("Complete (0)");
+    await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
+    await page.locator("[data-toolbox-status-filter='beta']").click();
+    const colorsBuildPathRow = page.locator("[data-build-path-tool='Colors']");
+    await expect(colorsBuildPathRow).toBeVisible();
+    await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-group", "Platform");
+    await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-path", "toolbox/colors/index.html?source=vote-review");
+    await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-release-channel", "beta");
+    await expect(colorsBuildPathRow).toHaveAttribute("data-build-path-metadata-source", "toolbox_tool_metadata");
+    await expect(colorsBuildPathRow.locator("[data-build-path-tool-link='Colors']")).toHaveAttribute("href", /toolbox\/colors\/index\.html\?source=vote-review$/);
+
     await expect(page.locator("[data-route='admin-tool-votes']")).toHaveCount(1);
     const mockDbToolboxTables = await page.evaluate(async () => {
       const response = await fetch("/api/mock-db/snapshot");
       const payload = await response.json();
       return {
-        voteOrders: payload.data.tables.toolbox_vote_order,
+        metadata: payload.data.tables.toolbox_tool_metadata,
         votes: payload.data.tables.toolbox_votes,
       };
     });
@@ -466,11 +491,17 @@ test("toolbox status kickers, filters, card order, and voting controls work from
         userKey: MOCK_DB_KEYS.users.user2,
       }),
     ]));
-    expect(mockDbToolboxTables.voteOrders.every((row) => Number.isInteger(row.order))).toBe(true);
-    expect(mockDbToolboxTables.voteOrders).toEqual(expect.arrayContaining([
+    expect(mockDbToolboxTables.metadata.every((row) => Number.isInteger(row.order))).toBe(true);
+    expect(mockDbToolboxTables.metadata).toEqual(expect.arrayContaining([
       expect.objectContaining({
         order: 2,
         toolId: "build-game",
+      }),
+      expect.objectContaining({
+        group: "Platform",
+        path: "toolbox/colors/index.html?source=vote-review",
+        releaseChannel: "beta",
+        toolId: "colors",
       }),
     ]));
 

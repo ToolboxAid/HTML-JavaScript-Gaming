@@ -1,5 +1,7 @@
 import {
   getActiveToolRegistry,
+  getToolReleaseChannel,
+  getToolReleaseChannelLabel,
   getToolRoute,
 } from "../../../toolbox/toolRegistry.js";
 import {
@@ -100,10 +102,29 @@ function humanToolStateSampleRows() {
   });
 }
 
+function toolboxToolMetadataRows() {
+  return getActiveToolRegistry()
+    .filter((tool) => tool.visibleInToolsList === true)
+    .map((tool, index) => {
+      const releaseChannel = getToolReleaseChannel(tool);
+      return {
+        key: serverSeedUlid(8_401 + index),
+        toolId: tool.id,
+        toolName: tool.displayName || tool.name || tool.id,
+        order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
+        group: tool.category || "Platform",
+        path: getToolRoute(tool) || "",
+        releaseChannel,
+        releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+        ...serverSeedAuditFields(60 + index, MOCK_DB_KEYS.users.forgeBot),
+      };
+    });
+}
+
 export function createServerSeedTables() {
   const tables = getStandaloneMockDbSeedTables();
+  tables.toolbox_tool_metadata = toolboxToolMetadataRows();
   tables.toolbox_votes = [];
-  tables.toolbox_vote_order = [];
   tables.tool_state_samples = [
     ...guestToolStateSampleRows(),
     ...humanToolStateSampleRows(),

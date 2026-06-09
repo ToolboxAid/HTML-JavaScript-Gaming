@@ -1,6 +1,7 @@
 import {
   readToolboxVoteSnapshot,
   reorderToolboxVoteRows,
+  updateToolboxVoteMetadata,
 } from "../src/engine/api/toolbox-votes-api-client.js";
 
 const status = document.querySelector("[data-toolbox-votes-status]");
@@ -14,10 +15,21 @@ const sortHeaders = Array.from(document.querySelectorAll("[data-toolbox-votes-so
 const widthLayout = document.querySelector("[data-toolbox-votes-layout]");
 const widthToggle = document.querySelector("[data-toolbox-votes-width-toggle]");
 const widthStatus = document.querySelector("[data-toolbox-votes-width-status]");
+const groupEdit = document.querySelector("[data-toolbox-votes-group-edit]");
+const pathEdit = document.querySelector("[data-toolbox-votes-path-edit]");
+const statusEdit = document.querySelector("[data-toolbox-votes-status-edit]");
+const metadataSave = document.querySelector("[data-toolbox-votes-metadata-save]");
 const sortButtonLabels = new Map(sortButtons.map((button) => [
   button.dataset.toolboxVotesSort,
   button.textContent.trim(),
 ]));
+
+const RELEASE_CHANNEL_OPTIONS = Object.freeze([
+  ["planned", "Planned"],
+  ["wireframe", "Wireframe"],
+  ["beta", "Beta"],
+  ["complete", "Complete"],
+]);
 
 const SORT_TYPES = Object.freeze({
   down: "number",
@@ -143,6 +155,58 @@ function setSelectedDetails(voteRow) {
   if (selectedPath) {
     selectedPath.textContent = voteRow?.path || "None";
   }
+  setMetadataEditor(voteRow);
+}
+
+function option(value, label = value) {
+  const node = document.createElement("option");
+  node.value = value;
+  node.textContent = label;
+  return node;
+}
+
+function populateGroupOptions(rows) {
+  if (!groupEdit) {
+    return;
+  }
+  const selectedValue = groupEdit.value;
+  const groups = [...new Set(rows.map((row) => row.group).filter(Boolean))].sort((left, right) => left.localeCompare(right));
+  groupEdit.replaceChildren(...groups.map((group) => option(group)));
+  if (groups.includes(selectedValue)) {
+    groupEdit.value = selectedValue;
+  }
+}
+
+function populateStatusOptions() {
+  if (!statusEdit || statusEdit.childElementCount) {
+    return;
+  }
+  statusEdit.replaceChildren(...RELEASE_CHANNEL_OPTIONS.map(([value, label]) => option(value, label)));
+}
+
+function setMetadataEditor(voteRow) {
+  populateStatusOptions();
+  const disabled = !voteRow;
+  [groupEdit, pathEdit, statusEdit, metadataSave].forEach((control) => {
+    if (control) {
+      control.disabled = disabled;
+    }
+  });
+  if (!voteRow) {
+    if (groupEdit) groupEdit.value = "";
+    if (pathEdit) pathEdit.value = "";
+    if (statusEdit) statusEdit.value = "planned";
+    return;
+  }
+  if (groupEdit) {
+    groupEdit.value = voteRow.group || "";
+  }
+  if (pathEdit) {
+    pathEdit.value = voteRow.path || "";
+  }
+  if (statusEdit) {
+    statusEdit.value = voteRow.releaseChannel || "planned";
+  }
 }
 
 function selectRow(toolId) {
@@ -216,6 +280,7 @@ function renderRows(rows) {
     return;
   }
   snapshotRows = rows;
+  populateGroupOptions(snapshotRows);
   updateSortHeaders();
   updateDragStatus();
   const displayRows = sortedRows();
@@ -317,6 +382,25 @@ widthToggle?.addEventListener("click", () => {
     widthStatus.textContent = expanded
       ? "Expanded table width; Admin side menu is collapsed."
       : "Standard table width.";
+  }
+});
+
+metadataSave?.addEventListener("click", () => {
+  if (!selectedToolId) {
+    setStatus("Select a Toolbox row before updating metadata.");
+    return;
+  }
+  try {
+    const snapshot = updateToolboxVoteMetadata(selectedToolId, {
+      group: groupEdit?.value || "",
+      path: pathEdit?.value || "",
+      releaseChannel: statusEdit?.value || "planned",
+    });
+    renderSnapshot(snapshot, "Toolbox metadata updated. Reload Toolbox Build Path to see the SSoT values.");
+    selectRow(selectedToolId);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : String(error || "Toolbox metadata update unavailable.");
+    setStatus(`Toolbox metadata could not be updated. ${message}`);
   }
 });
 
