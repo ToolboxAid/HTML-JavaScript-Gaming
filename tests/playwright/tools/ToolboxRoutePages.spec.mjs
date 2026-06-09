@@ -104,6 +104,15 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
 
   try {
     await workspaceV2CoverageReporter.start(page);
+    await setServerSession(server, "");
+    await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    const guestBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
+    await expect(guestBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 0");
+    await expect(guestBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 0");
+    await expect(guestBuildVotes.locator("[data-toolbox-vote='up']")).toBeDisabled();
+    await expect(guestBuildVotes.locator("[data-toolbox-vote='down']")).toBeDisabled();
+    await expect(guestBuildVotes.locator("[data-toolbox-vote-login-required='Build Game']")).toHaveText("Login required to vote.");
+
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toHaveCount(0);
@@ -261,12 +270,16 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await buildUpVote.click();
     await expect(buildUpVote).toHaveText("Up 1");
     await expect(buildUpVote).toHaveAttribute("aria-pressed", "true");
+    await expect(buildUpVote).toHaveClass(/primary/);
     await expect(buildDownVote).toHaveAttribute("aria-pressed", "false");
+    await expect(buildDownVote).not.toHaveClass(/primary/);
     await buildDownVote.click();
     await expect(buildUpVote).toHaveText("Up 0");
     await expect(buildUpVote).toHaveAttribute("aria-pressed", "false");
+    await expect(buildUpVote).not.toHaveClass(/primary/);
     await expect(buildDownVote).toHaveText("Down 1");
     await expect(buildDownVote).toHaveAttribute("aria-pressed", "true");
+    await expect(buildDownVote).toHaveClass(/primary/);
     await buildDownVote.click();
     await expect(buildDownVote).toHaveText("Down 1");
     await expect(buildDownVote).toHaveAttribute("aria-pressed", "true");
@@ -278,6 +291,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(restoredBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 0");
     await expect(restoredBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
     await expect(restoredBuildVotes.locator("[data-toolbox-vote='down']")).toHaveAttribute("aria-pressed", "true");
+    await expect(restoredBuildVotes.locator("[data-toolbox-vote='down']")).toHaveClass(/primary/);
 
     await setServerSession(server, MOCK_DB_KEYS.users.user2);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -286,6 +300,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(userTwoBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 1");
     await expect(userTwoBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
     await expect(userTwoBuildVotes.locator("[data-toolbox-vote='up']")).toHaveAttribute("aria-pressed", "true");
+    await expect(userTwoBuildVotes.locator("[data-toolbox-vote='up']")).toHaveClass(/primary/);
 
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -293,10 +308,12 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 1");
     await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
     await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveAttribute("aria-pressed", "true");
+    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveClass(/primary/);
     await userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']").click();
     await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 2");
     await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 0");
     await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveAttribute("aria-pressed", "true");
+    await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveClass(/primary/);
 
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -343,8 +360,21 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       "State",
       "Votes Up",
       "Votes Down",
+      "Total Votes",
+      "Up %",
+      "Down %",
       "Current User Vote",
     ]);
+    await expect(page.locator("[data-toolbox-votes-width-toggle]")).toHaveAttribute("aria-expanded", "false");
+    await expect(page.locator("[data-toolbox-votes-layout] > .side-menu")).toBeVisible();
+    await page.locator("[data-toolbox-votes-width-toggle]").click();
+    await expect(page.locator("[data-toolbox-votes-width-toggle]")).toHaveAttribute("aria-expanded", "true");
+    await expect(page.locator("[data-toolbox-votes-width-status]")).toContainText("Expanded table width");
+    await expect(page.locator("[data-toolbox-votes-layout]")).toHaveAttribute("data-toolbox-votes-expanded", "true");
+    await expect(page.locator("[data-toolbox-votes-layout] > .side-menu")).not.toBeVisible();
+    await page.locator("[data-toolbox-votes-width-toggle]").click();
+    await expect(page.locator("[data-toolbox-votes-width-toggle]")).toHaveAttribute("aria-expanded", "false");
+    await expect(page.locator("[data-toolbox-votes-layout] > .side-menu")).toBeVisible();
     await expect(page.locator("[data-toolbox-votes-order-input]")).toHaveCount(0);
     const adminBuildVoteRow = page.locator("[data-toolbox-votes-tool-id='build-game']");
     await expect(adminBuildVoteRow.locator("td").first().locator("a")).toHaveText("Build Game");
@@ -352,7 +382,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText(String(REGISTRY_BY_ID.get("build-game").order));
     await expect(adminBuildVoteRow.locator("td").nth(5)).toHaveText("2");
     await expect(adminBuildVoteRow.locator("td").nth(6)).toHaveText("0");
-    await expect(adminBuildVoteRow.locator("td").nth(7)).toHaveText("None");
+    await expect(adminBuildVoteRow.locator("td").nth(7)).toHaveText("2");
+    await expect(adminBuildVoteRow.locator("td").nth(8)).toHaveText("100%");
+    await expect(adminBuildVoteRow.locator("td").nth(9)).toHaveText("0%");
+    await expect(adminBuildVoteRow.locator("td").nth(10)).toHaveText("None");
     await adminBuildVoteRow.click();
     await expect(page.locator("[data-toolbox-votes-selected-order]")).not.toHaveText("None");
     await expect(page.locator("[data-toolbox-votes-selected-group]")).not.toHaveText("None");
@@ -391,7 +424,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText("2");
     await expect(page.locator("[data-toolbox-votes-selected-order]")).toHaveText("2");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("1");
-    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("up");
+    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("1");
+    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(8)).toHaveText("100%");
+    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(9)).toHaveText("0%");
+    await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(10)).toHaveText("up");
     await expect(page.locator("[data-route='admin-tool-votes']")).toHaveCount(1);
     const mockDbToolboxTables = await page.evaluate(async () => {
       const response = await fetch("/api/mock-db/snapshot");

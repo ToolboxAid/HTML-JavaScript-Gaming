@@ -283,6 +283,14 @@ body.tool-focus-mode .tool-column:last-of-type {
   gap: var(--space-18)
 }
 
+.account-panel[data-toolbox-votes-expanded="true"] {
+  grid-template-columns: 1fr
+}
+
+.account-panel[data-toolbox-votes-expanded="true"] > .side-menu {
+  display: none
+}
+
 .admin-page-stack {
   display: grid;
   gap: var(--space-18);

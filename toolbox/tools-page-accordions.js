@@ -39,6 +39,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         : defaultProjectMemberRole;
     const session = getSessionCurrent();
     const adminSession = session?.isAdmin === true;
+    const authenticatedSession = session?.authenticated === true && Boolean(session?.userKey);
     const sessionRoles = Array.isArray(session?.roleSlugs) ? session.roleSlugs : [];
     const betaSession = sessionRoles.includes("beta");
     let currentMode = searchParams.get("view") === "group" ? "grouped" : searchParams.get("view") === "build-path" ? "build-path" : "ascending";
@@ -930,6 +931,12 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         downVote.setAttribute("aria-label", `Down vote ${tool.title}`);
         downVote.dataset.toolboxVoteCount = "down";
 
+        const loginRequired = document.createElement("span");
+        loginRequired.className = "status";
+        loginRequired.dataset.toolboxVoteLoginRequired = tool.title;
+        loginRequired.textContent = "Login required to vote.";
+        loginRequired.hidden = authenticatedSession;
+
         function voteRecord() {
             return voteRowsByToolId.get(tool.id) || {
                 currentUserVote: "",
@@ -945,9 +952,17 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             downVote.textContent = `Down ${record.down}`;
             upVote.setAttribute("aria-pressed", String(selectedDirection === "up"));
             downVote.setAttribute("aria-pressed", String(selectedDirection === "down"));
+            upVote.classList.toggle("primary", selectedDirection === "up");
+            downVote.classList.toggle("primary", selectedDirection === "down");
+            upVote.disabled = !authenticatedSession;
+            downVote.disabled = !authenticatedSession;
         }
 
         function castVote(direction) {
+            if (!authenticatedSession) {
+                announceToolboxStatus(`${tool.title} vote requires login.`);
+                return;
+            }
             try {
                 applyToolboxVoteSnapshot(castToolboxVote(tool.id, direction));
                 updateVoteDisplay();
@@ -974,7 +989,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             row.append(label, diagnostic);
             return row;
         }
-        row.append(label, upVote, downVote);
+        row.append(label, upVote, downVote, loginRequired);
         return row;
     }
 

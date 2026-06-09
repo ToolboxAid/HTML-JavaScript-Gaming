@@ -307,6 +307,15 @@ function serverGeneratedUlid(source) {
   return `01K2GFSJ0Y${String(9_000_000_000 + hash).padStart(16, "0")}`;
 }
 
+function votePercent(count, total) {
+  const resolvedCount = Number(count);
+  const resolvedTotal = Number(total);
+  if (!Number.isFinite(resolvedCount) || !Number.isFinite(resolvedTotal) || resolvedTotal <= 0) {
+    return 0;
+  }
+  return Math.round((resolvedCount / resolvedTotal) * 100);
+}
+
 function snapshotAuditFields(index = 0, userKey = MOCK_DB_KEYS.users.forgeBot) {
   return createMockDbAuditFields(index, userKey);
 }
@@ -830,9 +839,13 @@ class LocalDevMockDataSource {
         .map((tool, index) => {
           const releaseChannel = getToolReleaseChannel(tool);
           const toolVotes = votes.filter((row) => row.toolId === tool.id);
+          const up = toolVotes.filter((row) => row.direction === "up").length;
+          const down = toolVotes.filter((row) => row.direction === "down").length;
+          const totalVotes = up + down;
           return {
             currentUserVote: toolVotes.find((row) => row.userKey === voterKey)?.direction || "",
-            down: toolVotes.filter((row) => row.direction === "down").length,
+            down,
+            downPercent: votePercent(down, totalVotes),
             group: tool.category || "",
             order: this.toolboxVoteOrder(tool.id, tool.order ?? index + 1),
             path: getToolRoute(tool) || "",
@@ -840,7 +853,9 @@ class LocalDevMockDataSource {
             releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
             toolId: tool.id,
             toolName: tool.displayName || tool.name || tool.id,
-            up: toolVotes.filter((row) => row.direction === "up").length,
+            totalVotes,
+            up,
+            upPercent: votePercent(up, totalVotes),
           };
         })
         .sort((left, right) => left.order - right.order || left.toolName.localeCompare(right.toolName)),

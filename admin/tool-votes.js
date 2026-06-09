@@ -11,6 +11,9 @@ const selectedGroup = document.querySelector("[data-toolbox-votes-selected-group
 const selectedPath = document.querySelector("[data-toolbox-votes-selected-path]");
 const sortButtons = Array.from(document.querySelectorAll("[data-toolbox-votes-sort]"));
 const sortHeaders = Array.from(document.querySelectorAll("[data-toolbox-votes-sort-header]"));
+const widthLayout = document.querySelector("[data-toolbox-votes-layout]");
+const widthToggle = document.querySelector("[data-toolbox-votes-width-toggle]");
+const widthStatus = document.querySelector("[data-toolbox-votes-width-status]");
 const sortButtonLabels = new Map(sortButtons.map((button) => [
   button.dataset.toolboxVotesSort,
   button.textContent.trim(),
@@ -18,8 +21,11 @@ const sortButtonLabels = new Map(sortButtons.map((button) => [
 
 const SORT_TYPES = Object.freeze({
   down: "number",
+  downPercent: "number",
   order: "number",
+  totalVotes: "number",
   up: "number",
+  upPercent: "number",
 });
 
 let selectedToolId = "";
@@ -53,6 +59,11 @@ function tableCell(value) {
   const cell = document.createElement("td");
   cell.textContent = value === null || value === undefined ? "" : String(value);
   return cell;
+}
+
+function percentCell(value) {
+  const percent = Number(value);
+  return tableCell(`${Number.isFinite(percent) ? percent : 0}%`);
 }
 
 function toolNameCell(voteRow) {
@@ -211,7 +222,7 @@ function renderRows(rows) {
   if (!displayRows.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 8;
+    cell.colSpan = 11;
     cell.textContent = "No Toolbox vote rows are available.";
     row.append(cell);
     body.replaceChildren(row);
@@ -247,6 +258,9 @@ function renderRows(rows) {
       tableCell(voteRow.releaseChannelLabel),
       tableCell(voteRow.up),
       tableCell(voteRow.down),
+      tableCell(voteRow.totalVotes),
+      percentCell(voteRow.upPercent),
+      percentCell(voteRow.downPercent),
       tableCell(voteRow.currentUserVote || "None"),
     );
     return row;
@@ -290,6 +304,20 @@ sortButtons.forEach((button) => {
     }
     renderRows(snapshotRows);
   });
+});
+
+widthToggle?.addEventListener("click", () => {
+  const expanded = widthToggle.getAttribute("aria-expanded") !== "true";
+  widthToggle.setAttribute("aria-expanded", String(expanded));
+  widthToggle.textContent = expanded ? "Collapse Table Width" : "Expand Table Width";
+  if (widthLayout) {
+    widthLayout.dataset.toolboxVotesExpanded = String(expanded);
+  }
+  if (widthStatus) {
+    widthStatus.textContent = expanded
+      ? "Expanded table width; Admin side menu is collapsed."
+      : "Standard table width.";
+  }
 });
 
 renderToolboxVotes();
