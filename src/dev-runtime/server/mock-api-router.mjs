@@ -64,7 +64,15 @@ const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
 const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
-const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_votes"];
+const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
+const TOOLBOX_PLANNING_FIELDS = Object.freeze([
+  "progressChecklist",
+  "readiness",
+  "requiredForPlayable",
+  "requiredForPublish",
+  "requiredForTestable",
+  "requires",
+]);
 
 const DB_ADAPTER_CONTRACT = Object.freeze({
   contract: "GameFoundryDbAdapter",
@@ -160,8 +168,15 @@ function serverRegistryTool(tool, index = 0) {
     name: toolName,
     order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
     path: route,
+    planningSource: "toolbox_tool_planning",
+    progressChecklist: Array.isArray(tool.progressChecklist) ? [...tool.progressChecklist] : [],
+    readiness: tool.readiness || getToolProgressReadiness(tool.status || tool.releaseChannel),
     releaseChannel,
     releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+    requiredForPlayable: tool.requiredForPlayable === true,
+    requiredForPublish: tool.requiredForPublish === true,
+    requiredForTestable: tool.requiredForTestable === true,
+    requires: Array.isArray(tool.requires) ? [...tool.requires] : [],
     route,
     shortDescription: tool.shortDescription || tool.description || "",
     shortLabel: tool.shortLabel || toolName,
@@ -844,6 +859,13 @@ class LocalDevMockDataSource {
     return this.standaloneTables.toolbox_tool_metadata;
   }
 
+  toolboxToolPlanningRows() {
+    if (!Array.isArray(this.standaloneTables.toolbox_tool_planning)) {
+      this.standaloneTables.toolbox_tool_planning = [];
+    }
+    return this.standaloneTables.toolbox_tool_planning;
+  }
+
   toolboxVoteVoterKey() {
     const session = this.currentSession();
     if (!session.userKey) {
@@ -858,6 +880,10 @@ class LocalDevMockDataSource {
 
   toolboxToolMetadataKey(toolId) {
     return serverGeneratedUlid(`toolbox-tool-metadata:${toolId}`);
+  }
+
+  toolboxToolPlanningKey(toolId) {
+    return serverGeneratedUlid(`toolbox-tool-planning:${toolId}`);
   }
 
   defaultToolboxMetadata(tool, index) {
@@ -877,13 +903,7 @@ class LocalDevMockDataSource {
       hidden: tool.hidden === true,
       order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
       path: getToolRoute(tool) || "",
-      progressChecklist: Array.isArray(tool.progressChecklist) ? [...tool.progressChecklist] : [],
-      readiness: tool.readiness || "",
-      requiredForPlayable: tool.requiredForPlayable === true,
-      requiredForPublish: tool.requiredForPublish === true,
-      requiredForTestable: tool.requiredForTestable === true,
       requiredRole: typeof tool.requiredRole === "string" ? tool.requiredRole : "",
-      requires: Array.isArray(tool.requires) ? [...tool.requires] : [],
       shortDescription: tool.shortDescription || tool.description || "",
       shortLabel: tool.shortLabel || tool.displayName || tool.name || tool.id,
       status: releaseChannel,
@@ -898,6 +918,66 @@ class LocalDevMockDataSource {
       releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
       toolName: tool.displayName || tool.name || tool.id,
     };
+  }
+
+  defaultToolboxPlanning(tool) {
+    return {
+      progressChecklist: Array.isArray(tool.progressChecklist) ? [...tool.progressChecklist] : [],
+      readiness: tool.readiness || "",
+      requiredForPlayable: tool.requiredForPlayable === true,
+      requiredForPublish: tool.requiredForPublish === true,
+      requiredForTestable: tool.requiredForTestable === true,
+      requires: Array.isArray(tool.requires) ? [...tool.requires] : [],
+      toolKey: tool.id,
+    };
+  }
+
+  ensureToolboxToolPlanningRows() {
+    const rows = this.toolboxToolPlanningRows();
+    const metadataRows = this.toolboxToolMetadataRows();
+    const activeTools = getActiveToolRegistry();
+    let changed = false;
+    activeTools.forEach((tool, index) => {
+      const toolKey = tool.id;
+      const defaults = this.defaultToolboxPlanning(tool);
+      const existingMetadata = metadataRows.find((row) => (row.toolKey || row.toolId) === toolKey);
+      const existingRow = rows.find((row) => row.toolKey === toolKey);
+      const migratedValues = existingMetadata || {};
+      const normalizedValues = {
+        progressChecklist: Array.isArray(existingRow?.progressChecklist)
+          ? existingRow.progressChecklist
+          : Array.isArray(migratedValues.progressChecklist) ? migratedValues.progressChecklist : defaults.progressChecklist,
+        readiness: valueOrDefault(existingRow?.readiness, valueOrDefault(migratedValues.readiness, defaults.readiness)),
+        requiredForPlayable: booleanOrDefault(existingRow?.requiredForPlayable, booleanOrDefault(migratedValues.requiredForPlayable, defaults.requiredForPlayable)),
+        requiredForPublish: booleanOrDefault(existingRow?.requiredForPublish, booleanOrDefault(migratedValues.requiredForPublish, defaults.requiredForPublish)),
+        requiredForTestable: booleanOrDefault(existingRow?.requiredForTestable, booleanOrDefault(migratedValues.requiredForTestable, defaults.requiredForTestable)),
+        requires: Array.isArray(existingRow?.requires)
+          ? existingRow.requires
+          : Array.isArray(migratedValues.requires) ? migratedValues.requires : defaults.requires,
+        toolKey,
+      };
+
+      if (!existingRow) {
+        rows.push({
+          key: this.toolboxToolPlanningKey(toolKey),
+          ...normalizedValues,
+          ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+        });
+        changed = true;
+        return;
+      }
+
+      Object.entries(normalizedValues).forEach(([key, value]) => {
+        if (existingRow[key] !== value) {
+          existingRow[key] = value;
+          changed = true;
+        }
+      });
+    });
+    if (changed) {
+      this.persistCurrentAdapterState("Syncing Toolbox tool planning");
+    }
+    return rows;
   }
 
   ensureToolboxToolMetadataRows() {
@@ -933,13 +1013,7 @@ class LocalDevMockDataSource {
         hidden: booleanOrDefault(existingRow.hidden, defaults.hidden),
         order: normalizedOrder,
         path: existingRow.path || defaults.path,
-        progressChecklist: Array.isArray(existingRow.progressChecklist) ? existingRow.progressChecklist : defaults.progressChecklist,
-        readiness: valueOrDefault(existingRow.readiness, defaults.readiness),
-        requiredForPlayable: booleanOrDefault(existingRow.requiredForPlayable, defaults.requiredForPlayable),
-        requiredForPublish: booleanOrDefault(existingRow.requiredForPublish, defaults.requiredForPublish),
-        requiredForTestable: booleanOrDefault(existingRow.requiredForTestable, defaults.requiredForTestable),
         requiredRole: valueOrDefault(existingRow.requiredRole, defaults.requiredRole),
-        requires: Array.isArray(existingRow.requires) ? existingRow.requires : defaults.requires,
         shortDescription: valueOrDefault(existingRow.shortDescription, defaults.shortDescription),
         shortLabel: valueOrDefault(existingRow.shortLabel, defaults.shortLabel),
         status: releaseChannel,
@@ -957,6 +1031,12 @@ class LocalDevMockDataSource {
       Object.entries(normalizedValues).forEach(([key, value]) => {
         if (existingRow[key] !== value) {
           existingRow[key] = value;
+          changed = true;
+        }
+      });
+      TOOLBOX_PLANNING_FIELDS.forEach((field) => {
+        if (Object.hasOwn(existingRow, field)) {
+          delete existingRow[field];
           changed = true;
         }
       });
@@ -1007,8 +1087,13 @@ class LocalDevMockDataSource {
   }
 
   toolRegistrySnapshot() {
+    const planningRows = this.ensureToolboxToolPlanningRows();
+    const planningByToolKey = new Map(planningRows.map((row) => [row.toolKey, row]));
     const tools = this.ensureToolboxToolMetadataRows()
-      .map((row, index) => serverRegistryTool(row, index))
+      .map((row, index) => serverRegistryTool({
+        ...row,
+        ...planningByToolKey.get(normalizedToolKey(row)),
+      }, index))
       .sort((left, right) => left.order - right.order || left.displayName.localeCompare(right.displayName));
     return {
       activeTools: tools.filter((tool) => tool.active !== false),
@@ -1298,6 +1383,7 @@ class LocalDevMockDataSource {
     const toolGroups = getMockDbToolGroups();
     const owners = {
       toolbox_tool_metadata: "standalone",
+      toolbox_tool_planning: "standalone",
       toolbox_votes: "standalone",
       tool_state_samples: "standalone",
       users: "standalone",
@@ -1320,6 +1406,7 @@ class LocalDevMockDataSource {
         schemas,
         tables: {
           toolbox_tool_metadata: [],
+          toolbox_tool_planning: [],
           toolbox_votes: [],
           tool_state_samples: [],
           users: [],

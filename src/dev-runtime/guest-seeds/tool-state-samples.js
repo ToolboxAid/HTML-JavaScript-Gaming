@@ -132,12 +132,6 @@ function toolboxToolMetadataRows() {
         capabilityLabel: tool.capabilityLabel || "",
         childCapabilities: Array.isArray(tool.childCapabilities) ? [...tool.childCapabilities] : [],
         requiredRole: typeof tool.requiredRole === "string" ? tool.requiredRole : "",
-        requires: Array.isArray(tool.requires) ? [...tool.requires] : [],
-        requiredForPlayable: tool.requiredForPlayable === true,
-        requiredForTestable: tool.requiredForTestable === true,
-        requiredForPublish: tool.requiredForPublish === true,
-        progressChecklist: Array.isArray(tool.progressChecklist) ? [...tool.progressChecklist] : [],
-        readiness: tool.readiness || "",
         statusDiagnostic: tool.statusDiagnostic || "",
         toolId: toolKey,
         releaseChannel,
@@ -147,9 +141,28 @@ function toolboxToolMetadataRows() {
     });
 }
 
+function toolboxToolPlanningRows() {
+  return getActiveToolRegistry()
+    .map((tool, index) => {
+      const toolKey = tool.id;
+      return {
+        key: serverSeedUlid(8_801 + index),
+        toolKey,
+        readiness: tool.readiness || "",
+        requiredForPlayable: tool.requiredForPlayable === true,
+        requiredForTestable: tool.requiredForTestable === true,
+        requiredForPublish: tool.requiredForPublish === true,
+        requires: Array.isArray(tool.requires) ? [...tool.requires] : [],
+        progressChecklist: Array.isArray(tool.progressChecklist) ? [...tool.progressChecklist] : [],
+        ...serverSeedAuditFields(90 + index, MOCK_DB_KEYS.users.forgeBot),
+      };
+    });
+}
+
 export function createServerSeedTables() {
   const tables = getStandaloneMockDbSeedTables();
   tables.toolbox_tool_metadata = toolboxToolMetadataRows();
+  tables.toolbox_tool_planning = toolboxToolPlanningRows();
   tables.toolbox_votes = [];
   tables.tool_state_samples = [
     ...guestToolStateSampleRows(),

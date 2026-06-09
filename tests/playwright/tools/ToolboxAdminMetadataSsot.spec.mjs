@@ -15,6 +15,14 @@ const REQUIRED_RESTORED_TOOLS = [
   "AI Assistant",
   "Creator Learning",
 ];
+const TOOL_PLANNING_FIELDS = [
+  "progressChecklist",
+  "readiness",
+  "requiredForPlayable",
+  "requiredForPublish",
+  "requiredForTestable",
+  "requires",
+];
 const STATUS_VALUES = new Set(["planned", "wireframe", "beta", "complete"]);
 
 test.beforeEach(async ({ page }) => {
@@ -107,15 +115,34 @@ async function activateBuildPathAllStatusFilters(page) {
   }
 }
 
-test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata", async ({ page }) => {
+test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and planning", async ({ page }) => {
   const server = await startRepoServer();
   await setServerSession(server, MOCK_DB_KEYS.users.admin);
   const failures = await openTrackedPage(page, server, "/admin/tool-votes.html");
 
   try {
     const snapshot = await fetchApiData(server, "/api/toolbox/votes/snapshot");
+    const registrySnapshot = await fetchApiData(server, "/api/toolbox/registry/snapshot");
+    const mockDbSnapshot = await fetchApiData(server, "/api/mock-db/snapshot");
     expect(snapshot.rows).toHaveLength(EXPECTED_TOOL_COUNT);
+    expect(registrySnapshot.activeTools).toHaveLength(EXPECTED_TOOL_COUNT);
     expect(new Set(snapshot.rows.map((row) => row.toolKey || row.toolId)).size).toBe(EXPECTED_TOOL_COUNT);
+    expect(mockDbSnapshot.schemas.toolbox_tool_metadata).not.toEqual(expect.arrayContaining(TOOL_PLANNING_FIELDS));
+    expect(mockDbSnapshot.schemas.toolbox_tool_planning).toEqual(expect.arrayContaining(TOOL_PLANNING_FIELDS));
+    expect(mockDbSnapshot.tables.toolbox_tool_metadata).toHaveLength(EXPECTED_TOOL_COUNT);
+    expect(mockDbSnapshot.tables.toolbox_tool_planning).toHaveLength(EXPECTED_TOOL_COUNT);
+    expect(mockDbSnapshot.tables.toolbox_tool_metadata.every((row) => (
+      TOOL_PLANNING_FIELDS.every((field) => !Object.hasOwn(row, field))
+    ))).toBe(true);
+    expect(mockDbSnapshot.tables.toolbox_tool_planning.every((row) => row.toolKey)).toBe(true);
+    const registryColors = registrySnapshot.activeTools.find((tool) => tool.id === "colors");
+    expect(registryColors).toEqual(expect.objectContaining({
+      planningSource: "toolbox_tool_planning",
+      requiredForPublish: true,
+      requiredForTestable: true,
+    }));
+    expect(Array.isArray(registryColors.progressChecklist)).toBe(true);
+    expect(Array.isArray(registryColors.requires)).toBe(true);
 
     for (const row of snapshot.rows) {
       expect(row.toolKey, row.toolName).toBeTruthy();
