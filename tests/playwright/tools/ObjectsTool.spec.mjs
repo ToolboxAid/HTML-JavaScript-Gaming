@@ -156,6 +156,7 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.locator("[data-objects-template-catalog] td:first-child")).toHaveText(TYPE_OPTIONS);
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Spawn Point");
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Decoration");
+    await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Events");
     await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
@@ -174,7 +175,8 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     ]);
     await expect(page.locator("[data-objects-list-table] thead")).not.toContainText("Status");
     await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
-    await expect(page.locator("[data-objects-type-basics] li")).toHaveText(TYPE_OPTIONS);
+    await expect(page.getByText("Type Choices", { exact: true })).toHaveCount(0);
+    await expect(page.locator("[data-objects-type-basics]")).toHaveCount(0);
     await expect(page.locator("[data-objects-readiness]")).toHaveText("Not Configured");
     await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Not Configured");
     await expect(page.locator("[data-objects-asset-status]")).toHaveText("Not Configured");
@@ -227,7 +229,10 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveClass(/primary/);
     await expect(page.locator("[data-objects-row-open-events]").first()).toHaveClass(/primary/);
     await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveAttribute("title", "Missing Hitbox.");
-    await expect(page.locator("[data-objects-row-open-events]").first()).toHaveAttribute("title", "Missing Events.");
+    await expect(page.locator("[data-objects-row-open-events]").first()).toHaveAttribute(
+      "title",
+      "Missing Events. Events configure when object behavior happens."
+    );
     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("None");
     await expect(page.locator("[data-objects-edit-sprite]")).toBeHidden();
     await expect(page.locator("[data-objects-output-setup]")).toHaveText("Objects have saved setup details.");
@@ -471,7 +476,10 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(page.locator("[data-objects-row-open-events]")).toHaveClass(/primary/);
     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute("title", "Sprite asset ready.");
     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveAttribute("title", "Missing Hitbox.");
-    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute("title", "Missing Events.");
+    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute(
+      "title",
+      "Missing Events. Events configure when object behavior happens."
+    );
     await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
       "href",
       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"

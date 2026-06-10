@@ -1,259 +1,135 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 50c662b99..9b00b634f 100644
+index 9b00b634f..2fbfdc62d 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -7,7 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
++(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
 
  Guardrail warnings:
--(100%) none - no changed runtime JS coverage warnings
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 7dee67949..1c6418c9d 100644
+index 1c6418c9d..11cb791c8 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,6 +17,7 @@ Exercised tool entry points detected:
+@@ -12,13 +12,13 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(86%) Toolbox Index - exercised 6 runtime JS files
++(85%) Toolbox Index - exercised 6 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
  (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
++(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
 
  Files with executed line/function counts where available:
-@@ -37,8 +38,9 @@ Files with executed line/function counts where available:
+ (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+@@ -32,7 +32,7 @@ Files with executed line/function counts where available:
+ (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
+ (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
+ (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
+-(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
++(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
+ (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
+ (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
  (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
-
- Uncovered or low-coverage changed JS files:
--(100%) none - no low-coverage changed runtime JS files
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
-
+@@ -43,4 +43,4 @@ Uncovered or low-coverage changed JS files:
  Changed JS files considered:
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
- (94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-index c02870c53..b348efd2e 100644
---- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-+++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-@@ -6,7 +6,8 @@ export const TOOL_STATUS_MODEL = Object.freeze([
-   "Under Construction",
-   "Planned",
-   "Hidden",
--  "Deprecated"
-+  "Deprecated",
-+  "beta"
- ]);
-
- export const TOOL_RELEASE_CHANNELS = Object.freeze([
-@@ -52,7 +53,8 @@ const READINESS_BY_STATUS = Object.freeze({
-   "Under Construction": "No",
-   Planned: "No",
-   Hidden: "No",
--  Deprecated: "No"
-+  Deprecated: "No",
-+  beta: "Yes"
- });
-
- const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
-@@ -61,7 +63,8 @@ const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
-   "Under Construction": "beta",
-   Planned: "planned",
-   Hidden: "planned",
--  Deprecated: "deprecated"
-+  Deprecated: "deprecated",
-+  beta: "beta"
- });
-
- export const TOOL_REGISTRY = Object.freeze([
-@@ -150,7 +153,7 @@ export const TOOL_REGISTRY = Object.freeze([
-     "requires": [
-       "project-workspace"
-     ],
--    "status": "Ready",
-+    "status": "beta",
-     "releaseChannel": "beta",
-     "progressChecklist": [
-       "Open Project Workspace",
-@@ -410,14 +413,14 @@ export const TOOL_REGISTRY = Object.freeze([
-     "id": "objects",
-     "name": "Objects",
-     "displayName": "Objects",
--    "shortDescription": "Create game objects with roles, state, and sprite assets.",
-+    "shortDescription": "Create game objects with types, state, and sprite assets.",
-     "shortLabel": "Objects",
-     "path": "objects",
-     "folderName": "objects",
-     "entryPoint": "objects/index.html",
-     "badge": "/assets/theme-v2/images/badges/objects.png",
-     "tool": "/assets/theme-v2/images/tools/objects.png",
--    "description": "Create game objects with roles, state, and sprite assets.",
-+    "description": "Create game objects with types, state, and sprite assets.",
-     "category": "Design",
-     "colorGroup": "tool-group-design",
-     "active": true,
-@@ -426,8 +429,8 @@ export const TOOL_REGISTRY = Object.freeze([
-     "requiredForTestable": true,
-     "requiredForPublish": true,
-     "requires": [],
--    "status": "Wireframe",
--    "releaseChannel": "wireframe",
-+    "status": "beta",
-+    "releaseChannel": "beta",
-     "progressChecklist": [
-       "Editable object table available",
-       "Inline row add, save, cancel, edit, and trash actions available",
-@@ -438,7 +441,7 @@ export const TOOL_REGISTRY = Object.freeze([
-     "adminOnly": false,
-     "visibleInToolsList": true,
-     "toolboxGroup": "Create",
--    "capabilityLabel": "Object role types",
-+    "capabilityLabel": "Object types",
-     "childCapabilities": [
-       "Static",
-       "Dynamic",
+-(94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
++(93%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
-index 3021b6f88..8db1b9b0d 100644
+index 8db1b9b0d..b2aa66b04 100644
 --- a/tests/playwright/tools/ObjectsTool.spec.mjs
 +++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -111,6 +111,14 @@ async function objectDefinitionRecords(page) {
-   });
- }
-
-+async function objectsRegistryEntry(page) {
-+  return page.evaluate(async () => {
-+    const response = await fetch("/api/toolbox/registry/snapshot");
-+    const payload = await response.json();
-+    return payload.data.tools.find((tool) => tool.id === "objects") || null;
-+  });
-+}
-+
- test("Objects exposes production copy, setup status, and broad table input", async ({ page }) => {
-   const failures = await openObjectsPage(page);
-
-@@ -126,7 +134,20 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     await expect(page.locator("main")).not.toContainText(["Not", "connected", "yet"].join(" "));
-     await expect(page.getByRole("heading", { level: 2, name: "Object Builder" })).toBeVisible();
-     await expect(page.getByText("Object Type Catalog", { exact: true })).toBeVisible();
--    await expect(page.locator("[data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
-+    await expect(page.locator("[data-objects-template-select]")).toHaveCount(1);
-+    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
-+    await expect(page.locator("[data-objects-table-footer-actions] [data-objects-add-row]")).toBeVisible();
-+    await expect(page.locator("[data-objects-table-footer-actions] [data-objects-reset-table]")).toBeVisible();
-+    await expect(page.locator("[data-objects-table-footer-catalog] [data-objects-template-select]")).toBeVisible();
-+    const footerPositions = await page.locator("[data-objects-table-footer]").evaluate((footer) => {
-+      const actions = footer.querySelector("[data-objects-table-footer-actions]");
-+      const catalog = footer.querySelector("[data-objects-table-footer-catalog]");
-+      return {
-+        actionsLeft: actions.getBoundingClientRect().left,
-+        catalogLeft: catalog.getBoundingClientRect().left,
-+      };
-+    });
-+    expect(footerPositions.catalogLeft).toBeGreaterThan(footerPositions.actionsLeft);
-     await expect(page.locator("[aria-label='Object type catalog'] th")).toHaveText(["Template", "Capability"]);
-     await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("State");
-     await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("Render");
-@@ -168,10 +189,8 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     await expect(page.locator("[data-objects-capability-basics]")).toContainText("Takes Damage");
-     await expect(page.locator("[data-objects-capability-basics]")).not.toContainText("bounces");
-
--    const addAfterTable = await page.locator("[data-objects-list-table]").evaluate((table) => (
--      Boolean(table.compareDocumentPosition(document.querySelector("[data-objects-add-row]")) & Node.DOCUMENT_POSITION_FOLLOWING)
--    ));
--    expect(addAfterTable).toBe(true);
-+    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-add-row]")).toBeVisible();
-+    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-reset-table]")).toBeVisible();
-
-     await page.getByRole("button", { name: "Seed Starter Objects" }).click();
-     await expect(page.locator("[data-objects-log]")).toHaveText("Seeded starter objects: Hero, Projectile, and Wall.");
-@@ -382,6 +401,7 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-   const failures = await openObjectsPage(page);
-
-   try {
-+    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-template-select]")).toBeVisible();
-     await page.locator("[data-objects-template-select]").selectOption("Hazard");
-     await expect(page.locator("[data-objects-log]")).toHaveText("Hazard template selected for the next object row.");
-
-@@ -588,14 +608,25 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
-   }
- });
-
--test("Objects is a clickable wireframe tool from Toolbox", async ({ page }) => {
-+test("Objects is a clickable beta tool from Toolbox", async ({ page }) => {
-   const failures = await openToolboxPage(page);
-
-   try {
-     const objectsCard = page.locator("[data-toolbox-tool-card='Objects']");
-     await expect(objectsCard).toBeVisible();
--    await expect(objectsCard.locator("[data-toolbox-kicker]")).toHaveText("Wireframe");
-+    await expect(objectsCard).toHaveAttribute("data-toolbox-release-channel", "beta");
-+    await expect(objectsCard.locator("[data-toolbox-kicker]")).toHaveText("Beta");
-+    await expect(objectsCard.locator("[data-toolbox-plan-details]")).toHaveCount(0);
-+    await expect(objectsCard).not.toContainText("Wireframe details");
-     await expect(objectsCard.locator("[data-toolbox-tool-name-link='Objects']")).toHaveAttribute("href", "/toolbox/objects/index.html");
-+    const registryEntry = await objectsRegistryEntry(page);
-+    expect(registryEntry).toEqual(expect.objectContaining({
-+      releaseChannel: "beta",
-+      releaseChannelLabel: "Beta",
-+      status: "beta",
-+    }));
-+    expect(registryEntry.shortDescription).toContain("types");
-+    expect(registryEntry.shortDescription).not.toMatch(/\broles\b/i);
-     await objectsCard.locator("[data-toolbox-tool-name-link='Objects']").click();
-     await expect(page.getByRole("heading", { level: 1, name: "Objects" })).toBeVisible();
-
+@@ -156,6 +156,7 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+     await expect(page.locator("[data-objects-template-catalog] td:first-child")).toHaveText(TYPE_OPTIONS);
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Spawn Point");
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Decoration");
++    await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Events");
+     await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
+@@ -174,7 +175,8 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+     ]);
+     await expect(page.locator("[data-objects-list-table] thead")).not.toContainText("Status");
+     await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
+-    await expect(page.locator("[data-objects-type-basics] li")).toHaveText(TYPE_OPTIONS);
++    await expect(page.getByText("Type Choices", { exact: true })).toHaveCount(0);
++    await expect(page.locator("[data-objects-type-basics]")).toHaveCount(0);
+     await expect(page.locator("[data-objects-readiness]")).toHaveText("Not Configured");
+     await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Not Configured");
+     await expect(page.locator("[data-objects-asset-status]")).toHaveText("Not Configured");
+@@ -227,7 +229,10 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+     await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveClass(/primary/);
+     await expect(page.locator("[data-objects-row-open-events]").first()).toHaveClass(/primary/);
+     await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveAttribute("title", "Missing Hitbox.");
+-    await expect(page.locator("[data-objects-row-open-events]").first()).toHaveAttribute("title", "Missing Events.");
++    await expect(page.locator("[data-objects-row-open-events]").first()).toHaveAttribute(
++      "title",
++      "Missing Events. Events configure when object behavior happens."
++    );
+     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("None");
+     await expect(page.locator("[data-objects-edit-sprite]")).toBeHidden();
+     await expect(page.locator("[data-objects-output-setup]")).toHaveText("Objects have saved setup details.");
+@@ -471,7 +476,10 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
+     await expect(page.locator("[data-objects-row-open-events]")).toHaveClass(/primary/);
+     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute("title", "Sprite asset ready.");
+     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveAttribute("title", "Missing Hitbox.");
+-    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute("title", "Missing Events.");
++    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute(
++      "title",
++      "Missing Events. Events configure when object behavior happens."
++    );
+     await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
+       "href",
+       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
 diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
-index ecce77ce5..8eea3fe34 100644
+index 8eea3fe34..63056d723 100644
 --- a/toolbox/objects/index.html
 +++ b/toolbox/objects/index.html
-@@ -42,9 +42,6 @@
-                             <details class="vertical-accordion" open>
-                                 <summary>Object Type Catalog</summary>
-                                 <div class="accordion-body content-stack">
--                                    <div class="content-cluster" aria-label="Object type catalog selection">
--                                        <select aria-label="Object Type Catalog" data-objects-template-select></select>
--                                    </div>
-                                     <div class="table-wrapper">
-                                         <table class="data-table" aria-label="Object type catalog">
-                                             <thead>
-@@ -96,12 +93,23 @@
-                                             </tr>
-                                         </thead>
-                                         <tbody data-objects-list></tbody>
-+                                        <tfoot>
-+                                            <tr>
-+                                                <td colspan="7">
-+                                                    <div class="content-split" data-objects-table-footer>
-+                                                        <div class="content-cluster" aria-label="Objects table actions" data-objects-table-footer-actions>
-+                                                            <button class="btn" type="button" data-objects-add-row>Add Object</button>
-+                                                            <button class="btn" type="button" data-objects-reset-table>Reset Table</button>
-+                                                        </div>
-+                                                        <div class="action-group action-group--end" aria-label="Object type catalog selection" data-objects-table-footer-catalog>
-+                                                            <select aria-label="Object Type Catalog" data-objects-template-select></select>
-+                                                        </div>
-+                                                    </div>
-+                                                </td>
-+                                            </tr>
-+                                        </tfoot>
-                                     </table>
+@@ -55,13 +55,6 @@
+                                     </div>
                                  </div>
--                                <div class="content-cluster" aria-label="Objects table actions">
--                                    <button class="btn" type="button" data-objects-add-row>Add Object</button>
--                                    <button class="btn" type="button" data-objects-reset-table>Reset Table</button>
+                             </details>
+-                            <details class="vertical-accordion" open>
+-                                <summary>Type Choices</summary>
+-                                <div class="accordion-body content-stack">
+-                                    <p>Types describe each object's setup purpose. Use Custom when a project-specific type is not listed.</p>
+-                                    <ul data-objects-type-basics></ul>
 -                                </div>
-                             </div>
-                         </article>
-                     </section>
-diff --git a/docs_build/dev/reports/objects-beta-promotion-and-catalog-relocation-report.md b/docs_build/dev/reports/objects-beta-promotion-and-catalog-relocation-report.md
+-                            </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="objects" data-tool-icon-src="assets/theme-v2/images/badges/objects.png" data-tool-character-src="assets/theme-v2/images/tools/objects.png"></div>
+diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
+index 55db082e8..1f855de74 100644
+--- a/toolbox/objects/objects.js
++++ b/toolbox/objects/objects.js
+@@ -558,7 +558,7 @@ function rowConfigurationActions(object) {
+   const openHitboxes = actionLink("Open Hitboxes", hitboxesHref(object), "objectsRowOpenHitboxes", id, "btn btn--compact primary");
+   const openEvents = actionLink("Open Events", eventsHref(object), "objectsRowOpenEvents", id, "btn btn--compact primary");
+   openHitboxes.title = "Missing Hitbox.";
+-  openEvents.title = "Missing Events.";
++  openEvents.title = "Missing Events. Events configure when object behavior happens.";
+   links.push(openHitboxes, openEvents);
+   return links;
+ }
+diff --git a/docs_build/dev/reports/objects-remove-type-choices-report.md b/docs_build/dev/reports/objects-remove-type-choices-report.md
 new file mode 100644
-index 000000000..465f0eddd
+index 000000000..5881ab40f
 --- /dev/null
-+++ b/docs_build/dev/reports/objects-beta-promotion-and-catalog-relocation-report.md
-@@ -0,0 +1,86 @@
-+# PR_26161_014 Objects Beta Promotion And Catalog Relocation Report
++++ b/docs_build/dev/reports/objects-remove-type-choices-report.md
+@@ -0,0 +1,78 @@
++# PR_26161_015 Objects Remove Type Choices Report
 +
 +## Branch Validation
 +
@@ -261,11 +137,11 @@ index 000000000..465f0eddd
 +
 +- Current branch: `main`
 +- Expected branch: `main`
-+- Local branches observed: `* main`
++- Worktree was clean before PR_26161_015 edits.
 +
 +## Scope
 +
-+- Impacted lane: Objects tool UI/runtime plus Toolbox tool metadata registry.
++- Impacted lane: Objects tool UI/runtime and targeted Objects Playwright coverage.
 +- Playwright impacted: Yes.
 +- Runtime engine behavior changed: No.
 +- Samples validation: Skipped as requested. No sample JSON, auth behavior, production DB behavior, engine runtime behavior, or unrelated tool behavior changed.
@@ -274,17 +150,13 @@ index 000000000..465f0eddd
 +
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
 +- PASS: Verified current git branch was `main` before edits.
-+- PASS: Moved the Object Type Catalog selector into the Objects Table footer.
-+- PASS: Placed the selector in the right-side footer group.
-+- PASS: Kept `Add Object` and `Reset Table` in the left-side footer group.
-+- PASS: Kept Object Type Catalog display limited to `Template` and `Capability`.
-+- PASS: Preserved object creation workflows, including template-prefilled row creation.
-+- PASS: Preserved DB/mock-adapter persistence after reload.
-+- PASS: Preserved Sprite asset linking after reload.
-+- PASS: Preserved row action buttons: `Edit`, `Edit Sprite`, `Open Hitboxes`, `Open Events`, and `Trash`.
-+- PASS: Preserved Missing/Complete button highlighting through existing Theme V2 button classes.
-+- PASS: Updated Objects tool metadata/status registry to `status = beta`.
-+- PASS: Removed remaining Objects wireframe-only messaging from the displayed Objects tool surface.
++- PASS: Removed the duplicate visible `Type Choices` section from Objects.
++- PASS: Kept `Object Type Catalog` as the single visible reference list for object templates and capabilities.
++- PASS: Kept the catalog display limited to `Template` and `Capability`.
++- PASS: Preserved object template/type values in the underlying registry, validator, row type dropdown, and footer template selector.
++- PASS: Preserved Render, State, Asset, Sprite linking, DB persistence, and table editing behavior.
++- PASS: Kept Events integration framed as future behavior/event configuration by updating the user-facing Events action title to `Events configure when object behavior happens.`
++- PASS: Preserved Objects beta status.
 +- PASS: Did not add sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
 +- PASS: Kept Theme V2 only and preserved HTML restrictions.
 +
@@ -292,50 +164,46 @@ index 000000000..465f0eddd
 +
 +- PASS: `node --check toolbox/objects/objects.js`
 +- PASS: `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
-+- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
-+- PASS: `rg --pcre2 -n '<script(?![^>]*\bsrc=)|<style\b|\son[a-z]+\s*=' toolbox/objects/index.html`
-+  - Expected no matches; command exited with no matches.
-+- PASS: `rg -n 'Wireframe|wireframe|Static wireframe|not wired|Not implemented yet|Role|Traits|Not connected yet' toolbox/objects/index.html`
-+  - Expected no matches; command exited with no matches.
-+- PASS: `node --input-type=module -e "...getToolById('objects')..."`
-+  - Result: Objects registry seed reports `status: "beta"`, `releaseChannel: "beta"`, and `releaseChannelLabel: "Beta"`.
-+- PASS: `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line`
-+  - Result: 6 passed.
 +- PASS: `git diff --check`
 +  - Result: PASS. Git reported line-ending normalization warnings only.
++- PASS: `rg --pcre2 -n '<script(?![^>]*\bsrc=)|<style\b|\son[a-z]+\s*=' toolbox/objects/index.html`
++  - Expected no matches; command exited with no matches.
++- PASS: `rg -n 'Type Choices|data-objects-type-basics' toolbox/objects/index.html`
++  - Expected no matches; command exited with no matches.
++- PASS: `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line`
++  - Result: 6 passed.
 +
 +## Playwright Behavior Covered
 +
-+- PASS: Object Type Catalog selector appears inside the Objects Table footer.
-+- PASS: Footer selector is in the right-side catalog group.
-+- PASS: `Add Object` and `Reset Table` remain in the left-side footer group.
-+- PASS: Selecting a footer template before adding an object still prefills Type, State, Render, and Capabilities.
-+- PASS: Add, cancel, save, edit, trash, reset, and DB persistence after reload still work.
-+- PASS: Sprite asset creation/resolution and linked sprite asset display persist after reload.
-+- PASS: Row actions and Missing/Complete visual classes remain intact.
-+- PASS: Toolbox displays Objects as `Beta`, not `Wireframe`.
-+- PASS: Toolbox registry API reports Objects as `status: "beta"`.
++- PASS: `Type Choices` no longer appears in the primary Objects UI.
++- PASS: `Object Type Catalog` remains visible.
++- PASS: Catalog headers remain `Template` and `Capability` only.
++- PASS: Events is not exposed as an object template/type in the catalog.
++- PASS: Footer template selector still offers object templates and can prefill active rows.
++- PASS: Row type dropdown still offers object type values.
++- PASS: Add, edit, delete, reset, and DB persistence after reload still work.
++- PASS: Sprite asset creation/resolution and linked sprite asset display still work.
++- PASS: Objects remains a clickable beta tool from Toolbox.
 +
 +## Playwright V8 Coverage
 +
 +- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- Changed runtime JavaScript coverage notes:
-+  - `(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105`
++  - `(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105`
 +  - `(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only`
-+- The warning is safe for this PR because `tool-metadata-inventory.js` is a dev-runtime seed module validated by syntax check and by the targeted Playwright registry/API status assertion.
++- The advisory warning is safe for this PR because PR_26161_015 did not modify `src/dev-runtime/guest-seeds/tool-metadata-inventory.js`; this change only touched Objects UI/runtime, Objects Playwright coverage, and generated reports.
 +
 +## Manual Validation Steps
 +
 +1. Open `/toolbox/objects/index.html`.
-+2. Confirm the Objects Table footer has `Add Object` and `Reset Table` on the left.
-+3. Confirm the Object Type Catalog selector is in the right side of the table footer.
-+4. Select `Hero` in the footer selector, click `Add Object`, and confirm the active row is prefilled.
-+5. Save a Sprite object, reload the page, and confirm the row and linked sprite asset remain.
-+6. Open `/toolbox/index.html` and confirm the Objects card displays `Beta`.
++2. Confirm the left Objects panel shows `Object Setup` and `Object Type Catalog`, with no `Type Choices` section.
++3. Confirm the Object Type Catalog table shows only `Template` and `Capability`.
++4. Use the table footer template selector to choose `Hero`, then click `Add Object` and confirm the active row is prefilled.
++5. Save a Sprite object, reload the Objects page, and confirm the row plus linked sprite asset remain.
++6. Confirm `Open Events` is presented as event configuration for when object behavior happens, not as an object type.
 +
 +## Skipped Lanes
 +
 +- Full samples validation: SKIP, explicitly requested and no samples changed.
 +- Broad workspace/project suite: SKIP, no shared Project Workspace contract, engine runtime behavior, public navigation behavior, auth behavior, production DB behavior, or sample behavior changed.
-+- Full registry suite: SKIP, registry impact is scoped to the Objects metadata seed and covered by targeted Objects Playwright plus direct seed inspection.
-+
++- Full registry suite: SKIP, registry and validator values were intentionally preserved; targeted Objects Playwright validates row type/template dropdown behavior.

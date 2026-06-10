@@ -558,7 +558,7 @@ function rowConfigurationActions(object) {
   const openHitboxes = actionLink("Open Hitboxes", hitboxesHref(object), "objectsRowOpenHitboxes", id, "btn btn--compact primary");
   const openEvents = actionLink("Open Events", eventsHref(object), "objectsRowOpenEvents", id, "btn btn--compact primary");
   openHitboxes.title = "Missing Hitbox.";
-  openEvents.title = "Missing Events.";
+  openEvents.title = "Missing Events. Events configure when object behavior happens.";
   links.push(openHitboxes, openEvents);
   return links;
 }

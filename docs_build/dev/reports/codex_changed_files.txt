@@ -1,18 +1,18 @@
 # git status --short
 M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
  M tests/playwright/tools/ObjectsTool.spec.mjs
  M toolbox/objects/index.html
-?? docs_build/dev/reports/objects-beta-promotion-and-catalog-relocation-report.md
+ M toolbox/objects/objects.js
+?? docs_build/dev/reports/objects-remove-type-choices-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/objects-beta-promotion-and-catalog-relocation-report.md
+docs_build/dev/reports/objects-remove-type-choices-report.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  3 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  4 +-
- .../guest-seeds/tool-metadata-inventory.js         | 21 +++++-----
- tests/playwright/tools/ObjectsTool.spec.mjs        | 45 ++++++++++++++++++----
- toolbox/objects/index.html                         | 22 +++++++----
- 5 files changed, 70 insertions(+), 25 deletions(-)
+docs_build/dev/reports/coverage_changed_js_guardrail.txt |  2 +-
+ docs_build/dev/reports/playwright_v8_coverage_report.txt |  8 ++++----
+ tests/playwright/tools/ObjectsTool.spec.mjs              | 14 +++++++++++---
+ toolbox/objects/index.html                               |  7 -------
+ toolbox/objects/objects.js                               |  2 +-
+ 5 files changed, 17 insertions(+), 16 deletions(-)
