@@ -51,11 +51,6 @@
                                                         <td>
                                                             <select id="objectsType" data-objects-type>
                                                                 <option value="">Select type</option>
-                                                                <option value="Static">Static</option>
-                                                                <option value="Dynamic">Dynamic</option>
-                                                                <option value="Collectible">Collectible</option>
-                                                                <option value="Hazard">Hazard</option>
-                                                                <option value="Goal">Goal</option>
                                                             </select>
                                                         </td>
                                                     </tr>
@@ -149,6 +144,7 @@
                                                 <th>Type</th>
                                                 <th>Role</th>
                                                 <th>State</th>
+                                                <th>Traits</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -190,13 +186,8 @@
                             <details class="vertical-accordion" open>
                                 <summary>Object Types</summary>
                                 <div class="accordion-body content-stack">
-                                    <ul data-objects-type-basics>
-                                        <li><strong>Static:</strong> fixed object such as a wall, boundary, or platform.</li>
-                                        <li><strong>Dynamic:</strong> moving object such as the player paddle or ball.</li>
-                                        <li><strong>Collectible:</strong> pickup that can change score, inventory, or progress.</li>
-                                        <li><strong>Hazard:</strong> danger object that can damage, fail, or reset the player.</li>
-                                        <li><strong>Goal:</strong> win, exit, scoring, or completion target.</li>
-                                    </ul>
+                                    <ul data-objects-type-basics></ul>
+                                    <ul data-objects-trait-basics></ul>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

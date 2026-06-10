@@ -1,476 +1,430 @@
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 8c9fb7635..d9038c472 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,13 +1,22 @@
--docs_build/dev/PROJECT_INSTRUCTIONS.md
--docs_build/dev/reports/codex_changed_files.txt
--docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/coverage_changed_js_guardrail.txt
--docs_build/dev/reports/mvp-path-validation-and-status-alignment-report.md
--docs_build/dev/reports/playwright_v8_coverage_report.txt
--src/dev-runtime/guest-seeds/tool-metadata-inventory.js
--src/dev-runtime/server/mock-api-router.mjs
--tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
--tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
--tests/playwright/tools/ToolboxRoutePages.spec.mjs
--toolbox/toolRegistry.js
--toolbox/tools-page-accordions.js
-+# git status --short
-+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
-+ M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-+ M tests/playwright/tools/RootToolsFutureState.spec.mjs
-+ M tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
-+ M toolbox/objects/index.html
-+?? tests/playwright/tools/ObjectsTool.spec.mjs
-+?? toolbox/objects/objects.js
-+
-+# git ls-files --others --exclude-standard
-+tests/playwright/tools/ObjectsTool.spec.mjs
-+toolbox/objects/objects.js
-+
-+# git diff --stat
-+.../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
-+ .../dev/reports/playwright_v8_coverage_report.txt  |  19 +--
-+ .../guest-seeds/tool-metadata-inventory.js         |  24 +--
-+ .../playwright/tools/RootToolsFutureState.spec.mjs |  14 +-
-+ .../tools/ToolboxAdminMetadataSsot.spec.mjs        |  10 +-
-+ toolbox/objects/index.html                         | 174 ++++++++++++++++++++-
-+ 6 files changed, 202 insertions(+), 45 deletions(-)
-\ No newline at end of file
-diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
-index 2214d4db4..7c922965e 100644
-Binary files a/docs_build/dev/reports/codex_review.diff and b/docs_build/dev/reports/codex_review.diff differ
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 60c4a4d7f..ba06338af 100644
+index ba06338af..c0488ccf9 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,11 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -7,7 +7,11 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
  Changed runtime JS files considered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(84%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 92/109
-+(95%) toolbox/objects/objects.js - executed lines 365/365; executed functions 38/40
+-(95%) toolbox/objects/objects.js - executed lines 365/365; executed functions 38/40
++(67%) src/engine/object-model/objectModelRegistry.js - executed lines 146/146; executed functions 4/6
++(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 269/269; executed functions 14/20
++(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 44/44; executed functions 3/4
++(94%) toolbox/objects/objects.js - executed lines 466/466; executed functions 58/62
++(100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
  
  Guardrail warnings:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 5b4c8148d..029e8f62c 100644
+index 029e8f62c..461d6dfcf 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,37 +12,32 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,32 +12,40 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
  
  Exercised tool entry points detected:
--(81%) Toolbox Index - exercised 3 runtime JS files
-+(88%) Toolbox Index - exercised 4 runtime JS files
+-(88%) Toolbox Index - exercised 4 runtime JS files
++(88%) Toolbox Index - exercised 2 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
- (74%) Theme V2 Shared JS - exercised 2 runtime JS files
+-(74%) Theme V2 Shared JS - exercised 2 runtime JS files
++(59%) Theme V2 Shared JS - exercised 2 runtime JS files
  
  Changed runtime JS files covered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(84%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 92/109
-+(95%) toolbox/objects/objects.js - executed lines 365/365; executed functions 38/40
+-(95%) toolbox/objects/objects.js - executed lines 365/365; executed functions 38/40
++(67%) src/engine/object-model/objectModelRegistry.js - executed lines 146/146; executed functions 4/6
++(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 269/269; executed functions 14/20
++(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 44/44; executed functions 3/4
++(94%) toolbox/objects/objects.js - executed lines 466/466; executed functions 58/62
++(100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
  
  Files with executed line/function counts where available:
- (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
- (50%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 3/6
- (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+-(38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
+-(50%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 3/6
+-(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
++(36%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 5/14
++(58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
--(64%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 16/25
- (77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 43/56
- (78%) admin/tool-votes.js - executed lines 406/406; executed functions 43/55
- (84%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 92/109
-+(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
-+(95%) toolbox/objects/objects.js - executed lines 365/365; executed functions 38/40
- (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
+-(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 43/56
+-(78%) admin/tool-votes.js - executed lines 406/406; executed functions 43/55
+-(84%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 92/109
+-(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
+-(95%) toolbox/objects/objects.js - executed lines 365/365; executed functions 38/40
+-(100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
++(67%) src/engine/object-model/objectModelRegistry.js - executed lines 146/146; executed functions 4/6
++(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 269/269; executed functions 14/20
++(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 44/44; executed functions 3/4
++(75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
++(94%) toolbox/objects/objects.js - executed lines 466/466; executed functions 58/62
++(100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
  
  Uncovered or low-coverage changed JS files:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/toolRegistry.js - WARNING: uncovered changed runtime JS file; advisory only
  
  Changed JS files considered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/engine/ObjectModelContract.test.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/toolRegistry.js - changed JS file not collected as browser runtime coverage
--(84%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
-+(95%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-index 9d9710c48..d45415533 100644
---- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-+++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-@@ -410,14 +410,14 @@ export const TOOL_REGISTRY = Object.freeze([
-     "id": "objects",
-     "name": "Objects",
-     "displayName": "Objects",
--    "shortDescription": "Design reusable game objects and object-ready assets.",
-+    "shortDescription": "Define static and dynamic game object setup for the paddle and ball MVP path.",
-     "shortLabel": "Objects",
-     "path": "objects",
-     "folderName": "objects",
-     "entryPoint": "objects/index.html",
-     "badge": "/assets/theme-v2/images/badges/objects.png",
-     "tool": "/assets/theme-v2/images/tools/objects.png",
--    "description": "Design reusable game objects and object-ready assets.",
-+    "description": "Define static and dynamic game object setup for the paddle and ball MVP path.",
-     "category": "Design",
-     "colorGroup": "tool-group-design",
-     "active": true,
-@@ -426,23 +426,25 @@ export const TOOL_REGISTRY = Object.freeze([
-     "requiredForTestable": true,
-     "requiredForPublish": true,
-     "requires": [],
--    "status": "Wireframe",
-+    "status": "Ready",
-+    "releaseChannel": "beta",
-     "progressChecklist": [
--      "Review readiness",
--      "Static planned text only"
-+      "Tool Template V2 shell adapted",
-+      "Paddle + ball MVP seed validates",
-+      "Actionable validation diagnostics available"
-     ],
-     "deferred": false,
-     "hidden": false,
-     "adminOnly": false,
-     "visibleInToolsList": true,
-     "toolboxGroup": "Create",
--    "capabilityLabel": "Planned object types",
-+    "capabilityLabel": "MVP object types",
-     "childCapabilities": [
--      "Vector",
--      "Sprite",
--      "Character",
--      "Enemy",
--      "Interactive"
-+      "Static",
-+      "Dynamic",
-+      "Collectible",
-+      "Hazard",
-+      "Goal"
-     ]
-   },
-   {
-diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-index fc023be2a..e019cf0c9 100644
---- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
-+++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
-@@ -83,7 +83,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     await expect(page.getByRole("button", { name: "Progress" })).toHaveCount(0);
-     await expect(page.getByRole("button", { name: "Build Path" })).toBeVisible();
-     await expect(page.getByRole("button", { name: "Build Path" })).not.toHaveAttribute("aria-disabled", "true");
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 6/38");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 7/38");
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveCount(1);
-     await expect(page.locator("nav.nav-links > a[data-route='learn']")).toHaveCount(1);
-@@ -122,8 +122,8 @@ test("root tools surface links current tool pages without old_* routes", async (
-     });
-     await expect(readyProjectWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/project-workspace/index.html");
-     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
--    expect(defaultToolLabels).toEqual(["Assets", "Colors", "Game Configuration", "Game Design", "Project Journey", "Project Workspace"]);
--    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Ready", "Ready", "Ready", "Ready", "Ready", "Ready"]);
-+    expect(defaultToolLabels).toEqual(["Assets", "Colors", "Game Configuration", "Game Design", "Objects", "Project Journey", "Project Workspace"]);
-+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Beta", "Complete", "Beta", "Beta", "Beta", "Beta", "Beta"]);
-     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Assistant$/ }) })).toHaveCount(0);
-     const oldStandaloneLabels = [
-       ["Palette", "Manager"].join(" "),
-@@ -222,7 +222,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     expect(failedRequests.filter((request) => request.includes("/toolbox/old_"))).toEqual([]);
+-(95%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
++(67%) src/engine/object-model/objectModelRegistry.js - changed JS file with browser V8 coverage
++(70%) src/engine/object-model/objectDefinitionValidator.js - changed JS file with browser V8 coverage
++(75%) src/engine/object-model/objectDefinitionSchema.js - changed JS file with browser V8 coverage
++(94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
++(100%) src/engine/object-model/index.js - changed JS file with browser V8 coverage
+diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
+index 428c20a43..f0be3b821 100644
+--- a/tests/playwright/tools/ObjectsTool.spec.mjs
++++ b/tests/playwright/tools/ObjectsTool.spec.mjs
+@@ -68,6 +68,10 @@ test("Objects seeds a usable paddle and ball MVP setup with visible diagnostics"
+     await expect(page.locator("[data-objects-type-basics]")).toContainText("Collectible");
+     await expect(page.locator("[data-objects-type-basics]")).toContainText("Hazard");
+     await expect(page.locator("[data-objects-type-basics]")).toContainText("Goal");
++    await expect(page.locator("[data-objects-trait-basics]")).toContainText("movable");
++    await expect(page.locator("[data-objects-trait-basics]")).toContainText("playerControlled");
++    await expect(page.locator("[data-objects-trait-basics]")).toContainText("bounces");
++    await expect(page.locator("[data-objects-trait-basics]")).toContainText("collides");
  
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 6/38");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 7/38");
-     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     await setServerSession(server, MOCK_DB_KEYS.users.admin);
-@@ -271,8 +271,8 @@ test("root tools surface links current tool pages without old_* routes", async (
-     const objectsCard = page.locator("main .control-card").filter({
-       has: page.locator("h3", { hasText: /^Objects$/ })
-     }).first();
--    await expect(objectsCard).toContainText("Planned object types");
--    await expect(objectsCard.locator("[data-child-capabilities='Objects']")).toHaveText("Planned object types: Vector, Sprite, Character, Enemy, Interactive");
-+    await expect(objectsCard).toContainText("MVP object types");
-+    await expect(objectsCard.locator("[data-child-capabilities='Objects']")).toHaveText("MVP object types: Static, Dynamic, Collectible, Hazard, Goal");
-     await page.getByRole("button", { name: "Group" }).click();
-     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
-       groups.map((group) => group.dataset.toolsAccordion)
-@@ -286,7 +286,7 @@ test("root tools surface links current tool pages without old_* routes", async (
-     await expect(page.locator("[data-toolbox-admin-nav-group]")).toHaveCount(0);
-     await setServerSession(server, "");
-     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 6/38");
-+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 7/38");
-     await expect(page.locator("main").getByText("Users", { exact: true })).toHaveCount(0);
-     expect(pageErrors).toEqual([]);
-   } finally {
-diff --git a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
-index efff68668..c28ec977d 100644
---- a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
-+++ b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
-@@ -199,6 +199,12 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
-     }));
-     expect(Array.isArray(registryColors.progressChecklist)).toBe(true);
-     expect(Array.isArray(registryColors.requires)).toBe(true);
-+    expect(registrySnapshot.activeTools.find((tool) => tool.id === "objects")).toEqual(expect.objectContaining({
-+      capabilityLabel: "MVP object types",
-+      childCapabilities: ["Static", "Dynamic", "Collectible", "Hazard", "Goal"],
-+      releaseChannel: "beta",
-+      status: "beta",
-+    }));
+     await page.getByRole("button", { name: "Seed Paddle + Ball" }).click();
+     await expect(page.locator("[data-objects-log]")).toHaveText("Seeded paddle + ball MVP objects: Player Paddle, Game Ball, and Arena Boundary.");
+@@ -81,6 +85,9 @@ test("Objects seeds a usable paddle and ball MVP setup with visible diagnostics"
+     await expect(page.locator("[data-objects-list]")).toContainText("Player Paddle");
+     await expect(page.locator("[data-objects-list]")).toContainText("Game Ball");
+     await expect(page.locator("[data-objects-list]")).toContainText("Arena Boundary");
++    await expect(page.locator("[data-objects-list]")).toContainText("Player Controlled");
++    await expect(page.locator("[data-objects-list]")).toContainText("Bounces");
++    await expect(page.locator("[data-objects-list]")).toContainText("Collides");
+     await expect(page.locator("[data-objects-output-mvp]")).toHaveText("Paddle + ball setup has the required Dynamic paddle, Dynamic ball, and Static boundary.");
  
-     for (const row of snapshot.rows) {
-       expect(row.toolKey, row.toolName).toBeTruthy();
-@@ -213,9 +219,9 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
-     expect(snapshotNames).toEqual(expect.arrayContaining([...REQUIRED_ADMIN_TOOLS, ...REQUIRED_RESTORED_TOOLS]));
-     const counts = countByStatus(snapshot.rows);
-     expect(counts).toMatchObject({
--      beta: 5,
-+      beta: 6,
-       complete: 1,
--      planned: 33,
-+      planned: 32,
-       wireframe: 3,
-       deprecated: 1,
-     });
+     await page.getByRole("button", { name: "Validate Setup" }).click();
 diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
-index ac6c57279..d50856471 100644
+index d50856471..9ee670b45 100644
 --- a/toolbox/objects/index.html
 +++ b/toolbox/objects/index.html
-@@ -6,7 +6,7 @@
-     <base href="/">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Objects - GameFoundryStudio</title>
--    <meta name="description" content="Objects Toolbox wireframe. Design reusable game objects and object-ready assets.">
-+    <meta name="description" content="Objects Toolbox beta surface for static and dynamic paddle and ball MVP object setup.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
- </head>
-@@ -18,7 +18,7 @@
-             <div class="container">
-                 <div class="kicker">Toolbox / Objects</div>
-                 <h1>Objects</h1>
--                <p class="lede">Design reusable game objects and object-ready assets. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
-+                <p class="lede">Define static and dynamic object setup for the paddle and ball MVP path without persistence, database writes, sample updates, or engine runtime changes.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -30,14 +30,133 @@
-                         </div>
-                         <div class="accordion-stack">
+@@ -51,11 +51,6 @@
+                                                         <td>
+                                                             <select id="objectsType" data-objects-type>
+                                                                 <option value="">Select type</option>
+-                                                                <option value="Static">Static</option>
+-                                                                <option value="Dynamic">Dynamic</option>
+-                                                                <option value="Collectible">Collectible</option>
+-                                                                <option value="Hazard">Hazard</option>
+-                                                                <option value="Goal">Goal</option>
+                                                             </select>
+                                                         </td>
+                                                     </tr>
+@@ -149,6 +144,7 @@
+                                                 <th>Type</th>
+                                                 <th>Role</th>
+                                                 <th>State</th>
++                                                <th>Traits</th>
+                                                 <th>Action</th>
+                                             </tr>
+                                         </thead>
+@@ -190,13 +186,8 @@
                              <details class="vertical-accordion" open>
--                                <summary>Setup</summary>
--                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-+                                <summary>MVP Setup</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p data-objects-mvp-context>Paddle + ball MVP requires a Dynamic paddle, a Dynamic ball, and a Static boundary.</p>
-+                                    <div class="content-cluster" aria-label="Objects MVP actions">
-+                                        <button class="btn" type="button" data-objects-seed-mvp>Seed Paddle + Ball</button>
-+                                        <button class="btn" type="button" data-objects-validate>Validate Setup</button>
-+                                    </div>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Object Draft</summary>
-+                                <div class="accordion-body">
-+                                    <form class="content-stack" data-objects-form>
-+                                        <div class="table-wrapper">
-+                                            <table class="data-table tool-form-table" aria-label="Object draft fields" data-objects-draft-table>
-+                                                <tbody>
-+                                                    <tr>
-+                                                        <th scope="row"><label for="objectsType">Object Type</label></th>
-+                                                        <td>
-+                                                            <select id="objectsType" data-objects-type>
-+                                                                <option value="">Select type</option>
-+                                                                <option value="Static">Static</option>
-+                                                                <option value="Dynamic">Dynamic</option>
-+                                                                <option value="Collectible">Collectible</option>
-+                                                                <option value="Hazard">Hazard</option>
-+                                                                <option value="Goal">Goal</option>
-+                                                            </select>
-+                                                        </td>
-+                                                    </tr>
-+                                                    <tr>
-+                                                        <th scope="row"><label for="objectsRole">MVP Role</label></th>
-+                                                        <td>
-+                                                            <select id="objectsRole" data-objects-role>
-+                                                                <option value="">Select role</option>
-+                                                                <option value="Paddle">Paddle</option>
-+                                                                <option value="Ball">Ball</option>
-+                                                                <option value="Boundary">Boundary</option>
-+                                                                <option value="Pickup">Pickup</option>
-+                                                                <option value="Hazard">Hazard</option>
-+                                                                <option value="Goal">Goal</option>
-+                                                            </select>
-+                                                        </td>
-+                                                    </tr>
-+                                                    <tr>
-+                                                        <th scope="row"><label for="objectsName">Object Name</label></th>
-+                                                        <td><input id="objectsName" type="text" data-objects-name placeholder="Player Paddle"></td>
-+                                                    </tr>
-+                                                    <tr>
-+                                                        <th scope="row"><label for="objectsState">Initial State</label></th>
-+                                                        <td>
-+                                                            <select id="objectsState" data-objects-state>
-+                                                                <option value="Active">Active</option>
-+                                                                <option value="Idle">Idle</option>
-+                                                                <option value="Disabled">Disabled</option>
-+                                                            </select>
-+                                                        </td>
-+                                                    </tr>
-+                                                    <tr>
-+                                                        <th scope="row"><label for="objectsBehavior">Behavior Notes</label></th>
-+                                                        <td><textarea id="objectsBehavior" rows="4" data-objects-behavior placeholder="Moves horizontally from player input."></textarea></td>
-+                                                    </tr>
-+                                                    <tr>
-+                                                        <th scope="row"><label for="objectsInteraction">Interaction Notes</label></th>
-+                                                        <td><textarea id="objectsInteraction" rows="4" data-objects-interaction placeholder="Deflects the ball and stays inside the play area."></textarea></td>
-+                                                    </tr>
-+                                                </tbody>
-+                                            </table>
-+                                        </div>
-+                                        <div class="content-cluster" aria-label="Object draft actions">
-+                                            <button class="btn" type="submit">Add Object</button>
-+                                            <button class="btn" type="button" data-objects-reset-draft>Reset Draft</button>
-+                                        </div>
-+                                    </form>
-+                                </div>
+                                 <summary>Object Types</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <ul data-objects-type-basics>
+-                                        <li><strong>Static:</strong> fixed object such as a wall, boundary, or platform.</li>
+-                                        <li><strong>Dynamic:</strong> moving object such as the player paddle or ball.</li>
+-                                        <li><strong>Collectible:</strong> pickup that can change score, inventory, or progress.</li>
+-                                        <li><strong>Hazard:</strong> danger object that can damage, fail, or reset the player.</li>
+-                                        <li><strong>Goal:</strong> win, exit, scoring, or completion target.</li>
+-                                    </ul>
++                                    <ul data-objects-type-basics></ul>
++                                    <ul data-objects-trait-basics></ul>
+                                 </div>
                              </details>
-                         </div>
-                     </aside>
--                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="objects" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
--                    <section class="tool-center-panel"><h2>Workspace</h2>
--                        <p>Design reusable game objects and object-ready assets. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
-+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="objects" data-tool-icon-src="assets/theme-v2/images/badges/objects.png" data-tool-character-src="assets/theme-v2/images/tools/objects.png"></div>
-+                    <section class="tool-center-panel">
-+                        <h2>Object Setup Workspace</h2>
-+                        <p>Objects are held in this page session only. The output is a readable setup plan for authoring, not a saved manifest or runtime payload.</p>
-+                        <div class="grid cols-3" aria-label="Objects readiness summary">
-+                            <article class="mini-stat"><strong data-objects-readiness>Needs Input</strong>MVP readiness</article>
-+                            <article class="mini-stat"><strong data-objects-count>0</strong>Objects drafted</article>
-+                            <article class="mini-stat"><strong data-objects-scope>In-memory</strong>Storage scope</article>
-+                        </div>
-+                        <article class="card">
-+                            <div class="card-body content-stack">
-+                                <div>
-+                                    <div class="kicker">Paddle + Ball MVP</div>
-+                                    <h3>Required Object Setup</h3>
-+                                </div>
-+                                <div class="table-wrapper">
-+                                    <table class="data-table" aria-label="Objects MVP requirements">
-+                                        <thead>
-+                                            <tr>
-+                                                <th>Requirement</th>
-+                                                <th>Status</th>
-+                                            </tr>
-+                                        </thead>
-+                                        <tbody data-objects-requirements></tbody>
-+                                    </table>
-+                                </div>
-+                            </div>
-+                        </article>
-+                        <article class="card">
-+                            <div class="card-body content-stack">
-+                                <div>
-+                                    <div class="kicker">Current Draft</div>
-+                                    <h3>Object List</h3>
-+                                </div>
-+                                <div class="table-wrapper">
-+                                    <table class="data-table" aria-label="Drafted objects" data-objects-list-table>
-+                                        <thead>
-+                                            <tr>
-+                                                <th>Name</th>
-+                                                <th>Type</th>
-+                                                <th>Role</th>
-+                                                <th>State</th>
-+                                                <th>Action</th>
-+                                            </tr>
-+                                        </thead>
-+                                        <tbody data-objects-list></tbody>
-+                                    </table>
-+                                </div>
-+                            </div>
-+                        </article>
-                     </section>
-                     <aside class="tool-column tool-group-design">
-                         <div class="tool-column-header">
-@@ -46,7 +165,45 @@
-                         <div class="accordion-stack">
                              <details class="vertical-accordion" open>
-                                 <summary>Output</summary>
--                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
-+                                <div class="accordion-body content-stack" data-objects-output>
-+                                    <p>Readiness: <span data-objects-output-readiness>Needs Input</span></p>
-+                                    <p>Static Objects: <span data-objects-output-static>0</span></p>
-+                                    <p>Dynamic Objects: <span data-objects-output-dynamic>0</span></p>
-+                                    <p>MVP Path: <span data-objects-output-mvp>Paddle and ball setup not ready.</span></p>
-+                                    <p>Runtime Scope: <span data-objects-output-scope>No persistence or engine runtime behavior.</span></p>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Validation</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <article class="card" role="dialog" aria-labelledby="objects-validation-title" data-objects-validation-overlay>
-+                                        <div class="card-body content-stack">
-+                                            <div>
-+                                                <div class="kicker">Actionable Validation</div>
-+                                                <h3 id="objects-validation-title">Missing Object Setup</h3>
-+                                            </div>
-+                                            <ul data-objects-validation-list></ul>
-+                                        </div>
-+                                    </article>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Object Types</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <ul data-objects-type-basics>
-+                                        <li><strong>Static:</strong> fixed object such as a wall, boundary, or platform.</li>
-+                                        <li><strong>Dynamic:</strong> moving object such as the player paddle or ball.</li>
-+                                        <li><strong>Collectible:</strong> pickup that can change score, inventory, or progress.</li>
-+                                        <li><strong>Hazard:</strong> danger object that can damage, fail, or reset the player.</li>
-+                                        <li><strong>Goal:</strong> win, exit, scoring, or completion target.</li>
-+                                    </ul>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Status Log</summary>
-+                                <div class="accordion-body">
-+                                    <div class="status" role="status" data-objects-log>Objects in-memory draft ready.</div>
-+                                </div>
-                             </details>
-                         </div>
-                     </aside>
-@@ -57,6 +214,7 @@
-     <div data-partial="footer"></div>
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-+    <script type="module" src="toolbox/objects/objects.js"></script>
- </body>
+diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
+index e2137faa2..fc427990c 100644
+--- a/toolbox/objects/objects.js
++++ b/toolbox/objects/objects.js
+@@ -1,4 +1,10 @@
+-const OBJECT_TYPES = Object.freeze(["Static", "Dynamic", "Collectible", "Hazard", "Goal"]);
++import {
++  OBJECT_MODEL_TRAIT_LIST,
++  OBJECT_MODEL_TYPE_LIST,
++  getObjectModelTrait,
++  getObjectModelType,
++  validateObjectDefinition,
++} from "../../src/engine/object-model/index.js";
  
- </html>
-diff --git a/docs_build/dev/reports/objects-beta-rebuild-report.md b/docs_build/dev/reports/objects-beta-rebuild-report.md
-new file mode 100644
-index 000000000..63e73b0fc
---- /dev/null
-+++ b/docs_build/dev/reports/objects-beta-rebuild-report.md
-@@ -0,0 +1,84 @@
-+# Objects Beta Rebuild Report
+ const MVP_REQUIREMENTS = Object.freeze([
+   {
+@@ -18,6 +24,15 @@ const MVP_REQUIREMENTS = Object.freeze([
+   }
+ ]);
+ 
++const MVP_ROLE_TRAITS = Object.freeze({
++  Ball: Object.freeze(["bounces"]),
++  Boundary: Object.freeze([]),
++  Goal: Object.freeze([]),
++  Hazard: Object.freeze([]),
++  Paddle: Object.freeze(["playerControlled"]),
++  Pickup: Object.freeze([]),
++});
 +
-+PR: PR_26161_001-objects-beta-rebuild
+ const SEEDED_OBJECTS = Object.freeze([
+   Object.freeze({
+     behavior: "Moves horizontally from player input.",
+@@ -65,7 +80,9 @@ const elements = {
+   role: document.querySelector("[data-objects-role]"),
+   seedMvp: document.querySelector("[data-objects-seed-mvp]"),
+   state: document.querySelector("[data-objects-state]"),
++  traitBasics: document.querySelector("[data-objects-trait-basics]"),
+   type: document.querySelector("[data-objects-type]"),
++  typeBasics: document.querySelector("[data-objects-type-basics]"),
+   validate: document.querySelector("[data-objects-validate]"),
+   validationList: document.querySelector("[data-objects-validation-list]"),
+   validationOverlay: document.querySelector("[data-objects-validation-overlay]")
+@@ -75,13 +92,17 @@ function normalizeText(value) {
+   return String(value || "").trim();
+ }
+ 
+-function objectId(object) {
+-  return normalizeText(object.name)
++function objectKeyFromText(value) {
++  return normalizeText(value)
+     .toLowerCase()
+     .replace(/[^a-z0-9]+/g, "-")
+     .replace(/^-+|-+$/g, "");
+ }
+ 
++function objectId(object) {
++  return objectKeyFromText(object.id || object.name);
++}
++
+ function setText(element, value) {
+   if (element) {
+     element.textContent = value;
+@@ -100,18 +121,56 @@ function tableCell(text) {
+   return cell;
+ }
+ 
++function optionElement(value, text) {
++  const option = document.createElement("option");
++  option.value = value;
++  option.textContent = text;
++  return option;
++}
++
+ function statusText(ok) {
+   return ok ? "OK" : "Needs Action";
+ }
+ 
+-function cloneObject(object) {
++function sortedObjectTypes() {
++  return [...OBJECT_MODEL_TYPE_LIST].sort((left, right) => left.label.localeCompare(right.label));
++}
++
++function sortedTraits() {
++  return [...OBJECT_MODEL_TRAIT_LIST].sort((left, right) => left.id.localeCompare(right.id));
++}
++
++function traitIdsFromSource(source) {
++  return Array.isArray(source.traits)
++    ? source.traits.map(normalizeText).filter(Boolean)
++    : [];
++}
++
++function traitsForObject(source, object) {
++  const traitIds = new Set();
++  const objectType = getObjectModelType(object.type);
++
++  (objectType?.traits || []).forEach((traitId) => traitIds.add(traitId));
++  (MVP_ROLE_TRAITS[object.role] || []).forEach((traitId) => traitIds.add(traitId));
++  traitIdsFromSource(source).forEach((traitId) => traitIds.add(traitId));
++
++  return Object.freeze([...traitIds]);
++}
++
++function cloneObject(source = {}) {
++  const object = {
++    behavior: normalizeText(source.behavior),
++    id: objectKeyFromText(source.id || source.name),
++    interaction: normalizeText(source.interaction),
++    name: normalizeText(source.name),
++    role: normalizeText(source.role),
++    state: normalizeText(source.state) || "Active",
++    type: normalizeText(source.type)
++  };
++
+   return {
+-    behavior: normalizeText(object.behavior),
+-    interaction: normalizeText(object.interaction),
+-    name: normalizeText(object.name),
+-    role: normalizeText(object.role),
+-    state: normalizeText(object.state) || "Active",
+-    type: normalizeText(object.type)
++    ...object,
++    traits: traitsForObject(source, object)
+   };
+ }
+ 
+@@ -147,26 +206,37 @@ function clearDraftForm() {
+   }
+ }
+ 
+-function draftFindings(draft) {
+-  const findings = [];
+-  if (!OBJECT_TYPES.includes(draft.type)) {
+-    findings.push({
+-      action: "Choose Static, Dynamic, Collectible, Hazard, or Goal.",
+-      label: "Object Type"
+-    });
++function issueLabel(issue) {
++  if (issue.path.endsWith(".name")) {
++    return "Object Name";
++  }
++  if (issue.path.endsWith(".type")) {
++    return "Object Type";
++  }
++  if (issue.path.includes(".traits")) {
++    return "Object Traits";
+   }
++  if (issue.path.endsWith(".state")) {
++    return "Initial State";
++  }
++  return "Object Definition";
++}
++
++function objectDefinitionFindings(object, labelPrefix) {
++  return validateObjectDefinition(object).issues.map((issue) => ({
++    action: issue.action,
++    label: labelPrefix ? `${labelPrefix} ${issueLabel(issue)}` : issueLabel(issue)
++  }));
++}
++
++function draftFindings(draft) {
++  const findings = objectDefinitionFindings(draft, "");
+   if (!draft.role) {
+     findings.push({
+       action: "Choose the MVP role this object serves.",
+       label: "MVP Role"
+     });
+   }
+-  if (!draft.name) {
+-    findings.push({
+-      action: "Name the object before adding it to the draft list.",
+-      label: "Object Name"
+-    });
+-  }
+   if (draft.role === "Paddle" && draft.type && draft.type !== "Dynamic") {
+     findings.push({
+       action: "Set the Paddle role to Dynamic for the paddle + ball MVP path.",
+@@ -200,12 +270,9 @@ function objectListFindings(objects) {
+ 
+   objects.forEach((object, index) => {
+     const label = object.name || `Object ${index + 1}`;
+-    if (!OBJECT_TYPES.includes(object.type)) {
+-      findings.push({
+-        action: `${label} must use Static, Dynamic, Collectible, Hazard, or Goal.`,
+-        label: `${label} Type`
+-      });
+-    }
++    objectDefinitionFindings(object, label).forEach((finding) => {
++      findings.push(finding);
++    });
+     if (!object.role) {
+       findings.push({
+         action: `${label} needs an MVP role.`,
+@@ -275,6 +342,18 @@ function renderRequirements(objects) {
+   });
+ }
+ 
++function traitLabel(traitId) {
++  const trait = getObjectModelTrait(traitId);
++  return trait ? trait.label : traitId;
++}
++
++function traitText(traitIds) {
++  if (!traitIds.length) {
++    return "None";
++  }
++  return traitIds.map(traitLabel).join(", ");
++}
++
+ function renderObjectList(objects) {
+   if (!elements.list) {
+     return;
+@@ -284,7 +363,7 @@ function renderObjectList(objects) {
+   if (objects.length === 0) {
+     const row = document.createElement("tr");
+     const empty = document.createElement("td");
+-    empty.colSpan = 5;
++    empty.colSpan = 6;
+     empty.textContent = "No objects drafted yet.";
+     row.append(empty);
+     elements.list.append(row);
+@@ -305,6 +384,7 @@ function renderObjectList(objects) {
+       tableCell(object.type),
+       tableCell(object.role),
+       tableCell(object.state),
++      tableCell(traitText(object.traits)),
+       action
+     );
+     elements.list.append(row);
+@@ -329,6 +409,43 @@ function renderOutput(objects, findings) {
+   );
+ }
+ 
++function renderObjectTypeOptions() {
++  if (!elements.type) {
++    return;
++  }
++
++  const selectedType = elements.type.value;
++  elements.type.replaceChildren(optionElement("", "Select type"));
++  sortedObjectTypes().forEach((objectType) => {
++    elements.type.append(optionElement(objectType.id, objectType.label));
++  });
++  elements.type.value = getObjectModelType(selectedType) ? selectedType : "";
++}
++
++function renderRegistryBasics() {
++  if (elements.typeBasics) {
++    elements.typeBasics.replaceChildren();
++    sortedObjectTypes().forEach((objectType) => {
++      const item = document.createElement("li");
++      const label = document.createElement("strong");
++      label.textContent = `${objectType.label}:`;
++      item.append(label, ` ${objectType.description} Traits: ${traitText(objectType.traits)}.`);
++      elements.typeBasics.append(item);
++    });
++  }
++
++  if (elements.traitBasics) {
++    elements.traitBasics.replaceChildren();
++    sortedTraits().forEach((trait) => {
++      const item = document.createElement("li");
++      const label = document.createElement("strong");
++      label.textContent = `${trait.id}:`;
++      item.append(label, ` ${trait.description}`);
++      elements.traitBasics.append(item);
++    });
++  }
++}
++
+ function render() {
+   const findings = objectListFindings(draftedObjects);
+   renderRequirements(draftedObjects);
+@@ -402,4 +519,6 @@ elements.list?.addEventListener("click", (event) => {
+   removeObject(button.dataset.objectsRemove || "");
+ });
+ 
++renderObjectTypeOptions();
++renderRegistryBasics();
+ render();
+diff --git a/docs_build/dev/reports/db-object-model-contract-report.md b/docs_build/dev/reports/db-object-model-contract-report.md
+new file mode 100644
+index 000000000..91af6186b
+--- /dev/null
++++ b/docs_build/dev/reports/db-object-model-contract-report.md
+@@ -0,0 +1,73 @@
++# PR_26161_002-db-object-model-contract Report
 +
 +## Branch Guard
 +
@@ -479,629 +433,799 @@ index 000000000..63e73b0fc
 +- Local branches found: `main`
 +- Branch validation: PASS
 +
-+## Source Of Truth
++## Scope Checklist
 +
-+- `docs_build/dev/PROJECT_INSTRUCTIONS.md` was read before execution.
-+- Named BUILD folder/file `docs_build/pr/PR_26161_001-objects-beta-rebuild/BUILD_PR.md` was not present.
-+- `docs_build/pr/BUILD_PR.md` was stale and unrelated (`BUILD_PR_LEVEL_18_1_OVERLAY_RUNTIME_HARDENING`).
-+- Execution used the user-provided structured PR block as the active BUILD source of truth.
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before BUILD execution.
++- PASS: Added shared object-model contract files under `src/engine/object-model/`.
++- PASS: Added object body/type registry for `Static`, `Dynamic`, `Collectible`, `Hazard`, and `Goal`.
++- PASS: Added trait registry for `movable`, `damageable`, `killable`, `playerControlled`, `bounces`, `collides`, `scores`, `collectible`, `hazard`, and `goal`.
++- PASS: Added object definition schema and validator for manifest/config-driven object definitions.
++- PASS: Validator returns visible, actionable issue objects with `code`, `path`, `message`, and `action`.
++- PASS: Validator rejects legacy names such as `objectStatic`, `objectDynamic`, and `objectKillable`; no legacy class hierarchy was restored.
++- PASS: Wired `toolbox/objects` to consume the shared object-model registry and validator instead of page-local type metadata.
++- PASS: Objects remains focused on static/dynamic paddle + ball MVP setup and visible diagnostics.
++- PASS: Theme V2 restrictions preserved; no inline CSS, inline JS, script blocks, style blocks, or inline event handlers were added.
++- PASS: No persistence, auth, sample JSON alignment, DB write behavior, or new engine runtime behavior was added.
++- PASS: No Toolbox/Admin metadata was changed in this PR.
 +
-+## Scope
++## Implementation Evidence
 +
-+Impacted lane: tool-runtime plus Toolbox/Admin metadata.
-+
-+Files changed:
-+
-+- `toolbox/objects/index.html`
-+- `toolbox/objects/objects.js`
-+- `src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
-+- `tests/playwright/tools/ObjectsTool.spec.mjs`
-+- `tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs`
-+- `tests/playwright/tools/RootToolsFutureState.spec.mjs`
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/objects-beta-rebuild-report.md`
-+
-+## Requirement Checklist
-+
-+- PASS: Rebuilt `toolbox/objects` as a Tool Template V2-style first-class surface with header, Tool Display Mode host, left setup panel, center workspace, right output/validation/status panels, and working accordions.
-+- PASS: Used Theme V2 only. No inline CSS, no inline JS, no `<style>` blocks, no inline event handlers.
-+- PASS: Added an external Objects module with in-memory-only object setup behavior.
-+- PASS: Kept the tool focused on the paddle + ball MVP path with a seeded Dynamic paddle, Dynamic ball, and Static boundary.
-+- PASS: Added object type basics for Static, Dynamic, Collectible, Hazard, and Goal.
-+- PASS: Added visible output, status logging, MVP requirement rows, and actionable validation diagnostics.
-+- PASS: Added no persistence, save/load, auth, sample JSON alignment, or engine runtime behavior.
-+- PASS: Updated DB-backed tool metadata only after targeted Objects Playwright passed.
-+- PASS: Marked Objects beta after execution evidence and targeted validation passed.
++- `src/engine/object-model/objectModelRegistry.js` owns the shared object body/type registry and trait registry.
++- `src/engine/object-model/objectDefinitionSchema.js` owns the object definition schema metadata.
++- `src/engine/object-model/objectDefinitionValidator.js` validates definitions, rejects unknown fields/types/traits, rejects duplicate traits, and preserves incoming payloads without mutation.
++- `src/engine/object-model/index.js` exports the shared contract.
++- `toolbox/objects/objects.js` imports the shared registry/validator, renders object type and trait basics from the registry, derives MVP traits for draft rows, and validates draft/list definitions through the shared validator.
++- `tests/engine/ObjectModelContract.test.mjs` covers registry membership, schema enum alignment, valid payload cloning/no mutation, actionable invalid diagnostics, and legacy type rejection.
++- `tests/playwright/tools/ObjectsTool.spec.mjs` now verifies shared trait registry visibility and trait-backed MVP seeded output.
 +
 +## Validation
 +
-+Changed-file syntax checks:
-+
-+- PASS: `node --check toolbox/objects/objects.js`
-+- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
-+- PASS: `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
-+- PASS: `node --check tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs`
-+- PASS: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
-+- PASS: no inline style/script/event-handler matches in `toolbox/objects/index.html`
++- PASS: `node --check src\engine\object-model\objectModelRegistry.js`
++- PASS: `node --check src\engine\object-model\objectDefinitionSchema.js`
++- PASS: `node --check src\engine\object-model\objectDefinitionValidator.js`
++- PASS: `node --check src\engine\object-model\index.js`
++- PASS: `node --check toolbox\objects\objects.js`
++- PASS: `node --check tests\engine\ObjectModelContract.test.mjs`
++- PASS: `node --check tests\playwright\tools\ObjectsTool.spec.mjs`
++- PASS: `node .\scripts\run-node-test-files.mjs tests\engine\ObjectModelContract.test.mjs`
++- PASS: `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs`
++- PASS: `Select-String -Path toolbox\objects\index.html -Pattern '<style\b','\son[a-z]+\s*=','<script(?![^>]*\bsrc=)'` returned no matches.
 +- PASS: `git diff --check`
 +
-+Targeted Playwright:
++Note: an initial Playwright invocation used a Windows backslash path and returned `No tests found`; the corrected forward-slash path above matched and passed both targeted Objects tests.
 +
-+- PASS: `node node_modules/@playwright/test/cli.js test tests/playwright/tools/ObjectsTool.spec.mjs tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs --project=playwright --workers=1 --reporter=list`
-+- Result: 6 passed
++## Playwright V8 Coverage
 +
-+Coverage:
-+
-+- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` produced by Playwright V8 coverage.
-+- Objects runtime coverage: `(95%) toolbox/objects/objects.js - executed lines 365/365; executed functions 38/40`
-+- WARN: `src/dev-runtime/guest-seeds/tool-metadata-inventory.js` is changed runtime-classified JS but is server/dev-runtime metadata, so browser V8 did not collect it. This is advisory per project instructions.
++- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` was regenerated by the targeted Objects Playwright run.
++- PASS: Changed PR_002 runtime JS covered by Playwright V8:
++  - `src/engine/object-model/index.js`
++  - `src/engine/object-model/objectDefinitionSchema.js`
++  - `src/engine/object-model/objectDefinitionValidator.js`
++  - `src/engine/object-model/objectModelRegistry.js`
++  - `toolbox/objects/objects.js`
++- WARN: The coverage helper also reported `src/dev-runtime/guest-seeds/tool-metadata-inventory.js` from its HEAD-change detection path. That file is not modified in this PR working diff, and no Toolbox/Admin metadata behavior was changed here.
 +
 +## Skipped Lanes
 +
-+- SKIP: full samples validation. Safe to skip because no sample JSON, sample loader, shared sample framework, or engine runtime behavior changed.
-+- SKIP: engine lane. Safe to skip because no `src/engine` behavior or engine runtime contract changed.
-+- SKIP: broad toolbox route sweep. Safe to skip because targeted Objects coverage plus Toolbox/Admin metadata coverage exercised the changed tool surface and metadata contract.
-+- SKIP: `toolbox/workspace-manager-v2` registration. Safe to skip because that folder does not exist in this checkout; Objects was already registered through current header navigation and DB-backed toolbox metadata route contracts.
++- SKIP: Full samples validation. Safe to skip because this PR does not touch sample JSON, sample launch flows, or sample runtime contracts.
++- SKIP: Toolbox/Admin metadata Playwright. Safe to skip because no tool metadata file changed in this PR.
++- SKIP: Broad engine/runtime suites. Safe to skip because the new object-model module is an authoring contract and validator only; runtime object instantiation and parser behavior were not changed.
++- SKIP: Auth, persistence, and DB adapter tests. Safe to skip because this PR adds no persistence/auth behavior and performs no DB writes.
 +
 +## Manual Notes
 +
-+- Objects page launches from `toolbox/objects/index.html`.
-+- Seed Paddle + Ball creates three in-memory rows and validates the MVP path.
-+- Add Object blocks missing fields and invalid Paddle/Ball/Boundary type combinations with actionable diagnostics.
-+- Reset/remove actions affect only the in-memory page draft.
-diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
++- Objects still uses the First-Class Tool V2 surface and Theme V2 CSS.
++- Object type choices and visible type/trait registry lists are generated from `src/engine/object-model/`.
++- The MVP seeded path remains in-memory only and validates as ready with a Dynamic paddle, Dynamic ball, and Static boundary.
+diff --git a/src/engine/object-model/index.js b/src/engine/object-model/index.js
 new file mode 100644
-index 000000000..428c20a43
+index 000000000..28648c47f
 --- /dev/null
-+++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -0,0 +1,136 @@
-+import { expect, test } from "@playwright/test";
-+import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
-+import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
-+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
++++ b/src/engine/object-model/index.js
+@@ -0,0 +1,32 @@
++/*
++Toolbox Aid
++David Quesenberry
++06/10/2026
++index.js
++*/
 +
-+test.beforeEach(async ({ page }) => {
-+  await installPlaywrightStorageIsolation(page, {
-+    lane: "objects",
-+    surface: "Objects Tool MVP setup"
-+  });
++export {
++  OBJECT_MODEL_TRAIT_IDS,
++  OBJECT_MODEL_TRAIT_LIST,
++  OBJECT_MODEL_TRAIT_REGISTRY,
++  OBJECT_MODEL_TYPE_IDS,
++  OBJECT_MODEL_TYPE_LIST,
++  OBJECT_MODEL_TYPE_REGISTRY,
++  getObjectModelTrait,
++  getObjectModelType,
++  isObjectModelTrait,
++  isObjectModelType,
++} from "./objectModelRegistry.js";
++
++export {
++  OBJECT_DEFINITION_SCHEMA,
++  OBJECT_DEFINITION_SCHEMA_ID,
++  OBJECT_DEFINITION_SCHEMA_VERSION,
++  getObjectDefinitionSchema,
++} from "./objectDefinitionSchema.js";
++
++export {
++  OBJECT_DEFINITION_VALIDATION_CODES,
++  validateObjectDefinition,
++  validateObjectDefinitionList,
++} from "./objectDefinitionValidator.js";
+diff --git a/src/engine/object-model/objectDefinitionSchema.js b/src/engine/object-model/objectDefinitionSchema.js
+new file mode 100644
+index 000000000..ee28cb09f
+--- /dev/null
++++ b/src/engine/object-model/objectDefinitionSchema.js
+@@ -0,0 +1,49 @@
++/*
++Toolbox Aid
++David Quesenberry
++06/10/2026
++objectDefinitionSchema.js
++*/
++
++import { OBJECT_MODEL_TRAIT_LIST, OBJECT_MODEL_TYPE_LIST } from "./objectModelRegistry.js";
++
++export const OBJECT_DEFINITION_SCHEMA_ID = "gamefoundrystudio.object-model.definition/1";
++export const OBJECT_DEFINITION_SCHEMA_VERSION = 1;
++
++const OBJECT_MODEL_TYPE_ENUM = Object.freeze(OBJECT_MODEL_TYPE_LIST.map((objectType) => objectType.id));
++const OBJECT_MODEL_TRAIT_ENUM = Object.freeze(OBJECT_MODEL_TRAIT_LIST.map((trait) => trait.id));
++const OBJECT_DEFINITION_STATE_ENUM = Object.freeze(["Active", "Idle", "Disabled"]);
++
++export const OBJECT_DEFINITION_SCHEMA = Object.freeze({
++  $id: OBJECT_DEFINITION_SCHEMA_ID,
++  $schema: "https://json-schema.org/draft/2020-12/schema",
++  additionalProperties: false,
++  properties: Object.freeze({
++    behavior: Object.freeze({ type: "string" }),
++    id: Object.freeze({ minLength: 1, type: "string" }),
++    interaction: Object.freeze({ type: "string" }),
++    name: Object.freeze({ minLength: 1, type: "string" }),
++    role: Object.freeze({ type: "string" }),
++    state: Object.freeze({ enum: OBJECT_DEFINITION_STATE_ENUM, type: "string" }),
++    traits: Object.freeze({
++      items: Object.freeze({
++        enum: OBJECT_MODEL_TRAIT_ENUM,
++        type: "string",
++      }),
++      type: "array",
++      uniqueItems: true,
++    }),
++    type: Object.freeze({
++      enum: OBJECT_MODEL_TYPE_ENUM,
++      type: "string",
++    }),
++  }),
++  required: Object.freeze(["name", "type", "traits"]),
++  title: "GameFoundryStudio Object Definition",
++  type: "object",
++  version: OBJECT_DEFINITION_SCHEMA_VERSION,
 +});
 +
-+test.afterEach(async ({ page }) => {
-+  await clearPlaywrightStorage(page);
++export function getObjectDefinitionSchema() {
++  return OBJECT_DEFINITION_SCHEMA;
++}
+diff --git a/src/engine/object-model/objectDefinitionValidator.js b/src/engine/object-model/objectDefinitionValidator.js
+new file mode 100644
+index 000000000..cb2db7beb
+--- /dev/null
++++ b/src/engine/object-model/objectDefinitionValidator.js
+@@ -0,0 +1,306 @@
++/*
++Toolbox Aid
++David Quesenberry
++06/10/2026
++objectDefinitionValidator.js
++*/
++
++import { OBJECT_DEFINITION_SCHEMA } from "./objectDefinitionSchema.js";
++import {
++  OBJECT_MODEL_TRAIT_LIST,
++  OBJECT_MODEL_TYPE_LIST,
++  getObjectModelTrait,
++  getObjectModelType,
++} from "./objectModelRegistry.js";
++
++export const OBJECT_DEFINITION_VALIDATION_CODES = Object.freeze({
++  DEFINITION_INVALID: "OBJECT_DEFINITION_INVALID",
++  FIELD_UNKNOWN: "OBJECT_DEFINITION_FIELD_UNKNOWN",
++  NAME_REQUIRED: "OBJECT_DEFINITION_NAME_REQUIRED",
++  NAME_INVALID: "OBJECT_DEFINITION_NAME_INVALID",
++  TYPE_REQUIRED: "OBJECT_DEFINITION_TYPE_REQUIRED",
++  TYPE_INVALID: "OBJECT_DEFINITION_TYPE_INVALID",
++  TRAITS_REQUIRED: "OBJECT_DEFINITION_TRAITS_REQUIRED",
++  TRAITS_INVALID: "OBJECT_DEFINITION_TRAITS_INVALID",
++  TRAIT_DUPLICATE: "OBJECT_DEFINITION_TRAIT_DUPLICATE",
++  TRAIT_INVALID: "OBJECT_DEFINITION_TRAIT_INVALID",
++  STATE_INVALID: "OBJECT_DEFINITION_STATE_INVALID",
++  FIELD_INVALID: "OBJECT_DEFINITION_FIELD_INVALID",
++  DEFINITIONS_INVALID: "OBJECT_DEFINITIONS_INVALID",
 +});
 +
-+test.afterAll(async () => {
-+  await workspaceV2CoverageReporter.writeReport();
-+});
++const OBJECT_DEFINITION_FIELDS = Object.freeze(Object.keys(OBJECT_DEFINITION_SCHEMA.properties));
++const OBJECT_DEFINITION_STATES = Object.freeze(OBJECT_DEFINITION_SCHEMA.properties.state.enum);
 +
-+async function openObjectsPage(page) {
-+  const server = await startRepoServer();
-+  const failedRequests = [];
-+  const pageErrors = [];
-+  const consoleErrors = [];
++export function validateObjectDefinition(definition, options = {}) {
++  const path = validationPath(options.path, "definition");
++  const issues = [];
 +
-+  page.on("pageerror", (error) => {
-+    pageErrors.push(error.message);
-+  });
-+  page.on("console", (message) => {
-+    if (message.type() === "error") {
-+      consoleErrors.push(message.text());
++  if (!isRecord(definition)) {
++    issues.push(createIssue(
++      OBJECT_DEFINITION_VALIDATION_CODES.DEFINITION_INVALID,
++      path,
++      "Object definition must be an object.",
++      "Provide one object definition with name, type, and traits fields."
++    ));
++    return createValidationResult({ definition: null, issues });
++  }
++
++  Object.keys(definition).forEach((fieldName) => {
++    if (OBJECT_DEFINITION_FIELDS.includes(fieldName)) {
++      return;
 +    }
-+  });
-+  page.on("response", (response) => {
-+    if (response.status() >= 400) {
-+      failedRequests.push(`${response.status()} ${response.url()}`);
-+    }
-+  });
-+  page.on("requestfailed", (request) => {
-+    failedRequests.push(`FAILED ${request.url()}`);
++    issues.push(createIssue(
++      OBJECT_DEFINITION_VALIDATION_CODES.FIELD_UNKNOWN,
++      `${path}.${fieldName}`,
++      `Object definition field ${fieldName} is not declared by the object definition schema.`,
++      `Remove ${fieldName} or add it through a future declared object-model contract change.`
++    ));
 +  });
 +
-+  await workspaceV2CoverageReporter.start(page);
-+  await page.goto(`${server.baseUrl}/toolbox/objects/index.html`, { waitUntil: "networkidle" });
-+  return { consoleErrors, failedRequests, pageErrors, server };
++  const name = readRequiredStringField(definition, "name", path, issues, {
++    invalidCode: OBJECT_DEFINITION_VALIDATION_CODES.NAME_INVALID,
++    invalidMessage: "Object definition name must be text.",
++    missingCode: OBJECT_DEFINITION_VALIDATION_CODES.NAME_REQUIRED,
++    missingMessage: "Object definition requires a name.",
++    missingAction: "Name the object before adding it to the draft list.",
++  });
++
++  const type = readRequiredStringField(definition, "type", path, issues, {
++    invalidCode: OBJECT_DEFINITION_VALIDATION_CODES.TYPE_INVALID,
++    invalidMessage: "Object definition type must be text.",
++    missingCode: OBJECT_DEFINITION_VALIDATION_CODES.TYPE_REQUIRED,
++    missingMessage: "Object definition requires a type.",
++    missingAction: `Choose ${choiceText(OBJECT_MODEL_TYPE_LIST.map((objectType) => objectType.id))}.`,
++  });
++
++  if (type && getObjectModelType(type) === null) {
++    issues.push(createIssue(
++      OBJECT_DEFINITION_VALIDATION_CODES.TYPE_INVALID,
++      `${path}.type`,
++      `Object definition type ${type} is not registered.`,
++      `Choose ${choiceText(OBJECT_MODEL_TYPE_LIST.map((objectType) => objectType.id))}.`
++    ));
++  }
++
++  const traits = readTraits(definition, path, issues);
++  const objectDefinition = {
++    name,
++    traits,
++    type,
++  };
++
++  copyOptionalStringField(definition, objectDefinition, "behavior", path, issues);
++  copyOptionalStringField(definition, objectDefinition, "id", path, issues);
++  copyOptionalStringField(definition, objectDefinition, "interaction", path, issues);
++  copyOptionalStringField(definition, objectDefinition, "role", path, issues);
++  copyStateField(definition, objectDefinition, path, issues);
++
++  return createValidationResult({
++    definition: issues.length === 0 ? Object.freeze(objectDefinition) : null,
++    issues,
++  });
 +}
 +
-+async function expectNoPageFailures(failures) {
-+  expect(failures.failedRequests).toEqual([]);
-+  expect(failures.pageErrors).toEqual([]);
-+  expect(failures.consoleErrors).toEqual([]);
++export function validateObjectDefinitionList(definitions, options = {}) {
++  const path = validationPath(options.path, "definitions");
++  if (!Array.isArray(definitions)) {
++    return createListValidationResult({
++      definitions: [],
++      issues: [
++        createIssue(
++          OBJECT_DEFINITION_VALIDATION_CODES.DEFINITIONS_INVALID,
++          path,
++          "Object definitions must be an array.",
++          "Provide an array of object definitions before validating a batch."
++        ),
++      ],
++    });
++  }
++
++  const objectDefinitions = [];
++  const issues = [];
++
++  definitions.forEach((definition, index) => {
++    const validation = validateObjectDefinition(definition, { path: `${path}[${index}]` });
++    if (validation.valid) {
++      objectDefinitions.push(validation.definition);
++      return;
++    }
++    validation.issues.forEach((issue) => {
++      issues.push(issue);
++    });
++  });
++
++  return createListValidationResult({
++    definitions: issues.length === 0 ? objectDefinitions : [],
++    issues,
++  });
 +}
 +
-+test("Objects seeds a usable paddle and ball MVP setup with visible diagnostics", async ({ page }) => {
-+  const failures = await openObjectsPage(page);
-+
-+  try {
-+    await expect(page.locator(".tool-workspace")).toBeVisible();
-+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-+    await expect(page.locator("[data-objects-readiness]")).toHaveText("Needs Input");
-+    await expect(page.locator("[data-objects-validation-overlay]")).toBeVisible();
-+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Dynamic paddle");
-+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Dynamic ball");
-+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Static play boundary");
-+    await expect(page.locator("[data-objects-type-basics]")).toContainText("Static");
-+    await expect(page.locator("[data-objects-type-basics]")).toContainText("Dynamic");
-+    await expect(page.locator("[data-objects-type-basics]")).toContainText("Collectible");
-+    await expect(page.locator("[data-objects-type-basics]")).toContainText("Hazard");
-+    await expect(page.locator("[data-objects-type-basics]")).toContainText("Goal");
-+
-+    await page.getByRole("button", { name: "Seed Paddle + Ball" }).click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Seeded paddle + ball MVP objects: Player Paddle, Game Ball, and Arena Boundary.");
-+    await expect(page.locator("[data-objects-readiness]")).toHaveText("Ready");
-+    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Ready");
-+    await expect(page.locator("[data-objects-count]")).toHaveText("3");
-+    await expect(page.locator("[data-objects-output-static]")).toHaveText("1");
-+    await expect(page.locator("[data-objects-output-dynamic]")).toHaveText("2");
-+    await expect(page.locator("[data-objects-validation-overlay]")).toBeHidden();
-+    await expect(page.locator("[data-objects-list] tr")).toHaveCount(3);
-+    await expect(page.locator("[data-objects-list]")).toContainText("Player Paddle");
-+    await expect(page.locator("[data-objects-list]")).toContainText("Game Ball");
-+    await expect(page.locator("[data-objects-list]")).toContainText("Arena Boundary");
-+    await expect(page.locator("[data-objects-output-mvp]")).toHaveText("Paddle + ball setup has the required Dynamic paddle, Dynamic ball, and Static boundary.");
-+
-+    await page.getByRole("button", { name: "Validate Setup" }).click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Validation PASS: Objects MVP setup is ready for authoring handoff.");
-+    await expect(page.locator("[data-objects-validation-list]")).toHaveText("PASS: Paddle + ball MVP object setup is ready.");
-+    await expect(page.locator("[data-objects-output] pre, [data-objects-output] code")).toHaveCount(0);
-+    await expect(page.locator("[data-objects-output]")).not.toContainText("{");
-+
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await workspaceV2CoverageReporter.stop(page);
-+    await failures.server.close();
++function readRequiredStringField(definition, fieldName, path, issues, messages) {
++  if (!Object.hasOwn(definition, fieldName) || definition[fieldName] === null || definition[fieldName] === undefined) {
++    issues.push(createIssue(messages.missingCode, `${path}.${fieldName}`, messages.missingMessage, messages.missingAction));
++    return "";
 +  }
-+});
 +
-+test("Objects blocks invalid draft rows with actionable validation", async ({ page }) => {
-+  const failures = await openObjectsPage(page);
-+
-+  try {
-+    await page.getByRole("button", { name: "Add Object" }).click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Draft blocked: 3 validation actions.");
-+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Object Type: Choose Static, Dynamic, Collectible, Hazard, or Goal.");
-+    await expect(page.locator("[data-objects-validation-list]")).toContainText("MVP Role: Choose the MVP role this object serves.");
-+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Object Name: Name the object before adding it to the draft list.");
-+    await expect(page.locator("[data-objects-list] tr")).toHaveCount(1);
-+    await expect(page.locator("[data-objects-list]")).toContainText("No objects drafted yet.");
-+
-+    await page.getByLabel("Object Type").selectOption("Static");
-+    await page.getByLabel("MVP Role").selectOption("Paddle");
-+    await page.getByLabel("Object Name").fill("Static Paddle");
-+    await page.getByRole("button", { name: "Add Object" }).click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Draft blocked: 1 validation action.");
-+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Paddle Type: Set the Paddle role to Dynamic");
-+
-+    await page.getByLabel("Object Type").selectOption("Dynamic");
-+    await page.getByLabel("Behavior Notes").fill("Moves from input.");
-+    await page.getByLabel("Interaction Notes").fill("Deflects the ball.");
-+    await page.getByRole("button", { name: "Add Object" }).click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Added Static Paddle as a Dynamic Paddle.");
-+    await expect(page.locator("[data-objects-list]")).toContainText("Static Paddle");
-+    await expect(page.locator("[data-objects-readiness]")).toHaveText("Needs Input");
-+    await expect(page.locator("[data-objects-validation-list]")).toContainText("Dynamic ball");
-+
-+    await page.locator("[data-objects-remove='static-paddle']").click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Removed object from the in-memory draft.");
-+    await expect(page.locator("[data-objects-list]")).toContainText("No objects drafted yet.");
-+
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await workspaceV2CoverageReporter.stop(page);
-+    await failures.server.close();
++  if (typeof definition[fieldName] !== "string") {
++    issues.push(createIssue(
++      messages.invalidCode,
++      `${path}.${fieldName}`,
++      messages.invalidMessage,
++      `Set ${fieldName} to a non-empty text value.`
++    ));
++    return "";
 +  }
-+});
-diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
++
++  const value = definition[fieldName].trim();
++  if (!value) {
++    issues.push(createIssue(messages.missingCode, `${path}.${fieldName}`, messages.missingMessage, messages.missingAction));
++  }
++  return value;
++}
++
++function readTraits(definition, path, issues) {
++  if (!Object.hasOwn(definition, "traits")) {
++    issues.push(createIssue(
++      OBJECT_DEFINITION_VALIDATION_CODES.TRAITS_REQUIRED,
++      `${path}.traits`,
++      "Object definition requires an explicit traits array.",
++      `Declare traits from ${choiceText(OBJECT_MODEL_TRAIT_LIST.map((trait) => trait.id))}.`
++    ));
++    return Object.freeze([]);
++  }
++
++  if (!Array.isArray(definition.traits)) {
++    issues.push(createIssue(
++      OBJECT_DEFINITION_VALIDATION_CODES.TRAITS_INVALID,
++      `${path}.traits`,
++      "Object definition traits must be an array.",
++      "Use an array of registered trait ids for traits."
++    ));
++    return Object.freeze([]);
++  }
++
++  const traits = [];
++  const seenTraits = new Set();
++  definition.traits.forEach((traitId, index) => {
++    if (typeof traitId !== "string" || !traitId.trim()) {
++      issues.push(createIssue(
++        OBJECT_DEFINITION_VALIDATION_CODES.TRAIT_INVALID,
++        `${path}.traits[${index}]`,
++        "Object definition trait ids must be non-empty text.",
++        `Use one of ${choiceText(OBJECT_MODEL_TRAIT_LIST.map((trait) => trait.id))}.`
++      ));
++      return;
++    }
++
++    const normalizedTraitId = traitId.trim();
++    if (seenTraits.has(normalizedTraitId)) {
++      issues.push(createIssue(
++        OBJECT_DEFINITION_VALIDATION_CODES.TRAIT_DUPLICATE,
++        `${path}.traits[${index}]`,
++        `Object definition repeats trait ${normalizedTraitId}.`,
++        `Remove the duplicate ${normalizedTraitId} trait.`
++      ));
++      return;
++    }
++    seenTraits.add(normalizedTraitId);
++
++    if (getObjectModelTrait(normalizedTraitId) === null) {
++      issues.push(createIssue(
++        OBJECT_DEFINITION_VALIDATION_CODES.TRAIT_INVALID,
++        `${path}.traits[${index}]`,
++        `Object definition trait ${normalizedTraitId} is not registered.`,
++        `Use one of ${choiceText(OBJECT_MODEL_TRAIT_LIST.map((trait) => trait.id))}.`
++      ));
++    }
++    traits.push(normalizedTraitId);
++  });
++
++  return Object.freeze(traits);
++}
++
++function copyOptionalStringField(source, target, fieldName, path, issues) {
++  if (!Object.hasOwn(source, fieldName) || source[fieldName] === null || source[fieldName] === undefined) {
++    return;
++  }
++
++  if (typeof source[fieldName] !== "string") {
++    issues.push(createIssue(
++      OBJECT_DEFINITION_VALIDATION_CODES.FIELD_INVALID,
++      `${path}.${fieldName}`,
++      `Object definition ${fieldName} must be text when provided.`,
++      `Set ${fieldName} to text or remove the field.`
++    ));
++    return;
++  }
++
++  const value = source[fieldName].trim();
++  if (value) {
++    target[fieldName] = value;
++  }
++}
++
++function copyStateField(source, target, path, issues) {
++  if (!Object.hasOwn(source, "state") || source.state === null || source.state === undefined || source.state === "") {
++    return;
++  }
++
++  if (typeof source.state !== "string") {
++    issues.push(createIssue(
++      OBJECT_DEFINITION_VALIDATION_CODES.STATE_INVALID,
++      `${path}.state`,
++      "Object definition state must be text when provided.",
++      `Use ${choiceText(OBJECT_DEFINITION_STATES)}.`
++    ));
++    return;
++  }
++
++  const state = source.state.trim();
++  if (!OBJECT_DEFINITION_STATES.includes(state)) {
++    issues.push(createIssue(
++      OBJECT_DEFINITION_VALIDATION_CODES.STATE_INVALID,
++      `${path}.state`,
++      `Object definition state ${state} is not supported.`,
++      `Use ${choiceText(OBJECT_DEFINITION_STATES)}.`
++    ));
++    return;
++  }
++  target.state = state;
++}
++
++function createValidationResult({ definition, issues }) {
++  return Object.freeze({
++    definition,
++    issues: Object.freeze(issues),
++    valid: issues.length === 0,
++  });
++}
++
++function createListValidationResult({ definitions, issues }) {
++  return Object.freeze({
++    definitions: Object.freeze(definitions),
++    issues: Object.freeze(issues),
++    valid: issues.length === 0,
++  });
++}
++
++function createIssue(code, path, message, action) {
++  return Object.freeze({ action, code, message, path });
++}
++
++function choiceText(values) {
++  if (values.length < 2) {
++    return values.join("");
++  }
++  return `${values.slice(0, -1).join(", ")}, or ${values[values.length - 1]}`;
++}
++
++function validationPath(value, fallback) {
++  return typeof value === "string" && value.trim() ? value.trim() : fallback;
++}
++
++function isRecord(value) {
++  return value !== null && typeof value === "object" && !Array.isArray(value);
++}
+diff --git a/src/engine/object-model/objectModelRegistry.js b/src/engine/object-model/objectModelRegistry.js
 new file mode 100644
-index 000000000..e2137faa2
+index 000000000..5b7a55375
 --- /dev/null
-+++ b/toolbox/objects/objects.js
-@@ -0,0 +1,405 @@
-+const OBJECT_TYPES = Object.freeze(["Static", "Dynamic", "Collectible", "Hazard", "Goal"]);
++++ b/src/engine/object-model/objectModelRegistry.js
+@@ -0,0 +1,172 @@
++/*
++Toolbox Aid
++David Quesenberry
++06/10/2026
++objectModelRegistry.js
++*/
 +
-+const MVP_REQUIREMENTS = Object.freeze([
-+  {
-+    action: "Add a Dynamic object with the Paddle role.",
-+    label: "Dynamic paddle",
-+    test: (objects) => objects.some((object) => object.type === "Dynamic" && object.role === "Paddle")
-+  },
-+  {
-+    action: "Add a Dynamic object with the Ball role.",
-+    label: "Dynamic ball",
-+    test: (objects) => objects.some((object) => object.type === "Dynamic" && object.role === "Ball")
-+  },
-+  {
-+    action: "Add a Static object, usually a Boundary, so the ball has a fixed play area.",
-+    label: "Static play boundary",
-+    test: (objects) => objects.some((object) => object.type === "Static")
-+  }
-+]);
++export const OBJECT_MODEL_TYPE_IDS = Object.freeze({
++  STATIC: "Static",
++  DYNAMIC: "Dynamic",
++  COLLECTIBLE: "Collectible",
++  HAZARD: "Hazard",
++  GOAL: "Goal",
++});
 +
-+const SEEDED_OBJECTS = Object.freeze([
-+  Object.freeze({
-+    behavior: "Moves horizontally from player input.",
-+    interaction: "Deflects the ball and stays inside the play area.",
++export const OBJECT_MODEL_TRAIT_IDS = Object.freeze({
++  MOVABLE: "movable",
++  DAMAGEABLE: "damageable",
++  KILLABLE: "killable",
++  PLAYER_CONTROLLED: "playerControlled",
++  BOUNCES: "bounces",
++  COLLIDES: "collides",
++  SCORES: "scores",
++  COLLECTIBLE: "collectible",
++  HAZARD: "hazard",
++  GOAL: "goal",
++});
++
++const STATIC_OBJECT_TYPE = Object.freeze({
++  bodyKind: "fixed",
++  description: "Fixed body for boundaries, walls, platforms, or other non-moving playfield objects.",
++  id: OBJECT_MODEL_TYPE_IDS.STATIC,
++  label: "Static",
++  traits: Object.freeze([OBJECT_MODEL_TRAIT_IDS.COLLIDES]),
++});
++
++const DYNAMIC_OBJECT_TYPE = Object.freeze({
++  bodyKind: "moving",
++  description: "Moving body for paddle, ball, actor, or projectile-style MVP objects.",
++  id: OBJECT_MODEL_TYPE_IDS.DYNAMIC,
++  label: "Dynamic",
++  traits: Object.freeze([OBJECT_MODEL_TRAIT_IDS.MOVABLE, OBJECT_MODEL_TRAIT_IDS.COLLIDES]),
++});
++
++const COLLECTIBLE_OBJECT_TYPE = Object.freeze({
++  bodyKind: "pickup",
++  description: "Pickup body for score, inventory, or progress collection.",
++  id: OBJECT_MODEL_TYPE_IDS.COLLECTIBLE,
++  label: "Collectible",
++  traits: Object.freeze([OBJECT_MODEL_TRAIT_IDS.COLLECTIBLE, OBJECT_MODEL_TRAIT_IDS.SCORES]),
++});
++
++const HAZARD_OBJECT_TYPE = Object.freeze({
++  bodyKind: "danger",
++  description: "Danger body for failure, reset, or damage-producing objects.",
++  id: OBJECT_MODEL_TYPE_IDS.HAZARD,
++  label: "Hazard",
++  traits: Object.freeze([OBJECT_MODEL_TRAIT_IDS.HAZARD, OBJECT_MODEL_TRAIT_IDS.DAMAGEABLE]),
++});
++
++const GOAL_OBJECT_TYPE = Object.freeze({
++  bodyKind: "completion",
++  description: "Completion body for exits, win targets, scoring targets, or level goals.",
++  id: OBJECT_MODEL_TYPE_IDS.GOAL,
++  label: "Goal",
++  traits: Object.freeze([OBJECT_MODEL_TRAIT_IDS.GOAL, OBJECT_MODEL_TRAIT_IDS.SCORES]),
++});
++
++export const OBJECT_MODEL_TYPE_REGISTRY = Object.freeze({
++  [OBJECT_MODEL_TYPE_IDS.STATIC]: STATIC_OBJECT_TYPE,
++  [OBJECT_MODEL_TYPE_IDS.DYNAMIC]: DYNAMIC_OBJECT_TYPE,
++  [OBJECT_MODEL_TYPE_IDS.COLLECTIBLE]: COLLECTIBLE_OBJECT_TYPE,
++  [OBJECT_MODEL_TYPE_IDS.HAZARD]: HAZARD_OBJECT_TYPE,
++  [OBJECT_MODEL_TYPE_IDS.GOAL]: GOAL_OBJECT_TYPE,
++});
++
++export const OBJECT_MODEL_TYPE_LIST = Object.freeze(Object.values(OBJECT_MODEL_TYPE_REGISTRY));
++
++const MOVABLE_TRAIT = Object.freeze({
++  description: "Object position can be changed by authoring logic, input, or simulation.",
++  id: OBJECT_MODEL_TRAIT_IDS.MOVABLE,
++  label: "Movable",
++});
++
++const DAMAGEABLE_TRAIT = Object.freeze({
++  description: "Object can receive damage or damaging interactions.",
++  id: OBJECT_MODEL_TRAIT_IDS.DAMAGEABLE,
++  label: "Damageable",
++});
++
++const KILLABLE_TRAIT = Object.freeze({
++  description: "Object can be defeated, removed, or failed by authored conditions.",
++  id: OBJECT_MODEL_TRAIT_IDS.KILLABLE,
++  label: "Killable",
++});
++
++const PLAYER_CONTROLLED_TRAIT = Object.freeze({
++  description: "Object is intended to respond to player control mapping.",
++  id: OBJECT_MODEL_TRAIT_IDS.PLAYER_CONTROLLED,
++  label: "Player Controlled",
++});
++
++const BOUNCES_TRAIT = Object.freeze({
++  description: "Object is intended to rebound from colliding surfaces.",
++  id: OBJECT_MODEL_TRAIT_IDS.BOUNCES,
++  label: "Bounces",
++});
++
++const COLLIDES_TRAIT = Object.freeze({
++  description: "Object participates in collision checks or blocking interactions.",
++  id: OBJECT_MODEL_TRAIT_IDS.COLLIDES,
++  label: "Collides",
++});
++
++const SCORES_TRAIT = Object.freeze({
++  description: "Object can affect score, progress, or completion counters.",
++  id: OBJECT_MODEL_TRAIT_IDS.SCORES,
++  label: "Scores",
++});
++
++const COLLECTIBLE_TRAIT = Object.freeze({
++  description: "Object can be collected by another authored object.",
++  id: OBJECT_MODEL_TRAIT_IDS.COLLECTIBLE,
++  label: "Collectible",
++});
++
++const HAZARD_TRAIT = Object.freeze({
++  description: "Object represents danger or failure pressure.",
++  id: OBJECT_MODEL_TRAIT_IDS.HAZARD,
++  label: "Hazard",
++});
++
++const GOAL_TRAIT = Object.freeze({
++  description: "Object represents a win, exit, or completion target.",
++  id: OBJECT_MODEL_TRAIT_IDS.GOAL,
++  label: "Goal",
++});
++
++export const OBJECT_MODEL_TRAIT_REGISTRY = Object.freeze({
++  [OBJECT_MODEL_TRAIT_IDS.MOVABLE]: MOVABLE_TRAIT,
++  [OBJECT_MODEL_TRAIT_IDS.DAMAGEABLE]: DAMAGEABLE_TRAIT,
++  [OBJECT_MODEL_TRAIT_IDS.KILLABLE]: KILLABLE_TRAIT,
++  [OBJECT_MODEL_TRAIT_IDS.PLAYER_CONTROLLED]: PLAYER_CONTROLLED_TRAIT,
++  [OBJECT_MODEL_TRAIT_IDS.BOUNCES]: BOUNCES_TRAIT,
++  [OBJECT_MODEL_TRAIT_IDS.COLLIDES]: COLLIDES_TRAIT,
++  [OBJECT_MODEL_TRAIT_IDS.SCORES]: SCORES_TRAIT,
++  [OBJECT_MODEL_TRAIT_IDS.COLLECTIBLE]: COLLECTIBLE_TRAIT,
++  [OBJECT_MODEL_TRAIT_IDS.HAZARD]: HAZARD_TRAIT,
++  [OBJECT_MODEL_TRAIT_IDS.GOAL]: GOAL_TRAIT,
++});
++
++export const OBJECT_MODEL_TRAIT_LIST = Object.freeze(Object.values(OBJECT_MODEL_TRAIT_REGISTRY));
++
++export function getObjectModelType(typeId) {
++  return OBJECT_MODEL_TYPE_REGISTRY[registryKey(typeId)] || null;
++}
++
++export function getObjectModelTrait(traitId) {
++  return OBJECT_MODEL_TRAIT_REGISTRY[registryKey(traitId)] || null;
++}
++
++export function isObjectModelType(typeId) {
++  return getObjectModelType(typeId) !== null;
++}
++
++export function isObjectModelTrait(traitId) {
++  return getObjectModelTrait(traitId) !== null;
++}
++
++function registryKey(value) {
++  return typeof value === "string" ? value.trim() : "";
++}
+diff --git a/tests/engine/ObjectModelContract.test.mjs b/tests/engine/ObjectModelContract.test.mjs
+new file mode 100644
+index 000000000..bf5c1c90a
+--- /dev/null
++++ b/tests/engine/ObjectModelContract.test.mjs
+@@ -0,0 +1,143 @@
++/*
++Toolbox Aid
++David Quesenberry
++06/10/2026
++ObjectModelContract.test.mjs
++*/
++import assert from "node:assert/strict";
++import {
++  OBJECT_DEFINITION_VALIDATION_CODES,
++  OBJECT_MODEL_TRAIT_LIST,
++  OBJECT_MODEL_TYPE_LIST,
++  getObjectDefinitionSchema,
++  getObjectModelTrait,
++  getObjectModelType,
++  validateObjectDefinition,
++  validateObjectDefinitionList,
++} from "../../src/engine/object-model/index.js";
++
++export function run() {
++  assert.deepEqual(OBJECT_MODEL_TYPE_LIST.map((objectType) => objectType.id), [
++    "Static",
++    "Dynamic",
++    "Collectible",
++    "Hazard",
++    "Goal",
++  ]);
++  assert.deepEqual(OBJECT_MODEL_TRAIT_LIST.map((trait) => trait.id), [
++    "movable",
++    "damageable",
++    "killable",
++    "playerControlled",
++    "bounces",
++    "collides",
++    "scores",
++    "collectible",
++    "hazard",
++    "goal",
++  ]);
++  assert.equal(getObjectModelType("objectStatic"), null);
++  assert.equal(getObjectModelType("objectDynamic"), null);
++  assert.equal(getObjectModelTrait("objectKillable"), null);
++
++  const schema = getObjectDefinitionSchema();
++  assert.equal(schema.$id, "gamefoundrystudio.object-model.definition/1");
++  assert.deepEqual(schema.required, ["name", "type", "traits"]);
++  assert.deepEqual(schema.properties.type.enum, OBJECT_MODEL_TYPE_LIST.map((objectType) => objectType.id));
++  assert.deepEqual(schema.properties.traits.items.enum, OBJECT_MODEL_TRAIT_LIST.map((trait) => trait.id));
++
++  const paddleDefinition = Object.freeze({
++    behavior: "Moves from player input.",
++    interaction: "Deflects the ball.",
 +    name: "Player Paddle",
 +    role: "Paddle",
 +    state: "Active",
-+    type: "Dynamic"
-+  }),
-+  Object.freeze({
-+    behavior: "Moves continuously after launch.",
-+    interaction: "Bounces off the paddle and static boundary.",
-+    name: "Game Ball",
-+    role: "Ball",
-+    state: "Active",
-+    type: "Dynamic"
-+  }),
-+  Object.freeze({
-+    behavior: "Does not move.",
-+    interaction: "Keeps the ball inside the MVP playfield.",
-+    name: "Arena Boundary",
-+    role: "Boundary",
-+    state: "Active",
-+    type: "Static"
-+  })
-+]);
-+
-+let draftedObjects = [];
-+
-+const elements = {
-+  behavior: document.querySelector("[data-objects-behavior]"),
-+  count: document.querySelector("[data-objects-count]"),
-+  form: document.querySelector("[data-objects-form]"),
-+  interaction: document.querySelector("[data-objects-interaction]"),
-+  list: document.querySelector("[data-objects-list]"),
-+  log: document.querySelector("[data-objects-log]"),
-+  name: document.querySelector("[data-objects-name]"),
-+  outputDynamic: document.querySelector("[data-objects-output-dynamic]"),
-+  outputMvp: document.querySelector("[data-objects-output-mvp]"),
-+  outputReadiness: document.querySelector("[data-objects-output-readiness]"),
-+  outputStatic: document.querySelector("[data-objects-output-static]"),
-+  readiness: document.querySelector("[data-objects-readiness]"),
-+  requirements: document.querySelector("[data-objects-requirements]"),
-+  resetDraft: document.querySelector("[data-objects-reset-draft]"),
-+  role: document.querySelector("[data-objects-role]"),
-+  seedMvp: document.querySelector("[data-objects-seed-mvp]"),
-+  state: document.querySelector("[data-objects-state]"),
-+  type: document.querySelector("[data-objects-type]"),
-+  validate: document.querySelector("[data-objects-validate]"),
-+  validationList: document.querySelector("[data-objects-validation-list]"),
-+  validationOverlay: document.querySelector("[data-objects-validation-overlay]")
-+};
-+
-+function normalizeText(value) {
-+  return String(value || "").trim();
-+}
-+
-+function objectId(object) {
-+  return normalizeText(object.name)
-+    .toLowerCase()
-+    .replace(/[^a-z0-9]+/g, "-")
-+    .replace(/^-+|-+$/g, "");
-+}
-+
-+function setText(element, value) {
-+  if (element) {
-+    element.textContent = value;
-+  }
-+}
-+
-+function listItem(text) {
-+  const item = document.createElement("li");
-+  item.textContent = text;
-+  return item;
-+}
-+
-+function tableCell(text) {
-+  const cell = document.createElement("td");
-+  cell.textContent = text;
-+  return cell;
-+}
-+
-+function statusText(ok) {
-+  return ok ? "OK" : "Needs Action";
-+}
-+
-+function cloneObject(object) {
-+  return {
-+    behavior: normalizeText(object.behavior),
-+    interaction: normalizeText(object.interaction),
-+    name: normalizeText(object.name),
-+    role: normalizeText(object.role),
-+    state: normalizeText(object.state) || "Active",
-+    type: normalizeText(object.type)
-+  };
-+}
-+
-+function readDraft() {
-+  return cloneObject({
-+    behavior: elements.behavior?.value,
-+    interaction: elements.interaction?.value,
-+    name: elements.name?.value,
-+    role: elements.role?.value,
-+    state: elements.state?.value,
-+    type: elements.type?.value
++    traits: Object.freeze(["movable", "collides", "playerControlled"]),
++    type: "Dynamic",
 +  });
-+}
++  const beforeValidation = JSON.stringify(paddleDefinition);
++  const paddleValidation = validateObjectDefinition(paddleDefinition);
 +
-+function clearDraftForm() {
-+  if (elements.type) {
-+    elements.type.value = "";
-+  }
-+  if (elements.role) {
-+    elements.role.value = "";
-+  }
-+  if (elements.name) {
-+    elements.name.value = "";
-+  }
-+  if (elements.state) {
-+    elements.state.value = "Active";
-+  }
-+  if (elements.behavior) {
-+    elements.behavior.value = "";
-+  }
-+  if (elements.interaction) {
-+    elements.interaction.value = "";
-+  }
-+}
++  assert.equal(paddleValidation.valid, true);
++  assert.equal(JSON.stringify(paddleDefinition), beforeValidation);
++  assert.notEqual(paddleValidation.definition, paddleDefinition);
++  assert.notEqual(paddleValidation.definition.traits, paddleDefinition.traits);
++  assert.deepEqual(paddleValidation.definition, paddleDefinition);
 +
-+function draftFindings(draft) {
-+  const findings = [];
-+  if (!OBJECT_TYPES.includes(draft.type)) {
-+    findings.push({
-+      action: "Choose Static, Dynamic, Collectible, Hazard, or Goal.",
-+      label: "Object Type"
-+    });
-+  }
-+  if (!draft.role) {
-+    findings.push({
-+      action: "Choose the MVP role this object serves.",
-+      label: "MVP Role"
-+    });
-+  }
-+  if (!draft.name) {
-+    findings.push({
-+      action: "Name the object before adding it to the draft list.",
-+      label: "Object Name"
-+    });
-+  }
-+  if (draft.role === "Paddle" && draft.type && draft.type !== "Dynamic") {
-+    findings.push({
-+      action: "Set the Paddle role to Dynamic for the paddle + ball MVP path.",
-+      label: "Paddle Type"
-+    });
-+  }
-+  if (draft.role === "Ball" && draft.type && draft.type !== "Dynamic") {
-+    findings.push({
-+      action: "Set the Ball role to Dynamic so it can move in the MVP path.",
-+      label: "Ball Type"
-+    });
-+  }
-+  if (draft.role === "Boundary" && draft.type && draft.type !== "Static") {
-+    findings.push({
-+      action: "Set the Boundary role to Static so it can define the fixed play area.",
-+      label: "Boundary Type"
-+    });
-+  }
-+  if (draft.name && draftedObjects.some((object) => objectId(object) === objectId(draft))) {
-+    findings.push({
-+      action: "Use a unique object name or remove the existing draft row first.",
-+      label: "Duplicate Object"
-+    });
-+  }
-+  return findings;
-+}
-+
-+function objectListFindings(objects) {
-+  const findings = [];
-+  const seenIds = new Set();
-+
-+  objects.forEach((object, index) => {
-+    const label = object.name || `Object ${index + 1}`;
-+    if (!OBJECT_TYPES.includes(object.type)) {
-+      findings.push({
-+        action: `${label} must use Static, Dynamic, Collectible, Hazard, or Goal.`,
-+        label: `${label} Type`
-+      });
-+    }
-+    if (!object.role) {
-+      findings.push({
-+        action: `${label} needs an MVP role.`,
-+        label: `${label} Role`
-+      });
-+    }
-+    const id = objectId(object);
-+    if (!id) {
-+      findings.push({
-+        action: `Object ${index + 1} needs a name.`,
-+        label: `Object ${index + 1} Name`
-+      });
-+    } else if (seenIds.has(id)) {
-+      findings.push({
-+        action: `${label} duplicates another draft object name.`,
-+        label: `${label} Duplicate`
-+      });
-+    }
-+    seenIds.add(id);
-+  });
-+
-+  MVP_REQUIREMENTS.forEach((requirement) => {
-+    if (!requirement.test(objects)) {
-+      findings.push({
-+        action: requirement.action,
-+        label: requirement.label
-+      });
-+    }
-+  });
-+
-+  return findings;
-+}
-+
-+function readinessLabel(findings) {
-+  return findings.length === 0 ? "Ready" : "Needs Input";
-+}
-+
-+function renderValidation(findings) {
-+  if (!elements.validationList || !elements.validationOverlay) {
-+    return;
-+  }
-+
-+  elements.validationList.replaceChildren();
-+
-+  if (findings.length === 0) {
-+    elements.validationList.append(listItem("PASS: Paddle + ball MVP object setup is ready."));
-+    elements.validationOverlay.hidden = true;
-+    return;
-+  }
-+
-+  findings.forEach((finding) => {
-+    elements.validationList.append(listItem(`${finding.label}: ${finding.action}`));
-+  });
-+  elements.validationOverlay.hidden = false;
-+}
-+
-+function renderRequirements(objects) {
-+  if (!elements.requirements) {
-+    return;
-+  }
-+
-+  elements.requirements.replaceChildren();
-+  MVP_REQUIREMENTS.forEach((requirement) => {
-+    const row = document.createElement("tr");
-+    row.append(tableCell(requirement.label), tableCell(statusText(requirement.test(objects))));
-+    elements.requirements.append(row);
-+  });
-+}
-+
-+function renderObjectList(objects) {
-+  if (!elements.list) {
-+    return;
-+  }
-+
-+  elements.list.replaceChildren();
-+  if (objects.length === 0) {
-+    const row = document.createElement("tr");
-+    const empty = document.createElement("td");
-+    empty.colSpan = 5;
-+    empty.textContent = "No objects drafted yet.";
-+    row.append(empty);
-+    elements.list.append(row);
-+    return;
-+  }
-+
-+  objects.forEach((object) => {
-+    const row = document.createElement("tr");
-+    const action = document.createElement("td");
-+    const remove = document.createElement("button");
-+    remove.className = "btn btn--compact";
-+    remove.type = "button";
-+    remove.dataset.objectsRemove = objectId(object);
-+    remove.textContent = "Remove";
-+    action.append(remove);
-+    row.append(
-+      tableCell(object.name),
-+      tableCell(object.type),
-+      tableCell(object.role),
-+      tableCell(object.state),
-+      action
-+    );
-+    elements.list.append(row);
-+  });
-+}
-+
-+function renderOutput(objects, findings) {
-+  const staticCount = objects.filter((object) => object.type === "Static").length;
-+  const dynamicCount = objects.filter((object) => object.type === "Dynamic").length;
-+  const readiness = readinessLabel(findings);
-+
-+  setText(elements.count, String(objects.length));
-+  setText(elements.readiness, readiness);
-+  setText(elements.outputReadiness, readiness);
-+  setText(elements.outputStatic, String(staticCount));
-+  setText(elements.outputDynamic, String(dynamicCount));
-+  setText(
-+    elements.outputMvp,
-+    findings.length === 0
-+      ? "Paddle + ball setup has the required Dynamic paddle, Dynamic ball, and Static boundary."
-+      : "Paddle and ball setup needs validation actions."
++  assertErrorCodes(
++    validateObjectDefinition("bad"),
++    [OBJECT_DEFINITION_VALIDATION_CODES.DEFINITION_INVALID],
++    "non-object definitions are rejected"
 +  );
-+}
-+
-+function render() {
-+  const findings = objectListFindings(draftedObjects);
-+  renderRequirements(draftedObjects);
-+  renderObjectList(draftedObjects);
-+  renderOutput(draftedObjects, findings);
-+  renderValidation(findings);
-+}
-+
-+function addDraftObject() {
-+  const draft = readDraft();
-+  const findings = draftFindings(draft);
-+  if (findings.length > 0) {
-+    renderValidation(findings);
-+    setText(elements.log, `Draft blocked: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
-+    return;
-+  }
-+
-+  draftedObjects = [...draftedObjects, draft];
-+  clearDraftForm();
-+  setText(elements.log, `Added ${draft.name} as a ${draft.type} ${draft.role}.`);
-+  render();
-+}
-+
-+function seedMvpObjects() {
-+  draftedObjects = SEEDED_OBJECTS.map(cloneObject);
-+  clearDraftForm();
-+  setText(elements.log, "Seeded paddle + ball MVP objects: Player Paddle, Game Ball, and Arena Boundary.");
-+  render();
-+}
-+
-+function validateObjects() {
-+  const findings = objectListFindings(draftedObjects);
-+  renderValidation(findings);
-+  setText(
-+    elements.log,
-+    findings.length === 0
-+      ? "Validation PASS: Objects MVP setup is ready for authoring handoff."
-+      : `Validation found ${findings.length} action${findings.length === 1 ? "" : "s"} for Objects MVP setup.`
++  assertErrorCodes(
++    validateObjectDefinition({ name: "", type: "", traits: [] }),
++    [
++      OBJECT_DEFINITION_VALIDATION_CODES.NAME_REQUIRED,
++      OBJECT_DEFINITION_VALIDATION_CODES.TYPE_REQUIRED,
++    ],
++    "missing required definition fields are rejected"
 +  );
-+  renderOutput(draftedObjects, findings);
++  assertErrorCodes(
++    validateObjectDefinition({
++      name: "Legacy Static",
++      type: "objectStatic",
++      traits: ["collides"],
++    }),
++    [OBJECT_DEFINITION_VALIDATION_CODES.TYPE_INVALID],
++    "legacy object class names are not restored as types"
++  );
++  assertErrorCodes(
++    validateObjectDefinition({
++      name: "Bad Traits",
++      type: "Dynamic",
++      traits: ["movable", "movable", "objectKillable"],
++    }),
++    [
++      OBJECT_DEFINITION_VALIDATION_CODES.TRAIT_DUPLICATE,
++      OBJECT_DEFINITION_VALIDATION_CODES.TRAIT_INVALID,
++    ],
++    "duplicate and unknown traits fail visibly"
++  );
++  assertErrorCodes(
++    validateObjectDefinition({
++      name: "Unknown Field",
++      style: "legacy",
++      traits: ["collides"],
++      type: "Static",
++    }),
++    [OBJECT_DEFINITION_VALIDATION_CODES.FIELD_UNKNOWN],
++    "unknown schema fields are rejected"
++  );
++  assertErrorCodes(
++    validateObjectDefinition({
++      name: "Bad State",
++      state: "Spawned",
++      traits: ["goal"],
++      type: "Goal",
++    }),
++    [OBJECT_DEFINITION_VALIDATION_CODES.STATE_INVALID],
++    "unsupported authoring states are rejected"
++  );
++
++  const listValidation = validateObjectDefinitionList([
++    paddleDefinition,
++    { name: "Broken", type: "objectDynamic", traits: ["movable"] },
++  ]);
++  assert.equal(listValidation.valid, false);
++  assert.deepEqual(listValidation.definitions, []);
++  assert.deepEqual(
++    listValidation.issues.map((issue) => issue.code),
++    [OBJECT_DEFINITION_VALIDATION_CODES.TYPE_INVALID]
++  );
++  assert.equal(listValidation.issues.every((issue) => issue.action && issue.path), true);
 +}
 +
-+function resetDraft() {
-+  draftedObjects = [];
-+  clearDraftForm();
-+  setText(elements.log, "Reset the in-memory Objects draft.");
-+  render();
++function assertErrorCodes(validation, expectedCodes, name) {
++  assert.equal(validation.valid, false, name);
++  assert.deepEqual(validation.issues.map((issue) => issue.code), expectedCodes, name);
++  assert.equal(validation.issues.every((issue) => issue.action && issue.path), true, `${name} issues are actionable`);
 +}
 +
-+function removeObject(objectKey) {
-+  const beforeCount = draftedObjects.length;
-+  draftedObjects = draftedObjects.filter((object) => objectId(object) !== objectKey);
-+  const removed = beforeCount !== draftedObjects.length;
-+  setText(elements.log, removed ? "Removed object from the in-memory draft." : "Remove skipped: object row was already absent.");
-+  render();
++if (import.meta.url === `file://${process.argv[1]}`) {
++  run();
 +}
-+
-+elements.form?.addEventListener("submit", (event) => {
-+  event.preventDefault();
-+  addDraftObject();
-+});
-+
-+elements.seedMvp?.addEventListener("click", seedMvpObjects);
-+elements.validate?.addEventListener("click", validateObjects);
-+elements.resetDraft?.addEventListener("click", resetDraft);
-+elements.list?.addEventListener("click", (event) => {
-+  const button = event.target instanceof HTMLElement ? event.target.closest("[data-objects-remove]") : null;
-+  if (!button) {
-+    return;
-+  }
-+  removeObject(button.dataset.objectsRemove || "");
-+});
-+
-+render();

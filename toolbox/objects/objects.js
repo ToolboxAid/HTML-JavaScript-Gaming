@@ -1,4 +1,10 @@
-const OBJECT_TYPES = Object.freeze(["Static", "Dynamic", "Collectible", "Hazard", "Goal"]);
+import {
+  OBJECT_MODEL_TRAIT_LIST,
+  OBJECT_MODEL_TYPE_LIST,
+  getObjectModelTrait,
+  getObjectModelType,
+  validateObjectDefinition,
+} from "../../src/engine/object-model/index.js";
 
 const MVP_REQUIREMENTS = Object.freeze([
   {
@@ -17,6 +23,15 @@ const MVP_REQUIREMENTS = Object.freeze([
     test: (objects) => objects.some((object) => object.type === "Static")
   }
 ]);
+
+const MVP_ROLE_TRAITS = Object.freeze({
+  Ball: Object.freeze(["bounces"]),
+  Boundary: Object.freeze([]),
+  Goal: Object.freeze([]),
+  Hazard: Object.freeze([]),
+  Paddle: Object.freeze(["playerControlled"]),
+  Pickup: Object.freeze([]),
+});
 
 const SEEDED_OBJECTS = Object.freeze([
   Object.freeze({
@@ -65,7 +80,9 @@ const elements = {
   role: document.querySelector("[data-objects-role]"),
   seedMvp: document.querySelector("[data-objects-seed-mvp]"),
   state: document.querySelector("[data-objects-state]"),
+  traitBasics: document.querySelector("[data-objects-trait-basics]"),
   type: document.querySelector("[data-objects-type]"),
+  typeBasics: document.querySelector("[data-objects-type-basics]"),
   validate: document.querySelector("[data-objects-validate]"),
   validationList: document.querySelector("[data-objects-validation-list]"),
   validationOverlay: document.querySelector("[data-objects-validation-overlay]")
@@ -75,11 +92,15 @@ function normalizeText(value) {
   return String(value || "").trim();
 }
 
-function objectId(object) {
-  return normalizeText(object.name)
+function objectKeyFromText(value) {
+  return normalizeText(value)
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
+}
+
+function objectId(object) {
+  return objectKeyFromText(object.id || object.name);
 }
 
 function setText(element, value) {
@@ -100,18 +121,56 @@ function tableCell(text) {
   return cell;
 }
 
+function optionElement(value, text) {
+  const option = document.createElement("option");
+  option.value = value;
+  option.textContent = text;
+  return option;
+}
+
 function statusText(ok) {
   return ok ? "OK" : "Needs Action";
 }
 
-function cloneObject(object) {
+function sortedObjectTypes() {
+  return [...OBJECT_MODEL_TYPE_LIST].sort((left, right) => left.label.localeCompare(right.label));
+}
+
+function sortedTraits() {
+  return [...OBJECT_MODEL_TRAIT_LIST].sort((left, right) => left.id.localeCompare(right.id));
+}
+
+function traitIdsFromSource(source) {
+  return Array.isArray(source.traits)
+    ? source.traits.map(normalizeText).filter(Boolean)
+    : [];
+}
+
+function traitsForObject(source, object) {
+  const traitIds = new Set();
+  const objectType = getObjectModelType(object.type);
+
+  (objectType?.traits || []).forEach((traitId) => traitIds.add(traitId));
+  (MVP_ROLE_TRAITS[object.role] || []).forEach((traitId) => traitIds.add(traitId));
+  traitIdsFromSource(source).forEach((traitId) => traitIds.add(traitId));
+
+  return Object.freeze([...traitIds]);
+}
+
+function cloneObject(source = {}) {
+  const object = {
+    behavior: normalizeText(source.behavior),
+    id: objectKeyFromText(source.id || source.name),
+    interaction: normalizeText(source.interaction),
+    name: normalizeText(source.name),
+    role: normalizeText(source.role),
+    state: normalizeText(source.state) || "Active",
+    type: normalizeText(source.type)
+  };
+
   return {
-    behavior: normalizeText(object.behavior),
-    interaction: normalizeText(object.interaction),
-    name: normalizeText(object.name),
-    role: normalizeText(object.role),
-    state: normalizeText(object.state) || "Active",
-    type: normalizeText(object.type)
+    ...object,
+    traits: traitsForObject(source, object)
   };
 }
 
@@ -147,24 +206,35 @@ function clearDraftForm() {
   }
 }
 
-function draftFindings(draft) {
-  const findings = [];
-  if (!OBJECT_TYPES.includes(draft.type)) {
-    findings.push({
-      action: "Choose Static, Dynamic, Collectible, Hazard, or Goal.",
-      label: "Object Type"
-    });
+function issueLabel(issue) {
+  if (issue.path.endsWith(".name")) {
+    return "Object Name";
   }
+  if (issue.path.endsWith(".type")) {
+    return "Object Type";
+  }
+  if (issue.path.includes(".traits")) {
+    return "Object Traits";
+  }
+  if (issue.path.endsWith(".state")) {
+    return "Initial State";
+  }
+  return "Object Definition";
+}
+
+function objectDefinitionFindings(object, labelPrefix) {
+  return validateObjectDefinition(object).issues.map((issue) => ({
+    action: issue.action,
+    label: labelPrefix ? `${labelPrefix} ${issueLabel(issue)}` : issueLabel(issue)
+  }));
+}
+
+function draftFindings(draft) {
+  const findings = objectDefinitionFindings(draft, "");
   if (!draft.role) {
     findings.push({
       action: "Choose the MVP role this object serves.",
       label: "MVP Role"
-    });
-  }
-  if (!draft.name) {
-    findings.push({
-      action: "Name the object before adding it to the draft list.",
-      label: "Object Name"
     });
   }
   if (draft.role === "Paddle" && draft.type && draft.type !== "Dynamic") {
@@ -200,12 +270,9 @@ function objectListFindings(objects) {
 
   objects.forEach((object, index) => {
     const label = object.name || `Object ${index + 1}`;
-    if (!OBJECT_TYPES.includes(object.type)) {
-      findings.push({
-        action: `${label} must use Static, Dynamic, Collectible, Hazard, or Goal.`,
-        label: `${label} Type`
-      });
-    }
+    objectDefinitionFindings(object, label).forEach((finding) => {
+      findings.push(finding);
+    });
     if (!object.role) {
       findings.push({
         action: `${label} needs an MVP role.`,
@@ -275,6 +342,18 @@ function renderRequirements(objects) {
   });
 }
 
+function traitLabel(traitId) {
+  const trait = getObjectModelTrait(traitId);
+  return trait ? trait.label : traitId;
+}
+
+function traitText(traitIds) {
+  if (!traitIds.length) {
+    return "None";
+  }
+  return traitIds.map(traitLabel).join(", ");
+}
+
 function renderObjectList(objects) {
   if (!elements.list) {
     return;
@@ -284,7 +363,7 @@ function renderObjectList(objects) {
   if (objects.length === 0) {
     const row = document.createElement("tr");
     const empty = document.createElement("td");
-    empty.colSpan = 5;
+    empty.colSpan = 6;
     empty.textContent = "No objects drafted yet.";
     row.append(empty);
     elements.list.append(row);
@@ -305,6 +384,7 @@ function renderObjectList(objects) {
       tableCell(object.type),
       tableCell(object.role),
       tableCell(object.state),
+      tableCell(traitText(object.traits)),
       action
     );
     elements.list.append(row);
@@ -327,6 +407,43 @@ function renderOutput(objects, findings) {
       ? "Paddle + ball setup has the required Dynamic paddle, Dynamic ball, and Static boundary."
       : "Paddle and ball setup needs validation actions."
   );
+}
+
+function renderObjectTypeOptions() {
+  if (!elements.type) {
+    return;
+  }
+
+  const selectedType = elements.type.value;
+  elements.type.replaceChildren(optionElement("", "Select type"));
+  sortedObjectTypes().forEach((objectType) => {
+    elements.type.append(optionElement(objectType.id, objectType.label));
+  });
+  elements.type.value = getObjectModelType(selectedType) ? selectedType : "";
+}
+
+function renderRegistryBasics() {
+  if (elements.typeBasics) {
+    elements.typeBasics.replaceChildren();
+    sortedObjectTypes().forEach((objectType) => {
+      const item = document.createElement("li");
+      const label = document.createElement("strong");
+      label.textContent = `${objectType.label}:`;
+      item.append(label, ` ${objectType.description} Traits: ${traitText(objectType.traits)}.`);
+      elements.typeBasics.append(item);
+    });
+  }
+
+  if (elements.traitBasics) {
+    elements.traitBasics.replaceChildren();
+    sortedTraits().forEach((trait) => {
+      const item = document.createElement("li");
+      const label = document.createElement("strong");
+      label.textContent = `${trait.id}:`;
+      item.append(label, ` ${trait.description}`);
+      elements.traitBasics.append(item);
+    });
+  }
 }
 
 function render() {
@@ -402,4 +519,6 @@ elements.list?.addEventListener("click", (event) => {
   removeObject(button.dataset.objectsRemove || "");
 });
 
+renderObjectTypeOptions();
+renderRegistryBasics();
 render();

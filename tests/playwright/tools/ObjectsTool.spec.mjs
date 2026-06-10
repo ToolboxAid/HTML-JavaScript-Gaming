@@ -68,6 +68,10 @@ test("Objects seeds a usable paddle and ball MVP setup with visible diagnostics"
     await expect(page.locator("[data-objects-type-basics]")).toContainText("Collectible");
     await expect(page.locator("[data-objects-type-basics]")).toContainText("Hazard");
     await expect(page.locator("[data-objects-type-basics]")).toContainText("Goal");
+    await expect(page.locator("[data-objects-trait-basics]")).toContainText("movable");
+    await expect(page.locator("[data-objects-trait-basics]")).toContainText("playerControlled");
+    await expect(page.locator("[data-objects-trait-basics]")).toContainText("bounces");
+    await expect(page.locator("[data-objects-trait-basics]")).toContainText("collides");
 
     await page.getByRole("button", { name: "Seed Paddle + Ball" }).click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Seeded paddle + ball MVP objects: Player Paddle, Game Ball, and Arena Boundary.");
@@ -81,6 +85,9 @@ test("Objects seeds a usable paddle and ball MVP setup with visible diagnostics"
     await expect(page.locator("[data-objects-list]")).toContainText("Player Paddle");
     await expect(page.locator("[data-objects-list]")).toContainText("Game Ball");
     await expect(page.locator("[data-objects-list]")).toContainText("Arena Boundary");
+    await expect(page.locator("[data-objects-list]")).toContainText("Player Controlled");
+    await expect(page.locator("[data-objects-list]")).toContainText("Bounces");
+    await expect(page.locator("[data-objects-list]")).toContainText("Collides");
     await expect(page.locator("[data-objects-output-mvp]")).toHaveText("Paddle + ball setup has the required Dynamic paddle, Dynamic ball, and Static boundary.");
 
     await page.getByRole("button", { name: "Validate Setup" }).click();

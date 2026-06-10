@@ -7,7 +7,11 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(95%) toolbox/objects/objects.js - executed lines 365/365; executed functions 38/40
+(67%) src/engine/object-model/objectModelRegistry.js - executed lines 146/146; executed functions 4/6
+(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 269/269; executed functions 14/20
+(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 44/44; executed functions 3/4
+(94%) toolbox/objects/objects.js - executed lines 466/466; executed functions 58/62
+(100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
 
 Guardrail warnings:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
