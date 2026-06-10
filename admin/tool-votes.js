@@ -10,6 +10,7 @@ const dragStatus = document.querySelector("[data-toolbox-votes-drag-status]");
 const body = document.querySelector("[data-toolbox-votes-body]");
 const sortButtons = Array.from(document.querySelectorAll("[data-toolbox-votes-sort]"));
 const sortHeaders = Array.from(document.querySelectorAll("[data-toolbox-votes-sort-header]"));
+const stateHelp = document.querySelector("[data-toolbox-votes-state-help]");
 const sortButtonLabels = new Map(sortButtons.map((button) => [
   button.dataset.toolboxVotesSort,
   button.textContent.trim(),
@@ -17,6 +18,7 @@ const sortButtonLabels = new Map(sortButtons.map((button) => [
 
 const toolboxContract = getToolboxContract();
 const releaseChannelLabels = toolboxContract.releaseChannelLabels || {};
+const releaseChannelHelpText = toolboxContract.releaseChannelHelpText || {};
 const RELEASE_CHANNEL_OPTIONS = Object.freeze((toolboxContract.releaseChannels || []).map((channel) => [
   channel,
   releaseChannelLabels[channel] || channel,
@@ -166,6 +168,33 @@ function releaseChannelLabel(value) {
   return RELEASE_CHANNEL_LABELS.get(value) || RELEASE_CHANNEL_LABELS.get(DEFAULT_RELEASE_CHANNEL) || value || DEFAULT_RELEASE_CHANNEL;
 }
 
+function releaseChannelHelp(value) {
+  return releaseChannelHelpText[value] || releaseChannelHelpText[DEFAULT_RELEASE_CHANNEL] || "";
+}
+
+function compactHelpText(value) {
+  return String(value || "").replace(/\s+/g, " ").trim();
+}
+
+function statusHelpSummary() {
+  return RELEASE_CHANNEL_OPTIONS.map(([value, label]) => {
+    const help = compactHelpText(releaseChannelHelp(value));
+    return help ? `${label}: ${help}` : label;
+  }).join(" ");
+}
+
+function renderStatusHelp() {
+  const summary = statusHelpSummary();
+  if (stateHelp) {
+    stateHelp.textContent = `State definitions: ${summary}`;
+    stateHelp.title = summary;
+  }
+  const stateSortButton = sortButtons.find((button) => button.dataset.toolboxVotesSort === "releaseChannelLabel");
+  if (stateSortButton) {
+    stateSortButton.title = summary;
+  }
+}
+
 function rowReleaseChannel(voteRow) {
   const value = String(voteRow.status || voteRow.releaseChannel || "").trim().toLowerCase();
   return RELEASE_CHANNEL_LABELS.has(value) ? value : DEFAULT_RELEASE_CHANNEL;
@@ -177,11 +206,13 @@ function stateCell(voteRow) {
   const currentState = rowReleaseChannel(voteRow);
   select.dataset.toolboxVotesState = voteRow.toolId;
   select.setAttribute("aria-label", `State for ${voteRow.toolName}`);
+  select.title = `${releaseChannelLabel(currentState)}: ${compactHelpText(releaseChannelHelp(currentState))}`;
   const options = RELEASE_CHANNEL_OPTIONS.length ? RELEASE_CHANNEL_OPTIONS : [[currentState, currentState]];
   options.forEach(([value, label]) => {
     const option = document.createElement("option");
     option.value = value;
     option.textContent = label;
+    option.title = `${label}: ${compactHelpText(releaseChannelHelp(value))}`;
     select.append(option);
   });
   select.value = currentState;
@@ -410,4 +441,5 @@ sortButtons.forEach((button) => {
   });
 });
 
+renderStatusHelp();
 renderToolboxVotes();

@@ -6,25 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/palette-catalog-config.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/project-workspace-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/project-journey/project-journey-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/project-journey/project-journey.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/project-workspace/project-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(89%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 189/212
-(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(78%) admin/tool-votes.js - executed lines 406/406; executed functions 43/55
+(84%) toolbox/tools-page-accordions.js - executed lines 960/960; executed functions 92/109
 
 Guardrail warnings:
-(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/palette-catalog-config.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/project-workspace-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/project-journey/project-journey-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/project-journey/project-journey.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/project-workspace/project-workspace.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only

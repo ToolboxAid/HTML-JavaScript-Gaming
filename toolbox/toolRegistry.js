@@ -24,10 +24,10 @@ export const TOOL_RELEASE_CHANNEL_LABELS = Object.freeze({
 });
 
 export const TOOL_RELEASE_CHANNEL_HELP_TEXT = Object.freeze({
-  planned: "Idea exists.\nNot yet available.",
-  wireframe: "Preview the planned workflow and layout.\nHelp shape the design before development begins.",
-  beta: "Ready to try.\nFeatures, layout, and workflows may change based on feedback.",
-  complete: "Production ready and fully supported.",
+  planned: "Not designed yet.\nNo meaningful UI.\nNo ownership defined.",
+  wireframe: "Tool exists.\nUser can understand workflow.\nData ownership is defined.\nNot functionally usable.",
+  beta: "Functionally usable.\nCan be used in a real game.\nMay still contain incomplete workflows, placeholder data, UI cleanup issues, unused fields, missing validation, or incomplete code review.",
+  complete: "Functionally usable.\nCode reviewed.\nDead code removed.\nInvalid fields removed.\nUI cleaned up.\nNo known placeholder data.\nNo known invalid controls.\nReady for long-term support.",
 });
 
 export const TOOL_REGISTRY_REQUIRED_METADATA_FIELDS = Object.freeze([]);

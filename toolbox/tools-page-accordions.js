@@ -463,6 +463,13 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         return cell;
     }
 
+    function createBuildPathStatusCell(row) {
+        const cell = createTableCell("td", row.statusLabel);
+        cell.dataset.buildPathStatusHelp = row.status;
+        cell.title = `${row.statusLabel}: ${row.tool.releaseChannelHelpText.replace(/\s+/g, " ")}`;
+        return cell;
+    }
+
     function createBuildPathTable() {
         const wrapper = document.createElement("div");
         wrapper.className = "table-wrapper";
@@ -504,7 +511,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             tableRow.append(
                 createTableCell("td", String(row.order)),
                 createBuildPathToolCell(row.tool),
-                createTableCell("td", row.statusLabel)
+                createBuildPathStatusCell(row)
             );
             body.append(tableRow);
         });

@@ -133,6 +133,12 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
         toolbox: ["wireframe", "beta", "complete"],
       }),
     }));
+    expect(registrySnapshot.toolboxContract.releaseChannelHelpText).toEqual(expect.objectContaining({
+      planned: expect.stringContaining("No meaningful UI."),
+      wireframe: expect.stringContaining("Not functionally usable."),
+      beta: expect.stringContaining("Can be used in a real game."),
+      complete: expect.stringContaining("Ready for long-term support."),
+    }));
     expect(registrySnapshot.toolboxContract.groups).toEqual(expect.arrayContaining(["AI", "Build/Create", "Design", "Platform"]));
     expect(registrySnapshot.toolboxContract.toolboxGroupOrder).toEqual(expect.arrayContaining(["Create", "Build", "Content", "Admin"]));
     expect(registrySnapshot.toolboxContract.groupSwatches.Design).toBe("toolbox-group-design");
@@ -176,6 +182,8 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     });
 
     await expect(page.locator("[data-toolbox-votes-tool-id]")).toHaveCount(EXPECTED_TOOL_COUNT);
+    await expect(page.locator("[data-toolbox-votes-state-help]")).toContainText("Beta: Functionally usable.");
+    await expect(page.locator("[data-toolbox-votes-state='colors']")).toHaveAttribute("title", /Complete: Functionally usable/);
     const adminNames = (await page.locator("[data-toolbox-votes-tool-id]").evaluateAll((rows) => (
       rows.map((row) => row.children[0]?.textContent.trim() || "")
     ))).sort((left, right) => left.localeCompare(right));
@@ -190,6 +198,8 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
       `Beta (${counts.beta})`,
       `Complete (${counts.complete})`,
     ]);
+    await expect(page.locator("[data-toolbox-status-filter='beta']")).toHaveAttribute("title", /Can be used in a real game/);
+    await expect(page.locator("[data-build-path-status-help='complete']").first()).toHaveAttribute("title", /Ready for long-term support/);
     const buildPathNames = (await page.locator("[data-build-path-tool]").evaluateAll((rows) => (
       rows.map((row) => row.dataset.buildPathTool || "")
     ))).sort((left, right) => left.localeCompare(right));
