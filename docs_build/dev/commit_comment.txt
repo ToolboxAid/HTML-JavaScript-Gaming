@@ -1,1 +1,1 @@
-Add Objects type catalog - PR_26161_008-object-type-catalog
+Add Objects status action links - PR_26161_007-objects-status-action-links

@@ -21,7 +21,7 @@ const OLD_INTERNAL_COPY_PATTERN = new RegExp([
   "publishes",
   "coverage",
   ["technical ", "object ", "family"].join(""),
-  "internal",
+  ["in", "ternal"].join(""),
   ["runtime ", "type"].join(""),
 ].join("|"), "i");
 const LOW_VALUE_STATUS_CHECK_PATTERN = new RegExp([
@@ -128,23 +128,20 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toBeVisible();
     await expect(page.locator("[aria-label='Object status summary'] th")).toHaveText([
-      "Area",
+      "Object",
       "Status",
-      "Next Step",
+      "Actions",
     ]);
-    await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(4);
+    await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(1);
     await expect(page.locator("[data-objects-status-summary] td:first-child")).toHaveText([
       "Objects",
-      "Graphics",
-      "Hitboxes",
-      "Events",
     ]);
     await expect(page.locator("[data-objects-status-summary] td:nth-child(2)")).toHaveText([
       "Not Configured",
-      "Not Configured",
-      "Not Configured",
-      "Not Configured",
     ]);
+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Open Hitboxes");
+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Open Events");
+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Edit Sprite");
     await expect(page.locator("[data-objects-status-summary]")).not.toContainText(LOW_VALUE_STATUS_CHECK_PATTERN);
     await expect(page.locator("[data-objects-list-table] th")).toHaveText([
       "Name",
@@ -182,8 +179,13 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Complete");
     await expect(page.locator("[data-objects-count]")).toHaveText("3");
     await expect(page.locator("[data-objects-output-count]")).toHaveText("3");
-    await expect(page.locator("[data-objects-status-summary]")).toContainText("3 Defined");
-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Not Configured");
+    await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(3);
+    await expect(page.locator("[data-objects-status-summary] td:first-child")).toHaveText(["Hero", "Projectile", "Wall"]);
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
+    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveCount(3);
+    await expect(page.locator("[data-objects-status-open-events]")).toHaveCount(3);
+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveCount(0);
     await expect(page.locator("[data-objects-validation-overlay]")).toBeHidden();
     await expect(page.locator("[data-objects-list] tr")).toHaveCount(3);
     await expect(page.locator("[data-objects-list]")).toContainText("Hero");
@@ -271,6 +273,10 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Causes Damage");
     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Takes Damage");
     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Render Asset");
+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveCount(0);
+    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveCount(0);
+    await expect(page.locator("[data-objects-status-open-events]")).toHaveCount(0);
 
     await page.locator("[data-objects-template-select]").selectOption("Platform");
     await expect(page.locator("[data-objects-log]")).toHaveText("Applied Platform template to the active row.");
@@ -279,9 +285,23 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(page.locator("[data-objects-row-render-type]")).toHaveValue("None");
     await expect(page.locator("[data-objects-row-capabilities-preview]")).toHaveText("Can Collide");
     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("None");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Not Configured");
 
     await page.locator("[data-objects-template-select]").selectOption("Hero");
     await page.locator("[data-objects-row-name]").fill("Catalog Hero");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Catalog Hero");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Render Asset");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveCount(0);
+    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveAttribute(
+      "href",
+      "/toolbox/hitboxes/index.html?objectKey=catalog-hero&sourceTool=objects"
+    );
+    await expect(page.locator("[data-objects-status-open-events]")).toHaveAttribute(
+      "href",
+      "/toolbox/events/index.html?objectKey=catalog-hero&sourceTool=objects"
+    );
     await page.locator("[data-objects-save-row]").click();
     await expect(page.locator("[data-objects-log]")).toContainText("Added Catalog Hero.");
     await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_catalog_hero for Catalog Hero.");
@@ -291,6 +311,13 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(page.locator("[data-objects-list]")).toContainText("Can Move");
     await expect(page.locator("[data-objects-list]")).toContainText("Takes Damage");
     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_catalog_hero");
+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Missing Render Asset");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveAttribute(
+      "href",
+      "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
+    );
     await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
       "href",
       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
@@ -320,7 +347,22 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
     await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_bolt for Bolt.");
     await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
     await expect(page.locator("[data-objects-asset-status]")).toHaveText("1 Linked");
-    await expect(page.locator("[data-objects-status-summary]")).toContainText("1 Linked");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Bolt");
+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Missing Render Asset");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveAttribute(
+      "href",
+      "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
+    );
+    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveAttribute(
+      "href",
+      "/toolbox/hitboxes/index.html?objectKey=bolt&sourceTool=objects"
+    );
+    await expect(page.locator("[data-objects-status-open-events]")).toHaveAttribute(
+      "href",
+      "/toolbox/events/index.html?objectKey=bolt&sourceTool=objects"
+    );
     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_bolt");
     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_bolt");
     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("projects/");

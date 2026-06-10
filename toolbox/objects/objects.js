@@ -210,6 +210,17 @@ function actionButton(text, dataName, value = "") {
   return button;
 }
 
+function actionLink(text, href, dataName, value = "") {
+  const link = document.createElement("a");
+  link.className = "btn btn--compact";
+  link.href = href;
+  link.textContent = text;
+  if (dataName) {
+    link.dataset[dataName] = value;
+  }
+  return link;
+}
+
 function optionElement(value, text) {
   const option = document.createElement("option");
   option.value = value;
@@ -427,19 +438,6 @@ function spriteObjectCount(objects) {
   return objects.filter((object) => object.render?.type === "Sprite").length;
 }
 
-function objectReady(object) {
-  return Boolean(
-    object.name
-    && object.role
-    && object.type
-    && (object.render?.type !== "Sprite" || object.render.assetKey)
-  );
-}
-
-function readyObjectCount(objects) {
-  return objects.filter(objectReady).length;
-}
-
 function objectStatusLabel(objects, findings) {
   if (objects.length === 0) {
     return "Not Configured";
@@ -469,73 +467,16 @@ function renderValidation(findings) {
   elements.validationOverlay.hidden = false;
 }
 
-function statusRow({ action, label, status }) {
+function statusRow({ actions, label, status }) {
   const row = document.createElement("tr");
-  row.append(tableCell(label), tableCell(status), tableCell(action));
+  const actionCell = document.createElement("td");
+  if (Array.isArray(actions) && actions.length) {
+    actionCell.append(...actions);
+  } else {
+    actionCell.textContent = "Add object details in the table.";
+  }
+  row.append(tableCell(label), tableCell(status), actionCell);
   return row;
-}
-
-function objectsStatusText(objects, findings) {
-  if (objects.length === 0) {
-    return "Not Configured";
-  }
-  if (findings.length > 0 || readyObjectCount(objects) !== objects.length) {
-    return "Pending Setup";
-  }
-  return `${objects.length} Defined`;
-}
-
-function graphicsStatusText(spriteCount, missingAssets) {
-  if (missingAssets > 0) {
-    return "Pending Setup";
-  }
-  if (spriteCount > 0) {
-    return `${spriteCount} Linked`;
-  }
-  return "Not Configured";
-}
-
-function renderStatusSummary(objects, findings) {
-  if (!elements.statusSummary) {
-    return;
-  }
-
-  const spriteCount = spriteObjectCount(objects);
-  const missingAssets = missingRenderAssetCount(objects);
-  const objectStatus = objectsStatusText(objects, findings);
-  const graphicsStatus = graphicsStatusText(spriteCount, missingAssets);
-  const renderAction = missingAssets > 0
-    ? "Save each Sprite row so Objects can create or resolve its render asset."
-    : spriteCount > 0
-      ? "Sprite render assets are ready."
-      : "Choose Sprite render when an object needs editable graphics.";
-
-  elements.statusSummary.replaceChildren(
-    statusRow({
-      action: objects.length > 0
-        ? "Saved table rows define the objects available for setup."
-        : "Add objects in the table below.",
-      label: "Objects",
-      status: objectStatus,
-    }),
-    statusRow({
-      action: renderAction,
-      label: "Graphics",
-      status: graphicsStatus,
-    }),
-    statusRow({
-      action: "Add hitboxes when collision setup is in scope.",
-      label: "Hitboxes",
-      status: "Not Configured",
-    }),
-    statusRow({
-      action: "Add events when rules setup is in scope.",
-      label: "Events",
-      status: "Not Configured",
-    }),
-  );
-
-  setText(elements.assetStatus, graphicsStatus);
 }
 
 function capabilityLabel(traitId) {
@@ -580,6 +521,85 @@ function spriteEditorHref(object) {
   const assetKey = encodeURIComponent(object.render.assetKey);
   const objectKey = encodeURIComponent(objectId(object));
   return `/toolbox/sprites/index.html?assetKey=${assetKey}&objectKey=${objectKey}&sourceTool=objects`;
+}
+
+function hitboxesHref(object) {
+  const objectKey = encodeURIComponent(objectId(object));
+  return `/toolbox/hitboxes/index.html?objectKey=${objectKey}&sourceTool=objects`;
+}
+
+function eventsHref(object) {
+  const objectKey = encodeURIComponent(objectId(object));
+  return `/toolbox/events/index.html?objectKey=${objectKey}&sourceTool=objects`;
+}
+
+function statusObjectRows(objects) {
+  const rows = objects.map((object) => ({ object, pending: false }));
+  const row = editingRowElement();
+  if (row) {
+    const object = editingObjectFromRow(row);
+    if (object.name || object.render?.type === "Sprite") {
+      rows.push({ object, pending: true });
+    }
+  }
+  return rows;
+}
+
+function objectGapLabels(object) {
+  const gaps = [];
+  if (object.render?.type === "Sprite" && !object.render.assetKey) {
+    gaps.push("Missing Render Asset");
+  }
+  if (objectId(object)) {
+    gaps.push("Missing Hitbox", "Missing Events");
+  }
+  return gaps;
+}
+
+function objectActionLinks(object) {
+  const id = objectId(object);
+  if (!id) {
+    return [];
+  }
+  const links = [];
+  if (object.render?.type === "Sprite" && object.render.assetKey) {
+    links.push(actionLink("Edit Sprite", spriteEditorHref(object), "objectsStatusEditSprite", id));
+  }
+  links.push(
+    actionLink("Open Hitboxes", hitboxesHref(object), "objectsStatusOpenHitboxes", id),
+    actionLink("Open Events", eventsHref(object), "objectsStatusOpenEvents", id)
+  );
+  return links;
+}
+
+function renderStatusSummary(objects) {
+  if (!elements.statusSummary) {
+    return;
+  }
+
+  const rows = statusObjectRows(objects);
+  if (!rows.length) {
+    elements.statusSummary.replaceChildren(statusRow({
+      actions: [],
+      label: "Objects",
+      status: "Not Configured",
+    }));
+    setText(elements.assetStatus, "Not Configured");
+    return;
+  }
+
+  elements.statusSummary.replaceChildren(...rows.map(({ object, pending }) => {
+    const gaps = objectGapLabels(object);
+    const label = object.name || (pending ? "Draft Object" : "Object");
+    return statusRow({
+      actions: objectActionLinks(object),
+      label,
+      status: gaps.length ? gaps.join(", ") : "Ready",
+    });
+  }));
+
+  const linkedSprites = spriteObjectCount(objects) - missingRenderAssetCount(objects);
+  setText(elements.assetStatus, linkedSprites > 0 ? `${linkedSprites} Linked` : "Not Configured");
 }
 
 function assetLinkMessage(result, fallback) {
@@ -844,8 +864,8 @@ function renderRegistryBasics() {
 
 function render() {
   const findings = objectListFindings(draftedObjects);
-  renderStatusSummary(draftedObjects, findings);
   renderObjectList(draftedObjects);
+  renderStatusSummary(draftedObjects);
   renderOutput(draftedObjects, findings);
   renderValidation(findings);
   if (elements.addRow) {
@@ -1019,6 +1039,7 @@ elements.templateSelect?.addEventListener("change", () => {
   const row = editingRowElement();
   if (row) {
     applyTemplateToRow(row, template);
+    renderStatusSummary(draftedObjects);
     setText(elements.log, `Applied ${template.type} template to the active row.`);
     return;
   }
@@ -1051,13 +1072,21 @@ elements.list?.addEventListener("change", (event) => {
     return;
   }
   if (control.matches("[data-objects-row-render-type]")) {
-      updateRenderAssetPreview(row);
+    updateRenderAssetPreview(row);
+    renderStatusSummary(draftedObjects);
     return;
   }
   const template = templateForType(control.value);
   setRowCapabilities(row, template ? [...template.capabilities] : []);
   if (elements.templateSelect && template) {
     elements.templateSelect.value = template.type;
+  }
+  renderStatusSummary(draftedObjects);
+});
+elements.list?.addEventListener("input", (event) => {
+  const control = event.target instanceof HTMLElement ? event.target.closest("[data-objects-row-name]") : null;
+  if (control) {
+    renderStatusSummary(draftedObjects);
   }
 });
 

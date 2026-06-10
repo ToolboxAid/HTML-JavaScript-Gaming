@@ -1264,3 +1264,33 @@ Required reports:
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26161_007-objects-status-action-links
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Continued from the current Objects tool Type Catalog state.
+- Replaced aggregate Object Status rows with per-object actionable status rows.
+- Added creator-facing row gap labels: `Missing Render Asset`, `Missing Hitbox`, `Missing Events`, and `Ready`.
+- Added row-level `Edit Sprite`, `Open Hitboxes`, and `Open Events` links where applicable.
+- Preserved table-first input, `Add Object` below the table, disabled Add while adding, Cancel, Edit, Trash, and Reset Table.
+- Preserved real Sprite render asset creation, resolution, preview, and Sprite Editor linking.
+- Did not change engine runtime behavior, sample JSON, auth behavior, production DB behavior, or unrelated tool behavior.
+
+Validation:
+- `node --check toolbox/objects/objects.js`
+- `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
+- HTML restriction check for `toolbox/objects/index.html`
+- Objects forbidden wording scan for requested terms
+- `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line`
+- `git diff --check`
+- Full samples validation skipped by request and because samples/runtime behavior were not changed.
+
+Required reports:
+- `docs_build/dev/reports/objects-status-action-links-report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
