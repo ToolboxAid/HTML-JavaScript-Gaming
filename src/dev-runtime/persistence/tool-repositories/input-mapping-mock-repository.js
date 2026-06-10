@@ -6,6 +6,7 @@ import {
 
 export const INPUT_MAPPING_TOOL_TABLES = Object.freeze([
   "input_mapping_records",
+  "input_controller_profile_records",
 ]);
 
 const INPUT_MAPPING_DB_OWNER = "input-mapping-v2";
@@ -24,6 +25,7 @@ function cloneTables(tables) {
 
 function createEmptyTables() {
   return {
+    input_controller_profile_records: [],
     input_mapping_records: [],
   };
 }
@@ -41,12 +43,24 @@ function mappingKeyFromText(value) {
 
 function initialTables(options = {}) {
   const explicitRows = options.memoryDbTables?.input_mapping_records;
-  if (Array.isArray(explicitRows)) {
+  const explicitProfiles = options.memoryDbTables?.input_controller_profile_records;
+  if (Array.isArray(explicitRows) || Array.isArray(explicitProfiles)) {
     return normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, {
-      input_mapping_records: explicitRows,
+      input_controller_profile_records: Array.isArray(explicitProfiles) ? explicitProfiles : [],
+      input_mapping_records: Array.isArray(explicitRows) ? explicitRows : [],
     }, options);
   }
   return normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, createEmptyTables(), options);
+}
+
+function normalizeList(value) {
+  if (Array.isArray(value)) {
+    return value.map(normalizeText).filter(Boolean);
+  }
+  return normalizeText(value)
+    .split(",")
+    .map(normalizeText)
+    .filter(Boolean);
 }
 
 function sortedMappingRows(tables) {
@@ -55,6 +69,26 @@ function sortedMappingRows(tables) {
       || normalizeText(left.actionLabel).localeCompare(normalizeText(right.actionLabel))
       || normalizeText(left.label).localeCompare(normalizeText(right.label))
   ));
+}
+
+function sortedControllerProfileRows(tables) {
+  return [...(tables.input_controller_profile_records || [])].sort((left, right) => (
+    (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
+      || normalizeText(left.mappingProfile).localeCompare(normalizeText(right.mappingProfile))
+      || normalizeText(left.controllerName).localeCompare(normalizeText(right.controllerName))
+  ));
+}
+
+function controllerProfileFromRecord(record = {}) {
+  return {
+    actions: normalizeList(record.actions),
+    controllerId: normalizeText(record.controllerId),
+    controllerName: normalizeText(record.controllerName),
+    deviceType: normalizeText(record.deviceType),
+    id: normalizeText(record.id),
+    inputs: normalizeList(record.inputs),
+    mappingProfile: normalizeText(record.mappingProfile),
+  };
 }
 
 function mappingFromRecord(record = {}) {
@@ -66,6 +100,8 @@ function mappingFromRecord(record = {}) {
     id: normalizeText(record.id),
     inputDevice: normalizeText(record.inputDevice),
     label: normalizeText(record.label),
+    controllerProfileId: normalizeText(record.controllerProfileId),
+    mappingProfile: normalizeText(record.mappingProfile),
     objectKey: normalizeText(record.objectKey),
     objectName: normalizeText(record.objectName),
     source: normalizeText(record.source),
@@ -108,6 +144,59 @@ export function createInputMappingToolMockRepository(options = {}) {
       .map(mappingFromRecord);
   }
 
+  function listControllerProfiles(projectId = "") {
+    const targetProjectId = normalizeText(projectId) || activeProjectId();
+    return sortedControllerProfileRows(tables)
+      .filter((record) => normalizeText(record.projectId) === targetProjectId)
+      .map(controllerProfileFromRecord);
+  }
+
+  function replaceControllerProfiles(profiles = [], projectId = "") {
+    const targetProjectId = normalizeText(projectId) || activeProjectId();
+    const existingRows = new Map(
+      (tables.input_controller_profile_records || [])
+        .filter((record) => normalizeText(record.projectId) === targetProjectId)
+        .map((record) => [normalizeText(record.id), record]),
+    );
+    const timestamp = new Date().toISOString();
+    const userKey = activeUserKey();
+    const nextRows = (Array.isArray(profiles) ? profiles : []).map((profile, index) => {
+      const mappingProfile = normalizeText(profile.mappingProfile);
+      const controllerId = normalizeText(profile.controllerId);
+      const id = normalizeText(profile.id) || mappingKeyFromText(`${controllerId}-${mappingProfile}-${index + 1}`);
+      const previous = existingRows.get(id);
+      return {
+        actions: normalizeList(profile.actions),
+        controllerId,
+        controllerName: normalizeText(profile.controllerName),
+        createdAt: previous?.createdAt || timestamp,
+        createdBy: previous?.createdBy || userKey,
+        deviceType: normalizeText(profile.deviceType) || "Gamepad",
+        id,
+        inputs: normalizeList(profile.inputs),
+        key: previous?.key,
+        mappingProfile,
+        projectId: targetProjectId,
+        recordOrder: index + 1,
+        updatedAt: timestamp,
+        updatedBy: userKey,
+      };
+    });
+
+    tables.input_controller_profile_records = [
+      ...(tables.input_controller_profile_records || []).filter(
+        (record) => normalizeText(record.projectId) !== targetProjectId,
+      ),
+      ...nextRows,
+    ];
+    persistTables();
+    return {
+      profiles: listControllerProfiles(targetProjectId),
+      saved: true,
+      snapshot: getSnapshot(),
+    };
+  }
+
   function replaceMappings(mappings = [], projectId = "") {
     const targetProjectId = normalizeText(projectId) || activeProjectId();
     const existingRows = new Map(
@@ -134,6 +223,8 @@ export function createInputMappingToolMockRepository(options = {}) {
         inputDevice: normalizeText(mapping.inputDevice),
         key: previous?.key,
         label: normalizeText(mapping.label),
+        controllerProfileId: normalizeText(mapping.controllerProfileId),
+        mappingProfile: normalizeText(mapping.mappingProfile),
         objectKey,
         objectName: normalizeText(mapping.objectName) || "Global",
         projectId: targetProjectId,
@@ -179,6 +270,7 @@ export function createInputMappingToolMockRepository(options = {}) {
   function getSnapshot() {
     const normalizedTables = getTables();
     return {
+      controllerProfiles: listControllerProfiles(),
       mappings: listMappings(),
       tableCounts: tableCounts(normalizedTables),
       tables: normalizedTables,
@@ -189,7 +281,9 @@ export function createInputMappingToolMockRepository(options = {}) {
     INPUT_MAPPING_TOOL_TABLES,
     getSnapshot,
     getTables,
+    listControllerProfiles,
     listMappings,
+    replaceControllerProfiles,
     replaceMappings,
     resetMappings,
   };

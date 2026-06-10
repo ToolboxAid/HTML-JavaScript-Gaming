@@ -25,6 +25,13 @@ const DEVICE_OPTIONS = Object.freeze([
   Object.freeze({ engine: "GamepadState + GamepadInputAdapter", label: "Gamepad", source: "gamepad" }),
 ]);
 
+const DEVICE_TYPE_OPTIONS = Object.freeze([
+  Object.freeze({ label: "Gamepad", value: "Gamepad" }),
+  Object.freeze({ label: "Keyboard", value: "Keyboard" }),
+  Object.freeze({ label: "Mouse", value: "Mouse" }),
+  Object.freeze({ label: "Custom", value: "Custom" }),
+]);
+
 const SOURCE_DIAGNOSTICS = Object.freeze([
   "InputService + KeyboardState",
   "InputService + MouseState",
@@ -35,8 +42,10 @@ const SOURCE_DIAGNOSTICS = Object.freeze([
 let inputRepository = createInputMappingToolApiRepository();
 let objectsRepository = createObjectsToolApiRepository();
 let mappings = [];
+let controllerProfiles = [];
 let objectOptions = [];
 let editingRow = null;
+let profileEditingRow = null;
 let captureMode = "";
 
 const elements = {
@@ -47,6 +56,9 @@ const elements = {
   captureMouse: document.querySelector("[data-input-capture-mouse]"),
   captureSelection: document.querySelector("[data-input-capture-selection]"),
   captureStatus: document.querySelector("[data-input-capture-status]"),
+  controllerProfileAdd: document.querySelector("[data-controller-profile-add]"),
+  controllerProfileList: document.querySelector("[data-controller-profile-list]"),
+  controllerProfileStatus: document.querySelector("[data-controller-profile-status]"),
   defaultActions: document.querySelector("[data-input-default-actions]"),
   deviceCount: document.querySelector("[data-input-device-count]"),
   list: document.querySelector("[data-input-mapping-list]"),
@@ -74,6 +86,21 @@ function keyFromText(value) {
     .replace(/^-+|-+$/g, "");
 }
 
+function normalizeList(value) {
+  if (Array.isArray(value)) {
+    return value.map(normalizeText).filter(Boolean);
+  }
+  return normalizeText(value)
+    .split(",")
+    .map(normalizeText)
+    .filter(Boolean);
+}
+
+function listLabel(values, fallback = "Not configured") {
+  const normalizedValues = normalizeList(values);
+  return normalizedValues.length ? normalizedValues.join(", ") : fallback;
+}
+
 function setText(element, value) {
   if (element) {
     element.textContent = value;
@@ -86,6 +113,24 @@ function actionById(actionId) {
 
 function deviceBySource(source) {
   return DEVICE_OPTIONS.find((device) => device.source === source) || DEVICE_OPTIONS[0];
+}
+
+function profileById(profileId) {
+  return controllerProfiles.find((profile) => profile.id === profileId) || null;
+}
+
+function profileOptions() {
+  return [
+    { label: "No saved profile", value: "" },
+    ...controllerProfiles.map((profile) => ({
+      label: profile.mappingProfile,
+      value: profile.id,
+    })),
+  ];
+}
+
+function profileLabel(profileId) {
+  return profileById(profileId)?.mappingProfile || "No saved profile";
 }
 
 function selectedObject() {
@@ -162,20 +207,47 @@ function mappingIdFor(mapping) {
   return keyFromText(base) || `mapping-${Date.now()}`;
 }
 
+function controllerProfileIdFor(profile) {
+  const base = [
+    profile.controllerId,
+    profile.mappingProfile,
+  ].join("-");
+  return keyFromText(base) || `profile-${Date.now()}`;
+}
+
+function normalizeControllerProfile(source = {}) {
+  const profile = {
+    actions: normalizeList(source.actions),
+    controllerId: normalizeText(source.controllerId),
+    controllerName: normalizeText(source.controllerName),
+    deviceType: normalizeText(source.deviceType) || "Gamepad",
+    id: normalizeText(source.id),
+    inputs: normalizeList(source.inputs),
+    mappingProfile: normalizeText(source.mappingProfile),
+  };
+  return {
+    ...profile,
+    id: profile.id || controllerProfileIdFor(profile),
+  };
+}
+
 function normalizeMapping(source = {}) {
   const action = actionById(source.action);
   const device = deviceBySource(source.source || source.inputDevice?.toLowerCase());
   const binding = normalizeText(source.binding || source.input);
   const objectKey = normalizeText(source.objectKey) || "global";
   const objectName = normalizeText(source.objectName) || objectOptions.find((object) => object.key === objectKey)?.label || "Global";
+  const profile = profileById(normalizeText(source.controllerProfileId));
   const mapping = {
     action: action.id,
     actionLabel: action.label,
     binding,
+    controllerProfileId: profile?.id || "",
     engine: normalizeText(source.engine) || device.engine,
     id: normalizeText(source.id),
     inputDevice: device.label,
     label: normalizeText(source.label) || inputLabel(device.source, binding),
+    mappingProfile: profile?.mappingProfile || "",
     objectKey,
     objectName,
     source: device.source,
@@ -210,8 +282,10 @@ function payloadActions() {
       .filter((mapping) => mapping.action === action.id && mapping.state === "Active")
       .map((mapping) => ({
         binding: mapping.binding,
+        ...(mapping.controllerProfileId ? { controllerProfileId: mapping.controllerProfileId } : {}),
         engine: mapping.engine,
         label: mapping.label,
+        ...(mapping.mappingProfile ? { mappingProfile: mapping.mappingProfile } : {}),
         source: mapping.source,
       }));
     return {
@@ -241,6 +315,16 @@ function readMappings() {
   return Array.isArray(result) ? result.map(normalizeMapping) : [];
 }
 
+function readControllerProfiles() {
+  let result = inputRepository.listControllerProfiles();
+  if (Array.isArray(result)) {
+    return result.map(normalizeControllerProfile);
+  }
+  inputRepository = createInputMappingToolApiRepository();
+  result = inputRepository.listControllerProfiles();
+  return Array.isArray(result) ? result.map(normalizeControllerProfile) : [];
+}
+
 function saveMappings(nextMappings) {
   const normalizedMappings = nextMappings.map(normalizeMapping);
   let result = inputRepository.replaceMappings(normalizedMappings);
@@ -254,6 +338,21 @@ function saveMappings(nextMappings) {
   }
   mappings = normalizedMappings;
   setText(elements.statusLog, result?.message || "WARN: Mapping save could not reach the shared DB adapter.");
+  return false;
+}
+
+function saveControllerProfiles(nextProfiles) {
+  const normalizedProfiles = nextProfiles.map(normalizeControllerProfile);
+  let result = inputRepository.replaceControllerProfiles(normalizedProfiles);
+  if (!Array.isArray(result?.profiles) && result?.error) {
+    inputRepository = createInputMappingToolApiRepository();
+    result = inputRepository.replaceControllerProfiles(normalizedProfiles);
+  }
+  if (Array.isArray(result?.profiles)) {
+    controllerProfiles = result.profiles.map(normalizeControllerProfile);
+    return true;
+  }
+  setText(elements.controllerProfileStatus, result?.message || "WARN: Controller profiles could not reach the shared DB adapter.");
   return false;
 }
 
@@ -315,6 +414,112 @@ function renderActionsAndObjects() {
     previousObject,
   );
   updateCaptureSelection();
+}
+
+function renderControllerProfileStatus() {
+  if (!elements.controllerProfileStatus) {
+    return;
+  }
+  if (!controllerProfiles.length) {
+    elements.controllerProfileStatus.textContent = "WARN: Unknown controller. Refresh Devices after connecting a controller; use Add Profile to save the controller identity when known.";
+    return;
+  }
+  const suffix = controllerProfiles.length === 1 ? "profile" : "profiles";
+  elements.controllerProfileStatus.textContent = `${controllerProfiles.length} controller ${suffix} saved. Unknown controllers still need Add Profile before mappings use them.`;
+}
+
+function renderControllerProfileRow(profile) {
+  const row = document.createElement("tr");
+  row.dataset.controllerProfileRow = profile.id;
+  row.append(
+    tableCell(profile.deviceType),
+    tableCell(profile.controllerName),
+    tableCell(profile.controllerId),
+    tableCell(profile.mappingProfile),
+    tableCell(listLabel(profile.inputs)),
+  );
+  const actionsCell = tableCell(listLabel(profile.actions));
+  const group = document.createElement("div");
+  group.className = "action-group action-group--tight";
+  group.append(
+    actionButton("Edit", "controllerProfileEdit", profile.id),
+    actionButton("Trash", "controllerProfileTrash", profile.id),
+  );
+  actionsCell.append(group);
+  row.append(actionsCell);
+  return row;
+}
+
+function renderControllerProfileEditingRow(values = {}) {
+  const row = document.createElement("tr");
+  row.dataset.controllerProfileEditingRow = "true";
+
+  const deviceType = selectControl({
+    ariaLabel: "Controller Device Type",
+    options: DEVICE_TYPE_OPTIONS,
+    selectedValue: values.deviceType || "Gamepad",
+  });
+  deviceType.dataset.controllerProfileDeviceType = "true";
+
+  const controllerName = textControl({ ariaLabel: "Controller Name", value: values.controllerName || "" });
+  controllerName.dataset.controllerProfileName = "true";
+
+  const controllerId = textControl({ ariaLabel: "Controller ID", value: values.controllerId || "" });
+  controllerId.dataset.controllerProfileIdValue = "true";
+
+  const mappingProfile = textControl({ ariaLabel: "Mapping Profile", value: values.mappingProfile || "" });
+  mappingProfile.dataset.controllerProfileMapping = "true";
+
+  const inputs = textControl({ ariaLabel: "Controller Inputs", value: listLabel(values.inputs, "") });
+  inputs.dataset.controllerProfileInputs = "true";
+
+  const actions = textControl({ ariaLabel: "Controller Actions", value: listLabel(values.actions, "") });
+  actions.dataset.controllerProfileActions = "true";
+
+  const actionsCell = controlCell(actions);
+  const group = document.createElement("div");
+  group.className = "action-group action-group--tight";
+  group.append(
+    actionButton("Save", "controllerProfileSave"),
+    actionButton("Cancel", "controllerProfileCancel"),
+  );
+  actionsCell.append(group);
+  row.append(
+    controlCell(deviceType),
+    controlCell(controllerName),
+    controlCell(controllerId),
+    controlCell(mappingProfile),
+    controlCell(inputs),
+    actionsCell,
+  );
+  return row;
+}
+
+function renderControllerProfiles() {
+  if (!elements.controllerProfileList) {
+    return;
+  }
+  const rows = [];
+  if (profileEditingRow) {
+    rows.push(renderControllerProfileEditingRow(profileEditingRow.values));
+  }
+  const visibleProfiles = profileEditingRow?.id
+    ? controllerProfiles.filter((profile) => profile.id !== profileEditingRow.id)
+    : controllerProfiles;
+  rows.push(...visibleProfiles.map(renderControllerProfileRow));
+  if (!rows.length) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 7;
+    cell.textContent = "No controller profiles saved yet.";
+    row.append(cell);
+    rows.push(row);
+  }
+  elements.controllerProfileList.replaceChildren(...rows);
+  if (elements.controllerProfileAdd) {
+    elements.controllerProfileAdd.disabled = Boolean(profileEditingRow);
+  }
+  renderControllerProfileStatus();
 }
 
 function renderDiagnostics(message = "") {
@@ -387,6 +592,7 @@ function renderMappingRow(mapping) {
     tableCell(mapping.objectName),
     tableCell(mapping.actionLabel),
     tableCell(mapping.inputDevice),
+    tableCell(profileLabel(mapping.controllerProfileId)),
   );
   const inputCell = document.createElement("td");
   inputCell.append(tokenButton(mapping));
@@ -423,6 +629,13 @@ function renderEditingRow(values = {}) {
   });
   deviceSelect.dataset.inputRowDevice = "true";
 
+  const profileSelect = selectControl({
+    ariaLabel: "Mapping Profile",
+    options: profileOptions(),
+    selectedValue: values.controllerProfileId || "",
+  });
+  profileSelect.dataset.inputRowProfile = "true";
+
   const input = textControl({ ariaLabel: "Mapping Input", value: values.binding || "" });
   input.dataset.inputRowBinding = "true";
 
@@ -440,6 +653,7 @@ function renderEditingRow(values = {}) {
     controlCell(objectSelect),
     controlCell(actionSelect),
     controlCell(deviceSelect),
+    controlCell(profileSelect),
     controlCell(input),
     controlCell(stateSelect),
     actionCell([
@@ -465,7 +679,7 @@ function renderMappings() {
   if (!rows.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 6;
+    cell.colSpan = 7;
     cell.textContent = "No mappings added yet.";
     row.append(cell);
     rows.push(row);
@@ -479,8 +693,11 @@ function renderMappings() {
 
 function renderAll(message = "") {
   objectOptions = readObjectOptions();
+  controllerProfiles = readControllerProfiles();
+  mappings = readMappings();
   renderActionsAndObjects();
   renderDefaults();
+  renderControllerProfiles();
   renderDiagnostics(message);
   renderMappings();
 }
@@ -635,16 +852,19 @@ function mappingFromEditingRow(row) {
   const object = objectOptions.find((candidate) => candidate.key === objectKey) || objectOptions[0];
   const action = actionById(row.querySelector("[data-input-row-action]")?.value);
   const source = row.querySelector("[data-input-row-device]")?.value || "keyboard";
+  const profile = profileById(row.querySelector("[data-input-row-profile]")?.value || "");
   const binding = normalizeText(row.querySelector("[data-input-row-binding]")?.value);
   const device = deviceBySource(source);
   return normalizeMapping({
     action: action.id,
     actionLabel: action.label,
     binding,
+    controllerProfileId: profile?.id || "",
     engine: device.engine,
     id: editingRow?.id || "",
     inputDevice: device.label,
     label: inputLabel(source, binding),
+    mappingProfile: profile?.mappingProfile || "",
     objectKey: object.key,
     objectName: object.label,
     source,
@@ -668,6 +888,76 @@ function saveEditingRow() {
   saveMappings(mappings);
   editingRow = null;
   renderAll(`Saved ${mapping.actionLabel} mapping.`);
+}
+
+function controllerProfileFromEditingRow(row) {
+  const actions = normalizeList(row.querySelector("[data-controller-profile-actions]")?.value);
+  const controllerId = normalizeText(row.querySelector("[data-controller-profile-id-value]")?.value);
+  const mappingProfile = normalizeText(row.querySelector("[data-controller-profile-mapping]")?.value);
+  return normalizeControllerProfile({
+    actions,
+    controllerId,
+    controllerName: normalizeText(row.querySelector("[data-controller-profile-name]")?.value),
+    deviceType: row.querySelector("[data-controller-profile-device-type]")?.value || "Gamepad",
+    id: profileEditingRow?.id || "",
+    inputs: normalizeList(row.querySelector("[data-controller-profile-inputs]")?.value),
+    mappingProfile,
+  });
+}
+
+function saveControllerProfileEditingRow() {
+  const row = elements.controllerProfileList?.querySelector("[data-controller-profile-editing-row]");
+  if (!row) {
+    return;
+  }
+  const profile = controllerProfileFromEditingRow(row);
+  if (!profile.controllerId || !profile.mappingProfile) {
+    setText(elements.controllerProfileStatus, "WARN: Add Controller ID and Mapping Profile before saving the controller profile.");
+    return;
+  }
+  const nextProfiles = profileEditingRow?.id
+    ? controllerProfiles.map((candidate) => (candidate.id === profileEditingRow.id ? profile : candidate))
+    : [profile, ...controllerProfiles];
+  if (!saveControllerProfiles(nextProfiles)) {
+    controllerProfiles = readControllerProfiles();
+    renderControllerProfiles();
+    return;
+  }
+  profileEditingRow = null;
+  renderAll(`Saved ${profile.mappingProfile} controller profile.`);
+}
+
+function editControllerProfile(profileId) {
+  const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
+  if (!profile) {
+    return;
+  }
+  profileEditingRow = {
+    id: profile.id,
+    values: profile,
+  };
+  renderControllerProfiles();
+  setText(elements.controllerProfileStatus, `Editing ${profile.mappingProfile} controller profile.`);
+}
+
+function deleteControllerProfile(profileId) {
+  const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
+  const nextProfiles = controllerProfiles.filter((candidate) => candidate.id !== profileId);
+  const nextMappings = mappings.map((mapping) => (
+    mapping.controllerProfileId === profileId
+      ? normalizeMapping({ ...mapping, controllerProfileId: "", mappingProfile: "" })
+      : mapping
+  ));
+  const savedProfiles = saveControllerProfiles(nextProfiles);
+  const savedMappings = saveMappings(nextMappings);
+  if (!savedProfiles || !savedMappings) {
+    controllerProfiles = readControllerProfiles();
+    mappings = readMappings();
+    renderAll("WARN: Controller profile delete could not reach the shared DB adapter.");
+    return;
+  }
+  profileEditingRow = null;
+  renderAll(profile ? `Deleted ${profile.mappingProfile} controller profile.` : "Deleted controller profile.");
 }
 
 function editMapping(mappingId) {
@@ -710,6 +1000,24 @@ function handleListClick(event) {
   }
 }
 
+function handleControllerProfileClick(event) {
+  const target = event.target instanceof Element ? event.target.closest("button") : null;
+  if (!target) {
+    return;
+  }
+  if (target.dataset.controllerProfileSave !== undefined) {
+    saveControllerProfileEditingRow();
+  } else if (target.dataset.controllerProfileCancel !== undefined) {
+    profileEditingRow = null;
+    renderControllerProfiles();
+    setText(elements.controllerProfileStatus, "Canceled controller profile edit.");
+  } else if (target.dataset.controllerProfileEdit !== undefined) {
+    editControllerProfile(target.dataset.controllerProfileEdit || "");
+  } else if (target.dataset.controllerProfileTrash !== undefined) {
+    deleteControllerProfile(target.dataset.controllerProfileTrash || "");
+  }
+}
+
 function showWorkspaceReturnIfNeeded() {
   if (!elements.returnWorkspace) {
     return;
@@ -726,9 +1034,11 @@ function showWorkspaceReturnIfNeeded() {
 function init() {
   showWorkspaceReturnIfNeeded();
   objectOptions = readObjectOptions();
+  controllerProfiles = readControllerProfiles();
   mappings = readMappings();
   renderActionsAndObjects();
   renderDefaults();
+  renderControllerProfiles();
   renderDiagnostics();
   renderMappings();
   elements.actionSelect?.addEventListener("change", updateCaptureSelection);
@@ -748,6 +1058,18 @@ function init() {
     renderMappings();
     setText(elements.statusLog, "Add a mapping row.");
   });
+  elements.controllerProfileAdd?.addEventListener("click", () => {
+    profileEditingRow = {
+      id: "",
+      values: {
+        actions: [selectedAction().label],
+        deviceType: "Gamepad",
+        inputs: [],
+      },
+    };
+    renderControllerProfiles();
+    setText(elements.controllerProfileStatus, "Add a controller profile row.");
+  });
   elements.resetMappings?.addEventListener("click", () => {
     resetStoredMappings();
     editingRow = null;
@@ -758,7 +1080,9 @@ function init() {
   elements.captureGamepad?.addEventListener("click", captureGamepadInput);
   elements.refreshDevices?.addEventListener("click", () => {
     renderDiagnostics("Device diagnostics refreshed.");
+    renderControllerProfileStatus();
   });
+  elements.controllerProfileList?.addEventListener("click", handleControllerProfileClick);
   elements.list?.addEventListener("click", handleListClick);
   window.addEventListener("keydown", captureKeyboardEvent);
   window.addEventListener("pointerdown", captureMouseEvent);

@@ -113,6 +113,14 @@ async function inputMappingRecords(page) {
   });
 }
 
+async function controllerProfileRecords(page) {
+  return page.evaluate(async () => {
+    const response = await fetch("/api/mock-db/snapshot");
+    const payload = await response.json();
+    return payload.data.tables.input_controller_profile_records || [];
+  });
+}
+
 async function controlsRegistryEntry(page) {
   return page.evaluate(async () => {
     const response = await fetch("/api/toolbox/registry/snapshot");
@@ -143,15 +151,18 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
       "Input",
       "Action",
     ]);
-    await expect(page.locator("[data-controller-profile-table]")).toContainText("Unknown Controller");
-    await expect(page.locator("[data-controller-profile-table]")).toContainText("Create Profile Needed");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
+    await expect(page.locator("[data-controller-profile-table]")).not.toContainText("Create Profile Needed");
     await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown controller.");
-    await expect(page.locator("[data-controller-profile-status]")).toContainText("future Create Profile flow");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("use Add Profile");
     await expect(page.locator("[data-controller-profile-planning]")).toContainText("Future game launch will match Controller ID to a saved Mapping Profile");
+    await expect(page.locator("[data-controller-profile-add]")).toBeVisible();
+    expect(await controllerProfileRecords(page)).toHaveLength(0);
     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
       "Object",
       "Action",
       "Input Device",
+      "Mapping Profile",
       "Input",
       "State",
       "Actions",
@@ -211,7 +222,7 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await addButton.click();
     await expect(addButton).toBeDisabled();
     await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
-    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(6);
+    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(7);
     await expect(page.locator("[data-input-editing-row] td").last().locator("button")).toHaveText(["Save", "Cancel"]);
     await expect(page.locator("[data-input-editing-row] td").last().locator("button").last()).toHaveText("Cancel");
 
@@ -223,12 +234,14 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await addButton.click();
     await page.locator("[data-input-row-action]").selectOption("fire");
     await page.locator("[data-input-row-device]").selectOption("keyboard");
+    await expect(page.locator("[data-input-row-profile] option")).toHaveText(["No saved profile"]);
     await page.locator("[data-input-row-binding]").fill("KeyF");
     await page.locator("[data-input-save-mapping]").click();
     await expect(addButton).toBeEnabled();
     await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
     await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Fire");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("No saved profile");
     await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyF");
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(1);
@@ -258,6 +271,77 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
 
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Controls controller profiles persist and mappings reference saved profiles", async ({ page }) => {
+  const failures = await openInputMappingPage(page);
+
+  try {
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
+    expect(await controllerProfileRecords(page)).toHaveLength(0);
+
+    const addProfile = page.locator("[data-controller-profile-add]");
+    await addProfile.click();
+    await expect(addProfile).toBeDisabled();
+    await page.locator("[data-controller-profile-name]").fill("Arcade Pad");
+    await page.locator("[data-controller-profile-id-value]").fill("usb-gamepad-123");
+    await page.locator("[data-controller-profile-mapping]").fill("Arcade Profile");
+    await page.locator("[data-controller-profile-inputs]").fill("Button0, Axis0+");
+    await page.locator("[data-controller-profile-actions]").fill("Fire, Move Right");
+    await page.locator("[data-controller-profile-save]").click();
+    await expect(addProfile).toBeEnabled();
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Pad");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("usb-gamepad-123");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Profile");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("1 controller profile saved.");
+
+    let profiles = await controllerProfileRecords(page);
+    expect(profiles).toHaveLength(1);
+    expect(profiles[0]).toMatchObject({
+      actions: ["Fire", "Move Right"],
+      controllerId: "usb-gamepad-123",
+      controllerName: "Arcade Pad",
+      deviceType: "Gamepad",
+      inputs: ["Button0", "Axis0+"],
+      mappingProfile: "Arcade Profile",
+    });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Profile");
+
+    await page.locator("[data-input-add-mapping]").click();
+    await page.locator("[data-input-row-action]").selectOption("fire");
+    await page.locator("[data-input-row-device]").selectOption("gamepad");
+    await page.locator("[data-input-row-profile]").selectOption({ label: "Arcade Profile" });
+    await page.locator("[data-input-row-binding]").fill("Pad0:Button0");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Profile");
+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Gamepad Button0");
+
+    let records = await inputMappingRecords(page);
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      action: "fire",
+      binding: "Pad0:Button0",
+      controllerProfileId: profiles[0].id,
+      mappingProfile: "Arcade Profile",
+      source: "gamepad",
+    });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Profile");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Profile");
+    profiles = await controllerProfileRecords(page);
+    records = await inputMappingRecords(page);
+    expect(profiles).toHaveLength(1);
+    expect(records).toHaveLength(1);
+    expect(records[0].controllerProfileId).toBe(profiles[0].id);
 
     await expectNoPageFailures(failures);
   } finally {

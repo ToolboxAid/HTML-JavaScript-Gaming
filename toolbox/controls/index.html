@@ -72,20 +72,20 @@
                                                     <th>Action</th>
                                                 </tr>
                                             </thead>
-                                            <tbody>
+                                            <tbody data-controller-profile-list></tbody>
+                                            <tfoot>
                                                 <tr>
-                                                    <td>Gamepad</td>
-                                                    <td>Unknown Controller</td>
-                                                    <td>Awaiting Device</td>
-                                                    <td>Create Profile Needed</td>
-                                                    <td>Button or Axis</td>
-                                                    <td>Select Action</td>
+                                                    <td colspan="6">
+                                                        <div class="content-cluster" aria-label="Controller profile table actions">
+                                                            <button class="btn" type="button" data-controller-profile-add>Add Profile</button>
+                                                        </div>
+                                                    </td>
                                                 </tr>
-                                            </tbody>
+                                            </tfoot>
                                         </table>
                                     </div>
                                     <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
-                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; future Create Profile flow will save the controller identity.</p>
+                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; use Add Profile to save the controller identity when known.</p>
                                 </div>
                             </details>
                         </div>
@@ -112,6 +112,7 @@
                                                 <th>Object</th>
                                                 <th>Action</th>
                                                 <th>Input Device</th>
+                                                <th>Mapping Profile</th>
                                                 <th>Input</th>
                                                 <th>State</th>
                                                 <th>Actions</th>
@@ -120,7 +121,7 @@
                                         <tbody data-input-mapping-list></tbody>
                                         <tfoot>
                                             <tr>
-                                                <td colspan="6">
+                                                <td colspan="7">
                                                     <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
                                                         <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
                                                         <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
