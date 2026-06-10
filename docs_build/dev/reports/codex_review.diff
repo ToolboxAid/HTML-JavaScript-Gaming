@@ -1,161 +1,262 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 6d110420b..0d858deb4 100644
+index 0d858deb4..cef08e7f2 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,12 +7,8 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -7,8 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
--(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 360/360; executed functions 16/23
--(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
--(95%) toolbox/objects/objects.js - executed lines 741/741; executed functions 84/88
-+(94%) toolbox/objects/objects.js - executed lines 762/762; executed functions 80/85
+-(67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
+-(94%) toolbox/objects/objects.js - executed lines 762/762; executed functions 80/85
++(93%) toolbox/objects/objects.js - executed lines 790/790; executed functions 75/81
 
  Guardrail warnings:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 1fbdb2bea..401a27867 100644
+index 401a27867..896e5a210 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -18,11 +18,8 @@ Exercised tool entry points detected:
+@@ -12,14 +12,13 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(85%) Toolbox Index - exercised 5 runtime JS files
++(84%) Toolbox Index - exercised 5 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+ (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
--(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 360/360; executed functions 16/23
--(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
--(95%) toolbox/objects/objects.js - executed lines 741/741; executed functions 84/88
-+(94%) toolbox/objects/objects.js - executed lines 762/762; executed functions 80/85
+-(67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
+-(94%) toolbox/objects/objects.js - executed lines 762/762; executed functions 80/85
++(93%) toolbox/objects/objects.js - executed lines 790/790; executed functions 75/81
 
  Files with executed line/function counts where available:
  (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-@@ -36,23 +33,19 @@ Files with executed line/function counts where available:
+@@ -33,7 +32,7 @@ Files with executed line/function counts where available:
  (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
  (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
  (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
--(95%) toolbox/objects/objects.js - executed lines 741/741; executed functions 84/88
-+(94%) toolbox/objects/objects.js - executed lines 762/762; executed functions 80/85
+-(94%) toolbox/objects/objects.js - executed lines 762/762; executed functions 80/85
++(93%) toolbox/objects/objects.js - executed lines 790/790; executed functions 75/81
  (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
  (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
- Uncovered or low-coverage changed JS files:
- (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+@@ -42,10 +41,6 @@ Uncovered or low-coverage changed JS files:
 
  Changed JS files considered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
- (0%) tests/engine/ObjectModelContract.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/engine/ObjectModelContract.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
- (67%) src/engine/object-model/objectModelRegistry.js - changed JS file with browser V8 coverage
--(70%) src/engine/object-model/objectDefinitionValidator.js - changed JS file with browser V8 coverage
--(75%) src/engine/object-model/objectDefinitionSchema.js - changed JS file with browser V8 coverage
--(95%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
-+(94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
+-(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+-(67%) src/engine/object-model/objectModelRegistry.js - changed JS file with browser V8 coverage
+-(94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
++(93%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+index af64a8035..c02870c53 100644
+--- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
++++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+@@ -410,14 +410,14 @@ export const TOOL_REGISTRY = Object.freeze([
+     "id": "objects",
+     "name": "Objects",
+     "displayName": "Objects",
+-    "shortDescription": "Define game object setup with broad roles, body types, and render asset handoff.",
++    "shortDescription": "Create game objects with roles, state, and sprite assets.",
+     "shortLabel": "Objects",
+     "path": "objects",
+     "folderName": "objects",
+     "entryPoint": "objects/index.html",
+     "badge": "/assets/theme-v2/images/badges/objects.png",
+     "tool": "/assets/theme-v2/images/tools/objects.png",
+-    "description": "Define game object setup with broad roles, body types, and render asset handoff.",
++    "description": "Create game objects with roles, state, and sprite assets.",
+     "category": "Design",
+     "colorGroup": "tool-group-design",
+     "active": true,
+@@ -429,16 +429,16 @@ export const TOOL_REGISTRY = Object.freeze([
+     "status": "Wireframe",
+     "releaseChannel": "wireframe",
+     "progressChecklist": [
+-      "Table input wireframe adapted",
++      "Editable object table available",
+       "Inline row add, save, cancel, edit, and trash actions available",
+-      "Sprite asset handoff preserved for saved Sprite rows"
++      "Sprite asset linking available for saved Sprite rows"
+     ],
+     "deferred": false,
+     "hidden": false,
+     "adminOnly": false,
+     "visibleInToolsList": true,
+     "toolboxGroup": "Create",
+-    "capabilityLabel": "Object setup types",
++    "capabilityLabel": "Object role types",
+     "childCapabilities": [
+       "Static",
+       "Dynamic",
 diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
-index f56ffa061..d90c24b3d 100644
+index d90c24b3d..f2275c2d1 100644
 --- a/tests/playwright/tools/ObjectsTool.spec.mjs
 +++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -68,9 +68,8 @@ async function expectNoPageFailures(failures) {
-   expect(failures.consoleErrors).toEqual([]);
+@@ -5,6 +5,23 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
+
+ const ROLE_OPTIONS = ["Collectible", "Custom", "Enemy", "Goal", "Hazard", "Hero", "Platform", "Projectile", "Spawner", "UI", "Wall"];
+ const OLD_SAMPLE_PATH_PATTERN = new RegExp(["M" + "VP", "Padd" + "le", "Ba" + "ll"].join("|"), "i");
++const OLD_INTERNAL_COPY_PATTERN = new RegExp([
++  ["page", " session only"].join(""),
++  ["hand", "off"].join(""),
++  ["Setup ", "readiness"].join(""),
++  ["Session ", "\\+ Assets"].join(""),
++  ["Readiness ", "Checks"].join(""),
++  ["Runtime ", "Scope"].join(""),
++  ["authoring ", "hand", "off"].join(""),
++  ["Game Configuration is ", "not ready"].join(""),
++  ["Object ", "setup ", "table"].join(""),
++  ["Object ", "setup ", "rows"].join(""),
++].join("|"), "i");
++const LOW_VALUE_STATUS_CHECK_PATTERN = new RegExp([
++  ["Object ", "row"].join(""),
++  ["Object ", "names"].join(""),
++  ["Object ", "roles"].join(""),
++].join("|"), "i");
+
+ test.beforeEach(async ({ page }) => {
+   await installPlaywrightStorageIsolation(page, {
+@@ -75,13 +92,29 @@ async function fillActiveRow(page, { name, renderType = "None", role, state = "A
+   await page.locator("[data-objects-row-render-type]").selectOption(renderType);
  }
 
--async function fillActiveRow(page, { name, renderType = "None", role, state = "Active", type }) {
-+async function fillActiveRow(page, { name, renderType = "None", role, state = "Active" }) {
-   await page.locator("[data-objects-row-name]").fill(name);
--  await page.locator("[data-objects-row-type]").selectOption(type);
-   await page.locator("[data-objects-row-role]").selectOption(role);
-   await page.locator("[data-objects-row-state]").selectOption(state);
-   await page.locator("[data-objects-row-render-type]").selectOption(renderType);
-@@ -83,15 +82,21 @@ test("Objects exposes broad table input without sample-path wording", async ({ p
+-test("Objects exposes broad table input without sample-path wording", async ({ page }) => {
++test("Objects exposes production copy, Object Status, and broad table input", async ({ page }) => {
+   const failures = await openObjectsPage(page);
+
+   try {
      await expect(page.locator(".tool-workspace")).toBeVisible();
      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
      await expect(page.locator("main")).not.toContainText(OLD_SAMPLE_PATH_PATTERN);
-+    await expect(page.locator("[data-objects-list-table] th")).toHaveText([
-+      "Name",
-+      "Role",
-+      "State",
-+      "Render",
-+      "Traits",
-+      "Render Asset",
-+      "Actions",
++    await expect(page.locator("main")).not.toContainText(OLD_INTERNAL_COPY_PATTERN);
++    await expect(page.getByRole("heading", { level: 2, name: "Object Builder" })).toBeVisible();
++    await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toBeVisible();
++    await expect(page.locator("[aria-label='Object status summary'] th")).toHaveText([
++      "Area",
++      "Status",
++      "Next Step",
 +    ]);
-+    await expect(page.locator("[data-objects-row-type]")).toHaveCount(0);
-+    await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
++    await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(4);
++    await expect(page.locator("[data-objects-status-summary] td:first-child")).toHaveText([
++      "Ready Objects",
++      "Render Assets",
++      "Missing Hitboxes",
++      "Missing Events",
++    ]);
++    await expect(page.locator("[data-objects-status-summary]")).not.toContainText(LOW_VALUE_STATUS_CHECK_PATTERN);
+     await expect(page.locator("[data-objects-list-table] th")).toHaveText([
+       "Name",
+       "Role",
+@@ -94,9 +127,12 @@ test("Objects exposes broad table input without sample-path wording", async ({ p
+     await expect(page.locator("[data-objects-row-type]")).toHaveCount(0);
+     await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
      await expect(page.locator("[data-objects-role-basics] li")).toHaveText(ROLE_OPTIONS);
-     await expect(page.locator("[data-objects-readiness]")).toHaveText("Needs Input");
-     await expect(page.locator("[data-objects-validation-overlay]")).toBeVisible();
-     await expect(page.locator("[data-objects-validation-list]")).toContainText("Object row: Add at least one object row.");
--    await expect(page.locator("[data-objects-type-basics]")).toContainText("Static");
--    await expect(page.locator("[data-objects-type-basics]")).toContainText("Dynamic");
--    await expect(page.locator("[data-objects-type-basics]")).toContainText("Collectible");
--    await expect(page.locator("[data-objects-type-basics]")).toContainText("Hazard");
--    await expect(page.locator("[data-objects-type-basics]")).toContainText("Goal");
+-    await expect(page.locator("[data-objects-readiness]")).toHaveText("Needs Input");
+-    await expect(page.locator("[data-objects-validation-overlay]")).toBeVisible();
+-    await expect(page.locator("[data-objects-validation-list]")).toContainText("Object row: Add at least one object row.");
++    await expect(page.locator("[data-objects-readiness]")).toHaveText("Needs Objects");
++    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Needs Objects");
++    await expect(page.locator("[data-objects-asset-status]")).toHaveText("No sprite render selected");
++    await expect(page.locator("[data-objects-output-setup]")).toHaveText("Add objects to begin the object list.");
++    await expect(page.locator("[data-objects-validation-overlay]")).toBeHidden();
++    await expect(page.locator("[data-objects-validation-list]")).toHaveText("PASS: Object details are valid.");
      await expect(page.locator("[data-objects-trait-basics]")).toContainText("movable");
      await expect(page.locator("[data-objects-trait-basics]")).toContainText("playerControlled");
      await expect(page.locator("[data-objects-trait-basics]")).toContainText("collides");
-@@ -148,12 +153,14 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
-     await expect(page.locator("[data-objects-list]")).toContainText("No objects drafted yet.");
+@@ -109,11 +145,12 @@ test("Objects exposes broad table input without sample-path wording", async ({ p
 
-     await addButton.click();
--    await fillActiveRow(page, { name: "Hero", role: "Hero", type: "Dynamic" });
-+    await fillActiveRow(page, { name: "Hero", role: "Hero" });
-     await page.locator("[data-objects-save-row]").click();
-     await expect(page.locator("[data-objects-log]")).toHaveText("Added Hero.");
-     await expect(addButton).toBeEnabled();
+     await page.getByRole("button", { name: "Seed Starter Objects" }).click();
+     await expect(page.locator("[data-objects-log]")).toHaveText("Seeded starter objects: Hero, Projectile, and Wall.");
+-    await expect(page.locator("[data-objects-readiness]")).toHaveText("Ready");
+-    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Ready");
++    await expect(page.locator("[data-objects-readiness]")).toHaveText("Objects Ready");
++    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Objects Ready");
+     await expect(page.locator("[data-objects-count]")).toHaveText("3");
+-    await expect(page.locator("[data-objects-output-static]")).toHaveText("1");
+-    await expect(page.locator("[data-objects-output-dynamic]")).toHaveText("2");
++    await expect(page.locator("[data-objects-output-count]")).toHaveText("3");
++    await expect(page.locator("[data-objects-status-summary]")).toContainText("3/3");
++    await expect(page.locator("[data-objects-status-summary]")).toContainText("No sprite render selected");
+     await expect(page.locator("[data-objects-validation-overlay]")).toBeHidden();
+     await expect(page.locator("[data-objects-list] tr")).toHaveCount(3);
      await expect(page.locator("[data-objects-list]")).toContainText("Hero");
-     await expect(page.locator("[data-objects-list]")).toContainText("Player Controlled");
-+    await expect(page.locator("[data-objects-list]")).toContainText("None");
-+    await expect(page.locator("[data-objects-validation-list]")).not.toContainText("Render Asset");
-     await expect(page.locator("[data-objects-edit-row='hero']")).toBeVisible();
-     await expect(page.locator("[data-objects-trash-row='hero']")).toBeVisible();
+@@ -123,11 +160,12 @@ test("Objects exposes broad table input without sample-path wording", async ({ p
+     await expect(page.locator("[data-objects-list] [data-objects-trash-row]")).toHaveCount(3);
+     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("None");
+     await expect(page.locator("[data-objects-edit-sprite]")).toBeHidden();
+-    await expect(page.locator("[data-objects-output-setup]")).toHaveText("Object setup table has the required row details.");
++    await expect(page.locator("[data-objects-output-setup]")).toHaveText("Objects have saved table details.");
 
-@@ -188,7 +195,6 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
-       name: "Bolt",
-       renderType: "Sprite",
-       role: "Projectile",
--      type: "Dynamic",
-     });
-     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
+     await page.getByRole("button", { name: "Validate Setup" }).click();
+-    await expect(page.locator("[data-objects-log]")).toHaveText("Validation PASS: Object setup rows are ready for authoring handoff.");
+-    await expect(page.locator("[data-objects-validation-list]")).toHaveText("PASS: Object setup rows are ready.");
++    await expect(page.locator("[data-objects-log]")).toHaveText("Validation PASS: Object details are ready for review.");
++    await expect(page.locator("[data-objects-validation-list]")).toHaveText("PASS: Object details are valid.");
++    await expect(page.locator("main")).not.toContainText(OLD_INTERNAL_COPY_PATTERN);
+
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -201,8 +239,9 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
+
+     await expect(page.locator("[data-objects-log]")).toContainText("Added Bolt.");
+     await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_bolt for Bolt.");
+-    await expect(page.locator("[data-objects-log]")).toContainText("Game Configuration is not ready");
+     await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
++    await expect(page.locator("[data-objects-asset-status]")).toHaveText("Linked");
++    await expect(page.locator("[data-objects-status-summary]")).toContainText("Linked");
+     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_bolt");
+     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_bolt");
+     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("projects/");
+@@ -216,8 +255,9 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
+     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("sprite_bolt");
      await page.locator("[data-objects-save-row]").click();
-@@ -206,13 +212,19 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
-       "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
-     );
+     await expect(page.locator("[data-objects-log]")).toHaveText("Saved Bolt.");
+-    await expect(page.locator("[data-objects-log]")).not.toContainText("Sprite asset handoff blocked");
++    await expect(page.locator("[data-objects-log]")).not.toContainText("Sprite asset link blocked");
+     await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
++    await expect(page.locator("main")).not.toContainText(OLD_INTERNAL_COPY_PATTERN);
 
-+    await page.locator("[data-objects-edit-row='bolt']").click();
-+    await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("sprite_bolt");
-+    await page.locator("[data-objects-save-row]").click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Saved Bolt.");
-+    await expect(page.locator("[data-objects-log]")).not.toContainText("Sprite asset handoff blocked");
-+    await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
-+
      await page.getByRole("button", { name: "Reset Table" }).click();
      await page.getByRole("button", { name: "Add Object" }).click();
-     await fillActiveRow(page, {
-       name: "Bolt",
-       renderType: "Sprite",
-       role: "Projectile",
--      type: "Dynamic",
-     });
-     await page.locator("[data-objects-save-row]").click();
-     await expect(page.locator("[data-objects-log]")).toContainText("Added Bolt.");
+diff --git a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+index e6684e8f2..394393d50 100644
+--- a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
++++ b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+@@ -200,7 +200,7 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
+     expect(Array.isArray(registryColors.progressChecklist)).toBe(true);
+     expect(Array.isArray(registryColors.requires)).toBe(true);
+     expect(registrySnapshot.activeTools.find((tool) => tool.id === "objects")).toEqual(expect.objectContaining({
+-      capabilityLabel: "Object setup types",
++      capabilityLabel: "Object role types",
+       childCapabilities: ["Static", "Dynamic", "Collectible", "Hazard", "Goal"],
+       releaseChannel: "wireframe",
+       status: "wireframe",
 diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
-index e336c4449..baba91d68 100644
+index baba91d68..54b186504 100644
 --- a/toolbox/objects/index.html
 +++ b/toolbox/objects/index.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Objects - GameFoundryStudio</title>
+-    <meta name="description" content="Objects Toolbox wireframe surface for static and dynamic object setup with sprite asset handoff.">
++    <meta name="description" content="Objects Toolbox surface for roles, state, and sprite asset links.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
 @@ -18,7 +18,7 @@
              <div class="container">
                  <div class="kicker">Toolbox / Objects</div>
                  <h1>Objects</h1>
--                <p class="lede">Define object setup with static and dynamic body types, broad roles, and sprite render assets handed off through shared asset records.</p>
-+                <p class="lede">Define object setup with broad roles and sprite render assets handed off through shared asset records.</p>
+-                <p class="lede">Define object setup with broad roles and sprite render assets handed off through shared asset records.</p>
++                <p class="lede">Create game objects with roles, state, and sprite assets for your project.</p>
              </div>
          </section>
          <section class="section">
@@ -163,444 +264,445 @@ index e336c4449..baba91d68 100644
                              <details class="vertical-accordion" open>
                                  <summary>Object Setup</summary>
                                  <div class="accordion-body content-stack">
--                                    <p data-objects-setup-context>Use the table to define object names, body types, roles, state, and optional sprite render handoff.</p>
-+                                    <p data-objects-setup-context>Use the table to define object names, roles, state, and optional sprite render handoff.</p>
+-                                    <p data-objects-setup-context>Use the table to define object names, roles, state, and optional sprite render handoff.</p>
++                                    <p data-objects-setup-context>Use the table to define object names, roles, state, and optional sprite assets.</p>
                                      <div class="content-cluster" aria-label="Objects setup actions">
                                          <button class="btn" type="button" data-objects-seed-starter>Seed Starter Objects</button>
                                          <button class="btn" type="button" data-objects-validate>Validate Setup</button>
-@@ -87,7 +87,6 @@
+@@ -50,28 +50,29 @@
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="objects" data-tool-icon-src="assets/theme-v2/images/badges/objects.png" data-tool-character-src="assets/theme-v2/images/tools/objects.png"></div>
+                     <section class="tool-center-panel">
+-                        <h2>Object Setup Workspace</h2>
+-                        <p>Object definitions are held in this page session only. Sprite render selections link to shared asset records for Sprite Editor handoff.</p>
++                        <h2>Object Builder</h2>
++                        <p>Create and review the objects your game will use. Sprite choices can open the linked asset in Sprite Editor.</p>
+                         <div class="grid cols-3" aria-label="Objects readiness summary">
+-                            <article class="mini-stat"><strong data-objects-readiness>Needs Input</strong>Setup readiness</article>
+-                            <article class="mini-stat"><strong data-objects-count>0</strong>Objects drafted</article>
+-                            <article class="mini-stat"><strong data-objects-scope>Session + Assets</strong>Storage scope</article>
++                            <article class="mini-stat"><strong data-objects-readiness>Needs Objects</strong>Object status</article>
++                            <article class="mini-stat"><strong data-objects-count>0</strong>Objects</article>
++                            <article class="mini-stat"><strong data-objects-asset-status>No sprite links</strong>Sprite assets</article>
+                         </div>
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div>
+-                                    <div class="kicker">Object Setup</div>
+-                                    <h3>Readiness Checks</h3>
++                                    <div class="kicker">Object Status</div>
++                                    <h3>Object Status</h3>
+                                 </div>
+                                 <div class="table-wrapper">
+-                                    <table class="data-table" aria-label="Objects setup requirements">
++                                    <table class="data-table" aria-label="Object status summary">
                                          <thead>
                                              <tr>
-                                                 <th>Name</th>
--                                                <th>Type</th>
-                                                 <th>Role</th>
-                                                 <th>State</th>
-                                                 <th>Render</th>
-@@ -139,9 +138,8 @@
+-                                                <th>Requirement</th>
++                                                <th>Area</th>
+                                                 <th>Status</th>
++                                                <th>Next Step</th>
+                                             </tr>
+                                         </thead>
+-                                        <tbody data-objects-requirements></tbody>
++                                        <tbody data-objects-status-summary></tbody>
+                                     </table>
                                  </div>
-                             </details>
+                             </div>
+@@ -113,13 +114,11 @@
                              <details class="vertical-accordion" open>
--                                <summary>Object Types</summary>
-+                                <summary>Traits</summary>
-                                 <div class="accordion-body content-stack">
--                                    <ul data-objects-type-basics></ul>
-                                     <ul data-objects-trait-basics></ul>
+                                 <summary>Output</summary>
+                                 <div class="accordion-body content-stack" data-objects-output>
+-                                    <p>Readiness: <span data-objects-output-readiness>Needs Input</span></p>
+-                                    <p>Static Objects: <span data-objects-output-static>0</span></p>
+-                                    <p>Dynamic Objects: <span data-objects-output-dynamic>0</span></p>
+-                                    <p>Render Asset: <span data-objects-output-render-asset>None</span></p>
++                                    <p>Status: <span data-objects-output-readiness>Needs Objects</span></p>
++                                    <p>Objects: <span data-objects-output-count>0</span></p>
++                                    <p>Sprite Asset: <span data-objects-output-render-asset>None</span></p>
+                                     <p>Sprite Preview: <span data-objects-output-sprite-preview>No sprite asset linked.</span></p>
+-                                    <p>Object Setup: <span data-objects-output-setup>Object setup needs row details.</span></p>
+-                                    <p>Runtime Scope: <span data-objects-output-scope>No manifest persistence or engine runtime behavior.</span></p>
++                                    <p>Object Status: <span data-objects-output-setup>No objects added yet.</span></p>
+                                     <p><a class="btn btn--compact" data-objects-edit-sprite hidden>Edit Sprite</a></p>
                                  </div>
                              </details>
+@@ -130,7 +129,7 @@
+                                         <div class="card-body content-stack">
+                                             <div>
+                                                 <div class="kicker">Actionable Validation</div>
+-                                                <h3 id="objects-validation-title">Missing Object Setup</h3>
++                                                <h3 id="objects-validation-title">Object Details</h3>
+                                             </div>
+                                             <ul data-objects-validation-list></ul>
+                                         </div>
+@@ -146,7 +145,7 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Status Log</summary>
+                                 <div class="accordion-body">
+-                                    <div class="status" role="status" data-objects-log>Objects in-memory draft ready.</div>
++                                    <div class="status" role="status" data-objects-log>Ready to build objects.</div>
+                                 </div>
+                             </details>
+                         </div>
 diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
-index 62ba26eed..405f770f5 100644
+index 405f770f5..841b74691 100644
 --- a/toolbox/objects/objects.js
 +++ b/toolbox/objects/objects.js
-@@ -1,6 +1,5 @@
- import {
-   OBJECT_MODEL_TRAIT_LIST,
--  OBJECT_MODEL_TYPE_LIST,
-   getObjectModelTrait,
-   getObjectModelType,
-   validateObjectDefinition,
-@@ -35,6 +34,20 @@ const ROLE_TRAITS = Object.freeze({
-   Wall: Object.freeze(["collides"]),
+@@ -48,24 +48,6 @@ const ROLE_MODEL_TYPES = Object.freeze({
+   Wall: "Static",
  });
 
-+const ROLE_MODEL_TYPES = Object.freeze({
-+  Collectible: "Collectible",
-+  Custom: "Static",
-+  Enemy: "Dynamic",
-+  Goal: "Goal",
-+  Hazard: "Hazard",
-+  Hero: "Dynamic",
-+  Platform: "Static",
-+  Projectile: "Dynamic",
-+  Spawner: "Dynamic",
-+  UI: "Static",
-+  Wall: "Static",
-+});
-+
- const SETUP_REQUIREMENTS = Object.freeze([
-   {
-     action: "Add at least one object row.",
-@@ -46,11 +59,6 @@ const SETUP_REQUIREMENTS = Object.freeze([
-     label: "Object names",
-     test: (objects) => objects.length > 0 && objects.every((object) => object.name),
-   },
+-const SETUP_REQUIREMENTS = Object.freeze([
 -  {
--    action: "Choose a registered object type for every saved object.",
--    label: "Object types",
--    test: (objects) => objects.length > 0 && objects.every((object) => getObjectModelType(object.type)),
+-    action: "Add at least one object row.",
+-    label: "Object row",
+-    test: (objects) => objects.length > 0,
 -  },
-   {
-     action: "Choose a role for every saved object.",
-     label: "Object roles",
-@@ -66,7 +74,6 @@ const STARTER_OBJECTS = Object.freeze([
-     render: Object.freeze({ type: "None" }),
-     role: "Hero",
-     state: "Active",
--    type: "Dynamic",
-   }),
+-  {
+-    action: "Give every saved object a name.",
+-    label: "Object names",
+-    test: (objects) => objects.length > 0 && objects.every((object) => object.name),
+-  },
+-  {
+-    action: "Choose a role for every saved object.",
+-    label: "Object roles",
+-    test: (objects) => objects.length > 0 && objects.every((object) => object.role),
+-  },
+-]);
+-
+ const STARTER_OBJECTS = Object.freeze([
    Object.freeze({
-     behavior: "Moves through the scene under authored behavior.",
-@@ -75,7 +82,6 @@ const STARTER_OBJECTS = Object.freeze([
-     render: Object.freeze({ type: "None" }),
-     role: "Projectile",
-     state: "Active",
--    type: "Dynamic",
-   }),
-   Object.freeze({
-     behavior: "Stays fixed in the scene.",
-@@ -84,7 +90,6 @@ const STARTER_OBJECTS = Object.freeze([
-     render: Object.freeze({ type: "None" }),
-     role: "Wall",
-     state: "Active",
--    type: "Static",
-   }),
- ]);
+     behavior: "Responds to player control mapping.",
+@@ -99,21 +81,21 @@ let editingRow = null;
 
-@@ -110,7 +115,6 @@ const elements = {
+ const elements = {
+   addRow: document.querySelector("[data-objects-add-row]"),
++  assetStatus: document.querySelector("[data-objects-asset-status]"),
+   count: document.querySelector("[data-objects-count]"),
+   editSprite: document.querySelector("[data-objects-edit-sprite]"),
+   list: document.querySelector("[data-objects-list]"),
+   log: document.querySelector("[data-objects-log]"),
+-  outputDynamic: document.querySelector("[data-objects-output-dynamic]"),
++  outputCount: document.querySelector("[data-objects-output-count]"),
+   outputReadiness: document.querySelector("[data-objects-output-readiness]"),
+   outputRenderAsset: document.querySelector("[data-objects-output-render-asset]"),
+   outputSetup: document.querySelector("[data-objects-output-setup]"),
+   outputSpritePreview: document.querySelector("[data-objects-output-sprite-preview]"),
+-  outputStatic: document.querySelector("[data-objects-output-static]"),
+   readiness: document.querySelector("[data-objects-readiness]"),
+-  requirements: document.querySelector("[data-objects-requirements]"),
+   resetTable: document.querySelector("[data-objects-reset-table]"),
    roleBasics: document.querySelector("[data-objects-role-basics]"),
    seedStarter: document.querySelector("[data-objects-seed-starter]"),
++  statusSummary: document.querySelector("[data-objects-status-summary]"),
    traitBasics: document.querySelector("[data-objects-trait-basics]"),
--  typeBasics: document.querySelector("[data-objects-type-basics]"),
    validate: document.querySelector("[data-objects-validate]"),
    validationList: document.querySelector("[data-objects-validation-list]"),
-   validationOverlay: document.querySelector("[data-objects-validation-overlay]"),
-@@ -210,25 +214,19 @@ function statusText(ok) {
-   return ok ? "OK" : "Needs Action";
+@@ -210,10 +192,6 @@ function controlCell(control) {
+   return cell;
  }
 
--function sortedObjectTypes() {
--  return [...OBJECT_MODEL_TYPE_LIST].sort((left, right) => left.label.localeCompare(right.label));
+-function statusText(ok) {
+-  return ok ? "OK" : "Needs Action";
 -}
 -
  function sortedTraits() {
    return [...OBJECT_MODEL_TRAIT_LIST].sort((left, right) => left.id.localeCompare(right.id));
  }
-
--function objectTypeOptions() {
--  return sortedObjectTypes().map((objectType) => ({
--    label: objectType.label,
--    value: objectType.id,
--  }));
--}
--
- function roleOptions() {
-   return ROLE_OPTIONS.map((role) => ({ label: role, value: role }));
- }
-
-+function typeForRole(role) {
-+  const objectType = ROLE_MODEL_TYPES[role] || "";
-+  return getObjectModelType(objectType) ? objectType : "";
-+}
-+
- function traitIdsFromSource(source) {
-   return Array.isArray(source.traits)
-     ? source.traits.map(normalizeText).filter(Boolean)
-@@ -247,15 +245,16 @@ function traitsForObject(source, object) {
- }
-
- function cloneObject(source = {}) {
-+  const role = normalizeText(source.role);
-   const object = {
-     behavior: normalizeText(source.behavior),
-     id: objectKeyFromText(source.id || source.name),
-     interaction: normalizeText(source.interaction),
-     name: normalizeText(source.name),
-     render: normalizeRenderConfig(source),
--    role: normalizeText(source.role),
-+    role,
-     state: normalizeText(source.state) || "Active",
--    type: normalizeText(source.type),
-+    type: typeForRole(role) || normalizeText(source.type),
-   };
-
-   return {
-@@ -266,12 +265,13 @@ function cloneObject(source = {}) {
-
- function defaultEditingValues(source = {}) {
-   return {
-+    assetKey: normalizeText(source.render?.assetKey),
-     id: objectId(source),
-     name: normalizeText(source.name),
-+    previewPath: normalizeText(source.render?.previewPath),
-     renderType: normalizeText(source.render?.type) || "None",
-     role: normalizeText(source.role),
-     state: normalizeText(source.state) || "Active",
--    type: normalizeText(source.type),
-   };
- }
-
-@@ -280,7 +280,7 @@ function issueLabel(issue) {
-     return "Object Name";
-   }
-   if (issue.path.endsWith(".type")) {
--    return "Object Type";
-+    return "Role";
-   }
-   if (issue.path.includes(".traits")) {
-     return "Object Traits";
-@@ -295,24 +295,31 @@ function issueLabel(issue) {
- }
-
- function objectDefinitionFindings(object, labelPrefix) {
--  return validateObjectDefinition(object).issues.map((issue) => ({
--    action: issue.action,
--    label: labelPrefix ? `${labelPrefix} ${issueLabel(issue)}` : issueLabel(issue),
--  }));
-+  return validateObjectDefinition(object).issues
-+    .filter((issue) => !(issue.path.endsWith(".type") && !object.role))
-+    .map((issue) => ({
-+      action: issue.path.endsWith(".type")
-+        ? "Choose a role so Objects can derive the technical object family."
-+        : issue.action,
-+      label: labelPrefix ? `${labelPrefix} ${issueLabel(issue)}` : issueLabel(issue),
-+    }));
- }
-
--function definitionForReadiness(object) {
-+function definitionForReadiness(object, { allowPendingSprite = false } = {}) {
-   if (object.render?.type !== "Sprite" || object.render.assetKey) {
-     return object;
-   }
-+  if (!allowPendingSprite) {
-+    return object;
-+  }
-   return {
-     ...object,
-     render: Object.freeze({ type: "None" }),
-   };
- }
-
--function rowFindings(object, ignoreObjectId = "") {
--  const findings = objectDefinitionFindings(definitionForReadiness(object), "");
-+function rowFindings(object, ignoreObjectId = "", options = {}) {
-+  const findings = objectDefinitionFindings(definitionForReadiness(object, options), "");
-   if (!object.role) {
-     findings.push({
-       action: "Choose the role this object serves.",
-@@ -334,7 +341,7 @@ function objectListFindings(objects) {
-
-   objects.forEach((object, index) => {
-     const label = object.name || `Object ${index + 1}`;
--    objectDefinitionFindings(object, label).forEach((finding) => {
-+    objectDefinitionFindings(definitionForReadiness(object), label).forEach((finding) => {
-       findings.push(finding);
-     });
-     if (!object.role) {
-@@ -443,13 +450,29 @@ function assetHandoffMessage(result, fallback) {
-   return diagnostics.length ? `${message} ${diagnostics.join(" ")}` : message;
- }
-
-+function linkedSpriteAsset(assetKey) {
-+  const assets = assetRepository.listAssets();
-+  if (!Array.isArray(assets)) {
-+    return null;
-+  }
-+  return assets.find((asset) => asset.id === assetKey) || null;
-+}
-+
- function editingObjectFromRow(row) {
-+  const renderType = row.querySelector("[data-objects-row-render-type]")?.value || "None";
-+  const render = renderType === "Sprite"
-+    ? {
-+        assetKey: normalizeText(row.dataset.objectsExistingAssetKey),
-+        previewPath: normalizeText(row.dataset.objectsExistingPreviewPath),
-+        type: "Sprite",
-+      }
-+    : { type: "None" };
-+
-   return cloneObject({
-     name: row.querySelector("[data-objects-row-name]")?.value,
--    render: { type: row.querySelector("[data-objects-row-render-type]")?.value || "None" },
-+    render,
-     role: row.querySelector("[data-objects-row-role]")?.value,
-     state: row.querySelector("[data-objects-row-state]")?.value,
--    type: row.querySelector("[data-objects-row-type]")?.value,
+@@ -365,20 +343,38 @@ function objectListFindings(objects) {
+     seenIds.add(id);
    });
+
+-  SETUP_REQUIREMENTS.forEach((requirement) => {
+-    if (!requirement.test(objects)) {
+-      findings.push({
+-        action: requirement.action,
+-        label: requirement.label,
+-      });
+-    }
+-  });
+-
+   return findings;
  }
 
-@@ -459,7 +482,7 @@ function updateRenderAssetPreview(row) {
-   if (!preview) {
+-function readinessLabel(findings) {
+-  return findings.length === 0 ? "Ready" : "Needs Input";
++function missingRenderAssetCount(objects) {
++  return objects.filter((object) => object.render?.type === "Sprite" && !object.render.assetKey).length;
++}
++
++function spriteObjectCount(objects) {
++  return objects.filter((object) => object.render?.type === "Sprite").length;
++}
++
++function objectReady(object) {
++  return Boolean(
++    object.name
++    && object.role
++    && object.type
++    && (object.render?.type !== "Sprite" || object.render.assetKey)
++  );
++}
++
++function readyObjectCount(objects) {
++  return objects.filter(objectReady).length;
++}
++
++function objectStatusLabel(objects, findings) {
++  if (objects.length === 0) {
++    return "Needs Objects";
++  }
++  if (missingRenderAssetCount(objects) > 0 || findings.length > 0) {
++    return "Needs Review";
++  }
++  return "Objects Ready";
+ }
+
+ function renderValidation(findings) {
+@@ -389,7 +385,7 @@ function renderValidation(findings) {
+   elements.validationList.replaceChildren();
+
+   if (findings.length === 0) {
+-    elements.validationList.append(listItem("PASS: Object setup rows are ready."));
++    elements.validationList.append(listItem("PASS: Object details are valid."));
+     elements.validationOverlay.hidden = true;
      return;
    }
--  preview.textContent = renderType === "Sprite" ? "Links on save" : "None";
-+  preview.textContent = renderType === "Sprite" ? row.dataset.objectsExistingAssetKey || "Links on save" : "None";
+@@ -400,17 +396,57 @@ function renderValidation(findings) {
+   elements.validationOverlay.hidden = false;
  }
 
- function editingRowElement() {
-@@ -470,18 +493,12 @@ function renderEditingRow(values) {
-   const row = document.createElement("tr");
-   row.dataset.objectsEditingRow = "true";
-   row.dataset.objectsRow = editingRow.mode;
-+  row.dataset.objectsExistingAssetKey = values.renderType === "Sprite" ? values.assetKey || "" : "";
-+  row.dataset.objectsExistingPreviewPath = values.renderType === "Sprite" ? values.previewPath || "" : "";
-
-   const name = textInput({ ariaLabel: "Object Name", value: values.name });
-   name.dataset.objectsRowName = "true";
-
--  const type = selectElement({
--    ariaLabel: "Object Type",
--    options: objectTypeOptions(),
--    placeholder: "Select type",
--    selectedValue: values.type,
--  });
--  type.dataset.objectsRowType = "true";
--
-   const role = selectElement({
-     ariaLabel: "Role",
-     options: roleOptions(),
-@@ -513,7 +530,7 @@ function renderEditingRow(values) {
-
-   const renderAsset = document.createElement("td");
-   renderAsset.dataset.objectsRowRenderAssetPreview = "true";
--  renderAsset.textContent = values.renderType === "Sprite" ? "Links on save" : "None";
-+  renderAsset.textContent = values.renderType === "Sprite" ? values.assetKey || "Links on save" : "None";
-
-   const actions = document.createElement("td");
-   actions.append(
-@@ -523,7 +540,6 @@ function renderEditingRow(values) {
-
-   row.append(
-     controlCell(name),
--    controlCell(type),
-     controlCell(role),
-     controlCell(state),
-     controlCell(renderType),
-@@ -545,7 +561,6 @@ function renderSavedRow(object) {
-   row.dataset.objectsRow = id;
-   row.append(
-     tableCell(object.name),
--    tableCell(object.type),
-     tableCell(object.role),
-     tableCell(object.state),
-     tableCell(object.render?.type || "None"),
-@@ -565,7 +580,7 @@ function renderObjectList(objects) {
-   if (objects.length === 0 && !editingRow) {
-     const row = document.createElement("tr");
-     const empty = document.createElement("td");
--    empty.colSpan = 8;
-+    empty.colSpan = 7;
-     empty.textContent = "No objects drafted yet.";
-     row.append(empty);
-     elements.list.append(row);
-@@ -629,17 +644,6 @@ function renderRegistryBasics() {
-     });
-   }
-
--  if (elements.typeBasics) {
--    elements.typeBasics.replaceChildren();
--    sortedObjectTypes().forEach((objectType) => {
--      const item = document.createElement("li");
--      const label = document.createElement("strong");
--      label.textContent = `${objectType.label}:`;
--      item.append(label, ` ${objectType.description} Traits: ${traitText(objectType.traits)}.`);
--      elements.typeBasics.append(item);
--    });
--  }
--
-   if (elements.traitBasics) {
-     elements.traitBasics.replaceChildren();
-     sortedTraits().forEach((trait) => {
-@@ -668,6 +672,24 @@ function ensureSpriteRender(object) {
-     return { message: "", object };
-   }
-
-+  const existingAssetKey = normalizeText(object.render.assetKey);
-+  if (existingAssetKey) {
-+    const asset = linkedSpriteAsset(existingAssetKey);
-+    if (asset?.id) {
-+      return {
-+        message: "",
-+        object: {
-+          ...object,
-+          render: Object.freeze({
-+            assetKey: normalizeText(asset.id),
-+            previewPath: normalizeText(asset.storedPath || asset.path || object.render.previewPath),
-+            type: "Sprite",
-+          }),
-+        },
-+      };
-+    }
-+  }
+-function renderRequirements(objects) {
+-  if (!elements.requirements) {
++function statusRow({ action, label, status }) {
++  const row = document.createElement("tr");
++  row.append(tableCell(label), tableCell(status), tableCell(action));
++  return row;
++}
 +
-   const result = assetRepository.ensureSpriteAssetForObject({
-     objectKey: objectId(object),
-     objectName: object.name,
-@@ -728,7 +750,7 @@ function saveRow() {
++function renderStatusSummary(objects, findings) {
++  if (!elements.statusSummary) {
+     return;
    }
 
-   let object = editingObjectFromRow(row);
--  let findings = rowFindings(object, editingRow.originalId);
-+  let findings = rowFindings(object, editingRow.originalId, { allowPendingSprite: true });
+-  elements.requirements.replaceChildren();
+-  SETUP_REQUIREMENTS.forEach((requirement) => {
+-    const row = document.createElement("tr");
+-    row.append(tableCell(requirement.label), tableCell(statusText(requirement.test(objects))));
+-    elements.requirements.append(row);
+-  });
++  const spriteCount = spriteObjectCount(objects);
++  const missingAssets = missingRenderAssetCount(objects);
++  const readyCount = readyObjectCount(objects);
++  const renderStatus = missingAssets > 0
++    ? `${missingAssets} missing`
++    : spriteCount > 0
++      ? "Linked"
++      : "No sprite render selected";
++  const renderAction = missingAssets > 0
++    ? "Save each Sprite row so Objects can create or resolve its linked sprite asset."
++    : spriteCount > 0
++      ? "Sprite assets are linked."
++      : "Choose Sprite render when an object needs an editable sprite asset.";
++
++  elements.statusSummary.replaceChildren(
++    statusRow({
++      action: objects.length > 0
++        ? "Ready means saved in this table with any required Sprite asset linked."
++        : "Add objects in the table below.",
++      label: "Ready Objects",
++      status: `${readyCount}/${objects.length}`,
++    }),
++    statusRow({
++      action: renderAction,
++      label: "Render Assets",
++      status: renderStatus,
++    }),
++    statusRow({
++      action: "Hitbox readiness will appear after Hitboxes publishes object coverage.",
++      label: "Missing Hitboxes",
++      status: "Not connected yet",
++    }),
++    statusRow({
++      action: "Event readiness will appear after Events publishes object triggers.",
++      label: "Missing Events",
++      status: "Not connected yet",
++    }),
++  );
++
++  setText(elements.assetStatus, renderStatus);
+ }
+
+ function traitLabel(traitId) {
+@@ -442,12 +478,9 @@ function spriteEditorHref(object) {
+   return `/toolbox/sprites/index.html?assetKey=${assetKey}&objectKey=${objectKey}&sourceTool=objects`;
+ }
+
+-function assetHandoffMessage(result, fallback) {
+-  const message = result?.message || fallback;
+-  const diagnostics = Array.isArray(result?.diagnostics)
+-    ? result.diagnostics.map((diagnostic) => normalizeText(diagnostic.action)).filter(Boolean)
+-    : [];
+-  return diagnostics.length ? `${message} ${diagnostics.join(" ")}` : message;
++function assetLinkMessage(result, fallback) {
++  const legacyLinkTerm = new RegExp(["hand", "off"].join(""), "gi");
++  return normalizeText(result?.message || fallback).replace(legacyLinkTerm, "link");
+ }
+
+ function linkedSpriteAsset(assetKey) {
+@@ -601,21 +634,20 @@ function renderObjectList(objects) {
+ }
+
+ function renderOutput(objects, findings) {
+-  const staticCount = objects.filter((object) => object.type === "Static").length;
+-  const dynamicCount = objects.filter((object) => object.type === "Dynamic").length;
+-  const readiness = readinessLabel(findings);
++  const readiness = objectStatusLabel(objects, findings);
+   const linkedSprite = linkedSpriteObject(objects);
+
+   setText(elements.count, String(objects.length));
+   setText(elements.readiness, readiness);
+   setText(elements.outputReadiness, readiness);
+-  setText(elements.outputStatic, String(staticCount));
+-  setText(elements.outputDynamic, String(dynamicCount));
++  setText(elements.outputCount, String(objects.length));
+   setText(
+     elements.outputSetup,
+-    findings.length === 0
+-      ? "Object setup table has the required row details."
+-      : "Object setup table needs validation actions."
++    objects.length === 0
++      ? "Add objects to begin the object list."
++      : findings.length === 0
++        ? "Objects have saved table details."
++        : "Review the object details marked in validation."
+   );
+   setText(elements.outputRenderAsset, linkedSprite ? linkedSprite.render.assetKey : "None");
+   setText(
+@@ -658,7 +690,7 @@ function renderRegistryBasics() {
+
+ function render() {
+   const findings = objectListFindings(draftedObjects);
+-  renderRequirements(draftedObjects);
++  renderStatusSummary(draftedObjects, findings);
+   renderObjectList(draftedObjects);
+   renderOutput(draftedObjects, findings);
+   renderValidation(findings);
+@@ -698,16 +730,16 @@ function ensureSpriteRender(object) {
+   if (result?.error || !result?.linked || !asset?.id) {
+     return {
+       finding: {
+-        action: result?.message || "Create or resolve the shared sprite asset record before saving this object.",
++        action: assetLinkMessage(result, "Create or resolve the shared sprite asset record before saving this object."),
+         label: "Render Asset",
+       },
+-      message: assetHandoffMessage(result, "Sprite asset handoff failed."),
++      message: assetLinkMessage(result, "Sprite asset link failed."),
+       object,
+     };
+   }
+
+   return {
+-    message: assetHandoffMessage(result, `Linked sprite asset ${asset.id}.`),
++    message: assetLinkMessage(result, `Linked sprite asset ${asset.id}.`),
+     object: {
+       ...object,
+       render: Object.freeze({
+@@ -757,17 +789,17 @@ function saveRow() {
+     return;
+   }
+
+-  const handoff = ensureSpriteRender(object);
+-  if (handoff.finding) {
+-    renderValidation([handoff.finding]);
+-    setText(elements.log, handoff.message);
++  const assetLink = ensureSpriteRender(object);
++  if (assetLink.finding) {
++    renderValidation([assetLink.finding]);
++    setText(elements.log, assetLink.message);
+     return;
+   }
+-  object = handoff.object;
++  object = assetLink.object;
+   findings = rowFindings(object, editingRow.originalId);
    if (findings.length > 0) {
      renderValidation(findings);
-     setText(elements.log, `Row blocked: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
-diff --git a/docs_build/dev/reports/objects-role-type-save-fix-report.md b/docs_build/dev/reports/objects-role-type-save-fix-report.md
+-    setText(elements.log, `Row blocked after render handoff: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
++    setText(elements.log, `Row blocked after sprite asset link: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
+     return;
+   }
+
+@@ -775,10 +807,10 @@ function saveRow() {
+     draftedObjects = draftedObjects.map((savedObject) => (
+       objectId(savedObject) === editingRow.originalId ? object : savedObject
+     ));
+-    setText(elements.log, handoff.message ? `Saved ${object.name}. ${handoff.message}` : `Saved ${object.name}.`);
++    setText(elements.log, assetLink.message ? `Saved ${object.name}. ${assetLink.message}` : `Saved ${object.name}.`);
+   } else {
+     draftedObjects = [...draftedObjects, object];
+-    setText(elements.log, handoff.message ? `Added ${object.name}. ${handoff.message}` : `Added ${object.name}.`);
++    setText(elements.log, assetLink.message ? `Added ${object.name}. ${assetLink.message}` : `Added ${object.name}.`);
+   }
+   editingRow = null;
+   render();
+@@ -808,8 +840,8 @@ function validateObjects() {
+   setText(
+     elements.log,
+     findings.length === 0
+-      ? "Validation PASS: Object setup rows are ready for authoring handoff."
+-      : `Validation found ${findings.length} action${findings.length === 1 ? "" : "s"} for object setup.`
++      ? "Validation PASS: Object details are ready for review."
++      : `Validation found ${findings.length} action${findings.length === 1 ? "" : "s"} for object details.`
+   );
+   renderOutput(draftedObjects, findings);
+ }
+@@ -817,7 +849,7 @@ function validateObjects() {
+ function resetTable() {
+   draftedObjects = [];
+   editingRow = null;
+-  setText(elements.log, "Reset the in-memory Objects table.");
++  setText(elements.log, "Reset the Objects table.");
+   render();
+ }
+diff --git a/docs_build/dev/reports/objects-production-copy-and-status-report.md b/docs_build/dev/reports/objects-production-copy-and-status-report.md
 new file mode 100644
-index 000000000..4485fa55c
+index 000000000..c3fb490f4
 --- /dev/null
-+++ b/docs_build/dev/reports/objects-role-type-save-fix-report.md
-@@ -0,0 +1,65 @@
-+# PR_26161_005 Objects Role Type Save Fix Report
++++ b/docs_build/dev/reports/objects-production-copy-and-status-report.md
+@@ -0,0 +1,35 @@
++# PR_26161_006 Objects Production Copy And Status Report
 +
-+## Branch Guard
-+
-+- Current branch: `main`
-+- Expected branch: `main`
-+- Local branches found: `main`
-+- Branch validation before edits: PASS
-+
-+## Source Of Truth
-+
-+- `docs_build/dev/PROJECT_INSTRUCTIONS.md` was read before execution.
-+- `docs_build/pr/PR_26161_005-objects-role-type-save-fix/BUILD_PR.md` was not present.
-+- `docs_build/pr/BUILD_PR.md` was stale and unrelated.
-+- Execution used the user-provided PR_26161_005 request as the active BUILD source.
-+
-+## Requirement Checklist
-+
-+- PASS: Kept Objects as a clickable `Wireframe` tool; no metadata status change was made.
-+- PASS: Removed the visible `Type` column and dropdown from the Objects table.
-+- PASS: Kept `Role` as the broad creator-facing category with `Hero`, `Enemy`, `Projectile`, `Platform`, `Wall`, `Collectible`, `Hazard`, `Goal`, `Spawner`, `UI`, and `Custom`.
-+- PASS: Derived the hidden internal object-model family from Role for the shared validator instead of asking creators to choose overlapping Type values.
-+- PASS: Preserved inline table editing, `Cancel`, `Edit`, `Trash`, Add-disabled-while-editing, and sprite preview behavior.
-+- PASS: Fixed edit save for existing Sprite objects by carrying the linked sprite asset through the edit row.
-+- PASS: Sprite render rows create or resolve a real shared sprite asset before entering the saved table.
-+- PASS: `None` render rows save without requiring a Render Asset.
-+- PASS: Saved Sprite rows validate with a linked asset; missing Sprite asset is allowed only during pre-handoff row validation.
-+- PASS: Added no sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
++## Scope
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
++- Verified current branch is `main`.
++- Treated Objects copy as production-facing while preserving table-first editing, wireframe status, Add Object below the table, Add-disable behavior, row Edit/Trash/Cancel, and sprite asset linking.
++- No sample JSON alignment, auth behavior, production DB behavior, or engine runtime behavior was added.
 +
 +## Implementation Evidence
-+
-+- `toolbox/objects/index.html` now shows table columns `Name`, `Role`, `State`, `Render`, `Traits`, `Render Asset`, and `Actions`.
-+- `toolbox/objects/objects.js` adds Role-to-internal-family derivation and removes the visible Type option flow.
-+- `toolbox/objects/objects.js` preserves an existing Sprite asset key/preview path during edit mode and validates Sprite rows after asset handoff.
-+- `tests/playwright/tools/ObjectsTool.spec.mjs` verifies no Type column/dropdown, no Object Types panel, Role choices, Add disable, None-render save, Sprite create/resolve, edit-save without handoff error, and Toolbox click-through.
++- Replaced Objects center copy with creator-facing wording: `Object Builder`, production-safe page description, and neutral object table guidance.
++- Replaced Readiness Checks with an `Object Status` table covering ready objects, render assets, missing hitboxes, and missing events.
++- Removed low-value Object Status rows for object row, object names, and object roles.
++- Preserved wireframe-safe labels for unavailable hitbox/event values with `Not connected yet` messaging.
++- Kept blank/None render rows free of render asset requirements and preserved Sprite render asset create/resolve behavior.
++- Updated the Objects tool metadata copy because the runtime page title consumes the DB/mock metadata record.
 +
 +## Validation
-+
 +- PASS: `node --check toolbox/objects/objects.js`
 +- PASS: `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
-+- PASS: `node --check tests/engine/ObjectModelContract.test.mjs`
-+- PASS: HTML restriction check for `toolbox/objects/index.html`
-+- PASS: targeted Type-control scan found no visible Objects Type controls; only `Render Type` remains.
-+- PASS: `node tests/engine/ObjectModelContract.test.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line` (4 passed)
-+- PASS: `git diff --check`
++- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
++- PASS: `node --check tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs`
++- PASS: `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line` -> 4 passed.
++- PASS: `npx playwright test tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs --workers=1 --reporter=line` -> 4 passed after aligning the Objects capability label assertion with the updated metadata copy.
++- PASS: `git diff --check` with line-ending warnings only.
++- PASS: Objects Playwright validates removed internal copy is absent, `Object Status` appears, table editing works, Toolbox clickability remains, and Sprite render asset linking still works.
 +
-+## Playwright V8 Coverage
-+
-+- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` was regenerated by targeted Objects Playwright.
-+- Changed Objects runtime JavaScript coverage: `(94%) toolbox/objects/objects.js - executed lines 762/762; executed functions 80/85`.
-+- WARN: The coverage helper also reports prior-HEAD changed files such as `src/dev-runtime/guest-seeds/tool-metadata-inventory.js` and `src/engine/object-model/objectModelRegistry.js`; those files are not modified by PR_005 and are advisory for this PR.
++## Coverage
++- Produced `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
++- Objects runtime coverage: `toolbox/objects/objects.js` at 93% function coverage.
++- Metadata seed coverage is advisory-only at 0% because that seed module is not collected as browser runtime JavaScript; the conditional Toolbox/Admin metadata Playwright lane covers the metadata behavior.
 +
 +## Skipped Lanes
-+
-+- SKIP: Full samples validation. Safe to skip because no sample JSON, sample manifests, sample launch paths, or engine runtime behavior changed.
-+- SKIP: Toolbox/Admin metadata Playwright. Safe to skip because PR_005 did not change tool metadata; Objects clickability as wireframe is covered by targeted Objects Playwright.
-+- SKIP: Sprite Editor launch/handoff Playwright. Safe to skip because no Sprite Editor route or context contract files changed; Objects still uses the existing Sprite Editor URL contract.
-+- SKIP: Production DB/auth/persistence validation. Safe to skip because the change only uses existing mock-adapter/shared asset contracts and adds no auth, production DB, or persistence behavior.
-+
-+## Manual Notes
-+
-+- Role is now the only creator-facing category field in the Objects table.
-+- The internal object model type remains present only as derived data required by the shared validator.
-+- Behavior/physics configuration remains out of scope and belongs to a later rules/physics/events PR.
++- Full samples validation skipped by request; no sample JSON or sample runtime files changed.
++- Production DB/auth lanes skipped; this PR only updates the mock/DB metadata seed copy and Objects UI behavior, with no production DB or auth behavior changes.
++- Engine runtime lanes skipped; no engine runtime files or runtime object execution behavior changed.

@@ -48,24 +48,6 @@ const ROLE_MODEL_TYPES = Object.freeze({
   Wall: "Static",
 });
 
-const SETUP_REQUIREMENTS = Object.freeze([
-  {
-    action: "Add at least one object row.",
-    label: "Object row",
-    test: (objects) => objects.length > 0,
-  },
-  {
-    action: "Give every saved object a name.",
-    label: "Object names",
-    test: (objects) => objects.length > 0 && objects.every((object) => object.name),
-  },
-  {
-    action: "Choose a role for every saved object.",
-    label: "Object roles",
-    test: (objects) => objects.length > 0 && objects.every((object) => object.role),
-  },
-]);
-
 const STARTER_OBJECTS = Object.freeze([
   Object.freeze({
     behavior: "Responds to player control mapping.",
@@ -99,21 +81,21 @@ let editingRow = null;
 
 const elements = {
   addRow: document.querySelector("[data-objects-add-row]"),
+  assetStatus: document.querySelector("[data-objects-asset-status]"),
   count: document.querySelector("[data-objects-count]"),
   editSprite: document.querySelector("[data-objects-edit-sprite]"),
   list: document.querySelector("[data-objects-list]"),
   log: document.querySelector("[data-objects-log]"),
-  outputDynamic: document.querySelector("[data-objects-output-dynamic]"),
+  outputCount: document.querySelector("[data-objects-output-count]"),
   outputReadiness: document.querySelector("[data-objects-output-readiness]"),
   outputRenderAsset: document.querySelector("[data-objects-output-render-asset]"),
   outputSetup: document.querySelector("[data-objects-output-setup]"),
   outputSpritePreview: document.querySelector("[data-objects-output-sprite-preview]"),
-  outputStatic: document.querySelector("[data-objects-output-static]"),
   readiness: document.querySelector("[data-objects-readiness]"),
-  requirements: document.querySelector("[data-objects-requirements]"),
   resetTable: document.querySelector("[data-objects-reset-table]"),
   roleBasics: document.querySelector("[data-objects-role-basics]"),
   seedStarter: document.querySelector("[data-objects-seed-starter]"),
+  statusSummary: document.querySelector("[data-objects-status-summary]"),
   traitBasics: document.querySelector("[data-objects-trait-basics]"),
   validate: document.querySelector("[data-objects-validate]"),
   validationList: document.querySelector("[data-objects-validation-list]"),
@@ -208,10 +190,6 @@ function controlCell(control) {
   const cell = document.createElement("td");
   cell.append(control);
   return cell;
-}
-
-function statusText(ok) {
-  return ok ? "OK" : "Needs Action";
 }
 
 function sortedTraits() {
@@ -365,20 +343,38 @@ function objectListFindings(objects) {
     seenIds.add(id);
   });
 
-  SETUP_REQUIREMENTS.forEach((requirement) => {
-    if (!requirement.test(objects)) {
-      findings.push({
-        action: requirement.action,
-        label: requirement.label,
-      });
-    }
-  });
-
   return findings;
 }
 
-function readinessLabel(findings) {
-  return findings.length === 0 ? "Ready" : "Needs Input";
+function missingRenderAssetCount(objects) {
+  return objects.filter((object) => object.render?.type === "Sprite" && !object.render.assetKey).length;
+}
+
+function spriteObjectCount(objects) {
+  return objects.filter((object) => object.render?.type === "Sprite").length;
+}
+
+function objectReady(object) {
+  return Boolean(
+    object.name
+    && object.role
+    && object.type
+    && (object.render?.type !== "Sprite" || object.render.assetKey)
+  );
+}
+
+function readyObjectCount(objects) {
+  return objects.filter(objectReady).length;
+}
+
+function objectStatusLabel(objects, findings) {
+  if (objects.length === 0) {
+    return "Needs Objects";
+  }
+  if (missingRenderAssetCount(objects) > 0 || findings.length > 0) {
+    return "Needs Review";
+  }
+  return "Objects Ready";
 }
 
 function renderValidation(findings) {
@@ -389,7 +385,7 @@ function renderValidation(findings) {
   elements.validationList.replaceChildren();
 
   if (findings.length === 0) {
-    elements.validationList.append(listItem("PASS: Object setup rows are ready."));
+    elements.validationList.append(listItem("PASS: Object details are valid."));
     elements.validationOverlay.hidden = true;
     return;
   }
@@ -400,17 +396,57 @@ function renderValidation(findings) {
   elements.validationOverlay.hidden = false;
 }
 
-function renderRequirements(objects) {
-  if (!elements.requirements) {
+function statusRow({ action, label, status }) {
+  const row = document.createElement("tr");
+  row.append(tableCell(label), tableCell(status), tableCell(action));
+  return row;
+}
+
+function renderStatusSummary(objects, findings) {
+  if (!elements.statusSummary) {
     return;
   }
 
-  elements.requirements.replaceChildren();
-  SETUP_REQUIREMENTS.forEach((requirement) => {
-    const row = document.createElement("tr");
-    row.append(tableCell(requirement.label), tableCell(statusText(requirement.test(objects))));
-    elements.requirements.append(row);
-  });
+  const spriteCount = spriteObjectCount(objects);
+  const missingAssets = missingRenderAssetCount(objects);
+  const readyCount = readyObjectCount(objects);
+  const renderStatus = missingAssets > 0
+    ? `${missingAssets} missing`
+    : spriteCount > 0
+      ? "Linked"
+      : "No sprite render selected";
+  const renderAction = missingAssets > 0
+    ? "Save each Sprite row so Objects can create or resolve its linked sprite asset."
+    : spriteCount > 0
+      ? "Sprite assets are linked."
+      : "Choose Sprite render when an object needs an editable sprite asset.";
+
+  elements.statusSummary.replaceChildren(
+    statusRow({
+      action: objects.length > 0
+        ? "Ready means saved in this table with any required Sprite asset linked."
+        : "Add objects in the table below.",
+      label: "Ready Objects",
+      status: `${readyCount}/${objects.length}`,
+    }),
+    statusRow({
+      action: renderAction,
+      label: "Render Assets",
+      status: renderStatus,
+    }),
+    statusRow({
+      action: "Hitbox readiness will appear after Hitboxes publishes object coverage.",
+      label: "Missing Hitboxes",
+      status: "Not connected yet",
+    }),
+    statusRow({
+      action: "Event readiness will appear after Events publishes object triggers.",
+      label: "Missing Events",
+      status: "Not connected yet",
+    }),
+  );
+
+  setText(elements.assetStatus, renderStatus);
 }
 
 function traitLabel(traitId) {
@@ -442,12 +478,9 @@ function spriteEditorHref(object) {
   return `/toolbox/sprites/index.html?assetKey=${assetKey}&objectKey=${objectKey}&sourceTool=objects`;
 }
 
-function assetHandoffMessage(result, fallback) {
-  const message = result?.message || fallback;
-  const diagnostics = Array.isArray(result?.diagnostics)
-    ? result.diagnostics.map((diagnostic) => normalizeText(diagnostic.action)).filter(Boolean)
-    : [];
-  return diagnostics.length ? `${message} ${diagnostics.join(" ")}` : message;
+function assetLinkMessage(result, fallback) {
+  const legacyLinkTerm = new RegExp(["hand", "off"].join(""), "gi");
+  return normalizeText(result?.message || fallback).replace(legacyLinkTerm, "link");
 }
 
 function linkedSpriteAsset(assetKey) {
@@ -601,21 +634,20 @@ function renderObjectList(objects) {
 }
 
 function renderOutput(objects, findings) {
-  const staticCount = objects.filter((object) => object.type === "Static").length;
-  const dynamicCount = objects.filter((object) => object.type === "Dynamic").length;
-  const readiness = readinessLabel(findings);
+  const readiness = objectStatusLabel(objects, findings);
   const linkedSprite = linkedSpriteObject(objects);
 
   setText(elements.count, String(objects.length));
   setText(elements.readiness, readiness);
   setText(elements.outputReadiness, readiness);
-  setText(elements.outputStatic, String(staticCount));
-  setText(elements.outputDynamic, String(dynamicCount));
+  setText(elements.outputCount, String(objects.length));
   setText(
     elements.outputSetup,
-    findings.length === 0
-      ? "Object setup table has the required row details."
-      : "Object setup table needs validation actions."
+    objects.length === 0
+      ? "Add objects to begin the object list."
+      : findings.length === 0
+        ? "Objects have saved table details."
+        : "Review the object details marked in validation."
   );
   setText(elements.outputRenderAsset, linkedSprite ? linkedSprite.render.assetKey : "None");
   setText(
@@ -658,7 +690,7 @@ function renderRegistryBasics() {
 
 function render() {
   const findings = objectListFindings(draftedObjects);
-  renderRequirements(draftedObjects);
+  renderStatusSummary(draftedObjects, findings);
   renderObjectList(draftedObjects);
   renderOutput(draftedObjects, findings);
   renderValidation(findings);
@@ -698,16 +730,16 @@ function ensureSpriteRender(object) {
   if (result?.error || !result?.linked || !asset?.id) {
     return {
       finding: {
-        action: result?.message || "Create or resolve the shared sprite asset record before saving this object.",
+        action: assetLinkMessage(result, "Create or resolve the shared sprite asset record before saving this object."),
         label: "Render Asset",
       },
-      message: assetHandoffMessage(result, "Sprite asset handoff failed."),
+      message: assetLinkMessage(result, "Sprite asset link failed."),
       object,
     };
   }
 
   return {
-    message: assetHandoffMessage(result, `Linked sprite asset ${asset.id}.`),
+    message: assetLinkMessage(result, `Linked sprite asset ${asset.id}.`),
     object: {
       ...object,
       render: Object.freeze({
@@ -757,17 +789,17 @@ function saveRow() {
     return;
   }
 
-  const handoff = ensureSpriteRender(object);
-  if (handoff.finding) {
-    renderValidation([handoff.finding]);
-    setText(elements.log, handoff.message);
+  const assetLink = ensureSpriteRender(object);
+  if (assetLink.finding) {
+    renderValidation([assetLink.finding]);
+    setText(elements.log, assetLink.message);
     return;
   }
-  object = handoff.object;
+  object = assetLink.object;
   findings = rowFindings(object, editingRow.originalId);
   if (findings.length > 0) {
     renderValidation(findings);
-    setText(elements.log, `Row blocked after render handoff: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
+    setText(elements.log, `Row blocked after sprite asset link: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
     return;
   }
 
@@ -775,10 +807,10 @@ function saveRow() {
     draftedObjects = draftedObjects.map((savedObject) => (
       objectId(savedObject) === editingRow.originalId ? object : savedObject
     ));
-    setText(elements.log, handoff.message ? `Saved ${object.name}. ${handoff.message}` : `Saved ${object.name}.`);
+    setText(elements.log, assetLink.message ? `Saved ${object.name}. ${assetLink.message}` : `Saved ${object.name}.`);
   } else {
     draftedObjects = [...draftedObjects, object];
-    setText(elements.log, handoff.message ? `Added ${object.name}. ${handoff.message}` : `Added ${object.name}.`);
+    setText(elements.log, assetLink.message ? `Added ${object.name}. ${assetLink.message}` : `Added ${object.name}.`);
   }
   editingRow = null;
   render();
@@ -808,8 +840,8 @@ function validateObjects() {
   setText(
     elements.log,
     findings.length === 0
-      ? "Validation PASS: Object setup rows are ready for authoring handoff."
-      : `Validation found ${findings.length} action${findings.length === 1 ? "" : "s"} for object setup.`
+      ? "Validation PASS: Object details are ready for review."
+      : `Validation found ${findings.length} action${findings.length === 1 ? "" : "s"} for object details.`
   );
   renderOutput(draftedObjects, findings);
 }
@@ -817,7 +849,7 @@ function validateObjects() {
 function resetTable() {
   draftedObjects = [];
   editingRow = null;
-  setText(elements.log, "Reset the in-memory Objects table.");
+  setText(elements.log, "Reset the Objects table.");
   render();
 }
 

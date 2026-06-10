@@ -200,7 +200,7 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     expect(Array.isArray(registryColors.progressChecklist)).toBe(true);
     expect(Array.isArray(registryColors.requires)).toBe(true);
     expect(registrySnapshot.activeTools.find((tool) => tool.id === "objects")).toEqual(expect.objectContaining({
-      capabilityLabel: "Object setup types",
+      capabilityLabel: "Object role types",
       childCapabilities: ["Static", "Dynamic", "Collectible", "Hazard", "Goal"],
       releaseChannel: "wireframe",
       status: "wireframe",

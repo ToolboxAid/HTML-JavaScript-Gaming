@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Objects - GameFoundryStudio</title>
-    <meta name="description" content="Objects Toolbox wireframe surface for static and dynamic object setup with sprite asset handoff.">
+    <meta name="description" content="Objects Toolbox surface for roles, state, and sprite asset links.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Objects</div>
                 <h1>Objects</h1>
-                <p class="lede">Define object setup with broad roles and sprite render assets handed off through shared asset records.</p>
+                <p class="lede">Create game objects with roles, state, and sprite assets for your project.</p>
             </div>
         </section>
         <section class="section">
@@ -32,7 +32,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Object Setup</summary>
                                 <div class="accordion-body content-stack">
-                                    <p data-objects-setup-context>Use the table to define object names, roles, state, and optional sprite render handoff.</p>
+                                    <p data-objects-setup-context>Use the table to define object names, roles, state, and optional sprite assets.</p>
                                     <div class="content-cluster" aria-label="Objects setup actions">
                                         <button class="btn" type="button" data-objects-seed-starter>Seed Starter Objects</button>
                                         <button class="btn" type="button" data-objects-validate>Validate Setup</button>
@@ -50,28 +50,29 @@
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="objects" data-tool-icon-src="assets/theme-v2/images/badges/objects.png" data-tool-character-src="assets/theme-v2/images/tools/objects.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Object Setup Workspace</h2>
-                        <p>Object definitions are held in this page session only. Sprite render selections link to shared asset records for Sprite Editor handoff.</p>
+                        <h2>Object Builder</h2>
+                        <p>Create and review the objects your game will use. Sprite choices can open the linked asset in Sprite Editor.</p>
                         <div class="grid cols-3" aria-label="Objects readiness summary">
-                            <article class="mini-stat"><strong data-objects-readiness>Needs Input</strong>Setup readiness</article>
-                            <article class="mini-stat"><strong data-objects-count>0</strong>Objects drafted</article>
-                            <article class="mini-stat"><strong data-objects-scope>Session + Assets</strong>Storage scope</article>
+                            <article class="mini-stat"><strong data-objects-readiness>Needs Objects</strong>Object status</article>
+                            <article class="mini-stat"><strong data-objects-count>0</strong>Objects</article>
+                            <article class="mini-stat"><strong data-objects-asset-status>No sprite links</strong>Sprite assets</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Object Setup</div>
-                                    <h3>Readiness Checks</h3>
+                                    <div class="kicker">Object Status</div>
+                                    <h3>Object Status</h3>
                                 </div>
                                 <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Objects setup requirements">
+                                    <table class="data-table" aria-label="Object status summary">
                                         <thead>
                                             <tr>
-                                                <th>Requirement</th>
+                                                <th>Area</th>
                                                 <th>Status</th>
+                                                <th>Next Step</th>
                                             </tr>
                                         </thead>
-                                        <tbody data-objects-requirements></tbody>
+                                        <tbody data-objects-status-summary></tbody>
                                     </table>
                                 </div>
                             </div>
@@ -113,13 +114,11 @@
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
                                 <div class="accordion-body content-stack" data-objects-output>
-                                    <p>Readiness: <span data-objects-output-readiness>Needs Input</span></p>
-                                    <p>Static Objects: <span data-objects-output-static>0</span></p>
-                                    <p>Dynamic Objects: <span data-objects-output-dynamic>0</span></p>
-                                    <p>Render Asset: <span data-objects-output-render-asset>None</span></p>
+                                    <p>Status: <span data-objects-output-readiness>Needs Objects</span></p>
+                                    <p>Objects: <span data-objects-output-count>0</span></p>
+                                    <p>Sprite Asset: <span data-objects-output-render-asset>None</span></p>
                                     <p>Sprite Preview: <span data-objects-output-sprite-preview>No sprite asset linked.</span></p>
-                                    <p>Object Setup: <span data-objects-output-setup>Object setup needs row details.</span></p>
-                                    <p>Runtime Scope: <span data-objects-output-scope>No manifest persistence or engine runtime behavior.</span></p>
+                                    <p>Object Status: <span data-objects-output-setup>No objects added yet.</span></p>
                                     <p><a class="btn btn--compact" data-objects-edit-sprite hidden>Edit Sprite</a></p>
                                 </div>
                             </details>
@@ -130,7 +129,7 @@
                                         <div class="card-body content-stack">
                                             <div>
                                                 <div class="kicker">Actionable Validation</div>
-                                                <h3 id="objects-validation-title">Missing Object Setup</h3>
+                                                <h3 id="objects-validation-title">Object Details</h3>
                                             </div>
                                             <ul data-objects-validation-list></ul>
                                         </div>
@@ -146,7 +145,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status Log</summary>
                                 <div class="accordion-body">
-                                    <div class="status" role="status" data-objects-log>Objects in-memory draft ready.</div>
+                                    <div class="status" role="status" data-objects-log>Ready to build objects.</div>
                                 </div>
                             </details>
                         </div>
