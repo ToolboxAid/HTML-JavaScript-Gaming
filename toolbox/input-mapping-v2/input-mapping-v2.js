@@ -66,8 +66,6 @@ const elements = {
   resetMappings: document.querySelector("[data-input-reset-mappings]"),
   returnWorkspace: document.querySelector("[data-input-return-workspace]"),
   saveStatus: document.querySelector("[data-input-save-status]"),
-  selectedAction: document.querySelector("[data-input-selected-action]"),
-  selectedObject: document.querySelector("[data-input-selected-object]"),
   sourceDiagnostics: document.querySelector("[data-input-source-diagnostics]"),
   statusLog: document.querySelector("[data-input-status-log]"),
 };
@@ -422,17 +420,21 @@ function renderDefaults() {
     return;
   }
   elements.defaultActions.replaceChildren(...DEFAULT_ACTIONS.map((action) => {
-    const item = document.createElement("li");
-    item.className = "content-split";
+    const row = document.createElement("tr");
+    row.dataset.inputActionCatalogRow = action.id;
+    const labelCell = document.createElement("td");
     const label = document.createElement("strong");
     label.dataset.inputActionLabel = action.id;
     label.textContent = action.label;
+    labelCell.append(label);
+    const descriptionCell = document.createElement("td");
     const description = document.createElement("span");
     description.className = "status";
     description.dataset.inputActionDescription = action.id;
     description.textContent = action.description;
-    item.append(label, description);
-    return item;
+    descriptionCell.append(description);
+    row.append(labelCell, descriptionCell);
+    return row;
   }));
 }
 
@@ -449,7 +451,6 @@ function renderActionsAndObjects() {
     objectOptions.map((object) => ({ label: object.label, value: object.key })),
     previousObject,
   );
-  updateCaptureSelection();
 }
 
 function renderControllerProfileStatus() {
@@ -788,13 +789,6 @@ function renderAll(message = "") {
   renderControllerProfiles();
   renderDiagnostics(message);
   renderMappings();
-}
-
-function updateCaptureSelection() {
-  const action = selectedAction();
-  const object = selectedObject();
-  setText(elements.selectedAction, `Selected Action: ${action.label}`);
-  setText(elements.selectedObject, `Selected Object: ${object.label}`);
 }
 
 function editingRowElement() {
@@ -1186,9 +1180,10 @@ function init() {
   renderControllerProfiles();
   renderDiagnostics();
   renderMappings();
-  elements.actionSelect?.addEventListener("change", updateCaptureSelection);
+  elements.actionSelect?.addEventListener("change", () => {
+    setText(elements.statusLog, `Selected ${selectedAction().label} action for new mappings.`);
+  });
   elements.objectSelect?.addEventListener("change", () => {
-    updateCaptureSelection();
     setText(elements.statusLog, `Selected ${selectedObject().label} for new mappings.`);
   });
   elements.addMapping?.addEventListener("click", () => {

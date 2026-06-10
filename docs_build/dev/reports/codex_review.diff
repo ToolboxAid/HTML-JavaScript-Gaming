@@ -1,216 +1,267 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index d63603181..f6aa6eb45 100644
+index f6aa6eb45..327f692bd 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 @@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(93%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1125/1125; executed functions 111/120
-+(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1133/1133; executed functions 105/116
+-(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1133/1133; executed functions 105/116
++(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1129/1129; executed functions 105/116
 
  Guardrail warnings:
  (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index c7209be0c..9333efc9a 100644
+index 9333efc9a..74d7b2631 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,19 +12,19 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
- Exercised tool entry points detected:
--(89%) Toolbox Index - exercised 4 runtime JS files
-+(88%) Toolbox Index - exercised 4 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
+@@ -17,14 +17,14 @@ Exercised tool entry points detected:
  (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
--(93%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1125/1125; executed functions 111/120
-+(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1133/1133; executed functions 105/116
+-(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1133/1133; executed functions 105/116
++(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1129/1129; executed functions 105/116
 
  Files with executed line/function counts where available:
  (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
  (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
  (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
--(93%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1125/1125; executed functions 111/120
-+(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1133/1133; executed functions 105/116
+-(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1133/1133; executed functions 105/116
++(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1129/1129; executed functions 105/116
  (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
  (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
 
-@@ -33,4 +33,4 @@ Uncovered or low-coverage changed JS files:
-
- Changed JS files considered:
- (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(93%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
-+(91%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 673d26748..a3955e7e9 100644
+index a3955e7e9..9f38734b1 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -21,6 +21,24 @@ const DEFAULT_ACTION_LABELS = [
-   "Thrust",
- ];
-
-+const DEFAULT_ACTION_DESCRIPTIONS = [
-+  "Back out of a menu or choice.",
-+  "Accept a choice or prompt.",
-+  "Use the primary attack or tool.",
-+  "Use nearby objects or prompts.",
-+  "Make the object jump.",
-+  "Move the object downward.",
-+  "Move the object left.",
-+  "Move the object right.",
-+  "Move the object upward.",
-+  "Pause gameplay or open the pause menu.",
-+  "Turn the object counterclockwise.",
-+  "Turn the object clockwise.",
-+  "Highlight or choose menu items.",
-+  "Begin gameplay or open the start menu.",
-+  "Push the object forward.",
-+];
-+
- test.beforeEach(async ({ page }) => {
-   await installPlaywrightStorageIsolation(page, {
-     lane: "input-mapping-v2",
-@@ -141,7 +159,8 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
-     await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();
-     await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
-     await expect(page.locator("[data-input-state-explanation]")).toHaveText("State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.");
--    await expect(page.getByText("Mapping JSON", { exact: true })).toBeVisible();
-+    await expect(page.getByText("Mapping JSON", { exact: true })).toHaveCount(0);
-+    await expect(page.locator("[data-input-mapping-json]")).toHaveCount(0);
-     await expect(page.getByText("Devices", { exact: true })).toBeVisible();
-     await expect(page.getByText("Status", { exact: true })).toBeVisible();
-     await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
-@@ -176,7 +195,8 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
-     await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Cancel");
-     await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
-     await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
--    await expect(page.locator("[data-input-default-actions] li")).toHaveText(DEFAULT_ACTION_LABELS);
-+    await expect(page.locator("[data-input-action-label]")).toHaveText(DEFAULT_ACTION_LABELS);
-+    await expect(page.locator("[data-input-action-description]")).toHaveText(DEFAULT_ACTION_DESCRIPTIONS);
-     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
-     await expect(page.locator("[data-input-action-select]")).toContainText("Pause");
-     await expect(page.locator("[data-input-action-select]")).toContainText("Select");
-@@ -438,8 +458,7 @@ test("Controls Input Mapping captures KeyA, keeps input click safe, and deletes
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("Move Left");
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("Keyboard");
-     await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyA");
--    await expect(page.locator("[data-input-mapping-json]")).toContainText('"action": "moveLeft"');
--    await expect(page.locator("[data-input-mapping-json]")).toContainText('"label": "Keyboard KeyA"');
-+    await expect(page.locator("[data-input-mapping-json]")).toHaveCount(0);
-     await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
-
-     let records = await inputMappingRecords(page);
-@@ -481,6 +500,8 @@ test("Controls compatibility route uses rebuilt Input Mapping surface", async ({
-
-   try {
-     await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
-+    await expect(page.getByText("Mapping JSON", { exact: true })).toHaveCount(0);
-+    await expect(page.locator("[data-input-mapping-json]")).toHaveCount(0);
+@@ -154,6 +154,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
+     await expect(page.locator(".tool-workspace")).toBeVisible();
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+     await expect(page.locator("summary").filter({ hasText: "Actions" })).toBeVisible();
++    await expect(page.locator("aside").first().locator("[data-input-action-select]")).toHaveCount(0);
++    await expect(page.locator("aside").first().locator("[data-input-object-select]")).toHaveCount(0);
++    await expect(page.locator("[data-input-action-catalog] th")).toHaveText(["Action Name", "Description"]);
      await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
      await expect(page.locator("aside").first().locator("summary").filter({ hasText: "Controller Profiles" })).toHaveCount(0);
      await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();
+@@ -192,9 +195,10 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
+     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]")).toBeVisible();
+     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-reset-mappings]")).toBeVisible();
+     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-selected-context]")).toBeVisible();
+-    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Cancel");
+-    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
+-    await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
++    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-action-select]")).toBeVisible();
++    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select]")).toBeVisible();
++    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
++    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select] option")).toHaveText(["Global"]);
+     await expect(page.locator("[data-input-action-label]")).toHaveText(DEFAULT_ACTION_LABELS);
+     await expect(page.locator("[data-input-action-description]")).toHaveText(DEFAULT_ACTION_DESCRIPTIONS);
+     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
+@@ -217,8 +221,7 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
+     await expect(page.locator("[data-input-source-diagnostics]")).toContainText("GamepadInputAdapter");
+
+     await page.locator("[data-input-action-select]").selectOption("moveLeft");
+-    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Move Left");
+-    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
++    await expect(page.locator("[data-input-status-log]")).toHaveText("Selected Move Left action for new mappings.");
+     await page.getByRole("button", { name: "Refresh Devices" }).click();
+     await expect(page.locator("[data-input-status-log]")).toHaveText("Device diagnostics refreshed.");
+
+@@ -439,11 +442,11 @@ test("Controls Input Mapping captures KeyA, keeps input click safe, and deletes
+   try {
+     await seedHeroObject(page);
+     await page.reload({ waitUntil: "networkidle" });
+-    await expect(page.locator("[data-input-object-select] option")).toContainText(["Global", "Hero"]);
++    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select] option")).toContainText(["Global", "Hero"]);
+     await page.locator("[data-input-object-select]").selectOption("hero");
+     await page.locator("[data-input-action-select]").selectOption("moveLeft");
+-    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Move Left");
+-    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Hero");
++    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-action-select]")).toHaveValue("moveLeft");
++    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select]")).toHaveValue("hero");
+
+     await page.locator("[data-input-add-mapping]").click();
+     await expect(page.locator("[data-input-row-object]")).toHaveValue("hero");
 diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index 066903c40..90ce91983 100644
+index 90ce91983..a50e62f0c 100644
 --- a/toolbox/controls/index.html
 +++ b/toolbox/controls/index.html
-@@ -135,12 +135,6 @@
-                             <h2>Inspector</h2>
-                         </div>
-                         <div class="accordion-stack">
--                            <details class="vertical-accordion" open>
--                                <summary>Mapping JSON</summary>
--                                <div class="accordion-body content-stack">
--                                    <pre data-input-mapping-json>{}</pre>
--                                </div>
--                            </details>
+@@ -33,15 +33,15 @@
                              <details class="vertical-accordion" open>
-                                 <summary>Devices</summary>
+                                 <summary>Actions</summary>
                                  <div class="accordion-body content-stack">
+-                                    <label>
+-                                        Action
+-                                        <select data-input-action-select></select>
+-                                    </label>
+-                                    <label>
+-                                        Object
+-                                        <select data-input-object-select></select>
+-                                    </label>
+-                                    <ul data-input-default-actions></ul>
++                                    <table class="data-table" aria-label="Controls action catalog" data-input-action-catalog>
++                                        <thead>
++                                            <tr>
++                                                <th>Action Name</th>
++                                                <th>Description</th>
++                                            </tr>
++                                        </thead>
++                                        <tbody data-input-default-actions></tbody>
++                                    </table>
+                                 </div>
+                             </details>
+                         </div>
+@@ -84,9 +84,15 @@
+                                                             <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
+                                                             <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+                                                         </div>
+-                                                        <div class="action-group action-group--end" aria-label="Selected mapping context" data-input-selected-context>
+-                                                            <span class="status" data-input-selected-action>Selected Action: Cancel</span>
+-                                                            <span class="status" data-input-selected-object>Selected Object: Global</span>
++                                                        <div class="action-group action-group--end" aria-label="Mapping creation selections" data-input-selected-context>
++                                                            <label>
++                                                                Action
++                                                                <select data-input-action-select></select>
++                                                            </label>
++                                                            <label>
++                                                                Object
++                                                                <select data-input-object-select></select>
++                                                            </label>
+                                                         </div>
+                                                     </div>
+                                                 </td>
 diff --git a/toolbox/input-mapping-v2/index.html b/toolbox/input-mapping-v2/index.html
-index 066903c40..90ce91983 100644
+index 90ce91983..a50e62f0c 100644
 --- a/toolbox/input-mapping-v2/index.html
 +++ b/toolbox/input-mapping-v2/index.html
-@@ -135,12 +135,6 @@
-                             <h2>Inspector</h2>
-                         </div>
-                         <div class="accordion-stack">
--                            <details class="vertical-accordion" open>
--                                <summary>Mapping JSON</summary>
--                                <div class="accordion-body content-stack">
--                                    <pre data-input-mapping-json>{}</pre>
--                                </div>
--                            </details>
+@@ -33,15 +33,15 @@
                              <details class="vertical-accordion" open>
-                                 <summary>Devices</summary>
+                                 <summary>Actions</summary>
                                  <div class="accordion-body content-stack">
+-                                    <label>
+-                                        Action
+-                                        <select data-input-action-select></select>
+-                                    </label>
+-                                    <label>
+-                                        Object
+-                                        <select data-input-object-select></select>
+-                                    </label>
+-                                    <ul data-input-default-actions></ul>
++                                    <table class="data-table" aria-label="Controls action catalog" data-input-action-catalog>
++                                        <thead>
++                                            <tr>
++                                                <th>Action Name</th>
++                                                <th>Description</th>
++                                            </tr>
++                                        </thead>
++                                        <tbody data-input-default-actions></tbody>
++                                    </table>
+                                 </div>
+                             </details>
+                         </div>
+@@ -84,9 +84,15 @@
+                                                             <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
+                                                             <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+                                                         </div>
+-                                                        <div class="action-group action-group--end" aria-label="Selected mapping context" data-input-selected-context>
+-                                                            <span class="status" data-input-selected-action>Selected Action: Cancel</span>
+-                                                            <span class="status" data-input-selected-object>Selected Object: Global</span>
++                                                        <div class="action-group action-group--end" aria-label="Mapping creation selections" data-input-selected-context>
++                                                            <label>
++                                                                Action
++                                                                <select data-input-action-select></select>
++                                                            </label>
++                                                            <label>
++                                                                Object
++                                                                <select data-input-object-select></select>
++                                                            </label>
+                                                         </div>
+                                                     </div>
+                                                 </td>
 diff --git a/toolbox/input-mapping-v2/input-mapping-v2.js b/toolbox/input-mapping-v2/input-mapping-v2.js
-index 46627d94a..54ff3debf 100644
+index 54ff3debf..a55559850 100644
 --- a/toolbox/input-mapping-v2/input-mapping-v2.js
 +++ b/toolbox/input-mapping-v2/input-mapping-v2.js
-@@ -2,21 +2,21 @@ import { createObjectsToolApiRepository } from "../objects/objects-api-client.js
- import { createInputMappingToolApiRepository } from "./input-mapping-api-client.js";
-
- const DEFAULT_ACTIONS = Object.freeze([
--  Object.freeze({ id: "cancel", label: "Cancel" }),
--  Object.freeze({ id: "confirm", label: "Confirm" }),
--  Object.freeze({ id: "fire", label: "Fire" }),
--  Object.freeze({ id: "interact", label: "Interact" }),
--  Object.freeze({ id: "jump", label: "Jump" }),
--  Object.freeze({ id: "moveDown", label: "Move Down" }),
--  Object.freeze({ id: "moveLeft", label: "Move Left" }),
--  Object.freeze({ id: "moveRight", label: "Move Right" }),
--  Object.freeze({ id: "moveUp", label: "Move Up" }),
--  Object.freeze({ id: "pause", label: "Pause" }),
--  Object.freeze({ id: "rotateLeft", label: "Rotate Left" }),
--  Object.freeze({ id: "rotateRight", label: "Rotate Right" }),
--  Object.freeze({ id: "select", label: "Select" }),
--  Object.freeze({ id: "start", label: "Start" }),
--  Object.freeze({ id: "thrust", label: "Thrust" }),
-+  Object.freeze({ description: "Back out of a menu or choice.", id: "cancel", label: "Cancel" }),
-+  Object.freeze({ description: "Accept a choice or prompt.", id: "confirm", label: "Confirm" }),
-+  Object.freeze({ description: "Use the primary attack or tool.", id: "fire", label: "Fire" }),
-+  Object.freeze({ description: "Use nearby objects or prompts.", id: "interact", label: "Interact" }),
-+  Object.freeze({ description: "Make the object jump.", id: "jump", label: "Jump" }),
-+  Object.freeze({ description: "Move the object downward.", id: "moveDown", label: "Move Down" }),
-+  Object.freeze({ description: "Move the object left.", id: "moveLeft", label: "Move Left" }),
-+  Object.freeze({ description: "Move the object right.", id: "moveRight", label: "Move Right" }),
-+  Object.freeze({ description: "Move the object upward.", id: "moveUp", label: "Move Up" }),
-+  Object.freeze({ description: "Pause gameplay or open the pause menu.", id: "pause", label: "Pause" }),
-+  Object.freeze({ description: "Turn the object counterclockwise.", id: "rotateLeft", label: "Rotate Left" }),
-+  Object.freeze({ description: "Turn the object clockwise.", id: "rotateRight", label: "Rotate Right" }),
-+  Object.freeze({ description: "Highlight or choose menu items.", id: "select", label: "Select" }),
-+  Object.freeze({ description: "Begin gameplay or open the start menu.", id: "start", label: "Start" }),
-+  Object.freeze({ description: "Push the object forward.", id: "thrust", label: "Thrust" }),
- ].sort((left, right) => left.label.localeCompare(right.label, undefined, { sensitivity: "base" })));
-
- const DEVICE_OPTIONS = Object.freeze([
-@@ -423,7 +423,15 @@ function renderDefaults() {
+@@ -66,8 +66,6 @@ const elements = {
+   resetMappings: document.querySelector("[data-input-reset-mappings]"),
+   returnWorkspace: document.querySelector("[data-input-return-workspace]"),
+   saveStatus: document.querySelector("[data-input-save-status]"),
+-  selectedAction: document.querySelector("[data-input-selected-action]"),
+-  selectedObject: document.querySelector("[data-input-selected-object]"),
+   sourceDiagnostics: document.querySelector("[data-input-source-diagnostics]"),
+   statusLog: document.querySelector("[data-input-status-log]"),
+ };
+@@ -422,17 +420,21 @@ function renderDefaults() {
+     return;
    }
    elements.defaultActions.replaceChildren(...DEFAULT_ACTIONS.map((action) => {
-     const item = document.createElement("li");
--    item.textContent = action.label;
-+    item.className = "content-split";
-+    const label = document.createElement("strong");
-+    label.dataset.inputActionLabel = action.id;
-+    label.textContent = action.label;
-+    const description = document.createElement("span");
-+    description.className = "status";
-+    description.dataset.inputActionDescription = action.id;
-+    description.textContent = action.description;
-+    item.append(label, description);
-     return item;
+-    const item = document.createElement("li");
+-    item.className = "content-split";
++    const row = document.createElement("tr");
++    row.dataset.inputActionCatalogRow = action.id;
++    const labelCell = document.createElement("td");
+     const label = document.createElement("strong");
+     label.dataset.inputActionLabel = action.id;
+     label.textContent = action.label;
++    labelCell.append(label);
++    const descriptionCell = document.createElement("td");
+     const description = document.createElement("span");
+     description.className = "status";
+     description.dataset.inputActionDescription = action.id;
+     description.textContent = action.description;
+-    item.append(label, description);
+-    return item;
++    descriptionCell.append(description);
++    row.append(labelCell, descriptionCell);
++    return row;
    }));
  }
-diff --git a/docs_build/dev/reports/controls-action-descriptions-report.md b/docs_build/dev/reports/controls-action-descriptions-report.md
+
+@@ -449,7 +451,6 @@ function renderActionsAndObjects() {
+     objectOptions.map((object) => ({ label: object.label, value: object.key })),
+     previousObject,
+   );
+-  updateCaptureSelection();
+ }
+
+ function renderControllerProfileStatus() {
+@@ -790,13 +791,6 @@ function renderAll(message = "") {
+   renderMappings();
+ }
+
+-function updateCaptureSelection() {
+-  const action = selectedAction();
+-  const object = selectedObject();
+-  setText(elements.selectedAction, `Selected Action: ${action.label}`);
+-  setText(elements.selectedObject, `Selected Object: ${object.label}`);
+-}
+-
+ function editingRowElement() {
+   return elements.list?.querySelector("[data-input-editing-row]") || null;
+ }
+@@ -1186,9 +1180,10 @@ function init() {
+   renderControllerProfiles();
+   renderDiagnostics();
+   renderMappings();
+-  elements.actionSelect?.addEventListener("change", updateCaptureSelection);
++  elements.actionSelect?.addEventListener("change", () => {
++    setText(elements.statusLog, `Selected ${selectedAction().label} action for new mappings.`);
++  });
+   elements.objectSelect?.addEventListener("change", () => {
+-    updateCaptureSelection();
+     setText(elements.statusLog, `Selected ${selectedObject().label} for new mappings.`);
+   });
+   elements.addMapping?.addEventListener("click", () => {
+diff --git a/docs_build/dev/reports/controls-footer-action-object-selection-report.md b/docs_build/dev/reports/controls-footer-action-object-selection-report.md
 new file mode 100644
-index 000000000..f48ba875e
+index 000000000..7609468c4
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-action-descriptions-report.md
-@@ -0,0 +1,58 @@
-+# PR_26161_022 Controls Action Descriptions Report
++++ b/docs_build/dev/reports/controls-footer-action-object-selection-report.md
+@@ -0,0 +1,62 @@
++# PR_26161_023 Controls Footer Action Object Selection Report
 +
 +## Branch Validation
 +- Current branch: `main`
@@ -218,10 +269,13 @@ index 000000000..f48ba875e
 +- Result: PASS
 +
 +## Summary
-+- Removed the visible Inspector > Mapping JSON accordion from Controls.
-+- Preserved internal mapping payload generation for tool output/status logic, without displaying it as an accordion.
-+- Added creator-facing descriptions next to every default action in Controls > Actions.
-+- Preserved alphabetical action ordering.
++- Moved the Action and Object creation selectors into the Table Input > Mappings footer.
++- Replaced the prior Selected Action / Selected Object text with footer dropdown controls.
++- Kept the Action dropdown backed by the Controls action registry.
++- Kept the Object dropdown backed by shared DB/mock-adapter Object records.
++- Removed duplicate Action/Object selectors from Controls > Actions.
++- Converted Controls > Actions into a reference-only action catalog with Action Name and Description.
++- Preserved action descriptions from PR_26161_022.
 +- Preserved device-specific input capture, Controller Profile center placement, State explanation, table editing, Add Mapping, Cancel, Edit, Trash, DB reload persistence, and Wireframe status.
 +
 +## Impacted Lane
@@ -239,13 +293,14 @@ index 000000000..f48ba875e
 +- `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --workers=1 --reporter=line` - PASS, 5 passed
 +
 +## Playwright Behavior Covered
-+- Mapping JSON accordion no longer appears.
-+- Mapping JSON DOM output is not visible.
-+- All listed actions display descriptions.
-+- Action labels remain alphabetically sorted.
-+- Device-specific capture still swaps Keyboard, Mouse, and Gamepad capture controls by selected Input Device.
++- Mappings footer contains Action and Object dropdowns.
++- Controls > Actions no longer contains Action/Object selectors.
++- Controls > Actions displays Action Name and Description reference catalog.
++- Action catalog descriptions remain visible and alphabetically ordered by action name.
++- Object dropdown loads DB-backed Object records, including seeded Hero object.
++- Footer Action/Object dropdown selections drive Add Mapping defaults.
 +- Captured mappings persist after reload.
-+- Devices, Status, controller profiles, table editing, Add Mapping, Cancel, Edit, and Trash continue to work.
++- Device-specific capture still works.
 +
 +## V8 Coverage
 +- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
@@ -254,11 +309,11 @@ index 000000000..f48ba875e
 +
 +## Manual Validation Steps
 +1. Open `/toolbox/input-mapping-v2/index.html`.
-+2. Confirm the Inspector column shows Devices and Status, with no Mapping JSON accordion.
-+3. Confirm Controls > Actions lists Cancel through Thrust alphabetically.
-+4. Confirm each action has a short creator-facing description beside it.
-+5. Add a mapping, capture a keyboard input, save, reload, and confirm the mapping remains.
-+6. Edit the mapping and confirm device-specific capture controls still appear for the selected device.
++2. Confirm Controls > Actions shows only the Action Name / Description catalog.
++3. Confirm the Mappings footer shows Action and Object dropdowns next to Add Mapping and Reset Mappings.
++4. Add or seed an Object record and confirm it appears in the footer Object dropdown.
++5. Choose an Action and Object in the footer, click Add Mapping, and confirm the edit row uses those defaults.
++6. Capture an input, save, reload, and confirm the mapping persists.
 +
 +## Skipped Lanes
 +- Full samples validation was skipped as required by the PR instructions; this change is scoped to Controls/Input Mapping UI and targeted behavior tests.

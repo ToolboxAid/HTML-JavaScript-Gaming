@@ -154,6 +154,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("summary").filter({ hasText: "Actions" })).toBeVisible();
+    await expect(page.locator("aside").first().locator("[data-input-action-select]")).toHaveCount(0);
+    await expect(page.locator("aside").first().locator("[data-input-object-select]")).toHaveCount(0);
+    await expect(page.locator("[data-input-action-catalog] th")).toHaveText(["Action Name", "Description"]);
     await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
     await expect(page.locator("aside").first().locator("summary").filter({ hasText: "Controller Profiles" })).toHaveCount(0);
     await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();
@@ -192,9 +195,10 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]")).toBeVisible();
     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-reset-mappings]")).toBeVisible();
     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-selected-context]")).toBeVisible();
-    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Cancel");
-    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
-    await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-action-select]")).toBeVisible();
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select]")).toBeVisible();
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select] option")).toHaveText(["Global"]);
     await expect(page.locator("[data-input-action-label]")).toHaveText(DEFAULT_ACTION_LABELS);
     await expect(page.locator("[data-input-action-description]")).toHaveText(DEFAULT_ACTION_DESCRIPTIONS);
     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
@@ -217,8 +221,7 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-source-diagnostics]")).toContainText("GamepadInputAdapter");
 
     await page.locator("[data-input-action-select]").selectOption("moveLeft");
-    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Move Left");
-    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Selected Move Left action for new mappings.");
     await page.getByRole("button", { name: "Refresh Devices" }).click();
     await expect(page.locator("[data-input-status-log]")).toHaveText("Device diagnostics refreshed.");
 
@@ -439,11 +442,11 @@ test("Controls Input Mapping captures KeyA, keeps input click safe, and deletes 
   try {
     await seedHeroObject(page);
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-input-object-select] option")).toContainText(["Global", "Hero"]);
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select] option")).toContainText(["Global", "Hero"]);
     await page.locator("[data-input-object-select]").selectOption("hero");
     await page.locator("[data-input-action-select]").selectOption("moveLeft");
-    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Move Left");
-    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Hero");
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-action-select]")).toHaveValue("moveLeft");
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select]")).toHaveValue("hero");
 
     await page.locator("[data-input-add-mapping]").click();
     await expect(page.locator("[data-input-row-object]")).toHaveValue("hero");

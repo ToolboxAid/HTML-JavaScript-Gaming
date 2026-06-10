@@ -17,14 +17,14 @@ Exercised tool entry points detected:
 (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1133/1133; executed functions 105/116
+(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1129/1129; executed functions 105/116
 
 Files with executed line/function counts where available:
 (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
 (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
-(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1133/1133; executed functions 105/116
+(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1129/1129; executed functions 105/116
 (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
 (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
 

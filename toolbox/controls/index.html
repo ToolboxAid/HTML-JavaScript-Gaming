@@ -33,15 +33,15 @@
                             <details class="vertical-accordion" open>
                                 <summary>Actions</summary>
                                 <div class="accordion-body content-stack">
-                                    <label>
-                                        Action
-                                        <select data-input-action-select></select>
-                                    </label>
-                                    <label>
-                                        Object
-                                        <select data-input-object-select></select>
-                                    </label>
-                                    <ul data-input-default-actions></ul>
+                                    <table class="data-table" aria-label="Controls action catalog" data-input-action-catalog>
+                                        <thead>
+                                            <tr>
+                                                <th>Action Name</th>
+                                                <th>Description</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-input-default-actions></tbody>
+                                    </table>
                                 </div>
                             </details>
                         </div>
@@ -84,9 +84,15 @@
                                                             <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
                                                             <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
                                                         </div>
-                                                        <div class="action-group action-group--end" aria-label="Selected mapping context" data-input-selected-context>
-                                                            <span class="status" data-input-selected-action>Selected Action: Cancel</span>
-                                                            <span class="status" data-input-selected-object>Selected Object: Global</span>
+                                                        <div class="action-group action-group--end" aria-label="Mapping creation selections" data-input-selected-context>
+                                                            <label>
+                                                                Action
+                                                                <select data-input-action-select></select>
+                                                            </label>
+                                                            <label>
+                                                                Object
+                                                                <select data-input-object-select></select>
+                                                            </label>
                                                         </div>
                                                     </div>
                                                 </td>
