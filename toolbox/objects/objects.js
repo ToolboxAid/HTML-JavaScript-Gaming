@@ -148,7 +148,6 @@ const elements = {
   resetTable: document.querySelector("[data-objects-reset-table]"),
   capabilityBasics: document.querySelector("[data-objects-capability-basics]"),
   seedStarter: document.querySelector("[data-objects-seed-starter]"),
-  statusSummary: document.querySelector("[data-objects-status-summary]"),
   templateCatalog: document.querySelector("[data-objects-template-catalog]"),
   templateSelect: document.querySelector("[data-objects-template-select]"),
   typeBasics: document.querySelector("[data-objects-type-basics]"),
@@ -204,18 +203,18 @@ function tableCell(text) {
   return cell;
 }
 
-function actionButton(text, dataName, value = "") {
+function actionButton(text, dataName, value = "", className = "btn btn--compact") {
   const button = document.createElement("button");
-  button.className = "btn btn--compact";
+  button.className = className;
   button.type = "button";
   button.textContent = text;
   button.dataset[dataName] = value;
   return button;
 }
 
-function actionLink(text, href, dataName, value = "") {
+function actionLink(text, href, dataName, value = "", className = "btn btn--compact") {
   const link = document.createElement("a");
-  link.className = "btn btn--compact";
+  link.className = className;
   link.href = href;
   link.textContent = text;
   if (dataName) {
@@ -445,7 +444,7 @@ function objectStatusLabel(objects, findings) {
   if (objects.length === 0) {
     return "Not Configured";
   }
-  if (missingRenderAssetCount(objects) > 0 || findings.length > 0) {
+  if (objects.some((object) => objectGapLabels(object).length > 0) || missingRenderAssetCount(objects) > 0 || findings.length > 0) {
     return "Pending Setup";
   }
   return "Complete";
@@ -468,18 +467,6 @@ function renderValidation(findings) {
     elements.validationList.append(listItem(`${finding.label}: ${finding.action}`));
   });
   elements.validationOverlay.hidden = false;
-}
-
-function statusRow({ actions, label, status }) {
-  const row = document.createElement("tr");
-  const actionCell = document.createElement("td");
-  if (Array.isArray(actions) && actions.length) {
-    actionCell.append(...actions);
-  } else {
-    actionCell.textContent = "Add object details in the table.";
-  }
-  row.append(tableCell(label), tableCell(status), actionCell);
-  return row;
 }
 
 function capabilityLabel(traitId) {
@@ -537,18 +524,6 @@ function eventsHref(object) {
   return `/toolbox/events/index.html?objectKey=${objectKey}&sourceTool=objects`;
 }
 
-function statusObjectRows(objects) {
-  const rows = objects.map((object) => ({ object, pending: false }));
-  const row = editingRowElement();
-  if (row) {
-    const object = editingObjectFromRow(row);
-    if (object.name || object.render?.type === "Sprite") {
-      rows.push({ object, pending: true });
-    }
-  }
-  return rows;
-}
-
 function objectGapLabels(object) {
   const gaps = [];
   if (object.render?.type === "Sprite" && !object.render.assetKey) {
@@ -560,50 +535,46 @@ function objectGapLabels(object) {
   return gaps;
 }
 
-function objectActionLinks(object) {
+function statusBadge(text, complete) {
+  const badge = document.createElement("span");
+  badge.className = complete ? "swatch-label swatch-green" : "swatch-label swatch-gold";
+  badge.dataset.objectsRowStatusBadge = complete ? "ready" : "missing";
+  badge.textContent = text;
+  return badge;
+}
+
+function statusCellForObject(object) {
+  const cell = document.createElement("td");
+  const gaps = objectGapLabels(object);
+  cell.dataset.objectsRowStatus = gaps.length ? "missing" : "ready";
+  cell.append(statusBadge(gaps.length ? gaps.join(", ") : "Ready", gaps.length === 0));
+  return cell;
+}
+
+function editingStatusCell() {
+  const cell = document.createElement("td");
+  cell.dataset.objectsRowStatus = "pending";
+  cell.append(statusBadge("Pending Setup", false));
+  return cell;
+}
+
+function rowConfigurationActions(object) {
   const id = objectId(object);
   if (!id) {
     return [];
   }
   const links = [];
   if (object.render?.type === "Sprite" && object.render.assetKey) {
-    links.push(actionLink("Edit Sprite", spriteEditorHref(object), "objectsStatusEditSprite", id));
+    const editSprite = actionLink("Edit Sprite", spriteEditorHref(object), "objectsRowEditSprite", id, "btn btn--compact cyan");
+    editSprite.title = "Sprite asset ready.";
+    links.push(editSprite);
   }
-  links.push(
-    actionLink("Open Hitboxes", hitboxesHref(object), "objectsStatusOpenHitboxes", id),
-    actionLink("Open Events", eventsHref(object), "objectsStatusOpenEvents", id)
-  );
+  const openHitboxes = actionLink("Open Hitboxes", hitboxesHref(object), "objectsRowOpenHitboxes", id, "btn btn--compact primary");
+  const openEvents = actionLink("Open Events", eventsHref(object), "objectsRowOpenEvents", id, "btn btn--compact primary");
+  openHitboxes.title = "Missing Hitbox.";
+  openEvents.title = "Missing Events.";
+  links.push(openHitboxes, openEvents);
   return links;
-}
-
-function renderStatusSummary(objects) {
-  if (!elements.statusSummary) {
-    return;
-  }
-
-  const rows = statusObjectRows(objects);
-  if (!rows.length) {
-    elements.statusSummary.replaceChildren(statusRow({
-      actions: [],
-      label: "Objects",
-      status: "Not Configured",
-    }));
-    setText(elements.assetStatus, "Not Configured");
-    return;
-  }
-
-  elements.statusSummary.replaceChildren(...rows.map(({ object, pending }) => {
-    const gaps = objectGapLabels(object);
-    const label = object.name || (pending ? "Draft Object" : "Object");
-    return statusRow({
-      actions: objectActionLinks(object),
-      label,
-      status: gaps.length ? gaps.join(", ") : "Ready",
-    });
-  }));
-
-  const linkedSprites = spriteObjectCount(objects) - missingRenderAssetCount(objects);
-  setText(elements.assetStatus, linkedSprites > 0 ? `${linkedSprites} Linked` : "Not Configured");
 }
 
 function assetLinkMessage(result, fallback) {
@@ -847,6 +818,7 @@ function renderEditingRow(values) {
     controlCell(renderType),
     capabilities,
     renderAsset,
+    editingStatusCell(),
     actions
   );
   return row;
@@ -858,6 +830,7 @@ function renderSavedRow(object) {
   const actions = document.createElement("td");
   actions.append(
     actionButton("Edit", "objectsEditRow", id),
+    ...rowConfigurationActions(object),
     actionButton("Trash", "objectsTrashRow", id)
   );
   row.dataset.objectsRow = id;
@@ -868,6 +841,7 @@ function renderSavedRow(object) {
     tableCell(object.render?.type || "None"),
     tableCell(capabilityText(object.traits)),
     tableCell(renderAssetText(object)),
+    statusCellForObject(object),
     actions
   );
   return row;
@@ -882,7 +856,7 @@ function renderObjectList(objects) {
   if (objects.length === 0 && !editingRow) {
     const row = document.createElement("tr");
     const empty = document.createElement("td");
-    empty.colSpan = 7;
+    empty.colSpan = 8;
     empty.textContent = "No objects drafted yet.";
     row.append(empty);
     elements.list.append(row);
@@ -908,11 +882,18 @@ function renderOutput(objects, findings) {
   const linkedAsset = linkedSprite ? linkedSpriteAsset(linkedSprite.render.assetKey) : null;
   const linkedAssetText = linkedSprite ? assetDisplayText(linkedAsset, linkedSprite.render.assetKey) : "None";
   const linkedPreviewPath = linkedSpritePreviewPath(linkedSprite, linkedAsset);
+  const linkedSpriteCount = spriteObjectCount(objects) - missingRenderAssetCount(objects);
 
   setText(elements.count, String(objects.length));
   setText(elements.readiness, readiness);
   setText(elements.outputReadiness, readiness);
   setText(elements.outputCount, String(objects.length));
+  setText(
+    elements.assetStatus,
+    linkedSpriteCount > 0
+      ? `${linkedSpriteCount} Linked`
+      : "Not Configured"
+  );
   setText(
     elements.outputSetup,
     objects.length === 0
@@ -987,7 +968,6 @@ function render() {
     ...(storageIssue ? [storageIssue] : []),
   ];
   renderObjectList(draftedObjects);
-  renderStatusSummary(draftedObjects);
   renderOutput(draftedObjects, findings);
   renderValidation(findings);
   if (elements.addRow) {
@@ -1188,7 +1168,6 @@ function refreshLinkedRenderAssetDisplay() {
     updateRenderAssetPreview(row);
   }
   const findings = objectListFindings(draftedObjects);
-  renderStatusSummary(draftedObjects);
   renderOutput(draftedObjects, findings);
 }
 
@@ -1204,7 +1183,6 @@ elements.templateSelect?.addEventListener("change", () => {
   const row = editingRowElement();
   if (row) {
     applyTemplateToRow(row, template);
-    renderStatusSummary(draftedObjects);
     setText(elements.log, `Applied ${template.type} template to the active row.`);
     return;
   }
@@ -1238,20 +1216,12 @@ elements.list?.addEventListener("change", (event) => {
   }
   if (control.matches("[data-objects-row-render-type]")) {
     updateRenderAssetPreview(row);
-    renderStatusSummary(draftedObjects);
     return;
   }
   const template = templateForType(control.value);
   setRowCapabilities(row, template ? [...template.capabilities] : []);
   if (elements.templateSelect && template) {
     elements.templateSelect.value = template.type;
-  }
-  renderStatusSummary(draftedObjects);
-});
-elements.list?.addEventListener("input", (event) => {
-  const control = event.target instanceof HTMLElement ? event.target.closest("[data-objects-row-name]") : null;
-  if (control) {
-    renderStatusSummary(draftedObjects);
   }
 });
 window.addEventListener("focus", refreshLinkedRenderAssetDisplay);

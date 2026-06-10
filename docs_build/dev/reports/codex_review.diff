@@ -1,470 +1,557 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 4e5fae393..f3afbfe0c 100644
+index f3afbfe0c..7a06d1102 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,13 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
- Changed runtime JS files considered:
--(94%) toolbox/objects/objects.js - executed lines 1065/1065; executed functions 100/106
-+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(94%) toolbox/objects/objects.js - executed lines 1150/1150; executed functions 103/109
-+(100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
+@@ -9,7 +9,7 @@ Changed runtime JS files considered:
+ (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(94%) toolbox/objects/objects.js - executed lines 1150/1150; executed functions 103/109
++(94%) toolbox/objects/objects.js - executed lines 1123/1123; executed functions 101/107
+ (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
  
  Guardrail warnings:
--(100%) none - no changed runtime JS coverage warnings
-+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index a1e611c25..563c3ae98 100644
+index 563c3ae98..0b14ef41d 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,12 +12,16 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
- Exercised tool entry points detected:
--(86%) Toolbox Index - exercised 5 runtime JS files
-+(86%) Toolbox Index - exercised 6 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
- (59%) Theme V2 Shared JS - exercised 2 runtime JS files
- 
- Changed runtime JS files covered:
--(94%) toolbox/objects/objects.js - executed lines 1065/1065; executed functions 100/106
-+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(94%) toolbox/objects/objects.js - executed lines 1150/1150; executed functions 103/109
-+(100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
+@@ -20,7 +20,7 @@ Changed runtime JS files covered:
+ (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(94%) toolbox/objects/objects.js - executed lines 1150/1150; executed functions 103/109
++(94%) toolbox/objects/objects.js - executed lines 1123/1123; executed functions 101/107
+ (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
  
  Files with executed line/function counts where available:
- (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-@@ -31,13 +35,20 @@ Files with executed line/function counts where available:
+@@ -35,7 +35,7 @@ Files with executed line/function counts where available:
  (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
  (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
  (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
--(94%) toolbox/objects/objects.js - executed lines 1065/1065; executed functions 100/106
-+(94%) toolbox/objects/objects.js - executed lines 1150/1150; executed functions 103/109
+-(94%) toolbox/objects/objects.js - executed lines 1150/1150; executed functions 103/109
++(94%) toolbox/objects/objects.js - executed lines 1123/1123; executed functions 101/107
  (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
-+(100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
+ (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
  (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
- 
- Uncovered or low-coverage changed JS files:
--(100%) none - no low-coverage changed runtime JS files
-+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
- 
- Changed JS files considered:
-+(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
- (94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
-+(100%) toolbox/objects/objects-api-client.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index 3c96ede23..4ec4f564b 100644
---- a/src/dev-runtime/persistence/mock-db-store.js
-+++ b/src/dev-runtime/persistence/mock-db-store.js
-@@ -83,6 +83,10 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
-     label: "Game Configuration",
-     tableNames: Object.freeze(["game_configuration_records", "game_configuration_validation_items"]),
-   }),
-+  objects: Object.freeze({
-+    label: "Objects",
-+    tableNames: Object.freeze(["object_definition_records"]),
-+  }),
-   "project-journey": Object.freeze({
-     label: "Project Journey",
-     tableNames: Object.freeze([
-@@ -127,6 +131,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
-   game_design_validation_items: Object.freeze(["key", "projectKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_configuration_records: Object.freeze(["key", "projectKey", "status", "summary", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_configuration_validation_items: Object.freeze(["key", "projectKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  object_definition_records: Object.freeze(["key", "id", "projectId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   project_journey_note_types: Object.freeze(["key", "typeSlug", "name", "seeded", "userExtensible", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   project_journey_notes: Object.freeze(["key", "slug", "projectKey", "ownerKey", "name", "typeKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   project_journey_templates: Object.freeze(["key", "templateSlug", "originalMeaning", "systemGuidance", "linkedToolContexts", "version", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-diff --git a/src/dev-runtime/server/mock-api-router.mjs b/src/dev-runtime/server/mock-api-router.mjs
-index a639b7370..f1ce6601e 100644
---- a/src/dev-runtime/server/mock-api-router.mjs
-+++ b/src/dev-runtime/server/mock-api-router.mjs
-@@ -6,6 +6,9 @@ import {
-   createAssetToolMockRepository,
-   pickerDiagnosticForRole,
- } from "../persistence/tool-repositories/assets-mock-repository.js";
-+import {
-+  createObjectsToolMockRepository,
-+} from "../persistence/tool-repositories/objects-mock-repository.js";
- import {
-   TOOL_IMAGE_FALLBACK,
-   TOOL_RELEASE_CHANNELS,
-@@ -70,7 +73,7 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
- const LOCAL_MEM_MODE_ID = "local-mem";
- const LOCAL_DB_MODE_ID = "local-db";
- const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
--const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
-+const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "objects", "project-journey", "palette", "asset"];
- const IDENTITY_TABLES = ["users", "roles", "user_roles"];
- const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
- const TOOLBOX_PLANNING_FIELDS = Object.freeze([
-@@ -638,6 +641,10 @@ function gameConfigurationTables(repository) {
-   });
- }
- 
-+function objectsTables(repository) {
-+  return normalizeOwnedTables("objects", repository.getTables());
-+}
-+
- function projectJourneyTables(repository) {
-   return normalizeOwnedTables("project-journey", repository.getTables());
- }
-@@ -916,6 +923,10 @@ class LocalDevMockDataSource {
-       paletteRepository: this.paletteRepository,
-       ...this.sharedOptions,
-     });
-+    this.objectsRepository = createObjectsToolMockRepository({
-+      projectWorkspaceRepository: this.workspaceRepository,
-+      ...this.sharedOptions,
-+    });
-     this.assetReadyInitialized = false;
-     this.sharedOptions.workspaceRepository = this.workspaceRepository;
-     this.projectJourneyRepository = createProjectJourneyMockRepository(this.sharedOptions);
-@@ -1436,6 +1447,7 @@ class LocalDevMockDataSource {
-     if (toolId === "project-workspace") return this.workspaceRepository;
-     if (toolId === "game-design") return this.gameDesignRepository;
-     if (toolId === "game-configuration") return this.gameConfigurationRepository;
-+    if (toolId === "objects") return this.objectsRepository;
-     if (toolId === "project-journey") return this.projectJourneyRepository;
-     if (toolId === "palette") return this.paletteRepository;
-     if (toolId === "colors") return this.paletteRepository;
-@@ -1463,6 +1475,11 @@ class LocalDevMockDataSource {
-     if (toolId === "game-configuration") {
-       return { GAME_CONFIGURATION_SECTIONS };
-     }
-+    if (toolId === "objects") {
-+      return {
-+        OBJECTS_TOOL_TABLES: this.objectsRepository.OBJECTS_TOOL_TABLES,
-+      };
-+    }
-     if (toolId === "project-journey") {
-       return {
-         PROJECT_JOURNEY_KEYS,
-@@ -1601,6 +1618,7 @@ class LocalDevMockDataSource {
-       ...workspaceTables(this.workspaceRepository),
-       ...gameDesignTables(this.gameDesignRepository),
-       ...gameConfigurationTables(this.gameConfigurationRepository),
-+      ...objectsTables(this.objectsRepository),
-       ...projectJourneyTables(this.projectJourneyRepository),
-       ...paletteTables(this.paletteRepository),
-       ...assetTables(this.assetRepository),
 diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
-index 6d956cb91..7a1a2705d 100644
+index 7a1a2705d..eff832126 100644
 --- a/tests/playwright/tools/ObjectsTool.spec.mjs
 +++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -103,6 +103,14 @@ async function fillActiveRow(page, { name, renderType = "None", type, state = "A
-   await page.locator("[data-objects-row-render-type]").selectOption(renderType);
- }
+@@ -138,23 +138,10 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+     await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
+-    await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toBeVisible();
+-    await expect(page.locator("[aria-label='Object status summary'] th")).toHaveText([
+-      "Object",
+-      "Status",
+-      "Actions",
+-    ]);
+-    await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(1);
+-    await expect(page.locator("[data-objects-status-summary] td:first-child")).toHaveText([
+-      "Objects",
+-    ]);
+-    await expect(page.locator("[data-objects-status-summary] td:nth-child(2)")).toHaveText([
+-      "Not Configured",
+-    ]);
+-    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Open Hitboxes");
+-    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Open Events");
+-    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Edit Sprite");
+-    await expect(page.locator("[data-objects-status-summary]")).not.toContainText(LOW_VALUE_STATUS_CHECK_PATTERN);
++    await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toHaveCount(0);
++    await expect(page.locator("[aria-label='Object status summary']")).toHaveCount(0);
++    await expect(page.locator("[data-objects-status-summary]")).toHaveCount(0);
++    await expect(page.locator("main")).not.toContainText(LOW_VALUE_STATUS_CHECK_PATTERN);
+     await expect(page.locator("[data-objects-list-table] th")).toHaveText([
+       "Name",
+       "Type",
+@@ -162,6 +149,7 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+       "Render",
+       "Capabilities",
+       "Render Asset",
++      "Status",
+       "Actions",
+     ]);
+     await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
+@@ -187,24 +175,35 @@ test("Objects exposes production copy, setup status, and broad table input", asy
  
-+async function objectDefinitionRecords(page) {
-+  return page.evaluate(async () => {
-+    const response = await fetch("/api/mock-db/snapshot");
-+    const payload = await response.json();
-+    return payload.data.tables.object_definition_records || [];
-+  });
-+}
-+
- test("Objects exposes production copy, setup status, and broad table input", async ({ page }) => {
-   const failures = await openObjectsPage(page);
+     await page.getByRole("button", { name: "Seed Starter Objects" }).click();
+     await expect(page.locator("[data-objects-log]")).toHaveText("Seeded starter objects: Hero, Projectile, and Wall.");
+-    await expect(page.locator("[data-objects-readiness]")).toHaveText("Complete");
+-    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Complete");
++    await expect(page.locator("[data-objects-readiness]")).toHaveText("Pending Setup");
++    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Pending Setup");
+     await expect(page.locator("[data-objects-count]")).toHaveText("3");
+     await expect(page.locator("[data-objects-output-count]")).toHaveText("3");
+-    await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(3);
+-    await expect(page.locator("[data-objects-status-summary] td:first-child")).toHaveText(["Hero", "Projectile", "Wall"]);
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
+-    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveCount(3);
+-    await expect(page.locator("[data-objects-status-open-events]")).toHaveCount(3);
+-    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveCount(0);
+     await expect(page.locator("[data-objects-validation-overlay]")).toBeHidden();
+     await expect(page.locator("[data-objects-list] tr")).toHaveCount(3);
+     await expect(page.locator("[data-objects-list]")).toContainText("Hero");
+     await expect(page.locator("[data-objects-list]")).toContainText("Projectile");
+     await expect(page.locator("[data-objects-list]")).toContainText("Wall");
++    await expect(page.locator("[data-objects-row-status]")).toHaveCount(3);
++    await expect(page.locator("[data-objects-row-status]")).toHaveText([
++      "Missing Hitbox, Missing Events",
++      "Missing Hitbox, Missing Events",
++      "Missing Hitbox, Missing Events",
++    ]);
++    await expect(page.locator("[data-objects-row-status-badge='missing']")).toHaveCount(3);
++    await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveCount(3);
++    await expect(page.locator("[data-objects-row-open-events]")).toHaveCount(3);
++    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveCount(0);
+     await expect(page.locator("[data-objects-list] [data-objects-edit-row]")).toHaveCount(3);
+     await expect(page.locator("[data-objects-list] [data-objects-trash-row]")).toHaveCount(3);
++    await expect(page.locator("[data-objects-list] tr").first().locator("td").last().locator("button, a")).toHaveText([
++      "Edit",
++      "Open Hitboxes",
++      "Open Events",
++      "Trash",
++    ]);
++    await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveClass(/primary/);
++    await expect(page.locator("[data-objects-row-open-events]").first()).toHaveClass(/primary/);
+     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("None");
+     await expect(page.locator("[data-objects-edit-sprite]")).toBeHidden();
+     await expect(page.locator("[data-objects-output-setup]")).toHaveText("Objects have saved setup details.");
+@@ -341,7 +340,7 @@ test("Objects persists added, edited, deleted, and sprite-linked rows through sh
+     await page.reload({ waitUntil: "networkidle" });
+     await expect(page.locator("[data-objects-list]")).toContainText("Persistent Bolt");
+     await expect(page.locator("[data-objects-list]")).toContainText("sprite_persistent_bolt");
+-    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveAttribute(
++    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute(
+       "href",
+       "/toolbox/sprites/index.html?assetKey=sprite_persistent_bolt&objectKey=persistent-bolt&sourceTool=objects"
+     );
+@@ -372,10 +371,10 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
+     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Causes Damage");
+     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Takes Damage");
+     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Render Asset");
+-    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveCount(0);
+-    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveCount(0);
+-    await expect(page.locator("[data-objects-status-open-events]")).toHaveCount(0);
++    await expect(page.locator("[data-objects-row-status]")).toHaveText("Pending Setup");
++    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveCount(0);
++    await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveCount(0);
++    await expect(page.locator("[data-objects-row-open-events]")).toHaveCount(0);
  
-@@ -263,6 +271,93 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
-   }
- });
+     await page.locator("[data-objects-template-select]").selectOption("Platform");
+     await expect(page.locator("[data-objects-log]")).toHaveText("Applied Platform template to the active row.");
+@@ -384,23 +383,14 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
+     await expect(page.locator("[data-objects-row-render-type]")).toHaveValue("None");
+     await expect(page.locator("[data-objects-row-capabilities-preview]")).toHaveText("Can Collide");
+     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("None");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Not Configured");
++    await expect(page.locator("[data-objects-row-status]")).toHaveText("Pending Setup");
  
-+test("Objects persists added, edited, deleted, and sprite-linked rows through shared DB", async ({ page }) => {
-+  const failures = await openObjectsPage(page);
-+
-+  try {
-+    const addButton = page.getByRole("button", { name: "Add Object" });
-+    await addButton.click();
-+    await fillActiveRow(page, {
-+      name: "Persistent Hero",
-+      type: "Hero",
-+    });
-+    await page.locator("[data-objects-save-row]").click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Added Persistent Hero.");
-+
-+    let rows = await objectDefinitionRecords(page);
-+    expect(rows).toHaveLength(1);
-+    expect(rows[0]).toEqual(expect.objectContaining({
-+      name: "Persistent Hero",
-+      renderType: "None",
-+      type: "Hero",
-+    }));
-+
-+    await page.reload({ waitUntil: "networkidle" });
-+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(0)).toHaveText("Persistent Hero");
-+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(1)).toHaveText("Hero");
-+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Active");
-+
-+    await page.locator("[data-objects-edit-row='persistent-hero']").click();
-+    await page.locator("[data-objects-row-name]").fill("Persistent Hero Prime");
-+    await page.locator("[data-objects-row-state]").selectOption("Disabled");
-+    await page.locator("[data-objects-save-row]").click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Saved Persistent Hero Prime.");
-+
-+    await page.reload({ waitUntil: "networkidle" });
-+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(0)).toHaveText("Persistent Hero Prime");
-+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Disabled");
-+    rows = await objectDefinitionRecords(page);
-+    expect(rows).toHaveLength(1);
-+    expect(rows[0]).toEqual(expect.objectContaining({
-+      name: "Persistent Hero Prime",
-+      state: "Disabled",
-+    }));
-+
-+    await page.locator("[data-objects-trash-row='persistent-hero-prime']").click();
-+    await expect(page.locator("[data-objects-log]")).toHaveText("Trashed object row.");
-+    rows = await objectDefinitionRecords(page);
-+    expect(rows).toHaveLength(0);
-+
-+    await page.reload({ waitUntil: "networkidle" });
-+    await expect(page.locator("[data-objects-list]")).toContainText("No objects drafted yet.");
-+
-+    await page.getByRole("button", { name: "Add Object" }).click();
-+    await fillActiveRow(page, {
-+      name: "Persistent Bolt",
-+      renderType: "Sprite",
-+      type: "Projectile",
-+    });
-+    await page.locator("[data-objects-save-row]").click();
-+    await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_persistent_bolt for Persistent Bolt.");
-+    rows = await objectDefinitionRecords(page);
-+    expect(rows).toHaveLength(1);
-+    expect(rows[0]).toEqual(expect.objectContaining({
-+      name: "Persistent Bolt",
-+      renderAssetKey: "sprite_persistent_bolt",
-+      renderType: "Sprite",
-+      type: "Projectile",
-+    }));
-+
-+    await page.reload({ waitUntil: "networkidle" });
-+    await expect(page.locator("[data-objects-list]")).toContainText("Persistent Bolt");
-+    await expect(page.locator("[data-objects-list]")).toContainText("sprite_persistent_bolt");
-+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveAttribute(
+     await page.locator("[data-objects-template-select]").selectOption("Hero");
+     await page.locator("[data-objects-row-name]").fill("Catalog Hero");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Catalog Hero");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Render Asset");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
+-    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveCount(0);
+-    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveAttribute(
+-      "href",
+-      "/toolbox/hitboxes/index.html?objectKey=catalog-hero&sourceTool=objects"
+-    );
+-    await expect(page.locator("[data-objects-status-open-events]")).toHaveAttribute(
+-      "href",
+-      "/toolbox/events/index.html?objectKey=catalog-hero&sourceTool=objects"
+-    );
++    await expect(page.locator("[data-objects-row-status]")).toHaveText("Pending Setup");
++    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveCount(0);
++    await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveCount(0);
++    await expect(page.locator("[data-objects-row-open-events]")).toHaveCount(0);
+     await page.locator("[data-objects-save-row]").click();
+     await expect(page.locator("[data-objects-log]")).toContainText("Added Catalog Hero.");
+     await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_catalog_hero for Catalog Hero.");
+@@ -410,13 +400,31 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
+     await expect(page.locator("[data-objects-list]")).toContainText("Can Move");
+     await expect(page.locator("[data-objects-list]")).toContainText("Takes Damage");
+     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_catalog_hero");
+-    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Missing Render Asset");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
+-    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveAttribute(
++    await expect(page.locator("[data-objects-row-status]")).not.toContainText("Missing Render Asset");
++    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Hitbox");
++    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Events");
++    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute(
+       "href",
+       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
+     );
++    await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveAttribute(
 +      "href",
-+      "/toolbox/sprites/index.html?assetKey=sprite_persistent_bolt&objectKey=persistent-bolt&sourceTool=objects"
++      "/toolbox/hitboxes/index.html?objectKey=catalog-hero&sourceTool=objects"
 +    );
-+    await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
++    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute(
 +      "href",
-+      "/toolbox/sprites/index.html?assetKey=sprite_persistent_bolt&objectKey=persistent-bolt&sourceTool=objects"
++      "/toolbox/events/index.html?objectKey=catalog-hero&sourceTool=objects"
 +    );
-+    await expect(page.locator("main")).not.toContainText(OLD_INTERNAL_COPY_PATTERN);
-+
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await workspaceV2CoverageReporter.stop(page);
-+    await failures.server.close();
-+  }
-+});
-+
- test("Object Type Catalog selection prefills active table rows", async ({ page }) => {
-   const failures = await openObjectsPage(page);
- 
++    await expect(page.locator("[data-objects-list] tr").first().locator("td").last().locator("button, a")).toHaveText([
++      "Edit",
++      "Edit Sprite",
++      "Open Hitboxes",
++      "Open Events",
++      "Trash",
++    ]);
++    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveClass(/cyan/);
++    await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveClass(/primary/);
++    await expect(page.locator("[data-objects-row-open-events]")).toHaveClass(/primary/);
+     await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
+       "href",
+       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
+@@ -448,22 +456,25 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
+     await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
+     await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(5).locator("input, textarea, select")).toHaveCount(0);
+     await expect(page.locator("[data-objects-asset-status]")).toHaveText("1 Linked");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Bolt");
+-    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Missing Render Asset");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
+-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
+-    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveAttribute(
++    await expect(page.locator("[data-objects-list]")).toContainText("Bolt");
++    await expect(page.locator("[data-objects-row-status]")).not.toContainText("Missing Render Asset");
++    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Hitbox");
++    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Events");
++    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute(
+       "href",
+       "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
+     );
+-    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveAttribute(
++    await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveAttribute(
+       "href",
+       "/toolbox/hitboxes/index.html?objectKey=bolt&sourceTool=objects"
+     );
+-    await expect(page.locator("[data-objects-status-open-events]")).toHaveAttribute(
++    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute(
+       "href",
+       "/toolbox/events/index.html?objectKey=bolt&sourceTool=objects"
+     );
++    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveClass(/cyan/);
++    await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveClass(/primary/);
++    await expect(page.locator("[data-objects-row-open-events]")).toHaveClass(/primary/);
+     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_bolt");
+     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_bolt");
+     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("projects/");
+diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
+index fbb20bfe8..1a5cc8514 100644
+--- a/toolbox/objects/index.html
++++ b/toolbox/objects/index.html
+@@ -76,26 +76,6 @@
+                             <article class="mini-stat"><strong data-objects-count>0</strong>Objects</article>
+                             <article class="mini-stat"><strong data-objects-asset-status>Not Configured</strong>Sprite assets</article>
+                         </div>
+-                        <article class="card">
+-                            <div class="card-body content-stack">
+-                                <div>
+-                                    <div class="kicker">Object Status</div>
+-                                    <h3>Object Status</h3>
+-                                </div>
+-                                <div class="table-wrapper">
+-                                    <table class="data-table" aria-label="Object status summary">
+-                                        <thead>
+-                                            <tr>
+-                                                <th>Object</th>
+-                                                <th>Status</th>
+-                                                <th>Actions</th>
+-                                            </tr>
+-                                        </thead>
+-                                        <tbody data-objects-status-summary></tbody>
+-                                    </table>
+-                                </div>
+-                            </div>
+-                        </article>
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div>
+@@ -112,6 +92,7 @@
+                                                 <th>Render</th>
+                                                 <th>Capabilities</th>
+                                                 <th>Render Asset</th>
++                                                <th>Status</th>
+                                                 <th>Actions</th>
+                                             </tr>
+                                         </thead>
 diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
-index 99a501486..0370864c5 100644
+index 0370864c5..03202f34e 100644
 --- a/toolbox/objects/objects.js
 +++ b/toolbox/objects/objects.js
-@@ -5,6 +5,7 @@ import {
-   validateObjectDefinition,
- } from "../../src/engine/object-model/index.js";
- import { createAssetToolApiRepository } from "../assets/assets-api-client.js";
-+import { createObjectsToolApiRepository } from "./objects-api-client.js";
- 
- const CAPABILITY_LABELS = Object.freeze({
-   collectible: "Can Be Collected",
-@@ -126,8 +127,10 @@ const STARTER_OBJECTS = Object.freeze([
- ]);
- 
- let assetRepository = createAssetToolApiRepository();
-+let objectsRepository = createObjectsToolApiRepository();
- let draftedObjects = [];
- let editingRow = null;
-+let storageIssue = null;
- 
- const elements = {
-   addRow: document.querySelector("[data-objects-add-row]"),
-@@ -669,6 +672,59 @@ function ensureSpriteAssetForObject(input) {
-   return result;
+@@ -148,7 +148,6 @@ const elements = {
+   resetTable: document.querySelector("[data-objects-reset-table]"),
+   capabilityBasics: document.querySelector("[data-objects-capability-basics]"),
+   seedStarter: document.querySelector("[data-objects-seed-starter]"),
+-  statusSummary: document.querySelector("[data-objects-status-summary]"),
+   templateCatalog: document.querySelector("[data-objects-template-catalog]"),
+   templateSelect: document.querySelector("[data-objects-template-select]"),
+   typeBasics: document.querySelector("[data-objects-type-basics]"),
+@@ -204,18 +203,18 @@ function tableCell(text) {
+   return cell;
  }
  
-+function objectStorageFinding(result) {
-+  const finding = Array.isArray(result?.validation?.findings)
-+    ? result.validation.findings[0]
-+    : null;
-+  if (finding) {
-+    return {
-+      action: normalizeText(finding.action || result.message),
-+      label: normalizeText(finding.label) || "Object Storage",
-+    };
-+  }
-+  return {
-+    action: normalizeText(result?.message) || "Start the local server API so Objects can save through the shared data adapter.",
-+    label: "Object Storage",
-+  };
-+}
-+
-+function readPersistedObjects() {
-+  let result = objectsRepository.listObjects();
-+  if (Array.isArray(result)) {
-+    storageIssue = null;
-+    return result.map(cloneObject);
-+  }
-+  if (result?.error) {
-+    objectsRepository = createObjectsToolApiRepository();
-+    result = objectsRepository.listObjects();
-+    if (Array.isArray(result)) {
-+      storageIssue = null;
-+      return result.map(cloneObject);
-+    }
-+  }
-+  storageIssue = objectStorageFinding(result);
-+  renderValidation([storageIssue]);
-+  setText(elements.log, storageIssue.action);
-+  return null;
-+}
-+
-+function persistDraftedObjects(nextObjects) {
-+  const normalizedObjects = nextObjects.map(cloneObject);
-+  let result = objectsRepository.replaceObjects(normalizedObjects);
-+  if (result?.error) {
-+    objectsRepository = createObjectsToolApiRepository();
-+    result = objectsRepository.replaceObjects(normalizedObjects);
-+  }
-+  if (Array.isArray(result?.objects)) {
-+    storageIssue = null;
-+    return result.objects.map(cloneObject);
-+  }
-+  storageIssue = objectStorageFinding(result);
-+  renderValidation([storageIssue]);
-+  setText(elements.log, storageIssue.action);
-+  return null;
-+}
-+
- function editingObjectFromRow(row) {
-   const renderType = row.querySelector("[data-objects-row-render-type]")?.value || "None";
-   const render = renderType === "Sprite"
-@@ -926,7 +982,10 @@ function renderRegistryBasics() {
+-function actionButton(text, dataName, value = "") {
++function actionButton(text, dataName, value = "", className = "btn btn--compact") {
+   const button = document.createElement("button");
+-  button.className = "btn btn--compact";
++  button.className = className;
+   button.type = "button";
+   button.textContent = text;
+   button.dataset[dataName] = value;
+   return button;
  }
  
- function render() {
--  const findings = objectListFindings(draftedObjects);
-+  const findings = [
-+    ...objectListFindings(draftedObjects),
-+    ...(storageIssue ? [storageIssue] : []),
-+  ];
-   renderObjectList(draftedObjects);
-   renderStatusSummary(draftedObjects);
-   renderOutput(draftedObjects, findings);
-@@ -1040,23 +1099,41 @@ function saveRow() {
-     return;
+-function actionLink(text, href, dataName, value = "") {
++function actionLink(text, href, dataName, value = "", className = "btn btn--compact") {
+   const link = document.createElement("a");
+-  link.className = "btn btn--compact";
++  link.className = className;
+   link.href = href;
+   link.textContent = text;
+   if (dataName) {
+@@ -445,7 +444,7 @@ function objectStatusLabel(objects, findings) {
+   if (objects.length === 0) {
+     return "Not Configured";
    }
+-  if (missingRenderAssetCount(objects) > 0 || findings.length > 0) {
++  if (objects.some((object) => objectGapLabels(object).length > 0) || missingRenderAssetCount(objects) > 0 || findings.length > 0) {
+     return "Pending Setup";
+   }
+   return "Complete";
+@@ -470,18 +469,6 @@ function renderValidation(findings) {
+   elements.validationOverlay.hidden = false;
+ }
  
-+  let nextObjects = [];
-   if (editingRow.mode === "edit") {
--    draftedObjects = draftedObjects.map((savedObject) => (
-+    nextObjects = draftedObjects.map((savedObject) => (
-       objectId(savedObject) === editingRow.originalId ? object : savedObject
-     ));
--    setText(elements.log, assetLink.message ? `Saved ${object.name}. ${assetLink.message}` : `Saved ${object.name}.`);
-   } else {
--    draftedObjects = [...draftedObjects, object];
--    setText(elements.log, assetLink.message ? `Added ${object.name}. ${assetLink.message}` : `Added ${object.name}.`);
-+    nextObjects = [...draftedObjects, object];
-   }
+-function statusRow({ actions, label, status }) {
+-  const row = document.createElement("tr");
+-  const actionCell = document.createElement("td");
+-  if (Array.isArray(actions) && actions.length) {
+-    actionCell.append(...actions);
+-  } else {
+-    actionCell.textContent = "Add object details in the table.";
+-  }
+-  row.append(tableCell(label), tableCell(status), actionCell);
+-  return row;
+-}
+-
+ function capabilityLabel(traitId) {
+   const trait = getObjectModelTrait(traitId);
+   return CAPABILITY_LABELS[traitId] || trait?.label || traitId;
+@@ -537,18 +524,6 @@ function eventsHref(object) {
+   return `/toolbox/events/index.html?objectKey=${objectKey}&sourceTool=objects`;
+ }
+ 
+-function statusObjectRows(objects) {
+-  const rows = objects.map((object) => ({ object, pending: false }));
+-  const row = editingRowElement();
+-  if (row) {
+-    const object = editingObjectFromRow(row);
+-    if (object.name || object.render?.type === "Sprite") {
+-      rows.push({ object, pending: true });
+-    }
+-  }
+-  return rows;
+-}
+-
+ function objectGapLabels(object) {
+   const gaps = [];
+   if (object.render?.type === "Sprite" && !object.render.assetKey) {
+@@ -560,52 +535,48 @@ function objectGapLabels(object) {
+   return gaps;
+ }
+ 
+-function objectActionLinks(object) {
++function statusBadge(text, complete) {
++  const badge = document.createElement("span");
++  badge.className = complete ? "swatch-label swatch-green" : "swatch-label swatch-gold";
++  badge.dataset.objectsRowStatusBadge = complete ? "ready" : "missing";
++  badge.textContent = text;
++  return badge;
++}
 +
-+  const savedObjects = persistDraftedObjects(nextObjects);
-+  if (!savedObjects) {
-+    return;
++function statusCellForObject(object) {
++  const cell = document.createElement("td");
++  const gaps = objectGapLabels(object);
++  cell.dataset.objectsRowStatus = gaps.length ? "missing" : "ready";
++  cell.append(statusBadge(gaps.length ? gaps.join(", ") : "Ready", gaps.length === 0));
++  return cell;
++}
++
++function editingStatusCell() {
++  const cell = document.createElement("td");
++  cell.dataset.objectsRowStatus = "pending";
++  cell.append(statusBadge("Pending Setup", false));
++  return cell;
++}
++
++function rowConfigurationActions(object) {
+   const id = objectId(object);
+   if (!id) {
+     return [];
+   }
+   const links = [];
+   if (object.render?.type === "Sprite" && object.render.assetKey) {
+-    links.push(actionLink("Edit Sprite", spriteEditorHref(object), "objectsStatusEditSprite", id));
+-  }
+-  links.push(
+-    actionLink("Open Hitboxes", hitboxesHref(object), "objectsStatusOpenHitboxes", id),
+-    actionLink("Open Events", eventsHref(object), "objectsStatusOpenEvents", id)
+-  );
++    const editSprite = actionLink("Edit Sprite", spriteEditorHref(object), "objectsRowEditSprite", id, "btn btn--compact cyan");
++    editSprite.title = "Sprite asset ready.";
++    links.push(editSprite);
 +  }
-+  draftedObjects = savedObjects;
++  const openHitboxes = actionLink("Open Hitboxes", hitboxesHref(object), "objectsRowOpenHitboxes", id, "btn btn--compact primary");
++  const openEvents = actionLink("Open Events", eventsHref(object), "objectsRowOpenEvents", id, "btn btn--compact primary");
++  openHitboxes.title = "Missing Hitbox.";
++  openEvents.title = "Missing Events.";
++  links.push(openHitboxes, openEvents);
+   return links;
+ }
+ 
+-function renderStatusSummary(objects) {
+-  if (!elements.statusSummary) {
+-    return;
+-  }
+-
+-  const rows = statusObjectRows(objects);
+-  if (!rows.length) {
+-    elements.statusSummary.replaceChildren(statusRow({
+-      actions: [],
+-      label: "Objects",
+-      status: "Not Configured",
+-    }));
+-    setText(elements.assetStatus, "Not Configured");
+-    return;
+-  }
+-
+-  elements.statusSummary.replaceChildren(...rows.map(({ object, pending }) => {
+-    const gaps = objectGapLabels(object);
+-    const label = object.name || (pending ? "Draft Object" : "Object");
+-    return statusRow({
+-      actions: objectActionLinks(object),
+-      label,
+-      status: gaps.length ? gaps.join(", ") : "Ready",
+-    });
+-  }));
+-
+-  const linkedSprites = spriteObjectCount(objects) - missingRenderAssetCount(objects);
+-  setText(elements.assetStatus, linkedSprites > 0 ? `${linkedSprites} Linked` : "Not Configured");
+-}
+-
+ function assetLinkMessage(result, fallback) {
+   const legacyLinkTerm = new RegExp(["hand", "off"].join(""), "gi");
+   return normalizeText(result?.message || fallback).replace(legacyLinkTerm, "link");
+@@ -847,6 +818,7 @@ function renderEditingRow(values) {
+     controlCell(renderType),
+     capabilities,
+     renderAsset,
++    editingStatusCell(),
+     actions
+   );
+   return row;
+@@ -858,6 +830,7 @@ function renderSavedRow(object) {
+   const actions = document.createElement("td");
+   actions.append(
+     actionButton("Edit", "objectsEditRow", id),
++    ...rowConfigurationActions(object),
+     actionButton("Trash", "objectsTrashRow", id)
+   );
+   row.dataset.objectsRow = id;
+@@ -868,6 +841,7 @@ function renderSavedRow(object) {
+     tableCell(object.render?.type || "None"),
+     tableCell(capabilityText(object.traits)),
+     tableCell(renderAssetText(object)),
++    statusCellForObject(object),
+     actions
+   );
+   return row;
+@@ -882,7 +856,7 @@ function renderObjectList(objects) {
+   if (objects.length === 0 && !editingRow) {
+     const row = document.createElement("tr");
+     const empty = document.createElement("td");
+-    empty.colSpan = 7;
++    empty.colSpan = 8;
+     empty.textContent = "No objects drafted yet.";
+     row.append(empty);
+     elements.list.append(row);
+@@ -908,11 +882,18 @@ function renderOutput(objects, findings) {
+   const linkedAsset = linkedSprite ? linkedSpriteAsset(linkedSprite.render.assetKey) : null;
+   const linkedAssetText = linkedSprite ? assetDisplayText(linkedAsset, linkedSprite.render.assetKey) : "None";
+   const linkedPreviewPath = linkedSpritePreviewPath(linkedSprite, linkedAsset);
++  const linkedSpriteCount = spriteObjectCount(objects) - missingRenderAssetCount(objects);
+ 
+   setText(elements.count, String(objects.length));
+   setText(elements.readiness, readiness);
+   setText(elements.outputReadiness, readiness);
+   setText(elements.outputCount, String(objects.length));
 +  setText(
-+    elements.log,
-+    editingRow.mode === "edit"
-+      ? assetLink.message ? `Saved ${object.name}. ${assetLink.message}` : `Saved ${object.name}.`
-+      : assetLink.message ? `Added ${object.name}. ${assetLink.message}` : `Added ${object.name}.`
++    elements.assetStatus,
++    linkedSpriteCount > 0
++      ? `${linkedSpriteCount} Linked`
++      : "Not Configured"
 +  );
-   editingRow = null;
-   render();
+   setText(
+     elements.outputSetup,
+     objects.length === 0
+@@ -987,7 +968,6 @@ function render() {
+     ...(storageIssue ? [storageIssue] : []),
+   ];
+   renderObjectList(draftedObjects);
+-  renderStatusSummary(draftedObjects);
+   renderOutput(draftedObjects, findings);
+   renderValidation(findings);
+   if (elements.addRow) {
+@@ -1188,7 +1168,6 @@ function refreshLinkedRenderAssetDisplay() {
+     updateRenderAssetPreview(row);
+   }
+   const findings = objectListFindings(draftedObjects);
+-  renderStatusSummary(draftedObjects);
+   renderOutput(draftedObjects, findings);
  }
  
- function trashRow(objectKey) {
-   const beforeCount = draftedObjects.length;
--  draftedObjects = draftedObjects.filter((object) => objectId(object) !== objectKey);
--  const removed = beforeCount !== draftedObjects.length;
-+  const nextObjects = draftedObjects.filter((object) => objectId(object) !== objectKey);
-+  const removed = beforeCount !== nextObjects.length;
-+  if (removed) {
-+    const savedObjects = persistDraftedObjects(nextObjects);
-+    if (!savedObjects) {
-+      return;
-+    }
-+    draftedObjects = savedObjects;
-+  }
-   setText(elements.log, removed ? "Trashed object row." : "Trash skipped: object row was already absent.");
-   render();
- }
-@@ -1066,13 +1143,20 @@ function seedStarterObjects() {
-     setText(elements.log, "Seed blocked: save or cancel the active row first.");
+@@ -1204,7 +1183,6 @@ elements.templateSelect?.addEventListener("change", () => {
+   const row = editingRowElement();
+   if (row) {
+     applyTemplateToRow(row, template);
+-    renderStatusSummary(draftedObjects);
+     setText(elements.log, `Applied ${template.type} template to the active row.`);
      return;
    }
--  draftedObjects = STARTER_OBJECTS.map(cloneObject);
-+  const savedObjects = persistDraftedObjects(STARTER_OBJECTS.map(cloneObject));
-+  if (!savedObjects) {
-+    return;
-+  }
-+  draftedObjects = savedObjects;
-   setText(elements.log, "Seeded starter objects: Hero, Projectile, and Wall.");
-   render();
- }
- 
- function validateObjects() {
--  const findings = objectListFindings(draftedObjects);
-+  const findings = [
-+    ...objectListFindings(draftedObjects),
-+    ...(storageIssue ? [storageIssue] : []),
-+  ];
-   renderValidation(findings);
-   setText(
-     elements.log,
-@@ -1084,7 +1168,11 @@ function validateObjects() {
- }
- 
- function resetTable() {
--  draftedObjects = [];
-+  const savedObjects = persistDraftedObjects([]);
-+  if (!savedObjects) {
-+    return;
-+  }
-+  draftedObjects = savedObjects;
-   editingRow = null;
-   setText(elements.log, "Reset the Objects table.");
-   render();
-@@ -1177,4 +1265,5 @@ document.addEventListener("visibilitychange", () => {
- 
- renderTemplateCatalog();
- renderRegistryBasics();
-+draftedObjects = readPersistedObjects() || [];
- render();
-diff --git a/docs_build/dev/reports/objects-db-persistence-fix-report.md b/docs_build/dev/reports/objects-db-persistence-fix-report.md
+@@ -1238,7 +1216,6 @@ elements.list?.addEventListener("change", (event) => {
+   }
+   if (control.matches("[data-objects-row-render-type]")) {
+     updateRenderAssetPreview(row);
+-    renderStatusSummary(draftedObjects);
+     return;
+   }
+   const template = templateForType(control.value);
+@@ -1246,13 +1223,6 @@ elements.list?.addEventListener("change", (event) => {
+   if (elements.templateSelect && template) {
+     elements.templateSelect.value = template.type;
+   }
+-  renderStatusSummary(draftedObjects);
+-});
+-elements.list?.addEventListener("input", (event) => {
+-  const control = event.target instanceof HTMLElement ? event.target.closest("[data-objects-row-name]") : null;
+-  if (control) {
+-    renderStatusSummary(draftedObjects);
+-  }
+ });
+ window.addEventListener("focus", refreshLinkedRenderAssetDisplay);
+ window.addEventListener("pageshow", refreshLinkedRenderAssetDisplay);
+diff --git a/docs_build/dev/reports/objects-table-status-actions-report.md b/docs_build/dev/reports/objects-table-status-actions-report.md
 new file mode 100644
-index 000000000..6e349f941
+index 000000000..6120881b1
 --- /dev/null
-+++ b/docs_build/dev/reports/objects-db-persistence-fix-report.md
-@@ -0,0 +1,85 @@
-+# PR_26161_011 Objects DB Persistence Fix Report
++++ b/docs_build/dev/reports/objects-table-status-actions-report.md
+@@ -0,0 +1,87 @@
++# PR_26161_012 Objects Table Status Actions Report
 +
 +## Branch Guard
 +- Current branch: `main`
@@ -474,45 +561,42 @@ index 000000000..6e349f941
 +
 +## Source Of Truth
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
-+- PASS: Used the user-provided `PR_26161_011-objects-db-persistence-fix` request as the active BUILD source.
-+- PASS: Continued from `PR_26161_010`.
-+- PASS: Kept the PR purpose singular: persist Objects table rows through the shared DB/mock adapter.
++- PASS: Used the user-provided `PR_26161_012-objects-table-status-actions` request as the active BUILD source.
++- PASS: Continued from `PR_26161_011`.
++- PASS: Kept the PR purpose singular: consolidate Objects status/actions into table rows.
 +
 +## Requirement Checklist
-+- PASS: Added/edited/deleted object rows persist through the shared Objects repository exposed by the shared server API/mock adapter.
-+- PASS: Object definitions are no longer stored only in page-local memory; the page uses `draftedObjects` as a render cache loaded from and saved to the shared adapter.
-+- PASS: Page load reads existing object records from the shared adapter.
-+- PASS: Add/Edit/Delete/Reset writes the updated object record list to the shared adapter.
-+- PASS: Sprite render asset links persist with each object record through `renderAssetKey` and `renderPreviewPath`.
-+- PASS: Returning to or reloading the Objects page shows previously saved rows.
-+- PASS: Asset remains linked render-record display data, not an invalid free-text user field.
-+- PASS: `State` remains visible in the Objects table.
++- PASS: Consolidated Object Status into the Objects Table with a row-level `Status` column.
++- PASS: Removed the separate Object Status panel because it duplicated per-row status/actions.
++- PASS: Added row-level actions between `Edit` and `Trash`: `Edit Sprite`, `Open Hitboxes`, and `Open Events`.
++- PASS: `Edit Sprite` appears only for saved Sprite rows with a linked render asset.
++- PASS: `Open Hitboxes` and `Open Events` appear for saved object rows with object keys.
++- PASS: Missing Hitbox/Event actions use existing Theme V2 `btn btn--compact primary` classes to highlight attention-needed setup.
++- PASS: Available linked Sprite actions use existing Theme V2 `btn btn--compact cyan` classes to highlight ready/available setup.
++- PASS: Row status uses existing Theme V2 `swatch-label swatch-gold` for missing setup and `swatch-label swatch-green` for ready rows.
++- PASS: Used creator-facing labels only; no handoff/session/MVP/internal wording was introduced in Objects UI files.
++- PASS: Preserved PR_26161_011 DB/mock-adapter persistence.
++- PASS: Preserved Asset as linked render record display, not invalid free text.
++- PASS: Preserved State as visible in the Objects table.
 +- PASS: Preserved Object Type Catalog compact display with `Template` and `Capability` only.
-+- PASS: Preserved table-first input, `Add Object` below the table, Add disabled while adding, Cancel, Edit, Trash, Reset Table, Object Status, and Sprite asset linking.
++- PASS: Preserved table-first input, `Add Object` below the table, Add disabled while adding, Cancel, Edit, Trash, Reset Table, and Sprite asset linking.
 +- PASS: Did not add sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
 +- PASS: Kept Theme V2 only and preserved HTML restrictions.
-+- PASS: No runtime engine behavior changed.
 +
 +## Implementation Evidence
-+- `src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js`: added an Objects repository with `listObjects`, `replaceObjects`, `resetObjects`, `getTables`, and `getSnapshot`.
-+- `src/dev-runtime/persistence/mock-db-store.js`: added the Objects table group and `object_definition_records` schema.
-+- `src/dev-runtime/server/mock-api-router.mjs`: exposed the Objects repository and table snapshot through the existing toolbox server API.
-+- `toolbox/objects/objects-api-client.js`: added the Objects API client for the browser tool.
-+- `toolbox/objects/objects.js`: loads Objects rows from the repository on page load and persists rows after Add/Edit/Delete/Reset while preserving linked sprite asset display.
-+- `tests/playwright/tools/ObjectsTool.spec.mjs`: added reload persistence checks for add, edit, delete, and sprite asset links.
++- `toolbox/objects/index.html`: removed the duplicate Object Status card and added `Status` to the Objects table.
++- `toolbox/objects/objects.js`: renders row status badges and inserts configuration action links between `Edit` and `Trash`.
++- `toolbox/objects/objects.js`: keeps Sprite asset display linked to shared asset records and preserves existing persistence calls.
++- `tests/playwright/tools/ObjectsTool.spec.mjs`: verifies removed status panel, row action order, action state classes, persistence after reload, and Sprite linking after reload.
 +
 +## Impacted Lane
-+- Impacted lane: Objects tool UI/runtime plus shared mock DB adapter contract for the Objects table.
++- Impacted lane: Objects tool UI/runtime.
 +- Playwright impacted: Yes.
-+- Changed runtime JavaScript: `toolbox/objects/objects.js`, `toolbox/objects/objects-api-client.js`, `src/dev-runtime/server/mock-api-router.mjs`, `src/dev-runtime/persistence/mock-db-store.js`, `src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js`.
++- Changed runtime JavaScript: `toolbox/objects/objects.js`.
 +
 +## Testing Performed
-+- PASS: `node --check src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js`
-+- PASS: `node --check toolbox/objects/objects-api-client.js`
 +- PASS: `node --check toolbox/objects/objects.js`
 +- PASS: `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
-+- PASS: `node --check src/dev-runtime/server/mock-api-router.mjs`
-+- PASS: `node --check src/dev-runtime/persistence/mock-db-store.js`
 +- PASS: HTML restriction check for `toolbox/objects/index.html` returned no inline script/style/event handler matches.
 +- PASS: Objects forbidden wording scan returned no matches in `toolbox/objects/index.html` or `toolbox/objects/objects.js`.
 +- PASS: `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line` (6 passed).
@@ -520,290 +604,37 @@ index 000000000..6e349f941
 +- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` was produced by targeted Objects Playwright.
 +
 +## Playwright Behavior Coverage
-+- PASS: Add row persists to `object_definition_records` and remains visible after page reload.
-+- PASS: Edit row persists to `object_definition_records` and remains visible after page reload.
-+- PASS: Delete row removes the shared DB record and remains removed after page reload.
-+- PASS: Sprite render creates/resolves a linked shared asset and persists its key on the object record.
-+- PASS: Reloading Objects restores the linked sprite asset display and `Edit Sprite` action.
-+- PASS: Existing Objects UI checks still cover Type/Capabilities wording, compact catalog, table-first editing, Object Status actions, and Sprite linking.
++- PASS: Separate Object Status panel and summary table are absent.
++- PASS: Objects Table includes the consolidated `Status` column.
++- PASS: Row status shows `Missing Hitbox, Missing Events` for saved rows that need setup.
++- PASS: `Open Hitboxes` and `Open Events` render between `Edit` and `Trash` and use the attention-needed button class.
++- PASS: Saved Sprite rows render `Edit Sprite` between `Edit` and `Open Hitboxes` and use the ready/available button class.
++- PASS: Add/Edit/Delete persistence still survives page reload.
++- PASS: Sprite asset link persistence still survives page reload.
++- PASS: Asset cells remain display-only linked render record output.
++
++## Coverage Notes
++- Targeted browser V8 coverage includes `toolbox/objects/objects.js` at 94%.
++- The generated coverage report still lists advisory WARN entries for dev-runtime files changed in the current HEAD baseline from PR_26161_011. Those files were not modified in this PR and are not browser-collected runtime files for PR_26161_012.
 +
 +## Skipped Lanes
-+- `npm run test:workspace-v2`: SKIP. The script maps to the legacy workspace-contract lane and does not cover Objects tool UI/runtime behavior.
 +- Full samples validation: SKIP. Safe because no sample JSON, sample launch path, or sample runtime behavior changed.
 +- Engine runtime validation beyond changed-file syntax/import checks: SKIP. Safe because no engine runtime behavior changed.
-+- Production DB/auth validation: SKIP. Safe because the change is limited to the shared dev mock adapter and Objects tool.
-+- Broad Toolbox/Admin validation: SKIP. Safe because navigation, registration, auth, admin surfaces, and sample paths were not changed.
++- Production DB/auth validation: SKIP. Safe because no production DB or auth behavior changed.
++- Broad Toolbox/Admin validation: SKIP. Safe because navigation, registration, metadata, admin surfaces, and sample paths were not changed.
 +
 +## Manual Validation Steps
 +- Open `/toolbox/objects/index.html`.
-+- Add a non-Sprite object, reload the page, and confirm the row remains.
-+- Edit the saved row, reload the page, and confirm the edited name/state remain.
-+- Delete the row, reload the page, and confirm the table is empty.
-+- Add a Sprite object, save it, reload the page, and confirm the Render Asset display and `Edit Sprite` link still point to the linked sprite asset.
-+- Click `Reset Table`, reload the page, and confirm the shared object records remain cleared.
-+- Confirm Object Type Catalog still shows only `Template` and `Capability`, and the Objects table still shows `State`.
++- Confirm there is no separate Object Status panel.
++- Add a non-Sprite object and confirm the saved row shows `Status` with Missing Hitbox/Event setup.
++- Confirm row actions read `Edit`, `Open Hitboxes`, `Open Events`, `Trash`.
++- Add a Sprite object and confirm the saved row actions read `Edit`, `Edit Sprite`, `Open Hitboxes`, `Open Events`, `Trash`.
++- Confirm `Edit Sprite` opens with the linked sprite asset key.
++- Reload after add/edit/delete/reset and confirm the table state persists correctly.
 +
 +## Required Artifacts
-+- PASS: `docs_build/dev/reports/objects-db-persistence-fix-report.md`
++- PASS: `docs_build/dev/reports/objects-table-status-actions-report.md`
 +- PASS: `docs_build/dev/reports/codex_review.diff`
 +- PASS: `docs_build/dev/reports/codex_changed_files.txt`
 +- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- PASS: `tmp/PR_26161_011-objects-db-persistence-fix_delta.zip`
-diff --git a/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
-new file mode 100644
-index 000000000..745dfc828
---- /dev/null
-+++ b/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
-@@ -0,0 +1,233 @@
-+import {
-+  MOCK_DB_KEYS,
-+  normalizeMockDbTables,
-+  saveMockDbTables,
-+} from "../mock-db-store.js";
-+
-+export const OBJECTS_TOOL_TABLES = Object.freeze([
-+  "object_definition_records",
-+]);
-+
-+const OBJECTS_DB_OWNER = "objects";
-+const DEFAULT_PROJECT_ID = "demo-project";
-+const DEFAULT_OBJECTS_USER_KEY = MOCK_DB_KEYS.users.user1;
-+
-+function cloneRows(rows = []) {
-+  return rows.map((row) => ({ ...row }));
-+}
-+
-+function cloneTables(tables) {
-+  return Object.fromEntries(
-+    OBJECTS_TOOL_TABLES.map((table) => [table, cloneRows(tables[table] || [])]),
-+  );
-+}
-+
-+function createEmptyTables() {
-+  return {
-+    object_definition_records: [],
-+  };
-+}
-+
-+function normalizeText(value) {
-+  return String(value || "").trim();
-+}
-+
-+function objectKeyFromText(value) {
-+  return normalizeText(value)
-+    .toLowerCase()
-+    .replace(/[^a-z0-9]+/g, "-")
-+    .replace(/^-+|-+$/g, "");
-+}
-+
-+function parseCapabilityIds(value) {
-+  if (Array.isArray(value)) {
-+    return value.map(normalizeText).filter(Boolean);
-+  }
-+  const text = normalizeText(value);
-+  if (!text) {
-+    return [];
-+  }
-+  try {
-+    const parsed = JSON.parse(text);
-+    if (Array.isArray(parsed)) {
-+      return parsed.map(normalizeText).filter(Boolean);
-+    }
-+  } catch {}
-+  return text.split(",").map(normalizeText).filter(Boolean);
-+}
-+
-+function normalizeRender(source = {}) {
-+  const render = source.render && typeof source.render === "object" ? source.render : {};
-+  const renderType = normalizeText(render.type) === "Sprite" ? "Sprite" : "None";
-+  if (renderType !== "Sprite") {
-+    return {
-+      assetKey: "",
-+      previewPath: "",
-+      type: "None",
-+    };
-+  }
-+  return {
-+    assetKey: normalizeText(render.assetKey),
-+    previewPath: normalizeText(render.previewPath),
-+    type: "Sprite",
-+  };
-+}
-+
-+function sortedObjectRows(tables) {
-+  return [...(tables.object_definition_records || [])].sort((left, right) => (
-+    (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
-+      || normalizeText(left.name).localeCompare(normalizeText(right.name))
-+  ));
-+}
-+
-+function objectFromRecord(record = {}) {
-+  const render = normalizeText(record.renderType) === "Sprite"
-+    ? {
-+        assetKey: normalizeText(record.renderAssetKey),
-+        previewPath: normalizeText(record.renderPreviewPath),
-+        type: "Sprite",
-+      }
-+    : { type: "None" };
-+
-+  return {
-+    behavior: normalizeText(record.behavior),
-+    id: objectKeyFromText(record.id || record.name),
-+    interaction: normalizeText(record.interaction),
-+    name: normalizeText(record.name),
-+    render,
-+    role: normalizeText(record.type),
-+    state: normalizeText(record.state) || "Active",
-+    traits: parseCapabilityIds(record.capabilities),
-+    type: normalizeText(record.modelType),
-+  };
-+}
-+
-+function tableCounts(tables) {
-+  return OBJECTS_TOOL_TABLES.map((table) => ({
-+    rows: tables[table].length,
-+    table,
-+  }));
-+}
-+
-+function initialTables(options = {}) {
-+  const explicitRows = options.memoryDbTables?.object_definition_records;
-+  if (Array.isArray(explicitRows)) {
-+    return normalizeMockDbTables(OBJECTS_DB_OWNER, {
-+      object_definition_records: explicitRows,
-+    }, options);
-+  }
-+  return normalizeMockDbTables(OBJECTS_DB_OWNER, createEmptyTables(), options);
-+}
-+
-+export function createObjectsToolMockRepository(options = {}) {
-+  let tables = initialTables(options);
-+
-+  function activeProjectId() {
-+    return normalizeText(options.projectWorkspaceRepository?.getActiveProject?.()?.id) || DEFAULT_PROJECT_ID;
-+  }
-+
-+  function activeUserKey() {
-+    return normalizeText(options.sessionUserKey) || DEFAULT_OBJECTS_USER_KEY;
-+  }
-+
-+  function persistTables() {
-+    tables = normalizeMockDbTables(OBJECTS_DB_OWNER, cloneTables(tables), options);
-+    if (options.memoryDbTables && typeof options.memoryDbTables === "object") {
-+      OBJECTS_TOOL_TABLES.forEach((tableName) => {
-+        options.memoryDbTables[tableName] = cloneRows(tables[tableName]);
-+      });
-+    }
-+    saveMockDbTables(OBJECTS_DB_OWNER, tables, options);
-+  }
-+
-+  function listObjects(projectId = "") {
-+    const targetProjectId = normalizeText(projectId) || activeProjectId();
-+    return sortedObjectRows(tables)
-+      .filter((record) => normalizeText(record.projectId) === targetProjectId)
-+      .map(objectFromRecord);
-+  }
-+
-+  function replaceObjects(objects = [], projectId = "") {
-+    const targetProjectId = normalizeText(projectId) || activeProjectId();
-+    const existingRows = new Map(
-+      (tables.object_definition_records || [])
-+        .filter((record) => normalizeText(record.projectId) === targetProjectId)
-+        .map((record) => [objectKeyFromText(record.id || record.name), record]),
-+    );
-+    const timestamp = new Date().toISOString();
-+    const userKey = activeUserKey();
-+    const nextRows = (Array.isArray(objects) ? objects : []).map((object, index) => {
-+      const id = objectKeyFromText(object.id || object.name);
-+      const previous = existingRows.get(id);
-+      const render = normalizeRender(object);
-+      return {
-+        behavior: normalizeText(object.behavior),
-+        capabilities: parseCapabilityIds(object.traits || object.capabilities),
-+        createdAt: previous?.createdAt || timestamp,
-+        createdBy: previous?.createdBy || userKey,
-+        id,
-+        interaction: normalizeText(object.interaction),
-+        key: previous?.key,
-+        modelType: normalizeText(object.type),
-+        name: normalizeText(object.name),
-+        projectId: targetProjectId,
-+        recordOrder: index + 1,
-+        renderAssetKey: render.assetKey,
-+        renderPreviewPath: render.previewPath,
-+        renderType: render.type,
-+        state: normalizeText(object.state) || "Active",
-+        type: normalizeText(object.role || object.type),
-+        updatedAt: timestamp,
-+        updatedBy: userKey,
-+      };
-+    });
-+
-+    tables.object_definition_records = [
-+      ...(tables.object_definition_records || []).filter(
-+        (record) => normalizeText(record.projectId) !== targetProjectId,
-+      ),
-+      ...nextRows,
-+    ];
-+    persistTables();
-+    return {
-+      objects: listObjects(targetProjectId),
-+      saved: true,
-+      snapshot: getSnapshot(),
-+    };
-+  }
-+
-+  function resetObjects(projectId = "") {
-+    const targetProjectId = normalizeText(projectId) || activeProjectId();
-+    tables.object_definition_records = (tables.object_definition_records || []).filter(
-+      (record) => normalizeText(record.projectId) !== targetProjectId,
-+    );
-+    persistTables();
-+    return {
-+      objects: [],
-+      reset: true,
-+      snapshot: getSnapshot(),
-+    };
-+  }
-+
-+  function getTables() {
-+    return normalizeMockDbTables(OBJECTS_DB_OWNER, cloneTables(tables), options);
-+  }
-+
-+  function getSnapshot() {
-+    const normalizedTables = getTables();
-+    return {
-+      objects: listObjects(),
-+      tableCounts: tableCounts(normalizedTables),
-+      tables: normalizedTables,
-+    };
-+  }
-+
-+  return {
-+    OBJECTS_TOOL_TABLES,
-+    getSnapshot,
-+    getTables,
-+    listObjects,
-+    replaceObjects,
-+    resetObjects,
-+  };
-+}
-diff --git a/toolbox/objects/objects-api-client.js b/toolbox/objects/objects-api-client.js
-new file mode 100644
-index 000000000..cf6c7db37
---- /dev/null
-+++ b/toolbox/objects/objects-api-client.js
-@@ -0,0 +1,13 @@
-+import {
-+  createServerRepositoryClient,
-+  readServerToolConstants,
-+  requireServerConstant,
-+} from "../../src/engine/api/server-api-client.js";
-+
-+const constants = readServerToolConstants("objects");
-+
-+export const OBJECTS_TOOL_TABLES = Object.freeze(requireServerConstant(constants, "OBJECTS_TOOL_TABLES", "objects"));
-+
-+export function createObjectsToolApiRepository(options = {}) {
-+  return createServerRepositoryClient("objects", options);
-+}
++- PASS: `tmp/PR_26161_012-objects-table-status-actions_delta.zip`

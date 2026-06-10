@@ -1,24 +1,18 @@
 # git status --short
 M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/persistence/mock-db-store.js
- M src/dev-runtime/server/mock-api-router.mjs
  M tests/playwright/tools/ObjectsTool.spec.mjs
+ M toolbox/objects/index.html
  M toolbox/objects/objects.js
-?? docs_build/dev/reports/objects-db-persistence-fix-report.md
-?? src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
-?? toolbox/objects/objects-api-client.js
+?? docs_build/dev/reports/objects-table-status-actions-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/objects-db-persistence-fix-report.md
-src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
-toolbox/objects/objects-api-client.js
+docs_build/dev/reports/objects-table-status-actions-report.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  10 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  19 +++-
- src/dev-runtime/persistence/mock-db-store.js       |   5 +
- src/dev-runtime/server/mock-api-router.mjs         |  20 +++-
- tests/playwright/tools/ObjectsTool.spec.mjs        |  95 ++++++++++++++++++
- toolbox/objects/objects.js                         | 109 +++++++++++++++++++--
- 6 files changed, 241 insertions(+), 17 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  |   2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   4 +-
+ tests/playwright/tools/ObjectsTool.spec.mjs        | 123 +++++++++++---------
+ toolbox/objects/index.html                         |  21 +---
+ toolbox/objects/objects.js                         | 128 ++++++++-------------
+ 5 files changed, 120 insertions(+), 158 deletions(-)

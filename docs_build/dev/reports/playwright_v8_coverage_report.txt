@@ -20,7 +20,7 @@ Changed runtime JS files covered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(94%) toolbox/objects/objects.js - executed lines 1150/1150; executed functions 103/109
+(94%) toolbox/objects/objects.js - executed lines 1123/1123; executed functions 101/107
 (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
 
 Files with executed line/function counts where available:
@@ -35,7 +35,7 @@ Files with executed line/function counts where available:
 (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
 (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
 (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
-(94%) toolbox/objects/objects.js - executed lines 1150/1150; executed functions 103/109
+(94%) toolbox/objects/objects.js - executed lines 1123/1123; executed functions 101/107
 (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
 (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
 (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
