@@ -142,6 +142,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
       "State",
       "Actions",
     ]);
+    await expect(page.locator("[data-input-add-mapping]")).toHaveCount(1);
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]")).toBeVisible();
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-reset-mappings]")).toBeVisible();
     await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
     await expect(page.locator("[data-input-default-actions] li")).toHaveText(DEFAULT_ACTION_LABELS);
     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
@@ -173,6 +176,71 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     const registryEntry = await controlsRegistryEntry(page);
     expect(registryEntry.path).toBe("toolbox/input-mapping-v2/index.html");
     expect(registryEntry.status).toBe("beta");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Controls Input Mapping supports table-first inline add, cancel, save, and edit", async ({ page }) => {
+  const failures = await openInputMappingPage(page);
+
+  try {
+    const addButton = page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]");
+    await expect(addButton).toBeEnabled();
+
+    await addButton.click();
+    await expect(addButton).toBeDisabled();
+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
+    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(6);
+    await expect(page.locator("[data-input-editing-row] td").last().locator("button")).toHaveText(["Save", "Cancel"]);
+    await expect(page.locator("[data-input-editing-row] td").last().locator("button").last()).toHaveText("Cancel");
+
+    await page.locator("[data-input-editing-row] [data-input-cancel-mapping]").click();
+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
+    await expect(addButton).toBeEnabled();
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
+
+    await addButton.click();
+    await page.locator("[data-input-row-action]").selectOption("fire");
+    await page.locator("[data-input-row-device]").selectOption("keyboard");
+    await page.locator("[data-input-row-binding]").fill("KeyF");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(addButton).toBeEnabled();
+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Fire");
+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyF");
+    let records = await inputMappingRecords(page);
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      action: "fire",
+      binding: "KeyF",
+      source: "keyboard",
+      state: "Active",
+    });
+
+    await page.locator("[data-input-edit-mapping]").click();
+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(0);
+    await expect(addButton).toBeDisabled();
+    await page.locator("[data-input-row-binding]").fill("KeyG");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(addButton).toBeEnabled();
+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
+    records = await inputMappingRecords(page);
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      action: "fire",
+      binding: "KeyG",
+      source: "keyboard",
+      state: "Active",
+    });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
 
     await expectNoPageFailures(failures);
   } finally {

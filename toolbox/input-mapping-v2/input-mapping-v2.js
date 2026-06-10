@@ -458,7 +458,10 @@ function renderMappings() {
   if (editingRow) {
     rows.push(renderEditingRow(editingRow.values));
   }
-  rows.push(...mappings.map(renderMappingRow));
+  const visibleMappings = editingRow?.id
+    ? mappings.filter((mapping) => mapping.id !== editingRow.id)
+    : mappings;
+  rows.push(...visibleMappings.map(renderMappingRow));
   if (!rows.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
