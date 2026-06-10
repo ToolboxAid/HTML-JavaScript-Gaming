@@ -76,6 +76,15 @@ const TOOLBOX_PLANNING_FIELDS = Object.freeze([
   "requiredForTestable",
   "requires",
 ]);
+const DB_VIEWER_IDENTITY_TABLES = Object.freeze(["users", "user_roles", "roles"]);
+const DB_VIEWER_TOOLBOX_VOTE_TABLES = Object.freeze(["toolbox_votes", "toolbox_vote_order"]);
+const DB_VIEWER_STANDALONE_LABELS = Object.freeze({
+  toolbox_tool_metadata: "Tool Metadata",
+  toolbox_tool_planning: "Tool Planning",
+  toolbox_votes: "Toolbox Votes",
+  tool_state_samples: "Tool State Samples",
+  user_roles: "User Roles",
+});
 const TOOLBOX_DEFAULT_RELEASE_CHANNELS = Object.freeze(["wireframe", "beta", "complete"]);
 const BUILD_PATH_DEFAULT_RELEASE_CHANNELS = Object.freeze(["complete"]);
 const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
@@ -197,6 +206,62 @@ function toolboxContractForTools(tools) {
     roleFocusTools: clone(TOOLBOX_ROLE_FOCUS_TOOLS),
     toolboxGroupOrder: orderedUniqueValues(tools, (tool) => tool.toolboxGroup),
   };
+}
+
+function dbViewerStandaloneTableLabel(tableName) {
+  return DB_VIEWER_STANDALONE_LABELS[tableName] || tableName;
+}
+
+function dbViewerGroupsForSnapshot(tables, owners, toolGroups) {
+  const tableNames = Object.keys(tables).sort();
+  const tableNamesForOwner = (ownerId) => tableNames
+    .filter((tableName) => owners[tableName] === ownerId)
+    .sort();
+  const toolGroupIds = TOOL_ORDER.filter((id) => tableNamesForOwner(id).length > 0);
+  const toolOwnedTables = new Set(toolGroupIds.flatMap(tableNamesForOwner));
+  const identityTables = DB_VIEWER_IDENTITY_TABLES.filter((tableName) => tableNames.includes(tableName));
+  const toolboxVoteTables = DB_VIEWER_TOOLBOX_VOTE_TABLES.filter((tableName) => tableNames.includes(tableName));
+  const groupedStandaloneTables = new Set([
+    ...identityTables,
+    ...toolboxVoteTables,
+  ]);
+  const standaloneTableNames = tableNames
+    .filter((tableName) => !toolOwnedTables.has(tableName))
+    .filter((tableName) => !groupedStandaloneTables.has(tableName))
+    .sort();
+
+  return [
+    {
+      id: "all",
+      label: "All",
+      tableNames,
+      type: "all",
+    },
+    ...toolGroupIds.map((id) => ({
+      id,
+      label: toolGroups[id]?.label || id,
+      tableNames: tableNamesForOwner(id),
+      type: "tool",
+    })),
+    ...(identityTables.length ? [{
+      id: "user_roles",
+      label: dbViewerStandaloneTableLabel("user_roles"),
+      tableNames: identityTables,
+      type: "table",
+    }] : []),
+    ...standaloneTableNames.map((tableName) => ({
+      id: tableName,
+      label: dbViewerStandaloneTableLabel(tableName),
+      tableNames: [tableName],
+      type: "table",
+    })),
+    ...(toolboxVoteTables.length ? [{
+      id: "toolbox_votes",
+      label: dbViewerStandaloneTableLabel("toolbox_votes"),
+      tableNames: toolboxVoteTables,
+      type: "table",
+    }] : []),
+  ];
 }
 
 function valueOrDefault(value, fallback) {
@@ -1484,21 +1549,23 @@ class LocalDevMockDataSource {
       Object.values(toolGroups).flatMap((group) => group.tableNames).map((tableName) => [tableName, []]),
     );
     if (this.cleared) {
+      const tables = {
+        toolbox_tool_metadata: [],
+        toolbox_tool_planning: [],
+        toolbox_votes: [],
+        tool_state_samples: [],
+        users: [],
+        roles: [],
+        user_roles: [],
+        ...emptyToolTables,
+      };
       return {
         cleared: true,
         owners,
         schemas,
-        tables: {
-          toolbox_tool_metadata: [],
-          toolbox_tool_planning: [],
-          toolbox_votes: [],
-          tool_state_samples: [],
-          users: [],
-          roles: [],
-          user_roles: [],
-          ...emptyToolTables,
-        },
+        tables,
         toolGroups,
+        viewerGroups: dbViewerGroupsForSnapshot(tables, owners, toolGroups),
         version: 3,
       };
     }
@@ -1525,6 +1592,7 @@ class LocalDevMockDataSource {
       schemas,
       tables,
       toolGroups,
+      viewerGroups: dbViewerGroupsForSnapshot(tables, owners, toolGroups),
       version: 3,
     };
   }

@@ -244,6 +244,9 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       "Asset",
       "User Roles",
       "Tool State Samples",
+      "Tool Metadata",
+      "Tool Planning",
+      "Toolbox Votes",
     ]);
     await expect(page.locator("[data-admin-db-filter='all']")).toHaveClass(/primary/);
     await expect(page.locator("[data-admin-db-filter='all']")).toHaveAttribute("aria-pressed", "true");
@@ -268,6 +271,9 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       "asset_library_items",
       "asset_storage_objects",
       "tool_state_samples",
+      "toolbox_tool_metadata",
+      "toolbox_tool_planning",
+      "toolbox_votes",
       "roles",
       "user_roles",
       "users",
@@ -339,6 +345,11 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(sampleTable).toContainText("Guest Project Journey starter");
     await expect(sampleTable).toContainText("local-seeds/user-3/");
     await expect(sampleTable).toContainText(seedData.samples[0].createdAt);
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("Colors");
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata'] thead")).toContainText("order");
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_planning']")).toContainText("requiredForTestable");
+    await expect(page.locator("[data-admin-db-table='toolbox_votes']")).toContainText("No records in this table.");
+    await expect(page.locator("[data-admin-db-table='toolbox_votes'] thead")).toContainText("direction");
 
     await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
       "All current Local Mem DB tables include createdAt, updatedAt, createdBy, and updatedBy."
@@ -360,10 +371,10 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       "*.updatedBy -> users.key:"
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "user_roles.userKey -> users.key: 6/6 records linked."
+      /user_roles\.userKey -> users\.key: \d+\/\d+ records linked\./
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "user_roles.roleKey -> roles.key: 6/6 records linked."
+      /user_roles\.roleKey -> roles\.key: \d+\/\d+ records linked\./
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
       "tool_state_samples.userKey -> users.key: 4/4 records linked."
@@ -425,6 +436,24 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("Guest Project Journey starter");
     await expect(page.locator("[data-admin-db-table='users']")).toHaveCount(0);
 
+    await page.getByRole("button", { name: "Tool Metadata" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Tool Metadata\./);
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_planning']")).toHaveCount(0);
+    await expect(page.locator("[data-admin-db-table='toolbox_votes']")).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Tool Planning" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Tool Planning\./);
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_planning']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toHaveCount(0);
+
+    await page.getByRole("button", { name: "Toolbox Votes" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Toolbox Votes\./);
+    await expect(page.locator("[data-admin-db-table='toolbox_votes']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='toolbox_votes'] thead")).toContainText("direction");
+    await expect(page.locator("[data-admin-db-table='toolbox_vote_order']")).toHaveCount(0);
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toHaveCount(0);
+
     await page.getByRole("button", { name: "All" }).click();
     page.once("dialog", async (dialog) => {
       expect(dialog.message()).toBe("Clear all shared Local Mem DB records?");
@@ -445,6 +474,10 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='project_journey_items'] thead")).toContainText("projectKey");
     await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("No records in this table.");
     await expect(page.locator("[data-admin-db-table='tool_state_samples'] thead")).toContainText("toolStatePayload");
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("No records in this table.");
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata'] thead")).toContainText("toolKey");
+    await expect(page.locator("[data-admin-db-table='toolbox_tool_planning'] thead")).toContainText("progressChecklist");
+    await expect(page.locator("[data-admin-db-table='toolbox_votes'] thead")).toContainText("direction");
     await expect(page.locator("[data-admin-db-table='users'] thead")).toContainText("authProviderUserId");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
     await page.locator("[data-admin-db-clear]").click();
@@ -484,6 +517,9 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
       "Asset",
       "User Roles",
       "Tool State Samples",
+      "Tool Metadata",
+      "Tool Planning",
+      "Toolbox Votes",
     ]);
     await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);

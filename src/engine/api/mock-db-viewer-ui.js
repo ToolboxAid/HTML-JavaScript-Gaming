@@ -5,20 +5,6 @@ import {
 } from "./mock-db-api-client.js";
 
 const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
-const TOOL_GROUP_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
-const TOOL_GROUP_LABELS = Object.freeze({
-  asset: "Asset",
-  "game-configuration": "Game Configuration",
-  "game-design": "Game Design",
-  palette: "Palette",
-  "project-journey": "Project Journey",
-  workspace: "Workspace",
-});
-const STANDALONE_TABLE_LABELS = Object.freeze({
-  tool_state_samples: "Tool State Samples",
-  user_roles: "User Roles",
-});
-const IDENTITY_TABLE_GROUP = Object.freeze(["users", "user_roles", "roles"]);
 
 class AdminDbViewer {
   constructor(documentRef = document, options = {}) {
@@ -148,46 +134,11 @@ class AdminDbViewer {
   collectSnapshot() {
     const snapshot = getMockDbSnapshot();
     const tables = snapshot.tables;
-    const owners = snapshot.owners || {};
     const schemas = snapshot.schemas || {};
-    const toolGroups = snapshot.toolGroups || {};
-    const tableNamesForOwner = (ownerId) => Object.keys(tables)
-      .filter((tableName) => owners[tableName] === ownerId)
-      .sort();
-    const toolGroupIds = TOOL_GROUP_ORDER.filter((id) => tableNamesForOwner(id).length > 0);
-    const toolOwnedTables = new Set(toolGroupIds.flatMap(tableNamesForOwner));
-    const unownedTableNames = Object.keys(tables)
-      .filter((tableName) => !toolOwnedTables.has(tableName));
-    const standaloneTableNames = [
-      ...unownedTableNames.filter((tableName) => !IDENTITY_TABLE_GROUP.includes(tableName)).sort(),
-    ];
-    const identityTables = IDENTITY_TABLE_GROUP.filter((tableName) => unownedTableNames.includes(tableName));
-    const groups = [
-      {
-        id: "all",
-        label: "All",
-        tableNames: Object.keys(tables).sort(),
-        type: "all",
-      },
-      ...toolGroupIds.map((id) => ({
-        id,
-        label: toolGroups[id]?.label || TOOL_GROUP_LABELS[id] || id,
-          tableNames: tableNamesForOwner(id),
-          type: "tool",
-        })),
-      ...(identityTables.length ? [{
-        id: "user_roles",
-        label: STANDALONE_TABLE_LABELS.user_roles,
-        tableNames: identityTables,
-        type: "table",
-      }] : []),
-      ...standaloneTableNames.map((tableName) => ({
-        id: tableName,
-        label: STANDALONE_TABLE_LABELS[tableName] || tableName,
-        tableNames: [tableName],
-        type: "table",
-      })),
-    ];
+    const groups = Array.isArray(snapshot.viewerGroups) ? snapshot.viewerGroups : [];
+    if (!groups.length) {
+      throw new Error("Mock DB snapshot is missing server-provided DB Viewer groups.");
+    }
     return {
       cleared: Boolean(snapshot.cleared),
       groups,

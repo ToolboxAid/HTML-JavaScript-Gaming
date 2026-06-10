@@ -17,9 +17,8 @@ Exercised tool entry points detected:
 (74%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/api/mock-db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
 (92%) admin/tool-votes.js - executed lines 378/378; executed functions 47/51
 (96%) toolbox/tools-page-accordions.js - executed lines 954/954; executed functions 109/113
@@ -42,14 +41,13 @@ Files with executed line/function counts where available:
 (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/api/mock-db-viewer-ui.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/engine/api/mock-db-viewer-ui.js - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
 (89%) toolbox/tool-registry-api-client.js - changed JS file with browser V8 coverage
 (92%) admin/tool-votes.js - changed JS file with browser V8 coverage
