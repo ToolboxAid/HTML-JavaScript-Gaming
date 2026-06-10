@@ -599,7 +599,7 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
     const expectedGroupColors = {
       "AI": "rgb(184, 119, 255)",
       "Audio": "rgb(255, 122, 0)",
-      "Build/Create": "rgb(255, 77, 77)",
+      "Build/Create": "rgb(255, 45, 45)",
       "Design": "rgb(255, 79, 139)",
       "Marketplace": "rgb(255, 200, 87)",
       "Platform": "rgb(77, 163, 255)",
@@ -608,6 +608,17 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
     for (const [groupName, expectedColor] of Object.entries(expectedGroupColors)) {
       await expect(page.locator(`[data-toolbox-group-label='${groupName}']`).first()).toHaveCSS("background-color", expectedColor);
     }
+    const buildColorTokens = await page.evaluate(() => {
+      const styles = getComputedStyle(document.documentElement);
+      return {
+        build: styles.getPropertyValue("--toolbox-group-build-color").trim(),
+        red: styles.getPropertyValue("--red").trim(),
+      };
+    });
+    expect(buildColorTokens).toEqual({
+      build: "#ff2d2d",
+      red: "#ff2d2d",
+    });
     await expect(page.locator("[data-toolbox-group-label='Marketplace']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
     await expect(page.locator("[data-toolbox-group-label='Play']").first()).toHaveCSS("color", "rgb(9, 11, 15)");
 
