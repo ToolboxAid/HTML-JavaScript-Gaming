@@ -257,6 +257,15 @@ function controlCell(control) {
   return cell;
 }
 
+function actionCell(actions) {
+  const cell = document.createElement("td");
+  const group = document.createElement("div");
+  group.className = "action-group action-group--tight";
+  group.append(...actions);
+  cell.append(group);
+  return cell;
+}
+
 function sortedCapabilities() {
   return [...OBJECT_MODEL_TRAIT_LIST].sort((left, right) => left.id.localeCompare(right.id));
 }
@@ -535,29 +544,6 @@ function objectGapLabels(object) {
   return gaps;
 }
 
-function statusBadge(text, complete) {
-  const badge = document.createElement("span");
-  badge.className = complete ? "swatch-label swatch-green" : "swatch-label swatch-gold";
-  badge.dataset.objectsRowStatusBadge = complete ? "ready" : "missing";
-  badge.textContent = text;
-  return badge;
-}
-
-function statusCellForObject(object) {
-  const cell = document.createElement("td");
-  const gaps = objectGapLabels(object);
-  cell.dataset.objectsRowStatus = gaps.length ? "missing" : "ready";
-  cell.append(statusBadge(gaps.length ? gaps.join(", ") : "Ready", gaps.length === 0));
-  return cell;
-}
-
-function editingStatusCell() {
-  const cell = document.createElement("td");
-  cell.dataset.objectsRowStatus = "pending";
-  cell.append(statusBadge("Pending Setup", false));
-  return cell;
-}
-
 function rowConfigurationActions(object) {
   const id = objectId(object);
   if (!id) {
@@ -805,11 +791,10 @@ function renderEditingRow(values) {
   const capabilities = tableCell(capabilityText(values.capabilities || []));
   capabilities.dataset.objectsRowCapabilitiesPreview = "true";
 
-  const actions = document.createElement("td");
-  actions.append(
+  const actions = actionCell([
     actionButton("Save", "objectsSaveRow"),
-    actionButton("Cancel", "objectsCancelRow")
-  );
+    actionButton("Cancel", "objectsCancelRow"),
+  ]);
 
   row.append(
     controlCell(name),
@@ -818,7 +803,6 @@ function renderEditingRow(values) {
     controlCell(renderType),
     capabilities,
     renderAsset,
-    editingStatusCell(),
     actions
   );
   return row;
@@ -827,12 +811,11 @@ function renderEditingRow(values) {
 function renderSavedRow(object) {
   const row = document.createElement("tr");
   const id = objectId(object);
-  const actions = document.createElement("td");
-  actions.append(
+  const actions = actionCell([
     actionButton("Edit", "objectsEditRow", id),
     ...rowConfigurationActions(object),
-    actionButton("Trash", "objectsTrashRow", id)
-  );
+    actionButton("Trash", "objectsTrashRow", id),
+  ]);
   row.dataset.objectsRow = id;
   row.append(
     tableCell(object.name),
@@ -841,7 +824,6 @@ function renderSavedRow(object) {
     tableCell(object.render?.type || "None"),
     tableCell(capabilityText(object.traits)),
     tableCell(renderAssetText(object)),
-    statusCellForObject(object),
     actions
   );
   return row;
@@ -856,7 +838,7 @@ function renderObjectList(objects) {
   if (objects.length === 0 && !editingRow) {
     const row = document.createElement("tr");
     const empty = document.createElement("td");
-    empty.colSpan = 8;
+    empty.colSpan = 7;
     empty.textContent = "No objects drafted yet.";
     row.append(empty);
     elements.list.append(row);

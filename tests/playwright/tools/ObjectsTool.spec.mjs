@@ -149,9 +149,9 @@ test("Objects exposes production copy, setup status, and broad table input", asy
       "Render",
       "Capabilities",
       "Render Asset",
-      "Status",
       "Actions",
     ]);
+    await expect(page.locator("[data-objects-list-table] thead")).not.toContainText("Status");
     await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-objects-type-basics] li")).toHaveText(TYPE_OPTIONS);
     await expect(page.locator("[data-objects-readiness]")).toHaveText("Not Configured");
@@ -184,26 +184,31 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.locator("[data-objects-list]")).toContainText("Hero");
     await expect(page.locator("[data-objects-list]")).toContainText("Projectile");
     await expect(page.locator("[data-objects-list]")).toContainText("Wall");
-    await expect(page.locator("[data-objects-row-status]")).toHaveCount(3);
-    await expect(page.locator("[data-objects-row-status]")).toHaveText([
-      "Missing Hitbox, Missing Events",
-      "Missing Hitbox, Missing Events",
-      "Missing Hitbox, Missing Events",
-    ]);
-    await expect(page.locator("[data-objects-row-status-badge='missing']")).toHaveCount(3);
+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
+    await expect(page.locator("[data-objects-row-status-badge]")).toHaveCount(0);
     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveCount(3);
     await expect(page.locator("[data-objects-row-open-events]")).toHaveCount(3);
     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveCount(0);
     await expect(page.locator("[data-objects-list] [data-objects-edit-row]")).toHaveCount(3);
     await expect(page.locator("[data-objects-list] [data-objects-trash-row]")).toHaveCount(3);
-    await expect(page.locator("[data-objects-list] tr").first().locator("td").last().locator("button, a")).toHaveText([
+    const firstActionCell = page.locator("[data-objects-list] tr").first().locator("td").last();
+    const firstActionGroup = firstActionCell.locator(".action-group");
+    await expect(firstActionGroup).toHaveClass(/action-group/);
+    await expect(firstActionGroup).toHaveClass(/action-group--tight/);
+    await expect(firstActionGroup.locator("button, a")).toHaveText([
       "Edit",
       "Open Hitboxes",
       "Open Events",
       "Trash",
     ]);
+    await expect(firstActionCell.locator("[data-objects-edit-row='hero']")).toBeVisible();
+    await expect(firstActionCell.locator("[data-objects-row-open-hitboxes]")).toBeVisible();
+    await expect(firstActionCell.locator("[data-objects-row-open-events]")).toBeVisible();
+    await expect(firstActionCell.locator("[data-objects-trash-row='hero']")).toBeVisible();
     await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveClass(/primary/);
     await expect(page.locator("[data-objects-row-open-events]").first()).toHaveClass(/primary/);
+    await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveAttribute("title", "Missing Hitbox.");
+    await expect(page.locator("[data-objects-row-open-events]").first()).toHaveAttribute("title", "Missing Events.");
     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("None");
     await expect(page.locator("[data-objects-edit-sprite]")).toBeHidden();
     await expect(page.locator("[data-objects-output-setup]")).toHaveText("Objects have saved setup details.");
@@ -231,6 +236,12 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(page.locator("[data-objects-row-name]")).toBeVisible();
     await expect(page.locator("[data-objects-cancel-row]")).toBeVisible();
     await expect(page.locator("[data-objects-row-type] option")).toHaveText(["Select type", ...TYPE_OPTIONS]);
+    const activeActionCell = page.locator("[data-objects-editing-row]").locator("td").last();
+    const activeActionGroup = activeActionCell.locator(".action-group");
+    await expect(activeActionGroup).toHaveClass(/action-group/);
+    await expect(activeActionGroup).toHaveClass(/action-group--tight/);
+    await expect(activeActionGroup.locator("button")).toHaveText(["Save", "Cancel"]);
+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
 
     await page.locator("[data-objects-cancel-row]").click();
     await expect(addButton).toBeEnabled();
@@ -247,6 +258,16 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(page.locator("[data-objects-validation-list]")).not.toContainText("Render Asset");
     await expect(page.locator("[data-objects-edit-row='hero']")).toBeVisible();
     await expect(page.locator("[data-objects-trash-row='hero']")).toBeVisible();
+    const savedActionCell = page.locator("[data-objects-list] tr").first().locator("td").last();
+    const savedActionGroup = savedActionCell.locator(".action-group");
+    await expect(savedActionGroup).toHaveClass(/action-group/);
+    await expect(savedActionGroup).toHaveClass(/action-group--tight/);
+    await expect(savedActionGroup.locator("button, a")).toHaveText([
+      "Edit",
+      "Open Hitboxes",
+      "Open Events",
+      "Trash",
+    ]);
 
     await page.locator("[data-objects-edit-row='hero']").click();
     await expect(addButton).toBeDisabled();
@@ -371,7 +392,8 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Causes Damage");
     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Takes Damage");
     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
-    await expect(page.locator("[data-objects-row-status]")).toHaveText("Pending Setup");
+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
+    await expect(page.locator("[data-objects-editing-row]").locator("td").last().locator(".action-group")).toHaveClass(/action-group/);
     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveCount(0);
     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveCount(0);
     await expect(page.locator("[data-objects-row-open-events]")).toHaveCount(0);
@@ -383,11 +405,11 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(page.locator("[data-objects-row-render-type]")).toHaveValue("None");
     await expect(page.locator("[data-objects-row-capabilities-preview]")).toHaveText("Can Collide");
     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("None");
-    await expect(page.locator("[data-objects-row-status]")).toHaveText("Pending Setup");
+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
 
     await page.locator("[data-objects-template-select]").selectOption("Hero");
     await page.locator("[data-objects-row-name]").fill("Catalog Hero");
-    await expect(page.locator("[data-objects-row-status]")).toHaveText("Pending Setup");
+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveCount(0);
     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveCount(0);
     await expect(page.locator("[data-objects-row-open-events]")).toHaveCount(0);
@@ -400,9 +422,7 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(page.locator("[data-objects-list]")).toContainText("Can Move");
     await expect(page.locator("[data-objects-list]")).toContainText("Takes Damage");
     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_catalog_hero");
-    await expect(page.locator("[data-objects-row-status]")).not.toContainText("Missing Render Asset");
-    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Hitbox");
-    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Events");
+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute(
       "href",
       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
@@ -415,7 +435,11 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
       "href",
       "/toolbox/events/index.html?objectKey=catalog-hero&sourceTool=objects"
     );
-    await expect(page.locator("[data-objects-list] tr").first().locator("td").last().locator("button, a")).toHaveText([
+    const catalogActionCell = page.locator("[data-objects-list] tr").first().locator("td").last();
+    const catalogActionGroup = catalogActionCell.locator(".action-group");
+    await expect(catalogActionGroup).toHaveClass(/action-group/);
+    await expect(catalogActionGroup).toHaveClass(/action-group--tight/);
+    await expect(catalogActionGroup.locator("button, a")).toHaveText([
       "Edit",
       "Edit Sprite",
       "Open Hitboxes",
@@ -425,6 +449,9 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveClass(/cyan/);
     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveClass(/primary/);
     await expect(page.locator("[data-objects-row-open-events]")).toHaveClass(/primary/);
+    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute("title", "Sprite asset ready.");
+    await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveAttribute("title", "Missing Hitbox.");
+    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute("title", "Missing Events.");
     await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
       "href",
       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
@@ -457,9 +484,7 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
     await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(5).locator("input, textarea, select")).toHaveCount(0);
     await expect(page.locator("[data-objects-asset-status]")).toHaveText("1 Linked");
     await expect(page.locator("[data-objects-list]")).toContainText("Bolt");
-    await expect(page.locator("[data-objects-row-status]")).not.toContainText("Missing Render Asset");
-    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Hitbox");
-    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Events");
+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute(
       "href",
       "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
@@ -475,6 +500,7 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveClass(/cyan/);
     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveClass(/primary/);
     await expect(page.locator("[data-objects-row-open-events]")).toHaveClass(/primary/);
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").last().locator(".action-group")).toHaveClass(/action-group/);
     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_bolt");
     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_bolt");
     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("projects/");

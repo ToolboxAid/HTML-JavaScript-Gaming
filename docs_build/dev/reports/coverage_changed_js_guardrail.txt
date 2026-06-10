@@ -6,13 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(94%) toolbox/objects/objects.js - executed lines 1123/1123; executed functions 101/107
-(100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
+(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
 
 Guardrail warnings:
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(100%) none - no changed runtime JS coverage warnings

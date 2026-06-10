@@ -4,15 +4,15 @@ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M tests/playwright/tools/ObjectsTool.spec.mjs
  M toolbox/objects/index.html
  M toolbox/objects/objects.js
-?? docs_build/dev/reports/objects-table-status-actions-report.md
+?? docs_build/dev/reports/objects-action-spacing-cleanup-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/objects-table-status-actions-report.md
+docs_build/dev/reports/objects-action-spacing-cleanup-report.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |   2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   4 +-
- tests/playwright/tools/ObjectsTool.spec.mjs        | 123 +++++++++++---------
- toolbox/objects/index.html                         |  21 +---
- toolbox/objects/objects.js                         | 128 ++++++++-------------
- 5 files changed, 120 insertions(+), 158 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  | 10 +---
+ .../dev/reports/playwright_v8_coverage_report.txt  | 16 +-----
+ tests/playwright/tools/ObjectsTool.spec.mjs        | 64 +++++++++++++++-------
+ toolbox/objects/index.html                         |  1 -
+ toolbox/objects/objects.js                         | 50 ++++++-----------
+ 5 files changed, 66 insertions(+), 75 deletions(-)
