@@ -33,6 +33,17 @@ Generated: 2026-06-09
 - Harmony source wording now refers to picker swatches, not source palettes.
 - DB Viewer still shows 838 deprecated source history rows under Palette, with an explicit visible deprecation note.
 
+## Before/After Runtime Dependency Notes
+
+| Area | Before PR_26160_076 | After PR_26160_076 |
+| --- | --- | --- |
+| Colors repository snapshot | `palette_source_swatches` fed `sourcePaletteOptions`, `sourcePaletteRecordCount`, `listSourceSwatches()`, and Repository Tables counts. | Snapshot no longer exposes source palette options/counts, and active repository `getTables()` no longer returns `palette_source_swatches`. |
+| Colors page source browser | The page still carried defensive source select/search/pin/sort/size bindings even though source controls were no longer active UI. | Source-browser bindings and query-mode hooks are removed; no active source controls render or execute. |
+| Harmony match source | Source/all harmony wording implied table-backed source palette matching. | Current/All Picker match wording is used, and harmony matching consumes supplied picker swatches only; no deprecated table fallback remains. |
+| Diagnostic-only page output | Repository Tables could make `palette_source_swatches` appear to be active Colors runtime data. | Colors Repository Tables omit source rows; deprecated source rows are shown only in DB Viewer as migration/history data. |
+| DB Viewer | The table appeared as an ordinary active Palette table. | DB Viewer labels it `palette_source_swatches (deprecated)` and shows a note that current Colors grid rendering, editing, save/load, and import/export do not read it. |
+| Migration/history data | Source rows were part of active repository table ownership. | Server DB snapshot keeps the table for deprecated migration/history inspection only; the table is not deleted because migration/history dependency has not been disproven. |
+
 ## Validation Evidence
 
 | Lane | Status | Evidence |
