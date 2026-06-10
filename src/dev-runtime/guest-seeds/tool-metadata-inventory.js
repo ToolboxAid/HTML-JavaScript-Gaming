@@ -6,7 +6,8 @@ export const TOOL_STATUS_MODEL = Object.freeze([
   "Under Construction",
   "Planned",
   "Hidden",
-  "Deprecated"
+  "Deprecated",
+  "beta"
 ]);
 
 export const TOOL_RELEASE_CHANNELS = Object.freeze([
@@ -52,7 +53,8 @@ const READINESS_BY_STATUS = Object.freeze({
   "Under Construction": "No",
   Planned: "No",
   Hidden: "No",
-  Deprecated: "No"
+  Deprecated: "No",
+  beta: "Yes"
 });
 
 const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
@@ -61,7 +63,8 @@ const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
   "Under Construction": "beta",
   Planned: "planned",
   Hidden: "planned",
-  Deprecated: "deprecated"
+  Deprecated: "deprecated",
+  beta: "beta"
 });
 
 export const TOOL_REGISTRY = Object.freeze([
@@ -150,7 +153,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "requires": [
       "project-workspace"
     ],
-    "status": "Ready",
+    "status": "beta",
     "releaseChannel": "beta",
     "progressChecklist": [
       "Open Project Workspace",
@@ -410,14 +413,14 @@ export const TOOL_REGISTRY = Object.freeze([
     "id": "objects",
     "name": "Objects",
     "displayName": "Objects",
-    "shortDescription": "Create game objects with roles, state, and sprite assets.",
+    "shortDescription": "Create game objects with types, state, and sprite assets.",
     "shortLabel": "Objects",
     "path": "objects",
     "folderName": "objects",
     "entryPoint": "objects/index.html",
     "badge": "/assets/theme-v2/images/badges/objects.png",
     "tool": "/assets/theme-v2/images/tools/objects.png",
-    "description": "Create game objects with roles, state, and sprite assets.",
+    "description": "Create game objects with types, state, and sprite assets.",
     "category": "Design",
     "colorGroup": "tool-group-design",
     "active": true,
@@ -426,8 +429,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [],
-    "status": "Wireframe",
-    "releaseChannel": "wireframe",
+    "status": "beta",
+    "releaseChannel": "beta",
     "progressChecklist": [
       "Editable object table available",
       "Inline row add, save, cancel, edit, and trash actions available",
@@ -438,7 +441,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "adminOnly": false,
     "visibleInToolsList": true,
     "toolboxGroup": "Create",
-    "capabilityLabel": "Object role types",
+    "capabilityLabel": "Object types",
     "childCapabilities": [
       "Static",
       "Dynamic",

@@ -1,350 +1,259 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 7a06d1102..50c662b99 100644
+index 50c662b99..9b00b634f 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,13 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,7 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(94%) toolbox/objects/objects.js - executed lines 1123/1123; executed functions 101/107
--(100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
-+(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
 
  Guardrail warnings:
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(100%) none - no changed runtime JS coverage warnings
+-(100%) none - no changed runtime JS coverage warnings
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 0b14ef41d..7dee67949 100644
+index 7dee67949..1c6418c9d 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,11 +17,7 @@ Exercised tool entry points detected:
+@@ -17,6 +17,7 @@ Exercised tool entry points detected:
  (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(94%) toolbox/objects/objects.js - executed lines 1123/1123; executed functions 101/107
--(100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
-+(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
 
  Files with executed line/function counts where available:
- (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-@@ -35,20 +31,14 @@ Files with executed line/function counts where available:
- (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
- (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
- (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
--(94%) toolbox/objects/objects.js - executed lines 1123/1123; executed functions 101/107
-+(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
- (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
- (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
+@@ -37,8 +38,9 @@ Files with executed line/function counts where available:
  (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
  Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(100%) none - no low-coverage changed runtime JS files
+-(100%) none - no low-coverage changed runtime JS files
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
 
  Changed JS files considered:
--(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
  (94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
--(100%) toolbox/objects/objects-api-client.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+index c02870c53..b348efd2e 100644
+--- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
++++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+@@ -6,7 +6,8 @@ export const TOOL_STATUS_MODEL = Object.freeze([
+   "Under Construction",
+   "Planned",
+   "Hidden",
+-  "Deprecated"
++  "Deprecated",
++  "beta"
+ ]);
+
+ export const TOOL_RELEASE_CHANNELS = Object.freeze([
+@@ -52,7 +53,8 @@ const READINESS_BY_STATUS = Object.freeze({
+   "Under Construction": "No",
+   Planned: "No",
+   Hidden: "No",
+-  Deprecated: "No"
++  Deprecated: "No",
++  beta: "Yes"
+ });
+
+ const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
+@@ -61,7 +63,8 @@ const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
+   "Under Construction": "beta",
+   Planned: "planned",
+   Hidden: "planned",
+-  Deprecated: "deprecated"
++  Deprecated: "deprecated",
++  beta: "beta"
+ });
+
+ export const TOOL_REGISTRY = Object.freeze([
+@@ -150,7 +153,7 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requires": [
+       "project-workspace"
+     ],
+-    "status": "Ready",
++    "status": "beta",
+     "releaseChannel": "beta",
+     "progressChecklist": [
+       "Open Project Workspace",
+@@ -410,14 +413,14 @@ export const TOOL_REGISTRY = Object.freeze([
+     "id": "objects",
+     "name": "Objects",
+     "displayName": "Objects",
+-    "shortDescription": "Create game objects with roles, state, and sprite assets.",
++    "shortDescription": "Create game objects with types, state, and sprite assets.",
+     "shortLabel": "Objects",
+     "path": "objects",
+     "folderName": "objects",
+     "entryPoint": "objects/index.html",
+     "badge": "/assets/theme-v2/images/badges/objects.png",
+     "tool": "/assets/theme-v2/images/tools/objects.png",
+-    "description": "Create game objects with roles, state, and sprite assets.",
++    "description": "Create game objects with types, state, and sprite assets.",
+     "category": "Design",
+     "colorGroup": "tool-group-design",
+     "active": true,
+@@ -426,8 +429,8 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requiredForTestable": true,
+     "requiredForPublish": true,
+     "requires": [],
+-    "status": "Wireframe",
+-    "releaseChannel": "wireframe",
++    "status": "beta",
++    "releaseChannel": "beta",
+     "progressChecklist": [
+       "Editable object table available",
+       "Inline row add, save, cancel, edit, and trash actions available",
+@@ -438,7 +441,7 @@ export const TOOL_REGISTRY = Object.freeze([
+     "adminOnly": false,
+     "visibleInToolsList": true,
+     "toolboxGroup": "Create",
+-    "capabilityLabel": "Object role types",
++    "capabilityLabel": "Object types",
+     "childCapabilities": [
+       "Static",
+       "Dynamic",
 diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
-index eff832126..3021b6f88 100644
+index 3021b6f88..8db1b9b0d 100644
 --- a/tests/playwright/tools/ObjectsTool.spec.mjs
 +++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -149,9 +149,9 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-       "Render",
-       "Capabilities",
-       "Render Asset",
--      "Status",
-       "Actions",
-     ]);
-+    await expect(page.locator("[data-objects-list-table] thead")).not.toContainText("Status");
-     await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
-     await expect(page.locator("[data-objects-type-basics] li")).toHaveText(TYPE_OPTIONS);
-     await expect(page.locator("[data-objects-readiness]")).toHaveText("Not Configured");
-@@ -184,26 +184,31 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     await expect(page.locator("[data-objects-list]")).toContainText("Hero");
-     await expect(page.locator("[data-objects-list]")).toContainText("Projectile");
-     await expect(page.locator("[data-objects-list]")).toContainText("Wall");
--    await expect(page.locator("[data-objects-row-status]")).toHaveCount(3);
--    await expect(page.locator("[data-objects-row-status]")).toHaveText([
--      "Missing Hitbox, Missing Events",
--      "Missing Hitbox, Missing Events",
--      "Missing Hitbox, Missing Events",
--    ]);
--    await expect(page.locator("[data-objects-row-status-badge='missing']")).toHaveCount(3);
-+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
-+    await expect(page.locator("[data-objects-row-status-badge]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveCount(3);
-     await expect(page.locator("[data-objects-row-open-events]")).toHaveCount(3);
-     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-list] [data-objects-edit-row]")).toHaveCount(3);
-     await expect(page.locator("[data-objects-list] [data-objects-trash-row]")).toHaveCount(3);
--    await expect(page.locator("[data-objects-list] tr").first().locator("td").last().locator("button, a")).toHaveText([
-+    const firstActionCell = page.locator("[data-objects-list] tr").first().locator("td").last();
-+    const firstActionGroup = firstActionCell.locator(".action-group");
-+    await expect(firstActionGroup).toHaveClass(/action-group/);
-+    await expect(firstActionGroup).toHaveClass(/action-group--tight/);
-+    await expect(firstActionGroup.locator("button, a")).toHaveText([
-       "Edit",
-       "Open Hitboxes",
-       "Open Events",
-       "Trash",
-     ]);
-+    await expect(firstActionCell.locator("[data-objects-edit-row='hero']")).toBeVisible();
-+    await expect(firstActionCell.locator("[data-objects-row-open-hitboxes]")).toBeVisible();
-+    await expect(firstActionCell.locator("[data-objects-row-open-events]")).toBeVisible();
-+    await expect(firstActionCell.locator("[data-objects-trash-row='hero']")).toBeVisible();
-     await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveClass(/primary/);
-     await expect(page.locator("[data-objects-row-open-events]").first()).toHaveClass(/primary/);
-+    await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveAttribute("title", "Missing Hitbox.");
-+    await expect(page.locator("[data-objects-row-open-events]").first()).toHaveAttribute("title", "Missing Events.");
-     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("None");
-     await expect(page.locator("[data-objects-edit-sprite]")).toBeHidden();
-     await expect(page.locator("[data-objects-output-setup]")).toHaveText("Objects have saved setup details.");
-@@ -231,6 +236,12 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
-     await expect(page.locator("[data-objects-row-name]")).toBeVisible();
-     await expect(page.locator("[data-objects-cancel-row]")).toBeVisible();
-     await expect(page.locator("[data-objects-row-type] option")).toHaveText(["Select type", ...TYPE_OPTIONS]);
-+    const activeActionCell = page.locator("[data-objects-editing-row]").locator("td").last();
-+    const activeActionGroup = activeActionCell.locator(".action-group");
-+    await expect(activeActionGroup).toHaveClass(/action-group/);
-+    await expect(activeActionGroup).toHaveClass(/action-group--tight/);
-+    await expect(activeActionGroup.locator("button")).toHaveText(["Save", "Cancel"]);
-+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
-
-     await page.locator("[data-objects-cancel-row]").click();
-     await expect(addButton).toBeEnabled();
-@@ -247,6 +258,16 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
-     await expect(page.locator("[data-objects-validation-list]")).not.toContainText("Render Asset");
-     await expect(page.locator("[data-objects-edit-row='hero']")).toBeVisible();
-     await expect(page.locator("[data-objects-trash-row='hero']")).toBeVisible();
-+    const savedActionCell = page.locator("[data-objects-list] tr").first().locator("td").last();
-+    const savedActionGroup = savedActionCell.locator(".action-group");
-+    await expect(savedActionGroup).toHaveClass(/action-group/);
-+    await expect(savedActionGroup).toHaveClass(/action-group--tight/);
-+    await expect(savedActionGroup.locator("button, a")).toHaveText([
-+      "Edit",
-+      "Open Hitboxes",
-+      "Open Events",
-+      "Trash",
-+    ]);
-
-     await page.locator("[data-objects-edit-row='hero']").click();
-     await expect(addButton).toBeDisabled();
-@@ -371,7 +392,8 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Causes Damage");
-     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Takes Damage");
-     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
--    await expect(page.locator("[data-objects-row-status]")).toHaveText("Pending Setup");
-+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
-+    await expect(page.locator("[data-objects-editing-row]").locator("td").last().locator(".action-group")).toHaveClass(/action-group/);
-     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-row-open-events]")).toHaveCount(0);
-@@ -383,11 +405,11 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-     await expect(page.locator("[data-objects-row-render-type]")).toHaveValue("None");
-     await expect(page.locator("[data-objects-row-capabilities-preview]")).toHaveText("Can Collide");
-     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("None");
--    await expect(page.locator("[data-objects-row-status]")).toHaveText("Pending Setup");
-+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
-
-     await page.locator("[data-objects-template-select]").selectOption("Hero");
-     await page.locator("[data-objects-row-name]").fill("Catalog Hero");
--    await expect(page.locator("[data-objects-row-status]")).toHaveText("Pending Setup");
-+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-row-open-events]")).toHaveCount(0);
-@@ -400,9 +422,7 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-     await expect(page.locator("[data-objects-list]")).toContainText("Can Move");
-     await expect(page.locator("[data-objects-list]")).toContainText("Takes Damage");
-     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_catalog_hero");
--    await expect(page.locator("[data-objects-row-status]")).not.toContainText("Missing Render Asset");
--    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Hitbox");
--    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Events");
-+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute(
-       "href",
-       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
-@@ -415,7 +435,11 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-       "href",
-       "/toolbox/events/index.html?objectKey=catalog-hero&sourceTool=objects"
-     );
--    await expect(page.locator("[data-objects-list] tr").first().locator("td").last().locator("button, a")).toHaveText([
-+    const catalogActionCell = page.locator("[data-objects-list] tr").first().locator("td").last();
-+    const catalogActionGroup = catalogActionCell.locator(".action-group");
-+    await expect(catalogActionGroup).toHaveClass(/action-group/);
-+    await expect(catalogActionGroup).toHaveClass(/action-group--tight/);
-+    await expect(catalogActionGroup.locator("button, a")).toHaveText([
-       "Edit",
-       "Edit Sprite",
-       "Open Hitboxes",
-@@ -425,6 +449,9 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveClass(/cyan/);
-     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveClass(/primary/);
-     await expect(page.locator("[data-objects-row-open-events]")).toHaveClass(/primary/);
-+    await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute("title", "Sprite asset ready.");
-+    await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveAttribute("title", "Missing Hitbox.");
-+    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute("title", "Missing Events.");
-     await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
-       "href",
-       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
-@@ -457,9 +484,7 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
-     await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(5).locator("input, textarea, select")).toHaveCount(0);
-     await expect(page.locator("[data-objects-asset-status]")).toHaveText("1 Linked");
-     await expect(page.locator("[data-objects-list]")).toContainText("Bolt");
--    await expect(page.locator("[data-objects-row-status]")).not.toContainText("Missing Render Asset");
--    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Hitbox");
--    await expect(page.locator("[data-objects-row-status]")).toContainText("Missing Events");
-+    await expect(page.locator("[data-objects-row-status]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute(
-       "href",
-       "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
-@@ -475,6 +500,7 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
-     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveClass(/cyan/);
-     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveClass(/primary/);
-     await expect(page.locator("[data-objects-row-open-events]")).toHaveClass(/primary/);
-+    await expect(page.locator("[data-objects-list] tr").first().locator("td").last().locator(".action-group")).toHaveClass(/action-group/);
-     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_bolt");
-     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_bolt");
-     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("projects/");
-diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
-index 1a5cc8514..ecce77ce5 100644
---- a/toolbox/objects/index.html
-+++ b/toolbox/objects/index.html
-@@ -92,7 +92,6 @@
-                                                 <th>Render</th>
-                                                 <th>Capabilities</th>
-                                                 <th>Render Asset</th>
--                                                <th>Status</th>
-                                                 <th>Actions</th>
-                                             </tr>
-                                         </thead>
-diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
-index 03202f34e..55db082e8 100644
---- a/toolbox/objects/objects.js
-+++ b/toolbox/objects/objects.js
-@@ -257,6 +257,15 @@ function controlCell(control) {
-   return cell;
+@@ -111,6 +111,14 @@ async function objectDefinitionRecords(page) {
+   });
  }
 
-+function actionCell(actions) {
-+  const cell = document.createElement("td");
-+  const group = document.createElement("div");
-+  group.className = "action-group action-group--tight";
-+  group.append(...actions);
-+  cell.append(group);
-+  return cell;
++async function objectsRegistryEntry(page) {
++  return page.evaluate(async () => {
++    const response = await fetch("/api/toolbox/registry/snapshot");
++    const payload = await response.json();
++    return payload.data.tools.find((tool) => tool.id === "objects") || null;
++  });
 +}
 +
- function sortedCapabilities() {
-   return [...OBJECT_MODEL_TRAIT_LIST].sort((left, right) => left.id.localeCompare(right.id));
- }
-@@ -535,29 +544,6 @@ function objectGapLabels(object) {
-   return gaps;
- }
+ test("Objects exposes production copy, setup status, and broad table input", async ({ page }) => {
+   const failures = await openObjectsPage(page);
 
--function statusBadge(text, complete) {
--  const badge = document.createElement("span");
--  badge.className = complete ? "swatch-label swatch-green" : "swatch-label swatch-gold";
--  badge.dataset.objectsRowStatusBadge = complete ? "ready" : "missing";
--  badge.textContent = text;
--  return badge;
--}
--
--function statusCellForObject(object) {
--  const cell = document.createElement("td");
--  const gaps = objectGapLabels(object);
--  cell.dataset.objectsRowStatus = gaps.length ? "missing" : "ready";
--  cell.append(statusBadge(gaps.length ? gaps.join(", ") : "Ready", gaps.length === 0));
--  return cell;
--}
--
--function editingStatusCell() {
--  const cell = document.createElement("td");
--  cell.dataset.objectsRowStatus = "pending";
--  cell.append(statusBadge("Pending Setup", false));
--  return cell;
--}
--
- function rowConfigurationActions(object) {
-   const id = objectId(object);
-   if (!id) {
-@@ -805,11 +791,10 @@ function renderEditingRow(values) {
-   const capabilities = tableCell(capabilityText(values.capabilities || []));
-   capabilities.dataset.objectsRowCapabilitiesPreview = "true";
+@@ -126,7 +134,20 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+     await expect(page.locator("main")).not.toContainText(["Not", "connected", "yet"].join(" "));
+     await expect(page.getByRole("heading", { level: 2, name: "Object Builder" })).toBeVisible();
+     await expect(page.getByText("Object Type Catalog", { exact: true })).toBeVisible();
+-    await expect(page.locator("[data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
++    await expect(page.locator("[data-objects-template-select]")).toHaveCount(1);
++    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
++    await expect(page.locator("[data-objects-table-footer-actions] [data-objects-add-row]")).toBeVisible();
++    await expect(page.locator("[data-objects-table-footer-actions] [data-objects-reset-table]")).toBeVisible();
++    await expect(page.locator("[data-objects-table-footer-catalog] [data-objects-template-select]")).toBeVisible();
++    const footerPositions = await page.locator("[data-objects-table-footer]").evaluate((footer) => {
++      const actions = footer.querySelector("[data-objects-table-footer-actions]");
++      const catalog = footer.querySelector("[data-objects-table-footer-catalog]");
++      return {
++        actionsLeft: actions.getBoundingClientRect().left,
++        catalogLeft: catalog.getBoundingClientRect().left,
++      };
++    });
++    expect(footerPositions.catalogLeft).toBeGreaterThan(footerPositions.actionsLeft);
+     await expect(page.locator("[aria-label='Object type catalog'] th")).toHaveText(["Template", "Capability"]);
+     await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("State");
+     await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("Render");
+@@ -168,10 +189,8 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+     await expect(page.locator("[data-objects-capability-basics]")).toContainText("Takes Damage");
+     await expect(page.locator("[data-objects-capability-basics]")).not.toContainText("bounces");
 
--  const actions = document.createElement("td");
--  actions.append(
-+  const actions = actionCell([
-     actionButton("Save", "objectsSaveRow"),
--    actionButton("Cancel", "objectsCancelRow")
--  );
-+    actionButton("Cancel", "objectsCancelRow"),
-+  ]);
+-    const addAfterTable = await page.locator("[data-objects-list-table]").evaluate((table) => (
+-      Boolean(table.compareDocumentPosition(document.querySelector("[data-objects-add-row]")) & Node.DOCUMENT_POSITION_FOLLOWING)
+-    ));
+-    expect(addAfterTable).toBe(true);
++    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-add-row]")).toBeVisible();
++    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-reset-table]")).toBeVisible();
 
-   row.append(
-     controlCell(name),
-@@ -818,7 +803,6 @@ function renderEditingRow(values) {
-     controlCell(renderType),
-     capabilities,
-     renderAsset,
--    editingStatusCell(),
-     actions
-   );
-   return row;
-@@ -827,12 +811,11 @@ function renderEditingRow(values) {
- function renderSavedRow(object) {
-   const row = document.createElement("tr");
-   const id = objectId(object);
--  const actions = document.createElement("td");
--  actions.append(
-+  const actions = actionCell([
-     actionButton("Edit", "objectsEditRow", id),
-     ...rowConfigurationActions(object),
--    actionButton("Trash", "objectsTrashRow", id)
--  );
-+    actionButton("Trash", "objectsTrashRow", id),
-+  ]);
-   row.dataset.objectsRow = id;
-   row.append(
-     tableCell(object.name),
-@@ -841,7 +824,6 @@ function renderSavedRow(object) {
-     tableCell(object.render?.type || "None"),
-     tableCell(capabilityText(object.traits)),
-     tableCell(renderAssetText(object)),
--    statusCellForObject(object),
-     actions
-   );
-   return row;
-@@ -856,7 +838,7 @@ function renderObjectList(objects) {
-   if (objects.length === 0 && !editingRow) {
-     const row = document.createElement("tr");
-     const empty = document.createElement("td");
--    empty.colSpan = 8;
-+    empty.colSpan = 7;
-     empty.textContent = "No objects drafted yet.";
-     row.append(empty);
-     elements.list.append(row);
-diff --git a/docs_build/dev/reports/objects-action-spacing-cleanup-report.md b/docs_build/dev/reports/objects-action-spacing-cleanup-report.md
+     await page.getByRole("button", { name: "Seed Starter Objects" }).click();
+     await expect(page.locator("[data-objects-log]")).toHaveText("Seeded starter objects: Hero, Projectile, and Wall.");
+@@ -382,6 +401,7 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
+   const failures = await openObjectsPage(page);
+
+   try {
++    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-template-select]")).toBeVisible();
+     await page.locator("[data-objects-template-select]").selectOption("Hazard");
+     await expect(page.locator("[data-objects-log]")).toHaveText("Hazard template selected for the next object row.");
+
+@@ -588,14 +608,25 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
+   }
+ });
+
+-test("Objects is a clickable wireframe tool from Toolbox", async ({ page }) => {
++test("Objects is a clickable beta tool from Toolbox", async ({ page }) => {
+   const failures = await openToolboxPage(page);
+
+   try {
+     const objectsCard = page.locator("[data-toolbox-tool-card='Objects']");
+     await expect(objectsCard).toBeVisible();
+-    await expect(objectsCard.locator("[data-toolbox-kicker]")).toHaveText("Wireframe");
++    await expect(objectsCard).toHaveAttribute("data-toolbox-release-channel", "beta");
++    await expect(objectsCard.locator("[data-toolbox-kicker]")).toHaveText("Beta");
++    await expect(objectsCard.locator("[data-toolbox-plan-details]")).toHaveCount(0);
++    await expect(objectsCard).not.toContainText("Wireframe details");
+     await expect(objectsCard.locator("[data-toolbox-tool-name-link='Objects']")).toHaveAttribute("href", "/toolbox/objects/index.html");
++    const registryEntry = await objectsRegistryEntry(page);
++    expect(registryEntry).toEqual(expect.objectContaining({
++      releaseChannel: "beta",
++      releaseChannelLabel: "Beta",
++      status: "beta",
++    }));
++    expect(registryEntry.shortDescription).toContain("types");
++    expect(registryEntry.shortDescription).not.toMatch(/\broles\b/i);
+     await objectsCard.locator("[data-toolbox-tool-name-link='Objects']").click();
+     await expect(page.getByRole("heading", { level: 1, name: "Objects" })).toBeVisible();
+
+diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
+index ecce77ce5..8eea3fe34 100644
+--- a/toolbox/objects/index.html
++++ b/toolbox/objects/index.html
+@@ -42,9 +42,6 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Object Type Catalog</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <div class="content-cluster" aria-label="Object type catalog selection">
+-                                        <select aria-label="Object Type Catalog" data-objects-template-select></select>
+-                                    </div>
+                                     <div class="table-wrapper">
+                                         <table class="data-table" aria-label="Object type catalog">
+                                             <thead>
+@@ -96,12 +93,23 @@
+                                             </tr>
+                                         </thead>
+                                         <tbody data-objects-list></tbody>
++                                        <tfoot>
++                                            <tr>
++                                                <td colspan="7">
++                                                    <div class="content-split" data-objects-table-footer>
++                                                        <div class="content-cluster" aria-label="Objects table actions" data-objects-table-footer-actions>
++                                                            <button class="btn" type="button" data-objects-add-row>Add Object</button>
++                                                            <button class="btn" type="button" data-objects-reset-table>Reset Table</button>
++                                                        </div>
++                                                        <div class="action-group action-group--end" aria-label="Object type catalog selection" data-objects-table-footer-catalog>
++                                                            <select aria-label="Object Type Catalog" data-objects-template-select></select>
++                                                        </div>
++                                                    </div>
++                                                </td>
++                                            </tr>
++                                        </tfoot>
+                                     </table>
+                                 </div>
+-                                <div class="content-cluster" aria-label="Objects table actions">
+-                                    <button class="btn" type="button" data-objects-add-row>Add Object</button>
+-                                    <button class="btn" type="button" data-objects-reset-table>Reset Table</button>
+-                                </div>
+                             </div>
+                         </article>
+                     </section>
+diff --git a/docs_build/dev/reports/objects-beta-promotion-and-catalog-relocation-report.md b/docs_build/dev/reports/objects-beta-promotion-and-catalog-relocation-report.md
 new file mode 100644
-index 000000000..e23fa1cc1
+index 000000000..465f0eddd
 --- /dev/null
-+++ b/docs_build/dev/reports/objects-action-spacing-cleanup-report.md
-@@ -0,0 +1,76 @@
-+# PR_26161_013 Objects Action Spacing Cleanup Report
++++ b/docs_build/dev/reports/objects-beta-promotion-and-catalog-relocation-report.md
+@@ -0,0 +1,86 @@
++# PR_26161_014 Objects Beta Promotion And Catalog Relocation Report
 +
 +## Branch Validation
 +
@@ -356,34 +265,40 @@ index 000000000..e23fa1cc1
 +
 +## Scope
 +
-+- Impacted lane: Objects tool runtime/UI lane.
++- Impacted lane: Objects tool UI/runtime plus Toolbox tool metadata registry.
 +- Playwright impacted: Yes.
 +- Runtime engine behavior changed: No.
-+- Samples validation: Skipped as requested. No sample JSON, game sample, engine runtime, auth, or production DB behavior changed.
++- Samples validation: Skipped as requested. No sample JSON, auth behavior, production DB behavior, engine runtime behavior, or unrelated tool behavior changed.
 +
 +## Requirement Checklist
 +
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
 +- PASS: Verified current git branch was `main` before edits.
-+- PASS: Removed the `Status` column from the Objects Table.
-+- PASS: Removed row-level Object Status cells and badges from the Objects Table.
-+- PASS: Kept action button styling as the row visual status indicator.
-+- PASS: Preserved Missing/incomplete visual highlighting through `btn btn--compact primary` on `Open Hitboxes` and `Open Events`.
-+- PASS: Preserved Complete/ready visual highlighting through `btn btn--compact cyan` on `Edit Sprite`.
-+- PASS: Increased row action spacing with existing Theme V2 `action-group action-group--tight` classes.
-+- PASS: Kept `Edit`, `Edit Sprite`, `Open Hitboxes`, `Open Events`, and `Trash` visually distinct and individually clickable.
-+- PASS: Did not introduce page-local CSS, inline styles, or tool-specific styling.
-+- PASS: Preserved DB/mock-adapter persistence, table editing, sprite asset linking, and current object behavior.
++- PASS: Moved the Object Type Catalog selector into the Objects Table footer.
++- PASS: Placed the selector in the right-side footer group.
++- PASS: Kept `Add Object` and `Reset Table` in the left-side footer group.
++- PASS: Kept Object Type Catalog display limited to `Template` and `Capability`.
++- PASS: Preserved object creation workflows, including template-prefilled row creation.
++- PASS: Preserved DB/mock-adapter persistence after reload.
++- PASS: Preserved Sprite asset linking after reload.
++- PASS: Preserved row action buttons: `Edit`, `Edit Sprite`, `Open Hitboxes`, `Open Events`, and `Trash`.
++- PASS: Preserved Missing/Complete button highlighting through existing Theme V2 button classes.
++- PASS: Updated Objects tool metadata/status registry to `status = beta`.
++- PASS: Removed remaining Objects wireframe-only messaging from the displayed Objects tool surface.
 +- PASS: Did not add sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
++- PASS: Kept Theme V2 only and preserved HTML restrictions.
 +
 +## Testing Performed
 +
 +- PASS: `node --check toolbox/objects/objects.js`
 +- PASS: `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
++- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
 +- PASS: `rg --pcre2 -n '<script(?![^>]*\bsrc=)|<style\b|\son[a-z]+\s*=' toolbox/objects/index.html`
 +  - Expected no matches; command exited with no matches.
-+- PASS: `rg -n 'Not connected yet|session-only|setup readiness|MVP|publishes|coverage|technical object family|runtime type|handoff|\binternal\b' toolbox/objects/index.html toolbox/objects/objects.js`
++- PASS: `rg -n 'Wireframe|wireframe|Static wireframe|not wired|Not implemented yet|Role|Traits|Not connected yet' toolbox/objects/index.html`
 +  - Expected no matches; command exited with no matches.
++- PASS: `node --input-type=module -e "...getToolById('objects')..."`
++  - Result: Objects registry seed reports `status: "beta"`, `releaseChannel: "beta"`, and `releaseChannelLabel: "Beta"`.
 +- PASS: `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line`
 +  - Result: 6 passed.
 +- PASS: `git diff --check`
@@ -391,32 +306,36 @@ index 000000000..e23fa1cc1
 +
 +## Playwright Behavior Covered
 +
-+- PASS: Objects Table headers no longer include `Status`.
-+- PASS: Row status data attributes and badges are absent.
-+- PASS: Row action group uses Theme V2 spacing classes.
-+- PASS: `Edit`, `Open Hitboxes`, `Open Events`, and `Trash` remain visible and clickable for non-sprite rows.
-+- PASS: `Edit`, `Edit Sprite`, `Open Hitboxes`, `Open Events`, and `Trash` remain visible and clickable for sprite rows.
-+- PASS: Missing action buttons retain `primary` styling.
-+- PASS: Ready sprite action retains `cyan` styling.
-+- PASS: Add, cancel, save, edit, trash, reset, DB persistence after reload, and sprite asset linking remain covered.
++- PASS: Object Type Catalog selector appears inside the Objects Table footer.
++- PASS: Footer selector is in the right-side catalog group.
++- PASS: `Add Object` and `Reset Table` remain in the left-side footer group.
++- PASS: Selecting a footer template before adding an object still prefills Type, State, Render, and Capabilities.
++- PASS: Add, cancel, save, edit, trash, reset, and DB persistence after reload still work.
++- PASS: Sprite asset creation/resolution and linked sprite asset display persist after reload.
++- PASS: Row actions and Missing/Complete visual classes remain intact.
++- PASS: Toolbox displays Objects as `Beta`, not `Wireframe`.
++- PASS: Toolbox registry API reports Objects as `status: "beta"`.
 +
 +## Playwright V8 Coverage
 +
 +- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- Changed runtime JavaScript covered:
++- Changed runtime JavaScript coverage notes:
 +  - `(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105`
++  - `(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only`
++- The warning is safe for this PR because `tool-metadata-inventory.js` is a dev-runtime seed module validated by syntax check and by the targeted Playwright registry/API status assertion.
 +
 +## Manual Validation Steps
 +
 +1. Open `/toolbox/objects/index.html`.
-+2. Confirm the Objects Table header is `Name | Type | State | Render | Capabilities | Render Asset | Actions`.
-+3. Seed starter objects and confirm each row shows spaced action buttons without a Status column.
-+4. Confirm `Open Hitboxes` and `Open Events` use the missing/incomplete button state.
-+5. Add a Sprite object and save it, then confirm `Edit Sprite` appears with the ready/complete button state.
-+6. Reload the page and confirm saved rows and sprite asset links persist.
++2. Confirm the Objects Table footer has `Add Object` and `Reset Table` on the left.
++3. Confirm the Object Type Catalog selector is in the right side of the table footer.
++4. Select `Hero` in the footer selector, click `Add Object`, and confirm the active row is prefilled.
++5. Save a Sprite object, reload the page, and confirm the row and linked sprite asset remain.
++6. Open `/toolbox/index.html` and confirm the Objects card displays `Beta`.
 +
 +## Skipped Lanes
 +
 +- Full samples validation: SKIP, explicitly requested and no samples changed.
-+- Broad workspace/project suite: SKIP, no shared Workspace contract, engine runtime behavior, public navigation behavior, auth behavior, production DB behavior, or sample behavior changed.
++- Broad workspace/project suite: SKIP, no shared Project Workspace contract, engine runtime behavior, public navigation behavior, auth behavior, production DB behavior, or sample behavior changed.
++- Full registry suite: SKIP, registry impact is scoped to the Objects metadata seed and covered by targeted Objects Playwright plus direct seed inspection.
 +

@@ -17,6 +17,7 @@ Exercised tool entry points detected:
 (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
 
 Files with executed line/function counts where available:
@@ -37,8 +38,9 @@ Files with executed line/function counts where available:
 (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(100%) none - no low-coverage changed runtime JS files
+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage

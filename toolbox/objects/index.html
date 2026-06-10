@@ -42,9 +42,6 @@
                             <details class="vertical-accordion" open>
                                 <summary>Object Type Catalog</summary>
                                 <div class="accordion-body content-stack">
-                                    <div class="content-cluster" aria-label="Object type catalog selection">
-                                        <select aria-label="Object Type Catalog" data-objects-template-select></select>
-                                    </div>
                                     <div class="table-wrapper">
                                         <table class="data-table" aria-label="Object type catalog">
                                             <thead>
@@ -96,11 +93,22 @@
                                             </tr>
                                         </thead>
                                         <tbody data-objects-list></tbody>
+                                        <tfoot>
+                                            <tr>
+                                                <td colspan="7">
+                                                    <div class="content-split" data-objects-table-footer>
+                                                        <div class="content-cluster" aria-label="Objects table actions" data-objects-table-footer-actions>
+                                                            <button class="btn" type="button" data-objects-add-row>Add Object</button>
+                                                            <button class="btn" type="button" data-objects-reset-table>Reset Table</button>
+                                                        </div>
+                                                        <div class="action-group action-group--end" aria-label="Object type catalog selection" data-objects-table-footer-catalog>
+                                                            <select aria-label="Object Type Catalog" data-objects-template-select></select>
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </tfoot>
                                     </table>
-                                </div>
-                                <div class="content-cluster" aria-label="Objects table actions">
-                                    <button class="btn" type="button" data-objects-add-row>Add Object</button>
-                                    <button class="btn" type="button" data-objects-reset-table>Reset Table</button>
                                 </div>
                             </div>
                         </article>

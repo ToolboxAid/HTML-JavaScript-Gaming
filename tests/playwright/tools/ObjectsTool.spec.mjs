@@ -111,6 +111,14 @@ async function objectDefinitionRecords(page) {
   });
 }
 
+async function objectsRegistryEntry(page) {
+  return page.evaluate(async () => {
+    const response = await fetch("/api/toolbox/registry/snapshot");
+    const payload = await response.json();
+    return payload.data.tools.find((tool) => tool.id === "objects") || null;
+  });
+}
+
 test("Objects exposes production copy, setup status, and broad table input", async ({ page }) => {
   const failures = await openObjectsPage(page);
 
@@ -126,7 +134,20 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.locator("main")).not.toContainText(["Not", "connected", "yet"].join(" "));
     await expect(page.getByRole("heading", { level: 2, name: "Object Builder" })).toBeVisible();
     await expect(page.getByText("Object Type Catalog", { exact: true })).toBeVisible();
-    await expect(page.locator("[data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
+    await expect(page.locator("[data-objects-template-select]")).toHaveCount(1);
+    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
+    await expect(page.locator("[data-objects-table-footer-actions] [data-objects-add-row]")).toBeVisible();
+    await expect(page.locator("[data-objects-table-footer-actions] [data-objects-reset-table]")).toBeVisible();
+    await expect(page.locator("[data-objects-table-footer-catalog] [data-objects-template-select]")).toBeVisible();
+    const footerPositions = await page.locator("[data-objects-table-footer]").evaluate((footer) => {
+      const actions = footer.querySelector("[data-objects-table-footer-actions]");
+      const catalog = footer.querySelector("[data-objects-table-footer-catalog]");
+      return {
+        actionsLeft: actions.getBoundingClientRect().left,
+        catalogLeft: catalog.getBoundingClientRect().left,
+      };
+    });
+    expect(footerPositions.catalogLeft).toBeGreaterThan(footerPositions.actionsLeft);
     await expect(page.locator("[aria-label='Object type catalog'] th")).toHaveText(["Template", "Capability"]);
     await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("State");
     await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("Render");
@@ -168,10 +189,8 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.locator("[data-objects-capability-basics]")).toContainText("Takes Damage");
     await expect(page.locator("[data-objects-capability-basics]")).not.toContainText("bounces");
 
-    const addAfterTable = await page.locator("[data-objects-list-table]").evaluate((table) => (
-      Boolean(table.compareDocumentPosition(document.querySelector("[data-objects-add-row]")) & Node.DOCUMENT_POSITION_FOLLOWING)
-    ));
-    expect(addAfterTable).toBe(true);
+    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-add-row]")).toBeVisible();
+    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-reset-table]")).toBeVisible();
 
     await page.getByRole("button", { name: "Seed Starter Objects" }).click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Seeded starter objects: Hero, Projectile, and Wall.");
@@ -382,6 +401,7 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
   const failures = await openObjectsPage(page);
 
   try {
+    await expect(page.locator("[data-objects-list-table] tfoot [data-objects-template-select]")).toBeVisible();
     await page.locator("[data-objects-template-select]").selectOption("Hazard");
     await expect(page.locator("[data-objects-log]")).toHaveText("Hazard template selected for the next object row.");
 
@@ -588,14 +608,25 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
   }
 });
 
-test("Objects is a clickable wireframe tool from Toolbox", async ({ page }) => {
+test("Objects is a clickable beta tool from Toolbox", async ({ page }) => {
   const failures = await openToolboxPage(page);
 
   try {
     const objectsCard = page.locator("[data-toolbox-tool-card='Objects']");
     await expect(objectsCard).toBeVisible();
-    await expect(objectsCard.locator("[data-toolbox-kicker]")).toHaveText("Wireframe");
+    await expect(objectsCard).toHaveAttribute("data-toolbox-release-channel", "beta");
+    await expect(objectsCard.locator("[data-toolbox-kicker]")).toHaveText("Beta");
+    await expect(objectsCard.locator("[data-toolbox-plan-details]")).toHaveCount(0);
+    await expect(objectsCard).not.toContainText("Wireframe details");
     await expect(objectsCard.locator("[data-toolbox-tool-name-link='Objects']")).toHaveAttribute("href", "/toolbox/objects/index.html");
+    const registryEntry = await objectsRegistryEntry(page);
+    expect(registryEntry).toEqual(expect.objectContaining({
+      releaseChannel: "beta",
+      releaseChannelLabel: "Beta",
+      status: "beta",
+    }));
+    expect(registryEntry.shortDescription).toContain("types");
+    expect(registryEntry.shortDescription).not.toMatch(/\broles\b/i);
     await objectsCard.locator("[data-toolbox-tool-name-link='Objects']").click();
     await expect(page.getByRole("heading", { level: 1, name: "Objects" })).toBeVisible();
 
