@@ -716,9 +716,9 @@ export const TOOL_REGISTRY = Object.freeze([
     "displayName": "Controls",
     "shortDescription": "Map keyboard, mouse, gamepad, and touch controls.",
     "shortLabel": "Controls",
-    "path": "controls",
-    "folderName": "controls",
-    "entryPoint": "controls/index.html",
+    "path": "input-mapping-v2",
+    "folderName": "input-mapping-v2",
+    "entryPoint": "input-mapping-v2/index.html",
     "badge": "/assets/theme-v2/images/badges/controls.png",
     "tool": "/assets/theme-v2/images/tools/controls.png",
     "description": "Map keyboard, mouse, gamepad, and touch controls.",
@@ -730,10 +730,11 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [],
-    "status": "Wireframe",
+    "status": "beta",
     "progressChecklist": [
-      "Review readiness",
-      "Static planned text only"
+      "Map object actions",
+      "Capture keyboard, mouse, and gamepad inputs",
+      "Persist mappings through shared DB adapter"
     ],
     "deferred": false,
     "hidden": false,

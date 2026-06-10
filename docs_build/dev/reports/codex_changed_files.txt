@@ -1,18 +1,30 @@
 # git status --short
 M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M tests/playwright/tools/ObjectsTool.spec.mjs
- M toolbox/objects/index.html
- M toolbox/objects/objects.js
-?? docs_build/dev/reports/objects-remove-type-choices-report.md
+ M src/dev-runtime/admin/header-nav.local.html
+ M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+ M src/dev-runtime/persistence/mock-db-store.js
+ M src/dev-runtime/server/mock-api-router.mjs
+ M toolbox/controls/index.html
+?? docs_build/dev/reports/controls-input-mapping-rebuild-report.md
+?? src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+?? tests/playwright/tools/InputMappingV2Tool.spec.mjs
+?? toolbox/input-mapping-v2/
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/objects-remove-type-choices-report.md
+docs_build/dev/reports/controls-input-mapping-rebuild-report.md
+src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+tests/playwright/tools/InputMappingV2Tool.spec.mjs
+toolbox/input-mapping-v2/index.html
+toolbox/input-mapping-v2/input-mapping-api-client.js
+toolbox/input-mapping-v2/input-mapping-v2.js
 
 # git diff --stat
-docs_build/dev/reports/coverage_changed_js_guardrail.txt |  2 +-
- docs_build/dev/reports/playwright_v8_coverage_report.txt |  8 ++++----
- tests/playwright/tools/ObjectsTool.spec.mjs              | 14 +++++++++++---
- toolbox/objects/index.html                               |  7 -------
- toolbox/objects/objects.js                               |  2 +-
- 5 files changed, 17 insertions(+), 16 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  | 11 ++-
+ .../dev/reports/playwright_v8_coverage_report.txt  | 35 ++++----
+ src/dev-runtime/admin/header-nav.local.html        |  2 +-
+ .../guest-seeds/tool-metadata-inventory.js         | 13 +--
+ src/dev-runtime/persistence/mock-db-store.js       |  5 ++
+ src/dev-runtime/server/mock-api-router.mjs         | 20 ++++-
+ toolbox/controls/index.html                        | 94 +++++++++++++++++++---
+ 7 files changed, 148 insertions(+), 32 deletions(-)

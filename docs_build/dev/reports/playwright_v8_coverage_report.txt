@@ -12,35 +12,42 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(85%) Toolbox Index - exercised 6 runtime JS files
+(80%) Toolbox Index - exercised 4 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
+(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
 
 Files with executed line/function counts where available:
-(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-(38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
 (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
 (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-(67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
-(67%) toolbox/assets/assets-api-client.js - executed lines 17/17; executed functions 2/3
-(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 360/360; executed functions 16/23
-(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
-(77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
-(86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
-(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
-(100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
+(75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
+(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
+(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
 (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
-(100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/objects/objects.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
-(93%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
+(0%) toolbox/objects/objects.js - changed JS file not collected as browser runtime coverage
+(81%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
+(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - changed JS file with browser V8 coverage

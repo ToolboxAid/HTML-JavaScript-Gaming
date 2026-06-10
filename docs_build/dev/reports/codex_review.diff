@@ -1,135 +1,370 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 9b00b634f..2fbfdc62d 100644
+index 2fbfdc62d..d5c9eb21e 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,7 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -7,7 +7,16 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
-+(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
+-(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
++(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
 
  Guardrail warnings:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 1c6418c9d..11cb791c8 100644
+index 11cb791c8..c67932174 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,13 +12,13 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,35 +12,42 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
  Exercised tool entry points detected:
--(86%) Toolbox Index - exercised 6 runtime JS files
-+(85%) Toolbox Index - exercised 6 runtime JS files
+-(85%) Toolbox Index - exercised 6 runtime JS files
++(80%) Toolbox Index - exercised 4 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
  (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
-+(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
+-(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
++(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
 
  Files with executed line/function counts where available:
- (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-@@ -32,7 +32,7 @@ Files with executed line/function counts where available:
- (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
- (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
- (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
--(94%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 99/105
-+(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
- (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
+-(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+-(38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
+ (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+ (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+-(67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
+-(67%) toolbox/assets/assets-api-client.js - executed lines 17/17; executed functions 2/3
+-(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 360/360; executed functions 16/23
+-(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
+-(77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
+-(86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
+-(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105
+-(100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
++(75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
++(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
++(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
  (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
- (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
-@@ -43,4 +43,4 @@ Uncovered or low-coverage changed JS files:
+-(100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
+
+ Uncovered or low-coverage changed JS files:
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/objects/objects.js - WARNING: uncovered changed runtime JS file; advisory only
+
  Changed JS files considered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
--(94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
-+(93%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
-diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
-index 8db1b9b0d..b2aa66b04 100644
---- a/tests/playwright/tools/ObjectsTool.spec.mjs
-+++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -156,6 +156,7 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     await expect(page.locator("[data-objects-template-catalog] td:first-child")).toHaveText(TYPE_OPTIONS);
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Spawn Point");
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Decoration");
-+    await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Events");
-     await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
-@@ -174,7 +175,8 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     ]);
-     await expect(page.locator("[data-objects-list-table] thead")).not.toContainText("Status");
-     await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
--    await expect(page.locator("[data-objects-type-basics] li")).toHaveText(TYPE_OPTIONS);
-+    await expect(page.getByText("Type Choices", { exact: true })).toHaveCount(0);
-+    await expect(page.locator("[data-objects-type-basics]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-readiness]")).toHaveText("Not Configured");
-     await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Not Configured");
-     await expect(page.locator("[data-objects-asset-status]")).toHaveText("Not Configured");
-@@ -227,7 +229,10 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveClass(/primary/);
-     await expect(page.locator("[data-objects-row-open-events]").first()).toHaveClass(/primary/);
-     await expect(page.locator("[data-objects-row-open-hitboxes]").first()).toHaveAttribute("title", "Missing Hitbox.");
--    await expect(page.locator("[data-objects-row-open-events]").first()).toHaveAttribute("title", "Missing Events.");
-+    await expect(page.locator("[data-objects-row-open-events]").first()).toHaveAttribute(
-+      "title",
-+      "Missing Events. Events configure when object behavior happens."
-+    );
-     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("None");
-     await expect(page.locator("[data-objects-edit-sprite]")).toBeHidden();
-     await expect(page.locator("[data-objects-output-setup]")).toHaveText("Objects have saved setup details.");
-@@ -471,7 +476,10 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-     await expect(page.locator("[data-objects-row-open-events]")).toHaveClass(/primary/);
-     await expect(page.locator("[data-objects-row-edit-sprite]")).toHaveAttribute("title", "Sprite asset ready.");
-     await expect(page.locator("[data-objects-row-open-hitboxes]")).toHaveAttribute("title", "Missing Hitbox.");
--    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute("title", "Missing Events.");
-+    await expect(page.locator("[data-objects-row-open-events]")).toHaveAttribute(
-+      "title",
-+      "Missing Events. Events configure when object behavior happens."
-+    );
-     await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
-       "href",
-       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
-diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
-index 8eea3fe34..63056d723 100644
---- a/toolbox/objects/index.html
-+++ b/toolbox/objects/index.html
-@@ -55,13 +55,6 @@
-                                     </div>
-                                 </div>
+-(93%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
++(0%) toolbox/objects/objects.js - changed JS file not collected as browser runtime coverage
++(81%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
++(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/admin/header-nav.local.html b/src/dev-runtime/admin/header-nav.local.html
+index e50fa23aa..18f98d305 100644
+--- a/src/dev-runtime/admin/header-nav.local.html
++++ b/src/dev-runtime/admin/header-nav.local.html
+@@ -84,7 +84,7 @@
+           <div class="nav-item nav-popout-item" data-toolbox-menu-group>
+             <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Test &#9656;</a>
+             <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Test tools">
+-              <a data-nav-link data-toolbox-menu-item data-route="tool-controls" href="toolbox/controls/index.html">Controls</a>
++              <a data-nav-link data-toolbox-menu-item data-route="tool-controls" href="toolbox/input-mapping-v2/index.html">Controls</a>
+               <a data-nav-link data-toolbox-menu-item data-route="debug" href="toolbox/debug/index.html">Debug</a>
+               <a data-nav-link data-toolbox-menu-item data-route="events" href="toolbox/events/index.html">Events</a>
+               <a data-nav-link data-toolbox-menu-item data-route="game-testing" href="toolbox/game-testing/index.html">Game Testing</a>
+diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+index b348efd2e..e13fa5444 100644
+--- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
++++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+@@ -716,9 +716,9 @@ export const TOOL_REGISTRY = Object.freeze([
+     "displayName": "Controls",
+     "shortDescription": "Map keyboard, mouse, gamepad, and touch controls.",
+     "shortLabel": "Controls",
+-    "path": "controls",
+-    "folderName": "controls",
+-    "entryPoint": "controls/index.html",
++    "path": "input-mapping-v2",
++    "folderName": "input-mapping-v2",
++    "entryPoint": "input-mapping-v2/index.html",
+     "badge": "/assets/theme-v2/images/badges/controls.png",
+     "tool": "/assets/theme-v2/images/tools/controls.png",
+     "description": "Map keyboard, mouse, gamepad, and touch controls.",
+@@ -730,10 +730,11 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requiredForTestable": true,
+     "requiredForPublish": true,
+     "requires": [],
+-    "status": "Wireframe",
++    "status": "beta",
+     "progressChecklist": [
+-      "Review readiness",
+-      "Static planned text only"
++      "Map object actions",
++      "Capture keyboard, mouse, and gamepad inputs",
++      "Persist mappings through shared DB adapter"
+     ],
+     "deferred": false,
+     "hidden": false,
+diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
+index 4ec4f564b..32f89fbcb 100644
+--- a/src/dev-runtime/persistence/mock-db-store.js
++++ b/src/dev-runtime/persistence/mock-db-store.js
+@@ -87,6 +87,10 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
+     label: "Objects",
+     tableNames: Object.freeze(["object_definition_records"]),
+   }),
++  "input-mapping-v2": Object.freeze({
++    label: "Input Mapping",
++    tableNames: Object.freeze(["input_mapping_records"]),
++  }),
+   "project-journey": Object.freeze({
+     label: "Project Journey",
+     tableNames: Object.freeze([
+@@ -132,6 +136,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
+   game_configuration_records: Object.freeze(["key", "projectKey", "status", "summary", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   game_configuration_validation_items: Object.freeze(["key", "projectKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   object_definition_records: Object.freeze(["key", "id", "projectId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  input_mapping_records: Object.freeze(["key", "id", "projectId", "objectKey", "objectName", "action", "actionLabel", "inputDevice", "source", "binding", "label", "engine", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   project_journey_note_types: Object.freeze(["key", "typeSlug", "name", "seeded", "userExtensible", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   project_journey_notes: Object.freeze(["key", "slug", "projectKey", "ownerKey", "name", "typeKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   project_journey_templates: Object.freeze(["key", "templateSlug", "originalMeaning", "systemGuidance", "linkedToolContexts", "version", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+diff --git a/src/dev-runtime/server/mock-api-router.mjs b/src/dev-runtime/server/mock-api-router.mjs
+index f1ce6601e..845f7cef1 100644
+--- a/src/dev-runtime/server/mock-api-router.mjs
++++ b/src/dev-runtime/server/mock-api-router.mjs
+@@ -9,6 +9,9 @@ import {
+ import {
+   createObjectsToolMockRepository,
+ } from "../persistence/tool-repositories/objects-mock-repository.js";
++import {
++  createInputMappingToolMockRepository,
++} from "../persistence/tool-repositories/input-mapping-mock-repository.js";
+ import {
+   TOOL_IMAGE_FALLBACK,
+   TOOL_RELEASE_CHANNELS,
+@@ -73,7 +76,7 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
+ const LOCAL_MEM_MODE_ID = "local-mem";
+ const LOCAL_DB_MODE_ID = "local-db";
+ const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
+-const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "objects", "project-journey", "palette", "asset"];
++const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "objects", "input-mapping-v2", "project-journey", "palette", "asset"];
+ const IDENTITY_TABLES = ["users", "roles", "user_roles"];
+ const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
+ const TOOLBOX_PLANNING_FIELDS = Object.freeze([
+@@ -645,6 +648,10 @@ function objectsTables(repository) {
+   return normalizeOwnedTables("objects", repository.getTables());
+ }
+
++function inputMappingTables(repository) {
++  return normalizeOwnedTables("input-mapping-v2", repository.getTables());
++}
++
+ function projectJourneyTables(repository) {
+   return normalizeOwnedTables("project-journey", repository.getTables());
+ }
+@@ -927,6 +934,10 @@ class LocalDevMockDataSource {
+       projectWorkspaceRepository: this.workspaceRepository,
+       ...this.sharedOptions,
+     });
++    this.inputMappingRepository = createInputMappingToolMockRepository({
++      projectWorkspaceRepository: this.workspaceRepository,
++      ...this.sharedOptions,
++    });
+     this.assetReadyInitialized = false;
+     this.sharedOptions.workspaceRepository = this.workspaceRepository;
+     this.projectJourneyRepository = createProjectJourneyMockRepository(this.sharedOptions);
+@@ -1448,6 +1459,7 @@ class LocalDevMockDataSource {
+     if (toolId === "game-design") return this.gameDesignRepository;
+     if (toolId === "game-configuration") return this.gameConfigurationRepository;
+     if (toolId === "objects") return this.objectsRepository;
++    if (toolId === "input-mapping-v2") return this.inputMappingRepository;
+     if (toolId === "project-journey") return this.projectJourneyRepository;
+     if (toolId === "palette") return this.paletteRepository;
+     if (toolId === "colors") return this.paletteRepository;
+@@ -1480,6 +1492,11 @@ class LocalDevMockDataSource {
+         OBJECTS_TOOL_TABLES: this.objectsRepository.OBJECTS_TOOL_TABLES,
+       };
+     }
++    if (toolId === "input-mapping-v2") {
++      return {
++        INPUT_MAPPING_TOOL_TABLES: this.inputMappingRepository.INPUT_MAPPING_TOOL_TABLES,
++      };
++    }
+     if (toolId === "project-journey") {
+       return {
+         PROJECT_JOURNEY_KEYS,
+@@ -1619,6 +1636,7 @@ class LocalDevMockDataSource {
+       ...gameDesignTables(this.gameDesignRepository),
+       ...gameConfigurationTables(this.gameConfigurationRepository),
+       ...objectsTables(this.objectsRepository),
++      ...inputMappingTables(this.inputMappingRepository),
+       ...projectJourneyTables(this.projectJourneyRepository),
+       ...paletteTables(this.paletteRepository),
+       ...assetTables(this.assetRepository),
+diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
+index ea4dd41cf..62916a4c9 100644
+--- a/toolbox/controls/index.html
++++ b/toolbox/controls/index.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Controls - GameFoundryStudio</title>
+-    <meta name="description" content="Controls Toolbox wireframe. Map keyboard, mouse, gamepad, and touch controls.">
++    <meta name="description" content="Controls toolbox for DB-backed keyboard, mouse, and gamepad input mapping.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,7 +18,8 @@
+             <div class="container">
+                 <div class="kicker">Toolbox / Controls</div>
+                 <h1>Controls</h1>
+-                <p class="lede">Map keyboard, mouse, gamepad, and touch controls. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
++                <p class="lede">Map objects and actions to keyboard, mouse, and gamepad inputs.</p>
++                <p><a class="btn btn--compact" href="/toolbox/project-workspace/index.html" hidden data-input-return-workspace>Return to Workspace</a></p>
+             </div>
+         </section>
+         <section class="section">
+@@ -30,14 +31,69 @@
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Setup</summary>
+-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
++                                <summary>Actions</summary>
++                                <div class="accordion-body content-stack">
++                                    <label>
++                                        Action
++                                        <select data-input-action-select></select>
++                                    </label>
++                                    <label>
++                                        Object
++                                        <select data-input-object-select></select>
++                                    </label>
++                                    <div class="content-cluster" aria-label="Input mapping action controls">
++                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
++                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
++                                    </div>
++                                    <ul data-input-default-actions></ul>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Capture</summary>
++                                <div class="accordion-body content-stack">
++                                    <p data-input-capture-selection>Selected action: Cancel</p>
++                                    <div class="content-cluster" aria-label="Capture input controls">
++                                        <button class="btn" type="button" data-input-capture-keyboard>Capture Keyboard</button>
++                                        <button class="btn" type="button" data-input-capture-mouse>Capture Mouse</button>
++                                        <button class="btn" type="button" data-input-capture-gamepad>Capture Gamepad</button>
++                                    </div>
++                                    <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
++                                </div>
                              </details>
--                            <details class="vertical-accordion" open>
--                                <summary>Type Choices</summary>
--                                <div class="accordion-body content-stack">
--                                    <p>Types describe each object's setup purpose. Use Custom when a project-specific type is not listed.</p>
--                                    <ul data-objects-type-basics></ul>
--                                </div>
--                            </details>
                          </div>
                      </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="objects" data-tool-icon-src="assets/theme-v2/images/badges/objects.png" data-tool-character-src="assets/theme-v2/images/tools/objects.png"></div>
-diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
-index 55db082e8..1f855de74 100644
---- a/toolbox/objects/objects.js
-+++ b/toolbox/objects/objects.js
-@@ -558,7 +558,7 @@ function rowConfigurationActions(object) {
-   const openHitboxes = actionLink("Open Hitboxes", hitboxesHref(object), "objectsRowOpenHitboxes", id, "btn btn--compact primary");
-   const openEvents = actionLink("Open Events", eventsHref(object), "objectsRowOpenEvents", id, "btn btn--compact primary");
-   openHitboxes.title = "Missing Hitbox.";
--  openEvents.title = "Missing Events.";
-+  openEvents.title = "Missing Events. Events configure when object behavior happens.";
-   links.push(openHitboxes, openEvents);
-   return links;
- }
-diff --git a/docs_build/dev/reports/objects-remove-type-choices-report.md b/docs_build/dev/reports/objects-remove-type-choices-report.md
+-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+-                    <section class="tool-center-panel"><h2>Workspace</h2>
+-                        <p>Map keyboard, mouse, gamepad, and touch controls. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
++                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
++                    <section class="tool-center-panel">
++                        <h2>Input Mapping</h2>
++                        <p>Use the table to assign object actions to captured or entered inputs.</p>
++                        <div class="grid cols-3" aria-label="Input mapping summary">
++                            <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
++                            <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
++                            <article class="mini-stat"><strong data-input-save-status>Not Configured</strong>Status</article>
++                        </div>
++                        <article class="card">
++                            <div class="card-body content-stack">
++                                <div>
++                                    <div class="kicker">Table Input</div>
++                                    <h3>Mappings</h3>
++                                </div>
++                                <div class="table-wrapper">
++                                    <table class="data-table" aria-label="Input mappings" data-input-mapping-table>
++                                        <thead>
++                                            <tr>
++                                                <th>Object</th>
++                                                <th>Action</th>
++                                                <th>Input Device</th>
++                                                <th>Input</th>
++                                                <th>State</th>
++                                                <th>Actions</th>
++                                            </tr>
++                                        </thead>
++                                        <tbody data-input-mapping-list></tbody>
++                                    </table>
++                                </div>
++                            </div>
++                        </article>
+                     </section>
+                     <aside class="tool-column tool-group-platform">
+                         <div class="tool-column-header">
+@@ -45,8 +101,27 @@
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Output</summary>
+-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
++                                <summary>Mapping JSON</summary>
++                                <div class="accordion-body content-stack">
++                                    <pre data-input-mapping-json>{}</pre>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Devices</summary>
++                                <div class="accordion-body content-stack">
++                                    <div class="content-cluster" aria-label="Device diagnostics controls">
++                                        <button class="btn" type="button" data-input-refresh-devices>Refresh Devices</button>
++                                    </div>
++                                    <ul data-input-source-diagnostics></ul>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Status</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Status: <span data-input-output-status>Not Configured</span></p>
++                                    <p>Mappings: <span data-input-output-count>0</span></p>
++                                    <div class="status" role="status" data-input-status-log>Ready to map controls.</div>
++                                </div>
+                             </details>
+                         </div>
+                     </aside>
+@@ -57,6 +132,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
++    <script type="module" src="toolbox/input-mapping-v2/input-mapping-v2.js"></script>
+ </body>
+
+ </html>
+diff --git a/docs_build/dev/reports/controls-input-mapping-rebuild-report.md b/docs_build/dev/reports/controls-input-mapping-rebuild-report.md
 new file mode 100644
-index 000000000..5881ab40f
+index 000000000..32d5703f8
 --- /dev/null
-+++ b/docs_build/dev/reports/objects-remove-type-choices-report.md
-@@ -0,0 +1,78 @@
-+# PR_26161_015 Objects Remove Type Choices Report
++++ b/docs_build/dev/reports/controls-input-mapping-rebuild-report.md
+@@ -0,0 +1,98 @@
++# PR_26161_016 Controls Input Mapping Rebuild Report
 +
 +## Branch Validation
 +
@@ -137,73 +372,1481 @@ index 000000000..5881ab40f
 +
 +- Current branch: `main`
 +- Expected branch: `main`
-+- Worktree was clean before PR_26161_015 edits.
++- Worktree was clean before PR_26161_016 edits.
 +
 +## Scope
 +
-+- Impacted lane: Objects tool UI/runtime and targeted Objects Playwright coverage.
++- Impacted lane: Controls/Input Mapping tool UI/runtime, shared mock DB adapter table registration, local mock API repository routing, Controls metadata launch route, and targeted Playwright coverage.
 +- Playwright impacted: Yes.
 +- Runtime engine behavior changed: No.
-+- Samples validation: Skipped as requested. No sample JSON, auth behavior, production DB behavior, engine runtime behavior, or unrelated tool behavior changed.
++- Samples validation: Skipped as requested. No sample JSON alignment, auth behavior, production DB behavior, or engine runtime behavior changed.
 +
 +## Requirement Checklist
 +
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
 +- PASS: Verified current git branch was `main` before edits.
-+- PASS: Removed the duplicate visible `Type Choices` section from Objects.
-+- PASS: Kept `Object Type Catalog` as the single visible reference list for object templates and capabilities.
-+- PASS: Kept the catalog display limited to `Template` and `Capability`.
-+- PASS: Preserved object template/type values in the underlying registry, validator, row type dropdown, and footer template selector.
-+- PASS: Preserved Render, State, Asset, Sprite linking, DB persistence, and table editing behavior.
-+- PASS: Kept Events integration framed as future behavior/event configuration by updating the user-facing Events action title to `Events configure when object behavior happens.`
-+- PASS: Preserved Objects beta status.
++- PASS: Reviewed `docs_build/tools/input-mapping-v2/uat.md` before implementation.
++- PASS: Used `archive/v1-v2/tools/old_input-mapping-v2/` as UX/reference only; no legacy CSS, shell, inline patterns, or deprecated structure were copied.
++- PASS: Rebuilt Controls/Input Mapping with current Theme V2 layout and external JavaScript only.
++- PASS: Added `toolbox/input-mapping-v2/index.html` as the UAT launch route.
++- PASS: Replaced the old `toolbox/controls/index.html` wireframe with the rebuilt working surface for compatibility.
++- PASS: Updated Controls metadata/nav launch route to `toolbox/input-mapping-v2/index.html`.
++- PASS: Promoted Controls metadata status to `beta` for the rebuilt DB-backed tool.
++- PASS: Preserved useful old workflow concepts: default actions, keyboard capture, mouse capture, gamepad capture WARN, mapping list, Mapping JSON/status output, and device/source diagnostics.
++- PASS: Implemented table-first mapping input with `Object | Action | Input Device | Input | State | Actions`.
++- PASS: Uses Objects DB records as selectable Object values when available.
++- PASS: Persists mappings through the shared DB/mock adapter via `input_mapping_records`, not page-local-only storage.
++- PASS: Default actions are alphabetically sorted and include movement, confirm/cancel, fire, thrust, rotation, Pause, Select, and Start.
++- PASS: Workspace launch mode shows `Return to Workspace`.
 +- PASS: Did not add sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
-+- PASS: Kept Theme V2 only and preserved HTML restrictions.
++- PASS: Kept Theme V2 only; no inline CSS, inline JS, script/style blocks, or inline event handlers.
 +
 +## Testing Performed
 +
-+- PASS: `node --check toolbox/objects/objects.js`
-+- PASS: `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
++- PASS: `node --check toolbox/input-mapping-v2/input-mapping-v2.js`
++- PASS: `node --check toolbox/input-mapping-v2/input-mapping-api-client.js`
++- PASS: `node --check src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
++- PASS: `node --check src/dev-runtime/server/mock-api-router.mjs`
++- PASS: `node --check src/dev-runtime/persistence/mock-db-store.js`
++- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
++- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++- PASS: `rg --pcre2 -n '<script(?![^>]*\bsrc=)|<style\b|\son[a-z]+\s*=' toolbox/input-mapping-v2/index.html toolbox/controls/index.html`
++  - Expected no matches; command exited with no matches.
++- PASS: `rg -n 'Static wireframe only|Not implemented yet|no database|no runtime behavior|legacy CSS|deprecated structure|session-only|MVP' toolbox/input-mapping-v2/index.html toolbox/controls/index.html toolbox/input-mapping-v2/input-mapping-v2.js`
++  - Expected no matches; command exited with no matches.
 +- PASS: `git diff --check`
 +  - Result: PASS. Git reported line-ending normalization warnings only.
-+- PASS: `rg --pcre2 -n '<script(?![^>]*\bsrc=)|<style\b|\son[a-z]+\s*=' toolbox/objects/index.html`
-+  - Expected no matches; command exited with no matches.
-+- PASS: `rg -n 'Type Choices|data-objects-type-basics' toolbox/objects/index.html`
-+  - Expected no matches; command exited with no matches.
-+- PASS: `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line`
-+  - Result: 6 passed.
++- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --workers=1 --reporter=line`
++  - Result: 3 passed.
 +
 +## Playwright Behavior Covered
 +
-+- PASS: `Type Choices` no longer appears in the primary Objects UI.
-+- PASS: `Object Type Catalog` remains visible.
-+- PASS: Catalog headers remain `Template` and `Capability` only.
-+- PASS: Events is not exposed as an object template/type in the catalog.
-+- PASS: Footer template selector still offers object templates and can prefill active rows.
-+- PASS: Row type dropdown still offers object type values.
-+- PASS: Add, edit, delete, reset, and DB persistence after reload still work.
-+- PASS: Sprite asset creation/resolution and linked sprite asset display still work.
-+- PASS: Objects remains a clickable beta tool from Toolbox.
++- PASS: UAT launch route `/toolbox/input-mapping-v2/index.html` renders the required panels: Actions, Capture, Mappings, Mapping JSON, Devices, and Status.
++- PASS: Workspace launch query shows `Return to Workspace`.
++- PASS: Mapping table columns are `Object`, `Action`, `Input Device`, `Input`, `State`, and `Actions`.
++- PASS: Default actions are sorted alphabetically and include movement, confirm/cancel, fire, thrust, rotation, Pause, Select, and Start.
++- PASS: Device diagnostics list `InputService + KeyboardState`, `InputService + MouseState`, `InputService + GamepadState + GamepadInputAdapter`, and `GamepadInputAdapter`.
++- PASS: Device refresh updates the status log.
++- PASS: Gamepad capture shows an actionable `WARN` when no live browser gamepad value is available.
++- PASS: Keyboard capture maps `KeyA` to the selected `Move Left` action.
++- PASS: Captured token `Keyboard KeyA` deletes the persisted mapping when clicked.
++- PASS: Objects DB records are available as selectable Object values.
++- PASS: Mapping records persist through the shared DB/mock adapter after reload.
++- PASS: Compatibility route `/toolbox/controls/index.html` uses the rebuilt Input Mapping surface and no longer shows wireframe-only copy.
++- PASS: Controls registry route resolves to `toolbox/input-mapping-v2/index.html` with status `beta`.
 +
 +## Playwright V8 Coverage
 +
 +- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- Changed runtime JavaScript coverage notes:
-+  - `(93%) toolbox/objects/objects.js - executed lines 1107/1107; executed functions 98/105`
-+  - `(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only`
-+- The advisory warning is safe for this PR because PR_26161_015 did not modify `src/dev-runtime/guest-seeds/tool-metadata-inventory.js`; this change only touched Objects UI/runtime, Objects Playwright coverage, and generated reports.
++- Current PR browser runtime JavaScript coverage:
++  - `(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79`
++  - `(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2`
++- Advisory WARN entries remain for server/dev-runtime files because Playwright browser V8 coverage does not collect Node-side mock API modules.
++- The report may also list previous `HEAD` changed JS such as Objects files; those are advisory from the coverage helper's HEAD comparison and are not PR_26161_016 worktree changes.
 +
 +## Manual Validation Steps
 +
-+1. Open `/toolbox/objects/index.html`.
-+2. Confirm the left Objects panel shows `Object Setup` and `Object Type Catalog`, with no `Type Choices` section.
-+3. Confirm the Object Type Catalog table shows only `Template` and `Capability`.
-+4. Use the table footer template selector to choose `Hero`, then click `Add Object` and confirm the active row is prefilled.
-+5. Save a Sprite object, reload the Objects page, and confirm the row plus linked sprite asset remain.
-+6. Confirm `Open Events` is presented as event configuration for when object behavior happens, not as an object type.
++1. Open `/toolbox/input-mapping-v2/index.html?workspace=demo-project`.
++2. Confirm `Return to Workspace` is visible.
++3. Confirm Actions, Capture, Mappings, Mapping JSON, Devices, and Status panels appear.
++4. Confirm the default action dropdown is alphabetically sorted and includes Pause, Select, and Start.
++5. Select `Move Left`, click `Capture Keyboard`, press `A`, and confirm `Keyboard KeyA` appears in the mapping table and JSON.
++6. Click the `Keyboard KeyA` token and confirm the mapping is deleted.
++7. Click `Capture Gamepad` with no live gamepad value and confirm the actionable WARN.
++8. Create or seed an Object record, reload Input Mapping, and confirm the Object dropdown includes it.
++9. Reload after saving a mapping and confirm the mapping persists from `input_mapping_records`.
 +
 +## Skipped Lanes
 +
 +- Full samples validation: SKIP, explicitly requested and no samples changed.
-+- Broad workspace/project suite: SKIP, no shared Project Workspace contract, engine runtime behavior, public navigation behavior, auth behavior, production DB behavior, or sample behavior changed.
-+- Full registry suite: SKIP, registry and validator values were intentionally preserved; targeted Objects Playwright validates row type/template dropdown behavior.
++- Full workspace/project suite: SKIP, broad Project Workspace behavior was not changed; targeted Playwright validates the UAT launch return action and Controls registry route.
++- Engine runtime tests: SKIP, no `src/engine/input` behavior changed.
++- Auth and production DB validation: SKIP, no auth or production DB behavior changed; shared mock DB adapter wiring was covered by targeted Playwright and syntax checks.
+diff --git a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+new file mode 100644
+index 000000000..3be17de3e
+--- /dev/null
++++ b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+@@ -0,0 +1,196 @@
++import {
++  MOCK_DB_KEYS,
++  normalizeMockDbTables,
++  saveMockDbTables,
++} from "../mock-db-store.js";
++
++export const INPUT_MAPPING_TOOL_TABLES = Object.freeze([
++  "input_mapping_records",
++]);
++
++const INPUT_MAPPING_DB_OWNER = "input-mapping-v2";
++const DEFAULT_PROJECT_ID = "demo-project";
++const DEFAULT_INPUT_MAPPING_USER_KEY = MOCK_DB_KEYS.users.user1;
++
++function cloneRows(rows = []) {
++  return rows.map((row) => ({ ...row }));
++}
++
++function cloneTables(tables) {
++  return Object.fromEntries(
++    INPUT_MAPPING_TOOL_TABLES.map((table) => [table, cloneRows(tables[table] || [])]),
++  );
++}
++
++function createEmptyTables() {
++  return {
++    input_mapping_records: [],
++  };
++}
++
++function normalizeText(value) {
++  return String(value || "").trim();
++}
++
++function mappingKeyFromText(value) {
++  return normalizeText(value)
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/^-+|-+$/g, "");
++}
++
++function initialTables(options = {}) {
++  const explicitRows = options.memoryDbTables?.input_mapping_records;
++  if (Array.isArray(explicitRows)) {
++    return normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, {
++      input_mapping_records: explicitRows,
++    }, options);
++  }
++  return normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, createEmptyTables(), options);
++}
++
++function sortedMappingRows(tables) {
++  return [...(tables.input_mapping_records || [])].sort((left, right) => (
++    (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
++      || normalizeText(left.actionLabel).localeCompare(normalizeText(right.actionLabel))
++      || normalizeText(left.label).localeCompare(normalizeText(right.label))
++  ));
++}
++
++function mappingFromRecord(record = {}) {
++  return {
++    action: normalizeText(record.action),
++    actionLabel: normalizeText(record.actionLabel),
++    binding: normalizeText(record.binding),
++    engine: normalizeText(record.engine),
++    id: normalizeText(record.id),
++    inputDevice: normalizeText(record.inputDevice),
++    label: normalizeText(record.label),
++    objectKey: normalizeText(record.objectKey),
++    objectName: normalizeText(record.objectName),
++    source: normalizeText(record.source),
++    state: normalizeText(record.state) || "Active",
++  };
++}
++
++function tableCounts(tables) {
++  return INPUT_MAPPING_TOOL_TABLES.map((table) => ({
++    rows: tables[table].length,
++    table,
++  }));
++}
++
++export function createInputMappingToolMockRepository(options = {}) {
++  let tables = initialTables(options);
++
++  function activeProjectId() {
++    return normalizeText(options.projectWorkspaceRepository?.getActiveProject?.()?.id) || DEFAULT_PROJECT_ID;
++  }
++
++  function activeUserKey() {
++    return normalizeText(options.sessionUserKey) || DEFAULT_INPUT_MAPPING_USER_KEY;
++  }
++
++  function persistTables() {
++    tables = normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, cloneTables(tables), options);
++    if (options.memoryDbTables && typeof options.memoryDbTables === "object") {
++      INPUT_MAPPING_TOOL_TABLES.forEach((tableName) => {
++        options.memoryDbTables[tableName] = cloneRows(tables[tableName]);
++      });
++    }
++    saveMockDbTables(INPUT_MAPPING_DB_OWNER, tables, options);
++  }
++
++  function listMappings(projectId = "") {
++    const targetProjectId = normalizeText(projectId) || activeProjectId();
++    return sortedMappingRows(tables)
++      .filter((record) => normalizeText(record.projectId) === targetProjectId)
++      .map(mappingFromRecord);
++  }
++
++  function replaceMappings(mappings = [], projectId = "") {
++    const targetProjectId = normalizeText(projectId) || activeProjectId();
++    const existingRows = new Map(
++      (tables.input_mapping_records || [])
++        .filter((record) => normalizeText(record.projectId) === targetProjectId)
++        .map((record) => [normalizeText(record.id), record]),
++    );
++    const timestamp = new Date().toISOString();
++    const userKey = activeUserKey();
++    const nextRows = (Array.isArray(mappings) ? mappings : []).map((mapping, index) => {
++      const action = normalizeText(mapping.action);
++      const binding = normalizeText(mapping.binding);
++      const objectKey = normalizeText(mapping.objectKey) || "global";
++      const id = normalizeText(mapping.id) || mappingKeyFromText(`${objectKey}-${action}-${binding}-${index + 1}`);
++      const previous = existingRows.get(id);
++      return {
++        action,
++        actionLabel: normalizeText(mapping.actionLabel),
++        binding,
++        createdAt: previous?.createdAt || timestamp,
++        createdBy: previous?.createdBy || userKey,
++        engine: normalizeText(mapping.engine),
++        id,
++        inputDevice: normalizeText(mapping.inputDevice),
++        key: previous?.key,
++        label: normalizeText(mapping.label),
++        objectKey,
++        objectName: normalizeText(mapping.objectName) || "Global",
++        projectId: targetProjectId,
++        recordOrder: index + 1,
++        source: normalizeText(mapping.source),
++        state: normalizeText(mapping.state) || "Active",
++        updatedAt: timestamp,
++        updatedBy: userKey,
++      };
++    });
++
++    tables.input_mapping_records = [
++      ...(tables.input_mapping_records || []).filter(
++        (record) => normalizeText(record.projectId) !== targetProjectId,
++      ),
++      ...nextRows,
++    ];
++    persistTables();
++    return {
++      mappings: listMappings(targetProjectId),
++      saved: true,
++      snapshot: getSnapshot(),
++    };
++  }
++
++  function resetMappings(projectId = "") {
++    const targetProjectId = normalizeText(projectId) || activeProjectId();
++    tables.input_mapping_records = (tables.input_mapping_records || []).filter(
++      (record) => normalizeText(record.projectId) !== targetProjectId,
++    );
++    persistTables();
++    return {
++      mappings: [],
++      reset: true,
++      snapshot: getSnapshot(),
++    };
++  }
++
++  function getTables() {
++    return normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, cloneTables(tables), options);
++  }
++
++  function getSnapshot() {
++    const normalizedTables = getTables();
++    return {
++      mappings: listMappings(),
++      tableCounts: tableCounts(normalizedTables),
++      tables: normalizedTables,
++    };
++  }
++
++  return {
++    INPUT_MAPPING_TOOL_TABLES,
++    getSnapshot,
++    getTables,
++    listMappings,
++    replaceMappings,
++    resetMappings,
++  };
++}
+diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
+new file mode 100644
+index 000000000..7471f8685
+--- /dev/null
++++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
+@@ -0,0 +1,245 @@
++import { expect, test } from "@playwright/test";
++import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
++import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
++import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
++
++const DEFAULT_ACTION_LABELS = [
++  "Cancel",
++  "Confirm",
++  "Fire",
++  "Interact",
++  "Jump",
++  "Move Down",
++  "Move Left",
++  "Move Right",
++  "Move Up",
++  "Pause",
++  "Rotate Left",
++  "Rotate Right",
++  "Select",
++  "Start",
++  "Thrust",
++];
++
++test.beforeEach(async ({ page }) => {
++  await installPlaywrightStorageIsolation(page, {
++    lane: "input-mapping-v2",
++    surface: "Controls input mapping rebuild",
++  });
++});
++
++test.afterEach(async ({ page }) => {
++  await clearPlaywrightStorage(page);
++});
++
++test.afterAll(async () => {
++  await workspaceV2CoverageReporter.writeReport();
++});
++
++function collectPageFailures(page) {
++  const failedRequests = [];
++  const pageErrors = [];
++  const consoleErrors = [];
++
++  page.on("pageerror", (error) => {
++    pageErrors.push(error.message);
++  });
++  page.on("console", (message) => {
++    if (message.type() === "error") {
++      consoleErrors.push(message.text());
++    }
++  });
++  page.on("response", (response) => {
++    if (response.status() >= 400) {
++      failedRequests.push(`${response.status()} ${response.url()}`);
++    }
++  });
++  page.on("requestfailed", (request) => {
++    failedRequests.push(`FAILED ${request.url()}`);
++  });
++
++  return { consoleErrors, failedRequests, pageErrors };
++}
++
++async function openInputMappingPage(page, path = "/toolbox/input-mapping-v2/index.html") {
++  const server = await startRepoServer();
++  const failures = collectPageFailures(page);
++  await workspaceV2CoverageReporter.start(page);
++  await page.goto(`${server.baseUrl}${path}`, { waitUntil: "networkidle" });
++  return { ...failures, server };
++}
++
++async function expectNoPageFailures(failures) {
++  expect(failures.failedRequests).toEqual([]);
++  expect(failures.pageErrors).toEqual([]);
++  expect(failures.consoleErrors).toEqual([]);
++}
++
++async function seedHeroObject(page) {
++  await page.evaluate(async () => {
++    const initResponse = await fetch("/api/toolbox/objects/repositories", {
++      body: JSON.stringify({ options: {} }),
++      headers: { "Content-Type": "application/json" },
++      method: "POST",
++    });
++    const initPayload = await initResponse.json();
++    const repositoryId = initPayload.data.repositoryId;
++    const saveResponse = await fetch(`/api/toolbox/objects/repositories/${repositoryId}/methods/replaceObjects`, {
++      body: JSON.stringify({
++        args: [[{
++          behavior: "Responds to mapped input.",
++          id: "hero",
++          interaction: "Uses controls.",
++          name: "Hero",
++          render: { type: "None" },
++          role: "Hero",
++          state: "Active",
++          traits: ["playerControlled", "movable"],
++          type: "Dynamic",
++        }]],
++      }),
++      headers: { "Content-Type": "application/json" },
++      method: "POST",
++    });
++    await saveResponse.json();
++  });
++}
++
++async function inputMappingRecords(page) {
++  return page.evaluate(async () => {
++    const response = await fetch("/api/mock-db/snapshot");
++    const payload = await response.json();
++    return payload.data.tables.input_mapping_records || [];
++  });
++}
++
++async function controlsRegistryEntry(page) {
++  return page.evaluate(async () => {
++    const response = await fetch("/api/toolbox/registry/snapshot");
++    const payload = await response.json();
++    return payload.data.tools.find((tool) => tool.id === "controls") || null;
++  });
++}
++
++test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace return match UAT", async ({ page }) => {
++  const failures = await openInputMappingPage(page, "/toolbox/input-mapping-v2/index.html?workspace=demo-project");
++
++  try {
++    await expect(page.locator(".tool-workspace")).toBeVisible();
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    await expect(page.locator("summary").filter({ hasText: "Actions" })).toBeVisible();
++    await expect(page.locator("summary").filter({ hasText: "Capture" })).toBeVisible();
++    await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
++    await expect(page.getByText("Mapping JSON", { exact: true })).toBeVisible();
++    await expect(page.getByText("Devices", { exact: true })).toBeVisible();
++    await expect(page.getByText("Status", { exact: true })).toBeVisible();
++    await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
++    await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
++      "Object",
++      "Action",
++      "Input Device",
++      "Input",
++      "State",
++      "Actions",
++    ]);
++    await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
++    await expect(page.locator("[data-input-default-actions] li")).toHaveText(DEFAULT_ACTION_LABELS);
++    expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
++    await expect(page.locator("[data-input-action-select]")).toContainText("Pause");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Select");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Start");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Move Left");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Move Right");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Move Up");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Move Down");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Confirm");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Cancel");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Fire");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Thrust");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Rotate Left");
++    await expect(page.locator("[data-input-action-select]")).toContainText("Rotate Right");
++    await expect(page.locator("[data-input-source-diagnostics]")).toContainText("InputService + KeyboardState");
++    await expect(page.locator("[data-input-source-diagnostics]")).toContainText("InputService + MouseState");
++    await expect(page.locator("[data-input-source-diagnostics]")).toContainText("InputService + GamepadState + GamepadInputAdapter");
++    await expect(page.locator("[data-input-source-diagnostics]")).toContainText("GamepadInputAdapter");
++
++    await page.getByRole("button", { name: "Refresh Devices" }).click();
++    await expect(page.locator("[data-input-status-log]")).toHaveText("Device diagnostics refreshed.");
++    await page.getByRole("button", { name: "Capture Gamepad" }).click();
++    await expect(page.locator("[data-input-capture-status]")).toContainText("WARN: Gamepad capture unavailable.");
++    await expect(page.locator("[data-input-capture-status]")).toContainText("connect a gamepad");
++    await expect(page.locator("[data-input-capture-status]")).toContainText("press a button or move an axis");
++
++    const registryEntry = await controlsRegistryEntry(page);
++    expect(registryEntry.path).toBe("toolbox/input-mapping-v2/index.html");
++    expect(registryEntry.status).toBe("beta");
++
++    await expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
++
++test("Controls Input Mapping captures KeyA, deletes token, and persists through shared DB", async ({ page }) => {
++  const failures = await openInputMappingPage(page);
++
++  try {
++    await seedHeroObject(page);
++    await page.reload({ waitUntil: "networkidle" });
++    await expect(page.locator("[data-input-object-select] option")).toContainText(["Global", "Hero"]);
++    await page.locator("[data-input-object-select]").selectOption("hero");
++    await page.locator("[data-input-action-select]").selectOption("moveLeft");
++    await expect(page.locator("[data-input-capture-selection]")).toHaveText("Selected action: Move Left");
++
++    await page.getByRole("button", { name: "Capture Keyboard" }).click();
++    await expect(page.locator("[data-input-capture-status]")).toHaveText("Press a keyboard key to map the selected action.");
++    await page.keyboard.press("KeyA");
++    await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
++    await expect(page.locator("[data-input-mapping-list]")).toContainText("Hero");
++    await expect(page.locator("[data-input-mapping-list]")).toContainText("Move Left");
++    await expect(page.locator("[data-input-mapping-list]")).toContainText("Keyboard");
++    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyA");
++    await expect(page.locator("[data-input-mapping-json]")).toContainText('"action": "moveLeft"');
++    await expect(page.locator("[data-input-mapping-json]")).toContainText('"label": "Keyboard KeyA"');
++    await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
++
++    let records = await inputMappingRecords(page);
++    expect(records).toHaveLength(1);
++    expect(records[0]).toMatchObject({
++      action: "moveLeft",
++      binding: "KeyA",
++      objectKey: "hero",
++      source: "keyboard",
++    });
++
++    await page.reload({ waitUntil: "networkidle" });
++    await expect(page.locator("[data-input-mapping-list]")).toContainText("Hero");
++    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyA");
++
++    await page.locator("[data-input-delete-token]").click();
++    await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
++    await expect(page.locator("[data-input-output-status]")).toHaveText("Not Configured");
++    records = await inputMappingRecords(page);
++    expect(records).toHaveLength(0);
++
++    await expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
++
++test("Controls compatibility route uses rebuilt Input Mapping surface", async ({ page }) => {
++  const failures = await openInputMappingPage(page, "/toolbox/controls/index.html");
++
++  try {
++    await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
++    await expect(page.locator("[data-input-mapping-table]")).toBeVisible();
++    await expect(page.locator("main")).not.toContainText(/Static wireframe only|Not implemented yet|no database|no runtime behavior/i);
++    await expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
+diff --git a/toolbox/input-mapping-v2/index.html b/toolbox/input-mapping-v2/index.html
+new file mode 100644
+index 000000000..62916a4c9
+--- /dev/null
++++ b/toolbox/input-mapping-v2/index.html
+@@ -0,0 +1,138 @@
++<!doctype html>
++<html lang="en">
++
++<head>
++    <meta charset="utf-8">
++    <base href="/">
++    <meta name="viewport" content="width=device-width, initial-scale=1">
++    <title>Controls - GameFoundryStudio</title>
++    <meta name="description" content="Controls toolbox for DB-backed keyboard, mouse, and gamepad input mapping.">
++    <link rel="icon" href="/favicon.svg">
++    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
++</head>
++
++<body class="meaning-molten-orange">
++    <div data-partial="header-nav"></div>
++    <main>
++        <section class="page-title">
++            <div class="container">
++                <div class="kicker">Toolbox / Controls</div>
++                <h1>Controls</h1>
++                <p class="lede">Map objects and actions to keyboard, mouse, and gamepad inputs.</p>
++                <p><a class="btn btn--compact" href="/toolbox/project-workspace/index.html" hidden data-input-return-workspace>Return to Workspace</a></p>
++            </div>
++        </section>
++        <section class="section">
++            <div class="container container--tool-wide">
++                <div class="tool-workspace tool-workspace--wide">
++                    <aside class="tool-column tool-group-platform">
++                        <div class="tool-column-header">
++                            <h2>Controls</h2>
++                        </div>
++                        <div class="accordion-stack">
++                            <details class="vertical-accordion" open>
++                                <summary>Actions</summary>
++                                <div class="accordion-body content-stack">
++                                    <label>
++                                        Action
++                                        <select data-input-action-select></select>
++                                    </label>
++                                    <label>
++                                        Object
++                                        <select data-input-object-select></select>
++                                    </label>
++                                    <div class="content-cluster" aria-label="Input mapping action controls">
++                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
++                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
++                                    </div>
++                                    <ul data-input-default-actions></ul>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Capture</summary>
++                                <div class="accordion-body content-stack">
++                                    <p data-input-capture-selection>Selected action: Cancel</p>
++                                    <div class="content-cluster" aria-label="Capture input controls">
++                                        <button class="btn" type="button" data-input-capture-keyboard>Capture Keyboard</button>
++                                        <button class="btn" type="button" data-input-capture-mouse>Capture Mouse</button>
++                                        <button class="btn" type="button" data-input-capture-gamepad>Capture Gamepad</button>
++                                    </div>
++                                    <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
++                                </div>
++                            </details>
++                        </div>
++                    </aside>
++                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
++                    <section class="tool-center-panel">
++                        <h2>Input Mapping</h2>
++                        <p>Use the table to assign object actions to captured or entered inputs.</p>
++                        <div class="grid cols-3" aria-label="Input mapping summary">
++                            <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
++                            <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
++                            <article class="mini-stat"><strong data-input-save-status>Not Configured</strong>Status</article>
++                        </div>
++                        <article class="card">
++                            <div class="card-body content-stack">
++                                <div>
++                                    <div class="kicker">Table Input</div>
++                                    <h3>Mappings</h3>
++                                </div>
++                                <div class="table-wrapper">
++                                    <table class="data-table" aria-label="Input mappings" data-input-mapping-table>
++                                        <thead>
++                                            <tr>
++                                                <th>Object</th>
++                                                <th>Action</th>
++                                                <th>Input Device</th>
++                                                <th>Input</th>
++                                                <th>State</th>
++                                                <th>Actions</th>
++                                            </tr>
++                                        </thead>
++                                        <tbody data-input-mapping-list></tbody>
++                                    </table>
++                                </div>
++                            </div>
++                        </article>
++                    </section>
++                    <aside class="tool-column tool-group-platform">
++                        <div class="tool-column-header">
++                            <h2>Inspector</h2>
++                        </div>
++                        <div class="accordion-stack">
++                            <details class="vertical-accordion" open>
++                                <summary>Mapping JSON</summary>
++                                <div class="accordion-body content-stack">
++                                    <pre data-input-mapping-json>{}</pre>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Devices</summary>
++                                <div class="accordion-body content-stack">
++                                    <div class="content-cluster" aria-label="Device diagnostics controls">
++                                        <button class="btn" type="button" data-input-refresh-devices>Refresh Devices</button>
++                                    </div>
++                                    <ul data-input-source-diagnostics></ul>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Status</summary>
++                                <div class="accordion-body content-stack">
++                                    <p>Status: <span data-input-output-status>Not Configured</span></p>
++                                    <p>Mappings: <span data-input-output-count>0</span></p>
++                                    <div class="status" role="status" data-input-status-log>Ready to map controls.</div>
++                                </div>
++                            </details>
++                        </div>
++                    </aside>
++                </div>
++            </div>
++        </section>
++    </main>
++    <div data-partial="footer"></div>
++    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
++    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
++    <script type="module" src="toolbox/input-mapping-v2/input-mapping-v2.js"></script>
++</body>
++
++</html>
+diff --git a/toolbox/input-mapping-v2/input-mapping-api-client.js b/toolbox/input-mapping-v2/input-mapping-api-client.js
+new file mode 100644
+index 000000000..8ab290a00
+--- /dev/null
++++ b/toolbox/input-mapping-v2/input-mapping-api-client.js
+@@ -0,0 +1,15 @@
++import {
++  createServerRepositoryClient,
++  readServerToolConstants,
++  requireServerConstant,
++} from "../../src/engine/api/server-api-client.js";
++
++const constants = readServerToolConstants("input-mapping-v2");
++
++export const INPUT_MAPPING_TOOL_TABLES = Object.freeze(
++  requireServerConstant(constants, "INPUT_MAPPING_TOOL_TABLES", "input-mapping-v2"),
++);
++
++export function createInputMappingToolApiRepository(options = {}) {
++  return createServerRepositoryClient("input-mapping-v2", options);
++}
+diff --git a/toolbox/input-mapping-v2/input-mapping-v2.js b/toolbox/input-mapping-v2/input-mapping-v2.js
+new file mode 100644
+index 000000000..9a64af1bd
+--- /dev/null
++++ b/toolbox/input-mapping-v2/input-mapping-v2.js
+@@ -0,0 +1,764 @@
++import { createObjectsToolApiRepository } from "../objects/objects-api-client.js";
++import { createInputMappingToolApiRepository } from "./input-mapping-api-client.js";
++
++const DEFAULT_ACTIONS = Object.freeze([
++  Object.freeze({ id: "cancel", label: "Cancel" }),
++  Object.freeze({ id: "confirm", label: "Confirm" }),
++  Object.freeze({ id: "fire", label: "Fire" }),
++  Object.freeze({ id: "interact", label: "Interact" }),
++  Object.freeze({ id: "jump", label: "Jump" }),
++  Object.freeze({ id: "moveDown", label: "Move Down" }),
++  Object.freeze({ id: "moveLeft", label: "Move Left" }),
++  Object.freeze({ id: "moveRight", label: "Move Right" }),
++  Object.freeze({ id: "moveUp", label: "Move Up" }),
++  Object.freeze({ id: "pause", label: "Pause" }),
++  Object.freeze({ id: "rotateLeft", label: "Rotate Left" }),
++  Object.freeze({ id: "rotateRight", label: "Rotate Right" }),
++  Object.freeze({ id: "select", label: "Select" }),
++  Object.freeze({ id: "start", label: "Start" }),
++  Object.freeze({ id: "thrust", label: "Thrust" }),
++].sort((left, right) => left.label.localeCompare(right.label, undefined, { sensitivity: "base" })));
++
++const DEVICE_OPTIONS = Object.freeze([
++  Object.freeze({ engine: "KeyboardState", label: "Keyboard", source: "keyboard" }),
++  Object.freeze({ engine: "MouseState", label: "Mouse", source: "mouse" }),
++  Object.freeze({ engine: "GamepadState + GamepadInputAdapter", label: "Gamepad", source: "gamepad" }),
++]);
++
++const SOURCE_DIAGNOSTICS = Object.freeze([
++  "InputService + KeyboardState",
++  "InputService + MouseState",
++  "InputService + GamepadState + GamepadInputAdapter",
++  "GamepadInputAdapter",
++]);
++
++let inputRepository = createInputMappingToolApiRepository();
++let objectsRepository = createObjectsToolApiRepository();
++let mappings = [];
++let objectOptions = [];
++let editingRow = null;
++let captureMode = "";
++
++const elements = {
++  actionSelect: document.querySelector("[data-input-action-select]"),
++  addMapping: document.querySelector("[data-input-add-mapping]"),
++  captureGamepad: document.querySelector("[data-input-capture-gamepad]"),
++  captureKeyboard: document.querySelector("[data-input-capture-keyboard]"),
++  captureMouse: document.querySelector("[data-input-capture-mouse]"),
++  captureSelection: document.querySelector("[data-input-capture-selection]"),
++  captureStatus: document.querySelector("[data-input-capture-status]"),
++  defaultActions: document.querySelector("[data-input-default-actions]"),
++  deviceCount: document.querySelector("[data-input-device-count]"),
++  list: document.querySelector("[data-input-mapping-list]"),
++  mappingCount: document.querySelector("[data-input-mapping-count]"),
++  mappingJson: document.querySelector("[data-input-mapping-json]"),
++  objectSelect: document.querySelector("[data-input-object-select]"),
++  outputCount: document.querySelector("[data-input-output-count]"),
++  outputStatus: document.querySelector("[data-input-output-status]"),
++  refreshDevices: document.querySelector("[data-input-refresh-devices]"),
++  resetMappings: document.querySelector("[data-input-reset-mappings]"),
++  returnWorkspace: document.querySelector("[data-input-return-workspace]"),
++  saveStatus: document.querySelector("[data-input-save-status]"),
++  sourceDiagnostics: document.querySelector("[data-input-source-diagnostics]"),
++  statusLog: document.querySelector("[data-input-status-log]"),
++};
++
++function normalizeText(value) {
++  return String(value || "").trim();
++}
++
++function keyFromText(value) {
++  return normalizeText(value)
++    .toLowerCase()
++    .replace(/[^a-z0-9]+/g, "-")
++    .replace(/^-+|-+$/g, "");
++}
++
++function setText(element, value) {
++  if (element) {
++    element.textContent = value;
++  }
++}
++
++function actionById(actionId) {
++  return DEFAULT_ACTIONS.find((action) => action.id === actionId) || DEFAULT_ACTIONS[0];
++}
++
++function deviceBySource(source) {
++  return DEVICE_OPTIONS.find((device) => device.source === source) || DEVICE_OPTIONS[0];
++}
++
++function selectedObject() {
++  const objectKey = elements.objectSelect?.value || "global";
++  return objectOptions.find((object) => object.key === objectKey) || objectOptions[0];
++}
++
++function selectedAction() {
++  return actionById(elements.actionSelect?.value);
++}
++
++function optionElement(value, text) {
++  const option = document.createElement("option");
++  option.value = value;
++  option.textContent = text;
++  return option;
++}
++
++function tableCell(text) {
++  const cell = document.createElement("td");
++  cell.textContent = text;
++  return cell;
++}
++
++function actionButton(text, dataName, value = "", className = "btn btn--compact") {
++  const button = document.createElement("button");
++  button.className = className;
++  button.type = "button";
++  button.textContent = text;
++  button.dataset[dataName] = value;
++  return button;
++}
++
++function actionCell(actions) {
++  const cell = document.createElement("td");
++  const group = document.createElement("div");
++  group.className = "action-group action-group--tight";
++  group.append(...actions);
++  cell.append(group);
++  return cell;
++}
++
++function selectControl({ ariaLabel, options, selectedValue }) {
++  const select = document.createElement("select");
++  select.setAttribute("aria-label", ariaLabel);
++  options.forEach((option) => {
++    select.append(optionElement(option.value, option.label));
++  });
++  select.value = selectedValue || options[0]?.value || "";
++  return select;
++}
++
++function textControl({ ariaLabel, value }) {
++  const input = document.createElement("input");
++  input.setAttribute("aria-label", ariaLabel);
++  input.type = "text";
++  input.value = value || "";
++  return input;
++}
++
++function controlCell(control) {
++  const cell = document.createElement("td");
++  cell.append(control);
++  return cell;
++}
++
++function mappingIdFor(mapping) {
++  const base = [
++    mapping.objectKey || "global",
++    mapping.action,
++    mapping.source,
++    mapping.binding,
++  ].join("-");
++  return keyFromText(base) || `mapping-${Date.now()}`;
++}
++
++function normalizeMapping(source = {}) {
++  const action = actionById(source.action);
++  const device = deviceBySource(source.source || source.inputDevice?.toLowerCase());
++  const binding = normalizeText(source.binding || source.input);
++  const objectKey = normalizeText(source.objectKey) || "global";
++  const objectName = normalizeText(source.objectName) || objectOptions.find((object) => object.key === objectKey)?.label || "Global";
++  const mapping = {
++    action: action.id,
++    actionLabel: action.label,
++    binding,
++    engine: normalizeText(source.engine) || device.engine,
++    id: normalizeText(source.id),
++    inputDevice: device.label,
++    label: normalizeText(source.label) || inputLabel(device.source, binding),
++    objectKey,
++    objectName,
++    source: device.source,
++    state: normalizeText(source.state) || "Active",
++  };
++  return {
++    ...mapping,
++    id: mapping.id || mappingIdFor(mapping),
++  };
++}
++
++function inputLabel(source, binding) {
++  if (!binding) {
++    return "";
++  }
++  const device = deviceBySource(source);
++  if (source === "keyboard") {
++    return `${device.label} ${binding}`;
++  }
++  if (source === "mouse") {
++    return `${device.label} ${binding.replace(/^MouseButton/, "Button ")}`;
++  }
++  if (source === "gamepad") {
++    return `${device.label} ${binding.replace(/^Pad\d+:/, "")}`;
++  }
++  return `${device.label} ${binding}`;
++}
++
++function payloadActions() {
++  return DEFAULT_ACTIONS.map((action) => {
++    const inputs = mappings
++      .filter((mapping) => mapping.action === action.id && mapping.state === "Active")
++      .map((mapping) => ({
++        binding: mapping.binding,
++        engine: mapping.engine,
++        label: mapping.label,
++        source: mapping.source,
++      }));
++    return {
++      action: action.id,
++      inputs,
++      label: action.label,
++    };
++  }).filter((action) => action.inputs.length > 0);
++}
++
++function payloadJson() {
++  return {
++    actions: payloadActions(),
++    engineInputModel: "src/engine/input/InputMap",
++    toolId: "input-mapping-v2",
++    version: 1,
++  };
++}
++
++function readMappings() {
++  let result = inputRepository.listMappings();
++  if (Array.isArray(result)) {
++    return result.map(normalizeMapping);
++  }
++  inputRepository = createInputMappingToolApiRepository();
++  result = inputRepository.listMappings();
++  return Array.isArray(result) ? result.map(normalizeMapping) : [];
++}
++
++function saveMappings(nextMappings) {
++  const normalizedMappings = nextMappings.map(normalizeMapping);
++  let result = inputRepository.replaceMappings(normalizedMappings);
++  if (!Array.isArray(result?.mappings) && result?.error) {
++    inputRepository = createInputMappingToolApiRepository();
++    result = inputRepository.replaceMappings(normalizedMappings);
++  }
++  if (Array.isArray(result?.mappings)) {
++    mappings = result.mappings.map(normalizeMapping);
++    return true;
++  }
++  mappings = normalizedMappings;
++  setText(elements.statusLog, result?.message || "WARN: Mapping save could not reach the shared DB adapter.");
++  return false;
++}
++
++function resetStoredMappings() {
++  let result = inputRepository.resetMappings();
++  if (!Array.isArray(result?.mappings) && result?.error) {
++    inputRepository = createInputMappingToolApiRepository();
++    result = inputRepository.resetMappings();
++  }
++  mappings = Array.isArray(result?.mappings) ? result.mappings.map(normalizeMapping) : [];
++}
++
++function readObjectOptions() {
++  let result = objectsRepository.listObjects();
++  if (!Array.isArray(result)) {
++    objectsRepository = createObjectsToolApiRepository();
++    result = objectsRepository.listObjects();
++  }
++  const objects = Array.isArray(result) ? result : [];
++  return [
++    { key: "global", label: "Global" },
++    ...objects.map((object) => ({
++      key: normalizeText(object.id) || keyFromText(object.name),
++      label: normalizeText(object.name),
++    })).filter((object) => object.key && object.label),
++  ];
++}
++
++function renderSelect(select, options, selectedValue) {
++  if (!select) {
++    return;
++  }
++  select.replaceChildren(...options.map((option) => optionElement(option.value, option.label)));
++  select.value = selectedValue || options[0]?.value || "";
++}
++
++function renderDefaults() {
++  if (!elements.defaultActions) {
++    return;
++  }
++  elements.defaultActions.replaceChildren(...DEFAULT_ACTIONS.map((action) => {
++    const item = document.createElement("li");
++    item.textContent = action.label;
++    return item;
++  }));
++}
++
++function renderActionsAndObjects() {
++  const previousAction = elements.actionSelect?.value || "moveLeft";
++  const previousObject = elements.objectSelect?.value || "global";
++  renderSelect(
++    elements.actionSelect,
++    DEFAULT_ACTIONS.map((action) => ({ label: action.label, value: action.id })),
++    previousAction,
++  );
++  renderSelect(
++    elements.objectSelect,
++    objectOptions.map((object) => ({ label: object.label, value: object.key })),
++    previousObject,
++  );
++  updateCaptureSelection();
++}
++
++function renderDiagnostics(message = "") {
++  const gamepadStatus = gamepadSummary();
++  const mouseAvailable = typeof window.PointerEvent === "function" || typeof window.MouseEvent === "function";
++  const diagnostics = SOURCE_DIAGNOSTICS.map((source) => {
++    if (source === "InputService + MouseState") {
++      return `${source}: ${mouseAvailable ? "Ready" : "WARN: Mouse capture is unavailable in this browser context."}`;
++    }
++    if (source === "InputService + GamepadState + GamepadInputAdapter" || source === "GamepadInputAdapter") {
++      return `${source}: ${gamepadStatus}`;
++    }
++    return `${source}: Ready`;
++  });
++  if (elements.sourceDiagnostics) {
++    elements.sourceDiagnostics.replaceChildren(...diagnostics.map((diagnostic) => {
++      const item = document.createElement("li");
++      item.textContent = diagnostic;
++      return item;
++    }));
++  }
++  setText(elements.deviceCount, String(diagnostics.length));
++  if (message) {
++    setText(elements.statusLog, message);
++  }
++}
++
++function gamepadSummary() {
++  if (typeof navigator.getGamepads !== "function") {
++    return "WARN: Gamepad API unavailable. Use a browser with navigator.getGamepads support.";
++  }
++  const pads = Array.from(navigator.getGamepads() || []).filter(Boolean);
++  if (!pads.length) {
++    return "WARN: No live gamepad value. Click inside this page, connect a gamepad, and press a button.";
++  }
++  return `${pads.length} live gamepad value${pads.length === 1 ? "" : "s"} available`;
++}
++
++function statusLabel() {
++  if (!mappings.length) {
++    return "Not Configured";
++  }
++  if (mappings.some((mapping) => mapping.state !== "Active")) {
++    return "Pending Setup";
++  }
++  return "Complete";
++}
++
++function renderOutput() {
++  const status = statusLabel();
++  setText(elements.mappingCount, String(mappings.length));
++  setText(elements.outputCount, String(mappings.length));
++  setText(elements.outputStatus, status);
++  setText(elements.saveStatus, status);
++  if (elements.mappingJson) {
++    elements.mappingJson.textContent = JSON.stringify(payloadJson(), null, 2);
++  }
++}
++
++function tokenButton(mapping) {
++  const button = actionButton(mapping.label, "inputDeleteToken", mapping.id, "btn btn--compact cyan");
++  button.title = `Delete ${mapping.label}`;
++  return button;
++}
++
++function renderMappingRow(mapping) {
++  const row = document.createElement("tr");
++  row.dataset.inputMappingRow = mapping.id;
++  row.append(
++    tableCell(mapping.objectName),
++    tableCell(mapping.actionLabel),
++    tableCell(mapping.inputDevice),
++  );
++  const inputCell = document.createElement("td");
++  inputCell.append(tokenButton(mapping));
++  row.append(inputCell, tableCell(mapping.state));
++  row.append(actionCell([
++    actionButton("Edit", "inputEditMapping", mapping.id),
++    actionButton("Trash", "inputTrashMapping", mapping.id),
++  ]));
++  return row;
++}
++
++function renderEditingRow(values = {}) {
++  const row = document.createElement("tr");
++  row.dataset.inputEditingRow = "true";
++
++  const objectSelect = selectControl({
++    ariaLabel: "Mapping Object",
++    options: objectOptions.map((object) => ({ label: object.label, value: object.key })),
++    selectedValue: values.objectKey || elements.objectSelect?.value || "global",
++  });
++  objectSelect.dataset.inputRowObject = "true";
++
++  const actionSelect = selectControl({
++    ariaLabel: "Mapping Action",
++    options: DEFAULT_ACTIONS.map((action) => ({ label: action.label, value: action.id })),
++    selectedValue: values.action || elements.actionSelect?.value || DEFAULT_ACTIONS[0]?.id,
++  });
++  actionSelect.dataset.inputRowAction = "true";
++
++  const deviceSelect = selectControl({
++    ariaLabel: "Mapping Input Device",
++    options: DEVICE_OPTIONS.map((device) => ({ label: device.label, value: device.source })),
++    selectedValue: values.source || "keyboard",
++  });
++  deviceSelect.dataset.inputRowDevice = "true";
++
++  const input = textControl({ ariaLabel: "Mapping Input", value: values.binding || "" });
++  input.dataset.inputRowBinding = "true";
++
++  const stateSelect = selectControl({
++    ariaLabel: "Mapping State",
++    options: [
++      { label: "Active", value: "Active" },
++      { label: "Disabled", value: "Disabled" },
++    ],
++    selectedValue: values.state || "Active",
++  });
++  stateSelect.dataset.inputRowState = "true";
++
++  row.append(
++    controlCell(objectSelect),
++    controlCell(actionSelect),
++    controlCell(deviceSelect),
++    controlCell(input),
++    controlCell(stateSelect),
++    actionCell([
++      actionButton("Save", "inputSaveMapping"),
++      actionButton("Cancel", "inputCancelMapping"),
++    ]),
++  );
++  return row;
++}
++
++function renderMappings() {
++  if (!elements.list) {
++    return;
++  }
++  const rows = [];
++  if (editingRow) {
++    rows.push(renderEditingRow(editingRow.values));
++  }
++  rows.push(...mappings.map(renderMappingRow));
++  if (!rows.length) {
++    const row = document.createElement("tr");
++    const cell = document.createElement("td");
++    cell.colSpan = 6;
++    cell.textContent = "No mappings added yet.";
++    row.append(cell);
++    rows.push(row);
++  }
++  elements.list.replaceChildren(...rows);
++  if (elements.addMapping) {
++    elements.addMapping.disabled = Boolean(editingRow);
++  }
++  renderOutput();
++}
++
++function renderAll(message = "") {
++  objectOptions = readObjectOptions();
++  renderActionsAndObjects();
++  renderDefaults();
++  renderDiagnostics(message);
++  renderMappings();
++}
++
++function updateCaptureSelection() {
++  const action = selectedAction();
++  setText(elements.captureSelection, `Selected action: ${action.label}`);
++}
++
++function selectedCaptureContext() {
++  const object = selectedObject();
++  const action = selectedAction();
++  return {
++    action: action.id,
++    actionLabel: action.label,
++    objectKey: object.key,
++    objectName: object.label,
++  };
++}
++
++function addCapturedInput({ binding, label, source }) {
++  const device = deviceBySource(source);
++  const nextMapping = normalizeMapping({
++    ...selectedCaptureContext(),
++    binding,
++    engine: device.engine,
++    inputDevice: device.label,
++    label,
++    source: device.source,
++    state: "Active",
++  });
++  mappings = [
++    ...mappings.filter((mapping) => !(
++      mapping.objectKey === nextMapping.objectKey &&
++      mapping.action === nextMapping.action &&
++      mapping.source === nextMapping.source &&
++      mapping.binding === nextMapping.binding
++    )),
++    nextMapping,
++  ];
++  saveMappings(mappings);
++  editingRow = null;
++  captureMode = "";
++  renderAll(`${label} mapped to ${nextMapping.actionLabel}.`);
++  setText(elements.captureStatus, `${label} mapped to ${nextMapping.actionLabel}.`);
++}
++
++function warnCapture(message) {
++  captureMode = "";
++  setText(elements.captureStatus, message);
++  setText(elements.statusLog, message);
++  renderDiagnostics();
++}
++
++function captureKeyboardEvent(event) {
++  if (captureMode !== "keyboard") {
++    return;
++  }
++  event.preventDefault();
++  const binding = normalizeText(event.code || event.key);
++  if (!binding) {
++    warnCapture("WARN: Keyboard capture did not receive a key code. Press a physical key and try again.");
++    return;
++  }
++  addCapturedInput({
++    binding,
++    label: inputLabel("keyboard", binding),
++    source: "keyboard",
++  });
++}
++
++function captureMouseEvent(event) {
++  if (captureMode !== "mouse") {
++    return;
++  }
++  event.preventDefault();
++  const button = Number.isInteger(event.button) ? event.button : 0;
++  const binding = `MouseButton${button}`;
++  addCapturedInput({
++    binding,
++    label: inputLabel("mouse", binding),
++    source: "mouse",
++  });
++}
++
++function activeGamepadInput() {
++  if (typeof navigator.getGamepads !== "function") {
++    return {
++      message: "WARN: Gamepad capture unavailable. Use a browser with navigator.getGamepads support, then connect a gamepad.",
++      ok: false,
++    };
++  }
++  const pads = Array.from(navigator.getGamepads() || []).filter(Boolean);
++  for (const pad of pads) {
++    const buttonIndex = (pad.buttons || []).findIndex((button) => Number(button?.value || 0) > 0.5 || button?.pressed);
++    if (buttonIndex >= 0) {
++      const binding = `Pad${Number(pad.index) || 0}:Button${buttonIndex}`;
++      return {
++        binding,
++        label: inputLabel("gamepad", binding),
++        ok: true,
++      };
++    }
++    const axisIndex = (pad.axes || []).findIndex((axis) => Math.abs(Number(axis) || 0) > 0.25);
++    if (axisIndex >= 0) {
++      const direction = Number(pad.axes[axisIndex]) < 0 ? "-" : "+";
++      const binding = `Pad${Number(pad.index) || 0}:Axis${axisIndex}${direction}`;
++      return {
++        binding,
++        label: inputLabel("gamepad", binding),
++        ok: true,
++      };
++    }
++  }
++  return {
++    message: "WARN: Gamepad capture unavailable. Click inside this page, connect a gamepad, press a button or move an axis, then click Capture Gamepad again.",
++    ok: false,
++  };
++}
++
++function startKeyboardCapture() {
++  captureMode = "keyboard";
++  setText(elements.captureStatus, "Press a keyboard key to map the selected action.");
++  setText(elements.statusLog, "Keyboard capture armed.");
++}
++
++function startMouseCapture() {
++  if (typeof window.PointerEvent !== "function" && typeof window.MouseEvent !== "function") {
++    warnCapture("WARN: Mouse capture unavailable. Use a browser context that supports pointer or mouse events.");
++    return;
++  }
++  captureMode = "mouse";
++  setText(elements.captureStatus, "Click a mouse button to map the selected action.");
++  setText(elements.statusLog, "Mouse capture armed.");
++}
++
++function captureGamepadInput() {
++  const result = activeGamepadInput();
++  if (!result.ok) {
++    warnCapture(result.message);
++    return;
++  }
++  addCapturedInput({
++    binding: result.binding,
++    label: result.label,
++    source: "gamepad",
++  });
++}
++
++function mappingFromEditingRow(row) {
++  const objectKey = row.querySelector("[data-input-row-object]")?.value || "global";
++  const object = objectOptions.find((candidate) => candidate.key === objectKey) || objectOptions[0];
++  const action = actionById(row.querySelector("[data-input-row-action]")?.value);
++  const source = row.querySelector("[data-input-row-device]")?.value || "keyboard";
++  const binding = normalizeText(row.querySelector("[data-input-row-binding]")?.value);
++  const device = deviceBySource(source);
++  return normalizeMapping({
++    action: action.id,
++    actionLabel: action.label,
++    binding,
++    engine: device.engine,
++    id: editingRow?.id || "",
++    inputDevice: device.label,
++    label: inputLabel(source, binding),
++    objectKey: object.key,
++    objectName: object.label,
++    source,
++    state: row.querySelector("[data-input-row-state]")?.value || "Active",
++  });
++}
++
++function saveEditingRow() {
++  const row = elements.list?.querySelector("[data-input-editing-row]");
++  if (!row) {
++    return;
++  }
++  const mapping = mappingFromEditingRow(row);
++  if (!mapping.binding) {
++    setText(elements.statusLog, "WARN: Add an input before saving the mapping row.");
++    return;
++  }
++  mappings = editingRow?.id
++    ? mappings.map((candidate) => (candidate.id === editingRow.id ? mapping : candidate))
++    : [mapping, ...mappings];
++  saveMappings(mappings);
++  editingRow = null;
++  renderAll(`Saved ${mapping.actionLabel} mapping.`);
++}
++
++function editMapping(mappingId) {
++  const mapping = mappings.find((candidate) => candidate.id === mappingId);
++  if (!mapping) {
++    return;
++  }
++  editingRow = {
++    id: mapping.id,
++    values: mapping,
++  };
++  renderMappings();
++  setText(elements.statusLog, `Editing ${mapping.actionLabel} mapping.`);
++}
++
++function deleteMapping(mappingId, message = "Deleted mapping.") {
++  mappings = mappings.filter((mapping) => mapping.id !== mappingId);
++  saveMappings(mappings);
++  editingRow = null;
++  renderAll(message);
++}
++
++function handleListClick(event) {
++  const target = event.target instanceof Element ? event.target.closest("button") : null;
++  if (!target) {
++    return;
++  }
++  if (target.dataset.inputSaveMapping !== undefined) {
++    saveEditingRow();
++  } else if (target.dataset.inputCancelMapping !== undefined) {
++    editingRow = null;
++    renderMappings();
++    setText(elements.statusLog, "Canceled mapping edit.");
++  } else if (target.dataset.inputEditMapping !== undefined) {
++    editMapping(target.dataset.inputEditMapping || "");
++  } else if (target.dataset.inputTrashMapping !== undefined) {
++    deleteMapping(target.dataset.inputTrashMapping || "");
++  } else if (target.dataset.inputDeleteToken !== undefined) {
++    deleteMapping(target.dataset.inputDeleteToken || "", "Deleted captured input token.");
++  }
++}
++
++function showWorkspaceReturnIfNeeded() {
++  if (!elements.returnWorkspace) {
++    return;
++  }
++  const params = new URLSearchParams(window.location.search);
++  const returnTo = normalizeText(params.get("returnTo"));
++  const shouldShow = params.has("workspace") || params.has("project") || params.get("source") === "workspace" || params.has("workspaceLaunch") || returnTo;
++  if (returnTo.startsWith("/toolbox/project-workspace/")) {
++    elements.returnWorkspace.href = returnTo;
++  }
++  elements.returnWorkspace.hidden = !shouldShow;
++}
++
++function init() {
++  showWorkspaceReturnIfNeeded();
++  objectOptions = readObjectOptions();
++  mappings = readMappings();
++  renderActionsAndObjects();
++  renderDefaults();
++  renderDiagnostics();
++  renderMappings();
++  elements.actionSelect?.addEventListener("change", updateCaptureSelection);
++  elements.objectSelect?.addEventListener("change", () => {
++    setText(elements.statusLog, `Selected ${selectedObject().label} for new mappings.`);
++  });
++  elements.addMapping?.addEventListener("click", () => {
++    editingRow = {
++      id: "",
++      values: {
++        action: selectedAction().id,
++        objectKey: selectedObject().key,
++        source: "keyboard",
++        state: "Active",
++      },
++    };
++    renderMappings();
++    setText(elements.statusLog, "Add a mapping row.");
++  });
++  elements.resetMappings?.addEventListener("click", () => {
++    resetStoredMappings();
++    editingRow = null;
++    renderAll("Reset input mappings.");
++  });
++  elements.captureKeyboard?.addEventListener("click", startKeyboardCapture);
++  elements.captureMouse?.addEventListener("click", startMouseCapture);
++  elements.captureGamepad?.addEventListener("click", captureGamepadInput);
++  elements.refreshDevices?.addEventListener("click", () => {
++    renderDiagnostics("Device diagnostics refreshed.");
++  });
++  elements.list?.addEventListener("click", handleListClick);
++  window.addEventListener("keydown", captureKeyboardEvent);
++  window.addEventListener("pointerdown", captureMouseEvent);
++}
++
++init();
