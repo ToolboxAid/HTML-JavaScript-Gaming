@@ -14,6 +14,7 @@ export const TOOL_RELEASE_CHANNELS = Object.freeze([
   "wireframe",
   "beta",
   "complete",
+  "deprecated",
 ]);
 
 export const TOOL_RELEASE_CHANNEL_LABELS = Object.freeze({
@@ -21,6 +22,7 @@ export const TOOL_RELEASE_CHANNEL_LABELS = Object.freeze({
   wireframe: "Wireframe",
   beta: "Beta",
   complete: "Complete",
+  deprecated: "Deprecated",
 });
 
 export const TOOL_RELEASE_CHANNEL_HELP_TEXT = Object.freeze({
@@ -28,6 +30,7 @@ export const TOOL_RELEASE_CHANNEL_HELP_TEXT = Object.freeze({
   wireframe: "Tool exists.\nUser can understand workflow.\nData ownership is defined.\nNot functionally usable.",
   beta: "Functionally usable.\nCan be used in a real game.\nMay still contain incomplete workflows, placeholder data, UI cleanup issues, unused fields, missing validation, or incomplete code review.",
   complete: "Functionally usable.\nCode reviewed.\nDead code removed.\nInvalid fields removed.\nUI cleaned up.\nNo known placeholder data.\nNo known invalid controls.\nReady for long-term support.",
+  deprecated: "Tool remains supported but is not recommended for new workflows.\nMust remain deprecated before removal.",
 });
 
 export const TOOL_REGISTRY_REQUIRED_METADATA_FIELDS = Object.freeze([]);

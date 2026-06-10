@@ -1,0 +1,13 @@
+docs_build/dev/PROJECT_INSTRUCTIONS.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/mvp-path-validation-and-status-alignment-report.md
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+src/dev-runtime/server/mock-api-router.mjs
+tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
+tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+tests/playwright/tools/ToolboxRoutePages.spec.mjs
+toolbox/toolRegistry.js
+toolbox/tools-page-accordions.js

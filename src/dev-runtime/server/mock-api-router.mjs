@@ -97,6 +97,7 @@ const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
   wireframe: "swatch-blue",
   beta: "swatch-gold",
   complete: "swatch-green",
+  deprecated: "swatch-purple",
 });
 const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
   Owner: null,

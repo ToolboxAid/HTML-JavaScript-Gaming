@@ -13,21 +13,24 @@ export const TOOL_RELEASE_CHANNELS = Object.freeze([
   "planned",
   "wireframe",
   "beta",
-  "complete"
+  "complete",
+  "deprecated"
 ]);
 
 export const TOOL_RELEASE_CHANNEL_LABELS = Object.freeze({
   planned: "Planned",
   wireframe: "Wireframe",
   beta: "Beta",
-  complete: "Complete"
+  complete: "Complete",
+  deprecated: "Deprecated"
 });
 
 export const TOOL_RELEASE_CHANNEL_HELP_TEXT = Object.freeze({
   planned: "Not designed yet.\nNo meaningful UI.\nNo ownership defined.",
   wireframe: "Tool exists.\nUser can understand workflow.\nData ownership is defined.\nNot functionally usable.",
   beta: "Functionally usable.\nCan be used in a real game.\nMay still contain incomplete workflows, placeholder data, UI cleanup issues, unused fields, missing validation, or incomplete code review.",
-  complete: "Functionally usable.\nCode reviewed.\nDead code removed.\nInvalid fields removed.\nUI cleaned up.\nNo known placeholder data.\nNo known invalid controls.\nReady for long-term support."
+  complete: "Functionally usable.\nCode reviewed.\nDead code removed.\nInvalid fields removed.\nUI cleaned up.\nNo known placeholder data.\nNo known invalid controls.\nReady for long-term support.",
+  deprecated: "Tool remains supported but is not recommended for new workflows.\nMust remain deprecated before removal."
 });
 
 export const TOOL_REGISTRY_REQUIRED_METADATA_FIELDS = Object.freeze([
@@ -58,7 +61,7 @@ const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
   "Under Construction": "beta",
   Planned: "planned",
   Hidden: "planned",
-  Deprecated: "planned"
+  Deprecated: "deprecated"
 });
 
 export const TOOL_REGISTRY = Object.freeze([
@@ -657,8 +660,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "requires": [
       "game-configuration"
     ],
-    "status": "Wireframe",
-    "releaseChannel": "wireframe",
+    "status": "Deprecated",
+    "releaseChannel": "deprecated",
     "progressChecklist": [
       "Review readiness",
       "Static wireframe text only"

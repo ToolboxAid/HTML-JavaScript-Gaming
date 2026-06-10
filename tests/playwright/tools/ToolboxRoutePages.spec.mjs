@@ -19,6 +19,7 @@ const STATUS_HELP_TEXT = Object.freeze({
   wireframe: "Tool exists.\nUser can understand workflow.\nData ownership is defined.\nNot functionally usable.",
   beta: "Functionally usable.\nCan be used in a real game.\nMay still contain incomplete workflows, placeholder data, UI cleanup issues, unused fields, missing validation, or incomplete code review.",
   complete: "Functionally usable.\nCode reviewed.\nDead code removed.\nInvalid fields removed.\nUI cleaned up.\nNo known placeholder data.\nNo known invalid controls.\nReady for long-term support.",
+  deprecated: "Tool remains supported but is not recommended for new workflows.\nMust remain deprecated before removal.",
 });
 
 test.afterAll(async () => {
@@ -126,12 +127,12 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await workspaceV2CoverageReporter.start(page);
     await setServerSession(server, "");
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    const guestBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
-    await expect(guestBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 0");
-    await expect(guestBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 0");
-    await expect(guestBuildVotes.locator("[data-toolbox-vote='up']")).toBeDisabled();
-    await expect(guestBuildVotes.locator("[data-toolbox-vote='down']")).toBeDisabled();
-    await expect(guestBuildVotes.locator("[data-toolbox-vote-login-required='Build Game']")).toHaveText("Login required to vote.");
+    const guestSavedDataVotes = page.locator("[data-toolbox-tool-card='Saved Data'] [data-toolbox-vote-controls='Saved Data']");
+    await expect(guestSavedDataVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 0");
+    await expect(guestSavedDataVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 0");
+    await expect(guestSavedDataVotes.locator("[data-toolbox-vote='up']")).toBeDisabled();
+    await expect(guestSavedDataVotes.locator("[data-toolbox-vote='down']")).toBeDisabled();
+    await expect(guestSavedDataVotes.locator("[data-toolbox-vote-login-required='Saved Data']")).toHaveText("Login required to vote.");
 
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -139,7 +140,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Colors']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-tool-name-link='Assets']")).toBeVisible();
-    await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-tool-name-link='Saved Data']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Languages']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Achievements']")).toBeVisible();
@@ -148,14 +149,17 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Project Journey']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Project Workspace']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 10/39");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 9/39");
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(29);
-    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(39);
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 39/39");
+    await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(38);
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 38/39");
     await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
+    await page.locator("[data-toolbox-status-filter='deprecated']").click();
+    await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 39/39");
 
     await setServerSession(server, MOCK_DB_KEYS.users.admin);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
@@ -166,6 +170,8 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toBeVisible();
+    await page.locator("[data-toolbox-status-filter='deprecated']").click();
+    await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
     const colorsCard = page.locator("[data-toolbox-tool-name-link='Colors']").locator("xpath=ancestor::article[1]");
     await expect(colorsCard.locator("[data-toolbox-readiness]")).toHaveText("Complete");
 
@@ -211,9 +217,10 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
       "Planned (29)",
-      "Wireframe (4)",
+      "Wireframe (3)",
       "Beta (5)",
       "Complete (1)",
+      "Deprecated (1)",
     ]);
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
     await expect(page.locator("[data-toolbox-status-filter='wireframe']")).toHaveAttribute("aria-pressed", "true");
@@ -227,25 +234,30 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.locator("[data-tools-view='build-path']").click();
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
       "Planned (29)",
-      "Wireframe (4)",
+      "Wireframe (3)",
       "Beta (5)",
       "Complete (1)",
+      "Deprecated (1)",
     ]);
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
     await expect(page.locator("[data-toolbox-status-filter='wireframe']")).toHaveAttribute("aria-pressed", "false");
     await expect(page.locator("[data-toolbox-status-filter='beta']")).toHaveAttribute("aria-pressed", "false");
     await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "false");
     await expect(page.locator("[data-build-path-table='workflow'] th")).toHaveText(["Order", "Tool", "Status"]);
     await expect(page.locator("[data-build-path-tool='Colors']")).toBeVisible();
     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveAttribute("data-build-path-release-channel", "complete");
     await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
-    await page.locator("[data-toolbox-status-filter='wireframe']").click();
+    await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
     await page.locator("[data-tools-order]").click();
     await expect(page.locator("[data-toolbox-status-filter='planned']")).toHaveAttribute("aria-pressed", "false");
     await expect(page.locator("[data-toolbox-status-filter='wireframe']")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("[data-toolbox-status-filter='beta']")).toHaveAttribute("aria-pressed", "true");
     await expect(page.locator("[data-toolbox-status-filter='complete']")).toHaveAttribute("aria-pressed", "true");
+    await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "false");
+    await page.locator("[data-toolbox-status-filter='deprecated']").click();
+    await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "true");
 
     for (const toolName of ["Assets", "Game Configuration", "Game Design", "Project Journey", "Project Workspace"]) {
       const betaCard = page.locator(`[data-toolbox-tool-card='${toolName}']`);
@@ -257,7 +269,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       );
     }
 
-    const wireframeCard = page.locator("[data-toolbox-tool-card='Build Game']");
+    const wireframeCard = page.locator("[data-toolbox-tool-card='Saved Data']");
     await expect(wireframeCard).toBeVisible();
     await expect(wireframeCard.locator("[data-toolbox-kicker]")).toHaveText("Wireframe");
     await expect(wireframeCard.locator("[data-toolbox-kicker]")).toHaveClass(/swatch-label/);
@@ -265,10 +277,21 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       "title",
       STATUS_HELP_TEXT.wireframe,
     );
-    await expect(wireframeCard.locator("[data-toolbox-tile-action-row='Build Game'] a.btn")).toHaveText("Open Tool");
-    await expect(wireframeCard.locator("[data-toolbox-plan-details='Build Game']")).toContainText("Wireframe details");
+    await expect(wireframeCard.locator("[data-toolbox-tile-action-row='Saved Data'] a.btn")).toHaveText("Open Tool");
+    await expect(wireframeCard.locator("[data-toolbox-plan-details='Saved Data']")).toContainText("Wireframe details");
 
-    const actionOrder = await wireframeCard.locator("[data-toolbox-tile-action-row='Build Game']").evaluate((row) => (
+    const deprecatedCard = page.locator("[data-toolbox-tool-card='Build Game']");
+    await expect(deprecatedCard).toBeVisible();
+    await expect(deprecatedCard.locator("[data-toolbox-kicker]")).toHaveText("Deprecated");
+    await expect(deprecatedCard.locator("[data-toolbox-kicker]")).toHaveClass(/swatch-label/);
+    await expect(deprecatedCard.locator("[data-toolbox-kicker]")).toHaveAttribute(
+      "title",
+      STATUS_HELP_TEXT.deprecated,
+    );
+    await expect(deprecatedCard.locator("[data-toolbox-tile-action-row='Build Game'] a.btn")).toHaveText("Open Tool");
+    await expect(deprecatedCard.locator("[data-toolbox-plan-details='Build Game']")).toContainText("Deprecated details");
+
+    const actionOrder = await deprecatedCard.locator("[data-toolbox-tile-action-row='Build Game']").evaluate((row) => (
       Array.from(row.children).map((child) => {
         if (child.tagName.toLowerCase() === "img") return "badge";
         if (child.tagName.toLowerCase() === "a") return child.textContent.trim();
@@ -277,7 +300,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       })
     ));
     expect(actionOrder).toEqual(["badge", "Open Tool"]);
-    const bodyOrder = await wireframeCard.locator(".card-body").evaluate((body) => (
+    const bodyOrder = await deprecatedCard.locator(".card-body").evaluate((body) => (
       Array.from(body.children).map((child) => {
         if (child.hasAttribute("data-toolbox-tile-action-row")) return "action";
         if (child.hasAttribute("data-toolbox-group-badge")) return "group";
@@ -288,7 +311,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       })
     ));
     expect(bodyOrder.slice(2, 7)).toEqual(["action", "group", "state", "feedback", "plan-details"]);
-    const groupAndStateTop = await wireframeCard.locator(".card-body").evaluate((body) => {
+    const groupAndStateTop = await deprecatedCard.locator(".card-body").evaluate((body) => {
       const group = body.querySelector("[data-toolbox-group-badge]");
       const state = body.querySelector("[data-toolbox-state-badge]");
       return {
@@ -298,7 +321,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     });
     expect(groupAndStateTop.state).toBeGreaterThan(groupAndStateTop.group);
 
-    const buildVotes = wireframeCard.locator("[data-toolbox-vote-controls='Build Game']");
+    const buildVotes = deprecatedCard.locator("[data-toolbox-vote-controls='Build Game']");
     await expect(buildVotes).toBeVisible();
     const buildUpVote = buildVotes.locator("[data-toolbox-vote='up']");
     const buildDownVote = buildVotes.locator("[data-toolbox-vote='down']");
@@ -324,6 +347,9 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await page.goto(`${server.baseUrl}/toolbox/index.html?view=group`, { waitUntil: "networkidle" });
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    if ((await page.locator("[data-toolbox-status-filter='deprecated']").getAttribute("aria-pressed")) !== "true") {
+      await page.locator("[data-toolbox-status-filter='deprecated']").click();
+    }
     const restoredBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
     await expect(restoredBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 0");
     await expect(restoredBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
@@ -332,6 +358,9 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await setServerSession(server, MOCK_DB_KEYS.users.user2);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    if ((await page.locator("[data-toolbox-status-filter='deprecated']").getAttribute("aria-pressed")) !== "true") {
+      await page.locator("[data-toolbox-status-filter='deprecated']").click();
+    }
     const userTwoBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
     await userTwoBuildVotes.locator("[data-toolbox-vote='up']").click();
     await expect(userTwoBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 1");
@@ -341,6 +370,9 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    if ((await page.locator("[data-toolbox-status-filter='deprecated']").getAttribute("aria-pressed")) !== "true") {
+      await page.locator("[data-toolbox-status-filter='deprecated']").click();
+    }
     const userOneReturnedBuildVotes = page.locator("[data-toolbox-tool-card='Build Game'] [data-toolbox-vote-controls='Build Game']");
     await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='up']")).toHaveText("Up 1");
     await expect(userOneReturnedBuildVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 1");
@@ -426,12 +458,13 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(adminBuildVoteRow.locator("td").first().locator("a")).toHaveText("Build Game");
     await expect(adminBuildVoteRow.locator("td").first().locator("a")).toHaveAttribute("href", /toolbox\/build-game\/index\.html$/);
     await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText(String(registryById.get("build-game").order));
-    await expect(adminBuildVoteRow.locator("[data-toolbox-votes-state='build-game']")).toHaveValue("wireframe");
+    await expect(adminBuildVoteRow.locator("[data-toolbox-votes-state='build-game']")).toHaveValue("deprecated");
     await expect(adminBuildVoteRow.locator("[data-toolbox-votes-state='build-game'] option")).toHaveText([
       "Planned",
       "Wireframe",
       "Beta",
       "Complete",
+      "Deprecated",
     ]);
     await expect(adminBuildVoteRow.locator("td").nth(5)).toHaveText("2");
     await expect(adminBuildVoteRow.locator("td").nth(6)).toHaveText("0");
@@ -595,6 +628,10 @@ test("toolbox group labels match Admin Tool Votes assignments and restored group
     if (await plannedFilter.getAttribute("aria-pressed") !== "true") {
       await plannedFilter.click();
     }
+    const deprecatedFilter = page.locator("[data-toolbox-status-filter='deprecated']");
+    if (await deprecatedFilter.getAttribute("aria-pressed") !== "true") {
+      await deprecatedFilter.click();
+    }
     const toolboxGroupsByTool = await page.locator("[data-toolbox-tool-card]").evaluateAll((cards) => (
       Object.fromEntries(cards.map((card) => [
         card.getAttribute("data-toolbox-tool-card"),
@@ -666,7 +703,7 @@ test("toolbox Build Path status filters support multi-select registry-matched to
   });
 
   async function expectActiveFilters(activeChannels) {
-    for (const releaseChannel of ["planned", "wireframe", "beta", "complete"]) {
+    for (const releaseChannel of ["planned", "wireframe", "beta", "complete", "deprecated"]) {
       const filter = page.locator(`[data-toolbox-status-filter='${releaseChannel}']`);
       const active = activeChannels.includes(releaseChannel);
       await expect(filter).toHaveAttribute("aria-pressed", String(active));
@@ -706,9 +743,10 @@ test("toolbox Build Path status filters support multi-select registry-matched to
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
       "Planned (29)",
-      "Wireframe (4)",
+      "Wireframe (3)",
       "Beta (5)",
       "Complete (1)",
+      "Deprecated (1)",
     ]);
     await expectActiveFilters(["complete"]);
     await expect(page.locator("[data-build-path-tool='Colors']")).toBeVisible();
@@ -730,13 +768,19 @@ test("toolbox Build Path status filters support multi-select registry-matched to
 
     await page.locator("[data-toolbox-status-filter='wireframe']").click();
     await expectActiveFilters(["planned", "wireframe"]);
-    await expectBuildPathChannels(["planned", "wireframe"], 33);
+    await expectBuildPathChannels(["planned", "wireframe"], 32);
+    await expect(page.locator("[data-build-path-tool='Saved Data']")).toBeVisible();
+    await expect(page.locator("[data-build-path-tool='Build Game']")).toHaveCount(0);
+
+    await page.locator("[data-toolbox-status-filter='deprecated']").click();
+    await expectActiveFilters(["planned", "wireframe", "deprecated"]);
+    await expectBuildPathChannels(["planned", "wireframe", "deprecated"], 33);
     await expect(page.locator("[data-build-path-tool='Build Game']")).toBeVisible();
     await expectBuildPathOrder("Build Game", registryById.get("build-game").order);
 
     await page.locator("[data-toolbox-status-filter='beta']").click();
-    await expectActiveFilters(["planned", "wireframe", "beta"]);
-    await expectBuildPathChannels(["planned", "wireframe", "beta"], 38);
+    await expectActiveFilters(["planned", "wireframe", "beta", "deprecated"]);
+    await expectBuildPathChannels(["planned", "wireframe", "beta", "deprecated"], 38);
 
     expect(failedRequests).toEqual([]);
     expect(pageErrors).toEqual([]);

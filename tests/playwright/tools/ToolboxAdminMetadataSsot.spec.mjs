@@ -31,6 +31,26 @@ const EXPECTED_MVP_COMPACT_ORDER = [
   "Publish",
   "Project Journey",
 ];
+const INTENDED_MVP_PATH_TOOLS = [
+  "Project Workspace",
+  "Game Design",
+  "Colors",
+  "Assets",
+  "Vector Asset Studio",
+  "Game Configuration",
+  "Objects",
+  "Controls",
+  "Hitboxes",
+  "Events",
+  "Saved Data",
+  "Debug",
+  "Game Testing",
+  "Publish",
+  "Project Journey",
+];
+const MVP_TOOL_RECORD_MAP = Object.freeze({
+  "Vector Asset Studio": "Assets",
+});
 const TOOL_PLANNING_FIELDS = [
   "progressChecklist",
   "readiness",
@@ -39,7 +59,7 @@ const TOOL_PLANNING_FIELDS = [
   "requiredForTestable",
   "requires",
 ];
-const STATUS_VALUES = new Set(["planned", "wireframe", "beta", "complete"]);
+const STATUS_VALUES = new Set(["planned", "wireframe", "beta", "complete", "deprecated"]);
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -143,7 +163,7 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     expect(snapshot.rows).toHaveLength(EXPECTED_TOOL_COUNT);
     expect(registrySnapshot.activeTools).toHaveLength(EXPECTED_TOOL_COUNT);
     expect(registrySnapshot.toolboxContract).toEqual(expect.objectContaining({
-      releaseChannels: ["planned", "wireframe", "beta", "complete"],
+      releaseChannels: ["planned", "wireframe", "beta", "complete", "deprecated"],
       defaultReleaseChannels: expect.objectContaining({
         buildPath: ["complete"],
         toolbox: ["wireframe", "beta", "complete"],
@@ -154,11 +174,13 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
       wireframe: expect.stringContaining("Not functionally usable."),
       beta: expect.stringContaining("Can be used in a real game."),
       complete: expect.stringContaining("Ready for long-term support."),
+      deprecated: expect.stringContaining("not recommended for new workflows."),
     }));
     expect(registrySnapshot.toolboxContract.groups).toEqual(expect.arrayContaining(["AI", "Build/Create", "Design", "Platform"]));
     expect(registrySnapshot.toolboxContract.toolboxGroupOrder).toEqual(expect.arrayContaining(["Create", "Build", "Content", "Admin"]));
     expect(registrySnapshot.toolboxContract.groupSwatches.Design).toBe("toolbox-group-design");
     expect(registrySnapshot.toolboxContract.releaseChannelSwatches.complete).toBe("swatch-green");
+    expect(registrySnapshot.toolboxContract.releaseChannelSwatches.deprecated).toBe("swatch-purple");
     expect(registrySnapshot.toolboxContract.roleFocusTools.Designer).toEqual(expect.arrayContaining(["Project Workspace", "Colors"]));
     expect(new Set(snapshot.rows.map((row) => row.toolKey || row.toolId)).size).toBe(EXPECTED_TOOL_COUNT);
     expect(mockDbSnapshot.schemas.toolbox_tool_metadata).not.toEqual(expect.arrayContaining(TOOL_PLANNING_FIELDS));
@@ -194,13 +216,37 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
       beta: 5,
       complete: 1,
       planned: 33,
-      wireframe: 4,
+      wireframe: 3,
+      deprecated: 1,
     });
     const orderedMvpRows = snapshot.rows
       .filter((row) => EXPECTED_MVP_COMPACT_ORDER.includes(row.toolName))
       .sort((left, right) => Number(left.order) - Number(right.order));
     expect(orderedMvpRows.map((row) => row.toolName)).toEqual(EXPECTED_MVP_COMPACT_ORDER);
+    const reconciledMvpRows = INTENDED_MVP_PATH_TOOLS.map((toolName) => {
+      const mappedToolName = MVP_TOOL_RECORD_MAP[toolName] || toolName;
+      return {
+        mappedToolName,
+        row: snapshot.rows.find((candidate) => candidate.toolName === mappedToolName),
+        toolName,
+      };
+    });
+    expect(reconciledMvpRows).toHaveLength(INTENDED_MVP_PATH_TOOLS.length);
+    expect(reconciledMvpRows.every(({ row }) => row)).toBe(true);
+    expect(new Set(reconciledMvpRows.map(({ mappedToolName }) => mappedToolName)).size).toBe(EXPECTED_MVP_COMPACT_ORDER.length);
+    expect(reconciledMvpRows.find(({ toolName }) => toolName === "Vector Asset Studio")).toEqual(expect.objectContaining({
+      mappedToolName: "Assets",
+      row: expect.objectContaining({
+        releaseChannel: "beta",
+        toolName: "Assets",
+      }),
+    }));
+    expect(reconciledMvpRows.every(({ row }) => STATUS_VALUES.has(row.status || row.releaseChannel))).toBe(true);
     expect(snapshot.rows.find((row) => row.toolName === "Vector Asset Studio")).toBeUndefined();
+    expect(snapshot.rows.find((row) => row.toolName === "Build Game")).toEqual(expect.objectContaining({
+      releaseChannel: "deprecated",
+      status: "deprecated",
+    }));
     expect(snapshot.rows.find((row) => row.toolName === "Particles")).toEqual(expect.objectContaining({
       group: "Design",
     }));
@@ -227,6 +273,7 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
       `Wireframe (${counts.wireframe})`,
       `Beta (${counts.beta})`,
       `Complete (${counts.complete})`,
+      `Deprecated (${counts.deprecated})`,
     ]);
     await expect(page.locator("[data-toolbox-status-filter='beta']")).toHaveAttribute("title", /Can be used in a real game/);
     await expect(page.locator("[data-build-path-status-help='complete']").first()).toHaveAttribute("title", /Ready for long-term support/);

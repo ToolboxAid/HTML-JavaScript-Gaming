@@ -213,6 +213,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
             tool.releaseChannel === "complete" ||
             tool.releaseChannel === "beta" ||
             tool.releaseChannel === "wireframe" ||
+            (tool.releaseChannel === "deprecated" && visibleReleaseChannels.has("deprecated")) ||
             (tool.releaseChannel === "planned" && visibleReleaseChannels.has("planned"))
         );
     }
@@ -817,7 +818,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function createToolVoteControls(tool) {
-        if (tool.releaseChannel !== "planned" && tool.releaseChannel !== "wireframe") {
+        if (!["planned", "wireframe", "deprecated"].includes(tool.releaseChannel)) {
             return null;
         }
 
@@ -906,16 +907,20 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function createPlanDetails(tool) {
-        if (tool.releaseChannel !== "planned" && tool.releaseChannel !== "wireframe") {
+        if (!["planned", "wireframe", "deprecated"].includes(tool.releaseChannel)) {
             return null;
         }
         const details = document.createElement("p");
         details.className = "status";
         details.dataset.toolboxPlanDetails = tool.title;
         details.setAttribute("role", "status");
-        details.textContent = tool.releaseChannel === "planned"
-            ? "Planned details and vote controls are shown here; runtime launch is not available yet."
-            : "Wireframe details and vote controls are shown here; controls are not wired to runtime behavior yet.";
+        if (tool.releaseChannel === "planned") {
+            details.textContent = "Planned details and vote controls are shown here; runtime launch is not available yet.";
+        } else if (tool.releaseChannel === "deprecated") {
+            details.textContent = "Deprecated details and vote controls are shown here; the tool remains supported but is not recommended for new workflows.";
+        } else {
+            details.textContent = "Wireframe details and vote controls are shown here; controls are not wired to runtime behavior yet.";
+        }
         return details;
     }
 

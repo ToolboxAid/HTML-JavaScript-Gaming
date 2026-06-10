@@ -262,12 +262,14 @@ The authoritative tool status values are:
 - `wireframe`
 - `beta`
 - `complete`
+- `deprecated`
 
 Status definitions:
 - `planned`: Not designed yet. No meaningful UI. No ownership defined.
 - `wireframe`: Tool exists. User can understand workflow. Data ownership is defined. Not functionally usable.
 - `beta`: Functionally usable. Can be used in a real game. May still contain incomplete workflows, placeholder data, UI cleanup issues, unused fields, missing validation, or incomplete code review.
 - `complete`: Functionally usable. Code reviewed. Dead code removed. Invalid fields removed. UI cleaned up. No known placeholder data. No known invalid controls. Ready for long-term support.
+- `deprecated`: Tool remains supported but is not recommended for new workflows. Must remain deprecated before removal.
 
 UAT rule:
 - A tool required for the current MVP game path must be `beta` or `complete` before UAT.
