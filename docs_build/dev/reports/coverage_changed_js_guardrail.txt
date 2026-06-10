@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1129/1129; executed functions 105/116
+(91%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1225/1225; executed functions 117/128
 
 Guardrail warnings:
 (100%) none - no changed runtime JS coverage warnings

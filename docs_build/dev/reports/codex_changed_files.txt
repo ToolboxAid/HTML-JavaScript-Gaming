@@ -1,20 +1,24 @@
 # git status --short
-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
  M toolbox/controls/index.html
  M toolbox/input-mapping-v2/index.html
  M toolbox/input-mapping-v2/input-mapping-v2.js
-?? docs_build/dev/reports/controls-footer-action-object-selection-report.md
+?? docs_build/dev/reports/controls-edit-gated-capture-devices-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/controls-footer-action-object-selection-report.md
+docs_build/dev/reports/controls-edit-gated-capture-devices-report.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  4 +--
- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 19 ++++++++------
- toolbox/controls/index.html                        | 30 +++++++++++++---------
- toolbox/input-mapping-v2/index.html                | 30 +++++++++++++---------
- toolbox/input-mapping-v2/input-mapping-v2.js       | 27 ++++++++-----------
- 6 files changed, 61 insertions(+), 51 deletions(-)
+docs_build/dev/reports/codex_changed_files.txt     |  17 +-
+ docs_build/dev/reports/codex_review.diff           | 713 +++++++++++++--------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   6 +-
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs | 125 +++-
+ toolbox/controls/index.html                        |   6 +
+ toolbox/input-mapping-v2/index.html                |   6 +
+ toolbox/input-mapping-v2/input-mapping-v2.js       | 129 +++-
+ 8 files changed, 684 insertions(+), 320 deletions(-)

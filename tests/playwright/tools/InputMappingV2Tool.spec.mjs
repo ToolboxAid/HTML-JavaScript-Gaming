@@ -181,6 +181,12 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-controller-profile-status]")).toContainText("use Add Profile");
     await expect(page.locator("[data-controller-profile-planning]")).toContainText("Future game launch will match Controller ID to a saved Mapping Profile");
     await expect(page.locator("[data-controller-profile-add]")).toBeVisible();
+    await expect(page.locator("[data-controller-device-select] option")).toHaveText([
+      "Choose a controller",
+      "Keyboard",
+      "Mouse",
+      "Unknown or unavailable controller",
+    ]);
     expect(await controllerProfileRecords(page)).toHaveLength(0);
     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
       "Object",
@@ -290,7 +296,8 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyF");
     await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
     await page.locator("[data-input-row-binding-value]").click();
-    await expect(page.locator("[data-input-row-device]")).toBeFocused();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
+    await page.keyboard.press("KeyF");
     await page.locator("[data-input-row-device]").selectOption("mouse");
     await expect(page.locator("[data-input-row-binding-value]")).toBeHidden();
     await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
@@ -324,12 +331,7 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyF");
     await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
     await page.locator("[data-input-row-binding-value]").click();
-    await expect(page.locator("[data-input-row-device]")).toBeFocused();
-    await page.locator("[data-input-row-device]").selectOption("mouse");
-    await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
-    await page.locator("[data-input-row-device]").selectOption("keyboard");
-    await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
-    await page.locator("[data-input-row-capture-keyboard]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
     await page.keyboard.press("KeyG");
     await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyG");
     await page.locator("[data-input-save-mapping]").click();
@@ -358,6 +360,55 @@ test("Controls controller profiles persist and mappings reference saved profiles
   const failures = await openInputMappingPage(page);
 
   try {
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
+    expect(await controllerProfileRecords(page)).toHaveLength(0);
+
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, "getGamepads", {
+        configurable: true,
+        value: () => [{
+          axes: [0, 0],
+          buttons: [{ pressed: false, value: 0 }],
+          id: "Arcade Test Pad",
+          index: 0,
+        }],
+      });
+    });
+    await page.locator("[data-input-refresh-devices]").click();
+    await expect(page.locator("[data-controller-device-select] option")).toHaveText([
+      "Choose a controller",
+      "Keyboard",
+      "Mouse",
+      "Gamepad: Arcade Test Pad",
+      "Unknown or unavailable controller",
+    ]);
+
+    await page.locator("[data-controller-device-select]").selectOption("keyboard");
+    await expect(page.locator("[data-controller-profile-device-type]")).toHaveValue("Keyboard");
+    await expect(page.locator("[data-controller-profile-name]")).toHaveValue("Keyboard");
+    await expect(page.locator("[data-controller-profile-id-value]")).toHaveValue("keyboard");
+    await expect(page.locator("[data-controller-profile-mapping]")).toHaveValue("Keyboard Profile");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("Keyboard selected.");
+    await page.locator("[data-controller-profile-cancel]").click();
+
+    await page.locator("[data-controller-device-select]").selectOption("mouse");
+    await expect(page.locator("[data-controller-profile-device-type]")).toHaveValue("Mouse");
+    await expect(page.locator("[data-controller-profile-name]")).toHaveValue("Mouse");
+    await expect(page.locator("[data-controller-profile-id-value]")).toHaveValue("mouse");
+    await expect(page.locator("[data-controller-profile-mapping]")).toHaveValue("Mouse Profile");
+    await page.locator("[data-controller-profile-cancel]").click();
+
+    await page.locator("[data-controller-device-select]").selectOption("gamepad-0");
+    await expect(page.locator("[data-controller-profile-device-type]")).toHaveValue("Gamepad");
+    await expect(page.locator("[data-controller-profile-name]")).toHaveValue("Arcade Test Pad");
+    await expect(page.locator("[data-controller-profile-id-value]")).toHaveValue("Arcade Test Pad");
+    await expect(page.locator("[data-controller-profile-mapping]")).toHaveValue("Arcade Test Pad Profile");
+    await expect(page.locator("[data-controller-profile-inputs]")).toHaveValue("Button0, Axis0, Axis1");
+    await page.locator("[data-controller-profile-cancel]").click();
+
+    await page.locator("[data-controller-device-select]").selectOption("unavailable-controller");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown or unavailable controller.");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("refresh devices");
     await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
@@ -436,7 +487,7 @@ test("Controls controller profiles persist and mappings reference saved profiles
   }
 });
 
-test("Controls Input Mapping captures KeyA, keeps input click safe, and deletes only through Trash", async ({ page }) => {
+test("Controls Input Mapping gates input capture to edit mode and deletes only through Trash", async ({ page }) => {
   const failures = await openInputMappingPage(page);
 
   try {
@@ -473,19 +524,61 @@ test("Controls Input Mapping captures KeyA, keeps input click safe, and deletes 
       source: "keyboard",
     });
 
+    await page.locator("[data-input-object-select]").selectOption("global");
+    await page.locator("[data-input-action-select]").selectOption("fire");
+    await page.locator("[data-input-add-mapping]").click();
+    await expect(page.locator("[data-input-row-object]")).toHaveValue("global");
+    await expect(page.locator("[data-input-row-action]")).toHaveValue("fire");
+    await page.locator("[data-input-row-capture-keyboard]").click();
+    await page.keyboard.press("KeyF");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyF");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(2);
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Fire" }).locator("[data-input-token]")).toHaveText("Keyboard KeyF");
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).locator("[data-input-token]")).toHaveText("Keyboard KeyA");
+
+    records = await inputMappingRecords(page);
+    expect(records).toHaveLength(2);
+    expect(records.find((record) => record.action === "fire")).toMatchObject({
+      binding: "KeyF",
+      objectKey: "global",
+      source: "keyboard",
+    });
+
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Hero");
-    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyA");
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).locator("[data-input-token]")).toHaveText("Keyboard KeyA");
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Fire" }).locator("[data-input-token]")).toHaveText("Keyboard KeyF");
 
-    await page.locator("[data-input-token]").click();
-    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
-    await expect(page.locator("[data-input-row-device]")).toBeFocused();
+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).locator("[data-input-token]").click();
+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).locator("[data-input-token]")).toHaveText("Keyboard KeyA");
     records = await inputMappingRecords(page);
-    expect(records).toHaveLength(1);
+    expect(records).toHaveLength(2);
 
-    await page.locator("[data-input-cancel-mapping]").click();
-    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyA");
-    await page.locator("[data-input-trash-mapping]").click();
+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).locator("[data-input-edit-mapping]").click();
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyA");
+    await page.locator("[data-input-row-binding-value]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
+    await page.keyboard.press("KeyB");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyB");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).locator("[data-input-token]")).toHaveText("Keyboard KeyB");
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Fire" }).locator("[data-input-token]")).toHaveText("Keyboard KeyF");
+
+    records = await inputMappingRecords(page);
+    expect(records).toHaveLength(2);
+    expect(records.find((record) => record.action === "moveLeft")).toMatchObject({ binding: "KeyB" });
+    expect(records.find((record) => record.action === "fire")).toMatchObject({ binding: "KeyF" });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).locator("[data-input-token]")).toHaveText("Keyboard KeyB");
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Fire" }).locator("[data-input-token]")).toHaveText("Keyboard KeyF");
+
+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).locator("[data-input-trash-mapping]").click();
+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Move Left");
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Fire" }).locator("[data-input-token]")).toHaveText("Keyboard KeyF");
+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Fire" }).locator("[data-input-trash-mapping]").click();
     await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
     await expect(page.locator("[data-input-output-status]")).toHaveText("Not Configured");
     records = await inputMappingRecords(page);

@@ -51,6 +51,7 @@ let rowCaptureSource = "";
 const elements = {
   actionSelect: document.querySelector("[data-input-action-select]"),
   addMapping: document.querySelector("[data-input-add-mapping]"),
+  controllerDeviceSelect: document.querySelector("[data-controller-device-select]"),
   controllerProfileAdd: document.querySelector("[data-controller-profile-add]"),
   controllerProfileList: document.querySelector("[data-controller-profile-list]"),
   controllerProfileStatus: document.querySelector("[data-controller-profile-status]"),
@@ -126,6 +127,67 @@ function profileOptions() {
 
 function profileLabel(profileId) {
   return profileById(profileId)?.mappingProfile || "No saved profile";
+}
+
+function availableGamepads() {
+  if (typeof navigator.getGamepads !== "function") {
+    return [];
+  }
+  return Array.from(navigator.getGamepads() || [])
+    .map((pad, fallbackIndex) => (pad ? {
+      axes: Array.from(pad.axes || []),
+      buttons: Array.from(pad.buttons || []),
+      id: normalizeText(pad.id),
+      index: Number.isInteger(pad.index) ? pad.index : fallbackIndex,
+    } : null))
+    .filter(Boolean);
+}
+
+function gamepadInputNames(gamepad) {
+  return [
+    ...gamepad.buttons.map((_, index) => `Button${index}`),
+    ...gamepad.axes.map((_, index) => `Axis${index}`),
+  ];
+}
+
+function controllerDeviceOptions() {
+  return [
+    {
+      controllerId: "keyboard",
+      controllerName: "Keyboard",
+      deviceType: "Keyboard",
+      inputs: ["Keyboard Key"],
+      label: "Keyboard",
+      mappingProfile: "Keyboard Profile",
+      value: "keyboard",
+    },
+    {
+      controllerId: "mouse",
+      controllerName: "Mouse",
+      deviceType: "Mouse",
+      inputs: ["Mouse Button"],
+      label: "Mouse",
+      mappingProfile: "Mouse Profile",
+      value: "mouse",
+    },
+    ...availableGamepads().map((gamepad) => {
+      const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
+      return {
+        controllerId: gamepad.id || `gamepad-${gamepad.index}`,
+        controllerName,
+        deviceType: "Gamepad",
+        inputs: gamepadInputNames(gamepad),
+        label: `Gamepad: ${controllerName}`,
+        mappingProfile: `${controllerName} Profile`,
+        value: `gamepad-${gamepad.index}`,
+      };
+    }),
+    {
+      label: "Unknown or unavailable controller",
+      unavailable: true,
+      value: "unavailable-controller",
+    },
+  ];
 }
 
 function selectedObject() {
@@ -453,6 +515,17 @@ function renderActionsAndObjects() {
   );
 }
 
+function renderControllerDeviceSelect(selectedValue = elements.controllerDeviceSelect?.value || "") {
+  renderSelect(
+    elements.controllerDeviceSelect,
+    [
+      { label: "Choose a controller", value: "" },
+      ...controllerDeviceOptions().map((device) => ({ label: device.label, value: device.value })),
+    ],
+    selectedValue,
+  );
+}
+
 function renderControllerProfileStatus() {
   if (!elements.controllerProfileStatus) {
     return;
@@ -652,7 +725,7 @@ function inputCaptureCell(values = {}) {
   const binding = normalizeText(values.binding);
   const currentInput = actionButton(inputLabel(source, binding) || "No input captured", "inputRowBindingValue", "", "btn btn--compact cyan");
   currentInput.hidden = !binding;
-  currentInput.setAttribute("aria-label", "Current mapping input. Choose Input Device to change capture path.");
+  currentInput.setAttribute("aria-label", "Current mapping input. Click while editing to capture a new input for this row.");
   const hiddenInput = hiddenControl({ value: binding });
   hiddenInput.dataset.inputRowBinding = "true";
 
@@ -684,7 +757,7 @@ function updateInputCaptureCell(row, source, binding = "") {
     currentInput.textContent = label || "No input captured";
     currentInput.title = label || "No input captured";
     currentInput.hidden = !normalizedBinding;
-    currentInput.setAttribute("aria-label", `${label || "No input captured"} input. Choose Input Device to change capture path.`);
+    currentInput.setAttribute("aria-label", `${label || "No input captured"} input. Click while editing to capture a new input for this row.`);
   }
   if (group) {
     group.replaceChildren();
@@ -786,6 +859,7 @@ function renderAll(message = "") {
   mappings = readMappings();
   renderActionsAndObjects();
   renderDefaults();
+  renderControllerDeviceSelect();
   renderControllerProfiles();
   renderDiagnostics(message);
   renderMappings();
@@ -805,14 +879,13 @@ function setEditingRowInput(row, source, binding) {
   return updateInputCaptureCell(row, normalizedSource, normalizedBinding);
 }
 
-function focusEditingRowDevice(row) {
-  const deviceSelect = row?.querySelector("[data-input-row-device]");
-  if (!deviceSelect) {
+function startEditingRowCaptureFromValue(row) {
+  const source = deviceBySource(row?.querySelector("[data-input-row-device]")?.value || "keyboard").source;
+  if (source === "gamepad") {
+    captureGamepadInputForRow();
     return;
   }
-  deviceSelect.focus();
-  deviceSelect.click();
-  setText(elements.statusLog, "Choose an Input Device, then capture input for this row.");
+  startRowCapture(source);
 }
 
 function changeEditingRowDevice(row, source) {
@@ -1053,6 +1126,32 @@ function editControllerProfile(profileId) {
   setText(elements.controllerProfileStatus, `Editing ${profile.mappingProfile} controller profile.`);
 }
 
+function selectControllerDevice(value) {
+  const device = controllerDeviceOptions().find((candidate) => candidate.value === value);
+  if (!device || device.unavailable) {
+    profileEditingRow = null;
+    renderControllerProfiles();
+    setText(
+      elements.controllerProfileStatus,
+      "WARN: Unknown or unavailable controller. Connect the device, press a button, refresh devices, then select the detected controller before saving a profile.",
+    );
+    return;
+  }
+  profileEditingRow = {
+    id: "",
+    values: {
+      actions: [selectedAction().label],
+      controllerId: device.controllerId,
+      controllerName: device.controllerName,
+      deviceType: device.deviceType,
+      inputs: device.inputs,
+      mappingProfile: device.mappingProfile,
+    },
+  };
+  renderControllerProfiles();
+  setText(elements.controllerProfileStatus, `${device.label} selected. Review and save this controller profile when ready.`);
+}
+
 function deleteControllerProfile(profileId) {
   const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
   const nextProfiles = controllerProfiles.filter((candidate) => candidate.id !== profileId);
@@ -1073,7 +1172,7 @@ function deleteControllerProfile(profileId) {
   renderAll(profile ? `Deleted ${profile.mappingProfile} controller profile.` : "Deleted controller profile.");
 }
 
-function editMapping(mappingId, options = {}) {
+function editMapping(mappingId) {
   const mapping = mappings.find((candidate) => candidate.id === mappingId);
   if (!mapping) {
     return;
@@ -1084,9 +1183,6 @@ function editMapping(mappingId, options = {}) {
     values: mapping,
   };
   renderMappings();
-  if (options.focusDevice) {
-    focusEditingRowDevice(editingRowElement());
-  }
   setText(elements.statusLog, `Editing ${mapping.actionLabel} mapping.`);
 }
 
@@ -1115,9 +1211,9 @@ function handleListClick(event) {
   } else if (target.dataset.inputTrashMapping !== undefined) {
     deleteMapping(target.dataset.inputTrashMapping || "");
   } else if (target.dataset.inputToken !== undefined) {
-    editMapping(target.dataset.inputToken || "", { focusDevice: true });
+    return;
   } else if (target.dataset.inputRowBindingValue !== undefined) {
-    focusEditingRowDevice(editingRowElement());
+    startEditingRowCaptureFromValue(editingRowElement());
   } else if (target.dataset.inputRowCaptureKeyboard !== undefined) {
     startKeyboardCapture();
   } else if (target.dataset.inputRowCaptureMouse !== undefined) {
@@ -1177,6 +1273,7 @@ function init() {
   mappings = readMappings();
   renderActionsAndObjects();
   renderDefaults();
+  renderControllerDeviceSelect();
   renderControllerProfiles();
   renderDiagnostics();
   renderMappings();
@@ -1185,6 +1282,9 @@ function init() {
   });
   elements.objectSelect?.addEventListener("change", () => {
     setText(elements.statusLog, `Selected ${selectedObject().label} for new mappings.`);
+  });
+  elements.controllerDeviceSelect?.addEventListener("change", () => {
+    selectControllerDevice(elements.controllerDeviceSelect.value);
   });
   elements.addMapping?.addEventListener("click", () => {
     rowCaptureSource = "";
@@ -1219,6 +1319,7 @@ function init() {
     renderAll("Reset input mappings.");
   });
   elements.refreshDevices?.addEventListener("click", () => {
+    renderControllerDeviceSelect();
     renderDiagnostics("Device diagnostics refreshed.");
     renderControllerProfileStatus();
   });
