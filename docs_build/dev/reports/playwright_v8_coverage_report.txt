@@ -12,25 +12,31 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(81%) Toolbox Index - exercised 3 runtime JS files
+(70%) Toolbox Index - exercised 9 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (74%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(78%) admin/tool-votes.js - executed lines 406/406; executed functions 43/55
-(84%) toolbox/tools-page-accordions.js - executed lines 960/960; executed functions 92/109
+(93%) admin/tool-votes.js - executed lines 406/406; executed functions 53/57
+(96%) toolbox/tools-page-accordions.js - executed lines 960/960; executed functions 110/114
 
 Files with executed line/function counts where available:
 (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
-(50%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 3/6
-(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+(55%) toolbox/project-journey/project-journey.js - executed lines 1002/1002; executed functions 54/99
+(58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
+(58%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 119/204
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-(64%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 16/25
+(71%) toolbox/assets/assets.js - executed lines 519/519; executed functions 42/59
 (77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 43/56
-(78%) admin/tool-votes.js - executed lines 406/406; executed functions 43/55
-(84%) toolbox/tools-page-accordions.js - executed lines 960/960; executed functions 92/109
+(83%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 5/6
+(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
+(93%) admin/tool-votes.js - executed lines 406/406; executed functions 53/57
+(96%) toolbox/tools-page-accordions.js - executed lines 960/960; executed functions 110/114
+(100%) toolbox/assets/assets-api-client.js - executed lines 17/17; executed functions 3/3
+(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
+(100%) toolbox/project-journey/project-journey-api-client.js - executed lines 13/13; executed functions 2/2
 (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
@@ -39,7 +45,9 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) toolbox/toolRegistry.js - changed JS file not collected as browser runtime coverage
-(78%) admin/tool-votes.js - changed JS file with browser V8 coverage
-(84%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
+(93%) admin/tool-votes.js - changed JS file with browser V8 coverage
+(96%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage

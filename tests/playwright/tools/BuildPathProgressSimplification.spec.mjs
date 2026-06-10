@@ -114,7 +114,7 @@ test("Toolbox removes Progress view and renders the DB-backed Build Path table",
     expect(rows).toEqual([
       expect.objectContaining({
         metadataSource: "toolbox_tool_metadata",
-        order: 7,
+        order: 3,
         releaseChannel: "complete",
         status: "Complete",
         tool: "Colors",
@@ -138,14 +138,14 @@ test("Build Path preserves DB order across selected status filters", async ({ pa
     const rows = await buildPathRows(page);
     expect(rows.map((row) => row.tool)).toEqual([
       "Project Workspace",
-      "Project Journey",
       "Game Design",
-      "Game Configuration",
-      "Assets",
       "Colors",
+      "Assets",
+      "Game Configuration",
+      "Project Journey",
     ]);
-    expect(rows.map((row) => row.order)).toEqual([2, 3, 4, 5, 6, 7]);
-    expect(rows.map((row) => row.releaseChannel)).toEqual(["beta", "beta", "beta", "beta", "beta", "complete"]);
+    expect(rows.map((row) => row.order)).toEqual([1, 2, 3, 4, 5, 14]);
+    expect(rows.map((row) => row.releaseChannel)).toEqual(["beta", "beta", "complete", "beta", "beta", "beta"]);
     expect(rows.every((row) => row.metadataSource === "toolbox_tool_metadata")).toBe(true);
 
     await expectNoPageFailures(failures);

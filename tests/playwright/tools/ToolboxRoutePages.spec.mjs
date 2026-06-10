@@ -14,6 +14,13 @@ const TOOL_ROUTE_SMOKE_CASES = [
   { heading: "Languages", route: "/tools/languages/index.html" },
 ];
 
+const STATUS_HELP_TEXT = Object.freeze({
+  planned: "Not designed yet.\nNo meaningful UI.\nNo ownership defined.",
+  wireframe: "Tool exists.\nUser can understand workflow.\nData ownership is defined.\nNot functionally usable.",
+  beta: "Functionally usable.\nCan be used in a real game.\nMay still contain incomplete workflows, placeholder data, UI cleanup issues, unused fields, missing validation, or incomplete code review.",
+  complete: "Functionally usable.\nCode reviewed.\nDead code removed.\nInvalid fields removed.\nUI cleaned up.\nNo known placeholder data.\nNo known invalid controls.\nReady for long-term support.",
+});
+
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
@@ -246,7 +253,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       await expect(betaCard.locator("[data-toolbox-kicker]")).toHaveText("Beta");
       await expect(betaCard.locator("[data-toolbox-kicker]")).toHaveAttribute(
         "title",
-        "Ready to try.\nFeatures, layout, and workflows may change based on feedback.",
+        STATUS_HELP_TEXT.beta,
       );
     }
 
@@ -256,7 +263,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(wireframeCard.locator("[data-toolbox-kicker]")).toHaveClass(/swatch-label/);
     await expect(wireframeCard.locator("[data-toolbox-kicker]")).toHaveAttribute(
       "title",
-      "Preview the planned workflow and layout.\nHelp shape the design before development begins.",
+      STATUS_HELP_TEXT.wireframe,
     );
     await expect(wireframeCard.locator("[data-toolbox-tile-action-row='Build Game'] a.btn")).toHaveText("Open Tool");
     await expect(wireframeCard.locator("[data-toolbox-plan-details='Build Game']")).toContainText("Wireframe details");
@@ -353,7 +360,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(plannedCard).toBeVisible();
     await expect(plannedCard.locator("[data-toolbox-kicker]")).toHaveText("Planned");
     await expect(plannedCard.locator("[data-toolbox-kicker]")).toHaveClass(/swatch-label/);
-    await expect(plannedCard.locator("[data-toolbox-kicker]")).toHaveAttribute("title", "Idea exists.\nNot yet available.");
+    await expect(plannedCard.locator("[data-toolbox-kicker]")).toHaveAttribute("title", STATUS_HELP_TEXT.planned);
     await expect(plannedCard.locator("[data-toolbox-vote-controls='Publish']")).toBeVisible();
     await plannedCard.locator("[data-toolbox-vote-controls='Publish'] [data-toolbox-vote='up']").click();
     await expect(page.locator("[data-toolbox-launch-status]")).toHaveText("Publish up vote recorded for Admin review.");
@@ -363,11 +370,11 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     const plannedFontCard = page.locator("[data-toolbox-tool-card='Fonts']");
     await expect(plannedFontCard.locator("[data-toolbox-kicker]")).toHaveText("Planned");
-    await expect(plannedFontCard.locator("[data-toolbox-kicker]")).toHaveAttribute("title", "Idea exists.\nNot yet available.");
+    await expect(plannedFontCard.locator("[data-toolbox-kicker]")).toHaveAttribute("title", STATUS_HELP_TEXT.planned);
     await expect(plannedFontCard.locator("[data-toolbox-vote-controls='Fonts']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-card='Colors'] [data-toolbox-kicker]")).toHaveAttribute(
       "title",
-      "Production ready and fully supported.",
+      STATUS_HELP_TEXT.complete,
     );
 
     const designGroupLabel = page.locator("[data-toolbox-group-label='Design']").first();
@@ -465,7 +472,8 @@ test("toolbox status kickers, filters, card order, and voting controls work from
       source.dispatchEvent(new DragEvent("dragend", { bubbles: true, dataTransfer }));
     });
     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Rows were renumbered with whole-number order values.");
-    await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText("2");
+    await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText("1");
+    await expect(page.locator("[data-toolbox-votes-tool-id='project-workspace'] td").nth(1)).toHaveText("2");
     await expect(adminBuildVoteRow).toHaveAttribute("aria-selected", "true");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("1");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("1");
@@ -517,7 +525,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     expect(mockDbToolboxTables.metadata.every((row) => Number.isInteger(row.order))).toBe(true);
     expect(mockDbToolboxTables.metadata).toEqual(expect.arrayContaining([
       expect.objectContaining({
-        order: 2,
+        order: 1,
         toolId: "build-game",
       }),
       expect.objectContaining({

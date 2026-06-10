@@ -15,6 +15,22 @@ const REQUIRED_RESTORED_TOOLS = [
   "AI Assistant",
   "Creator Learning",
 ];
+const EXPECTED_MVP_COMPACT_ORDER = [
+  "Project Workspace",
+  "Game Design",
+  "Colors",
+  "Assets",
+  "Game Configuration",
+  "Objects",
+  "Controls",
+  "Hitboxes",
+  "Events",
+  "Saved Data",
+  "Debug",
+  "Game Testing",
+  "Publish",
+  "Project Journey",
+];
 const TOOL_PLANNING_FIELDS = [
   "progressChecklist",
   "readiness",
@@ -180,6 +196,20 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
       planned: 33,
       wireframe: 4,
     });
+    const orderedMvpRows = snapshot.rows
+      .filter((row) => EXPECTED_MVP_COMPACT_ORDER.includes(row.toolName))
+      .sort((left, right) => Number(left.order) - Number(right.order));
+    expect(orderedMvpRows.map((row) => row.toolName)).toEqual(EXPECTED_MVP_COMPACT_ORDER);
+    expect(snapshot.rows.find((row) => row.toolName === "Vector Asset Studio")).toBeUndefined();
+    expect(snapshot.rows.find((row) => row.toolName === "Particles")).toEqual(expect.objectContaining({
+      group: "Design",
+    }));
+    expect(snapshot.rows.find((row) => row.toolName === "MIDI")).toEqual(expect.objectContaining({
+      group: "Audio",
+    }));
+    expect(snapshot.rows.find((row) => row.toolName === "Music")).toEqual(expect.objectContaining({
+      group: "Audio",
+    }));
 
     await expect(page.locator("[data-toolbox-votes-tool-id]")).toHaveCount(EXPECTED_TOOL_COUNT);
     await expect(page.locator("[data-toolbox-votes-state-help]")).toContainText("Beta: Functionally usable.");
