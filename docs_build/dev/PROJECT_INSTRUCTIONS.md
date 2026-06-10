@@ -255,6 +255,24 @@ Project Workspace is the next first real Toolbox rebuild target. Its contract ow
 
 Do not implement Project Workspace runtime behavior, persistence, database behavior, authentication, or save/load flows before the rebuild PR explicitly scopes those capabilities.
 
+## TOOL STATUS GOVERNANCE
+
+The authoritative tool status values are:
+- `planned`
+- `wireframe`
+- `beta`
+- `complete`
+
+Status definitions:
+- `planned`: Not designed yet. No meaningful UI. No ownership defined.
+- `wireframe`: Tool exists. User can understand workflow. Data ownership is defined. Not functionally usable.
+- `beta`: Functionally usable. Can be used in a real game. May still contain incomplete workflows, placeholder data, UI cleanup issues, unused fields, missing validation, or incomplete code review.
+- `complete`: Functionally usable. Code reviewed. Dead code removed. Invalid fields removed. UI cleaned up. No known placeholder data. No known invalid controls. Ready for long-term support.
+
+UAT rule:
+- A tool required for the current MVP game path must be `beta` or `complete` before UAT.
+- `complete` is not required for MVP UAT, but `beta` is the minimum usable state.
+
 ## TARGETED MSJ VALIDATION GOVERNANCE
 
 Every tool, page, or `src/` change must declare its impacted MSJ/test lane.
