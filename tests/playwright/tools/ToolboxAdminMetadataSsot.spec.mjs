@@ -126,6 +126,18 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     const mockDbSnapshot = await fetchApiData(server, "/api/mock-db/snapshot");
     expect(snapshot.rows).toHaveLength(EXPECTED_TOOL_COUNT);
     expect(registrySnapshot.activeTools).toHaveLength(EXPECTED_TOOL_COUNT);
+    expect(registrySnapshot.toolboxContract).toEqual(expect.objectContaining({
+      releaseChannels: ["planned", "wireframe", "beta", "complete"],
+      defaultReleaseChannels: expect.objectContaining({
+        buildPath: ["complete"],
+        toolbox: ["wireframe", "beta", "complete"],
+      }),
+    }));
+    expect(registrySnapshot.toolboxContract.groups).toEqual(expect.arrayContaining(["AI", "Build/Create", "Design", "Platform"]));
+    expect(registrySnapshot.toolboxContract.toolboxGroupOrder).toEqual(expect.arrayContaining(["Create", "Build", "Content", "Admin"]));
+    expect(registrySnapshot.toolboxContract.groupSwatches.Design).toBe("toolbox-group-design");
+    expect(registrySnapshot.toolboxContract.releaseChannelSwatches.complete).toBe("swatch-green");
+    expect(registrySnapshot.toolboxContract.roleFocusTools.Designer).toEqual(expect.arrayContaining(["Project Workspace", "Colors"]));
     expect(new Set(snapshot.rows.map((row) => row.toolKey || row.toolId)).size).toBe(EXPECTED_TOOL_COUNT);
     expect(mockDbSnapshot.schemas.toolbox_tool_metadata).not.toEqual(expect.arrayContaining(TOOL_PLANNING_FIELDS));
     expect(mockDbSnapshot.schemas.toolbox_tool_planning).toEqual(expect.arrayContaining(TOOL_PLANNING_FIELDS));

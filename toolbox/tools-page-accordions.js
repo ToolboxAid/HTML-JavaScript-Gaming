@@ -13,6 +13,7 @@ import {
     getToolImageDiagnostics,
     getToolImageSource,
     getToolRoute,
+    getToolboxContract,
     toolRegistryMetadataDiagnostic
 } from "./tool-registry-api-client.js";
 import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
@@ -44,42 +45,8 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     const betaSession = sessionRoles.includes("beta");
     let currentMode = searchParams.get("view") === "group" ? "grouped" : searchParams.get("view") === "build-path" ? "build-path" : "ascending";
     let targetGroupSlug = currentMode === "grouped" ? groupSlug(searchParams.get("group")) : "";
-    const releaseChannelOrder = Object.freeze(["planned", "wireframe", "beta", "complete"]);
-    const toolboxDefaultReleaseChannels = Object.freeze(["wireframe", "beta", "complete"]);
-    const buildPathDefaultReleaseChannels = Object.freeze(["complete"]);
-    const visibleReleaseChannels = new Set(toolboxDefaultReleaseChannels);
+    const visibleReleaseChannels = new Set();
     let releaseFilterMode = "";
-    const releaseChannelLabels = Object.freeze({
-        complete: "Complete",
-        beta: "Beta",
-        wireframe: "Wireframe",
-        planned: "Planned"
-    });
-    const releaseChannelHelpText = Object.freeze({
-        planned: "Idea exists.\nNot yet available.",
-        wireframe: "Preview the planned workflow and layout.\nHelp shape the design before development begins.",
-        beta: "Ready to try.\nFeatures, layout, and workflows may change based on feedback.",
-        complete: "Production ready and fully supported."
-    });
-    const releaseChannelByStatus = Object.freeze({
-        Ready: "beta",
-        Wireframe: "planned",
-        "Under Construction": "beta",
-        Planned: "planned",
-        Hidden: "planned",
-        Deprecated: "planned"
-    });
-    const roleFocusTools = Object.freeze({
-        Owner: null,
-        Designer: ["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"],
-        "World Builder": ["Worlds", "Objects", "Assets", "Colors", "Animations"],
-        Artist: ["Assets", "Colors", "Fonts", "Sprites", "Characters", "Objects", "Animations"],
-        "Audio Creator": ["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"],
-        Translator: ["Languages", "Voices", "Voice Capture", "Voice Output"],
-        Tester: ["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"],
-        Publisher: ["Publish", "Marketplace", "Community", "Cloud", "Languages"],
-        Viewer: ["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]
-    });
     const registryDiagnostic = getToolRegistryApiDiagnostic();
     if (registryDiagnostic) {
         const diagnostic = document.createElement("p");
@@ -89,18 +56,23 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         list.replaceChildren(diagnostic);
         return;
     }
+    const toolboxContract = getToolboxContract();
+    const releaseChannelOrder = Object.freeze([...(toolboxContract.releaseChannels || [])]);
+    const defaultReleaseChannel = releaseChannelOrder[0] || "planned";
+    const toolboxDefaultReleaseChannels = Object.freeze([...(toolboxContract.defaultReleaseChannels?.toolbox || [])]);
+    const buildPathDefaultReleaseChannels = Object.freeze([...(toolboxContract.defaultReleaseChannels?.buildPath || [])]);
+    const releaseChannelLabels = Object.freeze({ ...(toolboxContract.releaseChannelLabels || {}) });
+    const releaseChannelHelpText = Object.freeze({ ...(toolboxContract.releaseChannelHelpText || {}) });
+    const releaseChannelByStatus = Object.freeze({ ...(toolboxContract.releaseChannelByStatus || {}) });
+    const roleFocusTools = Object.freeze({ ...(toolboxContract.roleFocusTools || {}) });
+    const toolboxGroupOrder = Object.freeze([...(toolboxContract.toolboxGroupOrder || [])]);
+    const groupSwatchMap = Object.freeze({ ...(toolboxContract.groupSwatches || {}) });
+    const stateSwatchMap = Object.freeze({ ...(toolboxContract.releaseChannelSwatches || {}) });
+    toolboxDefaultReleaseChannels.forEach((channel) => {
+        visibleReleaseChannels.add(channel);
+    });
     const registryTools = getActiveToolRegistry();
     const registryToolsByTitle = new Map(registryTools.map((tool) => [tool.displayName || tool.name, tool]));
-    const toolboxGroupOrder = Object.freeze([
-        "Create",
-        "Build",
-        "Content",
-        "Media",
-        "Test",
-        "Share",
-        "Account",
-        "Admin"
-    ]);
     const toolGroups = toolboxGroupOrder
         .map((group) => ({
             group,
@@ -109,21 +81,6 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
                 .sort((left, right) => (left.order ?? Number.MAX_SAFE_INTEGER) - (right.order ?? Number.MAX_SAFE_INTEGER))
         }))
         .filter((group) => group.tools.length > 0);
-    const groupSwatchMap = {
-        "AI": "toolbox-group-ai",
-        "Audio": "toolbox-group-audio",
-        "Build/Create": "toolbox-group-build",
-        "Design": "toolbox-group-design",
-        "Marketplace": "toolbox-group-marketplace",
-        "Platform": "toolbox-group-platform",
-        "Play": "toolbox-group-play"
-    };
-    const stateSwatchMap = {
-        planned: "swatch-gray",
-        wireframe: "swatch-blue",
-        beta: "swatch-gold",
-        complete: "swatch-green"
-    };
     let toolboxVoteRows = [];
     const voteRowsByToolId = new Map();
     let voteDiagnostic = "";
@@ -163,21 +120,21 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     function releaseChannelForTool(tool) {
         if (typeof tool === "string") {
             const explicitChannel = tool.trim().toLowerCase();
-            return releaseChannelOrder.includes(explicitChannel) ? explicitChannel : "planned";
+            return releaseChannelOrder.includes(explicitChannel) ? explicitChannel : defaultReleaseChannel;
         }
         const explicitChannel = typeof tool?.releaseChannel === "string" ? tool.releaseChannel.trim().toLowerCase() : "";
         if (releaseChannelOrder.includes(explicitChannel)) {
             return explicitChannel;
         }
-        return releaseChannelByStatus[tool?.status] || "planned";
+        return releaseChannelByStatus[tool?.status] || defaultReleaseChannel;
     }
 
     function releaseChannelLabel(channel) {
-        return releaseChannelLabels[channel] || releaseChannelLabels.planned;
+        return releaseChannelLabels[channel] || releaseChannelLabels[defaultReleaseChannel] || channel || defaultReleaseChannel;
     }
 
     function releaseChannelHelp(channel) {
-        return releaseChannelHelpText[channel] || releaseChannelHelpText.planned;
+        return releaseChannelHelpText[channel] || releaseChannelHelpText[defaultReleaseChannel] || "";
     }
 
     function includeToolInToolboxInventory(tool) {

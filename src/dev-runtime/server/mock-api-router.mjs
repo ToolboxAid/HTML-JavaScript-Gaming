@@ -8,6 +8,9 @@ import {
 } from "../persistence/tool-repositories/assets-mock-repository.js";
 import {
   TOOL_IMAGE_FALLBACK,
+  TOOL_RELEASE_CHANNELS,
+  TOOL_RELEASE_CHANNEL_HELP_TEXT,
+  TOOL_RELEASE_CHANNEL_LABELS,
   TOOL_STATUS_MODEL,
   getActiveToolRegistry,
   getToolImageDiagnostics,
@@ -73,6 +76,25 @@ const TOOLBOX_PLANNING_FIELDS = Object.freeze([
   "requiredForTestable",
   "requires",
 ]);
+const TOOLBOX_DEFAULT_RELEASE_CHANNELS = Object.freeze(["wireframe", "beta", "complete"]);
+const BUILD_PATH_DEFAULT_RELEASE_CHANNELS = Object.freeze(["complete"]);
+const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
+  planned: "swatch-gray",
+  wireframe: "swatch-blue",
+  beta: "swatch-gold",
+  complete: "swatch-green",
+});
+const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
+  Owner: null,
+  Designer: Object.freeze(["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"]),
+  "World Builder": Object.freeze(["Worlds", "Objects", "Assets", "Colors", "Animations"]),
+  Artist: Object.freeze(["Assets", "Colors", "Fonts", "Sprites", "Characters", "Objects", "Animations"]),
+  "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"]),
+  Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Voice Output"]),
+  Tester: Object.freeze(["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"]),
+  Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
+  Viewer: Object.freeze(["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
+});
 
 const DB_ADAPTER_CONTRACT = Object.freeze({
   contract: "GameFoundryDbAdapter",
@@ -115,6 +137,66 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function orderedUniqueValues(rows, valueSelector) {
+  const values = [];
+  rows
+    .slice()
+    .sort((left, right) => left.order - right.order || left.displayName.localeCompare(right.displayName))
+    .forEach((row) => {
+      const value = String(valueSelector(row) || "").trim();
+      if (value && !values.includes(value)) {
+        values.push(value);
+      }
+    });
+  return values;
+}
+
+function toolboxGroupSwatchClass(groupName, colorGroup) {
+  const colorGroupClass = String(colorGroup || "").trim();
+  if (colorGroupClass.startsWith("tool-group-")) {
+    return colorGroupClass.replace(/^tool-group-/, "toolbox-group-");
+  }
+
+  const slug = String(groupName || "")
+    .trim()
+    .toLowerCase()
+    .replace(/build\/create/g, "build")
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+  return slug ? `toolbox-group-${slug}` : "swatch-orange";
+}
+
+function toolboxGroupSwatches(rows) {
+  return rows.reduce((swatches, row) => {
+    const groupName = row.category || row.group || "";
+    if (groupName && !swatches[groupName]) {
+      swatches[groupName] = toolboxGroupSwatchClass(groupName, row.colorGroup);
+    }
+    return swatches;
+  }, {});
+}
+
+function toolboxContractForTools(tools) {
+  return {
+    defaultReleaseChannels: {
+      buildPath: [...BUILD_PATH_DEFAULT_RELEASE_CHANNELS],
+      toolbox: [...TOOLBOX_DEFAULT_RELEASE_CHANNELS],
+    },
+    groupSwatches: toolboxGroupSwatches(tools),
+    groups: orderedUniqueValues(tools, (tool) => tool.category || tool.group),
+    releaseChannelByStatus: Object.fromEntries(TOOL_STATUS_MODEL.map((status) => [
+      status,
+      getToolReleaseChannel({ status }),
+    ])),
+    releaseChannelHelpText: clone(TOOL_RELEASE_CHANNEL_HELP_TEXT),
+    releaseChannelLabels: clone(TOOL_RELEASE_CHANNEL_LABELS),
+    releaseChannelSwatches: clone(TOOLBOX_RELEASE_CHANNEL_SWATCHES),
+    releaseChannels: [...TOOL_RELEASE_CHANNELS],
+    roleFocusTools: clone(TOOLBOX_ROLE_FOCUS_TOOLS),
+    toolboxGroupOrder: orderedUniqueValues(tools, (tool) => tool.toolboxGroup),
+  };
 }
 
 function valueOrDefault(value, fallback) {
@@ -1095,10 +1177,12 @@ class LocalDevMockDataSource {
         ...planningByToolKey.get(normalizedToolKey(row)),
       }, index))
       .sort((left, right) => left.order - right.order || left.displayName.localeCompare(right.displayName));
+    const activeTools = tools.filter((tool) => tool.active !== false);
     return {
-      activeTools: tools.filter((tool) => tool.active !== false),
+      activeTools,
       imageFallback: TOOL_IMAGE_FALLBACK,
       readinessByStatus: Object.fromEntries(TOOL_STATUS_MODEL.map((status) => [status, getToolProgressReadiness(status)])),
+      toolboxContract: toolboxContractForTools(activeTools),
       tools,
     };
   }

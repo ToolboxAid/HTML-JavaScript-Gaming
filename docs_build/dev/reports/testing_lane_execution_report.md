@@ -1,12 +1,12 @@
 # Testing Lane Execution Report
 
-PR: PR_26160_068-db-ssot-governance-and-tool-audit
+PR: PR_26160_072-toolbox-db-contract-enforcement
 Generated: 2026-06-09
 Full samples validation: SKIPPED
 
 ## Summary
 
-PASS: 9
+PASS: 8
 WARN: 1
 FAIL: 0
 SKIP: 3
@@ -16,24 +16,23 @@ SKIP: 3
 | Lane | Status | Command | Evidence |
 | --- | --- | --- | --- |
 | Branch guard | PASS | `git branch --show-current` | Returned `main`. |
-| Changed JS syntax | PASS | `node --check admin/tool-votes.js src/dev-runtime/guest-seeds/tool-state-samples.js src/dev-runtime/persistence/mock-db-store.js src/dev-runtime/server/mock-api-router.mjs tests/playwright/tools/BuildPathProgressSimplification.spec.mjs tests/playwright/tools/ToolboxRoutePages.spec.mjs tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs toolbox/toolRegistry.js toolbox/tools-page-accordions.js` | All changed JS/test files parsed. |
-| Governance/static placement | PASS | `Select-String` for `DB-BACKED PRODUCT DATA SSOT GOVERNANCE` | Governance section exists in `docs_build/dev/PROJECT_INSTRUCTIONS.md`. |
-| API contract probe | PASS | Inline Node mock API probe against `/api/toolbox/votes/snapshot` | Snapshot returned 43 rows; counts planned 33, wireframe 4, beta 5, complete 1; required tools present. |
-| Toolbox/Admin SSoT Playwright | PASS | `npx playwright test tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs` | 3 passed. Verifies 43-tool metadata, Admin edit propagation, and no hardcoded Toolbox count text. |
-| Adjacent Toolbox/Admin Playwright | PASS | `npx playwright test tests/playwright/tools/BuildPathProgressSimplification.spec.mjs tests/playwright/tools/ToolboxRoutePages.spec.mjs tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs` | 17 passed. Verifies Build Path filters/counts, Admin Tool Votes, group matching, Admin wireframes/menu items. |
-| Hardcoded count/local metadata scan | PASS | `rg "Tool Count: [0-9]|Planned \\([0-9]+\\)|Wireframe \\([0-9]+\\)|Beta \\([0-9]+\\)|Complete \\([0-9]+\\)|buildPathGroups|sourceToolByTitle" toolbox admin src/dev-runtime` | No active source matches. |
-| Inline script/style/event scan | PASS | `rg --pcre2 "onclick=|onchange=|oninput=|<script(?![^>]+src)|<style[\\s>]" toolbox/index.html admin/tool-votes.html` | No matches. |
+| Changed JS syntax | PASS | `node --check admin/tool-votes.js`; `node --check toolbox/tool-registry-api-client.js`; `node --check toolbox/tools-page-accordions.js`; `node --check src/dev-runtime/server/mock-api-router.mjs`; `node --check tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs` | All changed JS/test files parsed. |
+| DB/API contract probe | PASS | Inline Node probe against `/api/toolbox/registry/snapshot`, `/api/toolbox/votes/snapshot`, and `/api/mock-db/snapshot` | Registry active tools 43; vote rows 43; metadata rows 43; planning rows 43; contract channels `planned,wireframe,beta,complete`. |
+| Toolbox/Admin SSoT Playwright | PASS | `npx playwright test tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs --reporter=line` | 4 passed. Verifies 43-tool DB-backed metadata/planning, Admin edit propagation, Toolbox reload behavior, no hardcoded count text, and no retired browser registry request. |
+| Toolbox route/display Playwright | PASS | `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs --reporter=line` | 8 passed. Verifies Toolbox filters, voting controls, group colors/assignments, Build Path status rows, Colors route behavior, wireframe pages, and port guard. |
+| UI-owned product data audit | PASS | Static `rg` scans for old local arrays, hardcoded counts, storage SSoT, and contract endpoints | Active Toolbox/Admin local status/group arrays were replaced by API contract reads; no browser storage product SSoT found. |
+| Inline event/style constraint | PASS | Changed-file review plus static scan | No changed file adds inline script, inline style, or inline event handlers. |
 | Static whitespace validation | PASS | `git diff --check` | No whitespace errors; Git printed line-ending warnings only. |
-| V8 coverage artifact refresh | WARN | Playwright coverage reporter after targeted lanes | `docs_build/dev/reports/playwright_v8_coverage_report.txt` and `coverage_changed_js_guardrail.txt` were refreshed. Server/dev-runtime files are listed as advisory 0% browser coverage because they are not browser runtime files. |
+| V8 coverage artifact refresh | WARN | Playwright coverage reporter after targeted lanes | `playwright_v8_coverage_report.txt` and `coverage_changed_js_guardrail.txt` were refreshed. Server/dev-runtime files remain advisory 0% browser coverage because they are not browser runtime files. |
 
 ## Skipped Lanes
 
 | Lane | Status | Reason |
 | --- | --- | --- |
-| Full samples validation | SKIP | This PR does not touch sample loaders, sample assets, playable game runtime, or shared sample framework behavior. |
-| Broad all-Playwright suite | SKIP | Targeted Toolbox/Admin lanes cover the impacted UI/API contracts. |
-| Unrelated game/sample DB migration validation | SKIP | The request explicitly scoped migration to Toolbox/Admin tool metadata only. |
+| Full samples validation | SKIP | This PR does not touch samples, sample loaders, sample assets, playable runtime, or sample framework behavior. |
+| Broad all-Playwright suite | SKIP | Targeted Toolbox/Admin lanes cover the impacted API contract and UI surfaces. |
+| Unrelated game/sample DB migration validation | SKIP | The request explicitly scoped migration to Toolbox/Admin tool metadata, planning, voting, and order. |
 
 ## Manual Test Notes
 
-No additional manual browser walkthrough was needed. The targeted Playwright lanes directly exercise Toolbox Build Path, Admin Tool Votes, Admin menu/wireframes, 43-tool inventory parity, Admin metadata edits reflected in Toolbox after reload, and source scans for hardcoded counts/inline behavior.
+No additional manual walkthrough was needed. The targeted Playwright lanes exercised Toolbox Build Path, Admin Tool Votes, 43-tool inventory parity, tool planning load, votes, order/status/group metadata, Admin edits reflected in Toolbox after reload, and active-page guardrails against retired browser registry use.

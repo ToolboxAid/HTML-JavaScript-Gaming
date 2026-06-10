@@ -3,6 +3,7 @@ import {
   reorderToolboxVoteRows,
   updateToolboxVoteMetadata,
 } from "../src/engine/api/toolbox-votes-api-client.js";
+import { getToolboxContract } from "../toolbox/tool-registry-api-client.js";
 
 const status = document.querySelector("[data-toolbox-votes-status]");
 const dragStatus = document.querySelector("[data-toolbox-votes-drag-status]");
@@ -14,22 +15,15 @@ const sortButtonLabels = new Map(sortButtons.map((button) => [
   button.textContent.trim(),
 ]));
 
-const RELEASE_CHANNEL_OPTIONS = Object.freeze([
-  ["planned", "Planned"],
-  ["wireframe", "Wireframe"],
-  ["beta", "Beta"],
-  ["complete", "Complete"],
-]);
+const toolboxContract = getToolboxContract();
+const releaseChannelLabels = toolboxContract.releaseChannelLabels || {};
+const RELEASE_CHANNEL_OPTIONS = Object.freeze((toolboxContract.releaseChannels || []).map((channel) => [
+  channel,
+  releaseChannelLabels[channel] || channel,
+]));
 const RELEASE_CHANNEL_LABELS = new Map(RELEASE_CHANNEL_OPTIONS);
-const GROUP_OPTIONS = Object.freeze([
-  "AI",
-  "Audio",
-  "Build/Create",
-  "Design",
-  "Marketplace",
-  "Platform",
-  "Play",
-]);
+const GROUP_OPTIONS = Object.freeze([...(toolboxContract.groups || [])]);
+const DEFAULT_RELEASE_CHANNEL = RELEASE_CHANNEL_OPTIONS[0]?.[0] || "planned";
 
 const SORT_TYPES = Object.freeze({
   down: "number",
@@ -125,7 +119,7 @@ function groupCell(voteRow) {
   const select = document.createElement("select");
   const currentGroup = String(voteRow.group || "").trim();
   const options = GROUP_OPTIONS.includes(currentGroup) || !currentGroup
-    ? GROUP_OPTIONS
+    ? [...GROUP_OPTIONS]
     : [...GROUP_OPTIONS, currentGroup];
   select.dataset.toolboxVotesGroup = voteRow.toolId;
   select.setAttribute("aria-label", `Group for ${voteRow.toolName}`);
@@ -135,7 +129,7 @@ function groupCell(voteRow) {
     option.textContent = group;
     select.append(option);
   });
-  select.value = currentGroup || GROUP_OPTIONS[0];
+  select.value = currentGroup || GROUP_OPTIONS[0] || "";
   select.addEventListener("click", (event) => {
     event.stopPropagation();
   });
@@ -169,12 +163,12 @@ function pathCell(voteRow) {
 }
 
 function releaseChannelLabel(value) {
-  return RELEASE_CHANNEL_LABELS.get(value) || RELEASE_CHANNEL_LABELS.get("planned");
+  return RELEASE_CHANNEL_LABELS.get(value) || RELEASE_CHANNEL_LABELS.get(DEFAULT_RELEASE_CHANNEL) || value || DEFAULT_RELEASE_CHANNEL;
 }
 
 function rowReleaseChannel(voteRow) {
   const value = String(voteRow.status || voteRow.releaseChannel || "").trim().toLowerCase();
-  return RELEASE_CHANNEL_LABELS.has(value) ? value : "planned";
+  return RELEASE_CHANNEL_LABELS.has(value) ? value : DEFAULT_RELEASE_CHANNEL;
 }
 
 function stateCell(voteRow) {
@@ -183,7 +177,8 @@ function stateCell(voteRow) {
   const currentState = rowReleaseChannel(voteRow);
   select.dataset.toolboxVotesState = voteRow.toolId;
   select.setAttribute("aria-label", `State for ${voteRow.toolName}`);
-  RELEASE_CHANNEL_OPTIONS.forEach(([value, label]) => {
+  const options = RELEASE_CHANNEL_OPTIONS.length ? RELEASE_CHANNEL_OPTIONS : [[currentState, currentState]];
+  options.forEach(([value, label]) => {
     const option = document.createElement("option");
     option.value = value;
     option.textContent = label;

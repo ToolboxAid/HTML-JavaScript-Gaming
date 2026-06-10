@@ -41,6 +41,11 @@ export function getActiveToolRegistry() {
   return readToolRegistrySnapshot().activeTools.map((tool) => ({ ...tool }));
 }
 
+export function getToolboxContract() {
+  const contract = readToolRegistrySnapshot().toolboxContract || {};
+  return JSON.parse(JSON.stringify(contract));
+}
+
 export function getToolProgressReadiness(status) {
   const snapshot = readToolRegistrySnapshot();
   return snapshot.readinessByStatus?.[status] || "No";

@@ -20,6 +20,9 @@ Changed runtime JS files covered:
 (0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
+(92%) admin/tool-votes.js - executed lines 378/378; executed functions 47/51
+(96%) toolbox/tools-page-accordions.js - executed lines 954/954; executed functions 109/113
 
 Files with executed line/function counts where available:
 (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
@@ -30,9 +33,9 @@ Files with executed line/function counts where available:
 (71%) toolbox/assets/assets.js - executed lines 519/519; executed functions 42/59
 (77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 548/548; executed functions 37/48
 (83%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 5/6
-(89%) toolbox/tool-registry-api-client.js - executed lines 148/148; executed functions 24/27
-(92%) admin/tool-votes.js - executed lines 383/383; executed functions 46/50
-(96%) toolbox/tools-page-accordions.js - executed lines 997/997; executed functions 108/112
+(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
+(92%) admin/tool-votes.js - executed lines 378/378; executed functions 47/51
+(96%) toolbox/tools-page-accordions.js - executed lines 954/954; executed functions 109/113
 (100%) toolbox/assets/assets-api-client.js - executed lines 17/17; executed functions 3/3
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 (100%) toolbox/project-journey/project-journey-api-client.js - executed lines 12/12; executed functions 2/2
@@ -48,3 +51,6 @@ Changed JS files considered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
+(89%) toolbox/tool-registry-api-client.js - changed JS file with browser V8 coverage
+(92%) admin/tool-votes.js - changed JS file with browser V8 coverage
+(96%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
