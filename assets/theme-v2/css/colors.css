@@ -54,7 +54,7 @@
   --meaning-steel-gray-border: rgba(107, 114, 128, .56);
   --toolbox-group-ai-color: var(--purple);
   --toolbox-group-audio-color: var(--orange);
-  --toolbox-group-build-color: #ff4d4d;
+  --toolbox-group-build-color: var(--red);
   --toolbox-group-design-color: var(--pink);
   --toolbox-group-marketplace-color: var(--gold);
   --toolbox-group-platform-color: var(--electric-blue);
