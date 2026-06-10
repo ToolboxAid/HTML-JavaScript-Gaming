@@ -21,6 +21,24 @@ const DEFAULT_ACTION_LABELS = [
   "Thrust",
 ];
 
+const DEFAULT_ACTION_DESCRIPTIONS = [
+  "Back out of a menu or choice.",
+  "Accept a choice or prompt.",
+  "Use the primary attack or tool.",
+  "Use nearby objects or prompts.",
+  "Make the object jump.",
+  "Move the object downward.",
+  "Move the object left.",
+  "Move the object right.",
+  "Move the object upward.",
+  "Pause gameplay or open the pause menu.",
+  "Turn the object counterclockwise.",
+  "Turn the object clockwise.",
+  "Highlight or choose menu items.",
+  "Begin gameplay or open the start menu.",
+  "Push the object forward.",
+];
+
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "input-mapping-v2",
@@ -141,7 +159,8 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
     await expect(page.locator("[data-input-state-explanation]")).toHaveText("State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.");
-    await expect(page.getByText("Mapping JSON", { exact: true })).toBeVisible();
+    await expect(page.getByText("Mapping JSON", { exact: true })).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-json]")).toHaveCount(0);
     await expect(page.getByText("Devices", { exact: true })).toBeVisible();
     await expect(page.getByText("Status", { exact: true })).toBeVisible();
     await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
@@ -176,7 +195,8 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Cancel");
     await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
     await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
-    await expect(page.locator("[data-input-default-actions] li")).toHaveText(DEFAULT_ACTION_LABELS);
+    await expect(page.locator("[data-input-action-label]")).toHaveText(DEFAULT_ACTION_LABELS);
+    await expect(page.locator("[data-input-action-description]")).toHaveText(DEFAULT_ACTION_DESCRIPTIONS);
     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
     await expect(page.locator("[data-input-action-select]")).toContainText("Pause");
     await expect(page.locator("[data-input-action-select]")).toContainText("Select");
@@ -438,8 +458,7 @@ test("Controls Input Mapping captures KeyA, keeps input click safe, and deletes 
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Move Left");
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Keyboard");
     await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyA");
-    await expect(page.locator("[data-input-mapping-json]")).toContainText('"action": "moveLeft"');
-    await expect(page.locator("[data-input-mapping-json]")).toContainText('"label": "Keyboard KeyA"');
+    await expect(page.locator("[data-input-mapping-json]")).toHaveCount(0);
     await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
 
     let records = await inputMappingRecords(page);
@@ -481,6 +500,8 @@ test("Controls compatibility route uses rebuilt Input Mapping surface", async ({
 
   try {
     await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
+    await expect(page.getByText("Mapping JSON", { exact: true })).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-json]")).toHaveCount(0);
     await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
     await expect(page.locator("aside").first().locator("summary").filter({ hasText: "Controller Profiles" })).toHaveCount(0);
     await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();

@@ -5,16 +5,16 @@ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M toolbox/controls/index.html
  M toolbox/input-mapping-v2/index.html
  M toolbox/input-mapping-v2/input-mapping-v2.js
-?? docs_build/dev/reports/controls-device-specific-input-report.md
+?? docs_build/dev/reports/controls-action-descriptions-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/controls-device-specific-input-report.md
+docs_build/dev/reports/controls-action-descriptions-report.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   8 +-
- tests/playwright/tools/InputMappingV2Tool.spec.mjs |  45 +++++++-
- toolbox/controls/index.html                        |  66 ++++++------
- toolbox/input-mapping-v2/index.html                |  66 ++++++------
- toolbox/input-mapping-v2/input-mapping-v2.js       | 114 +++++++++++++++++----
- 6 files changed, 210 insertions(+), 93 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  |  2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  8 ++---
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs | 29 +++++++++++++---
+ toolbox/controls/index.html                        |  6 ----
+ toolbox/input-mapping-v2/index.html                |  6 ----
+ toolbox/input-mapping-v2/input-mapping-v2.js       | 40 +++++++++++++---------
+ 6 files changed, 54 insertions(+), 37 deletions(-)

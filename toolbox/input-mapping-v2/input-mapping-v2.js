@@ -2,21 +2,21 @@ import { createObjectsToolApiRepository } from "../objects/objects-api-client.js
 import { createInputMappingToolApiRepository } from "./input-mapping-api-client.js";
 
 const DEFAULT_ACTIONS = Object.freeze([
-  Object.freeze({ id: "cancel", label: "Cancel" }),
-  Object.freeze({ id: "confirm", label: "Confirm" }),
-  Object.freeze({ id: "fire", label: "Fire" }),
-  Object.freeze({ id: "interact", label: "Interact" }),
-  Object.freeze({ id: "jump", label: "Jump" }),
-  Object.freeze({ id: "moveDown", label: "Move Down" }),
-  Object.freeze({ id: "moveLeft", label: "Move Left" }),
-  Object.freeze({ id: "moveRight", label: "Move Right" }),
-  Object.freeze({ id: "moveUp", label: "Move Up" }),
-  Object.freeze({ id: "pause", label: "Pause" }),
-  Object.freeze({ id: "rotateLeft", label: "Rotate Left" }),
-  Object.freeze({ id: "rotateRight", label: "Rotate Right" }),
-  Object.freeze({ id: "select", label: "Select" }),
-  Object.freeze({ id: "start", label: "Start" }),
-  Object.freeze({ id: "thrust", label: "Thrust" }),
+  Object.freeze({ description: "Back out of a menu or choice.", id: "cancel", label: "Cancel" }),
+  Object.freeze({ description: "Accept a choice or prompt.", id: "confirm", label: "Confirm" }),
+  Object.freeze({ description: "Use the primary attack or tool.", id: "fire", label: "Fire" }),
+  Object.freeze({ description: "Use nearby objects or prompts.", id: "interact", label: "Interact" }),
+  Object.freeze({ description: "Make the object jump.", id: "jump", label: "Jump" }),
+  Object.freeze({ description: "Move the object downward.", id: "moveDown", label: "Move Down" }),
+  Object.freeze({ description: "Move the object left.", id: "moveLeft", label: "Move Left" }),
+  Object.freeze({ description: "Move the object right.", id: "moveRight", label: "Move Right" }),
+  Object.freeze({ description: "Move the object upward.", id: "moveUp", label: "Move Up" }),
+  Object.freeze({ description: "Pause gameplay or open the pause menu.", id: "pause", label: "Pause" }),
+  Object.freeze({ description: "Turn the object counterclockwise.", id: "rotateLeft", label: "Rotate Left" }),
+  Object.freeze({ description: "Turn the object clockwise.", id: "rotateRight", label: "Rotate Right" }),
+  Object.freeze({ description: "Highlight or choose menu items.", id: "select", label: "Select" }),
+  Object.freeze({ description: "Begin gameplay or open the start menu.", id: "start", label: "Start" }),
+  Object.freeze({ description: "Push the object forward.", id: "thrust", label: "Thrust" }),
 ].sort((left, right) => left.label.localeCompare(right.label, undefined, { sensitivity: "base" })));
 
 const DEVICE_OPTIONS = Object.freeze([
@@ -423,7 +423,15 @@ function renderDefaults() {
   }
   elements.defaultActions.replaceChildren(...DEFAULT_ACTIONS.map((action) => {
     const item = document.createElement("li");
-    item.textContent = action.label;
+    item.className = "content-split";
+    const label = document.createElement("strong");
+    label.dataset.inputActionLabel = action.id;
+    label.textContent = action.label;
+    const description = document.createElement("span");
+    description.className = "status";
+    description.dataset.inputActionDescription = action.id;
+    description.textContent = action.description;
+    item.append(label, description);
     return item;
   }));
 }
