@@ -1,750 +1,525 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 3f6736284..9d5c47911 100644
+index 9d5c47911..d63603181 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,12 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(90%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1000/1000; executed functions 99/110
-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1053/1053; executed functions 105/114
+-(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1053/1053; executed functions 105/114
++(93%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1125/1125; executed functions 111/120
 
  Guardrail warnings:
--(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+None.
+-None.
++(100%) none - no changed runtime JS coverage warnings
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 8b90ced98..6053c7dfa 100644
+index 6053c7dfa..c7209be0c 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,33 +12,25 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
- Exercised tool entry points detected:
--(87%) Toolbox Index - exercised 4 runtime JS files
-+(89%) Toolbox Index - exercised 4 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
+@@ -17,20 +17,20 @@ Exercised tool entry points detected:
  (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
--(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(90%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1000/1000; executed functions 99/110
-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1053/1053; executed functions 105/114
+-(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1053/1053; executed functions 105/114
++(93%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1125/1125; executed functions 111/120
 
  Files with executed line/function counts where available:
  (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
  (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
  (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
--(90%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1000/1000; executed functions 99/110
-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1053/1053; executed functions 105/114
+-(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1053/1053; executed functions 105/114
++(93%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 1125/1125; executed functions 111/120
  (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
  (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
 
  Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-+None.
+-None.
++(100%) none - no low-coverage changed runtime JS files
 
  Changed JS files considered:
--(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(90%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
+-(92%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
++(93%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 6496059c8..15800b604 100644
+index 15800b604..673d26748 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -136,7 +136,7 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
-     await expect(page.locator(".tool-workspace")).toBeVisible();
+@@ -137,8 +137,10 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
      await expect(page.locator("summary").filter({ hasText: "Actions" })).toBeVisible();
--    await expect(page.locator("summary").filter({ hasText: "Capture" })).toBeVisible();
-+    await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
-     await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
+     await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
+-    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
++    await expect(page.locator("aside").first().locator("summary").filter({ hasText: "Controller Profiles" })).toHaveCount(0);
++    await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();
      await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
++    await expect(page.locator("[data-input-state-explanation]")).toHaveText("State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.");
      await expect(page.getByText("Mapping JSON", { exact: true })).toBeVisible();
-@@ -170,6 +170,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
-     await expect(page.locator("[data-input-add-mapping]")).toHaveCount(1);
-     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]")).toBeVisible();
-     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-reset-mappings]")).toBeVisible();
-+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-selected-context]")).toBeVisible();
-+    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Cancel");
-+    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
-     await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
-     await expect(page.locator("[data-input-default-actions] li")).toHaveText(DEFAULT_ACTION_LABELS);
-     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
-@@ -191,12 +194,11 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
-     await expect(page.locator("[data-input-source-diagnostics]")).toContainText("InputService + GamepadState + GamepadInputAdapter");
-     await expect(page.locator("[data-input-source-diagnostics]")).toContainText("GamepadInputAdapter");
-
-+    await page.locator("[data-input-action-select]").selectOption("moveLeft");
-+    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Move Left");
-+    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
-     await page.getByRole("button", { name: "Refresh Devices" }).click();
-     await expect(page.locator("[data-input-status-log]")).toHaveText("Device diagnostics refreshed.");
--    await page.getByRole("button", { name: "Capture Gamepad" }).click();
--    await expect(page.locator("[data-input-capture-status]")).toContainText("WARN: Gamepad capture unavailable.");
--    await expect(page.locator("[data-input-capture-status]")).toContainText("connect a gamepad");
--    await expect(page.locator("[data-input-capture-status]")).toContainText("press a button or move an axis");
-
-     const registryEntry = await controlsRegistryEntry(page);
-     expect(registryEntry.path).toBe("toolbox/input-mapping-v2/index.html");
-@@ -225,6 +227,19 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and
-     await expect(page.locator("[data-input-editing-row] td")).toHaveCount(7);
+     await expect(page.getByText("Devices", { exact: true })).toBeVisible();
+     await expect(page.getByText("Status", { exact: true })).toBeVisible();
+@@ -228,7 +230,15 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and
      await expect(page.locator("[data-input-editing-row] td").last().locator("button")).toHaveText(["Save", "Cancel"]);
      await expect(page.locator("[data-input-editing-row] td").last().locator("button").last()).toHaveText("Cancel");
-+    await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
+     await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
++    await expect(page.locator("[data-input-row-capture-mouse]")).toHaveCount(0);
++    await expect(page.locator("[data-input-row-capture-gamepad]")).toHaveCount(0);
++    await page.locator("[data-input-row-device]").selectOption("mouse");
++    await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
+     await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
++    await expect(page.locator("[data-input-row-capture-gamepad]")).toHaveCount(0);
++    await page.locator("[data-input-row-device]").selectOption("gamepad");
++    await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
++    await expect(page.locator("[data-input-row-capture-mouse]")).toHaveCount(0);
+     await expect(page.locator("[data-input-row-capture-gamepad]")).toBeVisible();
+     await page.evaluate(() => {
+       Object.defineProperty(navigator, "getGamepads", {
+@@ -255,6 +265,19 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and
+     await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
+     await page.keyboard.press("KeyF");
+     await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyF");
++    await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
++    await page.locator("[data-input-row-binding-value]").click();
++    await expect(page.locator("[data-input-row-device]")).toBeFocused();
++    await page.locator("[data-input-row-device]").selectOption("mouse");
++    await expect(page.locator("[data-input-row-binding-value]")).toBeHidden();
++    await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
 +    await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
-+    await expect(page.locator("[data-input-row-capture-gamepad]")).toBeVisible();
-+    await page.evaluate(() => {
-+      Object.defineProperty(navigator, "getGamepads", {
-+        configurable: true,
-+        value: () => [],
-+      });
-+    });
-+    await page.locator("[data-input-row-capture-gamepad]").click();
-+    await expect(page.locator("[data-input-status-log]")).toContainText("WARN: Gamepad capture unavailable.");
-+    await expect(page.locator("[data-input-status-log]")).toContainText("connect a gamepad");
-+    await expect(page.locator("[data-input-status-log]")).toContainText("press a button or move an axis");
-
-     await page.locator("[data-input-editing-row] [data-input-cancel-mapping]").click();
-     await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
-@@ -235,14 +250,18 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and
-     await page.locator("[data-input-row-action]").selectOption("fire");
-     await page.locator("[data-input-row-device]").selectOption("keyboard");
-     await expect(page.locator("[data-input-row-profile] option")).toHaveText(["No saved profile"]);
--    await page.locator("[data-input-row-binding]").fill("KeyF");
-+    await expect(page.locator("[data-input-row-binding]")).toHaveAttribute("type", "hidden");
++    await expect(page.locator("[data-input-row-capture-gamepad]")).toHaveCount(0);
++    await page.locator("[data-input-row-device]").selectOption("keyboard");
++    await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
 +    await page.locator("[data-input-row-capture-keyboard]").click();
-+    await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
 +    await page.keyboard.press("KeyF");
 +    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyF");
      await page.locator("[data-input-save-mapping]").click();
      await expect(addButton).toBeEnabled();
      await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
-     await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("Fire");
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("No saved profile");
--    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyF");
-+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyF");
-     let records = await inputMappingRecords(page);
-     expect(records).toHaveLength(1);
-     expect(records[0]).toMatchObject({
-@@ -256,10 +275,12 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and
+@@ -275,6 +298,14 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and
      await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
      await expect(page.locator("[data-input-mapping-row]")).toHaveCount(0);
      await expect(addButton).toBeDisabled();
--    await page.locator("[data-input-row-binding]").fill("KeyG");
-+    await page.locator("[data-input-row-capture-keyboard]").click();
-+    await page.keyboard.press("KeyG");
-+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyG");
-     await page.locator("[data-input-save-mapping]").click();
-     await expect(addButton).toBeEnabled();
--    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
-+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyG");
++    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyF");
++    await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
++    await page.locator("[data-input-row-binding-value]").click();
++    await expect(page.locator("[data-input-row-device]")).toBeFocused();
++    await page.locator("[data-input-row-device]").selectOption("mouse");
++    await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
++    await page.locator("[data-input-row-device]").selectOption("keyboard");
++    await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
+     await page.locator("[data-input-row-capture-keyboard]").click();
+     await page.keyboard.press("KeyG");
+     await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyG");
+@@ -425,10 +456,13 @@ test("Controls Input Mapping captures KeyA, keeps input click safe, and deletes
+     await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyA");
+
+     await page.locator("[data-input-token]").click();
+-    await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
++    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
++    await expect(page.locator("[data-input-row-device]")).toBeFocused();
      records = await inputMappingRecords(page);
      expect(records).toHaveLength(1);
-     expect(records[0]).toMatchObject({
-@@ -270,7 +291,7 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and
-     });
 
-     await page.reload({ waitUntil: "networkidle" });
--    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
-+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyG");
-
-     await expectNoPageFailures(failures);
-   } finally {
-@@ -314,15 +335,26 @@ test("Controls controller profiles persist and mappings reference saved profiles
-
-     await page.reload({ waitUntil: "networkidle" });
-     await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Profile");
-+    await page.evaluate(() => {
-+      Object.defineProperty(navigator, "getGamepads", {
-+        configurable: true,
-+        value: () => [{
-+          axes: [],
-+          buttons: [{ pressed: true, value: 1 }],
-+          index: 0,
-+        }],
-+      });
-+    });
-
-     await page.locator("[data-input-add-mapping]").click();
-     await page.locator("[data-input-row-action]").selectOption("fire");
-     await page.locator("[data-input-row-device]").selectOption("gamepad");
-     await page.locator("[data-input-row-profile]").selectOption({ label: "Arcade Profile" });
--    await page.locator("[data-input-row-binding]").fill("Pad0:Button0");
-+    await page.locator("[data-input-row-capture-gamepad]").click();
-+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Gamepad Button0");
-     await page.locator("[data-input-save-mapping]").click();
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Profile");
--    await expect(page.locator("[data-input-delete-token]")).toHaveText("Gamepad Button0");
-+    await expect(page.locator("[data-input-token]")).toHaveText("Gamepad Button0");
-
-     let records = await inputMappingRecords(page);
-     expect(records).toHaveLength(1);
-@@ -350,7 +382,7 @@ test("Controls controller profiles persist and mappings reference saved profiles
-   }
- });
-
--test("Controls Input Mapping captures KeyA, deletes token, and persists through shared DB", async ({ page }) => {
-+test("Controls Input Mapping captures KeyA, keeps input click safe, and deletes only through Trash", async ({ page }) => {
-   const failures = await openInputMappingPage(page);
-
-   try {
-@@ -359,16 +391,22 @@ test("Controls Input Mapping captures KeyA, deletes token, and persists through
-     await expect(page.locator("[data-input-object-select] option")).toContainText(["Global", "Hero"]);
-     await page.locator("[data-input-object-select]").selectOption("hero");
-     await page.locator("[data-input-action-select]").selectOption("moveLeft");
--    await expect(page.locator("[data-input-capture-selection]")).toHaveText("Selected action: Move Left");
-+    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Move Left");
-+    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Hero");
-
--    await page.getByRole("button", { name: "Capture Keyboard" }).click();
--    await expect(page.locator("[data-input-capture-status]")).toHaveText("Press a keyboard key to map the selected action.");
-+    await page.locator("[data-input-add-mapping]").click();
-+    await expect(page.locator("[data-input-row-object]")).toHaveValue("hero");
-+    await expect(page.locator("[data-input-row-action]")).toHaveValue("moveLeft");
-+    await page.locator("[data-input-row-capture-keyboard]").click();
-+    await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
-     await page.keyboard.press("KeyA");
-+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyA");
-+    await page.locator("[data-input-save-mapping]").click();
-     await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("Hero");
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("Move Left");
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("Keyboard");
--    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyA");
++    await page.locator("[data-input-cancel-mapping]").click();
 +    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyA");
-     await expect(page.locator("[data-input-mapping-json]")).toContainText('"action": "moveLeft"');
-     await expect(page.locator("[data-input-mapping-json]")).toContainText('"label": "Keyboard KeyA"');
-     await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
-@@ -384,9 +422,14 @@ test("Controls Input Mapping captures KeyA, deletes token, and persists through
-
-     await page.reload({ waitUntil: "networkidle" });
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("Hero");
--    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyA");
-+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyA");
-
--    await page.locator("[data-input-delete-token]").click();
-+    await page.locator("[data-input-token]").click();
-+    await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
-+    records = await inputMappingRecords(page);
-+    expect(records).toHaveLength(1);
-+
-+    await page.locator("[data-input-trash-mapping]").click();
+     await page.locator("[data-input-trash-mapping]").click();
      await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
      await expect(page.locator("[data-input-output-status]")).toHaveText("Not Configured");
-     records = await inputMappingRecords(page);
-@@ -404,9 +447,14 @@ test("Controls compatibility route uses rebuilt Input Mapping surface", async ({
-
+@@ -448,13 +482,14 @@ test("Controls compatibility route uses rebuilt Input Mapping surface", async ({
    try {
      await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
-+    await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
-     await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
+     await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
+-    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
++    await expect(page.locator("aside").first().locator("summary").filter({ hasText: "Controller Profiles" })).toHaveCount(0);
++    await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();
      await expect(page.locator("[data-controller-profile-table]")).toContainText("Mapping Profile");
      await expect(page.locator("[data-input-mapping-table]")).toBeVisible();
-+    await page.locator("[data-input-add-mapping]").click();
-+    await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
-+    await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
-+    await expect(page.locator("[data-input-row-capture-gamepad]")).toBeVisible();
+     await page.locator("[data-input-add-mapping]").click();
+     await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
+-    await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
+-    await expect(page.locator("[data-input-row-capture-gamepad]")).toBeVisible();
++    await expect(page.locator("[data-input-row-capture-mouse]")).toHaveCount(0);
++    await expect(page.locator("[data-input-row-capture-gamepad]")).toHaveCount(0);
      await expect(page.locator("main")).not.toContainText(/Static wireframe only|Not implemented yet|no database|no runtime behavior/i);
      await expectNoPageFailures(failures);
    } finally {
 diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index 5b6e0628d..0f60b8cd8 100644
+index 0f60b8cd8..066903c40 100644
 --- a/toolbox/controls/index.html
 +++ b/toolbox/controls/index.html
-@@ -44,18 +44,6 @@
+@@ -44,38 +44,6 @@
                                      <ul data-input-default-actions></ul>
                                  </div>
                              </details>
 -                            <details class="vertical-accordion" open>
--                                <summary>Capture</summary>
--                                <div class="accordion-body content-stack">
--                                    <p data-input-capture-selection>Selected action: Cancel</p>
--                                    <div class="content-cluster" aria-label="Capture input controls">
--                                        <button class="btn" type="button" data-input-capture-keyboard>Capture Keyboard</button>
--                                        <button class="btn" type="button" data-input-capture-mouse>Capture Mouse</button>
--                                        <button class="btn" type="button" data-input-capture-gamepad>Capture Gamepad</button>
+-                                <summary>Controller Profiles</summary>
+-                                <div class="accordion-body content-stack" data-controller-profile-planning>
+-                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
+-                                    <div class="table-wrapper">
+-                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
+-                                            <thead>
+-                                                <tr>
+-                                                    <th>Device Type</th>
+-                                                    <th>Controller Name</th>
+-                                                    <th>Controller ID</th>
+-                                                    <th>Mapping Profile</th>
+-                                                    <th>Input</th>
+-                                                    <th>Action</th>
+-                                                </tr>
+-                                            </thead>
+-                                            <tbody data-controller-profile-list></tbody>
+-                                            <tfoot>
+-                                                <tr>
+-                                                    <td colspan="6">
+-                                                        <div class="content-cluster" aria-label="Controller profile table actions">
+-                                                            <button class="btn" type="button" data-controller-profile-add>Add Profile</button>
+-                                                        </div>
+-                                                    </td>
+-                                                </tr>
+-                                            </tfoot>
+-                                        </table>
 -                                    </div>
--                                    <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
+-                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
+-                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; use Add Profile to save the controller identity when known.</p>
 -                                </div>
 -                            </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Controller Profiles</summary>
-                                 <div class="accordion-body content-stack" data-controller-profile-planning>
-@@ -93,7 +81,7 @@
+                         </div>
+                     </aside>
                      <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
-                     <section class="tool-center-panel">
-                         <h2>Input Mapping</h2>
--                        <p>Use the table to assign object actions to captured or entered inputs.</p>
-+                        <p>Use the table to assign object actions to captured inputs.</p>
-                         <div class="grid cols-3" aria-label="Input mapping summary">
-                             <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
-                             <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
-@@ -122,9 +110,15 @@
-                                         <tfoot>
-                                             <tr>
-                                                 <td colspan="7">
--                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
--                                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
--                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
-+                                                    <div class="content-split" data-input-mapping-table-footer>
-+                                                        <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
-+                                                            <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
-+                                                            <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+@@ -93,6 +61,7 @@
+                                     <div class="kicker">Table Input</div>
+                                     <h3>Mappings</h3>
+                                 </div>
++                                <p class="status" data-input-state-explanation>State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.</p>
+                                 <div class="table-wrapper">
+                                     <table class="data-table" aria-label="Input mappings" data-input-mapping-table>
+                                         <thead>
+@@ -125,6 +94,39 @@
+                                         </tfoot>
+                                     </table>
+                                 </div>
++                                <section class="content-stack" data-controller-profile-planning>
++                                    <div>
++                                        <div class="kicker">Controller Profile</div>
++                                        <h3>Controller Profiles</h3>
++                                    </div>
++                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
++                                    <div class="table-wrapper">
++                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
++                                            <thead>
++                                                <tr>
++                                                    <th>Device Type</th>
++                                                    <th>Controller Name</th>
++                                                    <th>Controller ID</th>
++                                                    <th>Mapping Profile</th>
++                                                    <th>Input</th>
++                                                    <th>Action</th>
++                                                </tr>
++                                            </thead>
++                                            <tbody data-controller-profile-list></tbody>
++                                            <tfoot>
++                                                <tr>
++                                                    <td colspan="6">
++                                                        <div class="content-cluster" aria-label="Controller profile table actions">
++                                                            <button class="btn" type="button" data-controller-profile-add>Add Profile</button>
 +                                                        </div>
-+                                                        <div class="action-group action-group--end" aria-label="Selected mapping context" data-input-selected-context>
-+                                                            <span class="status" data-input-selected-action>Selected Action: Cancel</span>
-+                                                            <span class="status" data-input-selected-object>Selected Object: Global</span>
-+                                                        </div>
-                                                     </div>
-                                                 </td>
-                                             </tr>
++                                                    </td>
++                                                </tr>
++                                            </tfoot>
++                                        </table>
++                                    </div>
++                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
++                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; use Add Profile to save the controller identity when known.</p>
++                                </section>
+                             </div>
+                         </article>
+                     </section>
 diff --git a/toolbox/input-mapping-v2/index.html b/toolbox/input-mapping-v2/index.html
-index 5b6e0628d..0f60b8cd8 100644
+index 0f60b8cd8..066903c40 100644
 --- a/toolbox/input-mapping-v2/index.html
 +++ b/toolbox/input-mapping-v2/index.html
-@@ -44,18 +44,6 @@
+@@ -44,38 +44,6 @@
                                      <ul data-input-default-actions></ul>
                                  </div>
                              </details>
 -                            <details class="vertical-accordion" open>
--                                <summary>Capture</summary>
--                                <div class="accordion-body content-stack">
--                                    <p data-input-capture-selection>Selected action: Cancel</p>
--                                    <div class="content-cluster" aria-label="Capture input controls">
--                                        <button class="btn" type="button" data-input-capture-keyboard>Capture Keyboard</button>
--                                        <button class="btn" type="button" data-input-capture-mouse>Capture Mouse</button>
--                                        <button class="btn" type="button" data-input-capture-gamepad>Capture Gamepad</button>
+-                                <summary>Controller Profiles</summary>
+-                                <div class="accordion-body content-stack" data-controller-profile-planning>
+-                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
+-                                    <div class="table-wrapper">
+-                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
+-                                            <thead>
+-                                                <tr>
+-                                                    <th>Device Type</th>
+-                                                    <th>Controller Name</th>
+-                                                    <th>Controller ID</th>
+-                                                    <th>Mapping Profile</th>
+-                                                    <th>Input</th>
+-                                                    <th>Action</th>
+-                                                </tr>
+-                                            </thead>
+-                                            <tbody data-controller-profile-list></tbody>
+-                                            <tfoot>
+-                                                <tr>
+-                                                    <td colspan="6">
+-                                                        <div class="content-cluster" aria-label="Controller profile table actions">
+-                                                            <button class="btn" type="button" data-controller-profile-add>Add Profile</button>
+-                                                        </div>
+-                                                    </td>
+-                                                </tr>
+-                                            </tfoot>
+-                                        </table>
 -                                    </div>
--                                    <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
+-                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
+-                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; use Add Profile to save the controller identity when known.</p>
 -                                </div>
 -                            </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Controller Profiles</summary>
-                                 <div class="accordion-body content-stack" data-controller-profile-planning>
-@@ -93,7 +81,7 @@
+                         </div>
+                     </aside>
                      <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
-                     <section class="tool-center-panel">
-                         <h2>Input Mapping</h2>
--                        <p>Use the table to assign object actions to captured or entered inputs.</p>
-+                        <p>Use the table to assign object actions to captured inputs.</p>
-                         <div class="grid cols-3" aria-label="Input mapping summary">
-                             <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
-                             <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
-@@ -122,9 +110,15 @@
-                                         <tfoot>
-                                             <tr>
-                                                 <td colspan="7">
--                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
--                                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
--                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
-+                                                    <div class="content-split" data-input-mapping-table-footer>
-+                                                        <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
-+                                                            <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
-+                                                            <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+@@ -93,6 +61,7 @@
+                                     <div class="kicker">Table Input</div>
+                                     <h3>Mappings</h3>
+                                 </div>
++                                <p class="status" data-input-state-explanation>State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.</p>
+                                 <div class="table-wrapper">
+                                     <table class="data-table" aria-label="Input mappings" data-input-mapping-table>
+                                         <thead>
+@@ -125,6 +94,39 @@
+                                         </tfoot>
+                                     </table>
+                                 </div>
++                                <section class="content-stack" data-controller-profile-planning>
++                                    <div>
++                                        <div class="kicker">Controller Profile</div>
++                                        <h3>Controller Profiles</h3>
++                                    </div>
++                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
++                                    <div class="table-wrapper">
++                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
++                                            <thead>
++                                                <tr>
++                                                    <th>Device Type</th>
++                                                    <th>Controller Name</th>
++                                                    <th>Controller ID</th>
++                                                    <th>Mapping Profile</th>
++                                                    <th>Input</th>
++                                                    <th>Action</th>
++                                                </tr>
++                                            </thead>
++                                            <tbody data-controller-profile-list></tbody>
++                                            <tfoot>
++                                                <tr>
++                                                    <td colspan="6">
++                                                        <div class="content-cluster" aria-label="Controller profile table actions">
++                                                            <button class="btn" type="button" data-controller-profile-add>Add Profile</button>
 +                                                        </div>
-+                                                        <div class="action-group action-group--end" aria-label="Selected mapping context" data-input-selected-context>
-+                                                            <span class="status" data-input-selected-action>Selected Action: Cancel</span>
-+                                                            <span class="status" data-input-selected-object>Selected Object: Global</span>
-+                                                        </div>
-                                                     </div>
-                                                 </td>
-                                             </tr>
++                                                    </td>
++                                                </tr>
++                                            </tfoot>
++                                        </table>
++                                    </div>
++                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
++                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; use Add Profile to save the controller identity when known.</p>
++                                </section>
+                             </div>
+                         </article>
+                     </section>
 diff --git a/toolbox/input-mapping-v2/input-mapping-v2.js b/toolbox/input-mapping-v2/input-mapping-v2.js
-index 5b894e3bf..6c0d8a904 100644
+index 6c0d8a904..46627d94a 100644
 --- a/toolbox/input-mapping-v2/input-mapping-v2.js
 +++ b/toolbox/input-mapping-v2/input-mapping-v2.js
-@@ -46,16 +46,11 @@ let controllerProfiles = [];
- let objectOptions = [];
- let editingRow = null;
- let profileEditingRow = null;
--let captureMode = "";
-+let rowCaptureSource = "";
-
- const elements = {
-   actionSelect: document.querySelector("[data-input-action-select]"),
-   addMapping: document.querySelector("[data-input-add-mapping]"),
--  captureGamepad: document.querySelector("[data-input-capture-gamepad]"),
--  captureKeyboard: document.querySelector("[data-input-capture-keyboard]"),
--  captureMouse: document.querySelector("[data-input-capture-mouse]"),
--  captureSelection: document.querySelector("[data-input-capture-selection]"),
--  captureStatus: document.querySelector("[data-input-capture-status]"),
-   controllerProfileAdd: document.querySelector("[data-controller-profile-add]"),
-   controllerProfileList: document.querySelector("[data-controller-profile-list]"),
-   controllerProfileStatus: document.querySelector("[data-controller-profile-status]"),
-@@ -71,6 +66,8 @@ const elements = {
-   resetMappings: document.querySelector("[data-input-reset-mappings]"),
-   returnWorkspace: document.querySelector("[data-input-return-workspace]"),
-   saveStatus: document.querySelector("[data-input-save-status]"),
-+  selectedAction: document.querySelector("[data-input-selected-action]"),
-+  selectedObject: document.querySelector("[data-input-selected-object]"),
-   sourceDiagnostics: document.querySelector("[data-input-source-diagnostics]"),
-   statusLog: document.querySelector("[data-input-status-log]"),
- };
-@@ -191,6 +188,13 @@ function textControl({ ariaLabel, value }) {
-   return input;
+@@ -170,6 +170,30 @@ function actionCell(actions) {
+   return cell;
  }
 
-+function hiddenControl({ value }) {
-+  const input = document.createElement("input");
-+  input.type = "hidden";
-+  input.value = value || "";
-+  return input;
++function captureButtonConfig(source) {
++  if (source === "mouse") {
++    return {
++      dataName: "inputRowCaptureMouse",
++      label: "Capture Mouse",
++    };
++  }
++  if (source === "gamepad") {
++    return {
++      dataName: "inputRowCaptureGamepad",
++      label: "Capture Gamepad",
++    };
++  }
++  return {
++    dataName: "inputRowCaptureKeyboard",
++    label: "Capture Keyboard",
++  };
 +}
 +
- function controlCell(control) {
-   const cell = document.createElement("td");
-   cell.append(control);
-@@ -401,7 +405,7 @@ function renderDefaults() {
- }
-
- function renderActionsAndObjects() {
--  const previousAction = elements.actionSelect?.value || "moveLeft";
-+  const previousAction = elements.actionSelect?.value || DEFAULT_ACTIONS[0]?.id;
-   const previousObject = elements.objectSelect?.value || "global";
-   renderSelect(
-     elements.actionSelect,
-@@ -580,8 +584,10 @@ function renderOutput() {
- }
-
- function tokenButton(mapping) {
--  const button = actionButton(mapping.label, "inputDeleteToken", mapping.id, "btn btn--compact cyan");
--  button.title = `Delete ${mapping.label}`;
-+  const label = mapping.label || "No input";
-+  const button = actionButton(label, "inputToken", mapping.id, "btn btn--compact cyan");
-+  button.title = label;
-+  button.setAttribute("aria-label", `${label} input`);
-   return button;
- }
-
-@@ -604,6 +610,31 @@ function renderMappingRow(mapping) {
-   return row;
- }
-
-+function inputCaptureCell(values = {}) {
-+  const cell = document.createElement("td");
-+  const stack = document.createElement("div");
-+  stack.className = "content-stack content-stack--compact";
++function captureButtonForSource(source) {
++  const config = captureButtonConfig(source);
++  return actionButton(config.label, config.dataName, "", "btn btn--compact");
++}
 +
-+  const source = values.source || "keyboard";
-+  const binding = normalizeText(values.binding);
-+  const currentInput = actionButton(inputLabel(source, binding) || "No input captured", "inputRowBindingValue", "", "btn btn--compact cyan");
-+  currentInput.setAttribute("aria-label", "Current mapping input");
-+  const hiddenInput = hiddenControl({ value: binding });
-+  hiddenInput.dataset.inputRowBinding = "true";
-+
-+  const group = document.createElement("div");
-+  group.className = "action-group action-group--tight";
-+  group.append(
-+    actionButton("Capture Keyboard", "inputRowCaptureKeyboard", "", "btn btn--compact"),
-+    actionButton("Capture Mouse", "inputRowCaptureMouse", "", "btn btn--compact"),
-+    actionButton("Capture Gamepad", "inputRowCaptureGamepad", "", "btn btn--compact"),
-+  );
-+
-+  stack.append(currentInput, hiddenInput, group);
-+  cell.append(stack);
-+  return cell;
+ function selectControl({ ariaLabel, options, selectedValue }) {
+   const select = document.createElement("select");
+   select.setAttribute("aria-label", ariaLabel);
+@@ -618,23 +642,51 @@ function inputCaptureCell(values = {}) {
+   const source = values.source || "keyboard";
+   const binding = normalizeText(values.binding);
+   const currentInput = actionButton(inputLabel(source, binding) || "No input captured", "inputRowBindingValue", "", "btn btn--compact cyan");
+-  currentInput.setAttribute("aria-label", "Current mapping input");
++  currentInput.hidden = !binding;
++  currentInput.setAttribute("aria-label", "Current mapping input. Choose Input Device to change capture path.");
+   const hiddenInput = hiddenControl({ value: binding });
+   hiddenInput.dataset.inputRowBinding = "true";
+
+   const group = document.createElement("div");
+   group.className = "action-group action-group--tight";
+-  group.append(
+-    actionButton("Capture Keyboard", "inputRowCaptureKeyboard", "", "btn btn--compact"),
+-    actionButton("Capture Mouse", "inputRowCaptureMouse", "", "btn btn--compact"),
+-    actionButton("Capture Gamepad", "inputRowCaptureGamepad", "", "btn btn--compact"),
+-  );
++  group.dataset.inputRowCaptureActions = "true";
++  if (binding) {
++    group.hidden = true;
++  } else {
++    group.append(captureButtonForSource(source));
++  }
+
+   stack.append(currentInput, hiddenInput, group);
+   cell.append(stack);
+   return cell;
+ }
+
++function updateInputCaptureCell(row, source, binding = "") {
++  const normalizedSource = deviceBySource(source).source;
++  const normalizedBinding = normalizeText(binding);
++  const label = inputLabel(normalizedSource, normalizedBinding);
++  const currentInput = row.querySelector("[data-input-row-binding-value]");
++  const hiddenInput = row.querySelector("[data-input-row-binding]");
++  const group = row.querySelector("[data-input-row-capture-actions]");
++  if (hiddenInput) {
++    hiddenInput.value = normalizedBinding;
++  }
++  if (currentInput) {
++    currentInput.textContent = label || "No input captured";
++    currentInput.title = label || "No input captured";
++    currentInput.hidden = !normalizedBinding;
++    currentInput.setAttribute("aria-label", `${label || "No input captured"} input. Choose Input Device to change capture path.`);
++  }
++  if (group) {
++    group.replaceChildren();
++    group.hidden = Boolean(normalizedBinding);
++    if (!normalizedBinding) {
++      group.append(captureButtonForSource(normalizedSource));
++    }
++  }
++  return label;
 +}
 +
  function renderEditingRow(values = {}) {
    const row = document.createElement("tr");
    row.dataset.inputEditingRow = "true";
-@@ -636,9 +667,6 @@ function renderEditingRow(values = {}) {
-   });
-   profileSelect.dataset.inputRowProfile = "true";
-
--  const input = textControl({ ariaLabel: "Mapping Input", value: values.binding || "" });
--  input.dataset.inputRowBinding = "true";
--
-   const stateSelect = selectControl({
-     ariaLabel: "Mapping State",
-     options: [
-@@ -654,7 +682,7 @@ function renderEditingRow(values = {}) {
-     controlCell(actionSelect),
-     controlCell(deviceSelect),
-     controlCell(profileSelect),
--    controlCell(input),
-+    inputCaptureCell(values),
-     controlCell(stateSelect),
-     actionCell([
-       actionButton("Save", "inputSaveMapping"),
-@@ -704,56 +732,56 @@ function renderAll(message = "") {
-
- function updateCaptureSelection() {
-   const action = selectedAction();
--  setText(elements.captureSelection, `Selected action: ${action.label}`);
-+  const object = selectedObject();
-+  setText(elements.selectedAction, `Selected Action: ${action.label}`);
-+  setText(elements.selectedObject, `Selected Object: ${object.label}`);
- }
-
--function selectedCaptureContext() {
--  const object = selectedObject();
--  const action = selectedAction();
--  return {
--    action: action.id,
--    actionLabel: action.label,
--    objectKey: object.key,
--    objectName: object.label,
--  };
-+function editingRowElement() {
-+  return elements.list?.querySelector("[data-input-editing-row]") || null;
- }
-
--function addCapturedInput({ binding, label, source }) {
--  const device = deviceBySource(source);
--  const nextMapping = normalizeMapping({
--    ...selectedCaptureContext(),
--    binding,
--    engine: device.engine,
--    inputDevice: device.label,
--    label,
--    source: device.source,
--    state: "Active",
--  });
--  mappings = [
--    ...mappings.filter((mapping) => !(
--      mapping.objectKey === nextMapping.objectKey &&
--      mapping.action === nextMapping.action &&
--      mapping.source === nextMapping.source &&
--      mapping.binding === nextMapping.binding
--    )),
--    nextMapping,
--  ];
--  saveMappings(mappings);
--  editingRow = null;
--  captureMode = "";
--  renderAll(`${label} mapped to ${nextMapping.actionLabel}.`);
--  setText(elements.captureStatus, `${label} mapped to ${nextMapping.actionLabel}.`);
-+function setEditingRowInput(row, source, binding) {
+@@ -744,22 +796,28 @@ function editingRowElement() {
+ function setEditingRowInput(row, source, binding) {
+   const normalizedSource = deviceBySource(source).source;
+   const normalizedBinding = normalizeText(binding);
+-  const label = inputLabel(normalizedSource, normalizedBinding);
+   const deviceSelect = row.querySelector("[data-input-row-device]");
+-  const bindingInput = row.querySelector("[data-input-row-binding]");
+-  const bindingValue = row.querySelector("[data-input-row-binding-value]");
+   if (deviceSelect) {
+     deviceSelect.value = normalizedSource;
+   }
+-  if (bindingInput) {
+-    bindingInput.value = normalizedBinding;
+-  }
+-  if (bindingValue) {
+-    bindingValue.textContent = label || "No input captured";
+-    bindingValue.title = label || "No input captured";
+-    bindingValue.setAttribute("aria-label", `${label || "No input captured"} input`);
++  return updateInputCaptureCell(row, normalizedSource, normalizedBinding);
++}
++
++function focusEditingRowDevice(row) {
++  const deviceSelect = row?.querySelector("[data-input-row-device]");
++  if (!deviceSelect) {
++    return;
+   }
+-  return label;
++  deviceSelect.focus();
++  deviceSelect.click();
++  setText(elements.statusLog, "Choose an Input Device, then capture input for this row.");
++}
++
++function changeEditingRowDevice(row, source) {
 +  const normalizedSource = deviceBySource(source).source;
-+  const normalizedBinding = normalizeText(binding);
-+  const label = inputLabel(normalizedSource, normalizedBinding);
-+  const deviceSelect = row.querySelector("[data-input-row-device]");
-+  const bindingInput = row.querySelector("[data-input-row-binding]");
-+  const bindingValue = row.querySelector("[data-input-row-binding-value]");
-+  if (deviceSelect) {
-+    deviceSelect.value = normalizedSource;
-+  }
-+  if (bindingInput) {
-+    bindingInput.value = normalizedBinding;
-+  }
-+  if (bindingValue) {
-+    bindingValue.textContent = label || "No input captured";
-+    bindingValue.title = label || "No input captured";
-+    bindingValue.setAttribute("aria-label", `${label || "No input captured"} input`);
-+  }
-+  return label;
-+}
-+
-+function applyCapturedInputToEditingRow({ binding, label, source }) {
-+  const row = editingRowElement();
-+  if (!row) {
-+    warnCapture("WARN: Add or edit a mapping row before capturing input.");
-+    return;
-+  }
-+  const capturedLabel = setEditingRowInput(row, source, binding) || label;
 +  rowCaptureSource = "";
-+  setText(elements.statusLog, `${capturedLabel} captured. Save the mapping row to persist it.`);
-+  renderDiagnostics();
++  updateInputCaptureCell(row, normalizedSource, "");
++  setText(elements.statusLog, `Selected ${deviceBySource(normalizedSource).label}. Capture input for this row.`);
  }
 
- function warnCapture(message) {
--  captureMode = "";
--  setText(elements.captureStatus, message);
-+  rowCaptureSource = "";
-   setText(elements.statusLog, message);
-   renderDiagnostics();
+ function applyCapturedInputToEditingRow({ binding, label, source }) {
+@@ -1013,7 +1071,7 @@ function deleteControllerProfile(profileId) {
+   renderAll(profile ? `Deleted ${profile.mappingProfile} controller profile.` : "Deleted controller profile.");
  }
 
- function captureKeyboardEvent(event) {
--  if (captureMode !== "keyboard") {
-+  if (rowCaptureSource !== "keyboard") {
-     return;
-   }
-   event.preventDefault();
-@@ -762,7 +790,7 @@ function captureKeyboardEvent(event) {
-     warnCapture("WARN: Keyboard capture did not receive a key code. Press a physical key and try again.");
-     return;
-   }
--  addCapturedInput({
-+  applyCapturedInputToEditingRow({
-     binding,
-     label: inputLabel("keyboard", binding),
-     source: "keyboard",
-@@ -770,13 +798,13 @@ function captureKeyboardEvent(event) {
- }
-
- function captureMouseEvent(event) {
--  if (captureMode !== "mouse") {
-+  if (rowCaptureSource !== "mouse") {
-     return;
-   }
-   event.preventDefault();
-   const button = Number.isInteger(event.button) ? event.button : 0;
-   const binding = `MouseButton${button}`;
--  addCapturedInput({
-+  applyCapturedInputToEditingRow({
-     binding,
-     label: inputLabel("mouse", binding),
-     source: "mouse",
-@@ -818,35 +846,60 @@ function activeGamepadInput() {
-   };
- }
-
--function startKeyboardCapture() {
--  captureMode = "keyboard";
--  setText(elements.captureStatus, "Press a keyboard key to map the selected action.");
--  setText(elements.statusLog, "Keyboard capture armed.");
--}
--
--function startMouseCapture() {
--  if (typeof window.PointerEvent !== "function" && typeof window.MouseEvent !== "function") {
-+function startRowCapture(source) {
-+  const row = editingRowElement();
-+  if (!row) {
-+    warnCapture("WARN: Add or edit a mapping row before capturing input.");
-+    return;
-+  }
-+  if (source === "mouse" && typeof window.PointerEvent !== "function" && typeof window.MouseEvent !== "function") {
-     warnCapture("WARN: Mouse capture unavailable. Use a browser context that supports pointer or mouse events.");
-     return;
-   }
--  captureMode = "mouse";
--  setText(elements.captureStatus, "Click a mouse button to map the selected action.");
--  setText(elements.statusLog, "Mouse capture armed.");
-+  rowCaptureSource = source;
-+  if (source === "keyboard") {
-+    setText(elements.statusLog, "Press a keyboard key to capture input for this row.");
-+    return;
-+  }
-+  if (source === "mouse") {
-+    setText(elements.statusLog, "Click a mouse button to capture input for this row.");
-+  }
- }
-
--function captureGamepadInput() {
-+function captureGamepadInputForRow() {
-+  const row = editingRowElement();
-+  if (!row) {
-+    warnCapture("WARN: Add or edit a mapping row before capturing gamepad input.");
-+    return;
-+  }
-   const result = activeGamepadInput();
-   if (!result.ok) {
-     warnCapture(result.message);
-     return;
-   }
--  addCapturedInput({
-+  applyCapturedInputToEditingRow({
-     binding: result.binding,
-     label: result.label,
-     source: "gamepad",
-   });
- }
-
-+function startKeyboardCapture() {
-+  startRowCapture("keyboard");
-+}
-+
-+function startMouseCapture() {
-+  if (typeof window.PointerEvent !== "function" && typeof window.MouseEvent !== "function") {
-+    warnCapture("WARN: Mouse capture unavailable. Use a browser context that supports pointer or mouse events.");
-+    return;
-+  }
-+  startRowCapture("mouse");
-+}
-+
-+function captureGamepadInput() {
-+  captureGamepadInputForRow();
-+}
-+
- function mappingFromEditingRow(row) {
-   const objectKey = row.querySelector("[data-input-row-object]")?.value || "global";
-   const object = objectOptions.find((candidate) => candidate.key === objectKey) || objectOptions[0];
-@@ -965,6 +1018,7 @@ function editMapping(mappingId) {
+-function editMapping(mappingId) {
++function editMapping(mappingId, options = {}) {
+   const mapping = mappings.find((candidate) => candidate.id === mappingId);
    if (!mapping) {
      return;
-   }
-+  rowCaptureSource = "";
-   editingRow = {
-     id: mapping.id,
+@@ -1024,6 +1082,9 @@ function editMapping(mappingId) {
      values: mapping,
-@@ -977,6 +1031,7 @@ function deleteMapping(mappingId, message = "Deleted mapping.") {
-   mappings = mappings.filter((mapping) => mapping.id !== mappingId);
-   saveMappings(mappings);
-   editingRow = null;
-+  rowCaptureSource = "";
-   renderAll(message);
+   };
+   renderMappings();
++  if (options.focusDevice) {
++    focusEditingRowDevice(editingRowElement());
++  }
+   setText(elements.statusLog, `Editing ${mapping.actionLabel} mapping.`);
  }
 
-@@ -989,14 +1044,19 @@ function handleListClick(event) {
-     saveEditingRow();
-   } else if (target.dataset.inputCancelMapping !== undefined) {
-     editingRow = null;
-+    rowCaptureSource = "";
-     renderMappings();
-     setText(elements.statusLog, "Canceled mapping edit.");
-   } else if (target.dataset.inputEditMapping !== undefined) {
+@@ -1051,6 +1112,10 @@ function handleListClick(event) {
      editMapping(target.dataset.inputEditMapping || "");
    } else if (target.dataset.inputTrashMapping !== undefined) {
      deleteMapping(target.dataset.inputTrashMapping || "");
--  } else if (target.dataset.inputDeleteToken !== undefined) {
--    deleteMapping(target.dataset.inputDeleteToken || "", "Deleted captured input token.");
-+  } else if (target.dataset.inputRowCaptureKeyboard !== undefined) {
-+    startKeyboardCapture();
-+  } else if (target.dataset.inputRowCaptureMouse !== undefined) {
-+    startMouseCapture();
-+  } else if (target.dataset.inputRowCaptureGamepad !== undefined) {
-+    captureGamepadInput();
++  } else if (target.dataset.inputToken !== undefined) {
++    editMapping(target.dataset.inputToken || "", { focusDevice: true });
++  } else if (target.dataset.inputRowBindingValue !== undefined) {
++    focusEditingRowDevice(editingRowElement());
+   } else if (target.dataset.inputRowCaptureKeyboard !== undefined) {
+     startKeyboardCapture();
+   } else if (target.dataset.inputRowCaptureMouse !== undefined) {
+@@ -1060,6 +1125,18 @@ function handleListClick(event) {
    }
  }
 
-@@ -1043,9 +1103,11 @@ function init() {
-   renderMappings();
-   elements.actionSelect?.addEventListener("change", updateCaptureSelection);
-   elements.objectSelect?.addEventListener("change", () => {
-+    updateCaptureSelection();
-     setText(elements.statusLog, `Selected ${selectedObject().label} for new mappings.`);
++function handleListChange(event) {
++  const target = event.target instanceof Element ? event.target : null;
++  if (!target?.matches("[data-input-row-device]")) {
++    return;
++  }
++  const row = target.closest("[data-input-editing-row]");
++  if (!row) {
++    return;
++  }
++  changeEditingRowDevice(row, target.value);
++}
++
+ function handleControllerProfileClick(event) {
+   const target = event.target instanceof Element ? event.target.closest("button") : null;
+   if (!target) {
+@@ -1144,6 +1221,7 @@ function init() {
    });
-   elements.addMapping?.addEventListener("click", () => {
-+    rowCaptureSource = "";
-     editingRow = {
-       id: "",
-       values: {
-@@ -1073,11 +1135,9 @@ function init() {
-   elements.resetMappings?.addEventListener("click", () => {
-     resetStoredMappings();
-     editingRow = null;
-+    rowCaptureSource = "";
-     renderAll("Reset input mappings.");
-   });
--  elements.captureKeyboard?.addEventListener("click", startKeyboardCapture);
--  elements.captureMouse?.addEventListener("click", startMouseCapture);
--  elements.captureGamepad?.addEventListener("click", captureGamepadInput);
-   elements.refreshDevices?.addEventListener("click", () => {
-     renderDiagnostics("Device diagnostics refreshed.");
-     renderControllerProfileStatus();
-diff --git a/docs_build/dev/reports/controls-row-capture-cleanup-report.md b/docs_build/dev/reports/controls-row-capture-cleanup-report.md
+   elements.controllerProfileList?.addEventListener("click", handleControllerProfileClick);
+   elements.list?.addEventListener("click", handleListClick);
++  elements.list?.addEventListener("change", handleListChange);
+   window.addEventListener("keydown", captureKeyboardEvent);
+   window.addEventListener("pointerdown", captureMouseEvent);
+ }
+diff --git a/docs_build/dev/reports/controls-device-specific-input-report.md b/docs_build/dev/reports/controls-device-specific-input-report.md
 new file mode 100644
-index 000000000..2ee3aacd7
+index 000000000..34d2e4922
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-row-capture-cleanup-report.md
-@@ -0,0 +1,67 @@
-+# PR_26161_020 Controls Row Capture Cleanup Report
++++ b/docs_build/dev/reports/controls-device-specific-input-report.md
+@@ -0,0 +1,69 @@
++# PR_26161_021 Controls Device Specific Input Report
 +
 +## Branch Validation
 +- Current branch: `main`
@@ -752,15 +527,16 @@ index 000000000..2ee3aacd7
 +- Result: PASS
 +
 +## Summary
-+- Removed the separate Controls/Input Mapping Capture accordion.
-+- Moved selected Action/Object context into the right side of the mappings table footer next to Add Mapping and Reset Mappings.
-+- Replaced the row Input free-text editor with row-level capture buttons:
-+  - Capture Keyboard
-+  - Capture Mouse
-+  - Capture Gamepad
-+- Kept Input display clickable without deleting mappings.
-+- Kept deletion scoped to the row Trash action.
-+- Preserved table-first add/edit/cancel, Mapping JSON, Devices, Status, controller profiles, workspace return, and shared DB/mock-adapter persistence.
++- Changed mapping edit rows so the Input column shows only the capture button for the selected Input Device.
++- Keyboard rows show Capture Keyboard only.
++- Mouse rows show Capture Mouse only.
++- Gamepad rows show Capture Gamepad only.
++- Captured values replace the capture button in the Input column.
++- Clicking a captured value opens the row for editing and focuses the Input Device dropdown so the creator can choose another capture path.
++- Added creator-facing State guidance:
++  - Active means the mapping is available to the game.
++  - Disabled means the mapping is saved but ignored by the game until re-enabled.
++- Moved Controller Profiles from the left rail into the center Table Input area.
 +
 +## Impacted Lane
 +- runtime
@@ -777,37 +553,38 @@ index 000000000..2ee3aacd7
 +- `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --workers=1 --reporter=line` - PASS, 5 passed
 +
 +## Playwright Behavior Covered
-+- Selected Action/Object display appears in the mappings table footer and updates from the Actions panel.
-+- Capture accordion is absent.
-+- Row-level Capture Keyboard, Capture Mouse, and Capture Gamepad buttons appear during row add/edit.
-+- Keyboard capture updates the active row input and persists after Save/reload.
-+- Gamepad capture shows actionable WARN when no live gamepad value is available.
-+- Gamepad capture can populate a row when a live gamepad value is supplied by the test harness.
-+- Clicking the displayed Input token does not delete the row.
-+- Trash is the only covered row deletion path.
-+- Mapping JSON, Devices, Status, controller profiles, and compatibility route continue to render.
++- Only the matching capture button appears for the selected Input Device.
++- Keyboard, Mouse, and Gamepad device selection swaps the visible row capture button.
++- Captured input value replaces the capture button.
++- Clicking a captured input value focuses the Input Device dropdown.
++- Saved captured input values reopen the row for device selection instead of deleting the row.
++- State explanation appears with Active and Disabled creator-facing wording.
++- Controller Profile appears in the center column under Table Input Mapping.
++- Captured mappings persist after reload.
++- Mapping JSON, Devices, Status, controller profiles, table add/edit/cancel, and compatibility route still update.
 +
 +## V8 Coverage
 +- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- Changed runtime JS covered: `toolbox/input-mapping-v2/input-mapping-v2.js`
-+- Coverage result: 92% function coverage, 105/114 functions
++- Coverage result: 93% function coverage, 111/120 functions
 +
 +## Manual Validation Steps
 +1. Open `/toolbox/input-mapping-v2/index.html`.
-+2. Confirm the left column shows Actions and Controller Profiles, with no Capture accordion.
-+3. Confirm Add Mapping and Reset Mappings are on the left side of the table footer.
-+4. Confirm Selected Action and Selected Object appear on the right side of the table footer.
-+5. Click Add Mapping and confirm Add Mapping disables while the edit row is active.
-+6. Click Capture Keyboard, press a key, save the row, reload, and confirm the mapping remains.
-+7. Click the Input token and confirm the row remains.
-+8. Click Trash and confirm the row is deleted.
++2. Confirm Controller Profiles appears in the center card under Mappings.
++3. Confirm the State explanation mentions Active and Disabled exactly as creator-facing mapping states.
++4. Click Add Mapping and confirm only Capture Keyboard appears by default.
++5. Change Input Device to Mouse and confirm only Capture Mouse appears.
++6. Change Input Device to Gamepad and confirm only Capture Gamepad appears.
++7. Capture a keyboard input, confirm the captured value replaces the capture button, save, reload, and confirm the value persists.
++8. Click the captured value and confirm the row opens/focuses the Input Device dropdown.
 +
 +## Skipped Lanes
-+- Full samples validation was skipped as required by the PR instructions; this change is limited to the Controls/Input Mapping toolbox UI and test coverage.
-+- Full workspace contract lane was skipped because no Workspace V2 contract/runtime files changed; workspace return visibility is covered in the targeted Controls Playwright test.
++- Full samples validation was skipped as required by the PR instructions; this change is limited to the Controls/Input Mapping toolbox UI and behavior tests.
++- Full workspace contract lane was skipped because no Workspace V2 contract/runtime files changed; workspace return remains covered by targeted Controls Playwright.
 +
 +## Runtime Scope Confirmation
 +- Controls remains Wireframe.
++- Controls mapping and controller profile data remain persisted through the shared DB/mock adapter.
++- No page-local persisted storage was added.
 +- No production controller runtime was added.
 +- No sample JSON alignment, auth behavior, production DB behavior, engine runtime behavior, or unrelated rewrites were added.
-+- Controls mapping data remains persisted through the shared DB/mock adapter.

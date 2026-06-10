@@ -170,6 +170,30 @@ function actionCell(actions) {
   return cell;
 }
 
+function captureButtonConfig(source) {
+  if (source === "mouse") {
+    return {
+      dataName: "inputRowCaptureMouse",
+      label: "Capture Mouse",
+    };
+  }
+  if (source === "gamepad") {
+    return {
+      dataName: "inputRowCaptureGamepad",
+      label: "Capture Gamepad",
+    };
+  }
+  return {
+    dataName: "inputRowCaptureKeyboard",
+    label: "Capture Keyboard",
+  };
+}
+
+function captureButtonForSource(source) {
+  const config = captureButtonConfig(source);
+  return actionButton(config.label, config.dataName, "", "btn btn--compact");
+}
+
 function selectControl({ ariaLabel, options, selectedValue }) {
   const select = document.createElement("select");
   select.setAttribute("aria-label", ariaLabel);
@@ -618,21 +642,49 @@ function inputCaptureCell(values = {}) {
   const source = values.source || "keyboard";
   const binding = normalizeText(values.binding);
   const currentInput = actionButton(inputLabel(source, binding) || "No input captured", "inputRowBindingValue", "", "btn btn--compact cyan");
-  currentInput.setAttribute("aria-label", "Current mapping input");
+  currentInput.hidden = !binding;
+  currentInput.setAttribute("aria-label", "Current mapping input. Choose Input Device to change capture path.");
   const hiddenInput = hiddenControl({ value: binding });
   hiddenInput.dataset.inputRowBinding = "true";
 
   const group = document.createElement("div");
   group.className = "action-group action-group--tight";
-  group.append(
-    actionButton("Capture Keyboard", "inputRowCaptureKeyboard", "", "btn btn--compact"),
-    actionButton("Capture Mouse", "inputRowCaptureMouse", "", "btn btn--compact"),
-    actionButton("Capture Gamepad", "inputRowCaptureGamepad", "", "btn btn--compact"),
-  );
+  group.dataset.inputRowCaptureActions = "true";
+  if (binding) {
+    group.hidden = true;
+  } else {
+    group.append(captureButtonForSource(source));
+  }
 
   stack.append(currentInput, hiddenInput, group);
   cell.append(stack);
   return cell;
+}
+
+function updateInputCaptureCell(row, source, binding = "") {
+  const normalizedSource = deviceBySource(source).source;
+  const normalizedBinding = normalizeText(binding);
+  const label = inputLabel(normalizedSource, normalizedBinding);
+  const currentInput = row.querySelector("[data-input-row-binding-value]");
+  const hiddenInput = row.querySelector("[data-input-row-binding]");
+  const group = row.querySelector("[data-input-row-capture-actions]");
+  if (hiddenInput) {
+    hiddenInput.value = normalizedBinding;
+  }
+  if (currentInput) {
+    currentInput.textContent = label || "No input captured";
+    currentInput.title = label || "No input captured";
+    currentInput.hidden = !normalizedBinding;
+    currentInput.setAttribute("aria-label", `${label || "No input captured"} input. Choose Input Device to change capture path.`);
+  }
+  if (group) {
+    group.replaceChildren();
+    group.hidden = Boolean(normalizedBinding);
+    if (!normalizedBinding) {
+      group.append(captureButtonForSource(normalizedSource));
+    }
+  }
+  return label;
 }
 
 function renderEditingRow(values = {}) {
@@ -744,22 +796,28 @@ function editingRowElement() {
 function setEditingRowInput(row, source, binding) {
   const normalizedSource = deviceBySource(source).source;
   const normalizedBinding = normalizeText(binding);
-  const label = inputLabel(normalizedSource, normalizedBinding);
   const deviceSelect = row.querySelector("[data-input-row-device]");
-  const bindingInput = row.querySelector("[data-input-row-binding]");
-  const bindingValue = row.querySelector("[data-input-row-binding-value]");
   if (deviceSelect) {
     deviceSelect.value = normalizedSource;
   }
-  if (bindingInput) {
-    bindingInput.value = normalizedBinding;
+  return updateInputCaptureCell(row, normalizedSource, normalizedBinding);
+}
+
+function focusEditingRowDevice(row) {
+  const deviceSelect = row?.querySelector("[data-input-row-device]");
+  if (!deviceSelect) {
+    return;
   }
-  if (bindingValue) {
-    bindingValue.textContent = label || "No input captured";
-    bindingValue.title = label || "No input captured";
-    bindingValue.setAttribute("aria-label", `${label || "No input captured"} input`);
-  }
-  return label;
+  deviceSelect.focus();
+  deviceSelect.click();
+  setText(elements.statusLog, "Choose an Input Device, then capture input for this row.");
+}
+
+function changeEditingRowDevice(row, source) {
+  const normalizedSource = deviceBySource(source).source;
+  rowCaptureSource = "";
+  updateInputCaptureCell(row, normalizedSource, "");
+  setText(elements.statusLog, `Selected ${deviceBySource(normalizedSource).label}. Capture input for this row.`);
 }
 
 function applyCapturedInputToEditingRow({ binding, label, source }) {
@@ -1013,7 +1071,7 @@ function deleteControllerProfile(profileId) {
   renderAll(profile ? `Deleted ${profile.mappingProfile} controller profile.` : "Deleted controller profile.");
 }
 
-function editMapping(mappingId) {
+function editMapping(mappingId, options = {}) {
   const mapping = mappings.find((candidate) => candidate.id === mappingId);
   if (!mapping) {
     return;
@@ -1024,6 +1082,9 @@ function editMapping(mappingId) {
     values: mapping,
   };
   renderMappings();
+  if (options.focusDevice) {
+    focusEditingRowDevice(editingRowElement());
+  }
   setText(elements.statusLog, `Editing ${mapping.actionLabel} mapping.`);
 }
 
@@ -1051,6 +1112,10 @@ function handleListClick(event) {
     editMapping(target.dataset.inputEditMapping || "");
   } else if (target.dataset.inputTrashMapping !== undefined) {
     deleteMapping(target.dataset.inputTrashMapping || "");
+  } else if (target.dataset.inputToken !== undefined) {
+    editMapping(target.dataset.inputToken || "", { focusDevice: true });
+  } else if (target.dataset.inputRowBindingValue !== undefined) {
+    focusEditingRowDevice(editingRowElement());
   } else if (target.dataset.inputRowCaptureKeyboard !== undefined) {
     startKeyboardCapture();
   } else if (target.dataset.inputRowCaptureMouse !== undefined) {
@@ -1058,6 +1123,18 @@ function handleListClick(event) {
   } else if (target.dataset.inputRowCaptureGamepad !== undefined) {
     captureGamepadInput();
   }
+}
+
+function handleListChange(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  if (!target?.matches("[data-input-row-device]")) {
+    return;
+  }
+  const row = target.closest("[data-input-editing-row]");
+  if (!row) {
+    return;
+  }
+  changeEditingRowDevice(row, target.value);
 }
 
 function handleControllerProfileClick(event) {
@@ -1144,6 +1221,7 @@ function init() {
   });
   elements.controllerProfileList?.addEventListener("click", handleControllerProfileClick);
   elements.list?.addEventListener("click", handleListClick);
+  elements.list?.addEventListener("change", handleListChange);
   window.addEventListener("keydown", captureKeyboardEvent);
   window.addEventListener("pointerdown", captureMouseEvent);
 }
