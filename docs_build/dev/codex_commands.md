@@ -1202,3 +1202,34 @@ Required reports:
 - `docs_build/dev/reports/testing_lane_execution_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26161_007
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Treated the user-provided `PR_26161_007 Objects Model Simplification` request as the active BUILD source because no matching BUILD doc was present.
+- Updated the Objects user-facing setup language from Role/Traits to Type/Capabilities.
+- Replaced Object Status summary rows with `Objects`, `Graphics`, `Hitboxes`, and `Events`.
+- Replaced old readiness/status copy with creator-facing values: `Complete`, `Pending Setup`, `Not Configured`, `X Defined`, and `X Linked`.
+- Preserved table-first editing and kept `Add Object` below the table.
+- Preserved Sprite render asset create/resolve/preview/Edit Sprite linking behavior.
+- Removed the exact removed disconnected-copy phrase repo-wide.
+- Did not modify engine runtime behavior, production database/auth behavior, sample JSON, or sample runtime behavior.
+
+Validation:
+- `node --check toolbox/objects/objects.js`
+- `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
+- HTML restriction check for `toolbox/objects/index.html`
+- `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line`
+- `node tests/engine/ObjectModelContract.test.mjs`
+- Exact disconnected-copy phrase scan
+- `rg -n "\bRole\b|\bTraits\b|technical object family|publishes|coverage|runtime type|internal|connected" -S toolbox\objects`
+- `git diff --check`
+
+Required reports:
+- `docs_build/dev/reports/PR_26161_007-objects-model-simplification-report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

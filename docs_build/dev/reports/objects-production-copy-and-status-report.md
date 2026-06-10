@@ -10,7 +10,7 @@
 - Replaced Objects center copy with creator-facing wording: `Object Builder`, production-safe page description, and neutral object table guidance.
 - Replaced Readiness Checks with an `Object Status` table covering ready objects, render assets, missing hitboxes, and missing events.
 - Removed low-value Object Status rows for object row, object names, and object roles.
-- Preserved wireframe-safe labels for unavailable hitbox/event values with `Not connected yet` messaging.
+- Preserved wireframe-safe labels for unavailable hitbox/event values with deferred setup messaging.
 - Kept blank/None render rows free of render asset requirements and preserved Sprite render asset create/resolve behavior.
 - Updated the Objects tool metadata copy because the runtime page title consumes the DB/mock metadata record.
 

@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Objects - GameFoundryStudio</title>
-    <meta name="description" content="Objects Toolbox surface for roles, state, and sprite asset links.">
+    <meta name="description" content="Objects Toolbox surface for types, state, and sprite asset links.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Objects</div>
                 <h1>Objects</h1>
-                <p class="lede">Create game objects with roles, state, and sprite assets for your project.</p>
+                <p class="lede">Create game objects with types, state, and sprite assets for your project.</p>
             </div>
         </section>
         <section class="section">
@@ -32,7 +32,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Object Setup</summary>
                                 <div class="accordion-body content-stack">
-                                    <p data-objects-setup-context>Use the table to define object names, roles, state, and optional sprite assets.</p>
+                                    <p data-objects-setup-context>Use the table to define object names, types, state, and optional sprite assets.</p>
                                     <div class="content-cluster" aria-label="Objects setup actions">
                                         <button class="btn" type="button" data-objects-seed-starter>Seed Starter Objects</button>
                                         <button class="btn" type="button" data-objects-validate>Validate Setup</button>
@@ -40,10 +40,10 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Role Choices</summary>
+                                <summary>Type Choices</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Roles are broad authoring labels. Use Custom when a project-specific role is not listed.</p>
-                                    <ul data-objects-role-basics></ul>
+                                    <p>Types describe each object's setup purpose. Use Custom when a project-specific type is not listed.</p>
+                                    <ul data-objects-type-basics></ul>
                                 </div>
                             </details>
                         </div>
@@ -53,9 +53,9 @@
                         <h2>Object Builder</h2>
                         <p>Create and review the objects your game will use. Sprite choices can open the linked asset in Sprite Editor.</p>
                         <div class="grid cols-3" aria-label="Objects readiness summary">
-                            <article class="mini-stat"><strong data-objects-readiness>Needs Objects</strong>Object status</article>
+                            <article class="mini-stat"><strong data-objects-readiness>Not Configured</strong>Object status</article>
                             <article class="mini-stat"><strong data-objects-count>0</strong>Objects</article>
-                            <article class="mini-stat"><strong data-objects-asset-status>No sprite links</strong>Sprite assets</article>
+                            <article class="mini-stat"><strong data-objects-asset-status>Not Configured</strong>Sprite assets</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
@@ -88,10 +88,10 @@
                                         <thead>
                                             <tr>
                                                 <th>Name</th>
-                                                <th>Role</th>
+                                                <th>Type</th>
                                                 <th>State</th>
                                                 <th>Render</th>
-                                                <th>Traits</th>
+                                                <th>Capabilities</th>
                                                 <th>Render Asset</th>
                                                 <th>Actions</th>
                                             </tr>
@@ -114,11 +114,11 @@
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
                                 <div class="accordion-body content-stack" data-objects-output>
-                                    <p>Status: <span data-objects-output-readiness>Needs Objects</span></p>
+                                    <p>Status: <span data-objects-output-readiness>Not Configured</span></p>
                                     <p>Objects: <span data-objects-output-count>0</span></p>
                                     <p>Sprite Asset: <span data-objects-output-render-asset>None</span></p>
                                     <p>Sprite Preview: <span data-objects-output-sprite-preview>No sprite asset linked.</span></p>
-                                    <p>Object Status: <span data-objects-output-setup>No objects added yet.</span></p>
+                                    <p>Objects Setup: <span data-objects-output-setup>No objects added yet.</span></p>
                                     <p><a class="btn btn--compact" data-objects-edit-sprite hidden>Edit Sprite</a></p>
                                 </div>
                             </details>
@@ -137,9 +137,9 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Traits</summary>
+                                <summary>Capabilities</summary>
                                 <div class="accordion-body content-stack">
-                                    <ul data-objects-trait-basics></ul>
+                                    <ul data-objects-capability-basics></ul>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

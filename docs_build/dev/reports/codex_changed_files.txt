@@ -1,22 +1,11 @@
-# git status --short
-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
- M tests/playwright/tools/ObjectsTool.spec.mjs
- M tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
- M toolbox/objects/index.html
- M toolbox/objects/objects.js
-?? docs_build/dev/reports/objects-production-copy-and-status-report.md
-
-# git ls-files --others --exclude-standard
+docs_build/dev/codex_commands.md
+docs_build/dev/commit_comment.txt
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
 docs_build/dev/reports/objects-production-copy-and-status-report.md
-
-# git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |   3 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  13 +-
- .../guest-seeds/tool-metadata-inventory.js         |  10 +-
- tests/playwright/tools/ObjectsTool.spec.mjs        |  66 ++++++--
- .../tools/ToolboxAdminMetadataSsot.spec.mjs        |   2 +-
- toolbox/objects/index.html                         |  41 +++--
- toolbox/objects/objects.js                         | 180 ++++++++++++---------
- 7 files changed, 190 insertions(+), 125 deletions(-)
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/PR_26161_007-objects-model-simplification-report.md
+tests/playwright/tools/ObjectsTool.spec.mjs
+toolbox/objects/index.html
+toolbox/objects/objects.js

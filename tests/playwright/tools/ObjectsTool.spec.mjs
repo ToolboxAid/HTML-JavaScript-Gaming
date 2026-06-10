@@ -3,7 +3,7 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
-const ROLE_OPTIONS = ["Collectible", "Custom", "Enemy", "Goal", "Hazard", "Hero", "Platform", "Projectile", "Spawner", "UI", "Wall"];
+const TYPE_OPTIONS = ["Collectible", "Custom", "Enemy", "Goal", "Hazard", "Hero", "Platform", "Projectile", "Spawner", "UI", "Wall"];
 const OLD_SAMPLE_PATH_PATTERN = new RegExp(["M" + "VP", "Padd" + "le", "Ba" + "ll"].join("|"), "i");
 const OLD_INTERNAL_COPY_PATTERN = new RegExp([
   ["page", " session only"].join(""),
@@ -16,11 +16,22 @@ const OLD_INTERNAL_COPY_PATTERN = new RegExp([
   ["Game Configuration is ", "not ready"].join(""),
   ["Object ", "setup ", "table"].join(""),
   ["Object ", "setup ", "rows"].join(""),
+  ["Not ", "connected ", "yet"].join(""),
+  "connected",
+  "publishes",
+  "coverage",
+  ["technical ", "object ", "family"].join(""),
+  "internal",
+  ["runtime ", "type"].join(""),
 ].join("|"), "i");
 const LOW_VALUE_STATUS_CHECK_PATTERN = new RegExp([
-  ["Object ", "row"].join(""),
-  ["Object ", "names"].join(""),
-  ["Object ", "roles"].join(""),
+  ["Ready ", "Objects"].join(""),
+  ["Render ", "Assets"].join(""),
+  ["Missing ", "Hitboxes"].join(""),
+  ["Missing ", "Events"].join(""),
+  ["Needs ", "Objects"].join(""),
+  ["Needs ", "Review"].join(""),
+  ["No ", "sprite ", "render ", "selected"].join(""),
 ].join("|"), "i");
 
 test.beforeEach(async ({ page }) => {
@@ -85,14 +96,14 @@ async function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
-async function fillActiveRow(page, { name, renderType = "None", role, state = "Active" }) {
+async function fillActiveRow(page, { name, renderType = "None", type, state = "Active" }) {
   await page.locator("[data-objects-row-name]").fill(name);
-  await page.locator("[data-objects-row-role]").selectOption(role);
+  await page.locator("[data-objects-row-type]").selectOption(type);
   await page.locator("[data-objects-row-state]").selectOption(state);
   await page.locator("[data-objects-row-render-type]").selectOption(renderType);
 }
 
-test("Objects exposes production copy, Object Status, and broad table input", async ({ page }) => {
+test("Objects exposes production copy, setup status, and broad table input", async ({ page }) => {
   const failures = await openObjectsPage(page);
 
   try {
@@ -100,6 +111,11 @@ test("Objects exposes production copy, Object Status, and broad table input", as
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("main")).not.toContainText(OLD_SAMPLE_PATH_PATTERN);
     await expect(page.locator("main")).not.toContainText(OLD_INTERNAL_COPY_PATTERN);
+    await expect(page.locator("main")).not.toContainText(/\bRole\b/i);
+    await expect(page.locator("main")).not.toContainText(/\bTraits\b/i);
+    await expect(page.locator("main")).toContainText("Type");
+    await expect(page.locator("main")).toContainText("Capabilities");
+    await expect(page.locator("main")).not.toContainText(["Not", "connected", "yet"].join(" "));
     await expect(page.getByRole("heading", { level: 2, name: "Object Builder" })).toBeVisible();
     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toBeVisible();
     await expect(page.locator("[aria-label='Object status summary'] th")).toHaveText([
@@ -109,34 +125,42 @@ test("Objects exposes production copy, Object Status, and broad table input", as
     ]);
     await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(4);
     await expect(page.locator("[data-objects-status-summary] td:first-child")).toHaveText([
-      "Ready Objects",
-      "Render Assets",
-      "Missing Hitboxes",
-      "Missing Events",
+      "Objects",
+      "Graphics",
+      "Hitboxes",
+      "Events",
+    ]);
+    await expect(page.locator("[data-objects-status-summary] td:nth-child(2)")).toHaveText([
+      "Not Configured",
+      "Not Configured",
+      "Not Configured",
+      "Not Configured",
     ]);
     await expect(page.locator("[data-objects-status-summary]")).not.toContainText(LOW_VALUE_STATUS_CHECK_PATTERN);
     await expect(page.locator("[data-objects-list-table] th")).toHaveText([
       "Name",
-      "Role",
+      "Type",
       "State",
       "Render",
-      "Traits",
+      "Capabilities",
       "Render Asset",
       "Actions",
     ]);
-    await expect(page.locator("[data-objects-row-type]")).toHaveCount(0);
     await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
-    await expect(page.locator("[data-objects-role-basics] li")).toHaveText(ROLE_OPTIONS);
-    await expect(page.locator("[data-objects-readiness]")).toHaveText("Needs Objects");
-    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Needs Objects");
-    await expect(page.locator("[data-objects-asset-status]")).toHaveText("No sprite render selected");
-    await expect(page.locator("[data-objects-output-setup]")).toHaveText("Add objects to begin the object list.");
+    await expect(page.locator("[data-objects-type-basics] li")).toHaveText(TYPE_OPTIONS);
+    await expect(page.locator("[data-objects-readiness]")).toHaveText("Not Configured");
+    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Not Configured");
+    await expect(page.locator("[data-objects-asset-status]")).toHaveText("Not Configured");
+    await expect(page.locator("[data-objects-output-setup]")).toHaveText("Add objects to begin setup.");
     await expect(page.locator("[data-objects-validation-overlay]")).toBeHidden();
     await expect(page.locator("[data-objects-validation-list]")).toHaveText("PASS: Object details are valid.");
-    await expect(page.locator("[data-objects-trait-basics]")).toContainText("movable");
-    await expect(page.locator("[data-objects-trait-basics]")).toContainText("playerControlled");
-    await expect(page.locator("[data-objects-trait-basics]")).toContainText("collides");
-    await expect(page.locator("[data-objects-trait-basics]")).not.toContainText("bounces");
+    await expect(page.locator("[data-objects-capability-basics]")).toContainText("Can Move");
+    await expect(page.locator("[data-objects-capability-basics]")).toContainText("Player Controlled");
+    await expect(page.locator("[data-objects-capability-basics]")).toContainText("Can Collide");
+    await expect(page.locator("[data-objects-capability-basics]")).toContainText("Scores Points");
+    await expect(page.locator("[data-objects-capability-basics]")).toContainText("Causes Damage");
+    await expect(page.locator("[data-objects-capability-basics]")).toContainText("Takes Damage");
+    await expect(page.locator("[data-objects-capability-basics]")).not.toContainText("bounces");
 
     const addAfterTable = await page.locator("[data-objects-list-table]").evaluate((table) => (
       Boolean(table.compareDocumentPosition(document.querySelector("[data-objects-add-row]")) & Node.DOCUMENT_POSITION_FOLLOWING)
@@ -145,12 +169,12 @@ test("Objects exposes production copy, Object Status, and broad table input", as
 
     await page.getByRole("button", { name: "Seed Starter Objects" }).click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Seeded starter objects: Hero, Projectile, and Wall.");
-    await expect(page.locator("[data-objects-readiness]")).toHaveText("Objects Ready");
-    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Objects Ready");
+    await expect(page.locator("[data-objects-readiness]")).toHaveText("Complete");
+    await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Complete");
     await expect(page.locator("[data-objects-count]")).toHaveText("3");
     await expect(page.locator("[data-objects-output-count]")).toHaveText("3");
-    await expect(page.locator("[data-objects-status-summary]")).toContainText("3/3");
-    await expect(page.locator("[data-objects-status-summary]")).toContainText("No sprite render selected");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("3 Defined");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Not Configured");
     await expect(page.locator("[data-objects-validation-overlay]")).toBeHidden();
     await expect(page.locator("[data-objects-list] tr")).toHaveCount(3);
     await expect(page.locator("[data-objects-list]")).toContainText("Hero");
@@ -160,7 +184,7 @@ test("Objects exposes production copy, Object Status, and broad table input", as
     await expect(page.locator("[data-objects-list] [data-objects-trash-row]")).toHaveCount(3);
     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("None");
     await expect(page.locator("[data-objects-edit-sprite]")).toBeHidden();
-    await expect(page.locator("[data-objects-output-setup]")).toHaveText("Objects have saved table details.");
+    await expect(page.locator("[data-objects-output-setup]")).toHaveText("Objects have saved setup details.");
 
     await page.getByRole("button", { name: "Validate Setup" }).click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Validation PASS: Object details are ready for review.");
@@ -184,14 +208,14 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(addButton).toBeDisabled();
     await expect(page.locator("[data-objects-row-name]")).toBeVisible();
     await expect(page.locator("[data-objects-cancel-row]")).toBeVisible();
-    await expect(page.locator("[data-objects-row-role] option")).toHaveText(["Select role", ...ROLE_OPTIONS]);
+    await expect(page.locator("[data-objects-row-type] option")).toHaveText(["Select type", ...TYPE_OPTIONS]);
 
     await page.locator("[data-objects-cancel-row]").click();
     await expect(addButton).toBeEnabled();
     await expect(page.locator("[data-objects-list]")).toContainText("No objects drafted yet.");
 
     await addButton.click();
-    await fillActiveRow(page, { name: "Hero", role: "Hero" });
+    await fillActiveRow(page, { name: "Hero", type: "Hero" });
     await page.locator("[data-objects-save-row]").click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Added Hero.");
     await expect(addButton).toBeEnabled();
@@ -205,7 +229,7 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await page.locator("[data-objects-edit-row='hero']").click();
     await expect(addButton).toBeDisabled();
     await page.locator("[data-objects-row-name]").fill("Hero Prime");
-    await page.locator("[data-objects-row-role]").selectOption("Enemy");
+    await page.locator("[data-objects-row-type]").selectOption("Enemy");
     await page.locator("[data-objects-save-row]").click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Saved Hero Prime.");
     await expect(page.locator("[data-objects-list]")).toContainText("Hero Prime");
@@ -232,7 +256,7 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
     await fillActiveRow(page, {
       name: "Bolt",
       renderType: "Sprite",
-      role: "Projectile",
+      type: "Projectile",
     });
     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
     await page.locator("[data-objects-save-row]").click();
@@ -240,8 +264,8 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
     await expect(page.locator("[data-objects-log]")).toContainText("Added Bolt.");
     await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_bolt for Bolt.");
     await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
-    await expect(page.locator("[data-objects-asset-status]")).toHaveText("Linked");
-    await expect(page.locator("[data-objects-status-summary]")).toContainText("Linked");
+    await expect(page.locator("[data-objects-asset-status]")).toHaveText("1 Linked");
+    await expect(page.locator("[data-objects-status-summary]")).toContainText("1 Linked");
     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_bolt");
     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_bolt");
     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("projects/");
@@ -264,7 +288,7 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
     await fillActiveRow(page, {
       name: "Bolt",
       renderType: "Sprite",
-      role: "Projectile",
+      type: "Projectile",
     });
     await page.locator("[data-objects-save-row]").click();
     await expect(page.locator("[data-objects-log]")).toContainText("Added Bolt.");

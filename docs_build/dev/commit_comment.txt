@@ -1,1 +1,1 @@
-Update Asset dynamic picker model - PR_26156_160-163-asset-dynamic-picker-model
+Simplify Objects model setup language - PR_26161_007-objects-model-simplification

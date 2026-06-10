@@ -18,7 +18,7 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(93%) toolbox/objects/objects.js - executed lines 790/790; executed functions 75/81
+(93%) toolbox/objects/objects.js - executed lines 815/815; executed functions 77/83
 
 Files with executed line/function counts where available:
 (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
@@ -32,7 +32,7 @@ Files with executed line/function counts where available:
 (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
 (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
 (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
-(93%) toolbox/objects/objects.js - executed lines 790/790; executed functions 75/81
+(93%) toolbox/objects/objects.js - executed lines 815/815; executed functions 77/83
 (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
 (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 

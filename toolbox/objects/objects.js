@@ -6,7 +6,7 @@ import {
 } from "../../src/engine/object-model/index.js";
 import { createAssetToolApiRepository } from "../assets/assets-api-client.js";
 
-const ROLE_OPTIONS = Object.freeze([
+const TYPE_OPTIONS = Object.freeze([
   "Collectible",
   "Custom",
   "Enemy",
@@ -20,7 +20,7 @@ const ROLE_OPTIONS = Object.freeze([
   "Wall",
 ]);
 
-const ROLE_TRAITS = Object.freeze({
+const TYPE_TRAITS = Object.freeze({
   Collectible: Object.freeze(["collectible"]),
   Custom: Object.freeze([]),
   Enemy: Object.freeze([]),
@@ -34,7 +34,7 @@ const ROLE_TRAITS = Object.freeze({
   Wall: Object.freeze(["collides"]),
 });
 
-const ROLE_MODEL_TYPES = Object.freeze({
+const TYPE_MODEL_TYPES = Object.freeze({
   Collectible: "Collectible",
   Custom: "Static",
   Enemy: "Dynamic",
@@ -46,6 +46,18 @@ const ROLE_MODEL_TYPES = Object.freeze({
   Spawner: "Dynamic",
   UI: "Static",
   Wall: "Static",
+});
+
+const CAPABILITY_LABELS = Object.freeze({
+  collectible: "Can Be Collected",
+  collides: "Can Collide",
+  damageable: "Takes Damage",
+  goal: "Completes Goal",
+  hazard: "Causes Damage",
+  killable: "Can Be Removed",
+  movable: "Can Move",
+  playerControlled: "Player Controlled",
+  scores: "Scores Points",
 });
 
 const STARTER_OBJECTS = Object.freeze([
@@ -93,10 +105,10 @@ const elements = {
   outputSpritePreview: document.querySelector("[data-objects-output-sprite-preview]"),
   readiness: document.querySelector("[data-objects-readiness]"),
   resetTable: document.querySelector("[data-objects-reset-table]"),
-  roleBasics: document.querySelector("[data-objects-role-basics]"),
+  capabilityBasics: document.querySelector("[data-objects-capability-basics]"),
   seedStarter: document.querySelector("[data-objects-seed-starter]"),
   statusSummary: document.querySelector("[data-objects-status-summary]"),
-  traitBasics: document.querySelector("[data-objects-trait-basics]"),
+  typeBasics: document.querySelector("[data-objects-type-basics]"),
   validate: document.querySelector("[data-objects-validate]"),
   validationList: document.querySelector("[data-objects-validation-list]"),
   validationOverlay: document.querySelector("[data-objects-validation-overlay]"),
@@ -192,16 +204,16 @@ function controlCell(control) {
   return cell;
 }
 
-function sortedTraits() {
+function sortedCapabilities() {
   return [...OBJECT_MODEL_TRAIT_LIST].sort((left, right) => left.id.localeCompare(right.id));
 }
 
-function roleOptions() {
-  return ROLE_OPTIONS.map((role) => ({ label: role, value: role }));
+function typeOptions() {
+  return TYPE_OPTIONS.map((type) => ({ label: type, value: type }));
 }
 
-function typeForRole(role) {
-  const objectType = ROLE_MODEL_TYPES[role] || "";
+function modelTypeForSetupType(setupType) {
+  const objectType = TYPE_MODEL_TYPES[setupType] || "";
   return getObjectModelType(objectType) ? objectType : "";
 }
 
@@ -216,7 +228,7 @@ function traitsForObject(source, object) {
   const objectType = getObjectModelType(object.type);
 
   (objectType?.traits || []).forEach((traitId) => traitIds.add(traitId));
-  (ROLE_TRAITS[object.role] || []).forEach((traitId) => traitIds.add(traitId));
+  (TYPE_TRAITS[object.role] || []).forEach((traitId) => traitIds.add(traitId));
   traitIdsFromSource(source).forEach((traitId) => traitIds.add(traitId));
 
   return Object.freeze([...traitIds]);
@@ -232,7 +244,7 @@ function cloneObject(source = {}) {
     render: normalizeRenderConfig(source),
     role,
     state: normalizeText(source.state) || "Active",
-    type: typeForRole(role) || normalizeText(source.type),
+    type: modelTypeForSetupType(role) || normalizeText(source.type),
   };
 
   return {
@@ -258,10 +270,10 @@ function issueLabel(issue) {
     return "Object Name";
   }
   if (issue.path.endsWith(".type")) {
-    return "Role";
+    return "Type";
   }
   if (issue.path.includes(".traits")) {
-    return "Object Traits";
+    return "Capabilities";
   }
   if (issue.path.includes(".render")) {
     return "Render Asset";
@@ -277,7 +289,7 @@ function objectDefinitionFindings(object, labelPrefix) {
     .filter((issue) => !(issue.path.endsWith(".type") && !object.role))
     .map((issue) => ({
       action: issue.path.endsWith(".type")
-        ? "Choose a role so Objects can derive the technical object family."
+        ? "Choose a type so Objects can finish setup."
         : issue.action,
       label: labelPrefix ? `${labelPrefix} ${issueLabel(issue)}` : issueLabel(issue),
     }));
@@ -300,8 +312,8 @@ function rowFindings(object, ignoreObjectId = "", options = {}) {
   const findings = objectDefinitionFindings(definitionForReadiness(object, options), "");
   if (!object.role) {
     findings.push({
-      action: "Choose the role this object serves.",
-      label: "Role",
+      action: "Choose the type this object uses.",
+      label: "Type",
     });
   }
   if (object.name && draftedObjects.some((savedObject) => objectId(savedObject) === objectId(object) && objectId(savedObject) !== ignoreObjectId)) {
@@ -324,8 +336,8 @@ function objectListFindings(objects) {
     });
     if (!object.role) {
       findings.push({
-        action: `${label} needs a role.`,
-        label: `${label} Role`,
+        action: `${label} needs a type.`,
+        label: `${label} Type`,
       });
     }
     const id = objectId(object);
@@ -369,12 +381,12 @@ function readyObjectCount(objects) {
 
 function objectStatusLabel(objects, findings) {
   if (objects.length === 0) {
-    return "Needs Objects";
+    return "Not Configured";
   }
   if (missingRenderAssetCount(objects) > 0 || findings.length > 0) {
-    return "Needs Review";
+    return "Pending Setup";
   }
-  return "Objects Ready";
+  return "Complete";
 }
 
 function renderValidation(findings) {
@@ -402,6 +414,26 @@ function statusRow({ action, label, status }) {
   return row;
 }
 
+function objectsStatusText(objects, findings) {
+  if (objects.length === 0) {
+    return "Not Configured";
+  }
+  if (findings.length > 0 || readyObjectCount(objects) !== objects.length) {
+    return "Pending Setup";
+  }
+  return `${objects.length} Defined`;
+}
+
+function graphicsStatusText(spriteCount, missingAssets) {
+  if (missingAssets > 0) {
+    return "Pending Setup";
+  }
+  if (spriteCount > 0) {
+    return `${spriteCount} Linked`;
+  }
+  return "Not Configured";
+}
+
 function renderStatusSummary(objects, findings) {
   if (!elements.statusSummary) {
     return;
@@ -409,56 +441,52 @@ function renderStatusSummary(objects, findings) {
 
   const spriteCount = spriteObjectCount(objects);
   const missingAssets = missingRenderAssetCount(objects);
-  const readyCount = readyObjectCount(objects);
-  const renderStatus = missingAssets > 0
-    ? `${missingAssets} missing`
-    : spriteCount > 0
-      ? "Linked"
-      : "No sprite render selected";
+  const objectStatus = objectsStatusText(objects, findings);
+  const graphicsStatus = graphicsStatusText(spriteCount, missingAssets);
   const renderAction = missingAssets > 0
-    ? "Save each Sprite row so Objects can create or resolve its linked sprite asset."
+    ? "Save each Sprite row so Objects can create or resolve its render asset."
     : spriteCount > 0
-      ? "Sprite assets are linked."
-      : "Choose Sprite render when an object needs an editable sprite asset.";
+      ? "Sprite render assets are ready."
+      : "Choose Sprite render when an object needs editable graphics.";
 
   elements.statusSummary.replaceChildren(
     statusRow({
       action: objects.length > 0
-        ? "Ready means saved in this table with any required Sprite asset linked."
+        ? "Saved table rows define the objects available for setup."
         : "Add objects in the table below.",
-      label: "Ready Objects",
-      status: `${readyCount}/${objects.length}`,
+      label: "Objects",
+      status: objectStatus,
     }),
     statusRow({
       action: renderAction,
-      label: "Render Assets",
-      status: renderStatus,
+      label: "Graphics",
+      status: graphicsStatus,
     }),
     statusRow({
-      action: "Hitbox readiness will appear after Hitboxes publishes object coverage.",
-      label: "Missing Hitboxes",
-      status: "Not connected yet",
+      action: "Add hitboxes when collision setup is in scope.",
+      label: "Hitboxes",
+      status: "Not Configured",
     }),
     statusRow({
-      action: "Event readiness will appear after Events publishes object triggers.",
-      label: "Missing Events",
-      status: "Not connected yet",
+      action: "Add events when rules setup is in scope.",
+      label: "Events",
+      status: "Not Configured",
     }),
   );
 
-  setText(elements.assetStatus, renderStatus);
+  setText(elements.assetStatus, graphicsStatus);
 }
 
-function traitLabel(traitId) {
+function capabilityLabel(traitId) {
   const trait = getObjectModelTrait(traitId);
-  return trait ? trait.label : traitId;
+  return CAPABILITY_LABELS[traitId] || trait?.label || traitId;
 }
 
-function traitText(traitIds) {
+function capabilityText(traitIds) {
   if (!traitIds.length) {
     return "None";
   }
-  return traitIds.map(traitLabel).join(", ");
+  return traitIds.map(capabilityLabel).join(", ");
 }
 
 function renderAssetText(object) {
@@ -504,7 +532,7 @@ function editingObjectFromRow(row) {
   return cloneObject({
     name: row.querySelector("[data-objects-row-name]")?.value,
     render,
-    role: row.querySelector("[data-objects-row-role]")?.value,
+    role: row.querySelector("[data-objects-row-type]")?.value,
     state: row.querySelector("[data-objects-row-state]")?.value,
   });
 }
@@ -532,13 +560,13 @@ function renderEditingRow(values) {
   const name = textInput({ ariaLabel: "Object Name", value: values.name });
   name.dataset.objectsRowName = "true";
 
-  const role = selectElement({
-    ariaLabel: "Role",
-    options: roleOptions(),
-    placeholder: "Select role",
+  const type = selectElement({
+    ariaLabel: "Type",
+    options: typeOptions(),
+    placeholder: "Select type",
     selectedValue: values.role,
   });
-  role.dataset.objectsRowRole = "true";
+  type.dataset.objectsRowType = "true";
 
   const state = selectElement({
     ariaLabel: "Initial State",
@@ -573,7 +601,7 @@ function renderEditingRow(values) {
 
   row.append(
     controlCell(name),
-    controlCell(role),
+    controlCell(type),
     controlCell(state),
     controlCell(renderType),
     tableCell("Updates on save"),
@@ -597,7 +625,7 @@ function renderSavedRow(object) {
     tableCell(object.role),
     tableCell(object.state),
     tableCell(object.render?.type || "None"),
-    tableCell(traitText(object.traits)),
+    tableCell(capabilityText(object.traits)),
     tableCell(renderAssetText(object)),
     actions
   );
@@ -644,9 +672,9 @@ function renderOutput(objects, findings) {
   setText(
     elements.outputSetup,
     objects.length === 0
-      ? "Add objects to begin the object list."
+      ? "Add objects to begin setup."
       : findings.length === 0
-        ? "Objects have saved table details."
+        ? "Objects have saved setup details."
         : "Review the object details marked in validation."
   );
   setText(elements.outputRenderAsset, linkedSprite ? linkedSprite.render.assetKey : "None");
@@ -669,21 +697,21 @@ function renderOutput(objects, findings) {
 }
 
 function renderRegistryBasics() {
-  if (elements.roleBasics) {
-    elements.roleBasics.replaceChildren();
-    ROLE_OPTIONS.forEach((role) => {
-      elements.roleBasics.append(listItem(role));
+  if (elements.typeBasics) {
+    elements.typeBasics.replaceChildren();
+    TYPE_OPTIONS.forEach((type) => {
+      elements.typeBasics.append(listItem(type));
     });
   }
 
-  if (elements.traitBasics) {
-    elements.traitBasics.replaceChildren();
-    sortedTraits().forEach((trait) => {
+  if (elements.capabilityBasics) {
+    elements.capabilityBasics.replaceChildren();
+    sortedCapabilities().forEach((trait) => {
       const item = document.createElement("li");
       const label = document.createElement("strong");
-      label.textContent = `${trait.id}:`;
+      label.textContent = `${capabilityLabel(trait.id)}:`;
       item.append(label, ` ${trait.description}`);
-      elements.traitBasics.append(item);
+      elements.capabilityBasics.append(item);
     });
   }
 }
