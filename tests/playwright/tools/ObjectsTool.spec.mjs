@@ -68,9 +68,8 @@ async function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
-async function fillActiveRow(page, { name, renderType = "None", role, state = "Active", type }) {
+async function fillActiveRow(page, { name, renderType = "None", role, state = "Active" }) {
   await page.locator("[data-objects-row-name]").fill(name);
-  await page.locator("[data-objects-row-type]").selectOption(type);
   await page.locator("[data-objects-row-role]").selectOption(role);
   await page.locator("[data-objects-row-state]").selectOption(state);
   await page.locator("[data-objects-row-render-type]").selectOption(renderType);
@@ -83,15 +82,21 @@ test("Objects exposes broad table input without sample-path wording", async ({ p
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("main")).not.toContainText(OLD_SAMPLE_PATH_PATTERN);
+    await expect(page.locator("[data-objects-list-table] th")).toHaveText([
+      "Name",
+      "Role",
+      "State",
+      "Render",
+      "Traits",
+      "Render Asset",
+      "Actions",
+    ]);
+    await expect(page.locator("[data-objects-row-type]")).toHaveCount(0);
+    await expect(page.getByText("Object Types", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-objects-role-basics] li")).toHaveText(ROLE_OPTIONS);
     await expect(page.locator("[data-objects-readiness]")).toHaveText("Needs Input");
     await expect(page.locator("[data-objects-validation-overlay]")).toBeVisible();
     await expect(page.locator("[data-objects-validation-list]")).toContainText("Object row: Add at least one object row.");
-    await expect(page.locator("[data-objects-type-basics]")).toContainText("Static");
-    await expect(page.locator("[data-objects-type-basics]")).toContainText("Dynamic");
-    await expect(page.locator("[data-objects-type-basics]")).toContainText("Collectible");
-    await expect(page.locator("[data-objects-type-basics]")).toContainText("Hazard");
-    await expect(page.locator("[data-objects-type-basics]")).toContainText("Goal");
     await expect(page.locator("[data-objects-trait-basics]")).toContainText("movable");
     await expect(page.locator("[data-objects-trait-basics]")).toContainText("playerControlled");
     await expect(page.locator("[data-objects-trait-basics]")).toContainText("collides");
@@ -148,12 +153,14 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(page.locator("[data-objects-list]")).toContainText("No objects drafted yet.");
 
     await addButton.click();
-    await fillActiveRow(page, { name: "Hero", role: "Hero", type: "Dynamic" });
+    await fillActiveRow(page, { name: "Hero", role: "Hero" });
     await page.locator("[data-objects-save-row]").click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Added Hero.");
     await expect(addButton).toBeEnabled();
     await expect(page.locator("[data-objects-list]")).toContainText("Hero");
     await expect(page.locator("[data-objects-list]")).toContainText("Player Controlled");
+    await expect(page.locator("[data-objects-list]")).toContainText("None");
+    await expect(page.locator("[data-objects-validation-list]")).not.toContainText("Render Asset");
     await expect(page.locator("[data-objects-edit-row='hero']")).toBeVisible();
     await expect(page.locator("[data-objects-trash-row='hero']")).toBeVisible();
 
@@ -188,7 +195,6 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
       name: "Bolt",
       renderType: "Sprite",
       role: "Projectile",
-      type: "Dynamic",
     });
     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
     await page.locator("[data-objects-save-row]").click();
@@ -206,13 +212,19 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
       "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
     );
 
+    await page.locator("[data-objects-edit-row='bolt']").click();
+    await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("sprite_bolt");
+    await page.locator("[data-objects-save-row]").click();
+    await expect(page.locator("[data-objects-log]")).toHaveText("Saved Bolt.");
+    await expect(page.locator("[data-objects-log]")).not.toContainText("Sprite asset handoff blocked");
+    await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
+
     await page.getByRole("button", { name: "Reset Table" }).click();
     await page.getByRole("button", { name: "Add Object" }).click();
     await fillActiveRow(page, {
       name: "Bolt",
       renderType: "Sprite",
       role: "Projectile",
-      type: "Dynamic",
     });
     await page.locator("[data-objects-save-row]").click();
     await expect(page.locator("[data-objects-log]")).toContainText("Added Bolt.");

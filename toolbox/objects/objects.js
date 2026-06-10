@@ -1,6 +1,5 @@
 import {
   OBJECT_MODEL_TRAIT_LIST,
-  OBJECT_MODEL_TYPE_LIST,
   getObjectModelTrait,
   getObjectModelType,
   validateObjectDefinition,
@@ -35,6 +34,20 @@ const ROLE_TRAITS = Object.freeze({
   Wall: Object.freeze(["collides"]),
 });
 
+const ROLE_MODEL_TYPES = Object.freeze({
+  Collectible: "Collectible",
+  Custom: "Static",
+  Enemy: "Dynamic",
+  Goal: "Goal",
+  Hazard: "Hazard",
+  Hero: "Dynamic",
+  Platform: "Static",
+  Projectile: "Dynamic",
+  Spawner: "Dynamic",
+  UI: "Static",
+  Wall: "Static",
+});
+
 const SETUP_REQUIREMENTS = Object.freeze([
   {
     action: "Add at least one object row.",
@@ -45,11 +58,6 @@ const SETUP_REQUIREMENTS = Object.freeze([
     action: "Give every saved object a name.",
     label: "Object names",
     test: (objects) => objects.length > 0 && objects.every((object) => object.name),
-  },
-  {
-    action: "Choose a registered object type for every saved object.",
-    label: "Object types",
-    test: (objects) => objects.length > 0 && objects.every((object) => getObjectModelType(object.type)),
   },
   {
     action: "Choose a role for every saved object.",
@@ -66,7 +74,6 @@ const STARTER_OBJECTS = Object.freeze([
     render: Object.freeze({ type: "None" }),
     role: "Hero",
     state: "Active",
-    type: "Dynamic",
   }),
   Object.freeze({
     behavior: "Moves through the scene under authored behavior.",
@@ -75,7 +82,6 @@ const STARTER_OBJECTS = Object.freeze([
     render: Object.freeze({ type: "None" }),
     role: "Projectile",
     state: "Active",
-    type: "Dynamic",
   }),
   Object.freeze({
     behavior: "Stays fixed in the scene.",
@@ -84,7 +90,6 @@ const STARTER_OBJECTS = Object.freeze([
     render: Object.freeze({ type: "None" }),
     role: "Wall",
     state: "Active",
-    type: "Static",
   }),
 ]);
 
@@ -110,7 +115,6 @@ const elements = {
   roleBasics: document.querySelector("[data-objects-role-basics]"),
   seedStarter: document.querySelector("[data-objects-seed-starter]"),
   traitBasics: document.querySelector("[data-objects-trait-basics]"),
-  typeBasics: document.querySelector("[data-objects-type-basics]"),
   validate: document.querySelector("[data-objects-validate]"),
   validationList: document.querySelector("[data-objects-validation-list]"),
   validationOverlay: document.querySelector("[data-objects-validation-overlay]"),
@@ -210,23 +214,17 @@ function statusText(ok) {
   return ok ? "OK" : "Needs Action";
 }
 
-function sortedObjectTypes() {
-  return [...OBJECT_MODEL_TYPE_LIST].sort((left, right) => left.label.localeCompare(right.label));
-}
-
 function sortedTraits() {
   return [...OBJECT_MODEL_TRAIT_LIST].sort((left, right) => left.id.localeCompare(right.id));
 }
 
-function objectTypeOptions() {
-  return sortedObjectTypes().map((objectType) => ({
-    label: objectType.label,
-    value: objectType.id,
-  }));
-}
-
 function roleOptions() {
   return ROLE_OPTIONS.map((role) => ({ label: role, value: role }));
+}
+
+function typeForRole(role) {
+  const objectType = ROLE_MODEL_TYPES[role] || "";
+  return getObjectModelType(objectType) ? objectType : "";
 }
 
 function traitIdsFromSource(source) {
@@ -247,15 +245,16 @@ function traitsForObject(source, object) {
 }
 
 function cloneObject(source = {}) {
+  const role = normalizeText(source.role);
   const object = {
     behavior: normalizeText(source.behavior),
     id: objectKeyFromText(source.id || source.name),
     interaction: normalizeText(source.interaction),
     name: normalizeText(source.name),
     render: normalizeRenderConfig(source),
-    role: normalizeText(source.role),
+    role,
     state: normalizeText(source.state) || "Active",
-    type: normalizeText(source.type),
+    type: typeForRole(role) || normalizeText(source.type),
   };
 
   return {
@@ -266,12 +265,13 @@ function cloneObject(source = {}) {
 
 function defaultEditingValues(source = {}) {
   return {
+    assetKey: normalizeText(source.render?.assetKey),
     id: objectId(source),
     name: normalizeText(source.name),
+    previewPath: normalizeText(source.render?.previewPath),
     renderType: normalizeText(source.render?.type) || "None",
     role: normalizeText(source.role),
     state: normalizeText(source.state) || "Active",
-    type: normalizeText(source.type),
   };
 }
 
@@ -280,7 +280,7 @@ function issueLabel(issue) {
     return "Object Name";
   }
   if (issue.path.endsWith(".type")) {
-    return "Object Type";
+    return "Role";
   }
   if (issue.path.includes(".traits")) {
     return "Object Traits";
@@ -295,14 +295,21 @@ function issueLabel(issue) {
 }
 
 function objectDefinitionFindings(object, labelPrefix) {
-  return validateObjectDefinition(object).issues.map((issue) => ({
-    action: issue.action,
-    label: labelPrefix ? `${labelPrefix} ${issueLabel(issue)}` : issueLabel(issue),
-  }));
+  return validateObjectDefinition(object).issues
+    .filter((issue) => !(issue.path.endsWith(".type") && !object.role))
+    .map((issue) => ({
+      action: issue.path.endsWith(".type")
+        ? "Choose a role so Objects can derive the technical object family."
+        : issue.action,
+      label: labelPrefix ? `${labelPrefix} ${issueLabel(issue)}` : issueLabel(issue),
+    }));
 }
 
-function definitionForReadiness(object) {
+function definitionForReadiness(object, { allowPendingSprite = false } = {}) {
   if (object.render?.type !== "Sprite" || object.render.assetKey) {
+    return object;
+  }
+  if (!allowPendingSprite) {
     return object;
   }
   return {
@@ -311,8 +318,8 @@ function definitionForReadiness(object) {
   };
 }
 
-function rowFindings(object, ignoreObjectId = "") {
-  const findings = objectDefinitionFindings(definitionForReadiness(object), "");
+function rowFindings(object, ignoreObjectId = "", options = {}) {
+  const findings = objectDefinitionFindings(definitionForReadiness(object, options), "");
   if (!object.role) {
     findings.push({
       action: "Choose the role this object serves.",
@@ -334,7 +341,7 @@ function objectListFindings(objects) {
 
   objects.forEach((object, index) => {
     const label = object.name || `Object ${index + 1}`;
-    objectDefinitionFindings(object, label).forEach((finding) => {
+    objectDefinitionFindings(definitionForReadiness(object), label).forEach((finding) => {
       findings.push(finding);
     });
     if (!object.role) {
@@ -443,13 +450,29 @@ function assetHandoffMessage(result, fallback) {
   return diagnostics.length ? `${message} ${diagnostics.join(" ")}` : message;
 }
 
+function linkedSpriteAsset(assetKey) {
+  const assets = assetRepository.listAssets();
+  if (!Array.isArray(assets)) {
+    return null;
+  }
+  return assets.find((asset) => asset.id === assetKey) || null;
+}
+
 function editingObjectFromRow(row) {
+  const renderType = row.querySelector("[data-objects-row-render-type]")?.value || "None";
+  const render = renderType === "Sprite"
+    ? {
+        assetKey: normalizeText(row.dataset.objectsExistingAssetKey),
+        previewPath: normalizeText(row.dataset.objectsExistingPreviewPath),
+        type: "Sprite",
+      }
+    : { type: "None" };
+
   return cloneObject({
     name: row.querySelector("[data-objects-row-name]")?.value,
-    render: { type: row.querySelector("[data-objects-row-render-type]")?.value || "None" },
+    render,
     role: row.querySelector("[data-objects-row-role]")?.value,
     state: row.querySelector("[data-objects-row-state]")?.value,
-    type: row.querySelector("[data-objects-row-type]")?.value,
   });
 }
 
@@ -459,7 +482,7 @@ function updateRenderAssetPreview(row) {
   if (!preview) {
     return;
   }
-  preview.textContent = renderType === "Sprite" ? "Links on save" : "None";
+  preview.textContent = renderType === "Sprite" ? row.dataset.objectsExistingAssetKey || "Links on save" : "None";
 }
 
 function editingRowElement() {
@@ -470,17 +493,11 @@ function renderEditingRow(values) {
   const row = document.createElement("tr");
   row.dataset.objectsEditingRow = "true";
   row.dataset.objectsRow = editingRow.mode;
+  row.dataset.objectsExistingAssetKey = values.renderType === "Sprite" ? values.assetKey || "" : "";
+  row.dataset.objectsExistingPreviewPath = values.renderType === "Sprite" ? values.previewPath || "" : "";
 
   const name = textInput({ ariaLabel: "Object Name", value: values.name });
   name.dataset.objectsRowName = "true";
-
-  const type = selectElement({
-    ariaLabel: "Object Type",
-    options: objectTypeOptions(),
-    placeholder: "Select type",
-    selectedValue: values.type,
-  });
-  type.dataset.objectsRowType = "true";
 
   const role = selectElement({
     ariaLabel: "Role",
@@ -513,7 +530,7 @@ function renderEditingRow(values) {
 
   const renderAsset = document.createElement("td");
   renderAsset.dataset.objectsRowRenderAssetPreview = "true";
-  renderAsset.textContent = values.renderType === "Sprite" ? "Links on save" : "None";
+  renderAsset.textContent = values.renderType === "Sprite" ? values.assetKey || "Links on save" : "None";
 
   const actions = document.createElement("td");
   actions.append(
@@ -523,7 +540,6 @@ function renderEditingRow(values) {
 
   row.append(
     controlCell(name),
-    controlCell(type),
     controlCell(role),
     controlCell(state),
     controlCell(renderType),
@@ -545,7 +561,6 @@ function renderSavedRow(object) {
   row.dataset.objectsRow = id;
   row.append(
     tableCell(object.name),
-    tableCell(object.type),
     tableCell(object.role),
     tableCell(object.state),
     tableCell(object.render?.type || "None"),
@@ -565,7 +580,7 @@ function renderObjectList(objects) {
   if (objects.length === 0 && !editingRow) {
     const row = document.createElement("tr");
     const empty = document.createElement("td");
-    empty.colSpan = 8;
+    empty.colSpan = 7;
     empty.textContent = "No objects drafted yet.";
     row.append(empty);
     elements.list.append(row);
@@ -629,17 +644,6 @@ function renderRegistryBasics() {
     });
   }
 
-  if (elements.typeBasics) {
-    elements.typeBasics.replaceChildren();
-    sortedObjectTypes().forEach((objectType) => {
-      const item = document.createElement("li");
-      const label = document.createElement("strong");
-      label.textContent = `${objectType.label}:`;
-      item.append(label, ` ${objectType.description} Traits: ${traitText(objectType.traits)}.`);
-      elements.typeBasics.append(item);
-    });
-  }
-
   if (elements.traitBasics) {
     elements.traitBasics.replaceChildren();
     sortedTraits().forEach((trait) => {
@@ -666,6 +670,24 @@ function render() {
 function ensureSpriteRender(object) {
   if (object.render?.type !== "Sprite") {
     return { message: "", object };
+  }
+
+  const existingAssetKey = normalizeText(object.render.assetKey);
+  if (existingAssetKey) {
+    const asset = linkedSpriteAsset(existingAssetKey);
+    if (asset?.id) {
+      return {
+        message: "",
+        object: {
+          ...object,
+          render: Object.freeze({
+            assetKey: normalizeText(asset.id),
+            previewPath: normalizeText(asset.storedPath || asset.path || object.render.previewPath),
+            type: "Sprite",
+          }),
+        },
+      };
+    }
   }
 
   const result = assetRepository.ensureSpriteAssetForObject({
@@ -728,7 +750,7 @@ function saveRow() {
   }
 
   let object = editingObjectFromRow(row);
-  let findings = rowFindings(object, editingRow.originalId);
+  let findings = rowFindings(object, editingRow.originalId, { allowPendingSprite: true });
   if (findings.length > 0) {
     renderValidation(findings);
     setText(elements.log, `Row blocked: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);

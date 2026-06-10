@@ -18,11 +18,8 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (67%) src/engine/object-model/objectModelRegistry.js - executed lines 139/139; executed functions 4/6
-(70%) src/engine/object-model/objectDefinitionValidator.js - executed lines 360/360; executed functions 16/23
-(75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
-(95%) toolbox/objects/objects.js - executed lines 741/741; executed functions 84/88
+(94%) toolbox/objects/objects.js - executed lines 762/762; executed functions 80/85
 
 Files with executed line/function counts where available:
 (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
@@ -36,23 +33,19 @@ Files with executed line/function counts where available:
 (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
 (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
 (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
-(95%) toolbox/objects/objects.js - executed lines 741/741; executed functions 84/88
+(94%) toolbox/objects/objects.js - executed lines 762/762; executed functions 80/85
 (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
 (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) tests/engine/ObjectModelContract.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
 (67%) src/engine/object-model/objectModelRegistry.js - changed JS file with browser V8 coverage
-(70%) src/engine/object-model/objectDefinitionValidator.js - changed JS file with browser V8 coverage
-(75%) src/engine/object-model/objectDefinitionSchema.js - changed JS file with browser V8 coverage
-(95%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
+(94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
