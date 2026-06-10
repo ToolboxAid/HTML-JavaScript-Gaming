@@ -105,6 +105,27 @@ const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
   Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
   Viewer: Object.freeze(["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
 });
+const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
+  Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
+  Object.freeze({ label: "Branding", path: "admin/branding.html", route: "admin-branding" }),
+  Object.freeze({ label: "Controls", path: "admin/controls.html", route: "admin-controls" }),
+  Object.freeze({ label: "Environments", path: "admin/environments.html", route: "admin-environments" }),
+  Object.freeze({ label: "Game Migration", path: "admin/game-migration.html", route: "admin-game-migration" }),
+  Object.freeze({ label: "Moderation", path: "admin/moderation.html", route: "admin-moderation" }),
+  Object.freeze({ label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" }),
+  Object.freeze({ label: "Ratings", path: "admin/ratings.html", route: "admin-ratings" }),
+  Object.freeze({ label: "Roles", path: "admin/roles.html", route: "admin-roles" }),
+  Object.freeze({ label: "Site Settings", path: "admin/site-settings.html", route: "admin-site-settings" }),
+  Object.freeze({ label: "Themes", path: "admin/themes.html", route: "admin-themes" }),
+  Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
+  Object.freeze({ label: "Users", path: "admin/users.html", route: "admin-users" }),
+]);
+const LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS = Object.freeze([
+  Object.freeze({ label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" }),
+  Object.freeze({ label: "Design System", path: "admin/design-system.html", route: "admin-design-system" }),
+  Object.freeze({ label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" }),
+  Object.freeze({ href: "/admin/admin-notes.html", label: "Notes", localNotes: true }),
+]);
 
 const DB_ADAPTER_CONTRACT = Object.freeze({
   contract: "GameFoundryDbAdapter",
@@ -1256,6 +1277,19 @@ class LocalDevMockDataSource {
     };
   }
 
+  adminNavigationMenu() {
+    return {
+      adminMainItems: clone(ADMIN_NAVIGATION_MAIN_ITEMS),
+      localAdminMyStuffItems: clone(LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS),
+      ownership: {
+        adminMainItems: "navigation config",
+        localAdminMyStuffItems: "local/dev navigation config",
+        routeMap: "static shell route resolution",
+      },
+      source: "server-api",
+    };
+  }
+
   castToolboxVote(toolId, direction) {
     const normalizedToolId = String(toolId || "");
     const normalizedDirection = String(direction || "").toLowerCase();
@@ -1651,6 +1685,11 @@ export function createMockApiRouter() {
 
       if (parts[1] === "data-source" && request.method === "GET" && parts[2] === "adapter-contract") {
         ok(response, dataSource.adapterContract());
+        return true;
+      }
+
+      if (parts[1] === "navigation" && request.method === "GET" && parts[2] === "admin-menu") {
+        ok(response, dataSource.adminNavigationMenu());
         return true;
       }
 

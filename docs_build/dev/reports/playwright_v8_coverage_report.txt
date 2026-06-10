@@ -12,27 +12,34 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(88%) Toolbox Index - exercised 3 runtime JS files
+(70%) Toolbox Index - exercised 9 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(77%) Theme V2 Shared JS - exercised 3 runtime JS files
+(74%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/engine/api/mock-db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(89%) toolbox/colors/colors.js - executed lines 2161/2161; executed functions 190/213
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 43/56
 
 Files with executed line/function counts where available:
+(38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
+(55%) toolbox/project-journey/project-journey.js - executed lines 1003/1003; executed functions 54/99
 (58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
+(59%) toolbox/colors/colors.js - executed lines 2161/2161; executed functions 120/205
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-(75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
-(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 548/548; executed functions 37/48
-(89%) toolbox/colors/colors.js - executed lines 2161/2161; executed functions 190/213
-(92%) assets/theme-v2/js/account-controls.js - executed lines 47/47; executed functions 12/13
+(71%) toolbox/assets/assets.js - executed lines 519/519; executed functions 42/59
+(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 43/56
+(83%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 5/6
+(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
+(92%) admin/tool-votes.js - executed lines 378/378; executed functions 47/51
+(96%) toolbox/tools-page-accordions.js - executed lines 954/954; executed functions 109/113
+(100%) toolbox/assets/assets-api-client.js - executed lines 17/17; executed functions 3/3
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
+(100%) toolbox/project-journey/project-journey-api-client.js - executed lines 12/12; executed functions 2/2
+(100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) src/engine/api/mock-db-viewer-ui.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) src/engine/api/mock-db-viewer-ui.js - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
-(89%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
+(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+(77%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage

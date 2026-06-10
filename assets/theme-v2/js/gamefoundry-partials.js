@@ -137,27 +137,7 @@
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
     const apiBackedLoginDiagnostic = "Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html.";
-    const adminMainItems = Object.freeze([
-        Object.freeze({ label: "Analytics", route: "admin-analytics" }),
-        Object.freeze({ label: "Branding", route: "admin-branding" }),
-        Object.freeze({ label: "Controls", route: "admin-controls" }),
-        Object.freeze({ label: "Environments", route: "admin-environments" }),
-        Object.freeze({ label: "Game Migration", route: "admin-game-migration" }),
-        Object.freeze({ label: "Moderation", route: "admin-moderation" }),
-        Object.freeze({ label: "Platform Settings", route: "admin-platform-settings" }),
-        Object.freeze({ label: "Ratings", route: "admin-ratings" }),
-        Object.freeze({ label: "Roles", route: "admin-roles" }),
-        Object.freeze({ label: "Site Settings", route: "admin-site-settings" }),
-        Object.freeze({ label: "Themes", route: "admin-themes" }),
-        Object.freeze({ label: "Tool Votes", route: "admin-tool-votes" }),
-        Object.freeze({ label: "Users", route: "admin-users" })
-    ]);
-    const localAdminMyStuffItems = Object.freeze([
-        Object.freeze({ label: "DB Viewer", route: "admin-db-viewer" }),
-        Object.freeze({ label: "Design System", route: "admin-design-system" }),
-        Object.freeze({ label: "Grouping Colors", route: "admin-grouping-colors" }),
-        Object.freeze({ label: "Notes", href: "/admin/admin-notes.html", localNotes: true })
-    ]);
+    let navigationAdminMenuCache = null;
 
     function assetUrl(path) {
         if (!assetRoot) return rootPrefix() + path;
@@ -186,8 +166,78 @@
         return rootPrefix() + (routeMap[routeName] || routeName || "index.html");
     }
 
+    function pathHref(path) {
+        const normalizedPath = String(path || "").replace(/^\/+/, "");
+        return normalizedPath ? rootPrefix() + normalizedPath : "#";
+    }
+
     function isLocalDevMode(loginState) {
         return String(loginState?.mode || "").indexOf("local-") === 0;
+    }
+
+    function missingNavigationMenu(diagnostic) {
+        return {
+            adminMainItems: [],
+            diagnostic: diagnostic || "Admin navigation API did not return menu data.",
+            localAdminMyStuffItems: [],
+            source: "missing-api"
+        };
+    }
+
+    function normalizeNavigationItems(items) {
+        return Array.isArray(items)
+            ? items.map(function (item) {
+                return {
+                    href: typeof item.href === "string" ? item.href : "",
+                    label: typeof item.label === "string" ? item.label : "",
+                    localNotes: item.localNotes === true,
+                    path: typeof item.path === "string" ? item.path : "",
+                    route: typeof item.route === "string" ? item.route : ""
+                };
+            }).filter(function (item) {
+                return item.label && (item.route || item.path || item.href);
+            })
+            : [];
+    }
+
+    function readNavigationAdminMenu() {
+        if (navigationAdminMenuCache) {
+            return navigationAdminMenuCache;
+        }
+        try {
+            const request = new XMLHttpRequest();
+            request.open("GET", "/api/navigation/admin-menu", false);
+            request.setRequestHeader("Accept", "application/json");
+            request.send(null);
+            const payload = request.responseText ? JSON.parse(request.responseText) : null;
+            if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
+                if (request.status === 404 || request.status === 405) {
+                    throw new Error(localRouteUnavailableDiagnostic("GET", "/api/navigation/admin-menu", request.status));
+                }
+                throw new Error(payload?.error || "Navigation API did not return Admin menu data.");
+            }
+            const data = payload?.data || {};
+            navigationAdminMenuCache = {
+                adminMainItems: normalizeNavigationItems(data.adminMainItems),
+                diagnostic: "",
+                localAdminMyStuffItems: normalizeNavigationItems(data.localAdminMyStuffItems),
+                source: data.source || "server-api"
+            };
+            return navigationAdminMenuCache;
+        } catch (error) {
+            navigationAdminMenuCache = missingNavigationMenu(error instanceof Error ? error.message : "");
+            return navigationAdminMenuCache;
+        }
+    }
+
+    function menuItemHref(item) {
+        if (item.path) {
+            return pathHref(item.path);
+        }
+        if (item.route) {
+            return routeHref(item.route);
+        }
+        return item.href || "#";
     }
 
     function createMenuLink(item) {
@@ -195,10 +245,8 @@
         link.dataset.navLink = "";
         if (item.route) {
             link.dataset.route = item.route;
-            link.href = routeHref(item.route);
-        } else {
-            link.href = item.href || "#";
         }
+        link.href = menuItemHref(item);
         if (item.localNotes) {
             link.dataset.adminNotesLocalMenu = "";
         }
@@ -206,14 +254,14 @@
         return link;
     }
 
-    function createLocalAdminMyStuffMenu() {
+    function createLocalAdminMyStuffMenu(items) {
         const item = document.createElement("div");
         item.className = "nav-item nav-popout-item";
         item.dataset.adminMyStuffMenu = "";
 
         const label = document.createElement("a");
         label.dataset.adminMyStuffLabel = "";
-        label.href = "/admin/admin-notes.html";
+        label.href = items[0] ? menuItemHref(items[0]) : "#";
         label.setAttribute("aria-haspopup", "true");
         label.textContent = "My Stuff \u25B8";
 
@@ -221,7 +269,7 @@
         submenu.className = "sub-menu sub-menu--nested";
         submenu.dataset.adminMyStuffSubmenu = "";
         submenu.setAttribute("aria-label", "My Stuff");
-        localAdminMyStuffItems.forEach(function (menuItem) {
+        items.forEach(function (menuItem) {
             submenu.append(createMenuLink(menuItem));
         });
 
@@ -229,7 +277,17 @@
         return item;
     }
 
+    function createAdminNavigationDiagnostic(message) {
+        const diagnostic = document.createElement("p");
+        diagnostic.className = "status";
+        diagnostic.dataset.adminNavigationDiagnostic = "";
+        diagnostic.setAttribute("role", "status");
+        diagnostic.textContent = "Admin navigation unavailable: " + (message || "Start the local server API and refresh.");
+        return diagnostic;
+    }
+
     function createAdminMenu(loginState) {
+        const navigationMenu = readNavigationAdminMenu();
         const item = document.createElement("div");
         item.className = "nav-item";
         item.dataset.adminMenu = "";
@@ -242,15 +300,18 @@
 
         const submenu = document.createElement("div");
         submenu.className = "sub-menu";
-        if (isLocalDevMode(loginState)) {
+        if (navigationMenu.diagnostic) {
+            submenu.append(createAdminNavigationDiagnostic(navigationMenu.diagnostic));
+        }
+        if (isLocalDevMode(loginState) && navigationMenu.localAdminMyStuffItems.length) {
             const separator = document.createElement("hr");
             separator.dataset.adminMyStuffSeparator = "";
             separator.setAttribute("role", "separator");
             separator.setAttribute("aria-disabled", "true");
             separator.tabIndex = -1;
-            submenu.append(createLocalAdminMyStuffMenu(), separator);
+            submenu.append(createLocalAdminMyStuffMenu(navigationMenu.localAdminMyStuffItems), separator);
         }
-        adminMainItems.forEach(function (menuItem) {
+        navigationMenu.adminMainItems.forEach(function (menuItem) {
             submenu.append(createMenuLink(menuItem));
         });
 
