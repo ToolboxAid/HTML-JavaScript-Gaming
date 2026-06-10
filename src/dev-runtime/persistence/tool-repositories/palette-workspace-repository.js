@@ -1,5 +1,4 @@
 import { createProjectWorkspaceMockRepository } from "./project-workspace-mock-repository.js";
-import { createPaletteSourceMockDbRows } from "../../guest-seeds/palette-source-mock-db.js";
 import {
   loadMockDbTables,
   MOCK_DB_KEYS,
@@ -14,7 +13,6 @@ export const PALETTE_SOURCE_PALETTE_COLORS = "palette-colors";
 
 export const PALETTE_TOOL_TABLES = Object.freeze([
   "palette_colors",
-  "palette_source_swatches",
   "project_workspace_palette_globals",
   "palette_swatch_usages"
 ]);
@@ -24,8 +22,8 @@ const PALETTE_SYSTEM_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
 
 export const PALETTE_HARMONY_MATCH_SOURCES = Object.freeze([
   { id: "calculated", label: "Calculated" },
-  { id: "source", label: "Current Source Closest Match" },
-  { id: "all", label: "All Sources Closest Match" }
+  { id: "source", label: "Current Picker Closest Match" },
+  { id: "all", label: "All Picker Swatches Closest Match" }
 ]);
 
 export const PALETTE_HARMONY_SCHEMES = Object.freeze([
@@ -130,13 +128,6 @@ function cloneSwatch(swatch) {
   return cloned;
 }
 
-function cloneSourcePaletteRow(row) {
-  return {
-    ...row,
-    tags: [...(Array.isArray(row.tags) ? row.tags : [])]
-  };
-}
-
 function timestampForIndex(index) {
   return new Date(Date.now() + (index % 60) * 60_000).toISOString();
 }
@@ -163,11 +154,7 @@ function rowAuditFields(row = {}, index = 0) {
 }
 
 export function createPaletteToolMockDbTables(tables = {}) {
-  return {
-    palette_source_swatches: Object.prototype.hasOwnProperty.call(tables, "palette_source_swatches")
-      ? (Array.isArray(tables.palette_source_swatches) ? tables.palette_source_swatches : []).map(cloneSourcePaletteRow)
-      : createPaletteSourceMockDbRows().map(cloneSourcePaletteRow)
-  };
+  return {};
 }
 
 function cloneWorkspaceRecord(record) {
@@ -403,28 +390,6 @@ export function validatePaletteWorkspacePayload(payload = {}) {
   };
 }
 
-function normalizeSourcePaletteRows(sourcePaletteRows = []) {
-  return (Array.isArray(sourcePaletteRows) ? sourcePaletteRows : [])
-    .map((row, index) => {
-      const normalizedSourceId = normalizeSourceId(row?.sourceId || row?.paletteId || row?.source);
-      const swatch = normalizePaletteSwatchInput(row, { source: normalizedSourceId });
-      if (!normalizedSourceId || !swatch.key || !swatch.hex || !swatch.name) {
-        return null;
-      }
-      return {
-        ...rowAuditFields(row, index),
-        hex: swatch.hex,
-        id: normalizeText(row.id) || `${normalizedSourceId}-source-swatch-${index + 1}`,
-        name: swatch.name,
-        source: normalizedSourceId,
-        sourceLabel: sourceLabel(normalizedSourceId, row.sourceLabel || row.paletteLabel || row.label),
-        swatchKey: swatch.key,
-        tags: [...swatch.tags]
-      };
-    })
-    .filter(Boolean);
-}
-
 function compareSwatches(sortKey, sortDirection = "asc") {
   return (left, right) => {
     const direction = sortDirection === "desc" ? -1 : 1;
@@ -593,7 +558,7 @@ function withoutBaseColorSuggestions(suggestions, baseHex, schemeLabel) {
     });
 }
 
-function harmonyForSwatch(swatch, options = {}, sourcePaletteData = null) {
+function harmonyForSwatch(swatch, options = {}) {
   const rgb = hexToRgb(swatch?.hex);
   if (!rgb) {
     return [];
@@ -602,18 +567,12 @@ function harmonyForSwatch(swatch, options = {}, sourcePaletteData = null) {
   const hsl = rgbToHsl(rgb);
   const scheme = schemeForId(options.schemeId);
   const matchSource = matchSourceForId(options.matchSource);
-  const sourceId = normalizeSourceId(options.sourceId);
   const providedMatchSwatches = Array.isArray(options.matchSwatches)
     ? options.matchSwatches
         .map((matchSwatch) => normalizePaletteSwatchInput(matchSwatch, { source: matchSwatch?.source || "generated" }))
         .filter((matchSwatch) => matchSwatch.hex)
     : [];
-  const sourcePalettes = sourcePaletteData?.palettes || {};
-  const sourceSwatches = providedMatchSwatches.length
-    ? providedMatchSwatches
-    : matchSource === "source"
-    ? sourcePalettes[sourceId] || []
-    : Object.values(sourcePalettes).flat();
+  const matchSwatches = matchSource === "calculated" ? [] : providedMatchSwatches;
 
   const calculated = scheme.offsets.map((offset, index) => {
     let suggestionHex = rgbToHex(hslToRgb({ ...hsl, h: hsl.h + offset }));
@@ -626,7 +585,7 @@ function harmonyForSwatch(swatch, options = {}, sourcePaletteData = null) {
       suggestionHex = rgbToHex(hslToRgb({ ...hsl, l: lightness }));
     }
 
-    const closest = matchSource === "calculated" ? null : closestSwatch(suggestionHex, sourceSwatches);
+    const closest = matchSource === "calculated" ? null : closestSwatch(suggestionHex, matchSwatches);
     const hex = closest?.hex || suggestionHex;
     return {
       hex,
@@ -688,11 +647,6 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     ...createPaletteToolMockDbTables(options.tables || {}),
   };
   const loadedMockDbTables = loadMockDbTables(PALETTE_DB_OWNER, seedMockDbTables, options).tables;
-  const sourcePaletteInputRows = Object.prototype.hasOwnProperty.call(options, "sourcePaletteRows")
-    ? options.sourcePaletteRows
-    : loadedMockDbTables.palette_source_swatches;
-  const sourcePaletteRecordCount = Array.isArray(sourcePaletteInputRows) ? sourcePaletteInputRows.length : 0;
-  const sourcePaletteRows = normalizeSourcePaletteRows(sourcePaletteInputRows);
   const workspaceRecords = new Map();
   const paletteColorRows = (loadedMockDbTables.palette_colors || []).map((row) => ({
     ...row,
@@ -1084,48 +1038,6 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       .sort(compareSwatches(optionsForList.sortKey || "name", optionsForList.sortDirection || "asc"));
   }
 
-  function sourceRowsForSource(sourceId) {
-    return sourcePaletteRows.filter((row) => row.source === sourceId);
-  }
-
-  function sourcePaletteOptions() {
-    return [...new Set(sourcePaletteRows.map((row) => row.source))]
-      .sort((left, right) => {
-        const leftLabel = sourceRowsForSource(left)[0]?.sourceLabel || left;
-        const rightLabel = sourceRowsForSource(right)[0]?.sourceLabel || right;
-        return leftLabel.localeCompare(rightLabel, undefined, { numeric: true, sensitivity: "base" });
-      })
-      .map((sourceId) => ({
-        id: sourceId,
-        label: sourceRowsForSource(sourceId)[0]?.sourceLabel || sourceId,
-        swatchCount: sourceRowsForSource(sourceId).length
-      }));
-  }
-
-  function listSourceSwatches(optionsForList = {}) {
-    const sourceId = normalizeText(optionsForList.sourceId) || sourcePaletteOptions()[0]?.id || "";
-    const query = normalizeText(optionsForList.query).toLowerCase();
-    const swatches = sourceRowsForSource(sourceId).map((row) => ({
-      hex: row.hex,
-      key: row.swatchKey,
-      name: row.name,
-      source: row.source,
-      tags: [...row.tags]
-    }));
-    return swatches
-      .filter((swatch) => {
-        if (!query) {
-          return true;
-        }
-        return [swatch.key, swatch.hex, swatch.name, swatch.source, ...swatch.tags]
-          .join(" ")
-          .toLowerCase()
-          .includes(query);
-      })
-      .map(cloneSwatch)
-      .sort(compareSwatches(optionsForList.sortKey || "name", optionsForList.sortDirection || "asc"));
-  }
-
   function pinSourceSwatch(sourceSwatch = {}) {
     if (findPinnedSourceSwatch(sourceSwatch)) {
       return {
@@ -1140,74 +1052,6 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }, {
       source: normalizeSource(sourceSwatch.source)
     });
-  }
-
-  function pinSourceSwatches(sourceSwatches = []) {
-    const projectId = activeProjectId();
-    if (!projectId) {
-      return {
-        issues: [createIssue("activeProject", "Active Project", "Open a project before pinning source swatches.")],
-        ok: false,
-        message: "Pin All blocked: no active project.",
-        snapshot: getSnapshot()
-      };
-    }
-
-    const nextSwatches = getActiveSwatches().map(cloneSwatch);
-    const issues = [];
-    let added = 0;
-    let alreadyPinned = 0;
-    let lastAddedKey = "";
-    let skipped = 0;
-
-    (Array.isArray(sourceSwatches) ? sourceSwatches : []).forEach((sourceSwatch) => {
-      const swatch = normalizePaletteSwatchInput(sourceSwatch, {
-        source: normalizeSource(sourceSwatch?.source)
-      });
-      swatch.tags = [];
-      const colorKey = rgbKey(swatch.hex);
-      if (!swatch.key) {
-        swatch.key = nextAvailableSwatchKey(nextSwatches, `${swatch.name || ""} ${swatch.hex || ""}`);
-      }
-      if (!swatch.hex || !swatch.name) {
-        skipped += 1;
-        return;
-      }
-      if (colorKey && nextSwatches.some((existingSwatch) => rgbKey(existingSwatch.hex) === colorKey)) {
-        alreadyPinned += 1;
-        return;
-      }
-
-      const validation = validatePaletteSwatchInput(swatch, nextSwatches);
-      if (validation.issues.length) {
-        issues.push(...validation.issues);
-        skipped += 1;
-        return;
-      }
-
-      nextSwatches.push(validation.swatch);
-      added += 1;
-      lastAddedKey = validation.swatch.key;
-    });
-
-    const message = `Pin All complete: ${added} pinned, ${alreadyPinned} already pinned, ${skipped} skipped.`;
-    if (!added) {
-      return {
-        issues,
-        ok: alreadyPinned > 0,
-        message,
-        snapshot: getSnapshot()
-      };
-    }
-
-    const result = replaceSwatches(projectId, nextSwatches, {
-      selectedKey: lastAddedKey
-    });
-    return {
-      ...result,
-      issues: [...(result.issues || []), ...issues],
-      message
-    };
   }
 
   function findPinnedSourceSwatch(sourceSwatch = {}) {
@@ -1230,25 +1074,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     if (isHarmonySchemeSource(normalized)) {
       return displayHarmonySource(normalized);
     }
-    return sourceRowsForSource(normalized)[0]?.sourceLabel || displaySource(normalized);
-  }
-
-  function toggleSourceSwatchPin(sourceSwatch = {}) {
-    const pinnedSwatch = findPinnedSourceSwatch(sourceSwatch);
-    if (pinnedSwatch) {
-      return removeSwatch(pinnedSwatch.key);
-    }
-    return pinSourceSwatch(sourceSwatch);
+    return displaySource(normalized);
   }
 
   function createHarmonySuggestions(inputSwatch = null, optionsForHarmony = {}) {
-    const sourcePaletteData = {
-      palettes: sourcePaletteOptions().reduce((palettes, source) => {
-        palettes[source.id] = listSourceSwatches({ sourceId: source.id });
-        return palettes;
-      }, {})
-    };
-    return harmonyForSwatch(inputSwatch, optionsForHarmony, sourcePaletteData);
+    return harmonyForSwatch(inputSwatch, optionsForHarmony);
   }
 
   function addHarmonySuggestion(suggestion = {}) {
@@ -1497,10 +1327,6 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         ...row,
         tags: [...row.tags]
       })),
-      palette_source_swatches: sourcePaletteRows.map((row) => ({
-        ...row,
-        tags: [...row.tags]
-      })),
       palette_swatch_usages: usageRows.map((row) => ({ ...row })),
       project_workspace_palette_globals: [...workspaceRecords.values()].map((record, index) => ({
         ...auditFields(timestampForIndex(index + 30), PALETTE_SYSTEM_USER_KEY),
@@ -1553,8 +1379,6 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       palettePath: PALETTE_WORKSPACE_PATH,
       projectRequired: !projectId,
       selectedSwatch: selectedSwatch ? cloneSwatch(selectedSwatch) : null,
-      sourcePaletteOptions: sourcePaletteOptions(),
-      sourcePaletteRecordCount,
       swatches,
       tableCounts,
       tables: getTables(),
@@ -1577,11 +1401,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     getTables,
     isSourceSwatchPinned,
     addTagToSwatches,
-    listSourceSwatches,
     listSwatches,
     loadActiveProjectPalettePayload,
     pinSourceSwatch,
-    pinSourceSwatches,
     recordSwatchUsage,
     redo,
     removeSwatch,
@@ -1589,9 +1411,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     resetProjectData,
     seedActiveProjectPalette,
     selectSwatch,
-    sourcePaletteOptions,
     toggleHarmonySuggestionPin,
-    toggleSourceSwatchPin,
     undo,
     updateSelectedSwatch,
     updateSelectedSwatchTags

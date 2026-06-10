@@ -5,6 +5,9 @@ import {
 } from "./mock-db-api-client.js";
 
 const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
+const DEPRECATED_TABLE_NOTES = Object.freeze({
+  palette_source_swatches: "Deprecated source history: retained for migration/reference only. Current Colors grid rendering, editing, save/load, and import/export do not read this table.",
+});
 
 class AdminDbViewer {
   constructor(documentRef = document, options = {}) {
@@ -131,6 +134,13 @@ class AdminDbViewer {
     return fields;
   }
 
+  tableDisplayName(tableName) {
+    if (Object.hasOwn(DEPRECATED_TABLE_NOTES, tableName)) {
+      return `${tableName} (deprecated)`;
+    }
+    return tableName;
+  }
+
   collectSnapshot() {
     const snapshot = getMockDbSnapshot();
     const tables = snapshot.tables;
@@ -157,9 +167,10 @@ class AdminDbViewer {
     });
     details.open = true;
     details.dataset.adminDbTable = tableName;
+    const tableDisplayName = this.tableDisplayName(tableName);
 
     const summary = this.createElement("summary", {
-      text: `${tableName} (${records.length} records)`,
+      text: `${tableDisplayName} (${records.length} records)`,
     });
     const body = this.createElement("div", {
       className: "accordion-body",
@@ -170,7 +181,7 @@ class AdminDbViewer {
     const table = this.createElement("table", {
       className: "data-table data-table--preserve-casing",
     });
-    table.setAttribute("aria-label", `${tableName} records`);
+    table.setAttribute("aria-label", `${tableDisplayName} records`);
 
     const fields = [
       ...schemaFields,
@@ -221,6 +232,12 @@ class AdminDbViewer {
 
     table.append(head, tableBody);
     wrapper.append(table);
+    if (DEPRECATED_TABLE_NOTES[tableName]) {
+      body.append(this.createElement("p", {
+        className: "status",
+        text: DEPRECATED_TABLE_NOTES[tableName],
+      }));
+    }
     body.append(wrapper);
     details.append(summary, body);
     return details;

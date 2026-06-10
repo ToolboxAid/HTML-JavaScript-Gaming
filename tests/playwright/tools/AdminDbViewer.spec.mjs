@@ -410,6 +410,10 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Palette\./);
     await expect(page.locator("[data-admin-db-table='palette_colors']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='palette_source_swatches']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='palette_source_swatches'] > summary")).toContainText("deprecated");
+    await expect(page.locator("[data-admin-db-table='palette_source_swatches']")).toContainText(
+      "Current Colors grid rendering, editing, save/load, and import/export do not read this table."
+    );
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Asset" }).click();
@@ -687,11 +691,10 @@ test("Palette and Asset raw Local Mem DB tables are DB-shaped before viewer rend
   const paletteTables = paletteRepository.getTables();
   const assetTables = assetRepository.getTables();
 
-  expect(paletteTables.palette_source_swatches.length).toBeGreaterThan(0);
+  expect(paletteTables.palette_source_swatches).toBeUndefined();
   expect(assetTables.asset_role_definitions.length).toBeGreaterThan(0);
   expectDbShapedRows(paletteTables, [
     "palette_colors",
-    "palette_source_swatches",
     "palette_swatch_usages",
     "project_workspace_palette_globals",
   ]);

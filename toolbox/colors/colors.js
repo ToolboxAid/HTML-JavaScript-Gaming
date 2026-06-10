@@ -9,17 +9,7 @@ import {
 
 const params = new URLSearchParams(window.location.search);
 
-function sourceRepositoryOptions() {
-  if (params.get("source") === "empty") {
-    return { sourceMode: "empty" };
-  }
-  if (params.get("source") === "invalid") {
-    return { sourceMode: "invalid" };
-  }
-  return {};
-}
-
-const repository = createProjectWorkspacePaletteApiRepository(sourceRepositoryOptions());
+const repository = createProjectWorkspacePaletteApiRepository();
 
 const SORT_OPTIONS = Object.freeze([
   { key: "hue", label: "Hue" },
@@ -361,10 +351,6 @@ const CURATED_PALETTE_COLLECTIONS = Object.freeze([
 let editorIssues = [];
 let editorTags = [];
 let harmonyRows = [];
-let selectedSourceSwatch = null;
-let sourceSwatchRows = [];
-const sourceSortState = { direction: "asc", key: "name" };
-let sourceSizeState = "medium";
 const userSortState = { direction: "asc", key: "hue" };
 const previewSortState = { direction: "asc", key: "default" };
 let userSizeState = "medium";
@@ -427,12 +413,6 @@ const elements = {
   selectedHex: document.querySelector("[data-palette-selected-hex]"),
   selectedName: document.querySelector("[data-palette-selected-name]"),
   showDuplicates: document.querySelector("[data-palette-show-duplicates]"),
-  sourceList: document.querySelector("[data-palette-source-list]"),
-  sourcePinAll: document.querySelector("[data-palette-source-pin-all]"),
-  sourceSearch: document.querySelector("[data-palette-source-search]"),
-  sourceSelect: document.querySelector("[data-palette-source-select]"),
-  sourceSize: document.querySelector("[data-palette-source-size]"),
-  sourceSort: document.querySelector("[data-palette-source-sort]"),
   storagePath: document.querySelector("[data-palette-storage-path]"),
   tableCounts: document.querySelector("[data-palette-table-counts]"),
   tags: document.querySelector("[data-palette-tags]"),
@@ -1769,41 +1749,10 @@ function acceptTagFromInput() {
   applyResult(result);
 }
 
-function renderSourceOptions(snapshot) {
-  if (!elements.sourceSelect) {
-    return;
-  }
-
-  const currentSource = elements.sourceSelect.value;
-  elements.sourceSelect.replaceChildren();
-  if (!snapshot.sourcePaletteOptions.length) {
-    const option = document.createElement("option");
-    option.value = "";
-    option.textContent = snapshot.sourcePaletteRecordCount ? "Source swatches unavailable" : "No source swatches";
-    elements.sourceSelect.append(option);
-    elements.sourceSelect.value = "";
-    elements.sourceSelect.disabled = true;
-    return;
-  }
-
-  elements.sourceSelect.disabled = false;
-  snapshot.sourcePaletteOptions.forEach((source) => {
-    const option = document.createElement("option");
-    option.value = source.id;
-    option.textContent = `${source.label} (${source.swatchCount})`;
-    elements.sourceSelect.append(option);
-  });
-  if (currentSource && snapshot.sourcePaletteOptions.some((source) => source.id === currentSource)) {
-    elements.sourceSelect.value = currentSource;
-  }
-}
-
 function renderPaletteControls() {
   renderSortButtons(elements.userSort, userSortState, "Project Swatches");
   renderSizeButtons(elements.userSize, userSizeState, "Project Swatches");
   renderPickerPreviewSortButtons();
-  renderSortButtons(elements.sourceSort, sourceSortState, "Source swatches");
-  renderSizeButtons(elements.sourceSize, sourceSizeState, "Source swatches");
 }
 
 function renderProject(snapshot) {
@@ -1902,49 +1851,6 @@ function renderUserPalette(snapshot) {
   });
 }
 
-function sourcePaletteDiagnostic(snapshot) {
-  return snapshot.sourcePaletteRecordCount > 0 && snapshot.sourcePaletteOptions.length === 0
-    ? "Source swatch records exist, but the source dropdown is empty. Check Colors source records for valid source, swatch key, hex, and name fields."
-    : "";
-}
-
-function renderSourceSwatches(snapshot = repository.getSnapshot()) {
-  if (!elements.sourceList) {
-    return;
-  }
-
-  const sourceId = elements.sourceSelect?.value;
-  sourceSwatchRows = repository.listSourceSwatches({
-    query: elements.sourceSearch?.value || "",
-    sortDirection: sourceSortState.direction,
-    sortKey: sourceSortState.key,
-    sourceId
-  });
-  setDisabled(elements.sourcePinAll, sourceSwatchRows.length === 0 || !repository.getActiveProject());
-
-  elements.sourceList.replaceChildren();
-  if (sourceSwatchRows.length === 0) {
-    const message = document.createElement("p");
-    message.className = "status";
-    message.textContent = sourcePaletteDiagnostic(snapshot) || (snapshot.sourcePaletteOptions.length
-      ? "No source colors match the current filter."
-      : "No source swatches found. Add Colors source records to browse source colors.");
-    elements.sourceList.append(message);
-    return;
-  }
-
-  sourceSwatchRows.forEach((swatch, index) => {
-    const pinned = repository.isSourceSwatchPinned(swatch);
-    elements.sourceList.append(createSwatchTile(swatch, {
-      action: pinned ? "Unpin source color" : "Pin source color",
-      pinned,
-      pressed: pinned,
-      size: sourceSizeState,
-      sourceIndex: index
-    }));
-  });
-}
-
 function renderTags(snapshot) {
   if (!elements.tagsList) {
     return;
@@ -1988,14 +1894,12 @@ function renderHarmony(snapshot) {
   }
 
   elements.harmonyList.replaceChildren();
-  const baseSwatch = snapshot.selectedSwatch || selectedSourceSwatch;
-  const sourceId = elements.sourceSelect?.value || "";
+  const baseSwatch = snapshot.selectedSwatch;
   harmonyRows = baseSwatch
     ? repository.createHarmonySuggestions(baseSwatch, {
         matchSwatches: currentHarmonyMatchSwatches(),
         matchSource: elements.harmonyMatch?.value || "calculated",
-        schemeId: elements.harmonyScheme?.value || "complementary",
-        sourceId
+        schemeId: elements.harmonyScheme?.value || "complementary"
       })
     : [];
 
@@ -2052,7 +1956,7 @@ function renderTables(snapshot) {
 function displayColorsTableName(tableName) {
   const names = {
     palette_colors: "Project Swatches",
-    palette_source_swatches: "Source Swatches",
+    palette_source_swatches: "Deprecated Source Swatches",
     palette_swatch_usages: "Swatch Usage",
     project_workspace_palette_globals: "Project Swatch Settings"
   };
@@ -2087,14 +1991,12 @@ function render() {
   }
 
   checkedSwatchKeysFromSnapshot(snapshot);
-  renderSourceOptions(snapshot);
   renderPaletteControls();
   renderProject(snapshot);
   renderSelectedSwatchEditor(snapshot);
   renderSummary(snapshot);
   renderValidation(snapshot);
   renderUserPalette(snapshot);
-  renderSourceSwatches(snapshot);
   renderTags(snapshot);
   renderHarmony(snapshot);
   renderTables(snapshot);
@@ -2237,34 +2139,6 @@ elements.userSize?.addEventListener("click", (event) => {
   }
   userSizeState = button.dataset.paletteSizeKey;
   render();
-});
-
-elements.sourceSelect?.addEventListener("change", render);
-elements.sourceSearch?.addEventListener("input", renderSourceSwatches);
-elements.sourcePinAll?.addEventListener("click", () => {
-  applyResult(repository.pinSourceSwatches(sourceSwatchRows));
-});
-
-elements.sourceSort?.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-palette-sort-key]");
-  if (!button) {
-    return;
-  }
-  const key = button.dataset.paletteSortKey;
-  sourceSortState.direction = sourceSortState.key === key && sourceSortState.direction === "asc" ? "desc" : "asc";
-  sourceSortState.key = key;
-  renderSourceSwatches();
-  renderSortButtons(elements.sourceSort, sourceSortState, "Source swatches");
-});
-
-elements.sourceSize?.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-palette-size-key]");
-  if (!button) {
-    return;
-  }
-  sourceSizeState = button.dataset.paletteSizeKey;
-  renderSourceSwatches();
-  renderSizeButtons(elements.sourceSize, sourceSizeState, "Source swatches");
 });
 
 elements.generatorPreview?.addEventListener("pointerup", (event) => {
@@ -2410,7 +2284,6 @@ elements.userList?.addEventListener("click", (event) => {
   if (pin) {
     const deletingSelected = tile.dataset.paletteSelected === "true";
     const result = repository.removeSwatch(tile.dataset.paletteSwatchKey);
-    selectedSourceSwatch = null;
     if (deletingSelected || !result.snapshot.selectedSwatch) {
       fillUserSwatchForm(selectedUserDefinedSwatch(result.snapshot));
     }
@@ -2420,7 +2293,6 @@ elements.userList?.addEventListener("click", (event) => {
 
   const snapshot = repository.selectSwatch(tile.dataset.paletteSwatchKey);
   fillUserSwatchForm(selectedUserDefinedSwatch(snapshot));
-  selectedSourceSwatch = null;
   editorIssues = [];
   render();
 });
@@ -2475,19 +2347,6 @@ elements.tagMatchModes?.forEach((control) => {
     setText(elements.log, `Project Swatches tag match mode: ${control.nextElementSibling?.textContent || control.value}.`);
     render();
   });
-});
-
-elements.sourceList?.addEventListener("click", (event) => {
-  const tile = event.target.closest("[data-palette-source-index]");
-  if (!tile) {
-    return;
-  }
-
-  const swatch = sourceSwatchRows[Number(tile.dataset.paletteSourceIndex)];
-  if (swatch) {
-    selectedSourceSwatch = swatch;
-    applyResult(repository.toggleSourceSwatchPin(swatch));
-  }
 });
 
 initializePaletteGeneratorSelectors();

@@ -59,6 +59,7 @@ import {
   normalizeMockDbTables,
 } from "../persistence/mock-db-store.js";
 import { createServerSeedTables } from "../guest-seeds/tool-state-samples.js";
+import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
 
 export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
@@ -616,7 +617,10 @@ function projectJourneyTables(repository) {
 }
 
 function paletteTables(repository) {
-  return normalizeOwnedTables("palette", repository.getTables());
+  return normalizeOwnedTables("palette", {
+    ...repository.getTables(),
+    palette_source_swatches: createPaletteSourceMockDbRows(),
+  });
 }
 
 function assetTables(repository) {
@@ -1465,25 +1469,6 @@ class LocalDevMockDataSource {
     let repository = this.repositoryForTool(toolId);
     if (hasCustomOptions && (toolId === "palette" || toolId === "colors")) {
       const paletteOptions = { ...options };
-      if (paletteOptions.sourceMode === "empty") {
-        paletteOptions.tables = { palette_source_swatches: [] };
-        delete paletteOptions.sourceMode;
-      } else if (paletteOptions.sourceMode === "invalid") {
-        paletteOptions.tables = {
-          palette_source_swatches: [
-            {
-              ...snapshotAuditFields(320, MOCK_DB_KEYS.users.forgeBot),
-              key: "invalid-source-row",
-              source: "broken-source",
-              swatchKey: "invalid-source-row",
-              hex: "not-a-hex",
-              name: "",
-              tags: ["diagnostic"],
-            },
-          ],
-        };
-        delete paletteOptions.sourceMode;
-      }
       repository = createProjectWorkspacePaletteRepository({
         projectWorkspaceRepository: this.workspaceRepository,
         ...this.sharedOptions,

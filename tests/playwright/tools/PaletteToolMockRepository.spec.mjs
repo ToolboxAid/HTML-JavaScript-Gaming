@@ -11,11 +11,6 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 import { expectCompactToolFormControls } from "../../helpers/toolFormControlAssertions.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
-const sourcePaletteRows = [
-  { source: "reference", sourceLabel: "Reference", swatchKey: "reference-red", hex: "#FF0000", name: "Reference Red", tags: ["warm"] },
-  { source: "reference", sourceLabel: "Reference", swatchKey: "reference-green", hex: "#00FF00", name: "Reference Green", tags: ["cool"] }
-];
-
 const expectedThemeTypes = {
   Nature: ["Forest", "Jungle", "Desert", "Mountain", "Arctic", "Swamp", "Ocean", "Tropical"],
   ROYGBIV: ["ROYGBIV"],
@@ -251,16 +246,15 @@ async function expectSortToggle(page, key, label) {
 }
 
 test("Palette repository owns project swatches and protects invalid payloads", async () => {
-  const repository = createProjectWorkspacePaletteRepository({ sourcePaletteRows });
+  const repository = createProjectWorkspacePaletteRepository();
   const baseline = repository.getSnapshot();
 
   expect(baseline.palettePath).toBe(PALETTE_WORKSPACE_PATH);
   expect(Object.keys(repository.getTables()).sort()).toEqual([...PALETTE_TOOL_TABLES].sort());
   expect(repository.getTables().palette_colors).toEqual([]);
-  expect(repository.getTables().palette_source_swatches).toHaveLength(2);
-  expect(repository.sourcePaletteOptions()).toEqual([
-    { id: "reference", label: "Reference", swatchCount: 2 }
-  ]);
+  expect(repository.getTables().palette_source_swatches).toBeUndefined();
+  expect(baseline).not.toHaveProperty("sourcePaletteOptions");
+  expect(baseline).not.toHaveProperty("sourcePaletteRecordCount");
   expect(baseline.workspace.tools["palette-browser"].swatches).toEqual([]);
   expect(baseline.validation.status).toBe("Ready");
 
@@ -280,17 +274,13 @@ test("Palette repository owns project swatches and protects invalid payloads", a
     expect.objectContaining({ rows: 1, table: "palette_colors" })
   ]));
 
-  const sourceSwatch = repository.listSourceSwatches({ sourceId: "reference", sortKey: "hue" })[0];
-  const pinResult = repository.pinSourceSwatch(sourceSwatch);
-  expect(pinResult.ok).toBe(true);
-  expect(repository.findSwatch("reference-red")).toMatchObject({ name: "Reference Red", source: "reference", tags: [] });
-  expect(repository.displaySource("reference")).toBe("Reference");
+  expect(repository.addSwatch({ hex: "#FF0000", name: "Reference Red", source: "reference" }).ok).toBe(true);
+  const referenceKey = repository.getSnapshot().selectedSwatch.key;
 
-  const tagResult = repository.addTagToSwatches([heroKey, "reference-red"], "batch");
+  const tagResult = repository.addTagToSwatches([heroKey, referenceKey], "batch");
   expect(tagResult.ok).toBe(true);
   expect(repository.findSwatch(heroKey)).toMatchObject({ name: "Hero Blue", tags: ["batch"] });
-  expect(repository.findSwatch("reference-red")).toMatchObject({ name: "Reference Red", tags: ["batch"] });
-  expect(repository.findSwatch("reference-green")).toBeNull();
+  expect(repository.findSwatch(referenceKey)).toMatchObject({ name: "Reference Red", tags: ["batch"] });
 
   const noSymbolPayloadValidation = validatePaletteWorkspacePayload({
     tools: {
@@ -308,7 +298,7 @@ test("Palette repository owns project swatches and protects invalid payloads", a
     name: "Symbol Free Swatch"
   });
 
-  const lifecycleRepository = createProjectWorkspacePaletteRepository({ sourcePaletteRows });
+  const lifecycleRepository = createProjectWorkspacePaletteRepository();
   const lifecycleAdd = lifecycleRepository.addSwatch({ hex: "#224466", name: "Lifecycle Blue" });
   expect(lifecycleAdd.ok).toBe(true);
   const lifecycleKey = lifecycleAdd.snapshot.selectedSwatch.key;
@@ -316,11 +306,11 @@ test("Palette repository owns project swatches and protects invalid payloads", a
   expect(lifecycleRepository.findSwatch(lifecycleKey)).toMatchObject({ hex: "#224477", name: "Lifecycle Updated" });
   expect(lifecycleRepository.removeSwatch(lifecycleKey).ok).toBe(true);
   expect(lifecycleRepository.findSwatch(lifecycleKey)).toBeNull();
-  const lifecycleSourceSwatch = lifecycleRepository.listSourceSwatches({ sourceId: "reference" })[0];
-  expect(lifecycleRepository.pinSourceSwatch(lifecycleSourceSwatch).ok).toBe(true);
-  expect(lifecycleRepository.findSwatch(lifecycleSourceSwatch.key)).toMatchObject({ name: lifecycleSourceSwatch.name });
-  expect(lifecycleRepository.removeSwatch(lifecycleSourceSwatch.key).ok).toBe(true);
-  expect(lifecycleRepository.findSwatch(lifecycleSourceSwatch.key)).toBeNull();
+  const lifecycleGeneratedSwatch = { hex: "#FF6600", key: "runtime-generated-orange", name: "Runtime Generated Orange", source: "generated" };
+  expect(lifecycleRepository.pinSourceSwatch(lifecycleGeneratedSwatch).ok).toBe(true);
+  expect(lifecycleRepository.findSwatch(lifecycleGeneratedSwatch.key)).toMatchObject({ name: lifecycleGeneratedSwatch.name });
+  expect(lifecycleRepository.removeSwatch(lifecycleGeneratedSwatch.key).ok).toBe(true);
+  expect(lifecycleRepository.findSwatch(lifecycleGeneratedSwatch.key)).toBeNull();
   lifecycleRepository.addSwatch({ hex: "#667788", name: "Clearable Swatch" });
   lifecycleRepository.clearProjectData();
   expect(lifecycleRepository.getTables().palette_colors).toEqual([]);
