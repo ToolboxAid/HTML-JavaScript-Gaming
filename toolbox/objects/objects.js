@@ -125,7 +125,7 @@ const STARTER_OBJECTS = Object.freeze([
   }),
 ]);
 
-const assetRepository = createAssetToolApiRepository();
+let assetRepository = createAssetToolApiRepository();
 let draftedObjects = [];
 let editingRow = null;
 
@@ -510,7 +510,7 @@ function renderAssetText(object) {
   if (object.render?.type !== "Sprite") {
     return "None";
   }
-  return object.render.assetKey || "Sprite asset missing";
+  return renderAssetDisplayForKey(object.render.assetKey);
 }
 
 function linkedSpriteObject(objects) {
@@ -518,7 +518,8 @@ function linkedSpriteObject(objects) {
 }
 
 function spriteEditorHref(object) {
-  const assetKey = encodeURIComponent(object.render.assetKey);
+  const linkedAsset = linkedSpriteAsset(object.render.assetKey);
+  const assetKey = encodeURIComponent(normalizeText(linkedAsset?.id) || object.render.assetKey);
   const objectKey = encodeURIComponent(objectId(object));
   return `/toolbox/sprites/index.html?assetKey=${assetKey}&objectKey=${objectKey}&sourceTool=objects`;
 }
@@ -607,12 +608,65 @@ function assetLinkMessage(result, fallback) {
   return normalizeText(result?.message || fallback).replace(legacyLinkTerm, "link");
 }
 
+function listAssetRecords() {
+  let assets = assetRepository.listAssets();
+  if (Array.isArray(assets)) {
+    if (assets.length) {
+      return assets;
+    }
+  } else if (assets?.error) {
+    assetRepository = createAssetToolApiRepository();
+    assets = assetRepository.listAssets();
+    if (Array.isArray(assets) && assets.length) {
+      return assets;
+    }
+  }
+
+  let tables = assetRepository.getTables();
+  if (tables?.error) {
+    assetRepository = createAssetToolApiRepository();
+    tables = assetRepository.getTables();
+  }
+  return Array.isArray(tables?.asset_library_items) ? tables.asset_library_items : [];
+}
+
 function linkedSpriteAsset(assetKey) {
-  const assets = assetRepository.listAssets();
-  if (!Array.isArray(assets)) {
+  const key = normalizeText(assetKey);
+  if (!key) {
     return null;
   }
-  return assets.find((asset) => asset.id === assetKey) || null;
+  return listAssetRecords().find((asset) => asset.id === key) || null;
+}
+
+function assetDisplayText(asset, fallbackKey = "") {
+  const key = normalizeText(asset?.id || fallbackKey);
+  const name = normalizeText(asset?.name);
+  if (key && name && name !== key) {
+    return `${name} (${key})`;
+  }
+  return name || key || "Sprite asset missing";
+}
+
+function renderAssetDisplayForKey(assetKey) {
+  const key = normalizeText(assetKey);
+  if (!key) {
+    return "Sprite asset missing";
+  }
+  const linkedAsset = linkedSpriteAsset(key);
+  return assetDisplayText(linkedAsset, key);
+}
+
+function linkedSpritePreviewPath(object, linkedAsset) {
+  return normalizeText(linkedAsset?.storedPath || linkedAsset?.path || object?.render?.previewPath);
+}
+
+function ensureSpriteAssetForObject(input) {
+  let result = assetRepository.ensureSpriteAssetForObject(input);
+  if (result?.error) {
+    assetRepository = createAssetToolApiRepository();
+    result = assetRepository.ensureSpriteAssetForObject(input);
+  }
+  return result;
 }
 
 function editingObjectFromRow(row) {
@@ -640,7 +694,11 @@ function updateRenderAssetPreview(row) {
   if (!preview) {
     return;
   }
-  preview.textContent = renderType === "Sprite" ? row.dataset.objectsExistingAssetKey || "Links on save" : "None";
+  preview.textContent = renderType === "Sprite"
+    ? row.dataset.objectsExistingAssetKey
+      ? renderAssetDisplayForKey(row.dataset.objectsExistingAssetKey)
+      : "Links on save"
+    : "None";
 }
 
 function applyTemplateToRow(row, template) {
@@ -711,7 +769,11 @@ function renderEditingRow(values) {
 
   const renderAsset = document.createElement("td");
   renderAsset.dataset.objectsRowRenderAssetPreview = "true";
-  renderAsset.textContent = values.renderType === "Sprite" ? values.assetKey || "Links on save" : "None";
+  renderAsset.textContent = values.renderType === "Sprite"
+    ? values.assetKey
+      ? renderAssetDisplayForKey(values.assetKey)
+      : "Links on save"
+    : "None";
 
   const capabilities = tableCell(capabilityText(values.capabilities || []));
   capabilities.dataset.objectsRowCapabilitiesPreview = "true";
@@ -787,6 +849,9 @@ function renderObjectList(objects) {
 function renderOutput(objects, findings) {
   const readiness = objectStatusLabel(objects, findings);
   const linkedSprite = linkedSpriteObject(objects);
+  const linkedAsset = linkedSprite ? linkedSpriteAsset(linkedSprite.render.assetKey) : null;
+  const linkedAssetText = linkedSprite ? assetDisplayText(linkedAsset, linkedSprite.render.assetKey) : "None";
+  const linkedPreviewPath = linkedSpritePreviewPath(linkedSprite, linkedAsset);
 
   setText(elements.count, String(objects.length));
   setText(elements.readiness, readiness);
@@ -800,18 +865,18 @@ function renderOutput(objects, findings) {
         ? "Objects have saved setup details."
         : "Review the object details marked in validation."
   );
-  setText(elements.outputRenderAsset, linkedSprite ? linkedSprite.render.assetKey : "None");
+  setText(elements.outputRenderAsset, linkedAssetText);
   setText(
     elements.outputSpritePreview,
     linkedSprite
-      ? `${linkedSprite.render.assetKey}: ${linkedSprite.render.previewPath || "No preview path returned by shared asset record."}`
+      ? `${linkedAssetText}: ${linkedPreviewPath || "No preview path returned by shared asset record."}`
       : "No sprite asset linked."
   );
   if (elements.editSprite) {
     elements.editSprite.hidden = !linkedSprite;
     if (linkedSprite) {
       elements.editSprite.href = spriteEditorHref(linkedSprite);
-      elements.editSprite.textContent = `Edit ${linkedSprite.render.assetKey}`;
+      elements.editSprite.textContent = `Edit ${linkedAssetText}`;
     } else {
       elements.editSprite.removeAttribute("href");
       elements.editSprite.textContent = "Edit Sprite";
@@ -894,7 +959,7 @@ function ensureSpriteRender(object) {
     }
   }
 
-  const result = assetRepository.ensureSpriteAssetForObject({
+  const result = ensureSpriteAssetForObject({
     objectKey: objectId(object),
     objectName: object.name,
   });
@@ -1025,6 +1090,20 @@ function resetTable() {
   render();
 }
 
+function refreshLinkedRenderAssetDisplay() {
+  if (!editingRow) {
+    render();
+    return;
+  }
+  const row = editingRowElement();
+  if (row) {
+    updateRenderAssetPreview(row);
+  }
+  const findings = objectListFindings(draftedObjects);
+  renderStatusSummary(draftedObjects);
+  renderOutput(draftedObjects, findings);
+}
+
 elements.addRow?.addEventListener("click", addRow);
 elements.seedStarter?.addEventListener("click", seedStarterObjects);
 elements.validate?.addEventListener("click", validateObjects);
@@ -1085,6 +1164,14 @@ elements.list?.addEventListener("input", (event) => {
   const control = event.target instanceof HTMLElement ? event.target.closest("[data-objects-row-name]") : null;
   if (control) {
     renderStatusSummary(draftedObjects);
+  }
+});
+window.addEventListener("focus", refreshLinkedRenderAssetDisplay);
+window.addEventListener("pageshow", refreshLinkedRenderAssetDisplay);
+window.addEventListener("gamefoundry:objects-refresh-assets", refreshLinkedRenderAssetDisplay);
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    refreshLinkedRenderAssetDisplay();
   }
 });
 

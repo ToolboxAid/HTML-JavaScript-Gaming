@@ -1,1 +1,1 @@
-Compact Objects type catalog display - PR_26161_009-object-catalog-compact-display
+Display returned Objects render assets - PR_26161_010-objects-asset-return-display

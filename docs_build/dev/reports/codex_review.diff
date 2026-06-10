@@ -1,22 +1,24 @@
 diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
-index 6d9d81623..1a7c5e5a9 100644
+index 1a7c5e5a9..0502e2e5c 100644
 --- a/docs_build/dev/codex_commands.md
 +++ b/docs_build/dev/codex_commands.md
-@@ -1294,3 +1294,32 @@ Required reports:
+@@ -1323,3 +1323,34 @@ Required reports:
  - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
  - `docs_build/dev/reports/codex_changed_files.txt`
  - `docs_build/dev/reports/codex_review.diff`
 +
 +
-+## PR_26161_009-object-catalog-compact-display
++## PR_26161_010-objects-asset-return-display
 +
 +Changes:
 +- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 +- Verified the current branch is `main` before edits.
-+- Continued from the latest Objects PR state.
-+- Updated the Object Type Catalog display to show only `Template` and `Capability`.
-+- Removed `State` and `Render` columns from the Object Type Catalog display only.
-+- Preserved State, Render, State Flow, object registry/config concepts, object validation contracts, render asset linking, and Sprite Editor linking behavior.
++- Continued from `PR_26161_009`.
++- Kept `State` visible in the Objects table.
++- Kept Object Type Catalog compact with only `Template` and `Capability`.
++- Updated Objects render asset cells to display the linked shared sprite asset key/name instead of any user-editable Asset field.
++- Added linked asset display refresh on return/focus and an Objects-local refresh event for deterministic validation.
++- Kept `Edit Sprite` actions tied to the linked sprite asset key.
 +- Preserved table-first input, `Add Object` below the table, disabled Add while adding, Cancel, Edit, Trash, Reset Table, Object Status, and Sprite asset linking.
 +- Did not change engine runtime behavior, sample JSON, auth behavior, production DB behavior, or unrelated tool behavior.
 +
@@ -30,54 +32,55 @@ index 6d9d81623..1a7c5e5a9 100644
 +- Full samples validation skipped by request and because samples/runtime behavior were not changed.
 +
 +Required reports:
-+- `docs_build/dev/reports/object-catalog-compact-display-report.md`
++- `docs_build/dev/reports/objects-asset-return-display-report.md`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
-index c5969caae..2b004eb02 100644
+index 2b004eb02..bf74ed3a8 100644
 --- a/docs_build/dev/commit_comment.txt
 +++ b/docs_build/dev/commit_comment.txt
 @@ -1 +1 @@
--Add Objects status action links - PR_26161_007-objects-status-action-links
-+Compact Objects type catalog display - PR_26161_009-object-catalog-compact-display
+-Compact Objects type catalog display - PR_26161_009-object-catalog-compact-display
++Display returned Objects render assets - PR_26161_010-objects-asset-return-display
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index c0746279a..f9a4d14cd 100644
+index f9a4d14cd..7837151ed 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -3,7 +3,7 @@ docs_build/dev/commit_comment.txt
+@@ -3,8 +3,7 @@ docs_build/dev/commit_comment.txt
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
  docs_build/dev/reports/coverage_changed_js_guardrail.txt
--docs_build/dev/reports/objects-status-action-links-report.md
-+docs_build/dev/reports/object-catalog-compact-display-report.md
+-docs_build/dev/reports/object-catalog-compact-display-report.md
++docs_build/dev/reports/objects-asset-return-display-report.md
  docs_build/dev/reports/playwright_v8_coverage_report.txt
  tests/playwright/tools/ObjectsTool.spec.mjs
- toolbox/objects/index.html
+-toolbox/objects/index.html
+ toolbox/objects/objects.js
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index b11ab5df7..20783a4bb 100644
+index 20783a4bb..4e5fae393 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 @@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99
-+(95%) toolbox/objects/objects.js - executed lines 985/985; executed functions 94/99
+-(95%) toolbox/objects/objects.js - executed lines 985/985; executed functions 94/99
++(94%) toolbox/objects/objects.js - executed lines 1065/1065; executed functions 100/106
 
  Guardrail warnings:
  (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 4c7f82fab..039a0f69c 100644
+index 039a0f69c..a1e611c25 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
 @@ -17,7 +17,7 @@ Exercised tool entry points detected:
  (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
--(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99
-+(95%) toolbox/objects/objects.js - executed lines 985/985; executed functions 94/99
+-(95%) toolbox/objects/objects.js - executed lines 985/985; executed functions 94/99
++(94%) toolbox/objects/objects.js - executed lines 1065/1065; executed functions 100/106
 
  Files with executed line/function counts where available:
  (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
@@ -85,67 +88,296 @@ index 4c7f82fab..039a0f69c 100644
  (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
  (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
  (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
--(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99
-+(95%) toolbox/objects/objects.js - executed lines 985/985; executed functions 94/99
+-(95%) toolbox/objects/objects.js - executed lines 985/985; executed functions 94/99
++(94%) toolbox/objects/objects.js - executed lines 1065/1065; executed functions 100/106
  (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
  (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
+@@ -40,4 +40,4 @@ Uncovered or low-coverage changed JS files:
+
+ Changed JS files considered:
+ (0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
+-(95%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
++(94%) toolbox/objects/objects.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
-index 0826bf0fd..5aff1c080 100644
+index 5aff1c080..6d956cb91 100644
 --- a/tests/playwright/tools/ObjectsTool.spec.mjs
 +++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -119,11 +119,15 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     await expect(page.getByRole("heading", { level: 2, name: "Object Builder" })).toBeVisible();
-     await expect(page.getByText("Object Type Catalog", { exact: true })).toBeVisible();
-     await expect(page.locator("[data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
-+    await expect(page.locator("[aria-label='Object type catalog'] th")).toHaveText(["Template", "Capability"]);
-+    await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("State");
-+    await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("Render");
-+    await expect(page.locator("[data-objects-template-catalog] tr").first().locator("td")).toHaveCount(2);
-     await expect(page.locator("[data-objects-template-catalog] tr")).toHaveCount(TYPE_OPTIONS.length);
-     await expect(page.locator("[data-objects-template-catalog] td:first-child")).toHaveText(TYPE_OPTIONS);
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Spawn Point");
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Decoration");
--    await expect(page.locator("[data-objects-template-catalog]")).toContainText("Sprite");
-+    await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
-     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toBeVisible();
-diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
-index 483e21835..fbb20bfe8 100644
---- a/toolbox/objects/index.html
-+++ b/toolbox/objects/index.html
-@@ -50,9 +50,7 @@
-                                             <thead>
-                                                 <tr>
-                                                     <th>Template</th>
--                                                    <th>State</th>
--                                                    <th>Render</th>
--                                                    <th>Capabilities</th>
-+                                                    <th>Capability</th>
-                                                 </tr>
-                                             </thead>
-                                             <tbody data-objects-template-catalog></tbody>
+@@ -345,11 +345,13 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
+       type: "Projectile",
+     });
+     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
++    await expect(page.locator("[data-objects-row-render-asset-preview]").locator("input, textarea, select")).toHaveCount(0);
+     await page.locator("[data-objects-save-row]").click();
+
+     await expect(page.locator("[data-objects-log]")).toContainText("Added Bolt.");
+     await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_bolt for Bolt.");
+     await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
++    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(5).locator("input, textarea, select")).toHaveCount(0);
+     await expect(page.locator("[data-objects-asset-status]")).toHaveText("1 Linked");
+     await expect(page.locator("[data-objects-status-summary]")).toContainText("Bolt");
+     await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Missing Render Asset");
+@@ -376,12 +378,47 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
+       "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
+     );
+
++    const originalSprite = await page.evaluate(async () => {
++      const response = await fetch("/api/mock-db/snapshot");
++      const payload = await response.json();
++      return payload.data.tables.asset_library_items.find((row) => row.id === "sprite_bolt");
++    });
++    const updatedSprite = {
++      ...originalSprite,
++      fileName: "sprite_bolt_reworked.png",
++      name: "Bolt Reworked Sprite",
++      originalName: "sprite_bolt_reworked.png",
++      path: "projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/sprite/sprite_bolt_reworked.png",
++      storedPath: "projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/sprite/sprite_bolt_reworked.png",
++      updatedAt: new Date().toISOString(),
++    };
++    await page.route("**/api/toolbox/assets/repositories/*/methods/listAssets", async (route) => {
++      await route.fulfill({
++        body: JSON.stringify({ data: { result: [updatedSprite] }, ok: true }),
++        contentType: "application/json",
++        status: 200,
++      });
++    });
++    expect(updatedSprite.name).toBe("Bolt Reworked Sprite");
++    await page.evaluate(() => {
++      window.dispatchEvent(new Event("focus"));
++      window.dispatchEvent(new Event("gamefoundry:objects-refresh-assets"));
++    });
++    await expect(page.locator("[data-objects-list]")).toContainText("Bolt Reworked Sprite (sprite_bolt)");
++    await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("Bolt Reworked Sprite (sprite_bolt)");
++    await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_bolt_reworked.png");
++    await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
++      "href",
++      "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
++    );
++
+     await page.locator("[data-objects-edit-row='bolt']").click();
+-    await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("sprite_bolt");
++    await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Bolt Reworked Sprite (sprite_bolt)");
++    await expect(page.locator("[data-objects-row-render-asset-preview]").locator("input, textarea, select")).toHaveCount(0);
+     await page.locator("[data-objects-save-row]").click();
+     await expect(page.locator("[data-objects-log]")).toHaveText("Saved Bolt.");
+     await expect(page.locator("[data-objects-log]")).not.toContainText("Sprite asset link blocked");
+-    await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
++    await expect(page.locator("[data-objects-list]")).toContainText("Bolt Reworked Sprite (sprite_bolt)");
+     await expect(page.locator("main")).not.toContainText(OLD_INTERNAL_COPY_PATTERN);
+
+     await page.getByRole("button", { name: "Reset Table" }).click();
 diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
-index e904118cc..f8df4648f 100644
+index f8df4648f..99a501486 100644
 --- a/toolbox/objects/objects.js
 +++ b/toolbox/objects/objects.js
-@@ -826,8 +826,6 @@ function renderTemplateCatalog() {
-       const row = document.createElement("tr");
-       row.append(
-         tableCell(template.type),
--        tableCell(template.state),
--        tableCell(template.renderType),
-         tableCell(capabilityText(template.capabilities))
-       );
-       elements.templateCatalog.append(row);
-diff --git a/docs_build/dev/reports/object-catalog-compact-display-report.md b/docs_build/dev/reports/object-catalog-compact-display-report.md
+@@ -125,7 +125,7 @@ const STARTER_OBJECTS = Object.freeze([
+   }),
+ ]);
+
+-const assetRepository = createAssetToolApiRepository();
++let assetRepository = createAssetToolApiRepository();
+ let draftedObjects = [];
+ let editingRow = null;
+
+@@ -510,7 +510,7 @@ function renderAssetText(object) {
+   if (object.render?.type !== "Sprite") {
+     return "None";
+   }
+-  return object.render.assetKey || "Sprite asset missing";
++  return renderAssetDisplayForKey(object.render.assetKey);
+ }
+
+ function linkedSpriteObject(objects) {
+@@ -518,7 +518,8 @@ function linkedSpriteObject(objects) {
+ }
+
+ function spriteEditorHref(object) {
+-  const assetKey = encodeURIComponent(object.render.assetKey);
++  const linkedAsset = linkedSpriteAsset(object.render.assetKey);
++  const assetKey = encodeURIComponent(normalizeText(linkedAsset?.id) || object.render.assetKey);
+   const objectKey = encodeURIComponent(objectId(object));
+   return `/toolbox/sprites/index.html?assetKey=${assetKey}&objectKey=${objectKey}&sourceTool=objects`;
+ }
+@@ -607,12 +608,65 @@ function assetLinkMessage(result, fallback) {
+   return normalizeText(result?.message || fallback).replace(legacyLinkTerm, "link");
+ }
+
++function listAssetRecords() {
++  let assets = assetRepository.listAssets();
++  if (Array.isArray(assets)) {
++    if (assets.length) {
++      return assets;
++    }
++  } else if (assets?.error) {
++    assetRepository = createAssetToolApiRepository();
++    assets = assetRepository.listAssets();
++    if (Array.isArray(assets) && assets.length) {
++      return assets;
++    }
++  }
++
++  let tables = assetRepository.getTables();
++  if (tables?.error) {
++    assetRepository = createAssetToolApiRepository();
++    tables = assetRepository.getTables();
++  }
++  return Array.isArray(tables?.asset_library_items) ? tables.asset_library_items : [];
++}
++
+ function linkedSpriteAsset(assetKey) {
+-  const assets = assetRepository.listAssets();
+-  if (!Array.isArray(assets)) {
++  const key = normalizeText(assetKey);
++  if (!key) {
+     return null;
+   }
+-  return assets.find((asset) => asset.id === assetKey) || null;
++  return listAssetRecords().find((asset) => asset.id === key) || null;
++}
++
++function assetDisplayText(asset, fallbackKey = "") {
++  const key = normalizeText(asset?.id || fallbackKey);
++  const name = normalizeText(asset?.name);
++  if (key && name && name !== key) {
++    return `${name} (${key})`;
++  }
++  return name || key || "Sprite asset missing";
++}
++
++function renderAssetDisplayForKey(assetKey) {
++  const key = normalizeText(assetKey);
++  if (!key) {
++    return "Sprite asset missing";
++  }
++  const linkedAsset = linkedSpriteAsset(key);
++  return assetDisplayText(linkedAsset, key);
++}
++
++function linkedSpritePreviewPath(object, linkedAsset) {
++  return normalizeText(linkedAsset?.storedPath || linkedAsset?.path || object?.render?.previewPath);
++}
++
++function ensureSpriteAssetForObject(input) {
++  let result = assetRepository.ensureSpriteAssetForObject(input);
++  if (result?.error) {
++    assetRepository = createAssetToolApiRepository();
++    result = assetRepository.ensureSpriteAssetForObject(input);
++  }
++  return result;
+ }
+
+ function editingObjectFromRow(row) {
+@@ -640,7 +694,11 @@ function updateRenderAssetPreview(row) {
+   if (!preview) {
+     return;
+   }
+-  preview.textContent = renderType === "Sprite" ? row.dataset.objectsExistingAssetKey || "Links on save" : "None";
++  preview.textContent = renderType === "Sprite"
++    ? row.dataset.objectsExistingAssetKey
++      ? renderAssetDisplayForKey(row.dataset.objectsExistingAssetKey)
++      : "Links on save"
++    : "None";
+ }
+
+ function applyTemplateToRow(row, template) {
+@@ -711,7 +769,11 @@ function renderEditingRow(values) {
+
+   const renderAsset = document.createElement("td");
+   renderAsset.dataset.objectsRowRenderAssetPreview = "true";
+-  renderAsset.textContent = values.renderType === "Sprite" ? values.assetKey || "Links on save" : "None";
++  renderAsset.textContent = values.renderType === "Sprite"
++    ? values.assetKey
++      ? renderAssetDisplayForKey(values.assetKey)
++      : "Links on save"
++    : "None";
+
+   const capabilities = tableCell(capabilityText(values.capabilities || []));
+   capabilities.dataset.objectsRowCapabilitiesPreview = "true";
+@@ -787,6 +849,9 @@ function renderObjectList(objects) {
+ function renderOutput(objects, findings) {
+   const readiness = objectStatusLabel(objects, findings);
+   const linkedSprite = linkedSpriteObject(objects);
++  const linkedAsset = linkedSprite ? linkedSpriteAsset(linkedSprite.render.assetKey) : null;
++  const linkedAssetText = linkedSprite ? assetDisplayText(linkedAsset, linkedSprite.render.assetKey) : "None";
++  const linkedPreviewPath = linkedSpritePreviewPath(linkedSprite, linkedAsset);
+
+   setText(elements.count, String(objects.length));
+   setText(elements.readiness, readiness);
+@@ -800,18 +865,18 @@ function renderOutput(objects, findings) {
+         ? "Objects have saved setup details."
+         : "Review the object details marked in validation."
+   );
+-  setText(elements.outputRenderAsset, linkedSprite ? linkedSprite.render.assetKey : "None");
++  setText(elements.outputRenderAsset, linkedAssetText);
+   setText(
+     elements.outputSpritePreview,
+     linkedSprite
+-      ? `${linkedSprite.render.assetKey}: ${linkedSprite.render.previewPath || "No preview path returned by shared asset record."}`
++      ? `${linkedAssetText}: ${linkedPreviewPath || "No preview path returned by shared asset record."}`
+       : "No sprite asset linked."
+   );
+   if (elements.editSprite) {
+     elements.editSprite.hidden = !linkedSprite;
+     if (linkedSprite) {
+       elements.editSprite.href = spriteEditorHref(linkedSprite);
+-      elements.editSprite.textContent = `Edit ${linkedSprite.render.assetKey}`;
++      elements.editSprite.textContent = `Edit ${linkedAssetText}`;
+     } else {
+       elements.editSprite.removeAttribute("href");
+       elements.editSprite.textContent = "Edit Sprite";
+@@ -894,7 +959,7 @@ function ensureSpriteRender(object) {
+     }
+   }
+
+-  const result = assetRepository.ensureSpriteAssetForObject({
++  const result = ensureSpriteAssetForObject({
+     objectKey: objectId(object),
+     objectName: object.name,
+   });
+@@ -1025,6 +1090,20 @@ function resetTable() {
+   render();
+ }
+
++function refreshLinkedRenderAssetDisplay() {
++  if (!editingRow) {
++    render();
++    return;
++  }
++  const row = editingRowElement();
++  if (row) {
++    updateRenderAssetPreview(row);
++  }
++  const findings = objectListFindings(draftedObjects);
++  renderStatusSummary(draftedObjects);
++  renderOutput(draftedObjects, findings);
++}
++
+ elements.addRow?.addEventListener("click", addRow);
+ elements.seedStarter?.addEventListener("click", seedStarterObjects);
+ elements.validate?.addEventListener("click", validateObjects);
+@@ -1087,6 +1166,14 @@ elements.list?.addEventListener("input", (event) => {
+     renderStatusSummary(draftedObjects);
+   }
+ });
++window.addEventListener("focus", refreshLinkedRenderAssetDisplay);
++window.addEventListener("pageshow", refreshLinkedRenderAssetDisplay);
++window.addEventListener("gamefoundry:objects-refresh-assets", refreshLinkedRenderAssetDisplay);
++document.addEventListener("visibilitychange", () => {
++  if (document.visibilityState === "visible") {
++    refreshLinkedRenderAssetDisplay();
++  }
++});
+
+ renderTemplateCatalog();
+ renderRegistryBasics();
+diff --git a/docs_build/dev/reports/objects-asset-return-display-report.md b/docs_build/dev/reports/objects-asset-return-display-report.md
 new file mode 100644
-index 000000000..e317e425c
+index 000000000..28f7740b7
 --- /dev/null
-+++ b/docs_build/dev/reports/object-catalog-compact-display-report.md
-@@ -0,0 +1,70 @@
-+# PR_26161_009 Object Catalog Compact Display Report
++++ b/docs_build/dev/reports/objects-asset-return-display-report.md
+@@ -0,0 +1,77 @@
++# PR_26161_010 Objects Asset Return Display Report
 +
 +## Branch Guard
 +- Current branch: `main`
@@ -155,23 +387,26 @@ index 000000000..e317e425c
 +
 +## Source Of Truth
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before branch validation and edits.
-+- PASS: Used the user-provided `PR_26161_009-object-catalog-compact-display` request as the active BUILD source.
-+- PASS: Confirmed the PR purpose is singular: compact the Object Type Catalog display.
++- PASS: Used the user-provided `PR_26161_010-objects-asset-return-display` request as the active BUILD source.
++- PASS: Confirmed the PR purpose is singular: keep Objects render assets as linked shared-record display data.
 +
 +## Requirement Checklist
-+- PASS: Object Type Catalog now displays only `Template` and `Capability`.
-+- PASS: Removed `State` and `Render` columns from the Object Type Catalog display only.
-+- PASS: Kept State, Render, State Flow, registry/config concepts, and object validation contracts in the underlying model.
-+- PASS: Kept Render available in the Objects table/editor where object render configuration belongs.
-+- PASS: Kept table-first input, `Add Object` below the table, Add disabled while adding, Cancel, Edit, Trash, Reset Table, Object Status, and Sprite asset linking.
-+- PASS: Preserved render asset linking and Sprite Editor linking behavior.
++- PASS: Continued from `PR_26161_009`.
++- PASS: Left `State` visible in the Objects table.
++- PASS: Treated Asset as a linked render asset display, not a free-text user field.
++- PASS: When `Render = Sprite`, the Asset cell displays the linked shared sprite asset key/name.
++- PASS: Users cannot type an invalid Asset value in the Objects table.
++- PASS: Asset display and preview refresh from the linked shared asset record when returning to Objects.
++- PASS: `Edit Sprite` stays tied to the linked sprite asset key.
++- PASS: Preserved Object Type Catalog compact display with `Template` and `Capability` only.
++- PASS: Preserved table-first input, `Add Object` below the table, Add disabled while adding, Cancel, Edit, Trash, Reset Table, Object Status, and Sprite asset linking.
 +- PASS: Did not add sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
 +- PASS: Kept Theme V2 only and preserved HTML restrictions.
 +
 +## Implementation Evidence
-+- `toolbox/objects/index.html`: compacted the Object Type Catalog table headers to `Template` and `Capability`.
-+- `toolbox/objects/objects.js`: compacted Object Type Catalog row rendering to type plus capability labels only.
-+- `tests/playwright/tools/ObjectsTool.spec.mjs`: verifies the compact catalog headers, absence of catalog State/Render columns, Render availability in the Objects table/editor, table input behavior, and Sprite asset linking.
++- `toolbox/objects/objects.js`: render asset cells now resolve display text from the shared asset repository and refresh on return/focus.
++- `toolbox/objects/objects.js`: active and saved Asset cells are text-only display cells, with no text input for manual Asset entry.
++- `tests/playwright/tools/ObjectsTool.spec.mjs`: verifies State visibility, compact catalog preservation, linked Asset display, no Asset input, Sprite asset create/resolve, and return-refresh behavior.
 +
 +## Impacted Lane
 +- Impacted lane: Objects tool UI/runtime.
@@ -189,11 +424,13 @@ index 000000000..e317e425c
 +- PASS: `git diff --check` exited 0 with line-ending warnings only.
 +
 +## Playwright Behavior Coverage
-+- PASS: Object Type Catalog shows `Template` and `Capability` only.
-+- PASS: `State` and `Render` no longer appear in the Object Type Catalog headers.
-+- PASS: `Render` still appears in the Objects table where object render configuration belongs.
-+- PASS: Object Type Catalog selection still prefills Type, State, Render, and Capabilities in the active table row.
-+- PASS: Table input and Sprite asset linking still work.
++- PASS: `State` remains visible in the Objects table headers.
++- PASS: Object Type Catalog shows only `Template` and `Capability`.
++- PASS: Active Sprite rows show Asset as display text with no input/select/textarea.
++- PASS: Saved Sprite rows show Asset as display text with no input/select/textarea.
++- PASS: Sprite render creates/resolves a linked shared asset record.
++- PASS: Updated linked sprite record data refreshes the Objects Asset display and preview on return.
++- PASS: `Edit Sprite` href remains tied to the linked sprite asset key after the display refresh.
 +
 +## Skipped Lanes
 +- Full samples validation: SKIP. Safe because no sample JSON, sample launch path, or sample runtime behavior changed.
@@ -203,15 +440,17 @@ index 000000000..e317e425c
 +
 +## Manual Validation Steps
 +- Open `/toolbox/objects/index.html`.
-+- Confirm Object Type Catalog table headers show only `Template` and `Capability`.
-+- Confirm the Object Type Catalog does not display `State` or `Render` columns.
-+- Confirm the Objects Table still shows `State` and `Render` columns.
-+- Select a catalog template, add an object row, and confirm Type, State, Render, and Capabilities still prefill in the Objects table/editor.
-+- Save a Sprite object and confirm the Sprite asset is created/resolved and the Sprite Editor link remains available.
++- Confirm the Objects table still shows `State`.
++- Confirm Object Type Catalog shows only `Template` and `Capability`.
++- Add a Sprite object and confirm the Asset cell says `Links on save` and has no editable Asset input.
++- Save the Sprite object and confirm the Asset cell shows the linked sprite asset key/name.
++- Open the linked Sprite action, update the shared sprite asset record, and return to Objects.
++- Confirm the Objects Asset cell and Sprite Preview refresh to the updated shared asset record.
++- Confirm `Edit Sprite` still opens with the linked asset key.
 +
 +## Required Artifacts
-+- PASS: `docs_build/dev/reports/object-catalog-compact-display-report.md`
++- PASS: `docs_build/dev/reports/objects-asset-return-display-report.md`
 +- PASS: `docs_build/dev/reports/codex_review.diff`
 +- PASS: `docs_build/dev/reports/codex_changed_files.txt`
 +- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- PASS: `tmp/PR_26161_009-object-catalog-compact-display_delta.zip`
++- PASS: `tmp/PR_26161_010-objects-asset-return-display_delta.zip`

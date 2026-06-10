@@ -345,11 +345,13 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
       type: "Projectile",
     });
     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
+    await expect(page.locator("[data-objects-row-render-asset-preview]").locator("input, textarea, select")).toHaveCount(0);
     await page.locator("[data-objects-save-row]").click();
 
     await expect(page.locator("[data-objects-log]")).toContainText("Added Bolt.");
     await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_bolt for Bolt.");
     await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(5).locator("input, textarea, select")).toHaveCount(0);
     await expect(page.locator("[data-objects-asset-status]")).toHaveText("1 Linked");
     await expect(page.locator("[data-objects-status-summary]")).toContainText("Bolt");
     await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Missing Render Asset");
@@ -376,12 +378,47 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
       "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
     );
 
+    const originalSprite = await page.evaluate(async () => {
+      const response = await fetch("/api/mock-db/snapshot");
+      const payload = await response.json();
+      return payload.data.tables.asset_library_items.find((row) => row.id === "sprite_bolt");
+    });
+    const updatedSprite = {
+      ...originalSprite,
+      fileName: "sprite_bolt_reworked.png",
+      name: "Bolt Reworked Sprite",
+      originalName: "sprite_bolt_reworked.png",
+      path: "projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/sprite/sprite_bolt_reworked.png",
+      storedPath: "projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/sprite/sprite_bolt_reworked.png",
+      updatedAt: new Date().toISOString(),
+    };
+    await page.route("**/api/toolbox/assets/repositories/*/methods/listAssets", async (route) => {
+      await route.fulfill({
+        body: JSON.stringify({ data: { result: [updatedSprite] }, ok: true }),
+        contentType: "application/json",
+        status: 200,
+      });
+    });
+    expect(updatedSprite.name).toBe("Bolt Reworked Sprite");
+    await page.evaluate(() => {
+      window.dispatchEvent(new Event("focus"));
+      window.dispatchEvent(new Event("gamefoundry:objects-refresh-assets"));
+    });
+    await expect(page.locator("[data-objects-list]")).toContainText("Bolt Reworked Sprite (sprite_bolt)");
+    await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("Bolt Reworked Sprite (sprite_bolt)");
+    await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_bolt_reworked.png");
+    await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
+      "href",
+      "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
+    );
+
     await page.locator("[data-objects-edit-row='bolt']").click();
-    await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("sprite_bolt");
+    await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Bolt Reworked Sprite (sprite_bolt)");
+    await expect(page.locator("[data-objects-row-render-asset-preview]").locator("input, textarea, select")).toHaveCount(0);
     await page.locator("[data-objects-save-row]").click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Saved Bolt.");
     await expect(page.locator("[data-objects-log]")).not.toContainText("Sprite asset link blocked");
-    await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
+    await expect(page.locator("[data-objects-list]")).toContainText("Bolt Reworked Sprite (sprite_bolt)");
     await expect(page.locator("main")).not.toContainText(OLD_INTERNAL_COPY_PATTERN);
 
     await page.getByRole("button", { name: "Reset Table" }).click();

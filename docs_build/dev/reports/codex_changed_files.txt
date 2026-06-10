@@ -3,8 +3,7 @@ docs_build/dev/commit_comment.txt
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/object-catalog-compact-display-report.md
+docs_build/dev/reports/objects-asset-return-display-report.md
 docs_build/dev/reports/playwright_v8_coverage_report.txt
 tests/playwright/tools/ObjectsTool.spec.mjs
-toolbox/objects/index.html
 toolbox/objects/objects.js

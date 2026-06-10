@@ -1323,3 +1323,34 @@ Required reports:
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26161_010-objects-asset-return-display
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Continued from `PR_26161_009`.
+- Kept `State` visible in the Objects table.
+- Kept Object Type Catalog compact with only `Template` and `Capability`.
+- Updated Objects render asset cells to display the linked shared sprite asset key/name instead of any user-editable Asset field.
+- Added linked asset display refresh on return/focus and an Objects-local refresh event for deterministic validation.
+- Kept `Edit Sprite` actions tied to the linked sprite asset key.
+- Preserved table-first input, `Add Object` below the table, disabled Add while adding, Cancel, Edit, Trash, Reset Table, Object Status, and Sprite asset linking.
+- Did not change engine runtime behavior, sample JSON, auth behavior, production DB behavior, or unrelated tool behavior.
+
+Validation:
+- `node --check toolbox/objects/objects.js`
+- `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
+- HTML restriction check for `toolbox/objects/index.html`
+- Objects forbidden wording scan for requested terms
+- `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line`
+- `git diff --check`
+- Full samples validation skipped by request and because samples/runtime behavior were not changed.
+
+Required reports:
+- `docs_build/dev/reports/objects-asset-return-display-report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
