@@ -5,6 +5,7 @@ import {
   getObjectModelType,
   validateObjectDefinition,
 } from "../../src/engine/object-model/index.js";
+import { createAssetToolApiRepository } from "../assets/assets-api-client.js";
 
 const MVP_REQUIREMENTS = Object.freeze([
   {
@@ -25,7 +26,7 @@ const MVP_REQUIREMENTS = Object.freeze([
 ]);
 
 const MVP_ROLE_TRAITS = Object.freeze({
-  Ball: Object.freeze(["bounces"]),
+  Ball: Object.freeze([]),
   Boundary: Object.freeze([]),
   Goal: Object.freeze([]),
   Hazard: Object.freeze([]),
@@ -60,6 +61,7 @@ const SEEDED_OBJECTS = Object.freeze([
   })
 ]);
 
+const assetRepository = createAssetToolApiRepository();
 let draftedObjects = [];
 
 const elements = {
@@ -71,11 +73,15 @@ const elements = {
   log: document.querySelector("[data-objects-log]"),
   name: document.querySelector("[data-objects-name]"),
   outputDynamic: document.querySelector("[data-objects-output-dynamic]"),
+  outputRenderAsset: document.querySelector("[data-objects-output-render-asset]"),
   outputMvp: document.querySelector("[data-objects-output-mvp]"),
   outputReadiness: document.querySelector("[data-objects-output-readiness]"),
+  outputSpritePreview: document.querySelector("[data-objects-output-sprite-preview]"),
   outputStatic: document.querySelector("[data-objects-output-static]"),
   readiness: document.querySelector("[data-objects-readiness]"),
   requirements: document.querySelector("[data-objects-requirements]"),
+  editSprite: document.querySelector("[data-objects-edit-sprite]"),
+  renderType: document.querySelector("[data-objects-render-type]"),
   resetDraft: document.querySelector("[data-objects-reset-draft]"),
   role: document.querySelector("[data-objects-role]"),
   seedMvp: document.querySelector("[data-objects-seed-mvp]"),
@@ -101,6 +107,20 @@ function objectKeyFromText(value) {
 
 function objectId(object) {
   return objectKeyFromText(object.id || object.name);
+}
+
+function normalizeRenderConfig(source = {}) {
+  const render = source.render && typeof source.render === "object" ? source.render : {};
+  const renderType = normalizeText(render.type) === "Sprite" ? "Sprite" : "None";
+  if (renderType !== "Sprite") {
+    return Object.freeze({ type: "None" });
+  }
+
+  return Object.freeze({
+    assetKey: normalizeText(render.assetKey),
+    previewPath: normalizeText(render.previewPath),
+    type: "Sprite"
+  });
 }
 
 function setText(element, value) {
@@ -163,6 +183,7 @@ function cloneObject(source = {}) {
     id: objectKeyFromText(source.id || source.name),
     interaction: normalizeText(source.interaction),
     name: normalizeText(source.name),
+    render: normalizeRenderConfig(source),
     role: normalizeText(source.role),
     state: normalizeText(source.state) || "Active",
     type: normalizeText(source.type)
@@ -179,6 +200,7 @@ function readDraft() {
     behavior: elements.behavior?.value,
     interaction: elements.interaction?.value,
     name: elements.name?.value,
+    render: { type: elements.renderType?.value || "None" },
     role: elements.role?.value,
     state: elements.state?.value,
     type: elements.type?.value
@@ -198,6 +220,9 @@ function clearDraftForm() {
   if (elements.state) {
     elements.state.value = "Active";
   }
+  if (elements.renderType) {
+    elements.renderType.value = "None";
+  }
   if (elements.behavior) {
     elements.behavior.value = "";
   }
@@ -216,6 +241,9 @@ function issueLabel(issue) {
   if (issue.path.includes(".traits")) {
     return "Object Traits";
   }
+  if (issue.path.includes(".render")) {
+    return "Render Asset";
+  }
   if (issue.path.endsWith(".state")) {
     return "Initial State";
   }
@@ -229,8 +257,18 @@ function objectDefinitionFindings(object, labelPrefix) {
   }));
 }
 
+function draftDefinitionForReadiness(draft) {
+  if (draft.render?.type !== "Sprite" || draft.render.assetKey) {
+    return draft;
+  }
+  return {
+    ...draft,
+    render: Object.freeze({ type: "None" })
+  };
+}
+
 function draftFindings(draft) {
-  const findings = objectDefinitionFindings(draft, "");
+  const findings = objectDefinitionFindings(draftDefinitionForReadiness(draft), "");
   if (!draft.role) {
     findings.push({
       action: "Choose the MVP role this object serves.",
@@ -354,6 +392,31 @@ function traitText(traitIds) {
   return traitIds.map(traitLabel).join(", ");
 }
 
+function renderAssetText(object) {
+  if (object.render?.type !== "Sprite") {
+    return "None";
+  }
+  return object.render.assetKey || "Sprite asset missing";
+}
+
+function linkedSpriteObject(objects) {
+  return objects.find((object) => object.render?.type === "Sprite" && object.render.assetKey) || null;
+}
+
+function spriteEditorHref(object) {
+  const assetKey = encodeURIComponent(object.render.assetKey);
+  const objectKey = encodeURIComponent(objectId(object));
+  return `/toolbox/sprites/index.html?assetKey=${assetKey}&objectKey=${objectKey}&sourceTool=objects`;
+}
+
+function assetHandoffMessage(result, fallback) {
+  const message = result?.message || fallback;
+  const diagnostics = Array.isArray(result?.diagnostics)
+    ? result.diagnostics.map((diagnostic) => normalizeText(diagnostic.action)).filter(Boolean)
+    : [];
+  return diagnostics.length ? `${message} ${diagnostics.join(" ")}` : message;
+}
+
 function renderObjectList(objects) {
   if (!elements.list) {
     return;
@@ -363,7 +426,7 @@ function renderObjectList(objects) {
   if (objects.length === 0) {
     const row = document.createElement("tr");
     const empty = document.createElement("td");
-    empty.colSpan = 6;
+    empty.colSpan = 7;
     empty.textContent = "No objects drafted yet.";
     row.append(empty);
     elements.list.append(row);
@@ -385,6 +448,7 @@ function renderObjectList(objects) {
       tableCell(object.role),
       tableCell(object.state),
       tableCell(traitText(object.traits)),
+      tableCell(renderAssetText(object)),
       action
     );
     elements.list.append(row);
@@ -395,6 +459,7 @@ function renderOutput(objects, findings) {
   const staticCount = objects.filter((object) => object.type === "Static").length;
   const dynamicCount = objects.filter((object) => object.type === "Dynamic").length;
   const readiness = readinessLabel(findings);
+  const linkedSprite = linkedSpriteObject(objects);
 
   setText(elements.count, String(objects.length));
   setText(elements.readiness, readiness);
@@ -407,6 +472,23 @@ function renderOutput(objects, findings) {
       ? "Paddle + ball setup has the required Dynamic paddle, Dynamic ball, and Static boundary."
       : "Paddle and ball setup needs validation actions."
   );
+  setText(elements.outputRenderAsset, linkedSprite ? linkedSprite.render.assetKey : "None");
+  setText(
+    elements.outputSpritePreview,
+    linkedSprite
+      ? `${linkedSprite.render.assetKey}: ${linkedSprite.render.previewPath || "No preview path returned by shared asset record."}`
+      : "No sprite asset linked."
+  );
+  if (elements.editSprite) {
+    elements.editSprite.hidden = !linkedSprite;
+    if (linkedSprite) {
+      elements.editSprite.href = spriteEditorHref(linkedSprite);
+      elements.editSprite.textContent = `Edit ${linkedSprite.render.assetKey}`;
+    } else {
+      elements.editSprite.removeAttribute("href");
+      elements.editSprite.textContent = "Edit Sprite";
+    }
+  }
 }
 
 function renderObjectTypeOptions() {
@@ -454,18 +536,71 @@ function render() {
   renderValidation(findings);
 }
 
+function ensureDraftSpriteRender(draft) {
+  if (draft.render?.type !== "Sprite") {
+    return { draft, message: "" };
+  }
+
+  const result = assetRepository.ensureSpriteAssetForObject({
+    objectKey: objectId(draft),
+    objectName: draft.name
+  });
+  const asset = result?.asset || null;
+  if (result?.error || !result?.linked || !asset?.id) {
+    return {
+      draft,
+      finding: {
+        action: result?.message || "Create or resolve the shared sprite asset record before adding this object.",
+        label: "Render Asset"
+      },
+      message: assetHandoffMessage(result, "Sprite asset handoff failed.")
+    };
+  }
+
+  return {
+    draft: {
+      ...draft,
+      render: Object.freeze({
+        assetKey: normalizeText(asset.id),
+        previewPath: normalizeText(asset.storedPath || asset.path),
+        type: "Sprite"
+      })
+    },
+    message: assetHandoffMessage(result, `Linked sprite asset ${asset.id}.`)
+  };
+}
+
 function addDraftObject() {
-  const draft = readDraft();
-  const findings = draftFindings(draft);
+  let draft = readDraft();
+  let findings = draftFindings(draft);
   if (findings.length > 0) {
     renderValidation(findings);
     setText(elements.log, `Draft blocked: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
     return;
   }
 
+  const handoff = ensureDraftSpriteRender(draft);
+  if (handoff.finding) {
+    renderValidation([handoff.finding]);
+    setText(elements.log, handoff.message);
+    return;
+  }
+  draft = handoff.draft;
+  findings = draftFindings(draft);
+  if (findings.length > 0) {
+    renderValidation(findings);
+    setText(elements.log, `Draft blocked after render handoff: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
+    return;
+  }
+
   draftedObjects = [...draftedObjects, draft];
   clearDraftForm();
-  setText(elements.log, `Added ${draft.name} as a ${draft.type} ${draft.role}.`);
+  setText(
+    elements.log,
+    handoff.message
+      ? `Added ${draft.name} as a ${draft.type} ${draft.role}. ${handoff.message}`
+      : `Added ${draft.name} as a ${draft.type} ${draft.role}.`
+  );
   render();
 }
 

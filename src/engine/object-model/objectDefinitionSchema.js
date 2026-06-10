@@ -12,6 +12,7 @@ export const OBJECT_DEFINITION_SCHEMA_VERSION = 1;
 
 const OBJECT_MODEL_TYPE_ENUM = Object.freeze(OBJECT_MODEL_TYPE_LIST.map((objectType) => objectType.id));
 const OBJECT_MODEL_TRAIT_ENUM = Object.freeze(OBJECT_MODEL_TRAIT_LIST.map((trait) => trait.id));
+const OBJECT_DEFINITION_RENDER_TYPE_ENUM = Object.freeze(["None", "Sprite"]);
 const OBJECT_DEFINITION_STATE_ENUM = Object.freeze(["Active", "Idle", "Disabled"]);
 
 export const OBJECT_DEFINITION_SCHEMA = Object.freeze({
@@ -23,6 +24,19 @@ export const OBJECT_DEFINITION_SCHEMA = Object.freeze({
     id: Object.freeze({ minLength: 1, type: "string" }),
     interaction: Object.freeze({ type: "string" }),
     name: Object.freeze({ minLength: 1, type: "string" }),
+    render: Object.freeze({
+      additionalProperties: false,
+      properties: Object.freeze({
+        assetKey: Object.freeze({ minLength: 1, type: "string" }),
+        previewPath: Object.freeze({ minLength: 1, type: "string" }),
+        type: Object.freeze({
+          enum: OBJECT_DEFINITION_RENDER_TYPE_ENUM,
+          type: "string",
+        }),
+      }),
+      required: Object.freeze(["type"]),
+      type: "object",
+    }),
     role: Object.freeze({ type: "string" }),
     state: Object.freeze({ enum: OBJECT_DEFINITION_STATE_ENUM, type: "string" }),
     traits: Object.freeze({

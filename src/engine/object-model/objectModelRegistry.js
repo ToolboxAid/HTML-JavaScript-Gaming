@@ -18,7 +18,6 @@ export const OBJECT_MODEL_TRAIT_IDS = Object.freeze({
   DAMAGEABLE: "damageable",
   KILLABLE: "killable",
   PLAYER_CONTROLLED: "playerControlled",
-  BOUNCES: "bounces",
   COLLIDES: "collides",
   SCORES: "scores",
   COLLECTIBLE: "collectible",
@@ -100,12 +99,6 @@ const PLAYER_CONTROLLED_TRAIT = Object.freeze({
   label: "Player Controlled",
 });
 
-const BOUNCES_TRAIT = Object.freeze({
-  description: "Object is intended to rebound from colliding surfaces.",
-  id: OBJECT_MODEL_TRAIT_IDS.BOUNCES,
-  label: "Bounces",
-});
-
 const COLLIDES_TRAIT = Object.freeze({
   description: "Object participates in collision checks or blocking interactions.",
   id: OBJECT_MODEL_TRAIT_IDS.COLLIDES,
@@ -141,7 +134,6 @@ export const OBJECT_MODEL_TRAIT_REGISTRY = Object.freeze({
   [OBJECT_MODEL_TRAIT_IDS.DAMAGEABLE]: DAMAGEABLE_TRAIT,
   [OBJECT_MODEL_TRAIT_IDS.KILLABLE]: KILLABLE_TRAIT,
   [OBJECT_MODEL_TRAIT_IDS.PLAYER_CONTROLLED]: PLAYER_CONTROLLED_TRAIT,
-  [OBJECT_MODEL_TRAIT_IDS.BOUNCES]: BOUNCES_TRAIT,
   [OBJECT_MODEL_TRAIT_IDS.COLLIDES]: COLLIDES_TRAIT,
   [OBJECT_MODEL_TRAIT_IDS.SCORES]: SCORES_TRAIT,
   [OBJECT_MODEL_TRAIT_IDS.COLLECTIBLE]: COLLECTIBLE_TRAIT,

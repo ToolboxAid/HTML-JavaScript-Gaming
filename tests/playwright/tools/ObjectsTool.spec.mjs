@@ -70,8 +70,8 @@ test("Objects seeds a usable paddle and ball MVP setup with visible diagnostics"
     await expect(page.locator("[data-objects-type-basics]")).toContainText("Goal");
     await expect(page.locator("[data-objects-trait-basics]")).toContainText("movable");
     await expect(page.locator("[data-objects-trait-basics]")).toContainText("playerControlled");
-    await expect(page.locator("[data-objects-trait-basics]")).toContainText("bounces");
     await expect(page.locator("[data-objects-trait-basics]")).toContainText("collides");
+    await expect(page.locator("[data-objects-trait-basics]")).not.toContainText("bounces");
 
     await page.getByRole("button", { name: "Seed Paddle + Ball" }).click();
     await expect(page.locator("[data-objects-log]")).toHaveText("Seeded paddle + ball MVP objects: Player Paddle, Game Ball, and Arena Boundary.");
@@ -86,8 +86,10 @@ test("Objects seeds a usable paddle and ball MVP setup with visible diagnostics"
     await expect(page.locator("[data-objects-list]")).toContainText("Game Ball");
     await expect(page.locator("[data-objects-list]")).toContainText("Arena Boundary");
     await expect(page.locator("[data-objects-list]")).toContainText("Player Controlled");
-    await expect(page.locator("[data-objects-list]")).toContainText("Bounces");
     await expect(page.locator("[data-objects-list]")).toContainText("Collides");
+    await expect(page.locator("[data-objects-list]")).not.toContainText("Bounces");
+    await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("None");
+    await expect(page.locator("[data-objects-edit-sprite]")).toBeHidden();
     await expect(page.locator("[data-objects-output-mvp]")).toHaveText("Paddle + ball setup has the required Dynamic paddle, Dynamic ball, and Static boundary.");
 
     await page.getByRole("button", { name: "Validate Setup" }).click();
@@ -95,6 +97,66 @@ test("Objects seeds a usable paddle and ball MVP setup with visible diagnostics"
     await expect(page.locator("[data-objects-validation-list]")).toHaveText("PASS: Paddle + ball MVP object setup is ready.");
     await expect(page.locator("[data-objects-output] pre, [data-objects-output] code")).toHaveCount(0);
     await expect(page.locator("[data-objects-output]")).not.toContainText("{");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Objects creates and resolves a real sprite asset for Sprite render handoff", async ({ page }) => {
+  const failures = await openObjectsPage(page);
+
+  try {
+    await page.getByLabel("Object Type").selectOption("Dynamic");
+    await page.getByLabel("MVP Role").selectOption("Ball");
+    await page.getByLabel("Object Name").fill("Ball");
+    await page.getByLabel("Render Type").selectOption("Sprite");
+    await page.getByLabel("Behavior Notes").fill("Moves continuously after launch.");
+    await page.getByLabel("Interaction Notes").fill("Bounce behavior belongs in future event or physics configuration.");
+    await page.getByRole("button", { name: "Add Object" }).click();
+
+    await expect(page.locator("[data-objects-log]")).toContainText("Added Ball as a Dynamic Ball.");
+    await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_ball for Ball.");
+    await expect(page.locator("[data-objects-log]")).toContainText("Game Configuration is not ready");
+    await expect(page.locator("[data-objects-list]")).toContainText("sprite_ball");
+    await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_ball");
+    await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_ball");
+    await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("projects/");
+    await expect(page.locator("[data-objects-edit-sprite]")).toBeVisible();
+    await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
+      "href",
+      "/toolbox/sprites/index.html?assetKey=sprite_ball&objectKey=ball&sourceTool=objects"
+    );
+
+    await page.getByRole("button", { name: "Reset Draft" }).click();
+    await page.getByLabel("Object Type").selectOption("Dynamic");
+    await page.getByLabel("MVP Role").selectOption("Ball");
+    await page.getByLabel("Object Name").fill("Ball");
+    await page.getByLabel("Render Type").selectOption("Sprite");
+    await page.getByRole("button", { name: "Add Object" }).click();
+
+    await expect(page.locator("[data-objects-log]")).toContainText("Added Ball as a Dynamic Ball.");
+    await expect(page.locator("[data-objects-log]")).toContainText("Resolved existing sprite asset sprite_ball for Ball.");
+    await expect(page.locator("[data-objects-log]")).toContainText("Game Configuration is not ready");
+
+    const spriteRows = await page.evaluate(async () => {
+      const response = await fetch("/api/mock-db/snapshot");
+      const payload = await response.json();
+      return payload.data.tables.asset_library_items.filter((asset) => asset.id === "sprite_ball");
+    });
+    expect(spriteRows).toHaveLength(1);
+    expect(spriteRows[0]).toEqual(expect.objectContaining({
+      assetRole: "image",
+      fileName: "sprite_ball.png",
+      id: "sprite_ball",
+      name: "sprite_ball",
+      status: "Ready",
+      usage: "sprite",
+    }));
+    expect(spriteRows[0].storedPath).toContain("/image/sprite/sprite_ball.png");
+    expect(JSON.stringify(spriteRows)).not.toMatch(/placeholder/i);
 
     await expectNoPageFailures(failures);
   } finally {

@@ -324,6 +324,21 @@ function slugify(value) {
     .replace(/^-+|-+$/g, "") || "asset";
 }
 
+function slugifyRequired(value) {
+  return normalizeText(value)
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-+|-+$/g, "");
+}
+
+function spriteAssetKeyForObjectKey(value) {
+  const slug = slugifyRequired(value).replace(/-/g, "_");
+  if (!slug) {
+    return "";
+  }
+  return slug.startsWith("sprite_") ? slug : `sprite_${slug}`;
+}
+
 function checksumForMetadata({ fileName, mimeType, size, projectId, assetRole }) {
   const text = `${projectId}|${assetRole}|${fileName}|${mimeType}|${size}`;
   let hash = 0;
@@ -474,6 +489,70 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
     updatedAt: timestamp,
     updatedBy: ASSET_SYSTEM_USER_KEY
   };
+}
+
+function createEditableSpriteAssetRecord({ assetKey, project }) {
+  const assetRole = "image";
+  const fileName = `${assetKey}.png`;
+  const mimeType = "image/png";
+  const projectId = project?.id || "";
+  const role = roleDefinitionForId(assetRole);
+  const size = 1;
+  const storedPath = storagePathForProjectAsset(projectId, assetRole, "sprite", fileName);
+  const checksum = checksumForMetadata({
+    assetRole,
+    fileName,
+    mimeType,
+    projectId,
+    size
+  });
+  const timestamp = new Date().toISOString();
+  const storageObject = {
+    assetId: assetKey,
+    checksum,
+    createdAt: timestamp,
+    createdBy: ASSET_SYSTEM_USER_KEY,
+    id: `${projectId}-storage-image-sprite-${assetKey}`,
+    mimeType,
+    originalName: fileName,
+    ownerProjectId: projectId,
+    projectId,
+    role: role?.label || assetRole,
+    size,
+    status: "Stored",
+    storedPath,
+    updatedAt: timestamp,
+    updatedBy: ASSET_SYSTEM_USER_KEY
+  };
+  const asset = {
+    assetRole,
+    assetRoleLabel: role.label,
+    checksum,
+    createdAt: timestamp,
+    createdBy: ASSET_SYSTEM_USER_KEY,
+    fileName,
+    id: assetKey,
+    mimeType,
+    name: assetKey,
+    originalName: fileName,
+    ownerProjectId: projectId,
+    ownerUserId: project.ownerUserId,
+    paletteSwatch: null,
+    path: storedPath,
+    previewKind: previewKindForRole(role),
+    projectId,
+    role: role.label,
+    size,
+    status: "Ready",
+    storedPath,
+    storageObjectId: storageObject.id,
+    type: role.label,
+    updatedAt: timestamp,
+    updatedBy: ASSET_SYSTEM_USER_KEY,
+    usage: "sprite"
+  };
+
+  return { asset, storageObject };
 }
 
 export function createAssetToolMockRepository(options = {}) {
@@ -800,6 +879,105 @@ export function createAssetToolMockRepository(options = {}) {
     };
   }
 
+  function ensureSpriteAssetForObject(input = {}) {
+    const objectKey = normalizeText(input.objectKey || input.objectName || input.name);
+    const objectName = normalizeText(input.objectName || input.name || objectKey);
+    const spriteAssetKey = spriteAssetKeyForObjectKey(objectKey);
+    const handoff = getConfigurationHandoff();
+    const project = handoff.activeProject || null;
+    const projectId = project?.id || "";
+    const diagnostics = [];
+    const findings = [];
+
+    if (!spriteAssetKey) {
+      findings.push({
+        action: "Name the object before selecting Sprite render type.",
+        field: "objectKey",
+        label: "Object Key"
+      });
+    }
+    if (!projectId) {
+      findings.push({
+        action: "Open an active project so sprite assets can be created under project asset storage.",
+        field: "activeProject",
+        label: "Active Project"
+      });
+    }
+    if (projectId && !handoff.ready) {
+      diagnostics.push({
+        action: "Game Configuration is not ready; created a minimal editable default sprite asset for Sprite Editor ownership only.",
+        label: "Game Configuration",
+        status: "WARN"
+      });
+    }
+
+    if (findings.length > 0) {
+      replaceValidationRows(projectId, findings);
+      return {
+        asset: null,
+        created: false,
+        diagnostics,
+        linked: false,
+        message: findings.length === 1
+          ? "Sprite asset handoff blocked by 1 missing item."
+          : `Sprite asset handoff blocked by ${findings.length} missing items.`,
+        snapshot: getSnapshot(),
+        spriteAssetKey
+      };
+    }
+
+    const existingAsset = tables.asset_library_items.find(
+      (asset) => asset.projectId === projectId && asset.id === spriteAssetKey
+    );
+    if (existingAsset) {
+      selectedAssetId = existingAsset.id;
+      replaceValidationRows(projectId, []);
+      persistTables();
+      return {
+        asset: existingAsset,
+        created: false,
+        diagnostics,
+        linked: true,
+        message: `Resolved existing sprite asset ${spriteAssetKey} for ${objectName}.`,
+        snapshot: getSnapshot(),
+        spriteAssetKey
+      };
+    }
+
+    const record = createEditableSpriteAssetRecord({ assetKey: spriteAssetKey, project });
+    tables.asset_library_items = tables.asset_library_items.filter((asset) => asset.id !== record.asset.id);
+    tables.asset_storage_objects = tables.asset_storage_objects.filter((storageObject) => storageObject.id !== record.storageObject.id);
+    tables.asset_library_items.push(record.asset);
+    tables.asset_storage_objects.push(record.storageObject);
+    tables.asset_import_events.push({
+      assetId: record.asset.id,
+      createdAt: record.asset.createdAt,
+      createdBy: ASSET_SYSTEM_USER_KEY,
+      fileName: record.asset.fileName,
+      id: `${record.asset.id}-import-${tables.asset_import_events.length + 1}`,
+      mimeType: record.asset.mimeType,
+      projectId,
+      status: "Created",
+      storedPath: record.asset.storedPath,
+      type: record.asset.type,
+      updatedAt: record.asset.updatedAt,
+      updatedBy: ASSET_SYSTEM_USER_KEY
+    });
+    selectedAssetId = record.asset.id;
+    replaceValidationRows(projectId, []);
+    persistTables();
+
+    return {
+      asset: record.asset,
+      created: true,
+      diagnostics,
+      linked: true,
+      message: `Created editable default sprite asset ${spriteAssetKey} for ${objectName}.`,
+      snapshot: getSnapshot(),
+      spriteAssetKey
+    };
+  }
+
   function listAssets(projectId = "") {
     const handoff = getConfigurationHandoff();
     const targetProjectId = projectId || handoff.activeProject?.id || "";
@@ -1012,6 +1190,7 @@ export function createAssetToolMockRepository(options = {}) {
     ASSET_TYPES,
     ASSET_USAGE_BY_ROLE,
     clearAssetLibrary,
+    ensureSpriteAssetForObject,
     getConfigurationHandoff,
     getPaletteSnapshot,
     getProgressHandoff,

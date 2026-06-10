@@ -29,7 +29,6 @@ export function run() {
     "damageable",
     "killable",
     "playerControlled",
-    "bounces",
     "collides",
     "scores",
     "collectible",
@@ -38,6 +37,7 @@ export function run() {
   ]);
   assert.equal(getObjectModelType("objectStatic"), null);
   assert.equal(getObjectModelType("objectDynamic"), null);
+  assert.equal(getObjectModelTrait("bounces"), null);
   assert.equal(getObjectModelTrait("objectKillable"), null);
 
   const schema = getObjectDefinitionSchema();
@@ -45,6 +45,7 @@ export function run() {
   assert.deepEqual(schema.required, ["name", "type", "traits"]);
   assert.deepEqual(schema.properties.type.enum, OBJECT_MODEL_TYPE_LIST.map((objectType) => objectType.id));
   assert.deepEqual(schema.properties.traits.items.enum, OBJECT_MODEL_TRAIT_LIST.map((trait) => trait.id));
+  assert.deepEqual(schema.properties.render.properties.type.enum, ["None", "Sprite"]);
 
   const paddleDefinition = Object.freeze({
     behavior: "Moves from player input.",
@@ -63,6 +64,20 @@ export function run() {
   assert.notEqual(paddleValidation.definition, paddleDefinition);
   assert.notEqual(paddleValidation.definition.traits, paddleDefinition.traits);
   assert.deepEqual(paddleValidation.definition, paddleDefinition);
+
+  const spriteBallDefinition = Object.freeze({
+    name: "Ball",
+    render: Object.freeze({
+      assetKey: "sprite_ball",
+      previewPath: "projects/demo/image/sprite/sprite_ball.png",
+      type: "Sprite",
+    }),
+    traits: Object.freeze(["movable", "collides"]),
+    type: "Dynamic",
+  });
+  const spriteBallValidation = validateObjectDefinition(spriteBallDefinition);
+  assert.equal(spriteBallValidation.valid, true);
+  assert.deepEqual(spriteBallValidation.definition, spriteBallDefinition);
 
   assertErrorCodes(
     validateObjectDefinition("bad"),
@@ -97,6 +112,25 @@ export function run() {
       OBJECT_DEFINITION_VALIDATION_CODES.TRAIT_INVALID,
     ],
     "duplicate and unknown traits fail visibly"
+  );
+  assertErrorCodes(
+    validateObjectDefinition({
+      name: "Bad Ball Trait",
+      type: "Dynamic",
+      traits: ["bounces"],
+    }),
+    [OBJECT_DEFINITION_VALIDATION_CODES.TRAIT_INVALID],
+    "bounce behavior is not an object identity trait"
+  );
+  assertErrorCodes(
+    validateObjectDefinition({
+      name: "Sprite Without Asset",
+      render: { type: "Sprite" },
+      traits: ["collides"],
+      type: "Dynamic",
+    }),
+    [OBJECT_DEFINITION_VALIDATION_CODES.RENDER_ASSET_KEY_REQUIRED],
+    "sprite render config requires a real linked sprite asset"
   );
   assertErrorCodes(
     validateObjectDefinition({

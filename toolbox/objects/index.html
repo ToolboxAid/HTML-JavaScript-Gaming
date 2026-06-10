@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Objects</div>
                 <h1>Objects</h1>
-                <p class="lede">Define static and dynamic object setup for the paddle and ball MVP path without persistence, database writes, sample updates, or engine runtime changes.</p>
+                <p class="lede">Define static and dynamic object setup for the paddle and ball MVP path, with sprite render assets handed off through shared asset records and no sample or engine runtime changes.</p>
             </div>
         </section>
         <section class="section">
@@ -83,6 +83,15 @@
                                                         </td>
                                                     </tr>
                                                     <tr>
+                                                        <th scope="row"><label for="objectsRenderType">Render Type</label></th>
+                                                        <td>
+                                                            <select id="objectsRenderType" data-objects-render-type>
+                                                                <option value="None">None</option>
+                                                                <option value="Sprite">Sprite</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
                                                         <th scope="row"><label for="objectsBehavior">Behavior Notes</label></th>
                                                         <td><textarea id="objectsBehavior" rows="4" data-objects-behavior placeholder="Moves horizontally from player input."></textarea></td>
                                                     </tr>
@@ -105,11 +114,11 @@
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="objects" data-tool-icon-src="assets/theme-v2/images/badges/objects.png" data-tool-character-src="assets/theme-v2/images/tools/objects.png"></div>
                     <section class="tool-center-panel">
                         <h2>Object Setup Workspace</h2>
-                        <p>Objects are held in this page session only. The output is a readable setup plan for authoring, not a saved manifest or runtime payload.</p>
+                        <p>Object definitions are held in this page session only. Sprite render selections link to shared asset records for Sprite Editor handoff.</p>
                         <div class="grid cols-3" aria-label="Objects readiness summary">
                             <article class="mini-stat"><strong data-objects-readiness>Needs Input</strong>MVP readiness</article>
                             <article class="mini-stat"><strong data-objects-count>0</strong>Objects drafted</article>
-                            <article class="mini-stat"><strong data-objects-scope>In-memory</strong>Storage scope</article>
+                            <article class="mini-stat"><strong data-objects-scope>Session + Assets</strong>Storage scope</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
@@ -145,6 +154,7 @@
                                                 <th>Role</th>
                                                 <th>State</th>
                                                 <th>Traits</th>
+                                                <th>Render Asset</th>
                                                 <th>Action</th>
                                             </tr>
                                         </thead>
@@ -165,8 +175,11 @@
                                     <p>Readiness: <span data-objects-output-readiness>Needs Input</span></p>
                                     <p>Static Objects: <span data-objects-output-static>0</span></p>
                                     <p>Dynamic Objects: <span data-objects-output-dynamic>0</span></p>
+                                    <p>Render Asset: <span data-objects-output-render-asset>None</span></p>
+                                    <p>Sprite Preview: <span data-objects-output-sprite-preview>No sprite asset linked.</span></p>
                                     <p>MVP Path: <span data-objects-output-mvp>Paddle and ball setup not ready.</span></p>
-                                    <p>Runtime Scope: <span data-objects-output-scope>No persistence or engine runtime behavior.</span></p>
+                                    <p>Runtime Scope: <span data-objects-output-scope>No manifest persistence or engine runtime behavior.</span></p>
+                                    <p><a class="btn btn--compact" data-objects-edit-sprite hidden>Edit Sprite</a></p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

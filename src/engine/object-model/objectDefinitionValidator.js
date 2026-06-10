@@ -24,12 +24,19 @@ export const OBJECT_DEFINITION_VALIDATION_CODES = Object.freeze({
   TRAITS_INVALID: "OBJECT_DEFINITION_TRAITS_INVALID",
   TRAIT_DUPLICATE: "OBJECT_DEFINITION_TRAIT_DUPLICATE",
   TRAIT_INVALID: "OBJECT_DEFINITION_TRAIT_INVALID",
+  RENDER_INVALID: "OBJECT_DEFINITION_RENDER_INVALID",
+  RENDER_FIELD_UNKNOWN: "OBJECT_DEFINITION_RENDER_FIELD_UNKNOWN",
+  RENDER_TYPE_REQUIRED: "OBJECT_DEFINITION_RENDER_TYPE_REQUIRED",
+  RENDER_TYPE_INVALID: "OBJECT_DEFINITION_RENDER_TYPE_INVALID",
+  RENDER_ASSET_KEY_REQUIRED: "OBJECT_DEFINITION_RENDER_ASSET_KEY_REQUIRED",
   STATE_INVALID: "OBJECT_DEFINITION_STATE_INVALID",
   FIELD_INVALID: "OBJECT_DEFINITION_FIELD_INVALID",
   DEFINITIONS_INVALID: "OBJECT_DEFINITIONS_INVALID",
 });
 
 const OBJECT_DEFINITION_FIELDS = Object.freeze(Object.keys(OBJECT_DEFINITION_SCHEMA.properties));
+const OBJECT_DEFINITION_RENDER_FIELDS = Object.freeze(Object.keys(OBJECT_DEFINITION_SCHEMA.properties.render.properties));
+const OBJECT_DEFINITION_RENDER_TYPES = Object.freeze(OBJECT_DEFINITION_SCHEMA.properties.render.properties.type.enum);
 const OBJECT_DEFINITION_STATES = Object.freeze(OBJECT_DEFINITION_SCHEMA.properties.state.enum);
 
 export function validateObjectDefinition(definition, options = {}) {
@@ -93,6 +100,7 @@ export function validateObjectDefinition(definition, options = {}) {
   copyOptionalStringField(definition, objectDefinition, "behavior", path, issues);
   copyOptionalStringField(definition, objectDefinition, "id", path, issues);
   copyOptionalStringField(definition, objectDefinition, "interaction", path, issues);
+  copyRenderField(definition, objectDefinition, path, issues);
   copyOptionalStringField(definition, objectDefinition, "role", path, issues);
   copyStateField(definition, objectDefinition, path, issues);
 
@@ -232,6 +240,101 @@ function copyOptionalStringField(source, target, fieldName, path, issues) {
       `${path}.${fieldName}`,
       `Object definition ${fieldName} must be text when provided.`,
       `Set ${fieldName} to text or remove the field.`
+    ));
+    return;
+  }
+
+  const value = source[fieldName].trim();
+  if (value) {
+    target[fieldName] = value;
+  }
+}
+
+function copyRenderField(source, target, path, issues) {
+  if (!Object.hasOwn(source, "render") || source.render === null || source.render === undefined) {
+    return;
+  }
+
+  if (!isRecord(source.render)) {
+    issues.push(createIssue(
+      OBJECT_DEFINITION_VALIDATION_CODES.RENDER_INVALID,
+      `${path}.render`,
+      "Object definition render config must be an object when provided.",
+      "Use render.type None or Sprite, with assetKey when Sprite is selected."
+    ));
+    return;
+  }
+
+  Object.keys(source.render).forEach((fieldName) => {
+    if (OBJECT_DEFINITION_RENDER_FIELDS.includes(fieldName)) {
+      return;
+    }
+    issues.push(createIssue(
+      OBJECT_DEFINITION_VALIDATION_CODES.RENDER_FIELD_UNKNOWN,
+      `${path}.render.${fieldName}`,
+      `Object definition render field ${fieldName} is not declared by the object definition schema.`,
+      `Remove render.${fieldName} or add it through a future declared render contract change.`
+    ));
+  });
+
+  if (!Object.hasOwn(source.render, "type") || source.render.type === null || source.render.type === undefined) {
+    issues.push(createIssue(
+      OBJECT_DEFINITION_VALIDATION_CODES.RENDER_TYPE_REQUIRED,
+      `${path}.render.type`,
+      "Object definition render config requires a render type.",
+      `Choose ${choiceText(OBJECT_DEFINITION_RENDER_TYPES)}.`
+    ));
+    return;
+  }
+
+  if (typeof source.render.type !== "string") {
+    issues.push(createIssue(
+      OBJECT_DEFINITION_VALIDATION_CODES.RENDER_TYPE_INVALID,
+      `${path}.render.type`,
+      "Object definition render type must be text.",
+      `Choose ${choiceText(OBJECT_DEFINITION_RENDER_TYPES)}.`
+    ));
+    return;
+  }
+
+  const renderType = source.render.type.trim();
+  if (!OBJECT_DEFINITION_RENDER_TYPES.includes(renderType)) {
+    issues.push(createIssue(
+      OBJECT_DEFINITION_VALIDATION_CODES.RENDER_TYPE_INVALID,
+      `${path}.render.type`,
+      `Object definition render type ${renderType} is not supported.`,
+      `Choose ${choiceText(OBJECT_DEFINITION_RENDER_TYPES)}.`
+    ));
+    return;
+  }
+
+  const render = { type: renderType };
+  copyOptionalRenderStringField(source.render, render, "assetKey", path, issues);
+  copyOptionalRenderStringField(source.render, render, "previewPath", path, issues);
+
+  if (renderType === "Sprite" && !render.assetKey) {
+    issues.push(createIssue(
+      OBJECT_DEFINITION_VALIDATION_CODES.RENDER_ASSET_KEY_REQUIRED,
+      `${path}.render.assetKey`,
+      "Sprite render config requires a linked sprite asset key.",
+      "Create or resolve the sprite asset record before validating the object definition."
+    ));
+  }
+
+  target.render = Object.freeze(render);
+}
+
+function copyOptionalRenderStringField(source, target, fieldName, path, issues) {
+  if (!Object.hasOwn(source, fieldName) || source[fieldName] === null || source[fieldName] === undefined) {
+    return;
+  }
+
+  if (typeof source[fieldName] !== "string") {
+    issues.push(createIssue(
+      OBJECT_DEFINITION_VALIDATION_CODES.FIELD_INVALID,
+      `${path}.render.${fieldName}`,
+      `Object definition render ${fieldName} must be text when provided.`,
+      `Set render.${fieldName} to text or remove the field.`
     ));
     return;
   }
