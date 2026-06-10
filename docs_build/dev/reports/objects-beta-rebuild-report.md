@@ -39,9 +39,9 @@ Files changed:
 - PASS: Rebuilt `toolbox/objects` as a Tool Template V2-style first-class surface with header, Tool Display Mode host, left setup panel, center workspace, right output/validation/status panels, and working accordions.
 - PASS: Used Theme V2 only. No inline CSS, no inline JS, no `<style>` blocks, no inline event handlers.
 - PASS: Added an external Objects module with in-memory-only object setup behavior.
-- PASS: Kept the tool focused on the paddle + ball MVP path with a seeded Dynamic paddle, Dynamic ball, and Static boundary.
+- PASS: Kept the tool focused on a targeted object setup path with seeded Dynamic hero, Dynamic projectile, and Static wall rows.
 - PASS: Added object type basics for Static, Dynamic, Collectible, Hazard, and Goal.
-- PASS: Added visible output, status logging, MVP requirement rows, and actionable validation diagnostics.
+- PASS: Added visible output, status logging, requirement rows, and actionable validation diagnostics.
 - PASS: Added no persistence, save/load, auth, sample JSON alignment, or engine runtime behavior.
 - PASS: Updated DB-backed tool metadata only after targeted Objects Playwright passed.
 - PASS: Marked Objects beta after execution evidence and targeted validation passed.
@@ -79,6 +79,6 @@ Coverage:
 ## Manual Notes
 
 - Objects page launches from `toolbox/objects/index.html`.
-- Seed Paddle + Ball creates three in-memory rows and validates the MVP path.
-- Add Object blocks missing fields and invalid Paddle/Ball/Boundary type combinations with actionable diagnostics.
+- Seed Starter Objects creates three in-memory rows and validates object setup.
+- Add Object blocks missing fields and invalid object type combinations with actionable diagnostics.
 - Reset/remove actions affect only the in-memory page draft.

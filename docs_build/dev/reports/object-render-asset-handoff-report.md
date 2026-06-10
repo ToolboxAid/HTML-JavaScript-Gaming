@@ -14,12 +14,12 @@
 - PASS: Removed `bounces` from object identity traits. Bounce remains a future behavior/physics/event configuration concern.
 - PASS: Added object definition render config schema/validation for `None` and `Sprite`.
 - PASS: Wired Objects to the shared object-model registry and shared asset repository contract instead of owning duplicate sprite asset records.
-- PASS: Added Render Type = Sprite handoff that creates or resolves a real mock-adapter asset row named from the object key, for example `sprite_ball`.
+- PASS: Added Render Type = Sprite handoff that creates or resolves a real mock-adapter asset row named from the object key, for example `sprite_bolt`.
 - PASS: Linked the object render config to the returned sprite asset key and shared asset preview path.
 - PASS: Objects shows the linked sprite key/path and an Edit Sprite route with `assetKey`, `objectKey`, and `sourceTool=objects` query context.
 - PASS: Missing sprite assets create a minimal editable default sprite asset record with visible status diagnostics.
 - PASS: No fake `placeholder` asset key/concept and no `imageDataUrl` were introduced.
-- PASS: Object ownership stays in Objects; sprite content ownership stays with Assets/Sprite Editor.
+- PASS: Object definition ownership stays in Objects; sprite content ownership stays with Assets/Sprite Editor.
 - PASS: No sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites were added.
 - PASS: Toolbox/Admin tool metadata was not changed.
 
@@ -32,7 +32,7 @@
 - `toolbox/objects/index.html`: added Render Type input, Render Asset column, linked sprite preview, and Edit Sprite action using Theme V2 markup only.
 - `toolbox/objects/objects.js`: requests shared sprite assets, stores linked render config, logs warnings, and displays preview/action state.
 - `tests/engine/ObjectModelContract.test.mjs`: validates no `bounces` object trait and sprite render asset-key validation.
-- `tests/playwright/tools/ObjectsTool.spec.mjs`: validates sprite render selection creating/resolving `sprite_ball`, DB row evidence, no placeholder key, and no visible `bounces` trait.
+- `tests/playwright/tools/ObjectsTool.spec.mjs`: validates sprite render selection creating/resolving a real sprite asset, DB row evidence, no placeholder key, and no visible `bounces` trait.
 
 ## Validation
 

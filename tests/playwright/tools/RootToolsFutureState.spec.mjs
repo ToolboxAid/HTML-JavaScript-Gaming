@@ -271,8 +271,8 @@ test("root tools surface links current tool pages without old_* routes", async (
     const objectsCard = page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Objects$/ })
     }).first();
-    await expect(objectsCard).toContainText("MVP object types");
-    await expect(objectsCard.locator("[data-child-capabilities='Objects']")).toHaveText("MVP object types: Static, Dynamic, Collectible, Hazard, Goal");
+    await expect(objectsCard).toContainText("Object setup types");
+    await expect(objectsCard.locator("[data-child-capabilities='Objects']")).toHaveText("Object setup types: Static, Dynamic, Collectible, Hazard, Goal");
     await page.getByRole("button", { name: "Group" }).click();
     const adminGroupLabels = await page.locator("[data-tools-accordion-list] details[data-tools-accordion]").evaluateAll((groups) => (
       groups.map((group) => group.dataset.toolsAccordion)

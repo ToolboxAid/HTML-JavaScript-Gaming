@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Objects - GameFoundryStudio</title>
-    <meta name="description" content="Objects Toolbox beta surface for static and dynamic paddle and ball MVP object setup.">
+    <meta name="description" content="Objects Toolbox wireframe surface for static and dynamic object setup with sprite asset handoff.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Objects</div>
                 <h1>Objects</h1>
-                <p class="lede">Define static and dynamic object setup for the paddle and ball MVP path, with sprite render assets handed off through shared asset records and no sample or engine runtime changes.</p>
+                <p class="lede">Define object setup with static and dynamic body types, broad roles, and sprite render assets handed off through shared asset records.</p>
             </div>
         </section>
         <section class="section">
@@ -30,83 +30,20 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>MVP Setup</summary>
+                                <summary>Object Setup</summary>
                                 <div class="accordion-body content-stack">
-                                    <p data-objects-mvp-context>Paddle + ball MVP requires a Dynamic paddle, a Dynamic ball, and a Static boundary.</p>
-                                    <div class="content-cluster" aria-label="Objects MVP actions">
-                                        <button class="btn" type="button" data-objects-seed-mvp>Seed Paddle + Ball</button>
+                                    <p data-objects-setup-context>Use the table to define object names, body types, roles, state, and optional sprite render handoff.</p>
+                                    <div class="content-cluster" aria-label="Objects setup actions">
+                                        <button class="btn" type="button" data-objects-seed-starter>Seed Starter Objects</button>
                                         <button class="btn" type="button" data-objects-validate>Validate Setup</button>
                                     </div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Object Draft</summary>
-                                <div class="accordion-body">
-                                    <form class="content-stack" data-objects-form>
-                                        <div class="table-wrapper">
-                                            <table class="data-table tool-form-table" aria-label="Object draft fields" data-objects-draft-table>
-                                                <tbody>
-                                                    <tr>
-                                                        <th scope="row"><label for="objectsType">Object Type</label></th>
-                                                        <td>
-                                                            <select id="objectsType" data-objects-type>
-                                                                <option value="">Select type</option>
-                                                            </select>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="objectsRole">MVP Role</label></th>
-                                                        <td>
-                                                            <select id="objectsRole" data-objects-role>
-                                                                <option value="">Select role</option>
-                                                                <option value="Paddle">Paddle</option>
-                                                                <option value="Ball">Ball</option>
-                                                                <option value="Boundary">Boundary</option>
-                                                                <option value="Pickup">Pickup</option>
-                                                                <option value="Hazard">Hazard</option>
-                                                                <option value="Goal">Goal</option>
-                                                            </select>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="objectsName">Object Name</label></th>
-                                                        <td><input id="objectsName" type="text" data-objects-name placeholder="Player Paddle"></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="objectsState">Initial State</label></th>
-                                                        <td>
-                                                            <select id="objectsState" data-objects-state>
-                                                                <option value="Active">Active</option>
-                                                                <option value="Idle">Idle</option>
-                                                                <option value="Disabled">Disabled</option>
-                                                            </select>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="objectsRenderType">Render Type</label></th>
-                                                        <td>
-                                                            <select id="objectsRenderType" data-objects-render-type>
-                                                                <option value="None">None</option>
-                                                                <option value="Sprite">Sprite</option>
-                                                            </select>
-                                                        </td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="objectsBehavior">Behavior Notes</label></th>
-                                                        <td><textarea id="objectsBehavior" rows="4" data-objects-behavior placeholder="Moves horizontally from player input."></textarea></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="objectsInteraction">Interaction Notes</label></th>
-                                                        <td><textarea id="objectsInteraction" rows="4" data-objects-interaction placeholder="Deflects the ball and stays inside the play area."></textarea></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="content-cluster" aria-label="Object draft actions">
-                                            <button class="btn" type="submit">Add Object</button>
-                                            <button class="btn" type="button" data-objects-reset-draft>Reset Draft</button>
-                                        </div>
-                                    </form>
+                                <summary>Role Choices</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Roles are broad authoring labels. Use Custom when a project-specific role is not listed.</p>
+                                    <ul data-objects-role-basics></ul>
                                 </div>
                             </details>
                         </div>
@@ -116,18 +53,18 @@
                         <h2>Object Setup Workspace</h2>
                         <p>Object definitions are held in this page session only. Sprite render selections link to shared asset records for Sprite Editor handoff.</p>
                         <div class="grid cols-3" aria-label="Objects readiness summary">
-                            <article class="mini-stat"><strong data-objects-readiness>Needs Input</strong>MVP readiness</article>
+                            <article class="mini-stat"><strong data-objects-readiness>Needs Input</strong>Setup readiness</article>
                             <article class="mini-stat"><strong data-objects-count>0</strong>Objects drafted</article>
                             <article class="mini-stat"><strong data-objects-scope>Session + Assets</strong>Storage scope</article>
                         </div>
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Paddle + Ball MVP</div>
-                                    <h3>Required Object Setup</h3>
+                                    <div class="kicker">Object Setup</div>
+                                    <h3>Readiness Checks</h3>
                                 </div>
                                 <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Objects MVP requirements">
+                                    <table class="data-table" aria-label="Objects setup requirements">
                                         <thead>
                                             <tr>
                                                 <th>Requirement</th>
@@ -142,8 +79,8 @@
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Current Draft</div>
-                                    <h3>Object List</h3>
+                                    <div class="kicker">Table Input</div>
+                                    <h3>Objects Table</h3>
                                 </div>
                                 <div class="table-wrapper">
                                     <table class="data-table" aria-label="Drafted objects" data-objects-list-table>
@@ -153,13 +90,18 @@
                                                 <th>Type</th>
                                                 <th>Role</th>
                                                 <th>State</th>
+                                                <th>Render</th>
                                                 <th>Traits</th>
                                                 <th>Render Asset</th>
-                                                <th>Action</th>
+                                                <th>Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody data-objects-list></tbody>
                                     </table>
+                                </div>
+                                <div class="content-cluster" aria-label="Objects table actions">
+                                    <button class="btn" type="button" data-objects-add-row>Add Object</button>
+                                    <button class="btn" type="button" data-objects-reset-table>Reset Table</button>
                                 </div>
                             </div>
                         </article>
@@ -177,7 +119,7 @@
                                     <p>Dynamic Objects: <span data-objects-output-dynamic>0</span></p>
                                     <p>Render Asset: <span data-objects-output-render-asset>None</span></p>
                                     <p>Sprite Preview: <span data-objects-output-sprite-preview>No sprite asset linked.</span></p>
-                                    <p>MVP Path: <span data-objects-output-mvp>Paddle and ball setup not ready.</span></p>
+                                    <p>Object Setup: <span data-objects-output-setup>Object setup needs row details.</span></p>
                                     <p>Runtime Scope: <span data-objects-output-scope>No manifest persistence or engine runtime behavior.</span></p>
                                     <p><a class="btn btn--compact" data-objects-edit-sprite hidden>Edit Sprite</a></p>
                                 </div>

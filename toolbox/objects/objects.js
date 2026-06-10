@@ -7,91 +7,113 @@ import {
 } from "../../src/engine/object-model/index.js";
 import { createAssetToolApiRepository } from "../assets/assets-api-client.js";
 
-const MVP_REQUIREMENTS = Object.freeze([
-  {
-    action: "Add a Dynamic object with the Paddle role.",
-    label: "Dynamic paddle",
-    test: (objects) => objects.some((object) => object.type === "Dynamic" && object.role === "Paddle")
-  },
-  {
-    action: "Add a Dynamic object with the Ball role.",
-    label: "Dynamic ball",
-    test: (objects) => objects.some((object) => object.type === "Dynamic" && object.role === "Ball")
-  },
-  {
-    action: "Add a Static object, usually a Boundary, so the ball has a fixed play area.",
-    label: "Static play boundary",
-    test: (objects) => objects.some((object) => object.type === "Static")
-  }
+const ROLE_OPTIONS = Object.freeze([
+  "Collectible",
+  "Custom",
+  "Enemy",
+  "Goal",
+  "Hazard",
+  "Hero",
+  "Platform",
+  "Projectile",
+  "Spawner",
+  "UI",
+  "Wall",
 ]);
 
-const MVP_ROLE_TRAITS = Object.freeze({
-  Ball: Object.freeze([]),
-  Boundary: Object.freeze([]),
-  Goal: Object.freeze([]),
-  Hazard: Object.freeze([]),
-  Paddle: Object.freeze(["playerControlled"]),
-  Pickup: Object.freeze([]),
+const ROLE_TRAITS = Object.freeze({
+  Collectible: Object.freeze(["collectible"]),
+  Custom: Object.freeze([]),
+  Enemy: Object.freeze([]),
+  Goal: Object.freeze(["goal"]),
+  Hazard: Object.freeze(["hazard"]),
+  Hero: Object.freeze(["playerControlled"]),
+  Platform: Object.freeze(["collides"]),
+  Projectile: Object.freeze(["movable"]),
+  Spawner: Object.freeze([]),
+  UI: Object.freeze([]),
+  Wall: Object.freeze(["collides"]),
 });
 
-const SEEDED_OBJECTS = Object.freeze([
+const SETUP_REQUIREMENTS = Object.freeze([
+  {
+    action: "Add at least one object row.",
+    label: "Object row",
+    test: (objects) => objects.length > 0,
+  },
+  {
+    action: "Give every saved object a name.",
+    label: "Object names",
+    test: (objects) => objects.length > 0 && objects.every((object) => object.name),
+  },
+  {
+    action: "Choose a registered object type for every saved object.",
+    label: "Object types",
+    test: (objects) => objects.length > 0 && objects.every((object) => getObjectModelType(object.type)),
+  },
+  {
+    action: "Choose a role for every saved object.",
+    label: "Object roles",
+    test: (objects) => objects.length > 0 && objects.every((object) => object.role),
+  },
+]);
+
+const STARTER_OBJECTS = Object.freeze([
   Object.freeze({
-    behavior: "Moves horizontally from player input.",
-    interaction: "Deflects the ball and stays inside the play area.",
-    name: "Player Paddle",
-    role: "Paddle",
+    behavior: "Responds to player control mapping.",
+    interaction: "Can interact with platforms, collectibles, hazards, and goals.",
+    name: "Hero",
+    render: Object.freeze({ type: "None" }),
+    role: "Hero",
     state: "Active",
-    type: "Dynamic"
+    type: "Dynamic",
   }),
   Object.freeze({
-    behavior: "Moves continuously after launch.",
-    interaction: "Bounces off the paddle and static boundary.",
-    name: "Game Ball",
-    role: "Ball",
+    behavior: "Moves through the scene under authored behavior.",
+    interaction: "Can collide with walls, platforms, or targets.",
+    name: "Projectile",
+    render: Object.freeze({ type: "None" }),
+    role: "Projectile",
     state: "Active",
-    type: "Dynamic"
+    type: "Dynamic",
   }),
   Object.freeze({
-    behavior: "Does not move.",
-    interaction: "Keeps the ball inside the MVP playfield.",
-    name: "Arena Boundary",
-    role: "Boundary",
+    behavior: "Stays fixed in the scene.",
+    interaction: "Provides a stable collision surface.",
+    name: "Wall",
+    render: Object.freeze({ type: "None" }),
+    role: "Wall",
     state: "Active",
-    type: "Static"
-  })
+    type: "Static",
+  }),
 ]);
 
 const assetRepository = createAssetToolApiRepository();
 let draftedObjects = [];
+let editingRow = null;
 
 const elements = {
-  behavior: document.querySelector("[data-objects-behavior]"),
+  addRow: document.querySelector("[data-objects-add-row]"),
   count: document.querySelector("[data-objects-count]"),
-  form: document.querySelector("[data-objects-form]"),
-  interaction: document.querySelector("[data-objects-interaction]"),
+  editSprite: document.querySelector("[data-objects-edit-sprite]"),
   list: document.querySelector("[data-objects-list]"),
   log: document.querySelector("[data-objects-log]"),
-  name: document.querySelector("[data-objects-name]"),
   outputDynamic: document.querySelector("[data-objects-output-dynamic]"),
-  outputRenderAsset: document.querySelector("[data-objects-output-render-asset]"),
-  outputMvp: document.querySelector("[data-objects-output-mvp]"),
   outputReadiness: document.querySelector("[data-objects-output-readiness]"),
+  outputRenderAsset: document.querySelector("[data-objects-output-render-asset]"),
+  outputSetup: document.querySelector("[data-objects-output-setup]"),
   outputSpritePreview: document.querySelector("[data-objects-output-sprite-preview]"),
   outputStatic: document.querySelector("[data-objects-output-static]"),
   readiness: document.querySelector("[data-objects-readiness]"),
   requirements: document.querySelector("[data-objects-requirements]"),
-  editSprite: document.querySelector("[data-objects-edit-sprite]"),
-  renderType: document.querySelector("[data-objects-render-type]"),
-  resetDraft: document.querySelector("[data-objects-reset-draft]"),
-  role: document.querySelector("[data-objects-role]"),
-  seedMvp: document.querySelector("[data-objects-seed-mvp]"),
-  state: document.querySelector("[data-objects-state]"),
+  resetTable: document.querySelector("[data-objects-reset-table]"),
+  roleBasics: document.querySelector("[data-objects-role-basics]"),
+  seedStarter: document.querySelector("[data-objects-seed-starter]"),
   traitBasics: document.querySelector("[data-objects-trait-basics]"),
-  type: document.querySelector("[data-objects-type]"),
   typeBasics: document.querySelector("[data-objects-type-basics]"),
   validate: document.querySelector("[data-objects-validate]"),
   validationList: document.querySelector("[data-objects-validation-list]"),
-  validationOverlay: document.querySelector("[data-objects-validation-overlay]")
+  validationOverlay: document.querySelector("[data-objects-validation-overlay]"),
 };
 
 function normalizeText(value) {
@@ -119,7 +141,7 @@ function normalizeRenderConfig(source = {}) {
   return Object.freeze({
     assetKey: normalizeText(render.assetKey),
     previewPath: normalizeText(render.previewPath),
-    type: "Sprite"
+    type: "Sprite",
   });
 }
 
@@ -141,11 +163,47 @@ function tableCell(text) {
   return cell;
 }
 
+function actionButton(text, dataName, value = "") {
+  const button = document.createElement("button");
+  button.className = "btn btn--compact";
+  button.type = "button";
+  button.textContent = text;
+  button.dataset[dataName] = value;
+  return button;
+}
+
 function optionElement(value, text) {
   const option = document.createElement("option");
   option.value = value;
   option.textContent = text;
   return option;
+}
+
+function selectElement({ ariaLabel, options, placeholder, selectedValue }) {
+  const select = document.createElement("select");
+  select.setAttribute("aria-label", ariaLabel);
+  if (placeholder) {
+    select.append(optionElement("", placeholder));
+  }
+  options.forEach((option) => {
+    select.append(optionElement(option.value, option.label));
+  });
+  select.value = selectedValue || "";
+  return select;
+}
+
+function textInput({ ariaLabel, value }) {
+  const input = document.createElement("input");
+  input.setAttribute("aria-label", ariaLabel);
+  input.type = "text";
+  input.value = value || "";
+  return input;
+}
+
+function controlCell(control) {
+  const cell = document.createElement("td");
+  cell.append(control);
+  return cell;
 }
 
 function statusText(ok) {
@@ -160,6 +218,17 @@ function sortedTraits() {
   return [...OBJECT_MODEL_TRAIT_LIST].sort((left, right) => left.id.localeCompare(right.id));
 }
 
+function objectTypeOptions() {
+  return sortedObjectTypes().map((objectType) => ({
+    label: objectType.label,
+    value: objectType.id,
+  }));
+}
+
+function roleOptions() {
+  return ROLE_OPTIONS.map((role) => ({ label: role, value: role }));
+}
+
 function traitIdsFromSource(source) {
   return Array.isArray(source.traits)
     ? source.traits.map(normalizeText).filter(Boolean)
@@ -171,7 +240,7 @@ function traitsForObject(source, object) {
   const objectType = getObjectModelType(object.type);
 
   (objectType?.traits || []).forEach((traitId) => traitIds.add(traitId));
-  (MVP_ROLE_TRAITS[object.role] || []).forEach((traitId) => traitIds.add(traitId));
+  (ROLE_TRAITS[object.role] || []).forEach((traitId) => traitIds.add(traitId));
   traitIdsFromSource(source).forEach((traitId) => traitIds.add(traitId));
 
   return Object.freeze([...traitIds]);
@@ -186,49 +255,24 @@ function cloneObject(source = {}) {
     render: normalizeRenderConfig(source),
     role: normalizeText(source.role),
     state: normalizeText(source.state) || "Active",
-    type: normalizeText(source.type)
+    type: normalizeText(source.type),
   };
 
   return {
     ...object,
-    traits: traitsForObject(source, object)
+    traits: traitsForObject(source, object),
   };
 }
 
-function readDraft() {
-  return cloneObject({
-    behavior: elements.behavior?.value,
-    interaction: elements.interaction?.value,
-    name: elements.name?.value,
-    render: { type: elements.renderType?.value || "None" },
-    role: elements.role?.value,
-    state: elements.state?.value,
-    type: elements.type?.value
-  });
-}
-
-function clearDraftForm() {
-  if (elements.type) {
-    elements.type.value = "";
-  }
-  if (elements.role) {
-    elements.role.value = "";
-  }
-  if (elements.name) {
-    elements.name.value = "";
-  }
-  if (elements.state) {
-    elements.state.value = "Active";
-  }
-  if (elements.renderType) {
-    elements.renderType.value = "None";
-  }
-  if (elements.behavior) {
-    elements.behavior.value = "";
-  }
-  if (elements.interaction) {
-    elements.interaction.value = "";
-  }
+function defaultEditingValues(source = {}) {
+  return {
+    id: objectId(source),
+    name: normalizeText(source.name),
+    renderType: normalizeText(source.render?.type) || "None",
+    role: normalizeText(source.role),
+    state: normalizeText(source.state) || "Active",
+    type: normalizeText(source.type),
+  };
 }
 
 function issueLabel(issue) {
@@ -253,50 +297,32 @@ function issueLabel(issue) {
 function objectDefinitionFindings(object, labelPrefix) {
   return validateObjectDefinition(object).issues.map((issue) => ({
     action: issue.action,
-    label: labelPrefix ? `${labelPrefix} ${issueLabel(issue)}` : issueLabel(issue)
+    label: labelPrefix ? `${labelPrefix} ${issueLabel(issue)}` : issueLabel(issue),
   }));
 }
 
-function draftDefinitionForReadiness(draft) {
-  if (draft.render?.type !== "Sprite" || draft.render.assetKey) {
-    return draft;
+function definitionForReadiness(object) {
+  if (object.render?.type !== "Sprite" || object.render.assetKey) {
+    return object;
   }
   return {
-    ...draft,
-    render: Object.freeze({ type: "None" })
+    ...object,
+    render: Object.freeze({ type: "None" }),
   };
 }
 
-function draftFindings(draft) {
-  const findings = objectDefinitionFindings(draftDefinitionForReadiness(draft), "");
-  if (!draft.role) {
+function rowFindings(object, ignoreObjectId = "") {
+  const findings = objectDefinitionFindings(definitionForReadiness(object), "");
+  if (!object.role) {
     findings.push({
-      action: "Choose the MVP role this object serves.",
-      label: "MVP Role"
+      action: "Choose the role this object serves.",
+      label: "Role",
     });
   }
-  if (draft.role === "Paddle" && draft.type && draft.type !== "Dynamic") {
+  if (object.name && draftedObjects.some((savedObject) => objectId(savedObject) === objectId(object) && objectId(savedObject) !== ignoreObjectId)) {
     findings.push({
-      action: "Set the Paddle role to Dynamic for the paddle + ball MVP path.",
-      label: "Paddle Type"
-    });
-  }
-  if (draft.role === "Ball" && draft.type && draft.type !== "Dynamic") {
-    findings.push({
-      action: "Set the Ball role to Dynamic so it can move in the MVP path.",
-      label: "Ball Type"
-    });
-  }
-  if (draft.role === "Boundary" && draft.type && draft.type !== "Static") {
-    findings.push({
-      action: "Set the Boundary role to Static so it can define the fixed play area.",
-      label: "Boundary Type"
-    });
-  }
-  if (draft.name && draftedObjects.some((object) => objectId(object) === objectId(draft))) {
-    findings.push({
-      action: "Use a unique object name or remove the existing draft row first.",
-      label: "Duplicate Object"
+      action: "Use a unique object name or remove the existing row first.",
+      label: "Duplicate Object",
     });
   }
   return findings;
@@ -313,30 +339,30 @@ function objectListFindings(objects) {
     });
     if (!object.role) {
       findings.push({
-        action: `${label} needs an MVP role.`,
-        label: `${label} Role`
+        action: `${label} needs a role.`,
+        label: `${label} Role`,
       });
     }
     const id = objectId(object);
     if (!id) {
       findings.push({
         action: `Object ${index + 1} needs a name.`,
-        label: `Object ${index + 1} Name`
+        label: `Object ${index + 1} Name`,
       });
     } else if (seenIds.has(id)) {
       findings.push({
-        action: `${label} duplicates another draft object name.`,
-        label: `${label} Duplicate`
+        action: `${label} duplicates another object name.`,
+        label: `${label} Duplicate`,
       });
     }
     seenIds.add(id);
   });
 
-  MVP_REQUIREMENTS.forEach((requirement) => {
+  SETUP_REQUIREMENTS.forEach((requirement) => {
     if (!requirement.test(objects)) {
       findings.push({
         action: requirement.action,
-        label: requirement.label
+        label: requirement.label,
       });
     }
   });
@@ -356,7 +382,7 @@ function renderValidation(findings) {
   elements.validationList.replaceChildren();
 
   if (findings.length === 0) {
-    elements.validationList.append(listItem("PASS: Paddle + ball MVP object setup is ready."));
+    elements.validationList.append(listItem("PASS: Object setup rows are ready."));
     elements.validationOverlay.hidden = true;
     return;
   }
@@ -373,7 +399,7 @@ function renderRequirements(objects) {
   }
 
   elements.requirements.replaceChildren();
-  MVP_REQUIREMENTS.forEach((requirement) => {
+  SETUP_REQUIREMENTS.forEach((requirement) => {
     const row = document.createElement("tr");
     row.append(tableCell(requirement.label), tableCell(statusText(requirement.test(objects))));
     elements.requirements.append(row);
@@ -417,16 +443,129 @@ function assetHandoffMessage(result, fallback) {
   return diagnostics.length ? `${message} ${diagnostics.join(" ")}` : message;
 }
 
+function editingObjectFromRow(row) {
+  return cloneObject({
+    name: row.querySelector("[data-objects-row-name]")?.value,
+    render: { type: row.querySelector("[data-objects-row-render-type]")?.value || "None" },
+    role: row.querySelector("[data-objects-row-role]")?.value,
+    state: row.querySelector("[data-objects-row-state]")?.value,
+    type: row.querySelector("[data-objects-row-type]")?.value,
+  });
+}
+
+function updateRenderAssetPreview(row) {
+  const preview = row.querySelector("[data-objects-row-render-asset-preview]");
+  const renderType = row.querySelector("[data-objects-row-render-type]")?.value || "None";
+  if (!preview) {
+    return;
+  }
+  preview.textContent = renderType === "Sprite" ? "Links on save" : "None";
+}
+
+function editingRowElement() {
+  return elements.list?.querySelector("[data-objects-editing-row]") || null;
+}
+
+function renderEditingRow(values) {
+  const row = document.createElement("tr");
+  row.dataset.objectsEditingRow = "true";
+  row.dataset.objectsRow = editingRow.mode;
+
+  const name = textInput({ ariaLabel: "Object Name", value: values.name });
+  name.dataset.objectsRowName = "true";
+
+  const type = selectElement({
+    ariaLabel: "Object Type",
+    options: objectTypeOptions(),
+    placeholder: "Select type",
+    selectedValue: values.type,
+  });
+  type.dataset.objectsRowType = "true";
+
+  const role = selectElement({
+    ariaLabel: "Role",
+    options: roleOptions(),
+    placeholder: "Select role",
+    selectedValue: values.role,
+  });
+  role.dataset.objectsRowRole = "true";
+
+  const state = selectElement({
+    ariaLabel: "Initial State",
+    options: [
+      { label: "Active", value: "Active" },
+      { label: "Disabled", value: "Disabled" },
+      { label: "Idle", value: "Idle" },
+    ],
+    selectedValue: values.state,
+  });
+  state.dataset.objectsRowState = "true";
+
+  const renderType = selectElement({
+    ariaLabel: "Render Type",
+    options: [
+      { label: "None", value: "None" },
+      { label: "Sprite", value: "Sprite" },
+    ],
+    selectedValue: values.renderType,
+  });
+  renderType.dataset.objectsRowRenderType = "true";
+
+  const renderAsset = document.createElement("td");
+  renderAsset.dataset.objectsRowRenderAssetPreview = "true";
+  renderAsset.textContent = values.renderType === "Sprite" ? "Links on save" : "None";
+
+  const actions = document.createElement("td");
+  actions.append(
+    actionButton("Save", "objectsSaveRow"),
+    actionButton("Cancel", "objectsCancelRow")
+  );
+
+  row.append(
+    controlCell(name),
+    controlCell(type),
+    controlCell(role),
+    controlCell(state),
+    controlCell(renderType),
+    tableCell("Updates on save"),
+    renderAsset,
+    actions
+  );
+  return row;
+}
+
+function renderSavedRow(object) {
+  const row = document.createElement("tr");
+  const id = objectId(object);
+  const actions = document.createElement("td");
+  actions.append(
+    actionButton("Edit", "objectsEditRow", id),
+    actionButton("Trash", "objectsTrashRow", id)
+  );
+  row.dataset.objectsRow = id;
+  row.append(
+    tableCell(object.name),
+    tableCell(object.type),
+    tableCell(object.role),
+    tableCell(object.state),
+    tableCell(object.render?.type || "None"),
+    tableCell(traitText(object.traits)),
+    tableCell(renderAssetText(object)),
+    actions
+  );
+  return row;
+}
+
 function renderObjectList(objects) {
   if (!elements.list) {
     return;
   }
 
   elements.list.replaceChildren();
-  if (objects.length === 0) {
+  if (objects.length === 0 && !editingRow) {
     const row = document.createElement("tr");
     const empty = document.createElement("td");
-    empty.colSpan = 7;
+    empty.colSpan = 8;
     empty.textContent = "No objects drafted yet.";
     row.append(empty);
     elements.list.append(row);
@@ -434,25 +573,16 @@ function renderObjectList(objects) {
   }
 
   objects.forEach((object) => {
-    const row = document.createElement("tr");
-    const action = document.createElement("td");
-    const remove = document.createElement("button");
-    remove.className = "btn btn--compact";
-    remove.type = "button";
-    remove.dataset.objectsRemove = objectId(object);
-    remove.textContent = "Remove";
-    action.append(remove);
-    row.append(
-      tableCell(object.name),
-      tableCell(object.type),
-      tableCell(object.role),
-      tableCell(object.state),
-      tableCell(traitText(object.traits)),
-      tableCell(renderAssetText(object)),
-      action
-    );
-    elements.list.append(row);
+    if (editingRow?.mode === "edit" && editingRow.originalId === objectId(object)) {
+      elements.list.append(renderEditingRow(defaultEditingValues(object)));
+      return;
+    }
+    elements.list.append(renderSavedRow(object));
   });
+
+  if (editingRow?.mode === "new") {
+    elements.list.append(renderEditingRow(defaultEditingValues()));
+  }
 }
 
 function renderOutput(objects, findings) {
@@ -467,10 +597,10 @@ function renderOutput(objects, findings) {
   setText(elements.outputStatic, String(staticCount));
   setText(elements.outputDynamic, String(dynamicCount));
   setText(
-    elements.outputMvp,
+    elements.outputSetup,
     findings.length === 0
-      ? "Paddle + ball setup has the required Dynamic paddle, Dynamic ball, and Static boundary."
-      : "Paddle and ball setup needs validation actions."
+      ? "Object setup table has the required row details."
+      : "Object setup table needs validation actions."
   );
   setText(elements.outputRenderAsset, linkedSprite ? linkedSprite.render.assetKey : "None");
   setText(
@@ -491,20 +621,14 @@ function renderOutput(objects, findings) {
   }
 }
 
-function renderObjectTypeOptions() {
-  if (!elements.type) {
-    return;
+function renderRegistryBasics() {
+  if (elements.roleBasics) {
+    elements.roleBasics.replaceChildren();
+    ROLE_OPTIONS.forEach((role) => {
+      elements.roleBasics.append(listItem(role));
+    });
   }
 
-  const selectedType = elements.type.value;
-  elements.type.replaceChildren(optionElement("", "Select type"));
-  sortedObjectTypes().forEach((objectType) => {
-    elements.type.append(optionElement(objectType.id, objectType.label));
-  });
-  elements.type.value = getObjectModelType(selectedType) ? selectedType : "";
-}
-
-function renderRegistryBasics() {
   if (elements.typeBasics) {
     elements.typeBasics.replaceChildren();
     sortedObjectTypes().forEach((objectType) => {
@@ -534,80 +658,125 @@ function render() {
   renderObjectList(draftedObjects);
   renderOutput(draftedObjects, findings);
   renderValidation(findings);
+  if (elements.addRow) {
+    elements.addRow.disabled = Boolean(editingRow);
+  }
 }
 
-function ensureDraftSpriteRender(draft) {
-  if (draft.render?.type !== "Sprite") {
-    return { draft, message: "" };
+function ensureSpriteRender(object) {
+  if (object.render?.type !== "Sprite") {
+    return { message: "", object };
   }
 
   const result = assetRepository.ensureSpriteAssetForObject({
-    objectKey: objectId(draft),
-    objectName: draft.name
+    objectKey: objectId(object),
+    objectName: object.name,
   });
   const asset = result?.asset || null;
   if (result?.error || !result?.linked || !asset?.id) {
     return {
-      draft,
       finding: {
-        action: result?.message || "Create or resolve the shared sprite asset record before adding this object.",
-        label: "Render Asset"
+        action: result?.message || "Create or resolve the shared sprite asset record before saving this object.",
+        label: "Render Asset",
       },
-      message: assetHandoffMessage(result, "Sprite asset handoff failed.")
+      message: assetHandoffMessage(result, "Sprite asset handoff failed."),
+      object,
     };
   }
 
   return {
-    draft: {
-      ...draft,
+    message: assetHandoffMessage(result, `Linked sprite asset ${asset.id}.`),
+    object: {
+      ...object,
       render: Object.freeze({
         assetKey: normalizeText(asset.id),
         previewPath: normalizeText(asset.storedPath || asset.path),
-        type: "Sprite"
-      })
+        type: "Sprite",
+      }),
     },
-    message: assetHandoffMessage(result, `Linked sprite asset ${asset.id}.`)
   };
 }
 
-function addDraftObject() {
-  let draft = readDraft();
-  let findings = draftFindings(draft);
-  if (findings.length > 0) {
-    renderValidation(findings);
-    setText(elements.log, `Draft blocked: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
+function addRow() {
+  if (editingRow) {
+    return;
+  }
+  editingRow = { mode: "new", originalId: "" };
+  setText(elements.log, "New object row ready. Save or cancel before adding another row.");
+  render();
+}
+
+function editRow(objectKey) {
+  if (editingRow) {
+    return;
+  }
+  editingRow = { mode: "edit", originalId: objectKey };
+  setText(elements.log, "Editing object row. Save or cancel before adding another row.");
+  render();
+}
+
+function cancelRow() {
+  editingRow = null;
+  setText(elements.log, "Canceled row editing.");
+  render();
+}
+
+function saveRow() {
+  const row = editingRowElement();
+  if (!row || !editingRow) {
     return;
   }
 
-  const handoff = ensureDraftSpriteRender(draft);
+  let object = editingObjectFromRow(row);
+  let findings = rowFindings(object, editingRow.originalId);
+  if (findings.length > 0) {
+    renderValidation(findings);
+    setText(elements.log, `Row blocked: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
+    return;
+  }
+
+  const handoff = ensureSpriteRender(object);
   if (handoff.finding) {
     renderValidation([handoff.finding]);
     setText(elements.log, handoff.message);
     return;
   }
-  draft = handoff.draft;
-  findings = draftFindings(draft);
+  object = handoff.object;
+  findings = rowFindings(object, editingRow.originalId);
   if (findings.length > 0) {
     renderValidation(findings);
-    setText(elements.log, `Draft blocked after render handoff: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
+    setText(elements.log, `Row blocked after render handoff: ${findings.length} validation action${findings.length === 1 ? "" : "s"}.`);
     return;
   }
 
-  draftedObjects = [...draftedObjects, draft];
-  clearDraftForm();
-  setText(
-    elements.log,
-    handoff.message
-      ? `Added ${draft.name} as a ${draft.type} ${draft.role}. ${handoff.message}`
-      : `Added ${draft.name} as a ${draft.type} ${draft.role}.`
-  );
+  if (editingRow.mode === "edit") {
+    draftedObjects = draftedObjects.map((savedObject) => (
+      objectId(savedObject) === editingRow.originalId ? object : savedObject
+    ));
+    setText(elements.log, handoff.message ? `Saved ${object.name}. ${handoff.message}` : `Saved ${object.name}.`);
+  } else {
+    draftedObjects = [...draftedObjects, object];
+    setText(elements.log, handoff.message ? `Added ${object.name}. ${handoff.message}` : `Added ${object.name}.`);
+  }
+  editingRow = null;
   render();
 }
 
-function seedMvpObjects() {
-  draftedObjects = SEEDED_OBJECTS.map(cloneObject);
-  clearDraftForm();
-  setText(elements.log, "Seeded paddle + ball MVP objects: Player Paddle, Game Ball, and Arena Boundary.");
+function trashRow(objectKey) {
+  const beforeCount = draftedObjects.length;
+  draftedObjects = draftedObjects.filter((object) => objectId(object) !== objectKey);
+  const removed = beforeCount !== draftedObjects.length;
+  setText(elements.log, removed ? "Trashed object row." : "Trash skipped: object row was already absent.");
+  render();
+}
+
+function seedStarterObjects() {
+  if (editingRow) {
+    setText(elements.log, "Seed blocked: save or cancel the active row first.");
+    return;
+  }
+  draftedObjects = STARTER_OBJECTS.map(cloneObject);
+  setText(elements.log, "Seeded starter objects: Hero, Projectile, and Wall.");
   render();
 }
 
@@ -617,43 +786,47 @@ function validateObjects() {
   setText(
     elements.log,
     findings.length === 0
-      ? "Validation PASS: Objects MVP setup is ready for authoring handoff."
-      : `Validation found ${findings.length} action${findings.length === 1 ? "" : "s"} for Objects MVP setup.`
+      ? "Validation PASS: Object setup rows are ready for authoring handoff."
+      : `Validation found ${findings.length} action${findings.length === 1 ? "" : "s"} for object setup.`
   );
   renderOutput(draftedObjects, findings);
 }
 
-function resetDraft() {
+function resetTable() {
   draftedObjects = [];
-  clearDraftForm();
-  setText(elements.log, "Reset the in-memory Objects draft.");
+  editingRow = null;
+  setText(elements.log, "Reset the in-memory Objects table.");
   render();
 }
 
-function removeObject(objectKey) {
-  const beforeCount = draftedObjects.length;
-  draftedObjects = draftedObjects.filter((object) => objectId(object) !== objectKey);
-  const removed = beforeCount !== draftedObjects.length;
-  setText(elements.log, removed ? "Removed object from the in-memory draft." : "Remove skipped: object row was already absent.");
-  render();
-}
-
-elements.form?.addEventListener("submit", (event) => {
-  event.preventDefault();
-  addDraftObject();
-});
-
-elements.seedMvp?.addEventListener("click", seedMvpObjects);
+elements.addRow?.addEventListener("click", addRow);
+elements.seedStarter?.addEventListener("click", seedStarterObjects);
 elements.validate?.addEventListener("click", validateObjects);
-elements.resetDraft?.addEventListener("click", resetDraft);
+elements.resetTable?.addEventListener("click", resetTable);
 elements.list?.addEventListener("click", (event) => {
-  const button = event.target instanceof HTMLElement ? event.target.closest("[data-objects-remove]") : null;
+  const button = event.target instanceof HTMLElement ? event.target.closest("button") : null;
   if (!button) {
     return;
   }
-  removeObject(button.dataset.objectsRemove || "");
+  if (button.dataset.objectsSaveRow !== undefined) {
+    saveRow();
+  } else if (button.dataset.objectsCancelRow !== undefined) {
+    cancelRow();
+  } else if (button.dataset.objectsEditRow !== undefined) {
+    editRow(button.dataset.objectsEditRow || "");
+  } else if (button.dataset.objectsTrashRow !== undefined) {
+    trashRow(button.dataset.objectsTrashRow || "");
+  }
+});
+elements.list?.addEventListener("change", (event) => {
+  const control = event.target instanceof HTMLElement ? event.target.closest("[data-objects-row-render-type]") : null;
+  if (control) {
+    const row = control.closest("[data-objects-editing-row]");
+    if (row) {
+      updateRenderAssetPreview(row);
+    }
+  }
 });
 
-renderObjectTypeOptions();
 renderRegistryBasics();
 render();

@@ -35,7 +35,7 @@ const STATIC_OBJECT_TYPE = Object.freeze({
 
 const DYNAMIC_OBJECT_TYPE = Object.freeze({
   bodyKind: "moving",
-  description: "Moving body for paddle, ball, actor, or projectile-style MVP objects.",
+  description: "Moving body for actors, projectiles, platforms, or other motion-capable objects.",
   id: OBJECT_MODEL_TYPE_IDS.DYNAMIC,
   label: "Dynamic",
   traits: Object.freeze([OBJECT_MODEL_TRAIT_IDS.MOVABLE, OBJECT_MODEL_TRAIT_IDS.COLLIDES]),

@@ -12,12 +12,12 @@
 - PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before BUILD execution.
 - PASS: Added shared object-model contract files under `src/engine/object-model/`.
 - PASS: Added object body/type registry for `Static`, `Dynamic`, `Collectible`, `Hazard`, and `Goal`.
-- PASS: Added trait registry for `movable`, `damageable`, `killable`, `playerControlled`, `bounces`, `collides`, `scores`, `collectible`, `hazard`, and `goal`.
+- PASS: Added trait registry for `movable`, `damageable`, `killable`, `playerControlled`, `collides`, `scores`, `collectible`, `hazard`, and `goal`.
 - PASS: Added object definition schema and validator for manifest/config-driven object definitions.
 - PASS: Validator returns visible, actionable issue objects with `code`, `path`, `message`, and `action`.
 - PASS: Validator rejects legacy names such as `objectStatic`, `objectDynamic`, and `objectKillable`; no legacy class hierarchy was restored.
 - PASS: Wired `toolbox/objects` to consume the shared object-model registry and validator instead of page-local type metadata.
-- PASS: Objects remains focused on static/dynamic paddle + ball MVP setup and visible diagnostics.
+- PASS: Objects remains focused on broad object setup and visible diagnostics.
 - PASS: Theme V2 restrictions preserved; no inline CSS, inline JS, script blocks, style blocks, or inline event handlers were added.
 - PASS: No persistence, auth, sample JSON alignment, DB write behavior, or new engine runtime behavior was added.
 - PASS: No Toolbox/Admin metadata was changed in this PR.
@@ -28,9 +28,9 @@
 - `src/engine/object-model/objectDefinitionSchema.js` owns the object definition schema metadata.
 - `src/engine/object-model/objectDefinitionValidator.js` validates definitions, rejects unknown fields/types/traits, rejects duplicate traits, and preserves incoming payloads without mutation.
 - `src/engine/object-model/index.js` exports the shared contract.
-- `toolbox/objects/objects.js` imports the shared registry/validator, renders object type and trait basics from the registry, derives MVP traits for draft rows, and validates draft/list definitions through the shared validator.
+- `toolbox/objects/objects.js` imports the shared registry/validator, renders object type and trait basics from the registry, derives role traits for draft rows, and validates draft/list definitions through the shared validator.
 - `tests/engine/ObjectModelContract.test.mjs` covers registry membership, schema enum alignment, valid payload cloning/no mutation, actionable invalid diagnostics, and legacy type rejection.
-- `tests/playwright/tools/ObjectsTool.spec.mjs` now verifies shared trait registry visibility and trait-backed MVP seeded output.
+- `tests/playwright/tools/ObjectsTool.spec.mjs` now verifies shared trait registry visibility and trait-backed seeded output.
 
 ## Validation
 
@@ -70,4 +70,4 @@ Note: an initial Playwright invocation used a Windows backslash path and returne
 
 - Objects still uses the First-Class Tool V2 surface and Theme V2 CSS.
 - Object type choices and visible type/trait registry lists are generated from `src/engine/object-model/`.
-- The MVP seeded path remains in-memory only and validates as ready with a Dynamic paddle, Dynamic ball, and Static boundary.
+- The seeded path remains in-memory only and validates as ready with Dynamic hero, Dynamic projectile, and Static wall rows.

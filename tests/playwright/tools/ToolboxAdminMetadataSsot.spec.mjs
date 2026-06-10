@@ -15,7 +15,7 @@ const REQUIRED_RESTORED_TOOLS = [
   "AI Assistant",
   "Creator Learning",
 ];
-const EXPECTED_MVP_COMPACT_ORDER = [
+const EXPECTED_SETUP_COMPACT_ORDER = [
   "Project Workspace",
   "Game Design",
   "Colors",
@@ -31,7 +31,7 @@ const EXPECTED_MVP_COMPACT_ORDER = [
   "Publish",
   "Project Journey",
 ];
-const INTENDED_MVP_PATH_TOOLS = [
+const INTENDED_SETUP_PATH_TOOLS = [
   "Project Workspace",
   "Game Design",
   "Colors",
@@ -48,7 +48,7 @@ const INTENDED_MVP_PATH_TOOLS = [
   "Publish",
   "Project Journey",
 ];
-const MVP_TOOL_RECORD_MAP = Object.freeze({
+const SETUP_TOOL_RECORD_MAP = Object.freeze({
   "Vector Asset Studio": "Assets",
 });
 const TOOL_PLANNING_FIELDS = [
@@ -200,10 +200,10 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     expect(Array.isArray(registryColors.progressChecklist)).toBe(true);
     expect(Array.isArray(registryColors.requires)).toBe(true);
     expect(registrySnapshot.activeTools.find((tool) => tool.id === "objects")).toEqual(expect.objectContaining({
-      capabilityLabel: "MVP object types",
+      capabilityLabel: "Object setup types",
       childCapabilities: ["Static", "Dynamic", "Collectible", "Hazard", "Goal"],
-      releaseChannel: "beta",
-      status: "beta",
+      releaseChannel: "wireframe",
+      status: "wireframe",
     }));
 
     for (const row of snapshot.rows) {
@@ -219,35 +219,35 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     expect(snapshotNames).toEqual(expect.arrayContaining([...REQUIRED_ADMIN_TOOLS, ...REQUIRED_RESTORED_TOOLS]));
     const counts = countByStatus(snapshot.rows);
     expect(counts).toMatchObject({
-      beta: 6,
+      beta: 5,
       complete: 1,
       planned: 32,
-      wireframe: 3,
+      wireframe: 4,
       deprecated: 1,
     });
-    const orderedMvpRows = snapshot.rows
-      .filter((row) => EXPECTED_MVP_COMPACT_ORDER.includes(row.toolName))
+    const orderedSetupRows = snapshot.rows
+      .filter((row) => EXPECTED_SETUP_COMPACT_ORDER.includes(row.toolName))
       .sort((left, right) => Number(left.order) - Number(right.order));
-    expect(orderedMvpRows.map((row) => row.toolName)).toEqual(EXPECTED_MVP_COMPACT_ORDER);
-    const reconciledMvpRows = INTENDED_MVP_PATH_TOOLS.map((toolName) => {
-      const mappedToolName = MVP_TOOL_RECORD_MAP[toolName] || toolName;
+    expect(orderedSetupRows.map((row) => row.toolName)).toEqual(EXPECTED_SETUP_COMPACT_ORDER);
+    const reconciledSetupRows = INTENDED_SETUP_PATH_TOOLS.map((toolName) => {
+      const mappedToolName = SETUP_TOOL_RECORD_MAP[toolName] || toolName;
       return {
         mappedToolName,
         row: snapshot.rows.find((candidate) => candidate.toolName === mappedToolName),
         toolName,
       };
     });
-    expect(reconciledMvpRows).toHaveLength(INTENDED_MVP_PATH_TOOLS.length);
-    expect(reconciledMvpRows.every(({ row }) => row)).toBe(true);
-    expect(new Set(reconciledMvpRows.map(({ mappedToolName }) => mappedToolName)).size).toBe(EXPECTED_MVP_COMPACT_ORDER.length);
-    expect(reconciledMvpRows.find(({ toolName }) => toolName === "Vector Asset Studio")).toEqual(expect.objectContaining({
+    expect(reconciledSetupRows).toHaveLength(INTENDED_SETUP_PATH_TOOLS.length);
+    expect(reconciledSetupRows.every(({ row }) => row)).toBe(true);
+    expect(new Set(reconciledSetupRows.map(({ mappedToolName }) => mappedToolName)).size).toBe(EXPECTED_SETUP_COMPACT_ORDER.length);
+    expect(reconciledSetupRows.find(({ toolName }) => toolName === "Vector Asset Studio")).toEqual(expect.objectContaining({
       mappedToolName: "Assets",
       row: expect.objectContaining({
         releaseChannel: "beta",
         toolName: "Assets",
       }),
     }));
-    expect(reconciledMvpRows.every(({ row }) => STATUS_VALUES.has(row.status || row.releaseChannel))).toBe(true);
+    expect(reconciledSetupRows.every(({ row }) => STATUS_VALUES.has(row.status || row.releaseChannel))).toBe(true);
     expect(snapshot.rows.find((row) => row.toolName === "Vector Asset Studio")).toBeUndefined();
     expect(snapshot.rows.find((row) => row.toolName === "Build Game")).toEqual(expect.objectContaining({
       releaseChannel: "deprecated",

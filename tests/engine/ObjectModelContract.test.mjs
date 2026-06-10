@@ -47,37 +47,37 @@ export function run() {
   assert.deepEqual(schema.properties.traits.items.enum, OBJECT_MODEL_TRAIT_LIST.map((trait) => trait.id));
   assert.deepEqual(schema.properties.render.properties.type.enum, ["None", "Sprite"]);
 
-  const paddleDefinition = Object.freeze({
+  const heroDefinition = Object.freeze({
     behavior: "Moves from player input.",
-    interaction: "Deflects the ball.",
-    name: "Player Paddle",
-    role: "Paddle",
+    interaction: "Uses player input mapping.",
+    name: "Hero",
+    role: "Hero",
     state: "Active",
     traits: Object.freeze(["movable", "collides", "playerControlled"]),
     type: "Dynamic",
   });
-  const beforeValidation = JSON.stringify(paddleDefinition);
-  const paddleValidation = validateObjectDefinition(paddleDefinition);
+  const beforeValidation = JSON.stringify(heroDefinition);
+  const heroValidation = validateObjectDefinition(heroDefinition);
 
-  assert.equal(paddleValidation.valid, true);
-  assert.equal(JSON.stringify(paddleDefinition), beforeValidation);
-  assert.notEqual(paddleValidation.definition, paddleDefinition);
-  assert.notEqual(paddleValidation.definition.traits, paddleDefinition.traits);
-  assert.deepEqual(paddleValidation.definition, paddleDefinition);
+  assert.equal(heroValidation.valid, true);
+  assert.equal(JSON.stringify(heroDefinition), beforeValidation);
+  assert.notEqual(heroValidation.definition, heroDefinition);
+  assert.notEqual(heroValidation.definition.traits, heroDefinition.traits);
+  assert.deepEqual(heroValidation.definition, heroDefinition);
 
-  const spriteBallDefinition = Object.freeze({
-    name: "Ball",
+  const spriteProjectileDefinition = Object.freeze({
+    name: "Bolt",
     render: Object.freeze({
-      assetKey: "sprite_ball",
-      previewPath: "projects/demo/image/sprite/sprite_ball.png",
+      assetKey: "sprite_bolt",
+      previewPath: "projects/demo/image/sprite/sprite_bolt.png",
       type: "Sprite",
     }),
     traits: Object.freeze(["movable", "collides"]),
     type: "Dynamic",
   });
-  const spriteBallValidation = validateObjectDefinition(spriteBallDefinition);
-  assert.equal(spriteBallValidation.valid, true);
-  assert.deepEqual(spriteBallValidation.definition, spriteBallDefinition);
+  const spriteProjectileValidation = validateObjectDefinition(spriteProjectileDefinition);
+  assert.equal(spriteProjectileValidation.valid, true);
+  assert.deepEqual(spriteProjectileValidation.definition, spriteProjectileDefinition);
 
   assertErrorCodes(
     validateObjectDefinition("bad"),
@@ -115,7 +115,7 @@ export function run() {
   );
   assertErrorCodes(
     validateObjectDefinition({
-      name: "Bad Ball Trait",
+      name: "Bad Bounce Trait",
       type: "Dynamic",
       traits: ["bounces"],
     }),
@@ -154,7 +154,7 @@ export function run() {
   );
 
   const listValidation = validateObjectDefinitionList([
-    paddleDefinition,
+    heroDefinition,
     { name: "Broken", type: "objectDynamic", traits: ["movable"] },
   ]);
   assert.equal(listValidation.valid, false);

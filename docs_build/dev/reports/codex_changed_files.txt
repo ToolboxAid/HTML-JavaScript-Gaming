@@ -2,31 +2,39 @@
 M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/db-object-model-contract-report.md
+ M docs_build/dev/reports/object-render-asset-handoff-report.md
+ M docs_build/dev/reports/objects-beta-rebuild-report.md
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
- M src/engine/object-model/objectDefinitionSchema.js
- M src/engine/object-model/objectDefinitionValidator.js
+ M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
  M src/engine/object-model/objectModelRegistry.js
  M tests/engine/ObjectModelContract.test.mjs
  M tests/playwright/tools/ObjectsTool.spec.mjs
+ M tests/playwright/tools/RootToolsFutureState.spec.mjs
+ M tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+ M tests/playwright/tools/ToolboxRoutePages.spec.mjs
  M toolbox/objects/index.html
  M toolbox/objects/objects.js
-?? docs_build/dev/reports/object-render-asset-handoff-report.md
+?? docs_build/dev/reports/objects-table-input-wireframe-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/object-render-asset-handoff-report.md
+docs_build/dev/reports/objects-table-input-wireframe-report.md
 
 # git diff --stat
-docs_build/dev/reports/codex_changed_files.txt     |   32 +-
- docs_build/dev/reports/codex_review.diff           | 1990 +++++++++-----------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   12 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   33 +-
- .../tool-repositories/assets-mock-repository.js    |  179 ++
- src/engine/object-model/objectDefinitionSchema.js  |   14 +
- .../object-model/objectDefinitionValidator.js      |  103 +
- src/engine/object-model/objectModelRegistry.js     |    8 -
- tests/engine/ObjectModelContract.test.mjs          |   36 +-
- tests/playwright/tools/ObjectsTool.spec.mjs        |   66 +-
- toolbox/objects/index.html                         |   21 +-
- toolbox/objects/objects.js                         |  147 +-
- 12 files changed, 1473 insertions(+), 1168 deletions(-)
+docs_build/dev/reports/codex_changed_files.txt     |   46 +-
+ docs_build/dev/reports/codex_review.diff           | 4838 +++++++-------------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |    7 +-
+ .../dev/reports/db-object-model-contract-report.md |   10 +-
+ .../reports/object-render-asset-handoff-report.md  |    6 +-
+ .../dev/reports/objects-beta-rebuild-report.md     |    8 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   28 +-
+ .../guest-seeds/tool-metadata-inventory.js         |   16 +-
+ src/engine/object-model/objectModelRegistry.js     |    2 +-
+ tests/engine/ObjectModelContract.test.mjs          |   40 +-
+ tests/playwright/tools/ObjectsTool.spec.mjs        |  210 +-
+ .../playwright/tools/RootToolsFutureState.spec.mjs |    4 +-
+ .../tools/ToolboxAdminMetadataSsot.spec.mjs        |   36 +-
+ tests/playwright/tools/ToolboxRoutePages.spec.mjs  |   20 +-
+ toolbox/objects/index.html                         |  104 +-
+ toolbox/objects/objects.js                         |  617 ++-
+ 16 files changed, 2429 insertions(+), 3563 deletions(-)
