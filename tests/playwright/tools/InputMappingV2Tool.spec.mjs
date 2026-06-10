@@ -129,11 +129,25 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("summary").filter({ hasText: "Actions" })).toBeVisible();
     await expect(page.locator("summary").filter({ hasText: "Capture" })).toBeVisible();
+    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
     await expect(page.getByText("Mapping JSON", { exact: true })).toBeVisible();
     await expect(page.getByText("Devices", { exact: true })).toBeVisible();
     await expect(page.getByText("Status", { exact: true })).toBeVisible();
     await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
+    await expect(page.locator("[data-controller-profile-table] th")).toHaveText([
+      "Device Type",
+      "Controller Name",
+      "Controller ID",
+      "Mapping Profile",
+      "Input",
+      "Action",
+    ]);
+    await expect(page.locator("[data-controller-profile-table]")).toContainText("Unknown Controller");
+    await expect(page.locator("[data-controller-profile-table]")).toContainText("Create Profile Needed");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown controller.");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("future Create Profile flow");
+    await expect(page.locator("[data-controller-profile-planning]")).toContainText("Future game launch will match Controller ID to a saved Mapping Profile");
     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
       "Object",
       "Action",
@@ -175,7 +189,10 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
 
     const registryEntry = await controlsRegistryEntry(page);
     expect(registryEntry.path).toBe("toolbox/input-mapping-v2/index.html");
-    expect(registryEntry.status).toBe("beta");
+    expect(registryEntry.status).toBe("wireframe");
+    expect(registryEntry.status).not.toBe("beta");
+    expect(registryEntry.releaseChannel).toBe("wireframe");
+    expect(registryEntry.releaseChannelLabel).toBe("Wireframe");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -303,6 +320,8 @@ test("Controls compatibility route uses rebuilt Input Mapping surface", async ({
 
   try {
     await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
+    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
+    await expect(page.locator("[data-controller-profile-table]")).toContainText("Mapping Profile");
     await expect(page.locator("[data-input-mapping-table]")).toBeVisible();
     await expect(page.locator("main")).not.toContainText(/Static wireframe only|Not implemented yet|no database|no runtime behavior/i);
     await expectNoPageFailures(failures);

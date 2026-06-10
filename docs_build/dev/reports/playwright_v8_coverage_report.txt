@@ -18,11 +18,7 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
 
 Files with executed line/function counts where available:
 (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
@@ -35,15 +31,8 @@ Files with executed line/function counts where available:
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
 (92%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - changed JS file with browser V8 coverage

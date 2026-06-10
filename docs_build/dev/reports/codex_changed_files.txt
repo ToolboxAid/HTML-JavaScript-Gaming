@@ -1,20 +1,24 @@
 # git status --short
-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
  M toolbox/controls/index.html
  M toolbox/input-mapping-v2/index.html
- M toolbox/input-mapping-v2/input-mapping-v2.js
-?? docs_build/dev/reports/controls-table-first-input-report.md
+?? docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/controls-table-first-input-report.md
+docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  4 +-
- .../dev/reports/playwright_v8_coverage_report.txt  | 12 ++--
- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 68 ++++++++++++++++++++++
- toolbox/controls/index.html                        | 14 +++--
- toolbox/input-mapping-v2/index.html                | 14 +++--
- toolbox/input-mapping-v2/input-mapping-v2.js       |  5 +-
- 6 files changed, 97 insertions(+), 20 deletions(-)
+docs_build/dev/reports/codex_changed_files.txt     |   26 +-
+ docs_build/dev/reports/codex_review.diff           | 1100 +++++++++++++++-----
+ .../dev/reports/coverage_changed_js_guardrail.txt  |    7 -
+ .../dev/reports/playwright_v8_coverage_report.txt  |   11 -
+ .../guest-seeds/tool-metadata-inventory.js         |    4 +-
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs |   21 +-
+ toolbox/controls/index.html                        |   32 +
+ toolbox/input-mapping-v2/index.html                |   32 +
+ 8 files changed, 927 insertions(+), 306 deletions(-)

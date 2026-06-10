@@ -730,8 +730,10 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [],
-    "status": "beta",
+    "status": "Wireframe",
+    "releaseChannel": "wireframe",
     "progressChecklist": [
+      "Plan controller profiles",
       "Map object actions",
       "Capture keyboard, mouse, and gamepad inputs",
       "Persist mappings through shared DB adapter"

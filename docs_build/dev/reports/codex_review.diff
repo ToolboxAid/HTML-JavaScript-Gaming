@@ -1,332 +1,1488 @@
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 50607dbc0..aaee655fd 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,20 +1,24 @@
+ # git status --short
+-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
++M docs_build/dev/reports/codex_changed_files.txt
++ M docs_build/dev/reports/codex_review.diff
++ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+  M docs_build/dev/reports/playwright_v8_coverage_report.txt
++ M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
+  M toolbox/controls/index.html
+  M toolbox/input-mapping-v2/index.html
+- M toolbox/input-mapping-v2/input-mapping-v2.js
+-?? docs_build/dev/reports/controls-table-first-input-report.md
++?? docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
+
+ # git ls-files --others --exclude-standard
+-docs_build/dev/reports/controls-table-first-input-report.md
++docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
+
+ # git diff --stat
+-.../dev/reports/coverage_changed_js_guardrail.txt  |  4 +-
+- .../dev/reports/playwright_v8_coverage_report.txt  | 12 ++--
+- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 68 ++++++++++++++++++++++
+- toolbox/controls/index.html                        | 14 +++--
+- toolbox/input-mapping-v2/index.html                | 14 +++--
+- toolbox/input-mapping-v2/input-mapping-v2.js       |  5 +-
+- 6 files changed, 97 insertions(+), 20 deletions(-)
+\ No newline at end of file
++docs_build/dev/reports/codex_changed_files.txt     |  20 +-
++ docs_build/dev/reports/codex_review.diff           | 499 +++++++++------------
++ .../dev/reports/coverage_changed_js_guardrail.txt  |   7 -
++ .../dev/reports/playwright_v8_coverage_report.txt  |  11 -
++ .../guest-seeds/tool-metadata-inventory.js         |   4 +-
++ tests/playwright/tools/InputMappingV2Tool.spec.mjs |  21 +-
++ toolbox/controls/index.html                        |  32 ++
++ toolbox/input-mapping-v2/index.html                |  32 ++
++ 8 files changed, 321 insertions(+), 305 deletions(-)
+\ No newline at end of file
+diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
+index 2d8754e59..f6c5c7b19 100644
+--- a/docs_build/dev/reports/codex_review.diff
++++ b/docs_build/dev/reports/codex_review.diff
+@@ -1,332 +1,882 @@
++diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
++index 50607dbc0..4208865fd 100644
++--- a/docs_build/dev/reports/codex_changed_files.txt
+++++ b/docs_build/dev/reports/codex_changed_files.txt
++@@ -1,20 +1,20 @@
++ # git status --short
++ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
++  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+++ M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
++  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
++  M toolbox/controls/index.html
++  M toolbox/input-mapping-v2/index.html
++- M toolbox/input-mapping-v2/input-mapping-v2.js
++-?? docs_build/dev/reports/controls-table-first-input-report.md
+++?? docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
++
++ # git ls-files --others --exclude-standard
++-docs_build/dev/reports/controls-table-first-input-report.md
+++docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
++
++ # git diff --stat
++-.../dev/reports/coverage_changed_js_guardrail.txt  |  4 +-
++- .../dev/reports/playwright_v8_coverage_report.txt  | 12 ++--
++- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 68 ++++++++++++++++++++++
++- toolbox/controls/index.html                        | 14 +++--
++- toolbox/input-mapping-v2/index.html                | 14 +++--
++- toolbox/input-mapping-v2/input-mapping-v2.js       |  5 +-
++- 6 files changed, 97 insertions(+), 20 deletions(-)
++\ No newline at end of file
+++.../dev/reports/coverage_changed_js_guardrail.txt  |  7 -----
+++ .../dev/reports/playwright_v8_coverage_report.txt  | 11 --------
+++ .../guest-seeds/tool-metadata-inventory.js         |  4 ++-
+++ tests/playwright/tools/InputMappingV2Tool.spec.mjs | 21 +++++++++++++-
+++ toolbox/controls/index.html                        | 32 ++++++++++++++++++++++
+++ toolbox/input-mapping-v2/index.html                | 32 ++++++++++++++++++++++
+++ 6 files changed, 87 insertions(+), 20 deletions(-)
++\ No newline at end of file
++diff --git a/docs_build/dev/reports/codex_review.diff b/docs_build/dev/reports/codex_review.diff
++index 2d8754e59..2f3f7b479 100644
++--- a/docs_build/dev/reports/codex_review.diff
+++++ b/docs_build/dev/reports/codex_review.diff
++@@ -1,332 +1,281 @@
++ diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++-index d5c9eb21e..807285035 100644
+++index 807285035..06970d98b 100644
++ --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++ +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++-@@ -10,8 +10,7 @@ Changed runtime JS files considered:
++- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++--(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
++-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
++- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
+++@@ -7,14 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+++
+++ Changed runtime JS files considered:
+++ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++ (92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
+++-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
++
++  Guardrail warnings:
++-@@ -19,4 +18,3 @@ Guardrail warnings:
++- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
++- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++--(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file missing from coverage; advisory only
+++ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+++-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+++-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++ diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
++-index c67932174..f5b92fbb8 100644
+++index f5b92fbb8..1d372a88a 100644
++ --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++ +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
++-@@ -12,7 +12,7 @@ Note: entry percentages use function coverage when available, otherwise line cov
++- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
++-
++- Exercised tool entry points detected:
++--(80%) Toolbox Index - exercised 4 runtime JS files
++-+(88%) Toolbox Index - exercised 4 runtime JS files
++- (0%) Tool Template V2 - not exercised by this Playwright run
++- (59%) Theme V2 Shared JS - exercised 2 runtime JS files
+++@@ -18,11 +18,7 @@ Exercised tool entry points detected:
++
++-@@ -21,8 +21,7 @@ Changed runtime JS files covered:
++- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++--(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
++-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
++- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
+++ Changed runtime JS files covered:
+++ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+++ (92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
+++-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
++
++  Files with executed line/function counts where available:
++-@@ -30,7 +29,7 @@ Files with executed line/function counts where available:
++- (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
++- (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
++- (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
++--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
++-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
++- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
++- (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
+++ (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+++@@ -35,15 +31,8 @@ Files with executed line/function counts where available:
++
++-@@ -39,7 +38,6 @@ Uncovered or low-coverage changed JS files:
++- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
++- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++--(0%) toolbox/objects/objects.js - WARNING: uncovered changed runtime JS file; advisory only
+++ Uncovered or low-coverage changed JS files:
+++ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+++-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+++-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++
++  Changed JS files considered:
++  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
++-@@ -47,7 +45,5 @@ Changed JS files considered:
++- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
++- (0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+++-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+++-(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
++  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
++--(0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
++--(0%) toolbox/objects/objects.js - changed JS file not collected as browser runtime coverage
++--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
++-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
++- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - changed JS file with browser V8 coverage
+++ (92%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
+++-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - changed JS file with browser V8 coverage
+++diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+++index e13fa5444..9705f7bc5 100644
+++--- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
++++++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+++@@ -730,8 +730,10 @@ export const TOOL_REGISTRY = Object.freeze([
+++     "requiredForTestable": true,
+++     "requiredForPublish": true,
+++     "requires": [],
+++-    "status": "beta",
++++    "status": "Wireframe",
++++    "releaseChannel": "wireframe",
+++     "progressChecklist": [
++++      "Plan controller profiles",
+++       "Map object actions",
+++       "Capture keyboard, mouse, and gamepad inputs",
+++       "Persist mappings through shared DB adapter"
++ diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
++-index 7471f8685..229fec0b0 100644
+++index 229fec0b0..0b915451f 100644
++ --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
++ +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
++-@@ -142,6 +142,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
++-       "State",
++-       "Actions",
++-     ]);
++-+    await expect(page.locator("[data-input-add-mapping]")).toHaveCount(1);
++-+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]")).toBeVisible();
++-+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-reset-mappings]")).toBeVisible();
++-     await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
++-     await expect(page.locator("[data-input-default-actions] li")).toHaveText(DEFAULT_ACTION_LABELS);
++-     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
++-@@ -181,6 +184,71 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
++-   }
++- });
+++@@ -129,11 +129,25 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
+++     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+++     await expect(page.locator("summary").filter({ hasText: "Actions" })).toBeVisible();
+++     await expect(page.locator("summary").filter({ hasText: "Capture" })).toBeVisible();
++++    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
+++     await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
+++     await expect(page.getByText("Mapping JSON", { exact: true })).toBeVisible();
+++     await expect(page.getByText("Devices", { exact: true })).toBeVisible();
+++     await expect(page.getByText("Status", { exact: true })).toBeVisible();
+++     await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
++++    await expect(page.locator("[data-controller-profile-table] th")).toHaveText([
++++      "Device Type",
++++      "Controller Name",
++++      "Controller ID",
++++      "Mapping Profile",
++++      "Input",
++++      "Action",
++++    ]);
++++    await expect(page.locator("[data-controller-profile-table]")).toContainText("Unknown Controller");
++++    await expect(page.locator("[data-controller-profile-table]")).toContainText("Create Profile Needed");
++++    await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown controller.");
++++    await expect(page.locator("[data-controller-profile-status]")).toContainText("future Create Profile flow");
++++    await expect(page.locator("[data-controller-profile-planning]")).toContainText("Future game launch will match Controller ID to a saved Mapping Profile");
+++     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
+++       "Object",
+++       "Action",
+++@@ -175,7 +189,10 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
++
++-+test("Controls Input Mapping supports table-first inline add, cancel, save, and edit", async ({ page }) => {
++-+  const failures = await openInputMappingPage(page);
++-+
++-+  try {
++-+    const addButton = page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]");
++-+    await expect(addButton).toBeEnabled();
++-+
++-+    await addButton.click();
++-+    await expect(addButton).toBeDisabled();
++-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
++-+    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(6);
++-+    await expect(page.locator("[data-input-editing-row] td").last().locator("button")).toHaveText(["Save", "Cancel"]);
++-+    await expect(page.locator("[data-input-editing-row] td").last().locator("button").last()).toHaveText("Cancel");
++-+
++-+    await page.locator("[data-input-editing-row] [data-input-cancel-mapping]").click();
++-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
++-+    await expect(addButton).toBeEnabled();
++-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
++-+
++-+    await addButton.click();
++-+    await page.locator("[data-input-row-action]").selectOption("fire");
++-+    await page.locator("[data-input-row-device]").selectOption("keyboard");
++-+    await page.locator("[data-input-row-binding]").fill("KeyF");
++-+    await page.locator("[data-input-save-mapping]").click();
++-+    await expect(addButton).toBeEnabled();
++-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
++-+    await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
++-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Fire");
++-+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyF");
++-+    let records = await inputMappingRecords(page);
++-+    expect(records).toHaveLength(1);
++-+    expect(records[0]).toMatchObject({
++-+      action: "fire",
++-+      binding: "KeyF",
++-+      source: "keyboard",
++-+      state: "Active",
++-+    });
++-+
++-+    await page.locator("[data-input-edit-mapping]").click();
++-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
++-+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(0);
++-+    await expect(addButton).toBeDisabled();
++-+    await page.locator("[data-input-row-binding]").fill("KeyG");
++-+    await page.locator("[data-input-save-mapping]").click();
++-+    await expect(addButton).toBeEnabled();
++-+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
++-+    records = await inputMappingRecords(page);
++-+    expect(records).toHaveLength(1);
++-+    expect(records[0]).toMatchObject({
++-+      action: "fire",
++-+      binding: "KeyG",
++-+      source: "keyboard",
++-+      state: "Active",
++-+    });
++-+
++-+    await page.reload({ waitUntil: "networkidle" });
++-+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
++-+
++-+    await expectNoPageFailures(failures);
++-+  } finally {
++-+    await workspaceV2CoverageReporter.stop(page);
++-+    await failures.server.close();
++-+  }
++-+});
++-+
++- test("Controls Input Mapping captures KeyA, deletes token, and persists through shared DB", async ({ page }) => {
++-   const failures = await openInputMappingPage(page);
+++     const registryEntry = await controlsRegistryEntry(page);
+++     expect(registryEntry.path).toBe("toolbox/input-mapping-v2/index.html");
+++-    expect(registryEntry.status).toBe("beta");
++++    expect(registryEntry.status).toBe("wireframe");
++++    expect(registryEntry.status).not.toBe("beta");
++++    expect(registryEntry.releaseChannel).toBe("wireframe");
++++    expect(registryEntry.releaseChannelLabel).toBe("Wireframe");
++
+++     await expectNoPageFailures(failures);
+++   } finally {
+++@@ -303,6 +320,8 @@ test("Controls compatibility route uses rebuilt Input Mapping surface", async ({
+++
+++   try {
+++     await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
++++    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
++++    await expect(page.locator("[data-controller-profile-table]")).toContainText("Mapping Profile");
+++     await expect(page.locator("[data-input-mapping-table]")).toBeVisible();
+++     await expect(page.locator("main")).not.toContainText(/Static wireframe only|Not implemented yet|no database|no runtime behavior/i);
+++     await expectNoPageFailures(failures);
++ diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
++-index 62916a4c9..2e3e84e51 100644
+++index 2e3e84e51..70ef0b449 100644
++ --- a/toolbox/controls/index.html
++ +++ b/toolbox/controls/index.html
++-@@ -41,10 +41,6 @@
++-                                         Object
++-                                         <select data-input-object-select></select>
++-                                     </label>
++--                                    <div class="content-cluster" aria-label="Input mapping action controls">
++--                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
++--                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
++--                                    </div>
++-                                     <ul data-input-default-actions></ul>
+++@@ -56,6 +56,38 @@
+++                                     <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
++                                  </div>
++                              </details>
++-@@ -90,6 +86,16 @@
++-                                             </tr>
++-                                         </thead>
++-                                         <tbody data-input-mapping-list></tbody>
++-+                                        <tfoot>
++-+                                            <tr>
++-+                                                <td colspan="6">
++-+                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
++-+                                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
++-+                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
++-+                                                    </div>
++-+                                                </td>
++-+                                            </tr>
++-+                                        </tfoot>
++-                                     </table>
++-                                 </div>
++-                             </div>
++++                            <details class="vertical-accordion" open>
++++                                <summary>Controller Profiles</summary>
++++                                <div class="accordion-body content-stack" data-controller-profile-planning>
++++                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
++++                                    <div class="table-wrapper">
++++                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
++++                                            <thead>
++++                                                <tr>
++++                                                    <th>Device Type</th>
++++                                                    <th>Controller Name</th>
++++                                                    <th>Controller ID</th>
++++                                                    <th>Mapping Profile</th>
++++                                                    <th>Input</th>
++++                                                    <th>Action</th>
++++                                                </tr>
++++                                            </thead>
++++                                            <tbody>
++++                                                <tr>
++++                                                    <td>Gamepad</td>
++++                                                    <td>Unknown Controller</td>
++++                                                    <td>Awaiting Device</td>
++++                                                    <td>Create Profile Needed</td>
++++                                                    <td>Button or Axis</td>
++++                                                    <td>Select Action</td>
++++                                                </tr>
++++                                            </tbody>
++++                                        </table>
++++                                    </div>
++++                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
++++                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; future Create Profile flow will save the controller identity.</p>
++++                                </div>
++++                            </details>
+++                         </div>
+++                     </aside>
+++                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
++ diff --git a/toolbox/input-mapping-v2/index.html b/toolbox/input-mapping-v2/index.html
++-index 62916a4c9..2e3e84e51 100644
+++index 2e3e84e51..70ef0b449 100644
++ --- a/toolbox/input-mapping-v2/index.html
++ +++ b/toolbox/input-mapping-v2/index.html
++-@@ -41,10 +41,6 @@
++-                                         Object
++-                                         <select data-input-object-select></select>
++-                                     </label>
++--                                    <div class="content-cluster" aria-label="Input mapping action controls">
++--                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
++--                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
++--                                    </div>
++-                                     <ul data-input-default-actions></ul>
+++@@ -56,6 +56,38 @@
+++                                     <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
++                                  </div>
++                              </details>
++-@@ -90,6 +86,16 @@
++-                                             </tr>
++-                                         </thead>
++-                                         <tbody data-input-mapping-list></tbody>
++-+                                        <tfoot>
++-+                                            <tr>
++-+                                                <td colspan="6">
++-+                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
++-+                                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
++-+                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
++-+                                                    </div>
++-+                                                </td>
++-+                                            </tr>
++-+                                        </tfoot>
++-                                     </table>
++-                                 </div>
++-                             </div>
++-diff --git a/toolbox/input-mapping-v2/input-mapping-v2.js b/toolbox/input-mapping-v2/input-mapping-v2.js
++-index 9a64af1bd..d03dacf82 100644
++---- a/toolbox/input-mapping-v2/input-mapping-v2.js
++-+++ b/toolbox/input-mapping-v2/input-mapping-v2.js
++-@@ -458,7 +458,10 @@ function renderMappings() {
++-   if (editingRow) {
++-     rows.push(renderEditingRow(editingRow.values));
++-   }
++--  rows.push(...mappings.map(renderMappingRow));
++-+  const visibleMappings = editingRow?.id
++-+    ? mappings.filter((mapping) => mapping.id !== editingRow.id)
++-+    : mappings;
++-+  rows.push(...visibleMappings.map(renderMappingRow));
++-   if (!rows.length) {
++-     const row = document.createElement("tr");
++-     const cell = document.createElement("td");
++-diff --git a/docs_build/dev/reports/controls-table-first-input-report.md b/docs_build/dev/reports/controls-table-first-input-report.md
++++                            <details class="vertical-accordion" open>
++++                                <summary>Controller Profiles</summary>
++++                                <div class="accordion-body content-stack" data-controller-profile-planning>
++++                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
++++                                    <div class="table-wrapper">
++++                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
++++                                            <thead>
++++                                                <tr>
++++                                                    <th>Device Type</th>
++++                                                    <th>Controller Name</th>
++++                                                    <th>Controller ID</th>
++++                                                    <th>Mapping Profile</th>
++++                                                    <th>Input</th>
++++                                                    <th>Action</th>
++++                                                </tr>
++++                                            </thead>
++++                                            <tbody>
++++                                                <tr>
++++                                                    <td>Gamepad</td>
++++                                                    <td>Unknown Controller</td>
++++                                                    <td>Awaiting Device</td>
++++                                                    <td>Create Profile Needed</td>
++++                                                    <td>Button or Axis</td>
++++                                                    <td>Select Action</td>
++++                                                </tr>
++++                                            </tbody>
++++                                        </table>
++++                                    </div>
++++                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
++++                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; future Create Profile flow will save the controller identity.</p>
++++                                </div>
++++                            </details>
+++                         </div>
+++                     </aside>
+++                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
+++diff --git a/docs_build/dev/reports/controls-wireframe-controller-profiles-report.md b/docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
++ new file mode 100644
++-index 000000000..fc8c8c155
+++index 000000000..d5aa064b6
++ --- /dev/null
++-+++ b/docs_build/dev/reports/controls-table-first-input-report.md
++-@@ -0,0 +1,92 @@
++-+# PR_26161_017 Controls Table First Input Report
++++++ b/docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
+++@@ -0,0 +1,71 @@
++++# PR_26161_018 Controls Wireframe Controller Profiles Report
++ +
++ +## Branch Validation
++ +
++-+PASS
++-+
++-+- Current branch: `main`
++-+- Expected branch: `main`
++-+- Worktree was clean before PR_26161_017 edits.
++++- PASS: Current branch was `main`.
++++- Expected branch: `main`.
++++- Worktree was clean before PR_26161_018 edits.
++ +
++ +## Scope
++ +
++-+- Impacted lane: Controls/Input Mapping tool UI/runtime and targeted Controls/Input Mapping Playwright coverage.
++++- Impacted lane: Controls/Input Mapping tool recovery/UAT.
++ +- Playwright impacted: Yes.
++-+- Runtime engine behavior changed: No.
++-+- Samples validation: Skipped as requested. No sample JSON alignment, auth behavior, production DB behavior, or engine runtime behavior changed.
++++- Full samples validation: SKIPPED. Samples are out of scope for this Controls wireframe/profile planning change, and no sample JSON alignment was requested.
++++- Engine runtime behavior: Unchanged. No production controller runtime, sample runtime, auth behavior, or unrelated rewrite was added.
++ +
++ +## Requirement Checklist
++ +
++-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
++-+- PASS: Verified current git branch was `main` before edits.
++-+- PASS: Continued from PR_26161_016.
++-+- PASS: Moved Controls toward table-first editing like Objects by placing mapping row creation controls in the mappings table footer.
++-+- PASS: Mappings table supports inline add/edit for `Object`, `Action`, `Input Device`, `Input`, `State`, and `Actions`.
++-+- PASS: `Add Mapping` is below the mappings table.
++-+- PASS: Adding a row shows `Cancel` in the right-side action cell of the new row.
++-+- PASS: `Add Mapping` is disabled while a new or edited row is active, then re-enabled after save or cancel.
++-+- PASS: Keyboard, mouse, and gamepad capture behavior remains in place.
++-+- PASS: Default actions remain sorted alphabetically.
++-+- PASS: DB/mock-adapter persistence remains in place.
++-+- PASS: Workspace return behavior remains in place.
++-+- PASS: UAT-required panels remain: Actions, Capture, Mappings, Mapping JSON, Devices, and Status.
++-+- PASS: Did not add sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
++-+- PASS: Kept Theme V2 only; no inline CSS, inline JS, script/style blocks, or inline event handlers.
++++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++++- PASS: Reviewed `docs_build/tools/input-mapping-v2/uat.md`.
++++- PASS: Verified branch `main` before edits.
++++- PASS: Continued from PR_26161_017 table-first Controls behavior.
++++- PASS: Controls metadata moved away from beta to Wireframe with `releaseChannel: "wireframe"`.
++++- PASS: Controller profile planning was added inside Controls, not as a separate tool.
++++- PASS: Wireframe UI includes Device Type, Controller Name, Controller ID, Mapping Profile, Input, and Action.
++++- PASS: Unknown controller status gives an actionable Refresh Devices step and future Create Profile path.
++++- PASS: Existing mapping table behavior and DB persistence were preserved.
++++- PASS: No production controller runtime or engine behavior was added.
++++
++++## Files Changed
++++
++++- `src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
++++- `toolbox/input-mapping-v2/index.html`
++++- `toolbox/controls/index.html`
++++- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++ +
++ +## Testing Performed
++ +
++-+- PASS: `node --check toolbox/input-mapping-v2/input-mapping-v2.js`
++-+- PASS: `node --check toolbox/input-mapping-v2/input-mapping-api-client.js`
++-+- PASS: `node --check src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
++++- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
++ +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++-+- PASS: `rg --pcre2 -n '<script(?![^>]*\bsrc=)|<style\b|\son[a-z]+\s*=' toolbox/input-mapping-v2/index.html toolbox/controls/index.html`
++-+  - Expected no matches; command exited with no matches.
++++- PASS: `node --check toolbox/input-mapping-v2/input-mapping-v2.js`
++++- PASS: HTML restriction scan for inline scripts, style blocks, inline styles, and inline event handlers in both Controls routes.
++ +- PASS: `git diff --check`
++-+  - Result: PASS. Git reported line-ending normalization warnings only.
++++  - Note: Git reported CRLF normalization warnings on touched files only.
++ +- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --workers=1 --reporter=line`
++-+  - Result: 4 passed.
++-+
++-+## Playwright Behavior Covered
++-+
++-+- PASS: UAT launch route still renders Actions, Capture, Mappings, Mapping JSON, Devices, and Status.
++-+- PASS: `Add Mapping` appears once and is inside the mappings table footer.
++-+- PASS: `Reset Mappings` remains available in the mappings table footer.
++-+- PASS: Inline add creates a row with editable Object, Action, Input Device, Input, State, and right-side Actions cells.
++-+- PASS: New row action cell shows `Save` and `Cancel`, with `Cancel` on the right.
++-+- PASS: `Add Mapping` disables while a new row is active.
++-+- PASS: Cancel removes the unsaved row and re-enables `Add Mapping`.
++-+- PASS: Saving an inline row persists it to `input_mapping_records`.
++-+- PASS: Editing an existing mapping uses an inline replacement row and re-enables `Add Mapping` after save.
++-+- PASS: Saved edits persist after reload.
++-+- PASS: Keyboard capture still maps `KeyA` to the selected `Move Left` action.
++-+- PASS: Clicking the `Keyboard KeyA` token still deletes the persisted mapping.
++-+- PASS: Default actions remain alphabetically sorted.
++-+- PASS: Workspace return behavior remains covered by the UAT launch test.
++++  - Final result: 4 passed.
++++  - Initial run found only a test expectation mismatch because the registry API returns normalized `wireframe`; the assertion was corrected and the final run passed.
++ +
++-+## Playwright V8 Coverage
++++## Playwright Coverage
++ +
++-+- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++-+- Current PR browser runtime JavaScript coverage:
++-+  - `(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87`
++-+  - `(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2`
++-+- Advisory WARN entries remain for PR_26161_016 server/dev-runtime files because the coverage helper includes changed JS from `HEAD`; PR_26161_017 did not modify those files.
++++- Generated `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
++++- Generated `docs_build/dev/reports/coverage_changed_js_guardrail.txt`.
++++- Coverage report includes an advisory WARN for `src/dev-runtime/guest-seeds/tool-metadata-inventory.js` because server-side seed metadata is not collected by browser V8 coverage.
++++- Controls browser runtime coverage was collected for `toolbox/input-mapping-v2/input-mapping-v2.js`.
++ +
++ +## Manual Validation Steps
++ +
++-+1. Open `/toolbox/input-mapping-v2/index.html?workspace=demo-project`.
++-+2. Confirm Actions, Capture, Mappings, Mapping JSON, Devices, and Status panels appear.
++-+3. Confirm `Add Mapping` and `Reset Mappings` are below the mappings table.
++-+4. Click `Add Mapping` and confirm the new row appears with `Save` and `Cancel` in the right-side Actions cell.
++-+5. Confirm `Add Mapping` is disabled while the new row is active.
++-+6. Click `Cancel` and confirm the unsaved row disappears and `Add Mapping` is enabled again.
++-+7. Add and save a row, reload, and confirm the mapping persists.
++-+8. Edit the saved row, save, reload, and confirm the edit persists.
++-+9. Select `Move Left`, click `Capture Keyboard`, press `A`, and confirm `Keyboard KeyA` appears in the table and JSON.
++-+10. Click the `Keyboard KeyA` token and confirm the mapping is deleted.
++++1. Open `/toolbox/input-mapping-v2/index.html`.
++++2. Confirm Controls shows as Wireframe in registry-backed tool metadata.
++++3. Confirm Actions, Capture, Controller Profiles, Mappings, Mapping JSON, Devices, and Status panels appear.
++++4. Confirm Controller Profiles shows Device Type, Controller Name, Controller ID, Mapping Profile, Input, and Action.
++++5. Confirm the unknown controller status recommends Refresh Devices and points to the future Create Profile flow.
++++6. Add a mapping row, save it, reload, and confirm it persists.
++++7. Capture `KeyA`, confirm the mapping appears in the table and Mapping JSON, then click the token to delete it.
++ +
++ +## Skipped Lanes
++ +
++-+- Full samples validation: SKIP, explicitly requested and no samples changed.
++-+- Full workspace/project suite: SKIP, no broad Project Workspace behavior changed; workspace return remains covered by targeted Controls/Input Mapping Playwright.
++-+- Engine runtime tests: SKIP, no `src/engine/input` behavior changed.
++-+- Auth and production DB validation: SKIP, no auth or production DB behavior changed; existing shared mock DB persistence behavior remains covered by targeted Playwright.
++++- Full samples smoke: SKIPPED because samples and sample JSON alignment are explicitly out of scope.
++++- Broad workspace suite: SKIPPED because this PR only changes the Controls tool surface, Controls metadata, and targeted Controls Playwright coverage.
++++- Engine tests: SKIPPED because no engine runtime files or controller runtime behavior changed.
+ diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-index d5c9eb21e..807285035 100644
++index 807285035..06970d98b 100644
+ --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-@@ -10,8 +10,7 @@ Changed runtime JS files considered:
+- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+--(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
+-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
+- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
++@@ -7,14 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
++
++ Changed runtime JS files considered:
++ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++ (92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
++-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
+
+  Guardrail warnings:
+-@@ -19,4 +18,3 @@ Guardrail warnings:
+- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+--(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file missing from coverage; advisory only
++ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
++-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+-index c67932174..f5b92fbb8 100644
++index f5b92fbb8..1d372a88a 100644
+ --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
+ +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+-@@ -12,7 +12,7 @@ Note: entry percentages use function coverage when available, otherwise line cov
+- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
++@@ -18,11 +18,7 @@ Exercised tool entry points detected:
+
+- Exercised tool entry points detected:
+--(80%) Toolbox Index - exercised 4 runtime JS files
+-+(88%) Toolbox Index - exercised 4 runtime JS files
+- (0%) Tool Template V2 - not exercised by this Playwright run
+- (59%) Theme V2 Shared JS - exercised 2 runtime JS files
+-
+-@@ -21,8 +21,7 @@ Changed runtime JS files covered:
+- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+--(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
+-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
+- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
++ Changed runtime JS files covered:
++ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++ (92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
++-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
+
+  Files with executed line/function counts where available:
+-@@ -30,7 +29,7 @@ Files with executed line/function counts where available:
+- (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
+- (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+- (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
+--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
+-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
+- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
+- (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
++ (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
++@@ -35,15 +31,8 @@ Files with executed line/function counts where available:
+
+-@@ -39,7 +38,6 @@ Uncovered or low-coverage changed JS files:
+- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+--(0%) toolbox/objects/objects.js - WARNING: uncovered changed runtime JS file; advisory only
++ Uncovered or low-coverage changed JS files:
++ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
++-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+
+  Changed JS files considered:
+  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+-@@ -47,7 +45,5 @@ Changed JS files considered:
+- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+- (0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
++-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
++-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
++-(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
+--(0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
+--(0%) toolbox/objects/objects.js - changed JS file not collected as browser runtime coverage
+--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
+-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
+- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - changed JS file with browser V8 coverage
++ (92%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
++-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - changed JS file with browser V8 coverage
++diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
++index e13fa5444..9705f7bc5 100644
++--- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+++++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
++@@ -730,8 +730,10 @@ export const TOOL_REGISTRY = Object.freeze([
++     "requiredForTestable": true,
++     "requiredForPublish": true,
++     "requires": [],
++-    "status": "beta",
+++    "status": "Wireframe",
+++    "releaseChannel": "wireframe",
++     "progressChecklist": [
+++      "Plan controller profiles",
++       "Map object actions",
++       "Capture keyboard, mouse, and gamepad inputs",
++       "Persist mappings through shared DB adapter"
+ diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
+-index 7471f8685..229fec0b0 100644
++index 229fec0b0..0b915451f 100644
+ --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
+ +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
+-@@ -142,6 +142,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
+-       "State",
+-       "Actions",
+-     ]);
+-+    await expect(page.locator("[data-input-add-mapping]")).toHaveCount(1);
+-+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]")).toBeVisible();
+-+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-reset-mappings]")).toBeVisible();
+-     await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
+-     await expect(page.locator("[data-input-default-actions] li")).toHaveText(DEFAULT_ACTION_LABELS);
+-     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
+-@@ -181,6 +184,71 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
+-   }
+- });
++@@ -129,11 +129,25 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
++     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++     await expect(page.locator("summary").filter({ hasText: "Actions" })).toBeVisible();
++     await expect(page.locator("summary").filter({ hasText: "Capture" })).toBeVisible();
+++    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
++     await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
++     await expect(page.getByText("Mapping JSON", { exact: true })).toBeVisible();
++     await expect(page.getByText("Devices", { exact: true })).toBeVisible();
++     await expect(page.getByText("Status", { exact: true })).toBeVisible();
++     await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
+++    await expect(page.locator("[data-controller-profile-table] th")).toHaveText([
+++      "Device Type",
+++      "Controller Name",
+++      "Controller ID",
+++      "Mapping Profile",
+++      "Input",
+++      "Action",
+++    ]);
+++    await expect(page.locator("[data-controller-profile-table]")).toContainText("Unknown Controller");
+++    await expect(page.locator("[data-controller-profile-table]")).toContainText("Create Profile Needed");
+++    await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown controller.");
+++    await expect(page.locator("[data-controller-profile-status]")).toContainText("future Create Profile flow");
+++    await expect(page.locator("[data-controller-profile-planning]")).toContainText("Future game launch will match Controller ID to a saved Mapping Profile");
++     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
++       "Object",
++       "Action",
++@@ -175,7 +189,10 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
+
+-+test("Controls Input Mapping supports table-first inline add, cancel, save, and edit", async ({ page }) => {
+-+  const failures = await openInputMappingPage(page);
+-+
+-+  try {
+-+    const addButton = page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]");
+-+    await expect(addButton).toBeEnabled();
+-+
+-+    await addButton.click();
+-+    await expect(addButton).toBeDisabled();
+-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
+-+    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(6);
+-+    await expect(page.locator("[data-input-editing-row] td").last().locator("button")).toHaveText(["Save", "Cancel"]);
+-+    await expect(page.locator("[data-input-editing-row] td").last().locator("button").last()).toHaveText("Cancel");
+-+
+-+    await page.locator("[data-input-editing-row] [data-input-cancel-mapping]").click();
+-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
+-+    await expect(addButton).toBeEnabled();
+-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
+-+
+-+    await addButton.click();
+-+    await page.locator("[data-input-row-action]").selectOption("fire");
+-+    await page.locator("[data-input-row-device]").selectOption("keyboard");
+-+    await page.locator("[data-input-row-binding]").fill("KeyF");
+-+    await page.locator("[data-input-save-mapping]").click();
+-+    await expect(addButton).toBeEnabled();
+-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
+-+    await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
+-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Fire");
+-+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyF");
+-+    let records = await inputMappingRecords(page);
+-+    expect(records).toHaveLength(1);
+-+    expect(records[0]).toMatchObject({
+-+      action: "fire",
+-+      binding: "KeyF",
+-+      source: "keyboard",
+-+      state: "Active",
+-+    });
+-+
+-+    await page.locator("[data-input-edit-mapping]").click();
+-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
+-+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(0);
+-+    await expect(addButton).toBeDisabled();
+-+    await page.locator("[data-input-row-binding]").fill("KeyG");
+-+    await page.locator("[data-input-save-mapping]").click();
+-+    await expect(addButton).toBeEnabled();
+-+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
+-+    records = await inputMappingRecords(page);
+-+    expect(records).toHaveLength(1);
+-+    expect(records[0]).toMatchObject({
+-+      action: "fire",
+-+      binding: "KeyG",
+-+      source: "keyboard",
+-+      state: "Active",
+-+    });
+-+
+-+    await page.reload({ waitUntil: "networkidle" });
+-+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
+-+
+-+    await expectNoPageFailures(failures);
+-+  } finally {
+-+    await workspaceV2CoverageReporter.stop(page);
+-+    await failures.server.close();
+-+  }
+-+});
+-+
+- test("Controls Input Mapping captures KeyA, deletes token, and persists through shared DB", async ({ page }) => {
+-   const failures = await openInputMappingPage(page);
++     const registryEntry = await controlsRegistryEntry(page);
++     expect(registryEntry.path).toBe("toolbox/input-mapping-v2/index.html");
++-    expect(registryEntry.status).toBe("beta");
+++    expect(registryEntry.status).toBe("wireframe");
+++    expect(registryEntry.status).not.toBe("beta");
+++    expect(registryEntry.releaseChannel).toBe("wireframe");
+++    expect(registryEntry.releaseChannelLabel).toBe("Wireframe");
++
++     await expectNoPageFailures(failures);
++   } finally {
++@@ -303,6 +320,8 @@ test("Controls compatibility route uses rebuilt Input Mapping surface", async ({
+
++   try {
++     await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
+++    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
+++    await expect(page.locator("[data-controller-profile-table]")).toContainText("Mapping Profile");
++     await expect(page.locator("[data-input-mapping-table]")).toBeVisible();
++     await expect(page.locator("main")).not.toContainText(/Static wireframe only|Not implemented yet|no database|no runtime behavior/i);
++     await expectNoPageFailures(failures);
+ diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
+-index 62916a4c9..2e3e84e51 100644
++index 2e3e84e51..70ef0b449 100644
+ --- a/toolbox/controls/index.html
+ +++ b/toolbox/controls/index.html
+-@@ -41,10 +41,6 @@
+-                                         Object
+-                                         <select data-input-object-select></select>
+-                                     </label>
+--                                    <div class="content-cluster" aria-label="Input mapping action controls">
+--                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
+--                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+--                                    </div>
+-                                     <ul data-input-default-actions></ul>
++@@ -56,6 +56,38 @@
++                                     <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
+                                  </div>
+                              </details>
+-@@ -90,6 +86,16 @@
+-                                             </tr>
+-                                         </thead>
+-                                         <tbody data-input-mapping-list></tbody>
+-+                                        <tfoot>
+-+                                            <tr>
+-+                                                <td colspan="6">
+-+                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
+-+                                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
+-+                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+-+                                                    </div>
+-+                                                </td>
+-+                                            </tr>
+-+                                        </tfoot>
+-                                     </table>
+-                                 </div>
+-                             </div>
+++                            <details class="vertical-accordion" open>
+++                                <summary>Controller Profiles</summary>
+++                                <div class="accordion-body content-stack" data-controller-profile-planning>
+++                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
+++                                    <div class="table-wrapper">
+++                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
+++                                            <thead>
+++                                                <tr>
+++                                                    <th>Device Type</th>
+++                                                    <th>Controller Name</th>
+++                                                    <th>Controller ID</th>
+++                                                    <th>Mapping Profile</th>
+++                                                    <th>Input</th>
+++                                                    <th>Action</th>
+++                                                </tr>
+++                                            </thead>
+++                                            <tbody>
+++                                                <tr>
+++                                                    <td>Gamepad</td>
+++                                                    <td>Unknown Controller</td>
+++                                                    <td>Awaiting Device</td>
+++                                                    <td>Create Profile Needed</td>
+++                                                    <td>Button or Axis</td>
+++                                                    <td>Select Action</td>
+++                                                </tr>
+++                                            </tbody>
+++                                        </table>
+++                                    </div>
+++                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
+++                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; future Create Profile flow will save the controller identity.</p>
+++                                </div>
+++                            </details>
++                         </div>
++                     </aside>
++                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
+ diff --git a/toolbox/input-mapping-v2/index.html b/toolbox/input-mapping-v2/index.html
+-index 62916a4c9..2e3e84e51 100644
++index 2e3e84e51..70ef0b449 100644
+ --- a/toolbox/input-mapping-v2/index.html
+ +++ b/toolbox/input-mapping-v2/index.html
+-@@ -41,10 +41,6 @@
+-                                         Object
+-                                         <select data-input-object-select></select>
+-                                     </label>
+--                                    <div class="content-cluster" aria-label="Input mapping action controls">
+--                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
+--                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+--                                    </div>
+-                                     <ul data-input-default-actions></ul>
++@@ -56,6 +56,38 @@
++                                     <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
+                                  </div>
+                              </details>
+-@@ -90,6 +86,16 @@
+-                                             </tr>
+-                                         </thead>
+-                                         <tbody data-input-mapping-list></tbody>
+-+                                        <tfoot>
+-+                                            <tr>
+-+                                                <td colspan="6">
+-+                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
+-+                                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
+-+                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+-+                                                    </div>
+-+                                                </td>
+-+                                            </tr>
+-+                                        </tfoot>
+-                                     </table>
+-                                 </div>
+-                             </div>
+-diff --git a/toolbox/input-mapping-v2/input-mapping-v2.js b/toolbox/input-mapping-v2/input-mapping-v2.js
+-index 9a64af1bd..d03dacf82 100644
+---- a/toolbox/input-mapping-v2/input-mapping-v2.js
+-+++ b/toolbox/input-mapping-v2/input-mapping-v2.js
+-@@ -458,7 +458,10 @@ function renderMappings() {
+-   if (editingRow) {
+-     rows.push(renderEditingRow(editingRow.values));
+-   }
+--  rows.push(...mappings.map(renderMappingRow));
+-+  const visibleMappings = editingRow?.id
+-+    ? mappings.filter((mapping) => mapping.id !== editingRow.id)
+-+    : mappings;
+-+  rows.push(...visibleMappings.map(renderMappingRow));
+-   if (!rows.length) {
+-     const row = document.createElement("tr");
+-     const cell = document.createElement("td");
+-diff --git a/docs_build/dev/reports/controls-table-first-input-report.md b/docs_build/dev/reports/controls-table-first-input-report.md
+++                            <details class="vertical-accordion" open>
+++                                <summary>Controller Profiles</summary>
+++                                <div class="accordion-body content-stack" data-controller-profile-planning>
+++                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
+++                                    <div class="table-wrapper">
+++                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
+++                                            <thead>
+++                                                <tr>
+++                                                    <th>Device Type</th>
+++                                                    <th>Controller Name</th>
+++                                                    <th>Controller ID</th>
+++                                                    <th>Mapping Profile</th>
+++                                                    <th>Input</th>
+++                                                    <th>Action</th>
+++                                                </tr>
+++                                            </thead>
+++                                            <tbody>
+++                                                <tr>
+++                                                    <td>Gamepad</td>
+++                                                    <td>Unknown Controller</td>
+++                                                    <td>Awaiting Device</td>
+++                                                    <td>Create Profile Needed</td>
+++                                                    <td>Button or Axis</td>
+++                                                    <td>Select Action</td>
+++                                                </tr>
+++                                            </tbody>
+++                                        </table>
+++                                    </div>
+++                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
+++                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; future Create Profile flow will save the controller identity.</p>
+++                                </div>
+++                            </details>
++                         </div>
++                     </aside>
++                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
++diff --git a/docs_build/dev/reports/controls-wireframe-controller-profiles-report.md b/docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
+ new file mode 100644
+-index 000000000..fc8c8c155
++index 000000000..80b16bfc4
+ --- /dev/null
+-+++ b/docs_build/dev/reports/controls-table-first-input-report.md
+-@@ -0,0 +1,92 @@
+-+# PR_26161_017 Controls Table First Input Report
+++++ b/docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
++@@ -0,0 +1,74 @@
+++# PR_26161_018 Controls Wireframe Controller Profiles Report
+ +
+ +## Branch Validation
+ +
+-+PASS
+-+
+-+- Current branch: `main`
+-+- Expected branch: `main`
+-+- Worktree was clean before PR_26161_017 edits.
+++- PASS: Current branch was `main`.
+++- Expected branch: `main`.
+++- Worktree was clean before PR_26161_018 edits.
+ +
+ +## Scope
+ +
+-+- Impacted lane: Controls/Input Mapping tool UI/runtime and targeted Controls/Input Mapping Playwright coverage.
+++- Impacted lane: Controls/Input Mapping tool recovery/UAT.
+ +- Playwright impacted: Yes.
+-+- Runtime engine behavior changed: No.
+-+- Samples validation: Skipped as requested. No sample JSON alignment, auth behavior, production DB behavior, or engine runtime behavior changed.
+++- Full samples validation: SKIPPED. Samples are out of scope for this Controls wireframe/profile planning change, and no sample JSON alignment was requested.
+++- Engine runtime behavior: Unchanged. No production controller runtime, sample runtime, auth behavior, or unrelated rewrite was added.
+ +
+ +## Requirement Checklist
+ +
+-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
+-+- PASS: Verified current git branch was `main` before edits.
+-+- PASS: Continued from PR_26161_016.
+-+- PASS: Moved Controls toward table-first editing like Objects by placing mapping row creation controls in the mappings table footer.
+-+- PASS: Mappings table supports inline add/edit for `Object`, `Action`, `Input Device`, `Input`, `State`, and `Actions`.
+-+- PASS: `Add Mapping` is below the mappings table.
+-+- PASS: Adding a row shows `Cancel` in the right-side action cell of the new row.
+-+- PASS: `Add Mapping` is disabled while a new or edited row is active, then re-enabled after save or cancel.
+-+- PASS: Keyboard, mouse, and gamepad capture behavior remains in place.
+-+- PASS: Default actions remain sorted alphabetically.
+-+- PASS: DB/mock-adapter persistence remains in place.
+-+- PASS: Workspace return behavior remains in place.
+-+- PASS: UAT-required panels remain: Actions, Capture, Mappings, Mapping JSON, Devices, and Status.
+-+- PASS: Did not add sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
+-+- PASS: Kept Theme V2 only; no inline CSS, inline JS, script/style blocks, or inline event handlers.
+++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+++- PASS: Reviewed `docs_build/tools/input-mapping-v2/uat.md`.
+++- PASS: Verified branch `main` before edits.
+++- PASS: Continued from PR_26161_017 table-first Controls behavior.
+++- PASS: Controls metadata moved away from beta to Wireframe with `releaseChannel: "wireframe"`.
+++- PASS: Controller profile planning was added inside Controls, not as a separate tool.
+++- PASS: Wireframe UI includes Device Type, Controller Name, Controller ID, Mapping Profile, Input, and Action.
+++- PASS: Unknown controller status gives an actionable Refresh Devices step and future Create Profile path.
+++- PASS: Existing mapping table behavior and DB persistence were preserved.
+++- PASS: No production controller runtime or engine behavior was added.
+++
+++## Files Changed
+++
+++- `src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
+++- `toolbox/input-mapping-v2/index.html`
+++- `toolbox/controls/index.html`
+++- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
+++- `docs_build/dev/reports/controls-wireframe-controller-profiles-report.md`
+++- `docs_build/dev/reports/codex_review.diff`
+++- `docs_build/dev/reports/codex_changed_files.txt`
+++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+ +
+ +## Testing Performed
+ +
+-+- PASS: `node --check toolbox/input-mapping-v2/input-mapping-v2.js`
+-+- PASS: `node --check toolbox/input-mapping-v2/input-mapping-api-client.js`
+-+- PASS: `node --check src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
+++- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
+ +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
+-+- PASS: `rg --pcre2 -n '<script(?![^>]*\bsrc=)|<style\b|\son[a-z]+\s*=' toolbox/input-mapping-v2/index.html toolbox/controls/index.html`
+-+  - Expected no matches; command exited with no matches.
+++- PASS: `node --check toolbox/input-mapping-v2/input-mapping-v2.js`
+++- PASS: HTML restriction scan for inline scripts, style blocks, inline styles, and inline event handlers in both Controls routes.
+ +- PASS: `git diff --check`
+-+  - Result: PASS. Git reported line-ending normalization warnings only.
+++  - Note: Git reported CRLF normalization warnings on touched files only.
+ +- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --workers=1 --reporter=line`
+-+  - Result: 4 passed.
+-+
+-+## Playwright Behavior Covered
+-+
+-+- PASS: UAT launch route still renders Actions, Capture, Mappings, Mapping JSON, Devices, and Status.
+-+- PASS: `Add Mapping` appears once and is inside the mappings table footer.
+-+- PASS: `Reset Mappings` remains available in the mappings table footer.
+-+- PASS: Inline add creates a row with editable Object, Action, Input Device, Input, State, and right-side Actions cells.
+-+- PASS: New row action cell shows `Save` and `Cancel`, with `Cancel` on the right.
+-+- PASS: `Add Mapping` disables while a new row is active.
+-+- PASS: Cancel removes the unsaved row and re-enables `Add Mapping`.
+-+- PASS: Saving an inline row persists it to `input_mapping_records`.
+-+- PASS: Editing an existing mapping uses an inline replacement row and re-enables `Add Mapping` after save.
+-+- PASS: Saved edits persist after reload.
+-+- PASS: Keyboard capture still maps `KeyA` to the selected `Move Left` action.
+-+- PASS: Clicking the `Keyboard KeyA` token still deletes the persisted mapping.
+-+- PASS: Default actions remain alphabetically sorted.
+-+- PASS: Workspace return behavior remains covered by the UAT launch test.
+++  - Final result: 4 passed.
+++  - Initial run found only a test expectation mismatch because the registry API returns normalized `wireframe`; the assertion was corrected and the final run passed.
+ +
+-+## Playwright V8 Coverage
+++## Playwright Coverage
+ +
+-+- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+-+- Current PR browser runtime JavaScript coverage:
+-+  - `(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87`
+-+  - `(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2`
+-+- Advisory WARN entries remain for PR_26161_016 server/dev-runtime files because the coverage helper includes changed JS from `HEAD`; PR_26161_017 did not modify those files.
+++- Generated `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
+++- Generated `docs_build/dev/reports/coverage_changed_js_guardrail.txt`.
+++- Coverage report includes an advisory WARN for `src/dev-runtime/guest-seeds/tool-metadata-inventory.js` because server-side seed metadata is not collected by browser V8 coverage.
+++- Controls browser runtime coverage was collected for `toolbox/input-mapping-v2/input-mapping-v2.js`.
+ +
+ +## Manual Validation Steps
+ +
+-+1. Open `/toolbox/input-mapping-v2/index.html?workspace=demo-project`.
+-+2. Confirm Actions, Capture, Mappings, Mapping JSON, Devices, and Status panels appear.
+-+3. Confirm `Add Mapping` and `Reset Mappings` are below the mappings table.
+-+4. Click `Add Mapping` and confirm the new row appears with `Save` and `Cancel` in the right-side Actions cell.
+-+5. Confirm `Add Mapping` is disabled while the new row is active.
+-+6. Click `Cancel` and confirm the unsaved row disappears and `Add Mapping` is enabled again.
+-+7. Add and save a row, reload, and confirm the mapping persists.
+-+8. Edit the saved row, save, reload, and confirm the edit persists.
+-+9. Select `Move Left`, click `Capture Keyboard`, press `A`, and confirm `Keyboard KeyA` appears in the table and JSON.
+-+10. Click the `Keyboard KeyA` token and confirm the mapping is deleted.
+++1. Open `/toolbox/input-mapping-v2/index.html`.
+++2. Confirm Controls shows as Wireframe in registry-backed tool metadata.
+++3. Confirm Actions, Capture, Controller Profiles, Mappings, Mapping JSON, Devices, and Status panels appear.
+++4. Confirm Controller Profiles shows Device Type, Controller Name, Controller ID, Mapping Profile, Input, and Action.
+++5. Confirm the unknown controller status recommends Refresh Devices and points to the future Create Profile flow.
+++6. Add a mapping row, save it, reload, and confirm it persists.
+++7. Capture `KeyA`, confirm the mapping appears in the table and Mapping JSON, then click the token to delete it.
+ +
+ +## Skipped Lanes
+ +
+-+- Full samples validation: SKIP, explicitly requested and no samples changed.
+-+- Full workspace/project suite: SKIP, no broad Project Workspace behavior changed; workspace return remains covered by targeted Controls/Input Mapping Playwright.
+-+- Engine runtime tests: SKIP, no `src/engine/input` behavior changed.
+-+- Auth and production DB validation: SKIP, no auth or production DB behavior changed; existing shared mock DB persistence behavior remains covered by targeted Playwright.
+++- Full samples smoke: SKIPPED because samples and sample JSON alignment are explicitly out of scope.
+++- Broad workspace suite: SKIPPED because this PR only changes the Controls tool surface, Controls metadata, and targeted Controls Playwright coverage.
+++- Engine tests: SKIPPED because no engine runtime files or controller runtime behavior changed.
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index d5c9eb21e..807285035 100644
+index 807285035..06970d98b 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -10,8 +10,7 @@ Changed runtime JS files considered:
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
+@@ -7,14 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
+-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
 
  Guardrail warnings:
-@@ -19,4 +18,3 @@ Guardrail warnings:
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index c67932174..f5b92fbb8 100644
+index f5b92fbb8..1d372a88a 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,7 +12,7 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+@@ -18,11 +18,7 @@ Exercised tool entry points detected:
 
- Exercised tool entry points detected:
--(80%) Toolbox Index - exercised 4 runtime JS files
-+(88%) Toolbox Index - exercised 4 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
- (59%) Theme V2 Shared JS - exercised 2 runtime JS files
-
-@@ -21,8 +21,7 @@ Changed runtime JS files covered:
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
+ Changed runtime JS files covered:
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
+-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
 
  Files with executed line/function counts where available:
-@@ -30,7 +29,7 @@ Files with executed line/function counts where available:
- (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
- (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
- (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 700/700; executed functions 64/79
-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87
- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2
- (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
+ (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+@@ -35,15 +31,8 @@ Files with executed line/function counts where available:
 
-@@ -39,7 +38,6 @@ Uncovered or low-coverage changed JS files:
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/objects/objects.js - WARNING: uncovered changed runtime JS file; advisory only
+ Uncovered or low-coverage changed JS files:
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
  Changed JS files considered:
  (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
-@@ -47,7 +45,5 @@ Changed JS files considered:
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/objects/objects.js - changed JS file not collected as browser runtime coverage
--(81%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
-+(92%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
- (100%) toolbox/input-mapping-v2/input-mapping-api-client.js - changed JS file with browser V8 coverage
+ (92%) toolbox/input-mapping-v2/input-mapping-v2.js - changed JS file with browser V8 coverage
+-(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+index e13fa5444..9705f7bc5 100644
+--- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
++++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+@@ -730,8 +730,10 @@ export const TOOL_REGISTRY = Object.freeze([
+     "requiredForTestable": true,
+     "requiredForPublish": true,
+     "requires": [],
+-    "status": "beta",
++    "status": "Wireframe",
++    "releaseChannel": "wireframe",
+     "progressChecklist": [
++      "Plan controller profiles",
+       "Map object actions",
+       "Capture keyboard, mouse, and gamepad inputs",
+       "Persist mappings through shared DB adapter"
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 7471f8685..229fec0b0 100644
+index 229fec0b0..0b915451f 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -142,6 +142,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
-       "State",
-       "Actions",
-     ]);
-+    await expect(page.locator("[data-input-add-mapping]")).toHaveCount(1);
-+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]")).toBeVisible();
-+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-reset-mappings]")).toBeVisible();
-     await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
-     await expect(page.locator("[data-input-default-actions] li")).toHaveText(DEFAULT_ACTION_LABELS);
-     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
-@@ -181,6 +184,71 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
-   }
- });
+@@ -129,11 +129,25 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+     await expect(page.locator("summary").filter({ hasText: "Actions" })).toBeVisible();
+     await expect(page.locator("summary").filter({ hasText: "Capture" })).toBeVisible();
++    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
+     await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
+     await expect(page.getByText("Mapping JSON", { exact: true })).toBeVisible();
+     await expect(page.getByText("Devices", { exact: true })).toBeVisible();
+     await expect(page.getByText("Status", { exact: true })).toBeVisible();
+     await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
++    await expect(page.locator("[data-controller-profile-table] th")).toHaveText([
++      "Device Type",
++      "Controller Name",
++      "Controller ID",
++      "Mapping Profile",
++      "Input",
++      "Action",
++    ]);
++    await expect(page.locator("[data-controller-profile-table]")).toContainText("Unknown Controller");
++    await expect(page.locator("[data-controller-profile-table]")).toContainText("Create Profile Needed");
++    await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown controller.");
++    await expect(page.locator("[data-controller-profile-status]")).toContainText("future Create Profile flow");
++    await expect(page.locator("[data-controller-profile-planning]")).toContainText("Future game launch will match Controller ID to a saved Mapping Profile");
+     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
+       "Object",
+       "Action",
+@@ -175,7 +189,10 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
 
-+test("Controls Input Mapping supports table-first inline add, cancel, save, and edit", async ({ page }) => {
-+  const failures = await openInputMappingPage(page);
-+
-+  try {
-+    const addButton = page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]");
-+    await expect(addButton).toBeEnabled();
-+
-+    await addButton.click();
-+    await expect(addButton).toBeDisabled();
-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
-+    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(6);
-+    await expect(page.locator("[data-input-editing-row] td").last().locator("button")).toHaveText(["Save", "Cancel"]);
-+    await expect(page.locator("[data-input-editing-row] td").last().locator("button").last()).toHaveText("Cancel");
-+
-+    await page.locator("[data-input-editing-row] [data-input-cancel-mapping]").click();
-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
-+    await expect(addButton).toBeEnabled();
-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
-+
-+    await addButton.click();
-+    await page.locator("[data-input-row-action]").selectOption("fire");
-+    await page.locator("[data-input-row-device]").selectOption("keyboard");
-+    await page.locator("[data-input-row-binding]").fill("KeyF");
-+    await page.locator("[data-input-save-mapping]").click();
-+    await expect(addButton).toBeEnabled();
-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
-+    await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Fire");
-+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyF");
-+    let records = await inputMappingRecords(page);
-+    expect(records).toHaveLength(1);
-+    expect(records[0]).toMatchObject({
-+      action: "fire",
-+      binding: "KeyF",
-+      source: "keyboard",
-+      state: "Active",
-+    });
-+
-+    await page.locator("[data-input-edit-mapping]").click();
-+    await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
-+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(0);
-+    await expect(addButton).toBeDisabled();
-+    await page.locator("[data-input-row-binding]").fill("KeyG");
-+    await page.locator("[data-input-save-mapping]").click();
-+    await expect(addButton).toBeEnabled();
-+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
-+    records = await inputMappingRecords(page);
-+    expect(records).toHaveLength(1);
-+    expect(records[0]).toMatchObject({
-+      action: "fire",
-+      binding: "KeyG",
-+      source: "keyboard",
-+      state: "Active",
-+    });
-+
-+    await page.reload({ waitUntil: "networkidle" });
-+    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
-+
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await workspaceV2CoverageReporter.stop(page);
-+    await failures.server.close();
-+  }
-+});
-+
- test("Controls Input Mapping captures KeyA, deletes token, and persists through shared DB", async ({ page }) => {
-   const failures = await openInputMappingPage(page);
+     const registryEntry = await controlsRegistryEntry(page);
+     expect(registryEntry.path).toBe("toolbox/input-mapping-v2/index.html");
+-    expect(registryEntry.status).toBe("beta");
++    expect(registryEntry.status).toBe("wireframe");
++    expect(registryEntry.status).not.toBe("beta");
++    expect(registryEntry.releaseChannel).toBe("wireframe");
++    expect(registryEntry.releaseChannelLabel).toBe("Wireframe");
 
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -303,6 +320,8 @@ test("Controls compatibility route uses rebuilt Input Mapping surface", async ({
+
+   try {
+     await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
++    await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
++    await expect(page.locator("[data-controller-profile-table]")).toContainText("Mapping Profile");
+     await expect(page.locator("[data-input-mapping-table]")).toBeVisible();
+     await expect(page.locator("main")).not.toContainText(/Static wireframe only|Not implemented yet|no database|no runtime behavior/i);
+     await expectNoPageFailures(failures);
 diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index 62916a4c9..2e3e84e51 100644
+index 2e3e84e51..70ef0b449 100644
 --- a/toolbox/controls/index.html
 +++ b/toolbox/controls/index.html
-@@ -41,10 +41,6 @@
-                                         Object
-                                         <select data-input-object-select></select>
-                                     </label>
--                                    <div class="content-cluster" aria-label="Input mapping action controls">
--                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
--                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
--                                    </div>
-                                     <ul data-input-default-actions></ul>
+@@ -56,6 +56,38 @@
+                                     <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
                                  </div>
                              </details>
-@@ -90,6 +86,16 @@
-                                             </tr>
-                                         </thead>
-                                         <tbody data-input-mapping-list></tbody>
-+                                        <tfoot>
-+                                            <tr>
-+                                                <td colspan="6">
-+                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
-+                                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
-+                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
-+                                                    </div>
-+                                                </td>
-+                                            </tr>
-+                                        </tfoot>
-                                     </table>
-                                 </div>
-                             </div>
++                            <details class="vertical-accordion" open>
++                                <summary>Controller Profiles</summary>
++                                <div class="accordion-body content-stack" data-controller-profile-planning>
++                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
++                                    <div class="table-wrapper">
++                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
++                                            <thead>
++                                                <tr>
++                                                    <th>Device Type</th>
++                                                    <th>Controller Name</th>
++                                                    <th>Controller ID</th>
++                                                    <th>Mapping Profile</th>
++                                                    <th>Input</th>
++                                                    <th>Action</th>
++                                                </tr>
++                                            </thead>
++                                            <tbody>
++                                                <tr>
++                                                    <td>Gamepad</td>
++                                                    <td>Unknown Controller</td>
++                                                    <td>Awaiting Device</td>
++                                                    <td>Create Profile Needed</td>
++                                                    <td>Button or Axis</td>
++                                                    <td>Select Action</td>
++                                                </tr>
++                                            </tbody>
++                                        </table>
++                                    </div>
++                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
++                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; future Create Profile flow will save the controller identity.</p>
++                                </div>
++                            </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
 diff --git a/toolbox/input-mapping-v2/index.html b/toolbox/input-mapping-v2/index.html
-index 62916a4c9..2e3e84e51 100644
+index 2e3e84e51..70ef0b449 100644
 --- a/toolbox/input-mapping-v2/index.html
 +++ b/toolbox/input-mapping-v2/index.html
-@@ -41,10 +41,6 @@
-                                         Object
-                                         <select data-input-object-select></select>
-                                     </label>
--                                    <div class="content-cluster" aria-label="Input mapping action controls">
--                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
--                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
--                                    </div>
-                                     <ul data-input-default-actions></ul>
+@@ -56,6 +56,38 @@
+                                     <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
                                  </div>
                              </details>
-@@ -90,6 +86,16 @@
-                                             </tr>
-                                         </thead>
-                                         <tbody data-input-mapping-list></tbody>
-+                                        <tfoot>
-+                                            <tr>
-+                                                <td colspan="6">
-+                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
-+                                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
-+                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
-+                                                    </div>
-+                                                </td>
-+                                            </tr>
-+                                        </tfoot>
-                                     </table>
-                                 </div>
-                             </div>
-diff --git a/toolbox/input-mapping-v2/input-mapping-v2.js b/toolbox/input-mapping-v2/input-mapping-v2.js
-index 9a64af1bd..d03dacf82 100644
---- a/toolbox/input-mapping-v2/input-mapping-v2.js
-+++ b/toolbox/input-mapping-v2/input-mapping-v2.js
-@@ -458,7 +458,10 @@ function renderMappings() {
-   if (editingRow) {
-     rows.push(renderEditingRow(editingRow.values));
-   }
--  rows.push(...mappings.map(renderMappingRow));
-+  const visibleMappings = editingRow?.id
-+    ? mappings.filter((mapping) => mapping.id !== editingRow.id)
-+    : mappings;
-+  rows.push(...visibleMappings.map(renderMappingRow));
-   if (!rows.length) {
-     const row = document.createElement("tr");
-     const cell = document.createElement("td");
-diff --git a/docs_build/dev/reports/controls-table-first-input-report.md b/docs_build/dev/reports/controls-table-first-input-report.md
++                            <details class="vertical-accordion" open>
++                                <summary>Controller Profiles</summary>
++                                <div class="accordion-body content-stack" data-controller-profile-planning>
++                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
++                                    <div class="table-wrapper">
++                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
++                                            <thead>
++                                                <tr>
++                                                    <th>Device Type</th>
++                                                    <th>Controller Name</th>
++                                                    <th>Controller ID</th>
++                                                    <th>Mapping Profile</th>
++                                                    <th>Input</th>
++                                                    <th>Action</th>
++                                                </tr>
++                                            </thead>
++                                            <tbody>
++                                                <tr>
++                                                    <td>Gamepad</td>
++                                                    <td>Unknown Controller</td>
++                                                    <td>Awaiting Device</td>
++                                                    <td>Create Profile Needed</td>
++                                                    <td>Button or Axis</td>
++                                                    <td>Select Action</td>
++                                                </tr>
++                                            </tbody>
++                                        </table>
++                                    </div>
++                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
++                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; future Create Profile flow will save the controller identity.</p>
++                                </div>
++                            </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
+diff --git a/docs_build/dev/reports/controls-wireframe-controller-profiles-report.md b/docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
 new file mode 100644
-index 000000000..fc8c8c155
+index 000000000..80b16bfc4
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-table-first-input-report.md
-@@ -0,0 +1,92 @@
-+# PR_26161_017 Controls Table First Input Report
++++ b/docs_build/dev/reports/controls-wireframe-controller-profiles-report.md
+@@ -0,0 +1,74 @@
++# PR_26161_018 Controls Wireframe Controller Profiles Report
 +
 +## Branch Validation
 +
-+PASS
-+
-+- Current branch: `main`
-+- Expected branch: `main`
-+- Worktree was clean before PR_26161_017 edits.
++- PASS: Current branch was `main`.
++- Expected branch: `main`.
++- Worktree was clean before PR_26161_018 edits.
 +
 +## Scope
 +
-+- Impacted lane: Controls/Input Mapping tool UI/runtime and targeted Controls/Input Mapping Playwright coverage.
++- Impacted lane: Controls/Input Mapping tool recovery/UAT.
 +- Playwright impacted: Yes.
-+- Runtime engine behavior changed: No.
-+- Samples validation: Skipped as requested. No sample JSON alignment, auth behavior, production DB behavior, or engine runtime behavior changed.
++- Full samples validation: SKIPPED. Samples are out of scope for this Controls wireframe/profile planning change, and no sample JSON alignment was requested.
++- Engine runtime behavior: Unchanged. No production controller runtime, sample runtime, auth behavior, or unrelated rewrite was added.
 +
 +## Requirement Checklist
 +
-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
-+- PASS: Verified current git branch was `main` before edits.
-+- PASS: Continued from PR_26161_016.
-+- PASS: Moved Controls toward table-first editing like Objects by placing mapping row creation controls in the mappings table footer.
-+- PASS: Mappings table supports inline add/edit for `Object`, `Action`, `Input Device`, `Input`, `State`, and `Actions`.
-+- PASS: `Add Mapping` is below the mappings table.
-+- PASS: Adding a row shows `Cancel` in the right-side action cell of the new row.
-+- PASS: `Add Mapping` is disabled while a new or edited row is active, then re-enabled after save or cancel.
-+- PASS: Keyboard, mouse, and gamepad capture behavior remains in place.
-+- PASS: Default actions remain sorted alphabetically.
-+- PASS: DB/mock-adapter persistence remains in place.
-+- PASS: Workspace return behavior remains in place.
-+- PASS: UAT-required panels remain: Actions, Capture, Mappings, Mapping JSON, Devices, and Status.
-+- PASS: Did not add sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
-+- PASS: Kept Theme V2 only; no inline CSS, inline JS, script/style blocks, or inline event handlers.
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- PASS: Reviewed `docs_build/tools/input-mapping-v2/uat.md`.
++- PASS: Verified branch `main` before edits.
++- PASS: Continued from PR_26161_017 table-first Controls behavior.
++- PASS: Controls metadata moved away from beta to Wireframe with `releaseChannel: "wireframe"`.
++- PASS: Controller profile planning was added inside Controls, not as a separate tool.
++- PASS: Wireframe UI includes Device Type, Controller Name, Controller ID, Mapping Profile, Input, and Action.
++- PASS: Unknown controller status gives an actionable Refresh Devices step and future Create Profile path.
++- PASS: Existing mapping table behavior and DB persistence were preserved.
++- PASS: No production controller runtime or engine behavior was added.
++
++## Files Changed
++
++- `src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
++- `toolbox/input-mapping-v2/index.html`
++- `toolbox/controls/index.html`
++- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++- `docs_build/dev/reports/controls-wireframe-controller-profiles-report.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +
 +## Testing Performed
 +
-+- PASS: `node --check toolbox/input-mapping-v2/input-mapping-v2.js`
-+- PASS: `node --check toolbox/input-mapping-v2/input-mapping-api-client.js`
-+- PASS: `node --check src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
++- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
 +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- PASS: `rg --pcre2 -n '<script(?![^>]*\bsrc=)|<style\b|\son[a-z]+\s*=' toolbox/input-mapping-v2/index.html toolbox/controls/index.html`
-+  - Expected no matches; command exited with no matches.
++- PASS: `node --check toolbox/input-mapping-v2/input-mapping-v2.js`
++- PASS: HTML restriction scan for inline scripts, style blocks, inline styles, and inline event handlers in both Controls routes.
 +- PASS: `git diff --check`
-+  - Result: PASS. Git reported line-ending normalization warnings only.
++  - Note: Git reported CRLF normalization warnings on touched files only.
 +- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --workers=1 --reporter=line`
-+  - Result: 4 passed.
++  - Final result: 4 passed.
++  - Initial run found only a test expectation mismatch because the registry API returns normalized `wireframe`; the assertion was corrected and the final run passed.
 +
-+## Playwright Behavior Covered
++## Playwright Coverage
 +
-+- PASS: UAT launch route still renders Actions, Capture, Mappings, Mapping JSON, Devices, and Status.
-+- PASS: `Add Mapping` appears once and is inside the mappings table footer.
-+- PASS: `Reset Mappings` remains available in the mappings table footer.
-+- PASS: Inline add creates a row with editable Object, Action, Input Device, Input, State, and right-side Actions cells.
-+- PASS: New row action cell shows `Save` and `Cancel`, with `Cancel` on the right.
-+- PASS: `Add Mapping` disables while a new row is active.
-+- PASS: Cancel removes the unsaved row and re-enables `Add Mapping`.
-+- PASS: Saving an inline row persists it to `input_mapping_records`.
-+- PASS: Editing an existing mapping uses an inline replacement row and re-enables `Add Mapping` after save.
-+- PASS: Saved edits persist after reload.
-+- PASS: Keyboard capture still maps `KeyA` to the selected `Move Left` action.
-+- PASS: Clicking the `Keyboard KeyA` token still deletes the persisted mapping.
-+- PASS: Default actions remain alphabetically sorted.
-+- PASS: Workspace return behavior remains covered by the UAT launch test.
-+
-+## Playwright V8 Coverage
-+
-+- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- Current PR browser runtime JavaScript coverage:
-+  - `(92%) toolbox/input-mapping-v2/input-mapping-v2.js - executed lines 703/703; executed functions 80/87`
-+  - `(100%) toolbox/input-mapping-v2/input-mapping-api-client.js - executed lines 12/12; executed functions 2/2`
-+- Advisory WARN entries remain for PR_26161_016 server/dev-runtime files because the coverage helper includes changed JS from `HEAD`; PR_26161_017 did not modify those files.
++- Generated `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
++- Generated `docs_build/dev/reports/coverage_changed_js_guardrail.txt`.
++- Coverage report includes an advisory WARN for `src/dev-runtime/guest-seeds/tool-metadata-inventory.js` because server-side seed metadata is not collected by browser V8 coverage.
++- Controls browser runtime coverage was collected for `toolbox/input-mapping-v2/input-mapping-v2.js`.
 +
 +## Manual Validation Steps
 +
-+1. Open `/toolbox/input-mapping-v2/index.html?workspace=demo-project`.
-+2. Confirm Actions, Capture, Mappings, Mapping JSON, Devices, and Status panels appear.
-+3. Confirm `Add Mapping` and `Reset Mappings` are below the mappings table.
-+4. Click `Add Mapping` and confirm the new row appears with `Save` and `Cancel` in the right-side Actions cell.
-+5. Confirm `Add Mapping` is disabled while the new row is active.
-+6. Click `Cancel` and confirm the unsaved row disappears and `Add Mapping` is enabled again.
-+7. Add and save a row, reload, and confirm the mapping persists.
-+8. Edit the saved row, save, reload, and confirm the edit persists.
-+9. Select `Move Left`, click `Capture Keyboard`, press `A`, and confirm `Keyboard KeyA` appears in the table and JSON.
-+10. Click the `Keyboard KeyA` token and confirm the mapping is deleted.
++1. Open `/toolbox/input-mapping-v2/index.html`.
++2. Confirm Controls shows as Wireframe in registry-backed tool metadata.
++3. Confirm Actions, Capture, Controller Profiles, Mappings, Mapping JSON, Devices, and Status panels appear.
++4. Confirm Controller Profiles shows Device Type, Controller Name, Controller ID, Mapping Profile, Input, and Action.
++5. Confirm the unknown controller status recommends Refresh Devices and points to the future Create Profile flow.
++6. Add a mapping row, save it, reload, and confirm it persists.
++7. Capture `KeyA`, confirm the mapping appears in the table and Mapping JSON, then click the token to delete it.
 +
 +## Skipped Lanes
 +
-+- Full samples validation: SKIP, explicitly requested and no samples changed.
-+- Full workspace/project suite: SKIP, no broad Project Workspace behavior changed; workspace return remains covered by targeted Controls/Input Mapping Playwright.
-+- Engine runtime tests: SKIP, no `src/engine/input` behavior changed.
-+- Auth and production DB validation: SKIP, no auth or production DB behavior changed; existing shared mock DB persistence behavior remains covered by targeted Playwright.
++- Full samples smoke: SKIPPED because samples and sample JSON alignment are explicitly out of scope.
++- Broad workspace suite: SKIPPED because this PR only changes the Controls tool surface, Controls metadata, and targeted Controls Playwright coverage.
++- Engine tests: SKIPPED because no engine runtime files or controller runtime behavior changed.

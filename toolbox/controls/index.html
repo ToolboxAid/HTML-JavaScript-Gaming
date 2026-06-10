@@ -56,6 +56,38 @@
                                     <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
                                 </div>
                             </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Controller Profiles</summary>
+                                <div class="accordion-body content-stack" data-controller-profile-planning>
+                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Device Type</th>
+                                                    <th>Controller Name</th>
+                                                    <th>Controller ID</th>
+                                                    <th>Mapping Profile</th>
+                                                    <th>Input</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td>Gamepad</td>
+                                                    <td>Unknown Controller</td>
+                                                    <td>Awaiting Device</td>
+                                                    <td>Create Profile Needed</td>
+                                                    <td>Button or Axis</td>
+                                                    <td>Select Action</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
+                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; future Create Profile flow will save the controller identity.</p>
+                                </div>
+                            </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
