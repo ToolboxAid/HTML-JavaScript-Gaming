@@ -103,6 +103,14 @@ async function fillActiveRow(page, { name, renderType = "None", type, state = "A
   await page.locator("[data-objects-row-render-type]").selectOption(renderType);
 }
 
+async function objectDefinitionRecords(page) {
+  return page.evaluate(async () => {
+    const response = await fetch("/api/mock-db/snapshot");
+    const payload = await response.json();
+    return payload.data.tables.object_definition_records || [];
+  });
+}
+
 test("Objects exposes production copy, setup status, and broad table input", async ({ page }) => {
   const failures = await openObjectsPage(page);
 
@@ -255,6 +263,93 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(page.locator("[data-objects-log]")).toHaveText("Trashed object row.");
     await expect(page.locator("[data-objects-list]")).toContainText("No objects drafted yet.");
     await expect(addButton).toBeEnabled();
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Objects persists added, edited, deleted, and sprite-linked rows through shared DB", async ({ page }) => {
+  const failures = await openObjectsPage(page);
+
+  try {
+    const addButton = page.getByRole("button", { name: "Add Object" });
+    await addButton.click();
+    await fillActiveRow(page, {
+      name: "Persistent Hero",
+      type: "Hero",
+    });
+    await page.locator("[data-objects-save-row]").click();
+    await expect(page.locator("[data-objects-log]")).toHaveText("Added Persistent Hero.");
+
+    let rows = await objectDefinitionRecords(page);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toEqual(expect.objectContaining({
+      name: "Persistent Hero",
+      renderType: "None",
+      type: "Hero",
+    }));
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(0)).toHaveText("Persistent Hero");
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(1)).toHaveText("Hero");
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Active");
+
+    await page.locator("[data-objects-edit-row='persistent-hero']").click();
+    await page.locator("[data-objects-row-name]").fill("Persistent Hero Prime");
+    await page.locator("[data-objects-row-state]").selectOption("Disabled");
+    await page.locator("[data-objects-save-row]").click();
+    await expect(page.locator("[data-objects-log]")).toHaveText("Saved Persistent Hero Prime.");
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(0)).toHaveText("Persistent Hero Prime");
+    await expect(page.locator("[data-objects-list] tr").first().locator("td").nth(2)).toHaveText("Disabled");
+    rows = await objectDefinitionRecords(page);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toEqual(expect.objectContaining({
+      name: "Persistent Hero Prime",
+      state: "Disabled",
+    }));
+
+    await page.locator("[data-objects-trash-row='persistent-hero-prime']").click();
+    await expect(page.locator("[data-objects-log]")).toHaveText("Trashed object row.");
+    rows = await objectDefinitionRecords(page);
+    expect(rows).toHaveLength(0);
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-objects-list]")).toContainText("No objects drafted yet.");
+
+    await page.getByRole("button", { name: "Add Object" }).click();
+    await fillActiveRow(page, {
+      name: "Persistent Bolt",
+      renderType: "Sprite",
+      type: "Projectile",
+    });
+    await page.locator("[data-objects-save-row]").click();
+    await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_persistent_bolt for Persistent Bolt.");
+    rows = await objectDefinitionRecords(page);
+    expect(rows).toHaveLength(1);
+    expect(rows[0]).toEqual(expect.objectContaining({
+      name: "Persistent Bolt",
+      renderAssetKey: "sprite_persistent_bolt",
+      renderType: "Sprite",
+      type: "Projectile",
+    }));
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-objects-list]")).toContainText("Persistent Bolt");
+    await expect(page.locator("[data-objects-list]")).toContainText("sprite_persistent_bolt");
+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveAttribute(
+      "href",
+      "/toolbox/sprites/index.html?assetKey=sprite_persistent_bolt&objectKey=persistent-bolt&sourceTool=objects"
+    );
+    await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
+      "href",
+      "/toolbox/sprites/index.html?assetKey=sprite_persistent_bolt&objectKey=persistent-bolt&sourceTool=objects"
+    );
+    await expect(page.locator("main")).not.toContainText(OLD_INTERNAL_COPY_PATTERN);
 
     await expectNoPageFailures(failures);
   } finally {

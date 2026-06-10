@@ -7,6 +7,9 @@ import {
   pickerDiagnosticForRole,
 } from "../persistence/tool-repositories/assets-mock-repository.js";
 import {
+  createObjectsToolMockRepository,
+} from "../persistence/tool-repositories/objects-mock-repository.js";
+import {
   TOOL_IMAGE_FALLBACK,
   TOOL_RELEASE_CHANNELS,
   TOOL_RELEASE_CHANNEL_HELP_TEXT,
@@ -70,7 +73,7 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 const LOCAL_MEM_MODE_ID = "local-mem";
 const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
-const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "project-journey", "palette", "asset"];
+const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "objects", "project-journey", "palette", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
 const TOOLBOX_PLANNING_FIELDS = Object.freeze([
@@ -638,6 +641,10 @@ function gameConfigurationTables(repository) {
   });
 }
 
+function objectsTables(repository) {
+  return normalizeOwnedTables("objects", repository.getTables());
+}
+
 function projectJourneyTables(repository) {
   return normalizeOwnedTables("project-journey", repository.getTables());
 }
@@ -914,6 +921,10 @@ class LocalDevMockDataSource {
     this.assetRepository = createAssetToolMockRepository({
       configurationRepository: this.gameConfigurationRepository,
       paletteRepository: this.paletteRepository,
+      ...this.sharedOptions,
+    });
+    this.objectsRepository = createObjectsToolMockRepository({
+      projectWorkspaceRepository: this.workspaceRepository,
       ...this.sharedOptions,
     });
     this.assetReadyInitialized = false;
@@ -1436,6 +1447,7 @@ class LocalDevMockDataSource {
     if (toolId === "project-workspace") return this.workspaceRepository;
     if (toolId === "game-design") return this.gameDesignRepository;
     if (toolId === "game-configuration") return this.gameConfigurationRepository;
+    if (toolId === "objects") return this.objectsRepository;
     if (toolId === "project-journey") return this.projectJourneyRepository;
     if (toolId === "palette") return this.paletteRepository;
     if (toolId === "colors") return this.paletteRepository;
@@ -1462,6 +1474,11 @@ class LocalDevMockDataSource {
     }
     if (toolId === "game-configuration") {
       return { GAME_CONFIGURATION_SECTIONS };
+    }
+    if (toolId === "objects") {
+      return {
+        OBJECTS_TOOL_TABLES: this.objectsRepository.OBJECTS_TOOL_TABLES,
+      };
     }
     if (toolId === "project-journey") {
       return {
@@ -1601,6 +1618,7 @@ class LocalDevMockDataSource {
       ...workspaceTables(this.workspaceRepository),
       ...gameDesignTables(this.gameDesignRepository),
       ...gameConfigurationTables(this.gameConfigurationRepository),
+      ...objectsTables(this.objectsRepository),
       ...projectJourneyTables(this.projectJourneyRepository),
       ...paletteTables(this.paletteRepository),
       ...assetTables(this.assetRepository),

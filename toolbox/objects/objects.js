@@ -5,6 +5,7 @@ import {
   validateObjectDefinition,
 } from "../../src/engine/object-model/index.js";
 import { createAssetToolApiRepository } from "../assets/assets-api-client.js";
+import { createObjectsToolApiRepository } from "./objects-api-client.js";
 
 const CAPABILITY_LABELS = Object.freeze({
   collectible: "Can Be Collected",
@@ -126,8 +127,10 @@ const STARTER_OBJECTS = Object.freeze([
 ]);
 
 let assetRepository = createAssetToolApiRepository();
+let objectsRepository = createObjectsToolApiRepository();
 let draftedObjects = [];
 let editingRow = null;
+let storageIssue = null;
 
 const elements = {
   addRow: document.querySelector("[data-objects-add-row]"),
@@ -669,6 +672,59 @@ function ensureSpriteAssetForObject(input) {
   return result;
 }
 
+function objectStorageFinding(result) {
+  const finding = Array.isArray(result?.validation?.findings)
+    ? result.validation.findings[0]
+    : null;
+  if (finding) {
+    return {
+      action: normalizeText(finding.action || result.message),
+      label: normalizeText(finding.label) || "Object Storage",
+    };
+  }
+  return {
+    action: normalizeText(result?.message) || "Start the local server API so Objects can save through the shared data adapter.",
+    label: "Object Storage",
+  };
+}
+
+function readPersistedObjects() {
+  let result = objectsRepository.listObjects();
+  if (Array.isArray(result)) {
+    storageIssue = null;
+    return result.map(cloneObject);
+  }
+  if (result?.error) {
+    objectsRepository = createObjectsToolApiRepository();
+    result = objectsRepository.listObjects();
+    if (Array.isArray(result)) {
+      storageIssue = null;
+      return result.map(cloneObject);
+    }
+  }
+  storageIssue = objectStorageFinding(result);
+  renderValidation([storageIssue]);
+  setText(elements.log, storageIssue.action);
+  return null;
+}
+
+function persistDraftedObjects(nextObjects) {
+  const normalizedObjects = nextObjects.map(cloneObject);
+  let result = objectsRepository.replaceObjects(normalizedObjects);
+  if (result?.error) {
+    objectsRepository = createObjectsToolApiRepository();
+    result = objectsRepository.replaceObjects(normalizedObjects);
+  }
+  if (Array.isArray(result?.objects)) {
+    storageIssue = null;
+    return result.objects.map(cloneObject);
+  }
+  storageIssue = objectStorageFinding(result);
+  renderValidation([storageIssue]);
+  setText(elements.log, storageIssue.action);
+  return null;
+}
+
 function editingObjectFromRow(row) {
   const renderType = row.querySelector("[data-objects-row-render-type]")?.value || "None";
   const render = renderType === "Sprite"
@@ -926,7 +982,10 @@ function renderRegistryBasics() {
 }
 
 function render() {
-  const findings = objectListFindings(draftedObjects);
+  const findings = [
+    ...objectListFindings(draftedObjects),
+    ...(storageIssue ? [storageIssue] : []),
+  ];
   renderObjectList(draftedObjects);
   renderStatusSummary(draftedObjects);
   renderOutput(draftedObjects, findings);
@@ -1040,23 +1099,41 @@ function saveRow() {
     return;
   }
 
+  let nextObjects = [];
   if (editingRow.mode === "edit") {
-    draftedObjects = draftedObjects.map((savedObject) => (
+    nextObjects = draftedObjects.map((savedObject) => (
       objectId(savedObject) === editingRow.originalId ? object : savedObject
     ));
-    setText(elements.log, assetLink.message ? `Saved ${object.name}. ${assetLink.message}` : `Saved ${object.name}.`);
   } else {
-    draftedObjects = [...draftedObjects, object];
-    setText(elements.log, assetLink.message ? `Added ${object.name}. ${assetLink.message}` : `Added ${object.name}.`);
+    nextObjects = [...draftedObjects, object];
   }
+
+  const savedObjects = persistDraftedObjects(nextObjects);
+  if (!savedObjects) {
+    return;
+  }
+  draftedObjects = savedObjects;
+  setText(
+    elements.log,
+    editingRow.mode === "edit"
+      ? assetLink.message ? `Saved ${object.name}. ${assetLink.message}` : `Saved ${object.name}.`
+      : assetLink.message ? `Added ${object.name}. ${assetLink.message}` : `Added ${object.name}.`
+  );
   editingRow = null;
   render();
 }
 
 function trashRow(objectKey) {
   const beforeCount = draftedObjects.length;
-  draftedObjects = draftedObjects.filter((object) => objectId(object) !== objectKey);
-  const removed = beforeCount !== draftedObjects.length;
+  const nextObjects = draftedObjects.filter((object) => objectId(object) !== objectKey);
+  const removed = beforeCount !== nextObjects.length;
+  if (removed) {
+    const savedObjects = persistDraftedObjects(nextObjects);
+    if (!savedObjects) {
+      return;
+    }
+    draftedObjects = savedObjects;
+  }
   setText(elements.log, removed ? "Trashed object row." : "Trash skipped: object row was already absent.");
   render();
 }
@@ -1066,13 +1143,20 @@ function seedStarterObjects() {
     setText(elements.log, "Seed blocked: save or cancel the active row first.");
     return;
   }
-  draftedObjects = STARTER_OBJECTS.map(cloneObject);
+  const savedObjects = persistDraftedObjects(STARTER_OBJECTS.map(cloneObject));
+  if (!savedObjects) {
+    return;
+  }
+  draftedObjects = savedObjects;
   setText(elements.log, "Seeded starter objects: Hero, Projectile, and Wall.");
   render();
 }
 
 function validateObjects() {
-  const findings = objectListFindings(draftedObjects);
+  const findings = [
+    ...objectListFindings(draftedObjects),
+    ...(storageIssue ? [storageIssue] : []),
+  ];
   renderValidation(findings);
   setText(
     elements.log,
@@ -1084,7 +1168,11 @@ function validateObjects() {
 }
 
 function resetTable() {
-  draftedObjects = [];
+  const savedObjects = persistDraftedObjects([]);
+  if (!savedObjects) {
+    return;
+  }
+  draftedObjects = savedObjects;
   editingRow = null;
   setText(elements.log, "Reset the Objects table.");
   render();
@@ -1177,4 +1265,5 @@ document.addEventListener("visibilitychange", () => {
 
 renderTemplateCatalog();
 renderRegistryBasics();
+draftedObjects = readPersistedObjects() || [];
 render();
