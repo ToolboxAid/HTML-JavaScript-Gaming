@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Objects - GameFoundryStudio</title>
-    <meta name="description" content="Objects Toolbox wireframe. Design reusable game objects and object-ready assets.">
+    <meta name="description" content="Objects Toolbox beta surface for static and dynamic paddle and ball MVP object setup.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Objects</div>
                 <h1>Objects</h1>
-                <p class="lede">Design reusable game objects and object-ready assets. Static wireframe only; no database, persistence, save, load, or runtime behavior is implemented.</p>
+                <p class="lede">Define static and dynamic object setup for the paddle and ball MVP path without persistence, database writes, sample updates, or engine runtime changes.</p>
             </div>
         </section>
         <section class="section">
@@ -30,14 +30,133 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>MVP Setup</summary>
+                                <div class="accordion-body content-stack">
+                                    <p data-objects-mvp-context>Paddle + ball MVP requires a Dynamic paddle, a Dynamic ball, and a Static boundary.</p>
+                                    <div class="content-cluster" aria-label="Objects MVP actions">
+                                        <button class="btn" type="button" data-objects-seed-mvp>Seed Paddle + Ball</button>
+                                        <button class="btn" type="button" data-objects-validate>Validate Setup</button>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Object Draft</summary>
+                                <div class="accordion-body">
+                                    <form class="content-stack" data-objects-form>
+                                        <div class="table-wrapper">
+                                            <table class="data-table tool-form-table" aria-label="Object draft fields" data-objects-draft-table>
+                                                <tbody>
+                                                    <tr>
+                                                        <th scope="row"><label for="objectsType">Object Type</label></th>
+                                                        <td>
+                                                            <select id="objectsType" data-objects-type>
+                                                                <option value="">Select type</option>
+                                                                <option value="Static">Static</option>
+                                                                <option value="Dynamic">Dynamic</option>
+                                                                <option value="Collectible">Collectible</option>
+                                                                <option value="Hazard">Hazard</option>
+                                                                <option value="Goal">Goal</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="objectsRole">MVP Role</label></th>
+                                                        <td>
+                                                            <select id="objectsRole" data-objects-role>
+                                                                <option value="">Select role</option>
+                                                                <option value="Paddle">Paddle</option>
+                                                                <option value="Ball">Ball</option>
+                                                                <option value="Boundary">Boundary</option>
+                                                                <option value="Pickup">Pickup</option>
+                                                                <option value="Hazard">Hazard</option>
+                                                                <option value="Goal">Goal</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="objectsName">Object Name</label></th>
+                                                        <td><input id="objectsName" type="text" data-objects-name placeholder="Player Paddle"></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="objectsState">Initial State</label></th>
+                                                        <td>
+                                                            <select id="objectsState" data-objects-state>
+                                                                <option value="Active">Active</option>
+                                                                <option value="Idle">Idle</option>
+                                                                <option value="Disabled">Disabled</option>
+                                                            </select>
+                                                        </td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="objectsBehavior">Behavior Notes</label></th>
+                                                        <td><textarea id="objectsBehavior" rows="4" data-objects-behavior placeholder="Moves horizontally from player input."></textarea></td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th scope="row"><label for="objectsInteraction">Interaction Notes</label></th>
+                                                        <td><textarea id="objectsInteraction" rows="4" data-objects-interaction placeholder="Deflects the ball and stays inside the play area."></textarea></td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                        <div class="content-cluster" aria-label="Object draft actions">
+                                            <button class="btn" type="submit">Add Object</button>
+                                            <button class="btn" type="button" data-objects-reset-draft>Reset Draft</button>
+                                        </div>
+                                    </form>
+                                </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="objects" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel"><h2>Workspace</h2>
-                        <p>Design reusable game objects and object-ready assets. This page preserves the shared Theme V2 tool template structure for future rebuild work.</p>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="objects" data-tool-icon-src="assets/theme-v2/images/badges/objects.png" data-tool-character-src="assets/theme-v2/images/tools/objects.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Object Setup Workspace</h2>
+                        <p>Objects are held in this page session only. The output is a readable setup plan for authoring, not a saved manifest or runtime payload.</p>
+                        <div class="grid cols-3" aria-label="Objects readiness summary">
+                            <article class="mini-stat"><strong data-objects-readiness>Needs Input</strong>MVP readiness</article>
+                            <article class="mini-stat"><strong data-objects-count>0</strong>Objects drafted</article>
+                            <article class="mini-stat"><strong data-objects-scope>In-memory</strong>Storage scope</article>
+                        </div>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Paddle + Ball MVP</div>
+                                    <h3>Required Object Setup</h3>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Objects MVP requirements">
+                                        <thead>
+                                            <tr>
+                                                <th>Requirement</th>
+                                                <th>Status</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-objects-requirements></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Current Draft</div>
+                                    <h3>Object List</h3>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Drafted objects" data-objects-list-table>
+                                        <thead>
+                                            <tr>
+                                                <th>Name</th>
+                                                <th>Type</th>
+                                                <th>Role</th>
+                                                <th>State</th>
+                                                <th>Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-objects-list></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
                     </section>
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
@@ -46,7 +165,45 @@
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <div class="accordion-body content-stack" data-objects-output>
+                                    <p>Readiness: <span data-objects-output-readiness>Needs Input</span></p>
+                                    <p>Static Objects: <span data-objects-output-static>0</span></p>
+                                    <p>Dynamic Objects: <span data-objects-output-dynamic>0</span></p>
+                                    <p>MVP Path: <span data-objects-output-mvp>Paddle and ball setup not ready.</span></p>
+                                    <p>Runtime Scope: <span data-objects-output-scope>No persistence or engine runtime behavior.</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Validation</summary>
+                                <div class="accordion-body content-stack">
+                                    <article class="card" role="dialog" aria-labelledby="objects-validation-title" data-objects-validation-overlay>
+                                        <div class="card-body content-stack">
+                                            <div>
+                                                <div class="kicker">Actionable Validation</div>
+                                                <h3 id="objects-validation-title">Missing Object Setup</h3>
+                                            </div>
+                                            <ul data-objects-validation-list></ul>
+                                        </div>
+                                    </article>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Object Types</summary>
+                                <div class="accordion-body content-stack">
+                                    <ul data-objects-type-basics>
+                                        <li><strong>Static:</strong> fixed object such as a wall, boundary, or platform.</li>
+                                        <li><strong>Dynamic:</strong> moving object such as the player paddle or ball.</li>
+                                        <li><strong>Collectible:</strong> pickup that can change score, inventory, or progress.</li>
+                                        <li><strong>Hazard:</strong> danger object that can damage, fail, or reset the player.</li>
+                                        <li><strong>Goal:</strong> win, exit, scoring, or completion target.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <div class="status" role="status" data-objects-log>Objects in-memory draft ready.</div>
+                                </div>
                             </details>
                         </div>
                     </aside>
@@ -57,6 +214,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="toolbox/objects/objects.js"></script>
 </body>
 
 </html>

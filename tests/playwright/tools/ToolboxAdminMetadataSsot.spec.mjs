@@ -199,6 +199,12 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     }));
     expect(Array.isArray(registryColors.progressChecklist)).toBe(true);
     expect(Array.isArray(registryColors.requires)).toBe(true);
+    expect(registrySnapshot.activeTools.find((tool) => tool.id === "objects")).toEqual(expect.objectContaining({
+      capabilityLabel: "MVP object types",
+      childCapabilities: ["Static", "Dynamic", "Collectible", "Hazard", "Goal"],
+      releaseChannel: "beta",
+      status: "beta",
+    }));
 
     for (const row of snapshot.rows) {
       expect(row.toolKey, row.toolName).toBeTruthy();
@@ -213,9 +219,9 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     expect(snapshotNames).toEqual(expect.arrayContaining([...REQUIRED_ADMIN_TOOLS, ...REQUIRED_RESTORED_TOOLS]));
     const counts = countByStatus(snapshot.rows);
     expect(counts).toMatchObject({
-      beta: 5,
+      beta: 6,
       complete: 1,
-      planned: 33,
+      planned: 32,
       wireframe: 3,
       deprecated: 1,
     });

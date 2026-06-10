@@ -410,14 +410,14 @@ export const TOOL_REGISTRY = Object.freeze([
     "id": "objects",
     "name": "Objects",
     "displayName": "Objects",
-    "shortDescription": "Design reusable game objects and object-ready assets.",
+    "shortDescription": "Define static and dynamic game object setup for the paddle and ball MVP path.",
     "shortLabel": "Objects",
     "path": "objects",
     "folderName": "objects",
     "entryPoint": "objects/index.html",
     "badge": "/assets/theme-v2/images/badges/objects.png",
     "tool": "/assets/theme-v2/images/tools/objects.png",
-    "description": "Design reusable game objects and object-ready assets.",
+    "description": "Define static and dynamic game object setup for the paddle and ball MVP path.",
     "category": "Design",
     "colorGroup": "tool-group-design",
     "active": true,
@@ -426,23 +426,25 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [],
-    "status": "Wireframe",
+    "status": "Ready",
+    "releaseChannel": "beta",
     "progressChecklist": [
-      "Review readiness",
-      "Static planned text only"
+      "Tool Template V2 shell adapted",
+      "Paddle + ball MVP seed validates",
+      "Actionable validation diagnostics available"
     ],
     "deferred": false,
     "hidden": false,
     "adminOnly": false,
     "visibleInToolsList": true,
     "toolboxGroup": "Create",
-    "capabilityLabel": "Planned object types",
+    "capabilityLabel": "MVP object types",
     "childCapabilities": [
-      "Vector",
-      "Sprite",
-      "Character",
-      "Enemy",
-      "Interactive"
+      "Static",
+      "Dynamic",
+      "Collectible",
+      "Hazard",
+      "Goal"
     ]
   },
   {

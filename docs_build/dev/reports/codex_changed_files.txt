@@ -1,13 +1,28 @@
-docs_build/dev/PROJECT_INSTRUCTIONS.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/mvp-path-validation-and-status-alignment-report.md
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-src/dev-runtime/server/mock-api-router.mjs
-tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
-tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
-tests/playwright/tools/ToolboxRoutePages.spec.mjs
-toolbox/toolRegistry.js
-toolbox/tools-page-accordions.js
+# git status --short
+M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+ M tests/playwright/tools/RootToolsFutureState.spec.mjs
+ M tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+ M toolbox/objects/index.html
+?? docs_build/dev/reports/objects-beta-rebuild-report.md
+?? tests/playwright/tools/ObjectsTool.spec.mjs
+?? toolbox/objects/objects.js
+
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/objects-beta-rebuild-report.md
+tests/playwright/tools/ObjectsTool.spec.mjs
+toolbox/objects/objects.js
+
+# git diff --stat
+docs_build/dev/reports/codex_changed_files.txt     |  35 +++--
+ docs_build/dev/reports/codex_review.diff           | Bin 101630 -> 49857 bytes
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  19 +--
+ .../guest-seeds/tool-metadata-inventory.js         |  24 +--
+ .../playwright/tools/RootToolsFutureState.spec.mjs |  14 +-
+ .../tools/ToolboxAdminMetadataSsot.spec.mjs        |  10 +-
+ toolbox/objects/index.html                         | 174 ++++++++++++++++++++-
+ 8 files changed, 224 insertions(+), 58 deletions(-)
