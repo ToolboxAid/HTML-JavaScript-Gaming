@@ -141,6 +141,25 @@ class AdminDbViewer {
     return tableName;
   }
 
+  tableRuntimeState(tableName, records) {
+    if (Object.hasOwn(DEPRECATED_TABLE_NOTES, tableName)) {
+      return {
+        label: "Deprecated/history",
+        note: DEPRECATED_TABLE_NOTES[tableName],
+      };
+    }
+    if (!records.length) {
+      return {
+        label: "Empty schema-only",
+        note: `Empty schema-only table. ${this.modeLabel} shows headers so missing records and future writes are inspectable.`,
+      };
+    }
+    return {
+      label: "Active runtime data",
+      note: `Active runtime table data from the current ${this.modeLabel} adapter snapshot.`,
+    };
+  }
+
   collectSnapshot() {
     const snapshot = getMockDbSnapshot();
     const tables = snapshot.tables;
@@ -168,9 +187,10 @@ class AdminDbViewer {
     details.open = true;
     details.dataset.adminDbTable = tableName;
     const tableDisplayName = this.tableDisplayName(tableName);
+    const tableRuntimeState = this.tableRuntimeState(tableName, records);
 
     const summary = this.createElement("summary", {
-      text: `${tableDisplayName} (${records.length} records)`,
+      text: `${tableDisplayName} - ${tableRuntimeState.label} (${records.length} records)`,
     });
     const body = this.createElement("div", {
       className: "accordion-body",
@@ -232,12 +252,10 @@ class AdminDbViewer {
 
     table.append(head, tableBody);
     wrapper.append(table);
-    if (DEPRECATED_TABLE_NOTES[tableName]) {
-      body.append(this.createElement("p", {
-        className: "status",
-        text: DEPRECATED_TABLE_NOTES[tableName],
-      }));
-    }
+    body.append(this.createElement("p", {
+      className: "status",
+      text: tableRuntimeState.note,
+    }));
     body.append(wrapper);
     details.append(summary, body);
     return details;

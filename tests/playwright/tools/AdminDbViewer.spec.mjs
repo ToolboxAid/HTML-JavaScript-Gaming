@@ -402,6 +402,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await page.getByRole("button", { name: "Project Journey" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Project Journey\./);
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='project_journey_items'] > summary")).toContainText("Active runtime data");
     await expect(page.locator("[data-admin-db-table='palette_colors']")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-table='asset_library_items']")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-table='users']")).toHaveCount(0);
@@ -409,8 +410,9 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await page.getByRole("button", { name: "Palette" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Palette\./);
     await expect(page.locator("[data-admin-db-table='palette_colors']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='palette_colors'] > summary")).toContainText("Empty schema-only");
     await expect(page.locator("[data-admin-db-table='palette_source_swatches']")).toBeVisible();
-    await expect(page.locator("[data-admin-db-table='palette_source_swatches'] > summary")).toContainText("deprecated");
+    await expect(page.locator("[data-admin-db-table='palette_source_swatches'] > summary")).toContainText("Deprecated/history");
     await expect(page.locator("[data-admin-db-table='palette_source_swatches']")).toContainText(
       "Current Colors grid rendering, editing, save/load, and import/export do not read this table."
     );
