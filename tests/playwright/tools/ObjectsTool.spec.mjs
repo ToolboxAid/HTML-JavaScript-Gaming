@@ -119,11 +119,15 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.getByRole("heading", { level: 2, name: "Object Builder" })).toBeVisible();
     await expect(page.getByText("Object Type Catalog", { exact: true })).toBeVisible();
     await expect(page.locator("[data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
+    await expect(page.locator("[aria-label='Object type catalog'] th")).toHaveText(["Template", "Capability"]);
+    await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("State");
+    await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("Render");
+    await expect(page.locator("[data-objects-template-catalog] tr").first().locator("td")).toHaveCount(2);
     await expect(page.locator("[data-objects-template-catalog] tr")).toHaveCount(TYPE_OPTIONS.length);
     await expect(page.locator("[data-objects-template-catalog] td:first-child")).toHaveText(TYPE_OPTIONS);
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Spawn Point");
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Decoration");
-    await expect(page.locator("[data-objects-template-catalog]")).toContainText("Sprite");
+    await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toBeVisible();

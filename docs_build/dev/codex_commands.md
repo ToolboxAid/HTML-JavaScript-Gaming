@@ -1294,3 +1294,32 @@ Required reports:
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26161_009-object-catalog-compact-display
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Continued from the latest Objects PR state.
+- Updated the Object Type Catalog display to show only `Template` and `Capability`.
+- Removed `State` and `Render` columns from the Object Type Catalog display only.
+- Preserved State, Render, State Flow, object registry/config concepts, object validation contracts, render asset linking, and Sprite Editor linking behavior.
+- Preserved table-first input, `Add Object` below the table, disabled Add while adding, Cancel, Edit, Trash, Reset Table, Object Status, and Sprite asset linking.
+- Did not change engine runtime behavior, sample JSON, auth behavior, production DB behavior, or unrelated tool behavior.
+
+Validation:
+- `node --check toolbox/objects/objects.js`
+- `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
+- HTML restriction check for `toolbox/objects/index.html`
+- Objects forbidden wording scan for requested terms
+- `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line`
+- `git diff --check`
+- Full samples validation skipped by request and because samples/runtime behavior were not changed.
+
+Required reports:
+- `docs_build/dev/reports/object-catalog-compact-display-report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

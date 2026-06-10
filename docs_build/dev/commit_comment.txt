@@ -1,1 +1,1 @@
-Add Objects status action links - PR_26161_007-objects-status-action-links
+Compact Objects type catalog display - PR_26161_009-object-catalog-compact-display

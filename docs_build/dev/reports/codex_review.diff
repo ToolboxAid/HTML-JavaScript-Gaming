@@ -1,24 +1,23 @@
 diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
-index 26e17362a..6d9d81623 100644
+index 6d9d81623..1a7c5e5a9 100644
 --- a/docs_build/dev/codex_commands.md
 +++ b/docs_build/dev/codex_commands.md
-@@ -1264,3 +1264,33 @@ Required reports:
+@@ -1294,3 +1294,32 @@ Required reports:
  - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
  - `docs_build/dev/reports/codex_changed_files.txt`
  - `docs_build/dev/reports/codex_review.diff`
 +
 +
-+## PR_26161_007-objects-status-action-links
++## PR_26161_009-object-catalog-compact-display
 +
 +Changes:
 +- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 +- Verified the current branch is `main` before edits.
-+- Continued from the current Objects tool Type Catalog state.
-+- Replaced aggregate Object Status rows with per-object actionable status rows.
-+- Added creator-facing row gap labels: `Missing Render Asset`, `Missing Hitbox`, `Missing Events`, and `Ready`.
-+- Added row-level `Edit Sprite`, `Open Hitboxes`, and `Open Events` links where applicable.
-+- Preserved table-first input, `Add Object` below the table, disabled Add while adding, Cancel, Edit, Trash, and Reset Table.
-+- Preserved real Sprite render asset creation, resolution, preview, and Sprite Editor linking.
++- Continued from the latest Objects PR state.
++- Updated the Object Type Catalog display to show only `Template` and `Capability`.
++- Removed `State` and `Render` columns from the Object Type Catalog display only.
++- Preserved State, Render, State Flow, object registry/config concepts, object validation contracts, render asset linking, and Sprite Editor linking behavior.
++- Preserved table-first input, `Add Object` below the table, disabled Add while adding, Cancel, Edit, Trash, Reset Table, Object Status, and Sprite asset linking.
 +- Did not change engine runtime behavior, sample JSON, auth behavior, production DB behavior, or unrelated tool behavior.
 +
 +Validation:
@@ -31,61 +30,54 @@ index 26e17362a..6d9d81623 100644
 +- Full samples validation skipped by request and because samples/runtime behavior were not changed.
 +
 +Required reports:
-+- `docs_build/dev/reports/objects-status-action-links-report.md`
++- `docs_build/dev/reports/object-catalog-compact-display-report.md`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
-index fc81a962f..c5969caae 100644
+index c5969caae..2b004eb02 100644
 --- a/docs_build/dev/commit_comment.txt
 +++ b/docs_build/dev/commit_comment.txt
 @@ -1 +1 @@
--Add Objects type catalog - PR_26161_008-object-type-catalog
-+Add Objects status action links - PR_26161_007-objects-status-action-links
+-Add Objects status action links - PR_26161_007-objects-status-action-links
++Compact Objects type catalog display - PR_26161_009-object-catalog-compact-display
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 96a3d1103..c0746279a 100644
+index c0746279a..f9a4d14cd 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -3,8 +3,8 @@ docs_build/dev/commit_comment.txt
+@@ -3,7 +3,7 @@ docs_build/dev/commit_comment.txt
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
  docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+docs_build/dev/reports/objects-status-action-links-report.md
+-docs_build/dev/reports/objects-status-action-links-report.md
++docs_build/dev/reports/object-catalog-compact-display-report.md
  docs_build/dev/reports/playwright_v8_coverage_report.txt
--docs_build/dev/reports/PR_26161_008_object_type_catalog.md
  tests/playwright/tools/ObjectsTool.spec.mjs
  toolbox/objects/index.html
- toolbox/objects/objects.js
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index dea65171a..b11ab5df7 100644
+index b11ab5df7..20783a4bb 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 @@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(95%) toolbox/objects/objects.js - executed lines 960/960; executed functions 89/94
-+(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99
+-(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99
++(95%) toolbox/objects/objects.js - executed lines 985/985; executed functions 94/99
 
  Guardrail warnings:
  (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index e1d504b0f..4c7f82fab 100644
+index 4c7f82fab..039a0f69c 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,12 +12,12 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-
- Exercised tool entry points detected:
--(85%) Toolbox Index - exercised 5 runtime JS files
-+(86%) Toolbox Index - exercised 5 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
+@@ -17,7 +17,7 @@ Exercised tool entry points detected:
  (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
--(95%) toolbox/objects/objects.js - executed lines 960/960; executed functions 89/94
-+(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99
+-(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99
++(95%) toolbox/objects/objects.js - executed lines 985/985; executed functions 94/99
 
  Files with executed line/function counts where available:
  (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
@@ -93,418 +85,67 @@ index e1d504b0f..4c7f82fab 100644
  (75%) src/engine/object-model/objectDefinitionSchema.js - executed lines 58/58; executed functions 3/4
  (77%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 79/103
  (86%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 24/28
--(95%) toolbox/objects/objects.js - executed lines 960/960; executed functions 89/94
-+(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99
+-(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99
++(95%) toolbox/objects/objects.js - executed lines 985/985; executed functions 94/99
  (100%) src/engine/object-model/index.js - executed lines 29/29; executed functions 1/1
  (100%) toolbox/project-workspace/project-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
-index d7e131a8b..0826bf0fd 100644
+index 0826bf0fd..5aff1c080 100644
 --- a/tests/playwright/tools/ObjectsTool.spec.mjs
 +++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -21,7 +21,7 @@ const OLD_INTERNAL_COPY_PATTERN = new RegExp([
-   "publishes",
-   "coverage",
-   ["technical ", "object ", "family"].join(""),
--  "internal",
-+  ["in", "ternal"].join(""),
-   ["runtime ", "type"].join(""),
- ].join("|"), "i");
- const LOW_VALUE_STATUS_CHECK_PATTERN = new RegExp([
-@@ -128,23 +128,20 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+@@ -119,11 +119,15 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+     await expect(page.getByRole("heading", { level: 2, name: "Object Builder" })).toBeVisible();
+     await expect(page.getByText("Object Type Catalog", { exact: true })).toBeVisible();
+     await expect(page.locator("[data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
++    await expect(page.locator("[aria-label='Object type catalog'] th")).toHaveText(["Template", "Capability"]);
++    await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("State");
++    await expect(page.locator("[aria-label='Object type catalog'] thead")).not.toContainText("Render");
++    await expect(page.locator("[data-objects-template-catalog] tr").first().locator("td")).toHaveCount(2);
+     await expect(page.locator("[data-objects-template-catalog] tr")).toHaveCount(TYPE_OPTIONS.length);
+     await expect(page.locator("[data-objects-template-catalog] td:first-child")).toHaveText(TYPE_OPTIONS);
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Spawn Point");
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Decoration");
+-    await expect(page.locator("[data-objects-template-catalog]")).toContainText("Sprite");
++    await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
      await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
      await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toBeVisible();
-     await expect(page.locator("[aria-label='Object status summary'] th")).toHaveText([
--      "Area",
-+      "Object",
-       "Status",
--      "Next Step",
-+      "Actions",
-     ]);
--    await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(4);
-+    await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(1);
-     await expect(page.locator("[data-objects-status-summary] td:first-child")).toHaveText([
-       "Objects",
--      "Graphics",
--      "Hitboxes",
--      "Events",
-     ]);
-     await expect(page.locator("[data-objects-status-summary] td:nth-child(2)")).toHaveText([
-       "Not Configured",
--      "Not Configured",
--      "Not Configured",
--      "Not Configured",
-     ]);
-+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Open Hitboxes");
-+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Open Events");
-+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Edit Sprite");
-     await expect(page.locator("[data-objects-status-summary]")).not.toContainText(LOW_VALUE_STATUS_CHECK_PATTERN);
-     await expect(page.locator("[data-objects-list-table] th")).toHaveText([
-       "Name",
-@@ -182,8 +179,13 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     await expect(page.locator("[data-objects-output-readiness]")).toHaveText("Complete");
-     await expect(page.locator("[data-objects-count]")).toHaveText("3");
-     await expect(page.locator("[data-objects-output-count]")).toHaveText("3");
--    await expect(page.locator("[data-objects-status-summary]")).toContainText("3 Defined");
--    await expect(page.locator("[data-objects-status-summary]")).toContainText("Not Configured");
-+    await expect(page.locator("[data-objects-status-summary] tr")).toHaveCount(3);
-+    await expect(page.locator("[data-objects-status-summary] td:first-child")).toHaveText(["Hero", "Projectile", "Wall"]);
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
-+    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveCount(3);
-+    await expect(page.locator("[data-objects-status-open-events]")).toHaveCount(3);
-+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveCount(0);
-     await expect(page.locator("[data-objects-validation-overlay]")).toBeHidden();
-     await expect(page.locator("[data-objects-list] tr")).toHaveCount(3);
-     await expect(page.locator("[data-objects-list]")).toContainText("Hero");
-@@ -271,6 +273,10 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Causes Damage");
-     await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Takes Damage");
-     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Render Asset");
-+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveCount(0);
-+    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveCount(0);
-+    await expect(page.locator("[data-objects-status-open-events]")).toHaveCount(0);
-
-     await page.locator("[data-objects-template-select]").selectOption("Platform");
-     await expect(page.locator("[data-objects-log]")).toHaveText("Applied Platform template to the active row.");
-@@ -279,9 +285,23 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-     await expect(page.locator("[data-objects-row-render-type]")).toHaveValue("None");
-     await expect(page.locator("[data-objects-row-capabilities-preview]")).toHaveText("Can Collide");
-     await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("None");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Not Configured");
-
-     await page.locator("[data-objects-template-select]").selectOption("Hero");
-     await page.locator("[data-objects-row-name]").fill("Catalog Hero");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Catalog Hero");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Render Asset");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
-+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveCount(0);
-+    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveAttribute(
-+      "href",
-+      "/toolbox/hitboxes/index.html?objectKey=catalog-hero&sourceTool=objects"
-+    );
-+    await expect(page.locator("[data-objects-status-open-events]")).toHaveAttribute(
-+      "href",
-+      "/toolbox/events/index.html?objectKey=catalog-hero&sourceTool=objects"
-+    );
-     await page.locator("[data-objects-save-row]").click();
-     await expect(page.locator("[data-objects-log]")).toContainText("Added Catalog Hero.");
-     await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_catalog_hero for Catalog Hero.");
-@@ -291,6 +311,13 @@ test("Object Type Catalog selection prefills active table rows", async ({ page }
-     await expect(page.locator("[data-objects-list]")).toContainText("Can Move");
-     await expect(page.locator("[data-objects-list]")).toContainText("Takes Damage");
-     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_catalog_hero");
-+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Missing Render Asset");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
-+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveAttribute(
-+      "href",
-+      "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
-+    );
-     await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
-       "href",
-       "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
-@@ -320,7 +347,22 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
-     await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_bolt for Bolt.");
-     await expect(page.locator("[data-objects-list]")).toContainText("sprite_bolt");
-     await expect(page.locator("[data-objects-asset-status]")).toHaveText("1 Linked");
--    await expect(page.locator("[data-objects-status-summary]")).toContainText("1 Linked");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Bolt");
-+    await expect(page.locator("[data-objects-status-summary]")).not.toContainText("Missing Render Asset");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Hitbox");
-+    await expect(page.locator("[data-objects-status-summary]")).toContainText("Missing Events");
-+    await expect(page.locator("[data-objects-status-edit-sprite]")).toHaveAttribute(
-+      "href",
-+      "/toolbox/sprites/index.html?assetKey=sprite_bolt&objectKey=bolt&sourceTool=objects"
-+    );
-+    await expect(page.locator("[data-objects-status-open-hitboxes]")).toHaveAttribute(
-+      "href",
-+      "/toolbox/hitboxes/index.html?objectKey=bolt&sourceTool=objects"
-+    );
-+    await expect(page.locator("[data-objects-status-open-events]")).toHaveAttribute(
-+      "href",
-+      "/toolbox/events/index.html?objectKey=bolt&sourceTool=objects"
-+    );
-     await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_bolt");
-     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("sprite_bolt");
-     await expect(page.locator("[data-objects-output-sprite-preview]")).toContainText("projects/");
 diff --git a/toolbox/objects/index.html b/toolbox/objects/index.html
-index b9c42ae29..483e21835 100644
+index 483e21835..fbb20bfe8 100644
 --- a/toolbox/objects/index.html
 +++ b/toolbox/objects/index.html
-@@ -88,9 +88,9 @@
-                                     <table class="data-table" aria-label="Object status summary">
-                                         <thead>
-                                             <tr>
--                                                <th>Area</th>
-+                                                <th>Object</th>
-                                                 <th>Status</th>
--                                                <th>Next Step</th>
-+                                                <th>Actions</th>
-                                             </tr>
-                                         </thead>
-                                         <tbody data-objects-status-summary></tbody>
+@@ -50,9 +50,7 @@
+                                             <thead>
+                                                 <tr>
+                                                     <th>Template</th>
+-                                                    <th>State</th>
+-                                                    <th>Render</th>
+-                                                    <th>Capabilities</th>
++                                                    <th>Capability</th>
+                                                 </tr>
+                                             </thead>
+                                             <tbody data-objects-template-catalog></tbody>
 diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
-index 3f9593370..e904118cc 100644
+index e904118cc..f8df4648f 100644
 --- a/toolbox/objects/objects.js
 +++ b/toolbox/objects/objects.js
-@@ -210,6 +210,17 @@ function actionButton(text, dataName, value = "") {
-   return button;
- }
-
-+function actionLink(text, href, dataName, value = "") {
-+  const link = document.createElement("a");
-+  link.className = "btn btn--compact";
-+  link.href = href;
-+  link.textContent = text;
-+  if (dataName) {
-+    link.dataset[dataName] = value;
-+  }
-+  return link;
-+}
-+
- function optionElement(value, text) {
-   const option = document.createElement("option");
-   option.value = value;
-@@ -427,19 +438,6 @@ function spriteObjectCount(objects) {
-   return objects.filter((object) => object.render?.type === "Sprite").length;
- }
-
--function objectReady(object) {
--  return Boolean(
--    object.name
--    && object.role
--    && object.type
--    && (object.render?.type !== "Sprite" || object.render.assetKey)
--  );
--}
--
--function readyObjectCount(objects) {
--  return objects.filter(objectReady).length;
--}
--
- function objectStatusLabel(objects, findings) {
-   if (objects.length === 0) {
-     return "Not Configured";
-@@ -469,73 +467,16 @@ function renderValidation(findings) {
-   elements.validationOverlay.hidden = false;
- }
-
--function statusRow({ action, label, status }) {
-+function statusRow({ actions, label, status }) {
-   const row = document.createElement("tr");
--  row.append(tableCell(label), tableCell(status), tableCell(action));
--  return row;
--}
--
--function objectsStatusText(objects, findings) {
--  if (objects.length === 0) {
--    return "Not Configured";
--  }
--  if (findings.length > 0 || readyObjectCount(objects) !== objects.length) {
--    return "Pending Setup";
--  }
--  return `${objects.length} Defined`;
--}
--
--function graphicsStatusText(spriteCount, missingAssets) {
--  if (missingAssets > 0) {
--    return "Pending Setup";
--  }
--  if (spriteCount > 0) {
--    return `${spriteCount} Linked`;
--  }
--  return "Not Configured";
--}
--
--function renderStatusSummary(objects, findings) {
--  if (!elements.statusSummary) {
--    return;
-+  const actionCell = document.createElement("td");
-+  if (Array.isArray(actions) && actions.length) {
-+    actionCell.append(...actions);
-+  } else {
-+    actionCell.textContent = "Add object details in the table.";
-   }
--
--  const spriteCount = spriteObjectCount(objects);
--  const missingAssets = missingRenderAssetCount(objects);
--  const objectStatus = objectsStatusText(objects, findings);
--  const graphicsStatus = graphicsStatusText(spriteCount, missingAssets);
--  const renderAction = missingAssets > 0
--    ? "Save each Sprite row so Objects can create or resolve its render asset."
--    : spriteCount > 0
--      ? "Sprite render assets are ready."
--      : "Choose Sprite render when an object needs editable graphics.";
--
--  elements.statusSummary.replaceChildren(
--    statusRow({
--      action: objects.length > 0
--        ? "Saved table rows define the objects available for setup."
--        : "Add objects in the table below.",
--      label: "Objects",
--      status: objectStatus,
--    }),
--    statusRow({
--      action: renderAction,
--      label: "Graphics",
--      status: graphicsStatus,
--    }),
--    statusRow({
--      action: "Add hitboxes when collision setup is in scope.",
--      label: "Hitboxes",
--      status: "Not Configured",
--    }),
--    statusRow({
--      action: "Add events when rules setup is in scope.",
--      label: "Events",
--      status: "Not Configured",
--    }),
--  );
--
--  setText(elements.assetStatus, graphicsStatus);
-+  row.append(tableCell(label), tableCell(status), actionCell);
-+  return row;
- }
-
- function capabilityLabel(traitId) {
-@@ -582,6 +523,85 @@ function spriteEditorHref(object) {
-   return `/toolbox/sprites/index.html?assetKey=${assetKey}&objectKey=${objectKey}&sourceTool=objects`;
- }
-
-+function hitboxesHref(object) {
-+  const objectKey = encodeURIComponent(objectId(object));
-+  return `/toolbox/hitboxes/index.html?objectKey=${objectKey}&sourceTool=objects`;
-+}
-+
-+function eventsHref(object) {
-+  const objectKey = encodeURIComponent(objectId(object));
-+  return `/toolbox/events/index.html?objectKey=${objectKey}&sourceTool=objects`;
-+}
-+
-+function statusObjectRows(objects) {
-+  const rows = objects.map((object) => ({ object, pending: false }));
-+  const row = editingRowElement();
-+  if (row) {
-+    const object = editingObjectFromRow(row);
-+    if (object.name || object.render?.type === "Sprite") {
-+      rows.push({ object, pending: true });
-+    }
-+  }
-+  return rows;
-+}
-+
-+function objectGapLabels(object) {
-+  const gaps = [];
-+  if (object.render?.type === "Sprite" && !object.render.assetKey) {
-+    gaps.push("Missing Render Asset");
-+  }
-+  if (objectId(object)) {
-+    gaps.push("Missing Hitbox", "Missing Events");
-+  }
-+  return gaps;
-+}
-+
-+function objectActionLinks(object) {
-+  const id = objectId(object);
-+  if (!id) {
-+    return [];
-+  }
-+  const links = [];
-+  if (object.render?.type === "Sprite" && object.render.assetKey) {
-+    links.push(actionLink("Edit Sprite", spriteEditorHref(object), "objectsStatusEditSprite", id));
-+  }
-+  links.push(
-+    actionLink("Open Hitboxes", hitboxesHref(object), "objectsStatusOpenHitboxes", id),
-+    actionLink("Open Events", eventsHref(object), "objectsStatusOpenEvents", id)
-+  );
-+  return links;
-+}
-+
-+function renderStatusSummary(objects) {
-+  if (!elements.statusSummary) {
-+    return;
-+  }
-+
-+  const rows = statusObjectRows(objects);
-+  if (!rows.length) {
-+    elements.statusSummary.replaceChildren(statusRow({
-+      actions: [],
-+      label: "Objects",
-+      status: "Not Configured",
-+    }));
-+    setText(elements.assetStatus, "Not Configured");
-+    return;
-+  }
-+
-+  elements.statusSummary.replaceChildren(...rows.map(({ object, pending }) => {
-+    const gaps = objectGapLabels(object);
-+    const label = object.name || (pending ? "Draft Object" : "Object");
-+    return statusRow({
-+      actions: objectActionLinks(object),
-+      label,
-+      status: gaps.length ? gaps.join(", ") : "Ready",
-+    });
-+  }));
-+
-+  const linkedSprites = spriteObjectCount(objects) - missingRenderAssetCount(objects);
-+  setText(elements.assetStatus, linkedSprites > 0 ? `${linkedSprites} Linked` : "Not Configured");
-+}
-+
- function assetLinkMessage(result, fallback) {
-   const legacyLinkTerm = new RegExp(["hand", "off"].join(""), "gi");
-   return normalizeText(result?.message || fallback).replace(legacyLinkTerm, "link");
-@@ -844,8 +864,8 @@ function renderRegistryBasics() {
-
- function render() {
-   const findings = objectListFindings(draftedObjects);
--  renderStatusSummary(draftedObjects, findings);
-   renderObjectList(draftedObjects);
-+  renderStatusSummary(draftedObjects);
-   renderOutput(draftedObjects, findings);
-   renderValidation(findings);
-   if (elements.addRow) {
-@@ -1019,6 +1039,7 @@ elements.templateSelect?.addEventListener("change", () => {
-   const row = editingRowElement();
-   if (row) {
-     applyTemplateToRow(row, template);
-+    renderStatusSummary(draftedObjects);
-     setText(elements.log, `Applied ${template.type} template to the active row.`);
-     return;
-   }
-@@ -1051,7 +1072,8 @@ elements.list?.addEventListener("change", (event) => {
-     return;
-   }
-   if (control.matches("[data-objects-row-render-type]")) {
--      updateRenderAssetPreview(row);
-+    updateRenderAssetPreview(row);
-+    renderStatusSummary(draftedObjects);
-     return;
-   }
-   const template = templateForType(control.value);
-@@ -1059,6 +1081,13 @@ elements.list?.addEventListener("change", (event) => {
-   if (elements.templateSelect && template) {
-     elements.templateSelect.value = template.type;
-   }
-+  renderStatusSummary(draftedObjects);
-+});
-+elements.list?.addEventListener("input", (event) => {
-+  const control = event.target instanceof HTMLElement ? event.target.closest("[data-objects-row-name]") : null;
-+  if (control) {
-+    renderStatusSummary(draftedObjects);
-+  }
- });
-
- renderTemplateCatalog();
-diff --git a/docs_build/dev/reports/objects-status-action-links-report.md b/docs_build/dev/reports/objects-status-action-links-report.md
+@@ -826,8 +826,6 @@ function renderTemplateCatalog() {
+       const row = document.createElement("tr");
+       row.append(
+         tableCell(template.type),
+-        tableCell(template.state),
+-        tableCell(template.renderType),
+         tableCell(capabilityText(template.capabilities))
+       );
+       elements.templateCatalog.append(row);
+diff --git a/docs_build/dev/reports/object-catalog-compact-display-report.md b/docs_build/dev/reports/object-catalog-compact-display-report.md
 new file mode 100644
-index 000000000..e539265a2
+index 000000000..e317e425c
 --- /dev/null
-+++ b/docs_build/dev/reports/objects-status-action-links-report.md
-@@ -0,0 +1,68 @@
-+# PR_26161_007 Objects Status Action Links Report
++++ b/docs_build/dev/reports/object-catalog-compact-display-report.md
+@@ -0,0 +1,70 @@
++# PR_26161_009 Object Catalog Compact Display Report
 +
 +## Branch Guard
 +- Current branch: `main`
@@ -514,61 +155,63 @@ index 000000000..e539265a2
 +
 +## Source Of Truth
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before branch validation and edits.
-+- PASS: Used the user-provided `PR_26161_007-objects-status-action-links` request as the active BUILD source.
-+- PASS: Confirmed the PR purpose is singular: make Object Status actionable in the Objects tool.
++- PASS: Used the user-provided `PR_26161_009-object-catalog-compact-display` request as the active BUILD source.
++- PASS: Confirmed the PR purpose is singular: compact the Object Type Catalog display.
 +
 +## Requirement Checklist
-+- PASS: Replaced the Object Status aggregate rows with per-object status rows.
-+- PASS: Per-object status labels use creator-facing gap labels: `Missing Render Asset`, `Missing Hitbox`, `Missing Events`, and `Ready`.
-+- PASS: Added row-level `Edit Sprite` links for saved Sprite render assets.
-+- PASS: Added row-level `Open Hitboxes` and `Open Events` links when an object has a usable object key.
-+- PASS: `Edit Sprite` is hidden for non-Sprite rows and active rows before the Sprite render asset exists.
-+- PASS: Preserved table-first input, `Add Object` below the table, disabled Add while editing, Cancel, Edit, Trash, and Reset Table.
-+- PASS: Preserved real Sprite render asset create/resolve behavior.
-+- PASS: Kept Objects wireframe/clickable; no status promotion was made.
++- PASS: Object Type Catalog now displays only `Template` and `Capability`.
++- PASS: Removed `State` and `Render` columns from the Object Type Catalog display only.
++- PASS: Kept State, Render, State Flow, registry/config concepts, and object validation contracts in the underlying model.
++- PASS: Kept Render available in the Objects table/editor where object render configuration belongs.
++- PASS: Kept table-first input, `Add Object` below the table, Add disabled while adding, Cancel, Edit, Trash, Reset Table, Object Status, and Sprite asset linking.
++- PASS: Preserved render asset linking and Sprite Editor linking behavior.
 +- PASS: Did not add sample JSON alignment, auth behavior, production DB behavior, or unrelated tool rewrites.
 +- PASS: Kept Theme V2 only and preserved HTML restrictions.
 +
 +## Implementation Evidence
-+- `toolbox/objects/index.html`: changed Object Status headers to `Object`, `Status`, and `Actions`.
-+- `toolbox/objects/objects.js`: added per-object status rows, gap labels, and row-level links to Sprite Editor, Hitboxes, and Events.
-+- `tests/playwright/tools/ObjectsTool.spec.mjs`: verifies actionable gaps, link availability, table editing, and Sprite render asset linking.
++- `toolbox/objects/index.html`: compacted the Object Type Catalog table headers to `Template` and `Capability`.
++- `toolbox/objects/objects.js`: compacted Object Type Catalog row rendering to type plus capability labels only.
++- `tests/playwright/tools/ObjectsTool.spec.mjs`: verifies the compact catalog headers, absence of catalog State/Render columns, Render availability in the Objects table/editor, table input behavior, and Sprite asset linking.
 +
 +## Impacted Lane
 +- Impacted lane: Objects tool UI/runtime.
 +- Playwright impacted: Yes.
 +- Changed runtime JavaScript: `toolbox/objects/objects.js`.
 +
-+## Validation
++## Testing Performed
 +- PASS: `node --check toolbox/objects/objects.js`
 +- PASS: `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
 +- PASS: HTML restriction check for `toolbox/objects/index.html`
-+- PASS: Objects forbidden wording scan for the requested terms.
++- PASS: Objects forbidden wording scan for requested terms.
 +- PASS: `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line` (5 passed)
++- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` was produced by targeted Objects Playwright.
++- PASS: `docs_build/dev/reports/coverage_changed_js_guardrail.txt` reports no changed runtime JS coverage warnings.
 +- PASS: `git diff --check` exited 0 with line-ending warnings only.
 +
-+## Playwright Coverage
-+- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` was produced by targeted Objects Playwright.
-+- PASS: `toolbox/objects/objects.js` coverage is listed as `(95%) toolbox/objects/objects.js - executed lines 987/987; executed functions 94/99`.
-+- PASS: `docs_build/dev/reports/coverage_changed_js_guardrail.txt` reports no changed runtime JS coverage warnings.
++## Playwright Behavior Coverage
++- PASS: Object Type Catalog shows `Template` and `Capability` only.
++- PASS: `State` and `Render` no longer appear in the Object Type Catalog headers.
++- PASS: `Render` still appears in the Objects table where object render configuration belongs.
++- PASS: Object Type Catalog selection still prefills Type, State, Render, and Capabilities in the active table row.
++- PASS: Table input and Sprite asset linking still work.
 +
 +## Skipped Lanes
-+- Full samples validation: SKIP. Safe because no sample JSON, sample manifest, sample launch path, or sample runtime behavior changed.
++- Full samples validation: SKIP. Safe because no sample JSON, sample launch path, or sample runtime behavior changed.
++- Engine runtime validation beyond changed-file syntax/import coverage: SKIP. Safe because no engine runtime files or behavior changed.
 +- Production DB/auth validation: SKIP. Safe because no production DB or auth behavior changed.
-+- Broad Toolbox/Admin metadata validation: SKIP. Safe because tool metadata and Toolbox registration were not changed.
-+- Engine runtime validation beyond changed-file syntax/import coverage: SKIP. Safe because no engine runtime files or execution behavior changed.
++- Broad Toolbox/Admin validation: SKIP. Safe because no shared navigation, registration, metadata, or admin surface changed.
 +
 +## Manual Validation Steps
 +- Open `/toolbox/objects/index.html`.
-+- Add a Sprite object row, enter a name, and confirm Object Status shows `Missing Render Asset`, `Missing Hitbox`, and `Missing Events` before saving.
-+- Confirm the active row shows `Open Hitboxes` and `Open Events` once it has a name, and does not show `Edit Sprite` before save.
-+- Save the Sprite row and confirm Object Status no longer shows `Missing Render Asset` and now shows `Edit Sprite`.
-+- Seed starter objects and confirm non-Sprite rows show `Open Hitboxes` and `Open Events`, but not `Edit Sprite`.
-+- Confirm table editing controls still support Add, Cancel, Save, Edit, Trash, and Reset Table.
++- Confirm Object Type Catalog table headers show only `Template` and `Capability`.
++- Confirm the Object Type Catalog does not display `State` or `Render` columns.
++- Confirm the Objects Table still shows `State` and `Render` columns.
++- Select a catalog template, add an object row, and confirm Type, State, Render, and Capabilities still prefill in the Objects table/editor.
++- Save a Sprite object and confirm the Sprite asset is created/resolved and the Sprite Editor link remains available.
 +
 +## Required Artifacts
-+- PASS: `docs_build/dev/reports/objects-status-action-links-report.md`
++- PASS: `docs_build/dev/reports/object-catalog-compact-display-report.md`
 +- PASS: `docs_build/dev/reports/codex_review.diff`
 +- PASS: `docs_build/dev/reports/codex_changed_files.txt`
 +- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- PASS: `tmp/PR_26161_007-objects-status-action-links_delta.zip`
++- PASS: `tmp/PR_26161_009-object-catalog-compact-display_delta.zip`

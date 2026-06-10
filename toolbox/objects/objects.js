@@ -826,8 +826,6 @@ function renderTemplateCatalog() {
       const row = document.createElement("tr");
       row.append(
         tableCell(template.type),
-        tableCell(template.state),
-        tableCell(template.renderType),
         tableCell(capabilityText(template.capabilities))
       );
       elements.templateCatalog.append(row);
