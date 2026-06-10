@@ -1,4 +1,7 @@
-import { createProjectWorkspaceMockRepository } from "./project-workspace-mock-repository.js";
+import {
+  PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+  createProjectWorkspaceMockRepository,
+} from "./project-workspace-mock-repository.js";
 
 export const GAME_DESIGN_TABLES = Object.freeze([
   "game_design_documents",
@@ -38,7 +41,7 @@ export const GAME_DESIGN_PLAY_STYLES = Object.freeze([
   "Turn-Based"
 ]);
 
-const CREATOR_USER_ID = "creator-user";
+const PROJECT_WORKSPACE_USER_ID = PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY;
 const REQUIRED_FIELDS = Object.freeze([
   {
     field: "gameType",
@@ -135,14 +138,14 @@ export function createGameDesignMockRepository(options = {}) {
 
   function listProjectContexts() {
     return projectRepository
-      .listProjects({ userId: CREATOR_USER_ID })
+      .listProjects({ userId: PROJECT_WORKSPACE_USER_ID })
       .slice()
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   function listCapabilityDemoProjects() {
     return projectRepository
-      .listProjects({ userId: CREATOR_USER_ID })
+      .listProjects({ userId: PROJECT_WORKSPACE_USER_ID })
       .filter((project) => project.purpose === "Capability Demo")
       .sort((a, b) => a.name.localeCompare(b.name));
   }

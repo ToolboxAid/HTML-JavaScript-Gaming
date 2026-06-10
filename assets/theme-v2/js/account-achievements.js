@@ -1,6 +1,5 @@
 import { createServerRepositoryClient } from "../../../src/engine/api/server-api-client.js";
-
-const CREATOR_USER_ID = "creator-user";
+import { getSessionCurrent } from "../../../src/engine/api/session-api-client.js";
 
 const tabs = Array.from(document.querySelectorAll("[data-achievements-tab]"));
 const panels = Array.from(document.querySelectorAll("[data-achievements-panel]"));
@@ -96,8 +95,21 @@ function renderBuildError(message) {
     setText(buildStatus, message || "Project Workspace data is unavailable.");
 }
 
+function currentBuildUserId() {
+    try {
+        const session = getSessionCurrent();
+        if (session?.authenticated && session.userKey) {
+            return session.userKey;
+        }
+    } catch {}
+
+    const activeProject = repository.getActiveProject?.();
+    return activeProject?.ownerUserId || "";
+}
+
 function loadBuildProjects() {
-    const result = repository.listProjects({ userId: CREATOR_USER_ID });
+    const userId = currentBuildUserId();
+    const result = repository.listProjects(userId ? { userId } : {});
     if (result?.error) {
         renderBuildError(result.message || "Project Workspace data is unavailable.");
         return;

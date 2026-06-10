@@ -21,6 +21,9 @@ import {
   getToolRoute,
 } from "../guest-seeds/tool-metadata-inventory.js";
 import {
+  PALETTE_CATALOG_CONFIG,
+} from "../persistence/tool-repositories/palette-catalog-config.js";
+import {
   PALETTE_SOURCE_USER,
   PALETTE_TOOL_KEY,
   PALETTE_WORKSPACE_PATH,
@@ -42,6 +45,7 @@ import {
   PROJECT_JOURNEY_KEYS,
   PROJECT_JOURNEY_STATUS_BY_ID,
   PROJECT_JOURNEY_STATUSES,
+  PROJECT_JOURNEY_SUGGESTED_TOOLS,
   createProjectJourneyMockRepository,
 } from "../persistence/tool-repositories/project-journey-mock-repository.js";
 import {
@@ -1463,10 +1467,12 @@ class LocalDevMockDataSource {
         PROJECT_JOURNEY_KEYS,
         PROJECT_JOURNEY_STATUS_BY_ID,
         PROJECT_JOURNEY_STATUSES,
+        PROJECT_JOURNEY_SUGGESTED_TOOLS,
       };
     }
     if (toolId === "palette" || toolId === "colors") {
       return {
+        ...PALETTE_CATALOG_CONFIG,
         PALETTE_SOURCE_USER,
         PALETTE_TOOL_KEY,
         PALETTE_WORKSPACE_PATH,

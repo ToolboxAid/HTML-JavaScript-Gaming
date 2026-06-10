@@ -145,6 +145,20 @@ export const PROJECT_JOURNEY_STATUS_BY_ID = Object.fromEntries(
   PROJECT_JOURNEY_STATUSES.map((status) => [status.id, status]),
 );
 
+export const PROJECT_JOURNEY_SUGGESTED_TOOLS = Object.freeze({
+  blocker: Object.freeze(["Project Workspace", "Debug"]),
+  default: Object.freeze(["Project Workspace", "Game Design"]),
+  byNoteType: Object.freeze({
+    design: Object.freeze(["Game Design", "Colors", "Assets"]),
+    story: Object.freeze(["Game Design", "Project Workspace", "AI Assistant"]),
+    release: Object.freeze(["Publish", "Game Testing", "Project Workspace"]),
+    research: Object.freeze(["AI Assistant", "Game Design", "Project Workspace"]),
+    idea: Object.freeze(["AI Assistant", "Game Design", "Assets"]),
+    question: Object.freeze(["AI Assistant", "Project Workspace", "Game Design"]),
+    task: Object.freeze(["Project Workspace", "Game Testing", "Debug"]),
+  }),
+});
+
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }

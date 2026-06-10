@@ -4,8 +4,7 @@ import {
   PROJECT_WORKSPACE_PROJECT_STATUSES,
   createProjectWorkspaceApiRepository,
 } from "./project-workspace-api-client.js";
-
-const CREATOR_USER_ID = "creator-user";
+import { getSessionCurrent } from "../../src/engine/api/session-api-client.js";
 
 const repository = createProjectWorkspaceApiRepository();
 repository.resetProjectData();
@@ -52,6 +51,15 @@ function setStatusLog(message) {
   setText(elements.statusLog, message);
 }
 
+function currentSessionUserKey() {
+  try {
+    const session = getSessionCurrent();
+    return session?.authenticated && session.userKey ? session.userKey : "";
+  } catch {
+    return "";
+  }
+}
+
 function populateSelect(select, options) {
   if (!select) {
     return;
@@ -66,8 +74,17 @@ function populateSelect(select, options) {
   });
 }
 
-function currentCreatorMember(activeProject) {
-  return activeProject?.members.find((member) => member.userId === CREATOR_USER_ID) || null;
+function currentProjectUserId(activeProject) {
+  const sessionUserKey = currentSessionUserKey();
+  if (sessionUserKey && (!activeProject || activeProject.members.some((member) => member.userId === sessionUserKey))) {
+    return sessionUserKey;
+  }
+  return activeProject?.ownerUserId || activeProject?.members.find((member) => member.permission === "Owner")?.userId || "";
+}
+
+function currentProjectMember(activeProject) {
+  const userId = currentProjectUserId(activeProject);
+  return activeProject?.members.find((member) => member.userId === userId) || null;
 }
 
 function createProjectButton(project, isActive) {
@@ -89,7 +106,8 @@ function renderProjectList() {
   }
 
   const activeProject = repository.getActiveProject();
-  const projects = repository.listProjects({ userId: CREATOR_USER_ID });
+  const projectUserId = currentProjectUserId(activeProject);
+  const projects = repository.listProjects(projectUserId ? { userId: projectUserId } : {});
 
   elements.projectList.replaceChildren();
 
@@ -197,7 +215,7 @@ function renderChecklist(progress) {
 function renderWorkspace() {
   const activeProject = repository.getActiveProject();
   const progress = repository.getProjectProgress();
-  const currentMember = currentCreatorMember(activeProject);
+  const currentMember = currentProjectMember(activeProject);
 
   setText(elements.activeProjectName, activeProject?.name || "No project open");
   setText(elements.activeProjectOwner, activeProject?.ownerDisplayName || "No owner");
@@ -238,7 +256,7 @@ elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
   const project = repository.createProject({
     name: elements.nameInput?.value,
-    ownerUserId: CREATOR_USER_ID,
+    ownerUserId: currentProjectUserId(repository.getActiveProject()),
     purpose: elements.purposeInput?.value,
     status: elements.projectStatusInput?.value,
   });
@@ -308,7 +326,7 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
     return;
   }
 
-  repository.updateProjectMemberRole(activeProject.id, CREATOR_USER_ID, elements.currentUserRoleInput.value);
+  repository.updateProjectMemberRole(activeProject.id, currentProjectUserId(activeProject), elements.currentUserRoleInput.value);
   setStatusLog(`Updated current user role to ${elements.currentUserRoleInput.value}.`);
   renderWorkspace();
 });

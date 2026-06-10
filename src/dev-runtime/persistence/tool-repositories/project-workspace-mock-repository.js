@@ -1,19 +1,25 @@
+import { MOCK_DB_KEYS } from "../mock-db-store.js";
+
+export const PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY = MOCK_DB_KEYS.users.user1;
+export const PROJECT_WORKSPACE_ADMIN_USER_KEY = MOCK_DB_KEYS.users.admin;
+export const PROJECT_WORKSPACE_VIEWER_USER_KEY = MOCK_DB_KEYS.users.user3;
+
 const SEED_USERS = Object.freeze([
   {
-    id: "admin-user",
-    displayName: "Admin User",
+    id: PROJECT_WORKSPACE_ADMIN_USER_KEY,
+    displayName: "DavidQ",
     email: "admin@example.test",
     role: "Admin",
   },
   {
-    id: "creator-user",
-    displayName: "Creator User",
+    id: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    displayName: "User 1",
     email: "creator@example.test",
     role: "Creator",
   },
   {
-    id: "guest-preview-user",
-    displayName: "Guest Preview User",
+    id: PROJECT_WORKSPACE_VIEWER_USER_KEY,
+    displayName: "User 3",
     email: "guest@example.test",
     role: "Guest",
   },
@@ -21,7 +27,7 @@ const SEED_USERS = Object.freeze([
 
 const DEMO_PROJECT = Object.freeze({
   id: "demo-project",
-  ownerUserId: "creator-user",
+  ownerUserId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
   name: "Demo Project",
   purpose: "Game Project",
   status: "Under Construction",
@@ -30,21 +36,21 @@ const DEMO_PROJECT = Object.freeze({
 const CAPABILITY_DEMO_PROJECTS = Object.freeze([
   {
     id: "gravity-demo",
-    ownerUserId: "creator-user",
+    ownerUserId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     name: "Gravity Demo",
     purpose: "Capability Demo",
     status: "Wireframe",
   },
   {
     id: "collision-demo",
-    ownerUserId: "creator-user",
+    ownerUserId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     name: "Collision Demo",
     purpose: "Capability Demo",
     status: "Wireframe",
   },
   {
     id: "camera-follow-demo",
-    ownerUserId: "creator-user",
+    ownerUserId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     name: "Camera Follow Demo",
     purpose: "Capability Demo",
     status: "Wireframe",
@@ -54,19 +60,19 @@ const CAPABILITY_DEMO_PROJECTS = Object.freeze([
 const DEMO_PROJECT_MEMBERS = Object.freeze([
   {
     projectId: "demo-project",
-    userId: "creator-user",
+    userId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     permission: "Owner",
     role: "Owner",
   },
   {
     projectId: "demo-project",
-    userId: "admin-user",
+    userId: PROJECT_WORKSPACE_ADMIN_USER_KEY,
     permission: "Admin",
     role: "Owner",
   },
   {
     projectId: "demo-project",
-    userId: "guest-preview-user",
+    userId: PROJECT_WORKSPACE_VIEWER_USER_KEY,
     permission: "Viewer",
     role: "Viewer",
   },
@@ -76,19 +82,19 @@ const CAPABILITY_DEMO_PROJECT_MEMBERS = Object.freeze(
   CAPABILITY_DEMO_PROJECTS.flatMap((project) => [
     {
       projectId: project.id,
-      userId: "creator-user",
+      userId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
       permission: "Owner",
       role: "Owner",
     },
     {
       projectId: project.id,
-      userId: "admin-user",
+      userId: PROJECT_WORKSPACE_ADMIN_USER_KEY,
       permission: "Admin",
       role: "Owner",
     },
     {
       projectId: project.id,
-      userId: "guest-preview-user",
+      userId: PROJECT_WORKSPACE_VIEWER_USER_KEY,
       permission: "Viewer",
       role: "Viewer",
     },
@@ -343,7 +349,7 @@ export function createProjectWorkspaceMockRepository() {
     ensureSeedUsers();
 
     const name = String(input.name || "").trim() || "Untitled Project";
-    const ownerUserId = input.ownerUserId || "creator-user";
+    const ownerUserId = input.ownerUserId || PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY;
     const purpose = PROJECT_WORKSPACE_PROJECT_PURPOSES.includes(input.purpose)
       ? input.purpose
       : "Game Project";

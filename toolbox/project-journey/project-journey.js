@@ -2,6 +2,7 @@ import {
   PROJECT_JOURNEY_KEYS,
   PROJECT_JOURNEY_STATUS_BY_ID,
   PROJECT_JOURNEY_STATUSES,
+  PROJECT_JOURNEY_SUGGESTED_TOOLS,
   createProjectJourneyApiRepository,
 } from "./project-journey-api-client.js";
 import {
@@ -728,27 +729,25 @@ function findToolByName(name) {
 
 function getSuggestedToolNames(note) {
   if (!note) {
-    return ["Project Workspace"];
+    return PROJECT_JOURNEY_SUGGESTED_TOOLS.default || [];
   }
 
   const selectedItem = getSelectedItem();
   const templateToolNames = selectedItem?.linkedToolContexts?.filter((context) =>
     registryTools.some((tool) => tool.displayName === context || tool.name === context),
   ) || [];
-  const suggestionsByType = {
-    design: ["Game Design", "Colors", "Assets"],
-    story: ["Game Design", "Project Workspace", "AI Assistant"],
-    release: ["Publish", "Game Testing", "Project Workspace"],
-    research: ["AI Assistant", "Game Design", "Project Workspace"],
-    idea: ["AI Assistant", "Game Design", "Assets"],
-    question: ["AI Assistant", "Project Workspace", "Game Design"],
-    task: ["Project Workspace", "Game Testing", "Debug"],
-  };
   const noteTypeSlug = note.type?.typeSlug || "";
-  const names = [...templateToolNames, ...(suggestionsByType[noteTypeSlug] || ["Project Workspace", "Game Design"])];
+  const names = [
+    ...templateToolNames,
+    ...(
+      PROJECT_JOURNEY_SUGGESTED_TOOLS.byNoteType?.[noteTypeSlug] ||
+      PROJECT_JOURNEY_SUGGESTED_TOOLS.default ||
+      []
+    ),
+  ];
 
   if (note.counts?.blocker > 0) {
-    return ["Project Workspace", "Debug", ...names];
+    return [...(PROJECT_JOURNEY_SUGGESTED_TOOLS.blocker || []), ...names];
   }
 
   return names;

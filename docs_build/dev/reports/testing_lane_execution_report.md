@@ -1,34 +1,38 @@
-# Testing Lane Execution Report
+﻿# Testing Lane Execution Report
 
-PR: PR_26160_082-db-leftovers-cleanup
+PR: PR_26160_083-db-leftovers-actual-cleanup
 Generated: 2026-06-09
 Full samples validation: SKIPPED
 
 ## Summary
 
-PASS: 6
+PASS: 9
 FAIL: 0
-SKIP: 3
+SKIP: 4
 
 ## Executed Lanes
 
 | Lane | Status | Command | Evidence |
 | --- | --- | --- | --- |
 | Branch guard | PASS | `git branch --show-current` | Returned `main`. |
-| Active-source hardcoded color audit | PASS | `rg -n "#ff4d4d" assets src toolbox admin tests --glob '!**/node_modules/**'` | No active source matches after cleanup. |
-| Theme V2 token audit | PASS | `rg -n -e "--toolbox-group-build-color" -e "--red" -e "toolbox-group-build" -e "tool-group-build" assets/theme-v2/css tests/playwright/tools/ToolboxRoutePages.spec.mjs` | Confirmed Theme V2 token usage and Playwright assertions. |
-| Changed-file syntax | PASS | `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs` | Exited 0. |
-| Targeted Toolbox Playwright | PASS | `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs -g "toolbox group labels match" --reporter=line` | 1 passed. |
-| Static diff validation | PASS | `git diff --check` | No whitespace errors; Git reported expected LF/CRLF warning for the changed Playwright file. |
+| Changed-file syntax, Colors/server | PASS | `node --check toolbox/colors/colors.js; node --check toolbox/colors/palette-api-client.js; node --check src/dev-runtime/persistence/tool-repositories/palette-catalog-config.js; node --check src/dev-runtime/server/mock-api-router.mjs` | Exited 0. |
+| Changed-file syntax, Project Journey | PASS | `node --check toolbox/project-journey/project-journey.js; node --check toolbox/project-journey/project-journey-api-client.js; node --check src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js` | Exited 0. |
+| Changed-file syntax, auth/user identity | PASS | `node --check toolbox/project-workspace/project-workspace.js; node --check assets/theme-v2/js/account-achievements.js; node --check src/dev-runtime/persistence/tool-repositories/project-workspace-mock-repository.js; node --check src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js` | Exited 0. |
+| Enforcement scans | PASS | `rg` scans for `creator-user`, `suggestionsByType`, browser Colors catalog definitions, and browser storage/product SSoT in scoped files | No blocking active leftovers found. |
+| Targeted Playwright, affected surfaces | PASS | `npx playwright test tests/playwright/tools/PaletteToolMockRepository.spec.mjs tests/playwright/tools/ProjectJourneyTool.spec.mjs tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs tests/playwright/account/AchievementsPage.spec.mjs --reporter=line` | 31 passed. |
+| Inline HTML restriction audit | PASS | `rg -n "onclick=|onchange=|oninput=|onsubmit=|style=|<script(?![^>]+src=)|<style[\s>]" toolbox/colors/index.html toolbox/project-journey/index.html toolbox/project-workspace/index.html account/achievements.html --pcre2` | No matches. |
+| Targeted Project Workspace rerun | PASS | `node --check toolbox/project-workspace/project-workspace.js; npx playwright test tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs --reporter=line` | 7 passed. |
+| Static diff validation | PASS | `git diff --check` | No whitespace errors; CRLF warnings only. |
 
 ## Skipped Lanes
 
 | Lane | Status | Reason |
 | --- | --- | --- |
 | Full samples validation | SKIP | Samples and sample loaders were not changed. |
-| Broad Toolbox route suite | SKIP | The scoped change only updates group color validation; the targeted group-color Playwright test was run. |
-| Admin runtime Playwright | SKIP | Admin runtime behavior was unchanged; Admin relevance was covered by the existing group-color test reading Admin Tool Votes assignments. |
+| DB Viewer Playwright | SKIP | DB Viewer table/grouping display was not changed. |
+| Navigation Playwright | SKIP | Navigation runtime was audited but not touched. |
+| Full Toolbox suite | SKIP | Toolbox runtime was not changed; stale assertions in affected validation files were updated. |
 
 ## Manual Test Notes
 
-No separate manual walkthrough was required after the targeted Playwright test. Build/Create group labels now validate against the Theme V2 `--red` value through `--toolbox-group-build-color`.
+Manual validation focus: Colors catalog controls still load through API; Project Journey suggested links still render; Project Workspace and Account Achievements still show project rows without active `creator-user` literals.

@@ -1143,10 +1143,20 @@ test("Project Journey source stays separate from notes files and browser persist
     }
   }
 
-  const registrySource = await fs.readFile(path.join(repoRoot, "toolbox/toolRegistry.js"), "utf8");
-  const projectJourneyRegistry = registrySource.match(/"id": "project-journey"[\s\S]*?"toolboxGroup": "Build"/)?.[0] || "";
-  expect(projectJourneyRegistry).toContain('"status": "Ready"');
-  expect(projectJourneyRegistry).toContain('"requiredForPublish": true');
-  expect(projectJourneyRegistry).toContain('"adminOnly": false');
-  expect(projectJourneyRegistry).toContain('"visibleInToolsList": true');
+  const server = await startRepoServer();
+  try {
+    const response = await fetch(`${server.baseUrl}/api/toolbox/registry/snapshot`);
+    const payload = await response.json();
+    const projectJourneyRegistry = payload.data.activeTools.find((tool) => tool.id === "project-journey");
+    expect(projectJourneyRegistry).toMatchObject({
+      adminOnly: false,
+      id: "project-journey",
+      planningSource: "toolbox_tool_planning",
+      requiredForPublish: true,
+      status: "beta",
+      visibleInToolsList: true,
+    });
+  } finally {
+    await server.close();
+  }
 });
