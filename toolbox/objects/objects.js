@@ -6,48 +6,6 @@ import {
 } from "../../src/engine/object-model/index.js";
 import { createAssetToolApiRepository } from "../assets/assets-api-client.js";
 
-const TYPE_OPTIONS = Object.freeze([
-  "Collectible",
-  "Custom",
-  "Enemy",
-  "Goal",
-  "Hazard",
-  "Hero",
-  "Platform",
-  "Projectile",
-  "Spawner",
-  "UI",
-  "Wall",
-]);
-
-const TYPE_TRAITS = Object.freeze({
-  Collectible: Object.freeze(["collectible"]),
-  Custom: Object.freeze([]),
-  Enemy: Object.freeze([]),
-  Goal: Object.freeze(["goal"]),
-  Hazard: Object.freeze(["hazard"]),
-  Hero: Object.freeze(["playerControlled"]),
-  Platform: Object.freeze(["collides"]),
-  Projectile: Object.freeze(["movable"]),
-  Spawner: Object.freeze([]),
-  UI: Object.freeze([]),
-  Wall: Object.freeze(["collides"]),
-});
-
-const TYPE_MODEL_TYPES = Object.freeze({
-  Collectible: "Collectible",
-  Custom: "Static",
-  Enemy: "Dynamic",
-  Goal: "Goal",
-  Hazard: "Hazard",
-  Hero: "Dynamic",
-  Platform: "Static",
-  Projectile: "Dynamic",
-  Spawner: "Dynamic",
-  UI: "Static",
-  Wall: "Static",
-});
-
 const CAPABILITY_LABELS = Object.freeze({
   collectible: "Can Be Collected",
   collides: "Can Collide",
@@ -59,6 +17,86 @@ const CAPABILITY_LABELS = Object.freeze({
   playerControlled: "Player Controlled",
   scores: "Scores Points",
 });
+
+const OBJECT_TYPE_TEMPLATES = Object.freeze([
+  Object.freeze({
+    capabilities: Object.freeze(["collectible", "scores"]),
+    modelType: "Collectible",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Collectible",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze([]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Custom",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze([]),
+    modelType: "Static",
+    renderType: "Sprite",
+    state: "Idle",
+    type: "Decoration",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["movable", "collides", "hazard", "damageable"]),
+    modelType: "Dynamic",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Enemy",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["goal", "scores"]),
+    modelType: "Goal",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Goal",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["hazard", "damageable"]),
+    modelType: "Hazard",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Hazard",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["playerControlled", "movable", "collides", "damageable"]),
+    modelType: "Dynamic",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Hero",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["collides"]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Platform",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["movable", "collides", "hazard"]),
+    modelType: "Dynamic",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Projectile",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze([]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Spawn Point",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["collides"]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Wall",
+  }),
+]);
 
 const STARTER_OBJECTS = Object.freeze([
   Object.freeze({
@@ -108,6 +146,8 @@ const elements = {
   capabilityBasics: document.querySelector("[data-objects-capability-basics]"),
   seedStarter: document.querySelector("[data-objects-seed-starter]"),
   statusSummary: document.querySelector("[data-objects-status-summary]"),
+  templateCatalog: document.querySelector("[data-objects-template-catalog]"),
+  templateSelect: document.querySelector("[data-objects-template-select]"),
   typeBasics: document.querySelector("[data-objects-type-basics]"),
   validate: document.querySelector("[data-objects-validate]"),
   validationList: document.querySelector("[data-objects-validation-list]"),
@@ -209,11 +249,31 @@ function sortedCapabilities() {
 }
 
 function typeOptions() {
-  return TYPE_OPTIONS.map((type) => ({ label: type, value: type }));
+  return OBJECT_TYPE_TEMPLATES.map((template) => ({ label: template.type, value: template.type }));
+}
+
+function templateForType(type) {
+  return OBJECT_TYPE_TEMPLATES.find((template) => template.type === type) || null;
+}
+
+function selectedTemplate() {
+  return templateForType(elements.templateSelect?.value || "");
+}
+
+function templateSource(template) {
+  if (!template) {
+    return {};
+  }
+  return {
+    render: { type: template.renderType },
+    role: template.type,
+    state: template.state,
+    traits: template.capabilities,
+  };
 }
 
 function modelTypeForSetupType(setupType) {
-  const objectType = TYPE_MODEL_TYPES[setupType] || "";
+  const objectType = templateForType(setupType)?.modelType || "";
   return getObjectModelType(objectType) ? objectType : "";
 }
 
@@ -228,7 +288,7 @@ function traitsForObject(source, object) {
   const objectType = getObjectModelType(object.type);
 
   (objectType?.traits || []).forEach((traitId) => traitIds.add(traitId));
-  (TYPE_TRAITS[object.role] || []).forEach((traitId) => traitIds.add(traitId));
+  (templateForType(object.role)?.capabilities || []).forEach((traitId) => traitIds.add(traitId));
   traitIdsFromSource(source).forEach((traitId) => traitIds.add(traitId));
 
   return Object.freeze([...traitIds]);
@@ -256,6 +316,7 @@ function cloneObject(source = {}) {
 function defaultEditingValues(source = {}) {
   return {
     assetKey: normalizeText(source.render?.assetKey),
+    capabilities: traitIdsFromSource(source),
     id: objectId(source),
     name: normalizeText(source.name),
     previewPath: normalizeText(source.render?.previewPath),
@@ -489,6 +550,21 @@ function capabilityText(traitIds) {
   return traitIds.map(capabilityLabel).join(", ");
 }
 
+function capabilityIdsFromRow(row) {
+  return normalizeText(row.dataset.objectsCapabilityIds)
+    .split(",")
+    .map(normalizeText)
+    .filter(Boolean);
+}
+
+function setRowCapabilities(row, capabilityIds) {
+  row.dataset.objectsCapabilityIds = capabilityIds.join(",");
+  const preview = row.querySelector("[data-objects-row-capabilities-preview]");
+  if (preview) {
+    preview.textContent = capabilityText(capabilityIds);
+  }
+}
+
 function renderAssetText(object) {
   if (object.render?.type !== "Sprite") {
     return "None";
@@ -534,6 +610,7 @@ function editingObjectFromRow(row) {
     render,
     role: row.querySelector("[data-objects-row-type]")?.value,
     state: row.querySelector("[data-objects-row-state]")?.value,
+    traits: capabilityIdsFromRow(row),
   });
 }
 
@@ -546,6 +623,28 @@ function updateRenderAssetPreview(row) {
   preview.textContent = renderType === "Sprite" ? row.dataset.objectsExistingAssetKey || "Links on save" : "None";
 }
 
+function applyTemplateToRow(row, template) {
+  if (!row || !template) {
+    return;
+  }
+  const type = row.querySelector("[data-objects-row-type]");
+  const state = row.querySelector("[data-objects-row-state]");
+  const renderType = row.querySelector("[data-objects-row-render-type]");
+  if (type) {
+    type.value = template.type;
+  }
+  if (state) {
+    state.value = template.state;
+  }
+  if (renderType) {
+    renderType.value = template.renderType;
+  }
+  row.dataset.objectsExistingAssetKey = "";
+  row.dataset.objectsExistingPreviewPath = "";
+  setRowCapabilities(row, [...template.capabilities]);
+  updateRenderAssetPreview(row);
+}
+
 function editingRowElement() {
   return elements.list?.querySelector("[data-objects-editing-row]") || null;
 }
@@ -556,6 +655,7 @@ function renderEditingRow(values) {
   row.dataset.objectsRow = editingRow.mode;
   row.dataset.objectsExistingAssetKey = values.renderType === "Sprite" ? values.assetKey || "" : "";
   row.dataset.objectsExistingPreviewPath = values.renderType === "Sprite" ? values.previewPath || "" : "";
+  row.dataset.objectsCapabilityIds = (values.capabilities || []).join(",");
 
   const name = textInput({ ariaLabel: "Object Name", value: values.name });
   name.dataset.objectsRowName = "true";
@@ -593,6 +693,9 @@ function renderEditingRow(values) {
   renderAsset.dataset.objectsRowRenderAssetPreview = "true";
   renderAsset.textContent = values.renderType === "Sprite" ? values.assetKey || "Links on save" : "None";
 
+  const capabilities = tableCell(capabilityText(values.capabilities || []));
+  capabilities.dataset.objectsRowCapabilitiesPreview = "true";
+
   const actions = document.createElement("td");
   actions.append(
     actionButton("Save", "objectsSaveRow"),
@@ -604,7 +707,7 @@ function renderEditingRow(values) {
     controlCell(type),
     controlCell(state),
     controlCell(renderType),
-    tableCell("Updates on save"),
+    capabilities,
     renderAsset,
     actions
   );
@@ -657,7 +760,7 @@ function renderObjectList(objects) {
   });
 
   if (editingRow?.mode === "new") {
-    elements.list.append(renderEditingRow(defaultEditingValues()));
+    elements.list.append(renderEditingRow(defaultEditingValues(templateSource(selectedTemplate()))));
   }
 }
 
@@ -696,11 +799,34 @@ function renderOutput(objects, findings) {
   }
 }
 
+function renderTemplateCatalog() {
+  if (elements.templateCatalog) {
+    elements.templateCatalog.replaceChildren();
+    OBJECT_TYPE_TEMPLATES.forEach((template) => {
+      const row = document.createElement("tr");
+      row.append(
+        tableCell(template.type),
+        tableCell(template.state),
+        tableCell(template.renderType),
+        tableCell(capabilityText(template.capabilities))
+      );
+      elements.templateCatalog.append(row);
+    });
+  }
+
+  if (elements.templateSelect) {
+    elements.templateSelect.replaceChildren(optionElement("", "Select template"));
+    OBJECT_TYPE_TEMPLATES.forEach((template) => {
+      elements.templateSelect.append(optionElement(template.type, template.type));
+    });
+  }
+}
+
 function renderRegistryBasics() {
   if (elements.typeBasics) {
     elements.typeBasics.replaceChildren();
-    TYPE_OPTIONS.forEach((type) => {
-      elements.typeBasics.append(listItem(type));
+    OBJECT_TYPE_TEMPLATES.forEach((template) => {
+      elements.typeBasics.append(listItem(template.type));
     });
   }
 
@@ -885,6 +1011,19 @@ elements.addRow?.addEventListener("click", addRow);
 elements.seedStarter?.addEventListener("click", seedStarterObjects);
 elements.validate?.addEventListener("click", validateObjects);
 elements.resetTable?.addEventListener("click", resetTable);
+elements.templateSelect?.addEventListener("change", () => {
+  const template = selectedTemplate();
+  if (!template) {
+    return;
+  }
+  const row = editingRowElement();
+  if (row) {
+    applyTemplateToRow(row, template);
+    setText(elements.log, `Applied ${template.type} template to the active row.`);
+    return;
+  }
+  setText(elements.log, `${template.type} template selected for the next object row.`);
+});
 elements.list?.addEventListener("click", (event) => {
   const button = event.target instanceof HTMLElement ? event.target.closest("button") : null;
   if (!button) {
@@ -901,14 +1040,27 @@ elements.list?.addEventListener("click", (event) => {
   }
 });
 elements.list?.addEventListener("change", (event) => {
-  const control = event.target instanceof HTMLElement ? event.target.closest("[data-objects-row-render-type]") : null;
-  if (control) {
-    const row = control.closest("[data-objects-editing-row]");
-    if (row) {
+  const control = event.target instanceof HTMLElement
+    ? event.target.closest("[data-objects-row-render-type], [data-objects-row-type]")
+    : null;
+  if (!control) {
+    return;
+  }
+  const row = control.closest("[data-objects-editing-row]");
+  if (!row) {
+    return;
+  }
+  if (control.matches("[data-objects-row-render-type]")) {
       updateRenderAssetPreview(row);
-    }
+    return;
+  }
+  const template = templateForType(control.value);
+  setRowCapabilities(row, template ? [...template.capabilities] : []);
+  if (elements.templateSelect && template) {
+    elements.templateSelect.value = template.type;
   }
 });
 
+renderTemplateCatalog();
 renderRegistryBasics();
 render();

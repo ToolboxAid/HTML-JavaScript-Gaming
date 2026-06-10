@@ -1233,3 +1233,34 @@ Required reports:
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26161_008
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Added an Object Type Catalog to the Objects tool.
+- Added catalog templates for Collectible, Custom, Decoration, Enemy, Goal, Hazard, Hero, Platform, Projectile, Spawn Point, and Wall.
+- Made catalog selection prefill the next new table row or the active table row with Type, State, Render default, and Capabilities.
+- Kept Capabilities visible in the active editing row.
+- Preserved table-first editing and kept `Add Object` below the table.
+- Preserved Sprite render asset create, resolve, preview, and Sprite Editor link behavior.
+- Did not change runtime engine behavior, database/auth behavior, sample JSON, or sample runtime behavior.
+
+Validation:
+- `node --check toolbox/objects/objects.js`
+- `node --check tests/playwright/tools/ObjectsTool.spec.mjs`
+- HTML restriction check for `toolbox/objects/index.html`
+- Objects forbidden visible wording scan for `toolbox/objects`
+- Exact disconnected-copy phrase repo scan
+- `npx playwright test tests/playwright/tools/ObjectsTool.spec.mjs --workers=1 --reporter=line`
+- `npm run test:workspace-v2` ran and reported WARN failures outside Objects scope in existing Toolbox/header expectations.
+- `git diff --check`
+
+Required reports:
+- `docs_build/dev/reports/PR_26161_008_object_type_catalog.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

@@ -3,7 +3,7 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
-const TYPE_OPTIONS = ["Collectible", "Custom", "Enemy", "Goal", "Hazard", "Hero", "Platform", "Projectile", "Spawner", "UI", "Wall"];
+const TYPE_OPTIONS = ["Collectible", "Custom", "Decoration", "Enemy", "Goal", "Hazard", "Hero", "Platform", "Projectile", "Spawn Point", "Wall"];
 const OLD_SAMPLE_PATH_PATTERN = new RegExp(["M" + "VP", "Padd" + "le", "Ba" + "ll"].join("|"), "i");
 const OLD_INTERNAL_COPY_PATTERN = new RegExp([
   ["page", " session only"].join(""),
@@ -117,6 +117,15 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.locator("main")).toContainText("Capabilities");
     await expect(page.locator("main")).not.toContainText(["Not", "connected", "yet"].join(" "));
     await expect(page.getByRole("heading", { level: 2, name: "Object Builder" })).toBeVisible();
+    await expect(page.getByText("Object Type Catalog", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-objects-template-select] option")).toHaveText(["Select template", ...TYPE_OPTIONS]);
+    await expect(page.locator("[data-objects-template-catalog] tr")).toHaveCount(TYPE_OPTIONS.length);
+    await expect(page.locator("[data-objects-template-catalog] td:first-child")).toHaveText(TYPE_OPTIONS);
+    await expect(page.locator("[data-objects-template-catalog]")).toContainText("Spawn Point");
+    await expect(page.locator("[data-objects-template-catalog]")).toContainText("Decoration");
+    await expect(page.locator("[data-objects-template-catalog]")).toContainText("Sprite");
+    await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
+    await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toBeVisible();
     await expect(page.locator("[aria-label='Object status summary'] th")).toHaveText([
       "Area",
@@ -240,6 +249,52 @@ test("Objects table add disables while active row can cancel, save, edit, and tr
     await expect(page.locator("[data-objects-log]")).toHaveText("Trashed object row.");
     await expect(page.locator("[data-objects-list]")).toContainText("No objects drafted yet.");
     await expect(addButton).toBeEnabled();
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Object Type Catalog selection prefills active table rows", async ({ page }) => {
+  const failures = await openObjectsPage(page);
+
+  try {
+    await page.locator("[data-objects-template-select]").selectOption("Hazard");
+    await expect(page.locator("[data-objects-log]")).toHaveText("Hazard template selected for the next object row.");
+
+    await page.getByRole("button", { name: "Add Object" }).click();
+    await expect(page.locator("[data-objects-row-type]")).toHaveValue("Hazard");
+    await expect(page.locator("[data-objects-row-state]")).toHaveValue("Active");
+    await expect(page.locator("[data-objects-row-render-type]")).toHaveValue("Sprite");
+    await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Causes Damage");
+    await expect(page.locator("[data-objects-row-capabilities-preview]")).toContainText("Takes Damage");
+    await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("Links on save");
+
+    await page.locator("[data-objects-template-select]").selectOption("Platform");
+    await expect(page.locator("[data-objects-log]")).toHaveText("Applied Platform template to the active row.");
+    await expect(page.locator("[data-objects-row-type]")).toHaveValue("Platform");
+    await expect(page.locator("[data-objects-row-state]")).toHaveValue("Active");
+    await expect(page.locator("[data-objects-row-render-type]")).toHaveValue("None");
+    await expect(page.locator("[data-objects-row-capabilities-preview]")).toHaveText("Can Collide");
+    await expect(page.locator("[data-objects-row-render-asset-preview]")).toHaveText("None");
+
+    await page.locator("[data-objects-template-select]").selectOption("Hero");
+    await page.locator("[data-objects-row-name]").fill("Catalog Hero");
+    await page.locator("[data-objects-save-row]").click();
+    await expect(page.locator("[data-objects-log]")).toContainText("Added Catalog Hero.");
+    await expect(page.locator("[data-objects-log]")).toContainText("Created editable default sprite asset sprite_catalog_hero for Catalog Hero.");
+    await expect(page.locator("[data-objects-list]")).toContainText("Catalog Hero");
+    await expect(page.locator("[data-objects-list]")).toContainText("Hero");
+    await expect(page.locator("[data-objects-list]")).toContainText("Player Controlled");
+    await expect(page.locator("[data-objects-list]")).toContainText("Can Move");
+    await expect(page.locator("[data-objects-list]")).toContainText("Takes Damage");
+    await expect(page.locator("[data-objects-output-render-asset]")).toHaveText("sprite_catalog_hero");
+    await expect(page.locator("[data-objects-edit-sprite]")).toHaveAttribute(
+      "href",
+      "/toolbox/sprites/index.html?assetKey=sprite_catalog_hero&objectKey=catalog-hero&sourceTool=objects"
+    );
 
     await expectNoPageFailures(failures);
   } finally {
