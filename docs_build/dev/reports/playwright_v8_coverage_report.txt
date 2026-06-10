@@ -17,8 +17,6 @@ Exercised tool entry points detected:
 (77%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/engine/api/mock-db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (86%) toolbox/colors/colors.js - executed lines 2289/2289; executed functions 193/224
 
 Files with executed line/function counts where available:
@@ -31,11 +29,7 @@ Files with executed line/function counts where available:
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/engine/api/mock-db-viewer-ui.js - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/engine/api/mock-db-viewer-ui.js - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (86%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
