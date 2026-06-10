@@ -45,18 +45,6 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Capture</summary>
-                                <div class="accordion-body content-stack">
-                                    <p data-input-capture-selection>Selected action: Cancel</p>
-                                    <div class="content-cluster" aria-label="Capture input controls">
-                                        <button class="btn" type="button" data-input-capture-keyboard>Capture Keyboard</button>
-                                        <button class="btn" type="button" data-input-capture-mouse>Capture Mouse</button>
-                                        <button class="btn" type="button" data-input-capture-gamepad>Capture Gamepad</button>
-                                    </div>
-                                    <p class="status" role="status" data-input-capture-status>Choose an action and capture an input.</p>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
                                 <summary>Controller Profiles</summary>
                                 <div class="accordion-body content-stack" data-controller-profile-planning>
                                     <p>Plan how gamepad identities will match saved mapping profiles.</p>
@@ -93,7 +81,7 @@
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
                     <section class="tool-center-panel">
                         <h2>Input Mapping</h2>
-                        <p>Use the table to assign object actions to captured or entered inputs.</p>
+                        <p>Use the table to assign object actions to captured inputs.</p>
                         <div class="grid cols-3" aria-label="Input mapping summary">
                             <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
                             <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
@@ -122,9 +110,15 @@
                                         <tfoot>
                                             <tr>
                                                 <td colspan="7">
-                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
-                                                        <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
-                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+                                                    <div class="content-split" data-input-mapping-table-footer>
+                                                        <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
+                                                            <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
+                                                            <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+                                                        </div>
+                                                        <div class="action-group action-group--end" aria-label="Selected mapping context" data-input-selected-context>
+                                                            <span class="status" data-input-selected-action>Selected Action: Cancel</span>
+                                                            <span class="status" data-input-selected-object>Selected Object: Global</span>
+                                                        </div>
                                                     </div>
                                                 </td>
                                             </tr>

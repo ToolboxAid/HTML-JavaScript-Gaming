@@ -46,16 +46,11 @@ let controllerProfiles = [];
 let objectOptions = [];
 let editingRow = null;
 let profileEditingRow = null;
-let captureMode = "";
+let rowCaptureSource = "";
 
 const elements = {
   actionSelect: document.querySelector("[data-input-action-select]"),
   addMapping: document.querySelector("[data-input-add-mapping]"),
-  captureGamepad: document.querySelector("[data-input-capture-gamepad]"),
-  captureKeyboard: document.querySelector("[data-input-capture-keyboard]"),
-  captureMouse: document.querySelector("[data-input-capture-mouse]"),
-  captureSelection: document.querySelector("[data-input-capture-selection]"),
-  captureStatus: document.querySelector("[data-input-capture-status]"),
   controllerProfileAdd: document.querySelector("[data-controller-profile-add]"),
   controllerProfileList: document.querySelector("[data-controller-profile-list]"),
   controllerProfileStatus: document.querySelector("[data-controller-profile-status]"),
@@ -71,6 +66,8 @@ const elements = {
   resetMappings: document.querySelector("[data-input-reset-mappings]"),
   returnWorkspace: document.querySelector("[data-input-return-workspace]"),
   saveStatus: document.querySelector("[data-input-save-status]"),
+  selectedAction: document.querySelector("[data-input-selected-action]"),
+  selectedObject: document.querySelector("[data-input-selected-object]"),
   sourceDiagnostics: document.querySelector("[data-input-source-diagnostics]"),
   statusLog: document.querySelector("[data-input-status-log]"),
 };
@@ -187,6 +184,13 @@ function textControl({ ariaLabel, value }) {
   const input = document.createElement("input");
   input.setAttribute("aria-label", ariaLabel);
   input.type = "text";
+  input.value = value || "";
+  return input;
+}
+
+function hiddenControl({ value }) {
+  const input = document.createElement("input");
+  input.type = "hidden";
   input.value = value || "";
   return input;
 }
@@ -401,7 +405,7 @@ function renderDefaults() {
 }
 
 function renderActionsAndObjects() {
-  const previousAction = elements.actionSelect?.value || "moveLeft";
+  const previousAction = elements.actionSelect?.value || DEFAULT_ACTIONS[0]?.id;
   const previousObject = elements.objectSelect?.value || "global";
   renderSelect(
     elements.actionSelect,
@@ -580,8 +584,10 @@ function renderOutput() {
 }
 
 function tokenButton(mapping) {
-  const button = actionButton(mapping.label, "inputDeleteToken", mapping.id, "btn btn--compact cyan");
-  button.title = `Delete ${mapping.label}`;
+  const label = mapping.label || "No input";
+  const button = actionButton(label, "inputToken", mapping.id, "btn btn--compact cyan");
+  button.title = label;
+  button.setAttribute("aria-label", `${label} input`);
   return button;
 }
 
@@ -602,6 +608,31 @@ function renderMappingRow(mapping) {
     actionButton("Trash", "inputTrashMapping", mapping.id),
   ]));
   return row;
+}
+
+function inputCaptureCell(values = {}) {
+  const cell = document.createElement("td");
+  const stack = document.createElement("div");
+  stack.className = "content-stack content-stack--compact";
+
+  const source = values.source || "keyboard";
+  const binding = normalizeText(values.binding);
+  const currentInput = actionButton(inputLabel(source, binding) || "No input captured", "inputRowBindingValue", "", "btn btn--compact cyan");
+  currentInput.setAttribute("aria-label", "Current mapping input");
+  const hiddenInput = hiddenControl({ value: binding });
+  hiddenInput.dataset.inputRowBinding = "true";
+
+  const group = document.createElement("div");
+  group.className = "action-group action-group--tight";
+  group.append(
+    actionButton("Capture Keyboard", "inputRowCaptureKeyboard", "", "btn btn--compact"),
+    actionButton("Capture Mouse", "inputRowCaptureMouse", "", "btn btn--compact"),
+    actionButton("Capture Gamepad", "inputRowCaptureGamepad", "", "btn btn--compact"),
+  );
+
+  stack.append(currentInput, hiddenInput, group);
+  cell.append(stack);
+  return cell;
 }
 
 function renderEditingRow(values = {}) {
@@ -636,9 +667,6 @@ function renderEditingRow(values = {}) {
   });
   profileSelect.dataset.inputRowProfile = "true";
 
-  const input = textControl({ ariaLabel: "Mapping Input", value: values.binding || "" });
-  input.dataset.inputRowBinding = "true";
-
   const stateSelect = selectControl({
     ariaLabel: "Mapping State",
     options: [
@@ -654,7 +682,7 @@ function renderEditingRow(values = {}) {
     controlCell(actionSelect),
     controlCell(deviceSelect),
     controlCell(profileSelect),
-    controlCell(input),
+    inputCaptureCell(values),
     controlCell(stateSelect),
     actionCell([
       actionButton("Save", "inputSaveMapping"),
@@ -704,56 +732,56 @@ function renderAll(message = "") {
 
 function updateCaptureSelection() {
   const action = selectedAction();
-  setText(elements.captureSelection, `Selected action: ${action.label}`);
-}
-
-function selectedCaptureContext() {
   const object = selectedObject();
-  const action = selectedAction();
-  return {
-    action: action.id,
-    actionLabel: action.label,
-    objectKey: object.key,
-    objectName: object.label,
-  };
+  setText(elements.selectedAction, `Selected Action: ${action.label}`);
+  setText(elements.selectedObject, `Selected Object: ${object.label}`);
 }
 
-function addCapturedInput({ binding, label, source }) {
-  const device = deviceBySource(source);
-  const nextMapping = normalizeMapping({
-    ...selectedCaptureContext(),
-    binding,
-    engine: device.engine,
-    inputDevice: device.label,
-    label,
-    source: device.source,
-    state: "Active",
-  });
-  mappings = [
-    ...mappings.filter((mapping) => !(
-      mapping.objectKey === nextMapping.objectKey &&
-      mapping.action === nextMapping.action &&
-      mapping.source === nextMapping.source &&
-      mapping.binding === nextMapping.binding
-    )),
-    nextMapping,
-  ];
-  saveMappings(mappings);
-  editingRow = null;
-  captureMode = "";
-  renderAll(`${label} mapped to ${nextMapping.actionLabel}.`);
-  setText(elements.captureStatus, `${label} mapped to ${nextMapping.actionLabel}.`);
+function editingRowElement() {
+  return elements.list?.querySelector("[data-input-editing-row]") || null;
+}
+
+function setEditingRowInput(row, source, binding) {
+  const normalizedSource = deviceBySource(source).source;
+  const normalizedBinding = normalizeText(binding);
+  const label = inputLabel(normalizedSource, normalizedBinding);
+  const deviceSelect = row.querySelector("[data-input-row-device]");
+  const bindingInput = row.querySelector("[data-input-row-binding]");
+  const bindingValue = row.querySelector("[data-input-row-binding-value]");
+  if (deviceSelect) {
+    deviceSelect.value = normalizedSource;
+  }
+  if (bindingInput) {
+    bindingInput.value = normalizedBinding;
+  }
+  if (bindingValue) {
+    bindingValue.textContent = label || "No input captured";
+    bindingValue.title = label || "No input captured";
+    bindingValue.setAttribute("aria-label", `${label || "No input captured"} input`);
+  }
+  return label;
+}
+
+function applyCapturedInputToEditingRow({ binding, label, source }) {
+  const row = editingRowElement();
+  if (!row) {
+    warnCapture("WARN: Add or edit a mapping row before capturing input.");
+    return;
+  }
+  const capturedLabel = setEditingRowInput(row, source, binding) || label;
+  rowCaptureSource = "";
+  setText(elements.statusLog, `${capturedLabel} captured. Save the mapping row to persist it.`);
+  renderDiagnostics();
 }
 
 function warnCapture(message) {
-  captureMode = "";
-  setText(elements.captureStatus, message);
+  rowCaptureSource = "";
   setText(elements.statusLog, message);
   renderDiagnostics();
 }
 
 function captureKeyboardEvent(event) {
-  if (captureMode !== "keyboard") {
+  if (rowCaptureSource !== "keyboard") {
     return;
   }
   event.preventDefault();
@@ -762,7 +790,7 @@ function captureKeyboardEvent(event) {
     warnCapture("WARN: Keyboard capture did not receive a key code. Press a physical key and try again.");
     return;
   }
-  addCapturedInput({
+  applyCapturedInputToEditingRow({
     binding,
     label: inputLabel("keyboard", binding),
     source: "keyboard",
@@ -770,13 +798,13 @@ function captureKeyboardEvent(event) {
 }
 
 function captureMouseEvent(event) {
-  if (captureMode !== "mouse") {
+  if (rowCaptureSource !== "mouse") {
     return;
   }
   event.preventDefault();
   const button = Number.isInteger(event.button) ? event.button : 0;
   const binding = `MouseButton${button}`;
-  addCapturedInput({
+  applyCapturedInputToEditingRow({
     binding,
     label: inputLabel("mouse", binding),
     source: "mouse",
@@ -818,10 +846,46 @@ function activeGamepadInput() {
   };
 }
 
+function startRowCapture(source) {
+  const row = editingRowElement();
+  if (!row) {
+    warnCapture("WARN: Add or edit a mapping row before capturing input.");
+    return;
+  }
+  if (source === "mouse" && typeof window.PointerEvent !== "function" && typeof window.MouseEvent !== "function") {
+    warnCapture("WARN: Mouse capture unavailable. Use a browser context that supports pointer or mouse events.");
+    return;
+  }
+  rowCaptureSource = source;
+  if (source === "keyboard") {
+    setText(elements.statusLog, "Press a keyboard key to capture input for this row.");
+    return;
+  }
+  if (source === "mouse") {
+    setText(elements.statusLog, "Click a mouse button to capture input for this row.");
+  }
+}
+
+function captureGamepadInputForRow() {
+  const row = editingRowElement();
+  if (!row) {
+    warnCapture("WARN: Add or edit a mapping row before capturing gamepad input.");
+    return;
+  }
+  const result = activeGamepadInput();
+  if (!result.ok) {
+    warnCapture(result.message);
+    return;
+  }
+  applyCapturedInputToEditingRow({
+    binding: result.binding,
+    label: result.label,
+    source: "gamepad",
+  });
+}
+
 function startKeyboardCapture() {
-  captureMode = "keyboard";
-  setText(elements.captureStatus, "Press a keyboard key to map the selected action.");
-  setText(elements.statusLog, "Keyboard capture armed.");
+  startRowCapture("keyboard");
 }
 
 function startMouseCapture() {
@@ -829,22 +893,11 @@ function startMouseCapture() {
     warnCapture("WARN: Mouse capture unavailable. Use a browser context that supports pointer or mouse events.");
     return;
   }
-  captureMode = "mouse";
-  setText(elements.captureStatus, "Click a mouse button to map the selected action.");
-  setText(elements.statusLog, "Mouse capture armed.");
+  startRowCapture("mouse");
 }
 
 function captureGamepadInput() {
-  const result = activeGamepadInput();
-  if (!result.ok) {
-    warnCapture(result.message);
-    return;
-  }
-  addCapturedInput({
-    binding: result.binding,
-    label: result.label,
-    source: "gamepad",
-  });
+  captureGamepadInputForRow();
 }
 
 function mappingFromEditingRow(row) {
@@ -965,6 +1018,7 @@ function editMapping(mappingId) {
   if (!mapping) {
     return;
   }
+  rowCaptureSource = "";
   editingRow = {
     id: mapping.id,
     values: mapping,
@@ -977,6 +1031,7 @@ function deleteMapping(mappingId, message = "Deleted mapping.") {
   mappings = mappings.filter((mapping) => mapping.id !== mappingId);
   saveMappings(mappings);
   editingRow = null;
+  rowCaptureSource = "";
   renderAll(message);
 }
 
@@ -989,14 +1044,19 @@ function handleListClick(event) {
     saveEditingRow();
   } else if (target.dataset.inputCancelMapping !== undefined) {
     editingRow = null;
+    rowCaptureSource = "";
     renderMappings();
     setText(elements.statusLog, "Canceled mapping edit.");
   } else if (target.dataset.inputEditMapping !== undefined) {
     editMapping(target.dataset.inputEditMapping || "");
   } else if (target.dataset.inputTrashMapping !== undefined) {
     deleteMapping(target.dataset.inputTrashMapping || "");
-  } else if (target.dataset.inputDeleteToken !== undefined) {
-    deleteMapping(target.dataset.inputDeleteToken || "", "Deleted captured input token.");
+  } else if (target.dataset.inputRowCaptureKeyboard !== undefined) {
+    startKeyboardCapture();
+  } else if (target.dataset.inputRowCaptureMouse !== undefined) {
+    startMouseCapture();
+  } else if (target.dataset.inputRowCaptureGamepad !== undefined) {
+    captureGamepadInput();
   }
 }
 
@@ -1043,9 +1103,11 @@ function init() {
   renderMappings();
   elements.actionSelect?.addEventListener("change", updateCaptureSelection);
   elements.objectSelect?.addEventListener("change", () => {
+    updateCaptureSelection();
     setText(elements.statusLog, `Selected ${selectedObject().label} for new mappings.`);
   });
   elements.addMapping?.addEventListener("click", () => {
+    rowCaptureSource = "";
     editingRow = {
       id: "",
       values: {
@@ -1073,11 +1135,9 @@ function init() {
   elements.resetMappings?.addEventListener("click", () => {
     resetStoredMappings();
     editingRow = null;
+    rowCaptureSource = "";
     renderAll("Reset input mappings.");
   });
-  elements.captureKeyboard?.addEventListener("click", startKeyboardCapture);
-  elements.captureMouse?.addEventListener("click", startMouseCapture);
-  elements.captureGamepad?.addEventListener("click", captureGamepadInput);
   elements.refreshDevices?.addEventListener("click", () => {
     renderDiagnostics("Device diagnostics refreshed.");
     renderControllerProfileStatus();

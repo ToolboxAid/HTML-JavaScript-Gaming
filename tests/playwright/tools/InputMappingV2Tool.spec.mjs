@@ -136,7 +136,7 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("summary").filter({ hasText: "Actions" })).toBeVisible();
-    await expect(page.locator("summary").filter({ hasText: "Capture" })).toBeVisible();
+    await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
     await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
     await expect(page.getByText("Mapping JSON", { exact: true })).toBeVisible();
@@ -170,6 +170,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-add-mapping]")).toHaveCount(1);
     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]")).toBeVisible();
     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-reset-mappings]")).toBeVisible();
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-selected-context]")).toBeVisible();
+    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Cancel");
+    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
     await expect(page.locator("[data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
     await expect(page.locator("[data-input-default-actions] li")).toHaveText(DEFAULT_ACTION_LABELS);
     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
@@ -191,12 +194,11 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-source-diagnostics]")).toContainText("InputService + GamepadState + GamepadInputAdapter");
     await expect(page.locator("[data-input-source-diagnostics]")).toContainText("GamepadInputAdapter");
 
+    await page.locator("[data-input-action-select]").selectOption("moveLeft");
+    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Move Left");
+    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Global");
     await page.getByRole("button", { name: "Refresh Devices" }).click();
     await expect(page.locator("[data-input-status-log]")).toHaveText("Device diagnostics refreshed.");
-    await page.getByRole("button", { name: "Capture Gamepad" }).click();
-    await expect(page.locator("[data-input-capture-status]")).toContainText("WARN: Gamepad capture unavailable.");
-    await expect(page.locator("[data-input-capture-status]")).toContainText("connect a gamepad");
-    await expect(page.locator("[data-input-capture-status]")).toContainText("press a button or move an axis");
 
     const registryEntry = await controlsRegistryEntry(page);
     expect(registryEntry.path).toBe("toolbox/input-mapping-v2/index.html");
@@ -225,6 +227,19 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await expect(page.locator("[data-input-editing-row] td")).toHaveCount(7);
     await expect(page.locator("[data-input-editing-row] td").last().locator("button")).toHaveText(["Save", "Cancel"]);
     await expect(page.locator("[data-input-editing-row] td").last().locator("button").last()).toHaveText("Cancel");
+    await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
+    await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
+    await expect(page.locator("[data-input-row-capture-gamepad]")).toBeVisible();
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, "getGamepads", {
+        configurable: true,
+        value: () => [],
+      });
+    });
+    await page.locator("[data-input-row-capture-gamepad]").click();
+    await expect(page.locator("[data-input-status-log]")).toContainText("WARN: Gamepad capture unavailable.");
+    await expect(page.locator("[data-input-status-log]")).toContainText("connect a gamepad");
+    await expect(page.locator("[data-input-status-log]")).toContainText("press a button or move an axis");
 
     await page.locator("[data-input-editing-row] [data-input-cancel-mapping]").click();
     await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
@@ -235,14 +250,18 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await page.locator("[data-input-row-action]").selectOption("fire");
     await page.locator("[data-input-row-device]").selectOption("keyboard");
     await expect(page.locator("[data-input-row-profile] option")).toHaveText(["No saved profile"]);
-    await page.locator("[data-input-row-binding]").fill("KeyF");
+    await expect(page.locator("[data-input-row-binding]")).toHaveAttribute("type", "hidden");
+    await page.locator("[data-input-row-capture-keyboard]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
+    await page.keyboard.press("KeyF");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyF");
     await page.locator("[data-input-save-mapping]").click();
     await expect(addButton).toBeEnabled();
     await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
     await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Fire");
     await expect(page.locator("[data-input-mapping-list]")).toContainText("No saved profile");
-    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyF");
+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyF");
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({
@@ -256,10 +275,12 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
     await expect(page.locator("[data-input-mapping-row]")).toHaveCount(0);
     await expect(addButton).toBeDisabled();
-    await page.locator("[data-input-row-binding]").fill("KeyG");
+    await page.locator("[data-input-row-capture-keyboard]").click();
+    await page.keyboard.press("KeyG");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyG");
     await page.locator("[data-input-save-mapping]").click();
     await expect(addButton).toBeEnabled();
-    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyG");
     records = await inputMappingRecords(page);
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({
@@ -270,7 +291,7 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     });
 
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyG");
+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyG");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -314,15 +335,26 @@ test("Controls controller profiles persist and mappings reference saved profiles
 
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Profile");
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, "getGamepads", {
+        configurable: true,
+        value: () => [{
+          axes: [],
+          buttons: [{ pressed: true, value: 1 }],
+          index: 0,
+        }],
+      });
+    });
 
     await page.locator("[data-input-add-mapping]").click();
     await page.locator("[data-input-row-action]").selectOption("fire");
     await page.locator("[data-input-row-device]").selectOption("gamepad");
     await page.locator("[data-input-row-profile]").selectOption({ label: "Arcade Profile" });
-    await page.locator("[data-input-row-binding]").fill("Pad0:Button0");
+    await page.locator("[data-input-row-capture-gamepad]").click();
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Gamepad Button0");
     await page.locator("[data-input-save-mapping]").click();
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Profile");
-    await expect(page.locator("[data-input-delete-token]")).toHaveText("Gamepad Button0");
+    await expect(page.locator("[data-input-token]")).toHaveText("Gamepad Button0");
 
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(1);
@@ -350,7 +382,7 @@ test("Controls controller profiles persist and mappings reference saved profiles
   }
 });
 
-test("Controls Input Mapping captures KeyA, deletes token, and persists through shared DB", async ({ page }) => {
+test("Controls Input Mapping captures KeyA, keeps input click safe, and deletes only through Trash", async ({ page }) => {
   const failures = await openInputMappingPage(page);
 
   try {
@@ -359,16 +391,22 @@ test("Controls Input Mapping captures KeyA, deletes token, and persists through 
     await expect(page.locator("[data-input-object-select] option")).toContainText(["Global", "Hero"]);
     await page.locator("[data-input-object-select]").selectOption("hero");
     await page.locator("[data-input-action-select]").selectOption("moveLeft");
-    await expect(page.locator("[data-input-capture-selection]")).toHaveText("Selected action: Move Left");
+    await expect(page.locator("[data-input-selected-action]")).toHaveText("Selected Action: Move Left");
+    await expect(page.locator("[data-input-selected-object]")).toHaveText("Selected Object: Hero");
 
-    await page.getByRole("button", { name: "Capture Keyboard" }).click();
-    await expect(page.locator("[data-input-capture-status]")).toHaveText("Press a keyboard key to map the selected action.");
+    await page.locator("[data-input-add-mapping]").click();
+    await expect(page.locator("[data-input-row-object]")).toHaveValue("hero");
+    await expect(page.locator("[data-input-row-action]")).toHaveValue("moveLeft");
+    await page.locator("[data-input-row-capture-keyboard]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
     await page.keyboard.press("KeyA");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyA");
+    await page.locator("[data-input-save-mapping]").click();
     await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Hero");
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Move Left");
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Keyboard");
-    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyA");
+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyA");
     await expect(page.locator("[data-input-mapping-json]")).toContainText('"action": "moveLeft"');
     await expect(page.locator("[data-input-mapping-json]")).toContainText('"label": "Keyboard KeyA"');
     await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
@@ -384,9 +422,14 @@ test("Controls Input Mapping captures KeyA, deletes token, and persists through 
 
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Hero");
-    await expect(page.locator("[data-input-delete-token]")).toHaveText("Keyboard KeyA");
+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyA");
 
-    await page.locator("[data-input-delete-token]").click();
+    await page.locator("[data-input-token]").click();
+    await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
+    records = await inputMappingRecords(page);
+    expect(records).toHaveLength(1);
+
+    await page.locator("[data-input-trash-mapping]").click();
     await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
     await expect(page.locator("[data-input-output-status]")).toHaveText("Not Configured");
     records = await inputMappingRecords(page);
@@ -404,9 +447,14 @@ test("Controls compatibility route uses rebuilt Input Mapping surface", async ({
 
   try {
     await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
+    await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
     await expect(page.locator("summary").filter({ hasText: "Controller Profiles" })).toBeVisible();
     await expect(page.locator("[data-controller-profile-table]")).toContainText("Mapping Profile");
     await expect(page.locator("[data-input-mapping-table]")).toBeVisible();
+    await page.locator("[data-input-add-mapping]").click();
+    await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
+    await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
+    await expect(page.locator("[data-input-row-capture-gamepad]")).toBeVisible();
     await expect(page.locator("main")).not.toContainText(/Static wireframe only|Not implemented yet|no database|no runtime behavior/i);
     await expectNoPageFailures(failures);
   } finally {

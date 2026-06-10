@@ -1,28 +1,20 @@
 # git status --short
-M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/persistence/mock-db-store.js
- M src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
  M toolbox/controls/index.html
  M toolbox/input-mapping-v2/index.html
  M toolbox/input-mapping-v2/input-mapping-v2.js
-?? docs_build/dev/reports/controls-db-controller-profiles-report.md
+?? docs_build/dev/reports/controls-row-capture-cleanup-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/controls-db-controller-profiles-report.md
+docs_build/dev/reports/controls-row-capture-cleanup-report.md
 
 # git diff --stat
-docs_build/dev/reports/codex_changed_files.txt     |   30 +-
- docs_build/dev/reports/codex_review.diff           | 2400 ++++++++------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |    6 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   14 +-
- src/dev-runtime/persistence/mock-db-store.js       |    5 +-
- .../input-mapping-mock-repository.js               |   98 +-
- tests/playwright/tools/InputMappingV2Tool.spec.mjs |   92 +-
- toolbox/controls/index.html                        |   21 +-
- toolbox/input-mapping-v2/index.html                |   21 +-
- toolbox/input-mapping-v2/input-mapping-v2.js       |  326 ++-
- 10 files changed, 1567 insertions(+), 1446 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  |   9 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  18 +-
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs |  86 +++++++--
+ toolbox/controls/index.html                        |  26 +--
+ toolbox/input-mapping-v2/index.html                |  26 +--
+ toolbox/input-mapping-v2/input-mapping-v2.js       | 204 +++++++++++++--------
+ 6 files changed, 226 insertions(+), 143 deletions(-)
