@@ -1956,7 +1956,6 @@ function renderTables(snapshot) {
 function displayColorsTableName(tableName) {
   const names = {
     palette_colors: "Project Swatches",
-    palette_source_swatches: "Deprecated Source Swatches",
     palette_swatch_usages: "Swatch Usage",
     project_workspace_palette_globals: "Project Swatch Settings"
   };

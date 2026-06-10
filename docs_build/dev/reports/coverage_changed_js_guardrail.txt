@@ -7,6 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
 (0%) src/engine/api/mock-db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(89%) toolbox/colors/colors.js - executed lines 2161/2161; executed functions 190/213
 
 Guardrail warnings:
 (0%) src/engine/api/mock-db-viewer-ui.js - WARNING: changed runtime JS file missing from coverage; advisory only

@@ -18,13 +18,14 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (0%) src/engine/api/mock-db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(89%) toolbox/colors/colors.js - executed lines 2161/2161; executed functions 190/213
 
 Files with executed line/function counts where available:
 (58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
 (77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 548/548; executed functions 37/48
-(89%) toolbox/colors/colors.js - executed lines 2162/2162; executed functions 190/213
+(89%) toolbox/colors/colors.js - executed lines 2161/2161; executed functions 190/213
 (92%) assets/theme-v2/js/account-controls.js - executed lines 47/47; executed functions 12/13
 (100%) toolbox/colors/palette-api-client.js - executed lines 19/19; executed functions 4/4
 
@@ -34,3 +35,4 @@ Uncovered or low-coverage changed JS files:
 Changed JS files considered:
 (0%) src/engine/api/mock-db-viewer-ui.js - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+(89%) toolbox/colors/colors.js - changed JS file with browser V8 coverage
