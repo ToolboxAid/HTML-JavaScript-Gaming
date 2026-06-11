@@ -194,16 +194,20 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
       "Normalized Action Type",
       "Usage Label",
       "Input Family",
-      "D",
-      "H",
-      "U",
-      "DC",
+      "Down",
+      "Hold",
+      "Up",
+      "Double Click",
       "Drag",
       "Axis",
       "Object",
       "State",
       "Actions",
     ]);
+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^D$/ })).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^H$/ })).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^U$/ })).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^DC$/ })).toHaveCount(0);
     await expect(page.locator("[data-input-action-label]")).toContainText(NORMALIZED_INPUTS);
     await expect(page.locator("[data-input-control-type-list]")).toContainText("Keyboard Key");
     await expect(page.locator("[data-input-control-type-list]")).toContainText("Pointer Drag");
@@ -232,6 +236,10 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
     await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
     const primaryActionRow = page.locator("[data-input-mapping-row]").filter({ hasText: "action.primary" }).first();
     await expect(primaryActionRow.locator("td").nth(0).locator("input")).toBeChecked();
+    await expect(primaryActionRow.locator("input[aria-label='Down']")).toBeChecked();
+    await expect(primaryActionRow.locator("input[aria-label='Hold']")).not.toBeChecked();
+    await expect(primaryActionRow.locator("input[aria-label='Up']")).not.toBeChecked();
+    await expect(primaryActionRow.locator("input[aria-label='Double Click']")).not.toBeChecked();
     await expect(primaryActionRow.locator("td").nth(11)).toHaveText("Active");
     const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "aim.x+" }).first();
     await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();

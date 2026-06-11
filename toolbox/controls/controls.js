@@ -6,10 +6,10 @@ import {
 } from "../../src/engine/input/NormalizedInputRegistry.js";
 
 const CONTROL_EVENT_OPTIONS = Object.freeze([
-  Object.freeze({ field: "eventD", label: "D" }),
-  Object.freeze({ field: "eventH", label: "H" }),
-  Object.freeze({ field: "eventU", label: "U" }),
-  Object.freeze({ field: "eventDC", label: "DC" }),
+  Object.freeze({ field: "eventD", label: "Down" }),
+  Object.freeze({ field: "eventH", label: "Hold" }),
+  Object.freeze({ field: "eventU", label: "Up" }),
+  Object.freeze({ field: "eventDC", label: "Double Click" }),
   Object.freeze({ field: "eventDrag", label: "Drag" }),
   Object.freeze({ field: "eventAxis", label: "Axis" }),
 ]);
@@ -357,7 +357,7 @@ function validateMappingAction(mapping) {
   if (!CONTROL_EVENT_OPTIONS.some((option) => Boolean(mapping[option.field]))) {
     return {
       ok: false,
-      message: "Choose at least one event: D, H, U, DC, Drag, or Axis.",
+      message: "Choose at least one event: Down, Hold, Up, Double Click, Drag, or Axis.",
     };
   }
   return { ok: true, message: "" };
