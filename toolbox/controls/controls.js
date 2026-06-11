@@ -19,6 +19,33 @@ const DEFAULT_ACTIONS = Object.freeze([
   Object.freeze({ description: "Push the object forward.", id: "thrust", label: "Thrust" }),
 ].sort((left, right) => left.label.localeCompare(right.label, undefined, { sensitivity: "base" })));
 
+const OBJECT_ACTION_IDS = Object.freeze({
+  collectible: Object.freeze(["confirm", "interact", "select"]),
+  custom: Object.freeze(DEFAULT_ACTIONS.map((action) => action.id)),
+  decoration: Object.freeze(["select"]),
+  enemy: Object.freeze(["fire", "interact", "moveDown", "moveLeft", "moveRight", "moveUp", "rotateLeft", "rotateRight", "thrust"]),
+  global: Object.freeze(DEFAULT_ACTIONS.map((action) => action.id)),
+  goal: Object.freeze(["confirm", "interact", "select"]),
+  hazard: Object.freeze(["fire", "interact", "select"]),
+  hero: Object.freeze(DEFAULT_ACTIONS.map((action) => action.id)),
+  platform: Object.freeze(["interact", "select"]),
+  projectile: Object.freeze(["fire", "rotateLeft", "rotateRight", "thrust"]),
+  "spawn-point": Object.freeze(["confirm", "select", "start"]),
+  wall: Object.freeze(["interact", "select"]),
+});
+
+const CAPABILITY_ACTION_IDS = Object.freeze({
+  collectible: Object.freeze(["confirm", "interact", "select"]),
+  collides: Object.freeze(["interact", "select"]),
+  damageable: Object.freeze(["fire", "interact", "select"]),
+  goal: Object.freeze(["confirm", "interact", "select"]),
+  hazard: Object.freeze(["fire", "interact", "select"]),
+  killable: Object.freeze(["fire", "interact", "select"]),
+  movable: Object.freeze(["moveDown", "moveLeft", "moveRight", "moveUp", "rotateLeft", "rotateRight", "thrust"]),
+  playerControlled: Object.freeze(DEFAULT_ACTIONS.map((action) => action.id)),
+  scores: Object.freeze(["confirm", "interact", "select"]),
+});
+
 const DEVICE_OPTIONS = Object.freeze([
   Object.freeze({ engine: "KeyboardState", label: "Keyboard", source: "keyboard" }),
   Object.freeze({ engine: "MouseState", label: "Mouse", source: "mouse" }),
@@ -60,6 +87,9 @@ const elements = {
   list: document.querySelector("[data-input-mapping-list]"),
   mappingCount: document.querySelector("[data-input-mapping-count]"),
   mappingJson: document.querySelector("[data-input-mapping-json]"),
+  objectSummaryActions: document.querySelector("[data-input-object-summary-actions]"),
+  objectSummaryName: document.querySelector("[data-input-object-summary-name]"),
+  objectSummaryRole: document.querySelector("[data-input-object-summary-role]"),
   objectSelect: document.querySelector("[data-input-object-select]"),
   outputCount: document.querySelector("[data-input-output-count]"),
   outputStatus: document.querySelector("[data-input-output-status]"),
@@ -199,6 +229,65 @@ function selectedAction() {
   return actionById(elements.actionSelect?.value);
 }
 
+function actionOptions(actions) {
+  return actions.map((action) => ({ label: action.label, value: action.id }));
+}
+
+function objectByKey(objectKey) {
+  return objectOptions.find((object) => object.key === objectKey) || null;
+}
+
+function roleKeyForObject(object) {
+  return keyFromText(object?.role || object?.label || "global");
+}
+
+function validActionIdsForObject(object) {
+  if (!object || object.key === "global") {
+    return new Set(OBJECT_ACTION_IDS.global);
+  }
+  const roleKey = roleKeyForObject(object);
+  if (OBJECT_ACTION_IDS[roleKey] && roleKey !== "custom") {
+    return new Set(OBJECT_ACTION_IDS[roleKey]);
+  }
+  const ids = new Set(OBJECT_ACTION_IDS[roleKey] || []);
+  normalizeList(object.capabilities).forEach((capability) => {
+    (CAPABILITY_ACTION_IDS[capability] || []).forEach((actionId) => ids.add(actionId));
+  });
+  if (!ids.size) {
+    return new Set(OBJECT_ACTION_IDS.custom);
+  }
+  return ids;
+}
+
+function actionsForObject(object) {
+  const validIds = validActionIdsForObject(object);
+  return DEFAULT_ACTIONS.filter((action) => validIds.has(action.id));
+}
+
+function actionOptionsForObject(object) {
+  return actionOptions(actionsForObject(object));
+}
+
+function validateMappingAction(mapping) {
+  const object = objectByKey(mapping.objectKey);
+  if (!object && mapping.objectKey !== "global") {
+    return {
+      ok: false,
+      message: `${mapping.objectName || "This mapping"} needs an object that still exists. Edit this row and choose an existing object.`,
+    };
+  }
+  const action = actionById(mapping.action);
+  const targetObject = object || objectOptions[0];
+  if (!validActionIdsForObject(targetObject).has(action.id)) {
+    const availableActions = actionsForObject(targetObject).map((candidate) => candidate.label).join(", ");
+    return {
+      ok: false,
+      message: `${action.label} is not available for ${targetObject.role || targetObject.label}. Edit this row and choose: ${availableActions}.`,
+    };
+  }
+  return { ok: true, message: "" };
+}
+
 function optionElement(value, text) {
   const option = document.createElement("option");
   option.value = value;
@@ -260,7 +349,9 @@ function selectControl({ ariaLabel, options, selectedValue }) {
   options.forEach((option) => {
     select.append(optionElement(option.value, option.label));
   });
-  select.value = selectedValue || options[0]?.value || "";
+  select.value = options.some((option) => option.value === selectedValue)
+    ? selectedValue
+    : options[0]?.value || "";
   return select;
 }
 
@@ -461,10 +552,12 @@ function readObjectOptions() {
   }
   const objects = Array.isArray(result) ? result : [];
   return [
-    { key: "global", label: "Global" },
+    { capabilities: [], key: "global", label: "Global", role: "Global" },
     ...objects.map((object) => ({
+      capabilities: normalizeList(object.traits || object.capabilities),
       key: normalizeText(object.id) || keyFromText(object.name),
       label: normalizeText(object.name),
+      role: normalizeText(object.role || object.type) || "Custom",
     })).filter((object) => object.key && object.label),
   ];
 }
@@ -474,7 +567,9 @@ function renderSelect(select, options, selectedValue) {
     return;
   }
   select.replaceChildren(...options.map((option) => optionElement(option.value, option.label)));
-  select.value = selectedValue || options[0]?.value || "";
+  select.value = options.some((option) => option.value === selectedValue)
+    ? selectedValue
+    : options[0]?.value || "";
 }
 
 function renderDefaults() {
@@ -504,15 +599,24 @@ function renderActionsAndObjects() {
   const previousAction = elements.actionSelect?.value || DEFAULT_ACTIONS[0]?.id;
   const previousObject = elements.objectSelect?.value || "global";
   renderSelect(
-    elements.actionSelect,
-    DEFAULT_ACTIONS.map((action) => ({ label: action.label, value: action.id })),
-    previousAction,
-  );
-  renderSelect(
     elements.objectSelect,
     objectOptions.map((object) => ({ label: object.label, value: object.key })),
     previousObject,
   );
+  const object = selectedObject();
+  renderSelect(
+    elements.actionSelect,
+    actionOptionsForObject(object),
+    previousAction,
+  );
+  renderObjectSummary(object);
+}
+
+function renderObjectSummary(object = selectedObject()) {
+  const availableActions = actionsForObject(object).map((action) => action.label).join(", ");
+  setText(elements.objectSummaryName, object?.label || "Global");
+  setText(elements.objectSummaryRole, object?.role || "Global");
+  setText(elements.objectSummaryActions, availableActions || "No actions available");
 }
 
 function renderControllerDeviceSelect(selectedValue = elements.controllerDeviceSelect?.value || "") {
@@ -672,6 +776,9 @@ function statusLabel() {
   if (!mappings.length) {
     return "Not Configured";
   }
+  if (mappings.some((mapping) => !validateMappingAction(mapping).ok)) {
+    return "Pending Setup";
+  }
   if (mappings.some((mapping) => mapping.state !== "Active")) {
     return "Pending Setup";
   }
@@ -700,6 +807,10 @@ function tokenButton(mapping) {
 function renderMappingRow(mapping) {
   const row = document.createElement("tr");
   row.dataset.inputMappingRow = mapping.id;
+  const validation = validateMappingAction(mapping);
+  if (!validation.ok) {
+    row.dataset.inputMappingValidationState = "invalid";
+  }
   row.append(
     tableCell(mapping.objectName),
     tableCell(mapping.actionLabel),
@@ -709,10 +820,18 @@ function renderMappingRow(mapping) {
   const inputCell = document.createElement("td");
   inputCell.append(tokenButton(mapping));
   row.append(inputCell, tableCell(mapping.state));
-  row.append(actionCell([
+  const actions = actionCell([
     actionButton("Edit", "inputEditMapping", mapping.id),
     actionButton("Trash", "inputTrashMapping", mapping.id),
-  ]));
+  ]);
+  if (!validation.ok) {
+    const warning = document.createElement("p");
+    warning.className = "status";
+    warning.dataset.inputMappingValidation = mapping.id;
+    warning.textContent = `Needs update: ${validation.message}`;
+    actions.append(warning);
+  }
+  row.append(actions);
   return row;
 }
 
@@ -772,17 +891,19 @@ function updateInputCaptureCell(row, source, binding = "") {
 function renderEditingRow(values = {}) {
   const row = document.createElement("tr");
   row.dataset.inputEditingRow = "true";
+  const selectedObjectKey = values.objectKey || elements.objectSelect?.value || "global";
+  const object = objectByKey(selectedObjectKey) || objectOptions[0];
 
   const objectSelect = selectControl({
     ariaLabel: "Mapping Object",
     options: objectOptions.map((object) => ({ label: object.label, value: object.key })),
-    selectedValue: values.objectKey || elements.objectSelect?.value || "global",
+    selectedValue: selectedObjectKey,
   });
   objectSelect.dataset.inputRowObject = "true";
 
   const actionSelect = selectControl({
     ariaLabel: "Mapping Action",
-    options: DEFAULT_ACTIONS.map((action) => ({ label: action.label, value: action.id })),
+    options: actionOptionsForObject(object),
     selectedValue: values.action || elements.actionSelect?.value || DEFAULT_ACTIONS[0]?.id,
   });
   actionSelect.dataset.inputRowAction = "true";
@@ -811,6 +932,15 @@ function renderEditingRow(values = {}) {
   });
   stateSelect.dataset.inputRowState = "true";
 
+  const actionsCell = actionCell([
+    actionButton("Save", "inputSaveMapping"),
+    actionButton("Cancel", "inputCancelMapping"),
+  ]);
+  const validation = document.createElement("p");
+  validation.className = "status";
+  validation.dataset.inputRowValidation = "true";
+  actionsCell.append(validation);
+
   row.append(
     controlCell(objectSelect),
     controlCell(actionSelect),
@@ -818,12 +948,29 @@ function renderEditingRow(values = {}) {
     controlCell(profileSelect),
     inputCaptureCell(values),
     controlCell(stateSelect),
-    actionCell([
-      actionButton("Save", "inputSaveMapping"),
-      actionButton("Cancel", "inputCancelMapping"),
-    ]),
+    actionsCell,
   );
+  updateEditingRowValidation(row);
   return row;
+}
+
+function updateEditingRowActionOptions(row) {
+  const object = objectByKey(row.querySelector("[data-input-row-object]")?.value || "global") || objectOptions[0];
+  const actionSelect = row.querySelector("[data-input-row-action]");
+  if (!actionSelect) {
+    return;
+  }
+  renderSelect(actionSelect, actionOptionsForObject(object), actionSelect.value);
+}
+
+function updateEditingRowValidation(row) {
+  const validation = row.querySelector("[data-input-row-validation]");
+  if (!validation) {
+    return;
+  }
+  const mapping = mappingFromEditingRow(row);
+  const result = validateMappingAction(mapping);
+  validation.textContent = result.ok ? "" : `Needs update: ${result.message}`;
 }
 
 function renderMappings() {
@@ -1068,6 +1215,12 @@ function saveEditingRow() {
     setText(elements.statusLog, "WARN: Add an input before saving the mapping row.");
     return;
   }
+  const validation = validateMappingAction(mapping);
+  if (!validation.ok) {
+    updateEditingRowValidation(row);
+    setText(elements.statusLog, `WARN: ${validation.message}`);
+    return;
+  }
   mappings = editingRow?.id
     ? mappings.map((candidate) => (candidate.id === editingRow.id ? mapping : candidate))
     : [mapping, ...mappings];
@@ -1225,14 +1378,21 @@ function handleListClick(event) {
 
 function handleListChange(event) {
   const target = event.target instanceof Element ? event.target : null;
-  if (!target?.matches("[data-input-row-device]")) {
+  if (!target?.matches("[data-input-row-device], [data-input-row-object], [data-input-row-action]")) {
     return;
   }
   const row = target.closest("[data-input-editing-row]");
   if (!row) {
     return;
   }
-  changeEditingRowDevice(row, target.value);
+  if (target.matches("[data-input-row-device]")) {
+    changeEditingRowDevice(row, target.value);
+    return;
+  }
+  if (target.matches("[data-input-row-object]")) {
+    updateEditingRowActionOptions(row);
+  }
+  updateEditingRowValidation(row);
 }
 
 function handleControllerProfileClick(event) {
@@ -1281,7 +1441,10 @@ function init() {
     setText(elements.statusLog, `Selected ${selectedAction().label} action for new mappings.`);
   });
   elements.objectSelect?.addEventListener("change", () => {
-    setText(elements.statusLog, `Selected ${selectedObject().label} for new mappings.`);
+    const object = selectedObject();
+    renderSelect(elements.actionSelect, actionOptionsForObject(object), elements.actionSelect?.value || "");
+    renderObjectSummary(object);
+    setText(elements.statusLog, `Selected ${object.label} for new mappings.`);
   });
   elements.controllerDeviceSelect?.addEventListener("change", () => {
     selectControllerDevice(elements.controllerDeviceSelect.value);
@@ -1313,6 +1476,10 @@ function init() {
     setText(elements.controllerProfileStatus, "Add a controller profile row.");
   });
   elements.resetMappings?.addEventListener("click", () => {
+    if (!window.confirm("Reset all input mappings?")) {
+      setText(elements.statusLog, "Reset canceled.");
+      return;
+    }
     resetStoredMappings();
     editingRow = null;
     rowCaptureSource = "";

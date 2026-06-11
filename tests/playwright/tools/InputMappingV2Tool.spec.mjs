@@ -123,6 +123,92 @@ async function seedHeroObject(page) {
   });
 }
 
+async function seedObjectActionValidationRecords(page) {
+  await page.evaluate(async () => {
+    const initResponse = await fetch("/api/toolbox/objects/repositories", {
+      body: JSON.stringify({ options: {} }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+    const initPayload = await initResponse.json();
+    const repositoryId = initPayload.data.repositoryId;
+    const saveResponse = await fetch(`/api/toolbox/objects/repositories/${repositoryId}/methods/replaceObjects`, {
+      body: JSON.stringify({
+        args: [[
+          {
+            behavior: "Responds to mapped input.",
+            id: "hero",
+            interaction: "Uses controls.",
+            name: "Hero",
+            render: { type: "None" },
+            role: "Hero",
+            state: "Active",
+            traits: ["playerControlled", "movable", "collides"],
+            type: "Dynamic",
+          },
+          {
+            behavior: "Adds score when collected.",
+            id: "coin",
+            interaction: "Can be collected by the hero.",
+            name: "Coin",
+            render: { type: "None" },
+            role: "Collectible",
+            state: "Active",
+            traits: ["collectible", "scores"],
+            type: "Collectible",
+          },
+          {
+            behavior: "Launches forward when fired.",
+            id: "bolt",
+            interaction: "Can damage targets.",
+            name: "Bolt",
+            render: { type: "None" },
+            role: "Projectile",
+            state: "Active",
+            traits: ["movable", "hazard"],
+            type: "Dynamic",
+          },
+        ]],
+      }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+    await saveResponse.json();
+  });
+}
+
+async function seedInvalidCollectibleMapping(page) {
+  await page.evaluate(async () => {
+    const initResponse = await fetch("/api/toolbox/controls/repositories", {
+      body: JSON.stringify({ options: {} }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+    const initPayload = await initResponse.json();
+    const repositoryId = initPayload.data.repositoryId;
+    const saveResponse = await fetch(`/api/toolbox/controls/repositories/${repositoryId}/methods/replaceMappings`, {
+      body: JSON.stringify({
+        args: [[{
+          action: "moveLeft",
+          actionLabel: "Move Left",
+          binding: "KeyA",
+          engine: "KeyboardState",
+          id: "coin-move-left",
+          inputDevice: "Keyboard",
+          label: "Keyboard KeyA",
+          objectKey: "coin",
+          objectName: "Coin",
+          source: "keyboard",
+          state: "Active",
+        }]],
+      }),
+      headers: { "Content-Type": "application/json" },
+      method: "POST",
+    });
+    await saveResponse.json();
+  });
+}
+
 async function inputMappingRecords(page) {
   return page.evaluate(async () => {
     const response = await fetch("/api/mock-db/snapshot");
@@ -205,6 +291,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select]")).toBeVisible();
     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-action-select] option")).toHaveText(DEFAULT_ACTION_LABELS);
     await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select] option")).toHaveText(["Global"]);
+    await expect(page.locator("[data-input-object-summary-name]")).toHaveText("Global");
+    await expect(page.locator("[data-input-object-summary-role]")).toHaveText("Global");
+    await expect(page.locator("[data-input-object-summary-actions]")).toHaveText(DEFAULT_ACTION_LABELS.join(", "));
     await expect(page.locator("[data-input-action-label]")).toHaveText(DEFAULT_ACTION_LABELS);
     await expect(page.locator("[data-input-action-description]")).toHaveText(DEFAULT_ACTION_DESCRIPTIONS);
     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
@@ -348,6 +437,137 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
 
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyG");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Controls filters actions by DB-backed object and flags invalid object action mappings", async ({ page }) => {
+  const failures = await openControlsPage(page);
+
+  try {
+    await seedObjectActionValidationRecords(page);
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-input-mapping-table] tfoot [data-input-object-select] option")).toHaveText([
+      "Global",
+      "Hero",
+      "Coin",
+      "Bolt",
+    ]);
+
+    await page.locator("[data-input-object-select]").selectOption("coin");
+    await expect(page.locator("[data-input-object-summary-name]")).toHaveText("Coin");
+    await expect(page.locator("[data-input-object-summary-role]")).toHaveText("Collectible");
+    await expect(page.locator("[data-input-object-summary-actions]")).toHaveText("Confirm, Interact, Select");
+    await expect(page.locator("[data-input-action-select] option")).toHaveText(["Confirm", "Interact", "Select"]);
+    await expect(page.locator("[data-input-action-select]")).not.toContainText("Move Left");
+    await expect(page.locator("[data-input-action-select]")).not.toContainText("Move Right");
+    await expect(page.locator("[data-input-action-select]")).not.toContainText("Jump");
+
+    await page.locator("[data-input-add-mapping]").click();
+    await expect(page.locator("[data-input-row-object]")).toHaveValue("coin");
+    await expect(page.locator("[data-input-row-action] option")).toHaveText(["Confirm", "Interact", "Select"]);
+    await expect(page.locator("[data-input-row-action]")).not.toContainText("Move Left");
+    await page.locator("[data-input-cancel-mapping]").click();
+
+    await page.locator("[data-input-object-select]").selectOption("hero");
+    await expect(page.locator("[data-input-object-summary-role]")).toHaveText("Hero");
+    await expect(page.locator("[data-input-action-select]")).toContainText("Move Left");
+    await expect(page.locator("[data-input-action-select]")).toContainText("Move Right");
+    await expect(page.locator("[data-input-action-select]")).toContainText("Jump");
+    await expect(page.locator("[data-input-action-select]")).toContainText("Interact");
+
+    await page.locator("[data-input-object-select]").selectOption("bolt");
+    await expect(page.locator("[data-input-object-summary-role]")).toHaveText("Projectile");
+    await expect(page.locator("[data-input-object-summary-actions]")).toHaveText("Fire, Rotate Left, Rotate Right, Thrust");
+    await expect(page.locator("[data-input-action-select] option")).toHaveText(["Fire", "Rotate Left", "Rotate Right", "Thrust"]);
+    await page.locator("[data-input-action-select]").selectOption("fire");
+    await page.locator("[data-input-add-mapping]").click();
+    await expect(page.locator("[data-input-row-object]")).toHaveValue("bolt");
+    await expect(page.locator("[data-input-row-action]")).toHaveValue("fire");
+    await page.locator("[data-input-row-capture-keyboard]").click();
+    await page.keyboard.press("KeyL");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyL");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Bolt" })).toContainText("Fire");
+    await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
+
+    let records = await inputMappingRecords(page);
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      action: "fire",
+      binding: "KeyL",
+      objectKey: "bolt",
+      source: "keyboard",
+    });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Bolt" })).toContainText("Fire");
+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyL");
+
+    await seedInvalidCollectibleMapping(page);
+    await page.reload({ waitUntil: "networkidle" });
+    const invalidRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Coin" });
+    await expect(invalidRow).toContainText("Move Left");
+    await expect(invalidRow.locator("[data-input-mapping-validation]")).toContainText("Needs update:");
+    await expect(invalidRow.locator("[data-input-mapping-validation]")).toContainText("Move Left is not available for Collectible.");
+    await expect(invalidRow.locator("[data-input-mapping-validation]")).toContainText("Edit this row and choose: Confirm, Interact, Select.");
+    await expect(page.locator("[data-input-output-status]")).toHaveText("Pending Setup");
+
+    await invalidRow.locator("[data-input-edit-mapping]").click();
+    await expect(page.locator("[data-input-row-object]")).toHaveValue("coin");
+    await expect(page.locator("[data-input-row-action] option")).toHaveText(["Confirm", "Interact", "Select"]);
+    await page.locator("[data-input-row-action]").selectOption("interact");
+    await expect(page.locator("[data-input-row-validation]")).toHaveText("");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
+    await expect(page.locator("[data-input-mapping-validation]")).toHaveCount(0);
+    records = await inputMappingRecords(page);
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      action: "interact",
+      binding: "KeyA",
+      objectKey: "coin",
+      source: "keyboard",
+    });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Coin" })).toContainText("Interact");
+    await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
+
+    await page.evaluate(() => {
+      Object.defineProperty(navigator, "getGamepads", {
+        configurable: true,
+        value: () => [{
+          axes: [0],
+          buttons: [{ pressed: false, value: 0 }],
+          id: "Validation Pad",
+          index: 0,
+        }],
+      });
+    });
+    await page.locator("[data-input-refresh-devices]").click();
+    await expect(page.locator("[data-controller-device-select]")).toContainText("Gamepad: Validation Pad");
+
+    page.once("dialog", async (dialog) => {
+      expect(dialog.message()).toBe("Reset all input mappings?");
+      await dialog.dismiss();
+    });
+    await page.locator("[data-input-reset-mappings]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Reset canceled.");
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Coin" })).toContainText("Interact");
+
+    page.once("dialog", async (dialog) => {
+      expect(dialog.message()).toBe("Reset all input mappings?");
+      await dialog.accept();
+    });
+    await page.locator("[data-input-reset-mappings]").click();
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
+    records = await inputMappingRecords(page);
+    expect(records).toHaveLength(0);
 
     await expectNoPageFailures(failures);
   } finally {

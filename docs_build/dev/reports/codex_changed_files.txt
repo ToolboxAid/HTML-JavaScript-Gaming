@@ -3,40 +3,18 @@
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/admin/header-nav.local.html
- M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
- M src/dev-runtime/persistence/mock-db-store.js
- M src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
- M src/dev-runtime/server/mock-api-router.mjs
- M tests/playwright/tools/AdminDbViewer.spec.mjs
  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
- M tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+ M toolbox/controls/controls.js
  M toolbox/controls/index.html
- M toolbox/input-mapping-v2/index.html
- D toolbox/input-mapping-v2/input-mapping-api-client.js
- D toolbox/input-mapping-v2/input-mapping-v2.js
-?? docs_build/dev/reports/PR_26161_025-controls-authoritative-ownership-report.md
-?? toolbox/controls/controls-api-client.js
-?? toolbox/controls/controls.js
+?? docs_build/dev/reports/controls-object-action-mapping-validation-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26161_025-controls-authoritative-ownership-report.md
-toolbox/controls/controls-api-client.js
-toolbox/controls/controls.js
+docs_build/dev/reports/controls-object-action-mapping-validation-report.md
 
 # git diff --stat (excluding review artifact files)
- .../dev/reports/coverage_changed_js_guardrail.txt  |   12 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   25 +-
- src/dev-runtime/admin/header-nav.local.html        |    2 +-
- .../guest-seeds/tool-metadata-inventory.js         |   41 +-
- src/dev-runtime/persistence/mock-db-store.js       |    4 +-
- .../input-mapping-mock-repository.js               |    2 +-
- src/dev-runtime/server/mock-api-router.mjs         |   12 +-
- tests/playwright/tools/AdminDbViewer.spec.mjs      |   12 +
- tests/playwright/tools/InputMappingV2Tool.spec.mjs |   35 +-
- .../tools/ToolboxAdminMetadataSsot.spec.mjs        |   47 +-
- toolbox/controls/index.html                        |    2 +-
- toolbox/input-mapping-v2/index.html                |  165 +--
- .../input-mapping-v2/input-mapping-api-client.js   |   15 -
- toolbox/input-mapping-v2/input-mapping-v2.js       | 1333 --------------------
- 14 files changed, 156 insertions(+), 1551 deletions(-)
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   8 +-
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs | 220 +++++++++++++++++++++
+ toolbox/controls/controls.js                       | 205 +++++++++++++++++--
+ toolbox/controls/index.html                        |   5 +
+ 5 files changed, 416 insertions(+), 24 deletions(-)
