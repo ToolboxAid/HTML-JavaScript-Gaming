@@ -225,6 +225,14 @@ async function controllerProfileRecords(page) {
   });
 }
 
+async function customActionRecords(page) {
+  return page.evaluate(async () => {
+    const response = await fetch("/api/mock-db/snapshot");
+    const payload = await response.json();
+    return payload.data.tables.input_custom_action_records || [];
+  });
+}
+
 async function controlsRegistryEntry(page) {
   return page.evaluate(async () => {
     const response = await fetch("/api/toolbox/registry/snapshot");
@@ -245,6 +253,8 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-action-catalog] th")).toHaveText(["Action Name", "Description"]);
     await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
     await expect(page.locator("aside").first().locator("summary").filter({ hasText: "Controller Profiles" })).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-accordion] summary")).toHaveText("Input Mapping");
+    await expect(page.locator("[data-controller-profile-accordion] summary")).toHaveText("Controller Profile");
     await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
     await expect(page.locator("[data-input-state-explanation]")).toHaveText("State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.");
@@ -265,6 +275,8 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-controller-profile-table]")).not.toContainText("Create Profile Needed");
     await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown controller.");
     await expect(page.locator("[data-controller-profile-status]")).toContainText("use Add Profile");
+    await expect(page.locator("[data-controller-profile-fallback-status]")).toHaveText("Missing Mapping. Missing saved profile for this controller.");
+    await expect(page.locator("[data-controller-profile-create-default]")).toBeHidden();
     await expect(page.locator("[data-controller-profile-planning]")).toContainText("Future game launch will match Controller ID to a saved Mapping Profile");
     await expect(page.locator("[data-controller-profile-add]")).toBeVisible();
     await expect(page.locator("[data-controller-device-select] option")).toHaveText([
@@ -296,6 +308,9 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-object-summary-actions]")).toHaveText(DEFAULT_ACTION_LABELS.join(", "));
     await expect(page.locator("[data-input-action-label]")).toHaveText(DEFAULT_ACTION_LABELS);
     await expect(page.locator("[data-input-action-description]")).toHaveText(DEFAULT_ACTION_DESCRIPTIONS);
+    await expect(page.locator("[data-input-custom-action-name]")).toBeVisible();
+    await expect(page.locator("[data-input-custom-action-add]")).toBeVisible();
+    expect(await customActionRecords(page)).toHaveLength(0);
     expect(DEFAULT_ACTION_LABELS).toEqual([...DEFAULT_ACTION_LABELS].sort((left, right) => left.localeCompare(right)));
     await expect(page.locator("[data-input-action-select]")).toContainText("Pause");
     await expect(page.locator("[data-input-action-select]")).toContainText("Select");
@@ -553,7 +568,7 @@ test("Controls filters actions by DB-backed object and flags invalid object acti
     await expect(page.locator("[data-controller-device-select]")).toContainText("Gamepad: Validation Pad");
 
     page.once("dialog", async (dialog) => {
-      expect(dialog.message()).toBe("Reset all input mappings?");
+      expect(dialog.message()).toBe("This will delete all Mappings, are you sure?");
       await dialog.dismiss();
     });
     await page.locator("[data-input-reset-mappings]").click();
@@ -561,13 +576,15 @@ test("Controls filters actions by DB-backed object and flags invalid object acti
     await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Coin" })).toContainText("Interact");
 
     page.once("dialog", async (dialog) => {
-      expect(dialog.message()).toBe("Reset all input mappings?");
+      expect(dialog.message()).toBe("This will delete all Mappings, are you sure?");
       await dialog.accept();
     });
     await page.locator("[data-input-reset-mappings]").click();
     await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
     records = await inputMappingRecords(page);
     expect(records).toHaveLength(0);
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("No mappings added yet.");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -576,7 +593,7 @@ test("Controls filters actions by DB-backed object and flags invalid object acti
   }
 });
 
-test("Controls controller profiles persist and mappings reference saved profiles", async ({ page }) => {
+test("Controls generates controller profiles, shows fallback status, and mappings reference saved profiles", async ({ page }) => {
   const failures = await openControlsPage(page);
 
   try {
@@ -588,7 +605,7 @@ test("Controls controller profiles persist and mappings reference saved profiles
         configurable: true,
         value: () => [{
           axes: [0, 0],
-          buttons: [{ pressed: false, value: 0 }],
+          buttons: Array.from({ length: 16 }, () => ({ pressed: false, value: 0 })),
           id: "Arcade Test Pad",
           index: 0,
         }],
@@ -603,82 +620,108 @@ test("Controls controller profiles persist and mappings reference saved profiles
       "Unknown or unavailable controller",
     ]);
 
-    await page.locator("[data-controller-device-select]").selectOption("keyboard");
-    await expect(page.locator("[data-controller-profile-device-type]")).toHaveValue("Keyboard");
-    await expect(page.locator("[data-controller-profile-name]")).toHaveValue("Keyboard");
-    await expect(page.locator("[data-controller-profile-id-value]")).toHaveValue("keyboard");
-    await expect(page.locator("[data-controller-profile-mapping]")).toHaveValue("Keyboard Profile");
-    await expect(page.locator("[data-controller-profile-status]")).toContainText("Keyboard selected.");
-    await page.locator("[data-controller-profile-cancel]").click();
-
-    await page.locator("[data-controller-device-select]").selectOption("mouse");
-    await expect(page.locator("[data-controller-profile-device-type]")).toHaveValue("Mouse");
-    await expect(page.locator("[data-controller-profile-name]")).toHaveValue("Mouse");
-    await expect(page.locator("[data-controller-profile-id-value]")).toHaveValue("mouse");
-    await expect(page.locator("[data-controller-profile-mapping]")).toHaveValue("Mouse Profile");
-    await page.locator("[data-controller-profile-cancel]").click();
-
     await page.locator("[data-controller-device-select]").selectOption("gamepad-0");
-    await expect(page.locator("[data-controller-profile-device-type]")).toHaveValue("Gamepad");
-    await expect(page.locator("[data-controller-profile-name]")).toHaveValue("Arcade Test Pad");
-    await expect(page.locator("[data-controller-profile-id-value]")).toHaveValue("Arcade Test Pad");
-    await expect(page.locator("[data-controller-profile-mapping]")).toHaveValue("Arcade Test Pad Profile");
-    await expect(page.locator("[data-controller-profile-inputs]")).toHaveValue("Button0, Axis0, Axis1");
-    await page.locator("[data-controller-profile-cancel]").click();
-
-    await page.locator("[data-controller-device-select]").selectOption("unavailable-controller");
-    await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown or unavailable controller.");
-    await expect(page.locator("[data-controller-profile-status]")).toContainText("refresh devices");
-    await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
+    await expect(page.locator("[data-controller-profile-editing-row]")).toHaveCount(0);
+    await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Using Default Gamepad Mapping");
+    await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Missing saved profile for this controller");
+    await expect(page.locator("[data-controller-profile-create-default]")).toBeVisible();
     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
-    const addProfile = page.locator("[data-controller-profile-add]");
-    await addProfile.click();
-    await expect(addProfile).toBeDisabled();
-    await page.locator("[data-controller-profile-name]").fill("Arcade Pad");
-    await page.locator("[data-controller-profile-id-value]").fill("usb-gamepad-123");
-    await page.locator("[data-controller-profile-mapping]").fill("Arcade Profile");
-    await page.locator("[data-controller-profile-inputs]").fill("Button0, Axis0+");
-    await page.locator("[data-controller-profile-actions]").fill("Fire, Move Right");
-    await page.locator("[data-controller-profile-save]").click();
-    await expect(addProfile).toBeEnabled();
-    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Pad");
-    await expect(page.locator("[data-controller-profile-list]")).toContainText("usb-gamepad-123");
-    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Profile");
-    await expect(page.locator("[data-controller-profile-status]")).toContainText("1 controller profile saved.");
+    await page.locator("[data-controller-profile-add]").click();
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad Profile");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Action Required");
+    await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Exact saved profile");
 
     let profiles = await controllerProfileRecords(page);
     expect(profiles).toHaveLength(1);
     expect(profiles[0]).toMatchObject({
-      actions: ["Fire", "Move Right"],
-      controllerId: "usb-gamepad-123",
-      controllerName: "Arcade Pad",
+      actions: [],
+      controllerId: "Arcade Test Pad",
+      controllerName: "Arcade Test Pad",
       deviceType: "Gamepad",
-      inputs: ["Button0", "Axis0+"],
-      mappingProfile: "Arcade Profile",
+      mappingProfile: "Arcade Test Pad Profile",
     });
+    expect(profiles[0].inputs).toEqual([
+      "Button0",
+      "Button1",
+      "Button2",
+      "Button3",
+      "Button4",
+      "Button5",
+      "Trigger Left",
+      "Trigger Right",
+      "Button8",
+      "Button9",
+      "Button10",
+      "Button11",
+      "DPad Up",
+      "DPad Down",
+      "DPad Left",
+      "DPad Right",
+      "Axis0",
+      "Axis1",
+    ]);
+
+    await page.locator("[data-controller-profile-save-actions]").click();
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("Action Required");
+    profiles = await controllerProfileRecords(page);
+    expect(profiles[0].actions).toEqual([]);
+
+    const inputActionSelects = page.locator("[data-controller-profile-input-action]");
+    const inputActionCount = await inputActionSelects.count();
+    expect(inputActionCount).toBe(profiles[0].inputs.length);
+    for (let index = 0; index < inputActionCount; index += 1) {
+      await inputActionSelects.nth(index).selectOption(index === 0 ? "fire" : "moveRight");
+    }
+    await page.locator("[data-controller-profile-save-actions]").click();
+    profiles = await controllerProfileRecords(page);
+    expect(profiles[0].actions).toHaveLength(profiles[0].inputs.length);
+    expect(profiles[0].actions[0]).toBe("fire");
+    expect(profiles[0].actions[1]).toBe("moveRight");
+
+    await page.locator("[data-controller-profile-trash]").click();
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
+    expect(await controllerProfileRecords(page)).toHaveLength(0);
+    await expect(page.locator("[data-controller-profile-create-default]")).toBeVisible();
+    await page.locator("[data-controller-profile-create-default]").click();
+    profiles = await controllerProfileRecords(page);
+    expect(profiles).toHaveLength(1);
+    expect(profiles[0].mappingProfile).toBe("Arcade Test Pad Profile");
+
+    await page.locator("[data-controller-device-select]").selectOption("unavailable-controller");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown or unavailable controller.");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("refresh devices");
+    await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Missing Mapping");
+    expect(profiles).toHaveLength(1);
 
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Profile");
+    await expect(page.locator("[data-input-mapping-accordion] summary")).toHaveText("Input Mapping");
+    await expect(page.locator("[data-controller-profile-accordion] summary")).toHaveText("Controller Profile");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad Profile");
     await page.evaluate(() => {
       Object.defineProperty(navigator, "getGamepads", {
         configurable: true,
         value: () => [{
           axes: [],
           buttons: [{ pressed: true, value: 1 }],
+          id: "Arcade Test Pad",
           index: 0,
         }],
       });
     });
+    await page.locator("[data-input-refresh-devices]").click();
+    await page.locator("[data-controller-device-select]").selectOption("gamepad-0");
+    await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Exact saved profile");
 
     await page.locator("[data-input-add-mapping]").click();
     await page.locator("[data-input-row-action]").selectOption("fire");
     await page.locator("[data-input-row-device]").selectOption("gamepad");
-    await page.locator("[data-input-row-profile]").selectOption({ label: "Arcade Profile" });
+    await page.locator("[data-input-row-profile]").selectOption({ label: "Arcade Test Pad Profile" });
     await page.locator("[data-input-row-capture-gamepad]").click();
     await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Gamepad Button0");
     await page.locator("[data-input-save-mapping]").click();
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Profile");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Test Pad Profile");
     await expect(page.locator("[data-input-token]")).toHaveText("Gamepad Button0");
 
     let records = await inputMappingRecords(page);
@@ -687,18 +730,76 @@ test("Controls controller profiles persist and mappings reference saved profiles
       action: "fire",
       binding: "Pad0:Button0",
       controllerProfileId: profiles[0].id,
-      mappingProfile: "Arcade Profile",
+      mappingProfile: "Arcade Test Pad Profile",
       source: "gamepad",
     });
 
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Profile");
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Profile");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad Profile");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Test Pad Profile");
     profiles = await controllerProfileRecords(page);
     records = await inputMappingRecords(page);
     expect(profiles).toHaveLength(1);
     expect(records).toHaveLength(1);
     expect(records[0].controllerProfileId).toBe(profiles[0].id);
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Controls persists custom Actions and exposes them in mapping dropdowns after reload", async ({ page }) => {
+  const failures = await openControlsPage(page);
+
+  try {
+    await seedHeroObject(page);
+    await page.reload({ waitUntil: "networkidle" });
+
+    await page.locator("[data-input-custom-action-name]").fill("Dash Burst");
+    await page.locator("[data-input-custom-action-add]").click();
+    await expect(page.locator("[data-input-custom-action-status]")).toHaveText("Dash Burst saved.");
+    await expect(page.locator("[data-input-action-catalog]")).toContainText("Dash Burst");
+    await expect(page.locator("[data-input-action-select]")).toContainText("Dash Burst");
+
+    let customActions = await customActionRecords(page);
+    expect(customActions).toHaveLength(1);
+    expect(customActions[0]).toMatchObject({
+      id: "custom-dash-burst",
+      label: "Dash Burst",
+    });
+
+    await page.locator("[data-input-object-select]").selectOption("hero");
+    await expect(page.locator("[data-input-action-select]")).toContainText("Dash Burst");
+    await page.locator("[data-input-action-select]").selectOption("custom-dash-burst");
+    await page.locator("[data-input-add-mapping]").click();
+    await expect(page.locator("[data-input-row-object]")).toHaveValue("hero");
+    await expect(page.locator("[data-input-row-action]")).toHaveValue("custom-dash-burst");
+    await page.locator("[data-input-row-capture-keyboard]").click();
+    await page.keyboard.press("KeyD");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Dash Burst");
+
+    let records = await inputMappingRecords(page);
+    expect(records).toHaveLength(1);
+    expect(records[0]).toMatchObject({
+      action: "custom-dash-burst",
+      actionLabel: "Dash Burst",
+      binding: "KeyD",
+      objectKey: "hero",
+      source: "keyboard",
+    });
+
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-input-action-catalog]")).toContainText("Dash Burst");
+    await expect(page.locator("[data-input-action-select]")).toContainText("Dash Burst");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Dash Burst");
+    await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyD");
+    customActions = await customActionRecords(page);
+    records = await inputMappingRecords(page);
+    expect(customActions).toHaveLength(1);
+    expect(records).toHaveLength(1);
 
     await expectNoPageFailures(failures);
   } finally {

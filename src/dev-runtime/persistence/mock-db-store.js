@@ -89,7 +89,7 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
   }),
   controls: Object.freeze({
     label: "Controls",
-    tableNames: Object.freeze(["input_mapping_records", "input_controller_profile_records"]),
+    tableNames: Object.freeze(["input_mapping_records", "input_controller_profile_records", "input_custom_action_records"]),
   }),
   "project-journey": Object.freeze({
     label: "Project Journey",
@@ -138,6 +138,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   object_definition_records: Object.freeze(["key", "id", "projectId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   input_mapping_records: Object.freeze(["key", "id", "projectId", "objectKey", "objectName", "action", "actionLabel", "inputDevice", "source", "binding", "label", "engine", "controllerProfileId", "mappingProfile", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   input_controller_profile_records: Object.freeze(["key", "id", "projectId", "deviceType", "controllerName", "controllerId", "mappingProfile", "inputs", "actions", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  input_custom_action_records: Object.freeze(["key", "id", "projectId", "label", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   project_journey_note_types: Object.freeze(["key", "typeSlug", "name", "seeded", "userExtensible", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   project_journey_notes: Object.freeze(["key", "slug", "projectKey", "ownerKey", "name", "typeKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   project_journey_templates: Object.freeze(["key", "templateSlug", "originalMeaning", "systemGuidance", "linkedToolContexts", "version", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),

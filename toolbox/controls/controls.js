@@ -70,6 +70,7 @@ let controlsRepository = createControlsToolApiRepository();
 let objectsRepository = createObjectsToolApiRepository();
 let mappings = [];
 let controllerProfiles = [];
+let customActions = [];
 let objectOptions = [];
 let editingRow = null;
 let profileEditingRow = null;
@@ -80,8 +81,13 @@ const elements = {
   addMapping: document.querySelector("[data-input-add-mapping]"),
   controllerDeviceSelect: document.querySelector("[data-controller-device-select]"),
   controllerProfileAdd: document.querySelector("[data-controller-profile-add]"),
+  controllerProfileCreateDefault: document.querySelector("[data-controller-profile-create-default]"),
+  controllerProfileFallbackStatus: document.querySelector("[data-controller-profile-fallback-status]"),
   controllerProfileList: document.querySelector("[data-controller-profile-list]"),
   controllerProfileStatus: document.querySelector("[data-controller-profile-status]"),
+  customActionAdd: document.querySelector("[data-input-custom-action-add]"),
+  customActionInput: document.querySelector("[data-input-custom-action-name]"),
+  customActionStatus: document.querySelector("[data-input-custom-action-status]"),
   defaultActions: document.querySelector("[data-input-default-actions]"),
   deviceCount: document.querySelector("[data-input-device-count]"),
   list: document.querySelector("[data-input-mapping-list]"),
@@ -133,8 +139,33 @@ function setText(element, value) {
   }
 }
 
+function normalizeCustomAction(source = {}) {
+  const label = normalizeText(source.label || source.actionLabel || source.action);
+  const idBase = keyFromText(source.id || label);
+  const id = idBase.startsWith("custom-") ? idBase : `custom-${idBase || Date.now()}`;
+  return {
+    description: "Custom action for this game.",
+    id,
+    label: label || id,
+  };
+}
+
+function actionCatalog() {
+  const byId = new Map(DEFAULT_ACTIONS.map((action) => [action.id, action]));
+  customActions.map(normalizeCustomAction).forEach((action) => {
+    byId.set(action.id, action);
+  });
+  return [...byId.values()].sort((left, right) =>
+    left.label.localeCompare(right.label, undefined, { sensitivity: "base" }),
+  );
+}
+
+function customActionIds() {
+  return customActions.map((action) => normalizeCustomAction(action).id);
+}
+
 function actionById(actionId) {
-  return DEFAULT_ACTIONS.find((action) => action.id === actionId) || DEFAULT_ACTIONS[0];
+  return actionCatalog().find((action) => action.id === actionId) || DEFAULT_ACTIONS[0];
 }
 
 function deviceBySource(source) {
@@ -174,8 +205,21 @@ function availableGamepads() {
 }
 
 function gamepadInputNames(gamepad) {
+  const dpadLabels = new Map([
+    [12, "DPad Up"],
+    [13, "DPad Down"],
+    [14, "DPad Left"],
+    [15, "DPad Right"],
+  ]);
+  const triggerLabels = new Map([
+    [6, "Trigger Left"],
+    [7, "Trigger Right"],
+  ]);
+  const buttonNames = gamepad.buttons.map((_, index) =>
+    dpadLabels.get(index) || triggerLabels.get(index) || `Button${index}`,
+  );
   return [
-    ...gamepad.buttons.map((_, index) => `Button${index}`),
+    ...buttonNames,
     ...gamepad.axes.map((_, index) => `Axis${index}`),
   ];
 }
@@ -220,6 +264,64 @@ function controllerDeviceOptions() {
   ];
 }
 
+function selectedControllerDevice() {
+  const selectedValue = elements.controllerDeviceSelect?.value || "";
+  return controllerDeviceOptions().find((candidate) => candidate.value === selectedValue) || null;
+}
+
+function exactProfileForDevice(device) {
+  if (!device || device.unavailable) {
+    return null;
+  }
+  return controllerProfiles.find((profile) =>
+    profile.deviceType === device.deviceType &&
+      profile.controllerId === device.controllerId &&
+      profile.mappingProfile === device.mappingProfile,
+  ) || null;
+}
+
+function profileFromDevice(device, source = "detected") {
+  const profile = normalizeControllerProfile({
+    actions: [],
+    controllerId: device.controllerId,
+    controllerName: device.controllerName,
+    deviceType: device.deviceType,
+    inputs: device.inputs,
+    mappingProfile: device.mappingProfile,
+  });
+  return {
+    ...profile,
+    source,
+  };
+}
+
+function renderControllerProfileFallback() {
+  const device = selectedControllerDevice();
+  if (elements.controllerProfileCreateDefault) {
+    elements.controllerProfileCreateDefault.hidden = true;
+  }
+  if (!elements.controllerProfileFallbackStatus) {
+    return;
+  }
+  if (!device || device.unavailable) {
+    setText(elements.controllerProfileFallbackStatus, "Missing Mapping. Missing saved profile for this controller.");
+    return;
+  }
+  const exactProfile = exactProfileForDevice(device);
+  if (exactProfile) {
+    setText(elements.controllerProfileFallbackStatus, `Exact saved profile: ${exactProfile.mappingProfile}`);
+    return;
+  }
+  if (device.deviceType === "Gamepad") {
+    setText(elements.controllerProfileFallbackStatus, "Using Default Gamepad Mapping. Missing saved profile for this controller.");
+    if (elements.controllerProfileCreateDefault) {
+      elements.controllerProfileCreateDefault.hidden = false;
+    }
+    return;
+  }
+  setText(elements.controllerProfileFallbackStatus, "Keyboard/Mouse Default");
+}
+
 function selectedObject() {
   const objectKey = elements.objectSelect?.value || "global";
   return objectOptions.find((object) => object.key === objectKey) || objectOptions[0];
@@ -242,26 +344,30 @@ function roleKeyForObject(object) {
 }
 
 function validActionIdsForObject(object) {
+  const addCustomActionIds = (ids) => {
+    customActionIds().forEach((actionId) => ids.add(actionId));
+    return ids;
+  };
   if (!object || object.key === "global") {
-    return new Set(OBJECT_ACTION_IDS.global);
+    return addCustomActionIds(new Set(OBJECT_ACTION_IDS.global));
   }
   const roleKey = roleKeyForObject(object);
   if (OBJECT_ACTION_IDS[roleKey] && roleKey !== "custom") {
-    return new Set(OBJECT_ACTION_IDS[roleKey]);
+    return addCustomActionIds(new Set(OBJECT_ACTION_IDS[roleKey]));
   }
   const ids = new Set(OBJECT_ACTION_IDS[roleKey] || []);
   normalizeList(object.capabilities).forEach((capability) => {
     (CAPABILITY_ACTION_IDS[capability] || []).forEach((actionId) => ids.add(actionId));
   });
   if (!ids.size) {
-    return new Set(OBJECT_ACTION_IDS.custom);
+    return addCustomActionIds(new Set(OBJECT_ACTION_IDS.custom));
   }
-  return ids;
+  return addCustomActionIds(ids);
 }
 
 function actionsForObject(object) {
   const validIds = validActionIdsForObject(object);
-  return DEFAULT_ACTIONS.filter((action) => validIds.has(action.id));
+  return actionCatalog().filter((action) => validIds.has(action.id));
 }
 
 function actionOptionsForObject(object) {
@@ -456,7 +562,7 @@ function inputLabel(source, binding) {
 }
 
 function payloadActions() {
-  return DEFAULT_ACTIONS.map((action) => {
+  return actionCatalog().map((action) => {
     const inputs = mappings
       .filter((mapping) => mapping.action === action.id && mapping.state === "Active")
       .map((mapping) => ({
@@ -504,6 +610,21 @@ function readControllerProfiles() {
   return Array.isArray(result) ? result.map(normalizeControllerProfile) : [];
 }
 
+function readCustomActions() {
+  if (typeof controlsRepository.listCustomActions !== "function") {
+    return [];
+  }
+  let result = controlsRepository.listCustomActions();
+  if (Array.isArray(result)) {
+    return result.map(normalizeCustomAction);
+  }
+  controlsRepository = createControlsToolApiRepository();
+  result = typeof controlsRepository.listCustomActions === "function"
+    ? controlsRepository.listCustomActions()
+    : [];
+  return Array.isArray(result) ? result.map(normalizeCustomAction) : [];
+}
+
 function saveMappings(nextMappings) {
   const normalizedMappings = nextMappings.map(normalizeMapping);
   let result = controlsRepository.replaceMappings(normalizedMappings);
@@ -532,6 +653,25 @@ function saveControllerProfiles(nextProfiles) {
     return true;
   }
   setText(elements.controllerProfileStatus, result?.message || "WARN: Controller profiles could not reach the shared DB adapter.");
+  return false;
+}
+
+function saveCustomActions(nextActions) {
+  const normalizedActions = nextActions.map(normalizeCustomAction);
+  if (typeof controlsRepository.replaceCustomActions !== "function") {
+    setText(elements.customActionStatus, "WARN: Custom actions could not reach the shared DB adapter.");
+    return false;
+  }
+  let result = controlsRepository.replaceCustomActions(normalizedActions);
+  if (!Array.isArray(result?.customActions) && result?.error) {
+    controlsRepository = createControlsToolApiRepository();
+    result = controlsRepository.replaceCustomActions(normalizedActions);
+  }
+  if (Array.isArray(result?.customActions)) {
+    customActions = result.customActions.map(normalizeCustomAction);
+    return true;
+  }
+  setText(elements.customActionStatus, result?.message || "WARN: Custom actions could not reach the shared DB adapter.");
   return false;
 }
 
@@ -576,7 +716,7 @@ function renderDefaults() {
   if (!elements.defaultActions) {
     return;
   }
-  elements.defaultActions.replaceChildren(...DEFAULT_ACTIONS.map((action) => {
+  elements.defaultActions.replaceChildren(...actionCatalog().map((action) => {
     const row = document.createElement("tr");
     row.dataset.inputActionCatalogRow = action.id;
     const labelCell = document.createElement("td");
@@ -593,6 +733,8 @@ function renderDefaults() {
     row.append(labelCell, descriptionCell);
     return row;
   }));
+  const suffix = customActions.length === 1 ? "custom action" : "custom actions";
+  setText(elements.customActionStatus, customActions.length ? `${customActions.length} ${suffix} saved.` : "Default actions loaded.");
 }
 
 function renderActionsAndObjects() {
@@ -619,6 +761,34 @@ function renderObjectSummary(object = selectedObject()) {
   setText(elements.objectSummaryActions, availableActions || "No actions available");
 }
 
+function addCustomAction() {
+  const action = normalizeCustomAction({ label: elements.customActionInput?.value || "" });
+  if (!normalizeText(elements.customActionInput?.value)) {
+    setText(elements.customActionStatus, "WARN: Add a Custom Action name before saving.");
+    return;
+  }
+  const exists = actionCatalog().some((candidate) =>
+    candidate.id === action.id ||
+      candidate.label.toLowerCase() === action.label.toLowerCase(),
+  );
+  if (exists) {
+    setText(elements.customActionStatus, `${action.label} already exists.`);
+    return;
+  }
+  if (!saveCustomActions([...customActions, action])) {
+    return;
+  }
+  if (elements.customActionInput) {
+    elements.customActionInput.value = "";
+  }
+  renderAll(`Saved ${action.label} custom action.`);
+  if (elements.actionSelect && actionOptionsForObject(selectedObject()).some((option) => option.value === action.id)) {
+    elements.actionSelect.value = action.id;
+    renderObjectSummary(selectedObject());
+  }
+  setText(elements.customActionStatus, `${action.label} saved.`);
+}
+
 function renderControllerDeviceSelect(selectedValue = elements.controllerDeviceSelect?.value || "") {
   renderSelect(
     elements.controllerDeviceSelect,
@@ -628,6 +798,7 @@ function renderControllerDeviceSelect(selectedValue = elements.controllerDeviceS
     ],
     selectedValue,
   );
+  renderControllerProfileFallback();
 }
 
 function renderControllerProfileStatus() {
@@ -642,6 +813,25 @@ function renderControllerProfileStatus() {
   elements.controllerProfileStatus.textContent = `${controllerProfiles.length} controller ${suffix} saved. Unknown controllers still need Add Profile before mappings use them.`;
 }
 
+function profileInputActionControl(profile, inputName, index) {
+  const wrapper = document.createElement("label");
+  wrapper.className = "content-stack content-stack--compact";
+  const label = document.createElement("span");
+  label.textContent = inputName;
+  const select = selectControl({
+    ariaLabel: `${inputName} Action`,
+    options: [
+      { label: "Action Required", value: "" },
+      ...actionOptions(actionCatalog()),
+    ],
+    selectedValue: profile.actions[index] || "",
+  });
+  select.dataset.controllerProfileInputAction = profile.id;
+  select.dataset.controllerProfileInputIndex = String(index);
+  wrapper.append(label, select);
+  return wrapper;
+}
+
 function renderControllerProfileRow(profile) {
   const row = document.createElement("tr");
   row.dataset.controllerProfileRow = profile.id;
@@ -652,7 +842,22 @@ function renderControllerProfileRow(profile) {
     tableCell(profile.mappingProfile),
     tableCell(listLabel(profile.inputs)),
   );
-  const actionsCell = tableCell(listLabel(profile.actions));
+  const actionsCell = document.createElement("td");
+  const actionControls = document.createElement("div");
+  actionControls.className = "content-stack content-stack--compact";
+  if (profile.inputs.length) {
+    actionControls.append(...profile.inputs.map((inputName, index) =>
+      profileInputActionControl(profile, inputName, index),
+    ));
+  } else {
+    const required = document.createElement("p");
+    required.className = "status";
+    required.textContent = "Action Required";
+    actionControls.append(required);
+  }
+  const saveActions = actionButton("Save Actions", "controllerProfileSaveActions", profile.id);
+  actionControls.append(saveActions);
+  actionsCell.append(actionControls);
   const group = document.createElement("div");
   group.className = "action-group action-group--tight";
   group.append(
@@ -724,7 +929,7 @@ function renderControllerProfiles() {
   if (!rows.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 7;
+    cell.colSpan = 6;
     cell.textContent = "No controller profiles saved yet.";
     row.append(cell);
     rows.push(row);
@@ -734,6 +939,7 @@ function renderControllerProfiles() {
     elements.controllerProfileAdd.disabled = Boolean(profileEditingRow);
   }
   renderControllerProfileStatus();
+  renderControllerProfileFallback();
 }
 
 function renderDiagnostics(message = "") {
@@ -1003,6 +1209,7 @@ function renderMappings() {
 function renderAll(message = "") {
   objectOptions = readObjectOptions();
   controllerProfiles = readControllerProfiles();
+  customActions = readCustomActions();
   mappings = readMappings();
   renderActionsAndObjects();
   renderDefaults();
@@ -1266,6 +1473,33 @@ function saveControllerProfileEditingRow() {
   renderAll(`Saved ${profile.mappingProfile} controller profile.`);
 }
 
+function saveControllerProfileInputActions(profileId) {
+  const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
+  const row = elements.controllerProfileList?.querySelector(`[data-controller-profile-row="${CSS.escape(profileId)}"]`);
+  if (!profile || !row) {
+    return;
+  }
+  const actions = profile.inputs.map((_, index) =>
+    normalizeText(row.querySelector(`[data-controller-profile-input-index="${index}"]`)?.value),
+  );
+  const nextProfile = normalizeControllerProfile({
+    ...profile,
+    actions,
+  });
+  if (!actions.every(Boolean)) {
+    setText(elements.controllerProfileStatus, "Action Required: assign an Action to each generated profile input before using this profile.");
+    return;
+  }
+  if (!saveControllerProfiles(controllerProfiles.map((candidate) =>
+    candidate.id === profileId ? nextProfile : candidate,
+  ))) {
+    controllerProfiles = readControllerProfiles();
+    renderControllerProfiles();
+    return;
+  }
+  renderAll(`Saved actions for ${nextProfile.mappingProfile}.`);
+}
+
 function editControllerProfile(profileId) {
   const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
   if (!profile) {
@@ -1279,30 +1513,47 @@ function editControllerProfile(profileId) {
   setText(elements.controllerProfileStatus, `Editing ${profile.mappingProfile} controller profile.`);
 }
 
+function addProfileForDevice(device, source = "detected") {
+  if (!device || device.unavailable) {
+    setText(
+      elements.controllerProfileStatus,
+      "WARN: Unknown or unavailable controller. Connect the device, press a button, refresh devices, then select the detected controller before saving a profile.",
+    );
+    renderControllerProfileFallback();
+    return;
+  }
+  const existingProfile = exactProfileForDevice(device);
+  if (existingProfile) {
+    setText(elements.controllerProfileStatus, `Exact saved profile: ${existingProfile.mappingProfile}`);
+    renderControllerProfileFallback();
+    return;
+  }
+  const profile = profileFromDevice(device, source);
+  if (!saveControllerProfiles([profile, ...controllerProfiles])) {
+    controllerProfiles = readControllerProfiles();
+    renderControllerProfiles();
+    return;
+  }
+  profileEditingRow = null;
+  renderAll(`${profile.mappingProfile} saved. Action Required for generated profile inputs.`);
+}
+
 function selectControllerDevice(value) {
   const device = controllerDeviceOptions().find((candidate) => candidate.value === value);
   if (!device || device.unavailable) {
     profileEditingRow = null;
     renderControllerProfiles();
+    renderControllerProfileFallback();
     setText(
       elements.controllerProfileStatus,
       "WARN: Unknown or unavailable controller. Connect the device, press a button, refresh devices, then select the detected controller before saving a profile.",
     );
     return;
   }
-  profileEditingRow = {
-    id: "",
-    values: {
-      actions: [selectedAction().label],
-      controllerId: device.controllerId,
-      controllerName: device.controllerName,
-      deviceType: device.deviceType,
-      inputs: device.inputs,
-      mappingProfile: device.mappingProfile,
-    },
-  };
+  profileEditingRow = null;
   renderControllerProfiles();
-  setText(elements.controllerProfileStatus, `${device.label} selected. Review and save this controller profile when ready.`);
+  renderControllerProfileFallback();
+  setText(elements.controllerProfileStatus, `${device.label} selected. Use Add Profile to save a controller profile for this device.`);
 }
 
 function deleteControllerProfile(profileId) {
@@ -1402,6 +1653,8 @@ function handleControllerProfileClick(event) {
   }
   if (target.dataset.controllerProfileSave !== undefined) {
     saveControllerProfileEditingRow();
+  } else if (target.dataset.controllerProfileSaveActions !== undefined) {
+    saveControllerProfileInputActions(target.dataset.controllerProfileSaveActions || "");
   } else if (target.dataset.controllerProfileCancel !== undefined) {
     profileEditingRow = null;
     renderControllerProfiles();
@@ -1430,6 +1683,7 @@ function init() {
   showWorkspaceReturnIfNeeded();
   objectOptions = readObjectOptions();
   controllerProfiles = readControllerProfiles();
+  customActions = readCustomActions();
   mappings = readMappings();
   renderActionsAndObjects();
   renderDefaults();
@@ -1464,19 +1718,20 @@ function init() {
     setText(elements.statusLog, "Add a mapping row.");
   });
   elements.controllerProfileAdd?.addEventListener("click", () => {
-    profileEditingRow = {
-      id: "",
-      values: {
-        actions: [selectedAction().label],
-        deviceType: "Gamepad",
-        inputs: [],
-      },
-    };
-    renderControllerProfiles();
-    setText(elements.controllerProfileStatus, "Add a controller profile row.");
+    addProfileForDevice(selectedControllerDevice(), "detected");
+  });
+  elements.controllerProfileCreateDefault?.addEventListener("click", () => {
+    addProfileForDevice(selectedControllerDevice(), "default-gamepad");
+  });
+  elements.customActionAdd?.addEventListener("click", addCustomAction);
+  elements.customActionInput?.addEventListener("keydown", (event) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      addCustomAction();
+    }
   });
   elements.resetMappings?.addEventListener("click", () => {
-    if (!window.confirm("Reset all input mappings?")) {
+    if (!window.confirm("This will delete all Mappings, are you sure?")) {
       setText(elements.statusLog, "Reset canceled.");
       return;
     }
@@ -1489,6 +1744,7 @@ function init() {
     renderControllerDeviceSelect();
     renderDiagnostics("Device diagnostics refreshed.");
     renderControllerProfileStatus();
+    renderControllerProfileFallback();
   });
   elements.controllerProfileList?.addEventListener("click", handleControllerProfileClick);
   elements.list?.addEventListener("click", handleListClick);

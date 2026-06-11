@@ -1,20 +1,10 @@
-# git status --short
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M tests/playwright/tools/InputMappingV2Tool.spec.mjs
- M toolbox/controls/controls.js
- M toolbox/controls/index.html
-?? docs_build/dev/reports/controls-object-action-mapping-validation-report.md
-
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/controls-object-action-mapping-validation-report.md
-
-# git diff --stat (excluding review artifact files)
- .../dev/reports/coverage_changed_js_guardrail.txt  |   2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   8 +-
- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 220 +++++++++++++++++++++
- toolbox/controls/controls.js                       | 205 +++++++++++++++++--
- toolbox/controls/index.html                        |   5 +
- 5 files changed, 416 insertions(+), 24 deletions(-)
+docs_build/dev/reports/controls-controller-profile-generation-report.md
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+src/dev-runtime/persistence/mock-db-store.js
+src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+tests/playwright/tools/InputMappingV2Tool.spec.mjs
+toolbox/controls/controls.js
+toolbox/controls/index.html
