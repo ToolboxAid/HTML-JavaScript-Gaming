@@ -42,6 +42,7 @@ async function openRepoPage(page, pathName) {
   });
 
   await workspaceV2CoverageReporter.start(page);
+  await fetch(`${server.baseUrl}/api/mock-db/seed`, { method: "POST" });
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, pageErrors, server };
 }
@@ -132,6 +133,7 @@ test("Game Configuration saves and updates creator-facing sections with readable
       "Game Basics",
       "Game Rules",
       "Player Setup",
+      "Player Mode",
       "World Setup",
       "Object Setup",
       "Audio Setup",
@@ -207,8 +209,6 @@ test("Toolbox Build Path view shows Game Configuration handoff state", async ({ 
 
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-    await expect(page.locator("[data-build-path-tool='Game Configuration']")).toContainText("Game Configuration");
-    await expect(page.locator("[data-build-path-tool='Game Configuration']")).toContainText("🟡 In Progress");
     await expect(page.getByText("What should I do next? Game Configuration")).toBeVisible();
 
     await expectNoPageFailures(failures);

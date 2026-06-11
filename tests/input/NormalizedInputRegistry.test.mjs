@@ -33,6 +33,7 @@ function testRegistryContainsPlayableNormalizedInputs() {
     'action.quaternary',
     'action.confirm',
     'action.cancel',
+    'action.menu',
     'action.start',
     'action.select',
     'action.pause',

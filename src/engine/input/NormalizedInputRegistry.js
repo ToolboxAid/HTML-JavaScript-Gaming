@@ -20,6 +20,7 @@ export const NORMALIZED_INPUT_REGISTRY = Object.freeze([
     Object.freeze({ id: 'action.quaternary', label: 'action.quaternary', kind: 'action' }),
     Object.freeze({ id: 'action.confirm', label: 'action.confirm', kind: 'action' }),
     Object.freeze({ id: 'action.cancel', label: 'action.cancel', kind: 'action' }),
+    Object.freeze({ id: 'action.menu', label: 'action.menu', kind: 'action' }),
     Object.freeze({ id: 'action.start', label: 'action.start', kind: 'action' }),
     Object.freeze({ id: 'action.select', label: 'action.select', kind: 'action' }),
     Object.freeze({ id: 'action.pause', label: 'action.pause', kind: 'action' }),

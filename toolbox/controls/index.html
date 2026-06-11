@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Controls</div>
                 <h1>Controls</h1>
-                <p class="lede">Map physical inputs to normalized inputs, then map normalized inputs to game actions.</p>
+                <p class="lede">Define project-owned game controls with generic normalized controls and creator-facing usage labels.</p>
                 <p><a class="btn btn--compact" href="/toolbox/project-workspace/index.html" hidden data-input-return-workspace>Return to Workspace</a></p>
             </div>
         </section>
@@ -31,33 +31,47 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Actions</summary>
+                                <summary>Normalized Controls</summary>
                                 <div class="accordion-body content-stack">
-                                    <table class="data-table" aria-label="Controls action catalog" data-input-action-catalog>
+                                    <table class="data-table" aria-label="Normalized controls catalog" data-input-action-catalog>
                                         <thead>
                                             <tr>
-                                                <th>Action Name</th>
+                                                <th>Normalized Action Type</th>
                                                 <th>Description</th>
                                             </tr>
                                         </thead>
                                         <tbody data-input-default-actions></tbody>
                                     </table>
-                                    <div class="content-cluster" aria-label="Custom action creation">
-                                        <label>
-                                            Custom Action
-                                            <input type="text" data-input-custom-action-name placeholder="Dash">
-                                        </label>
-                                        <button class="btn" type="button" data-input-custom-action-add>Add Action</button>
+                                    <p class="status" role="status" data-input-custom-action-status>Normalized control types loaded.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Presets</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="content-cluster" aria-label="Game control presets">
+                                        <button class="btn btn--compact" type="button" data-input-preset="platformer">Platformer</button>
+                                        <button class="btn btn--compact" type="button" data-input-preset="shooter">Shooter</button>
+                                        <button class="btn btn--compact" type="button" data-input-preset="paddle-ball">Paddle / Ball</button>
+                                        <button class="btn btn--compact" type="button" data-input-preset="menu">Menu</button>
+                                        <button class="btn btn--compact" type="button" data-input-preset="vehicle">Vehicle</button>
+                                        <button class="btn btn--compact" type="button" data-input-preset="fighting">Fighting</button>
+                                        <button class="btn btn--compact" type="button" data-input-preset="party-arena">Party / Arena</button>
                                     </div>
-                                    <p class="status" role="status" data-input-custom-action-status>Default actions loaded.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Supported Control Types</summary>
+                                <div class="accordion-body content-stack">
+                                    <ul data-input-control-type-list></ul>
+                                    <a class="btn btn--compact" href="/account/user-controls.html" data-account-user-controls-link>Open Account User Controls</a>
                                 </div>
                             </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Game Input Mapping</h2>
-                        <p>Map normalized inputs to game actions, objects, and mapping state.</p>
+                        <h2>Game Controls</h2>
+                        <p>Map fixed normalized action types to game usage labels, objects, and gameplay event fields.</p>
                         <div class="grid cols-3" aria-label="Input mapping summary">
                             <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
                             <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
@@ -71,17 +85,23 @@
                                         <div class="accordion-body content-stack">
                                             <div>
                                                 <div class="kicker">Game Input Mapping</div>
-                                                <h3>Game Input Mapping</h3>
+                                                <h3>Game Controls</h3>
                                             </div>
                                             <p class="status" data-input-state-explanation>State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.</p>
                                             <div class="table-wrapper">
                                                 <table class="data-table" aria-label="Game controls" data-input-mapping-table>
                                                     <thead>
                                                         <tr>
-                                                            <th>Normalized Input</th>
+                                                            <th>Enabled</th>
+                                                            <th>Normalized Action Type</th>
+                                                            <th>Usage Label</th>
                                                             <th>Input Family</th>
-                                                            <th>Input Event</th>
-                                                            <th>Game Action</th>
+                                                            <th>D</th>
+                                                            <th>H</th>
+                                                            <th>U</th>
+                                                            <th>DC</th>
+                                                            <th>Drag</th>
+                                                            <th>Axis</th>
                                                             <th>Object</th>
                                                             <th>State</th>
                                                             <th>Actions</th>
@@ -90,7 +110,7 @@
                                                     <tbody data-input-mapping-list></tbody>
                                                     <tfoot>
                                                         <tr>
-                                                            <td colspan="7">
+                                                            <td colspan="13">
                                                                 <div class="content-split" data-input-mapping-table-footer>
                                                                     <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
                                                                         <button class="btn" type="button" data-input-add-mapping>Add Game Control</button>
@@ -98,7 +118,7 @@
                                                                     </div>
                                                                     <div class="action-group action-group--end" aria-label="Mapping creation selections" data-input-selected-context>
                                                                         <label>
-                                                                            Action
+                                                                            Normalized Action Type
                                                                             <select data-input-action-select></select>
                                                                         </label>
                                                                         <label>
@@ -110,58 +130,13 @@
                                                                 <div class="content-stack content-stack--compact" data-input-object-summary>
                                                                     <p>Selected Object: <span data-input-object-summary-name>Global</span></p>
                                                                     <p>Object Role/Template: <span data-input-object-summary-role>Global</span></p>
-                                                                    <p>Available Actions: <span data-input-object-summary-actions>All actions</span></p>
+                                                                    <p>Available Normalized Controls: <span data-input-object-summary-actions>All normalized controls</span></p>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                     </tfoot>
                                                 </table>
                                             </div>
-                                        </div>
-                                    </details>
-                                    <details class="vertical-accordion" open data-controller-profile-accordion>
-                                        <summary>Player Input Mapping</summary>
-                                        <div class="accordion-body content-stack" data-controller-profile-planning>
-                                            <div>
-                                                <div class="kicker">Player Input Mapping</div>
-                                                <h3>Player Input Mapping</h3>
-                                            </div>
-                                            <p>Map physical inputs to normalized inputs before game actions are assigned.</p>
-                                            <div class="content-cluster" aria-label="Physical controller selection" data-controller-device-selection>
-                                                <button class="btn" type="button" data-input-refresh-devices>Refresh Devices</button>
-                                                <label>
-                                                    Physical Controller
-                                                    <select data-controller-device-select></select>
-                                                </label>
-                                                <button class="btn" type="button" data-controller-profile-create-default hidden>Create My Controller Profile</button>
-                                            </div>
-                                            <p class="status" role="status" data-controller-profile-fallback-status>Missing Controller Profile</p>
-                                            <div class="table-wrapper">
-                                                <table class="data-table" aria-label="Player input mappings" data-controller-profile-table>
-                                                    <thead>
-                                                        <tr>
-                                                            <th>Physical Controller</th>
-                                                            <th>Physical Input</th>
-                                                            <th>Normalized Input</th>
-                                                            <th>Deadzone</th>
-                                                            <th>Invert</th>
-                                                            <th>Actions</th>
-                                                        </tr>
-                                                    </thead>
-                                                    <tbody data-controller-profile-list></tbody>
-                                                    <tfoot>
-                                                        <tr>
-                                                            <td colspan="6">
-                                                                <div class="content-cluster" aria-label="Controller profile table actions">
-                                                                    <button class="btn" type="button" data-controller-profile-add>Create My Controller Profile</button>
-                                                                </div>
-                                                            </td>
-                                                        </tr>
-                                                    </tfoot>
-                                                </table>
-                                            </div>
-                                            <p>Physical inputs route through normalized inputs before Game Input Mapping assigns game actions.</p>
-                                            <p class="status" role="status" data-controller-profile-status>Missing Controller Profile. Refresh Devices, select a physical controller, then create a player input mapping.</p>
                                         </div>
                                     </details>
                                 </div>
@@ -176,7 +151,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Devices</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" data-input-device-guidance>Press a button on the controller, then refresh Physical Controller.</p>
+                                    <p class="status" data-input-device-guidance>Physical controller setup belongs in Account User Controls. Game Controls stays generic and project-owned.</p>
                                     <ul data-input-source-diagnostics></ul>
                                 </div>
                             </details>

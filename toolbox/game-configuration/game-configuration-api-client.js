@@ -7,6 +7,7 @@ import {
 const constants = readServerToolConstants("game-configuration");
 
 export const GAME_CONFIGURATION_SECTIONS = Object.freeze(requireServerConstant(constants, "GAME_CONFIGURATION_SECTIONS", "game-configuration"));
+export const GAME_CONFIGURATION_PLAYER_MODES = Object.freeze(requireServerConstant(constants, "GAME_CONFIGURATION_PLAYER_MODES", "game-configuration"));
 
 export function createGameConfigurationApiRepository(options = {}) {
   return createServerRepositoryClient("game-configuration", options);

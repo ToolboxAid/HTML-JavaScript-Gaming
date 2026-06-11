@@ -1,24 +1,24 @@
 # Incremental Validation Report
 
-Generated: 2026-06-07T16:34:39.392Z
+Generated: 2026-06-11T16:06:41.261Z
 Status: PASS
 
 ## Reuse Summary
 
-Reused manifests: 0
+Reused manifests: 1
 Invalidated manifests: 0
 Generated manifests: 0
 Skipped manifests: 0
-Prevented lane regeneration: 0
-Prevented discovery scans: 0
-Prevented helper resolution passes: 0
+Prevented lane regeneration: 1
+Prevented discovery scans: 1
+Prevented helper resolution passes: 4
 Prevented fixture resolution passes: 0
 
 ## Incremental Decisions
 
 | Lane | Decision | Invalidated By | Runtime Savings Observation |
 | --- | --- | --- | --- |
-| none | SKIP | none | No incremental validation decisions were recorded. |
+| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
 
 ## Invalidation Rules
 

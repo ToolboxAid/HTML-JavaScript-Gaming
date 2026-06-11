@@ -38,6 +38,7 @@ import {
   validatePaletteSwatchInput,
 } from "../persistence/tool-repositories/palette-workspace-repository.js";
 import {
+  GAME_CONFIGURATION_PLAYER_MODES,
   GAME_CONFIGURATION_SECTIONS,
   createGameConfigurationMockRepository,
 } from "../persistence/tool-repositories/game-configuration-mock-repository.js";
@@ -617,8 +618,9 @@ function gameConfigurationTables(repository) {
       ...snapshotAuditFields(index + 180, MOCK_DB_KEYS.users.user1),
       key: record.key,
       projectKey: workspaceProjectKey(record.projectKey || record.projectId),
-      status: record.readinessStatus || "Ready",
-      summary: [
+      playerMode: record.playerMode || "1 Player",
+      status: record.status || record.readinessStatus || "Ready",
+      summary: record.gameBasics || [
         record.sceneTemplate,
         record.inputProfile,
         record.physicsProfile,
@@ -1485,7 +1487,10 @@ class LocalDevMockDataSource {
       };
     }
     if (toolId === "game-configuration") {
-      return { GAME_CONFIGURATION_SECTIONS };
+      return {
+        GAME_CONFIGURATION_PLAYER_MODES,
+        GAME_CONFIGURATION_SECTIONS,
+      };
     }
     if (toolId === "objects") {
       return {

@@ -116,6 +116,7 @@
         "account-profile": "account/profile.html",
         "account-preferences": "account/preferences.html",
         "account-security": "account/security.html",
+        "account-user-controls": "account/user-controls.html",
         "account-achievements": "account/achievements.html",
         branding: "admin/branding.html",
         controls: "admin/controls.html",

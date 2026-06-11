@@ -1,13 +1,13 @@
 # Static Validation Report
 
-Generated: 2026-06-07T16:34:39.382Z
+Generated: 2026-06-11T16:06:41.249Z
 Status: PASS
-Static only: Yes
+Static only: No
 Dry run: No
 
 ## Requested Lanes
 
-- none
+- workspace-contract
 
 ## Prevented Launches
 
@@ -18,16 +18,16 @@ Reason: No deterministic static validation failure was found.
 
 | Check | Status | Details |
 | --- | --- | --- |
-| lane ownership and file placement | SKIP | No selected lane requires Playwright structure audit. |
-| invalid filename detection | SKIP | Covered by Playwright structure audit. |
-| missing import detection | SKIP | Covered by Playwright structure audit relative import checks. |
+| lane ownership and file placement | PASS | Playwright structure audit passed. |
+| invalid filename detection | PASS | Covered by Playwright structure audit. |
+| missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
 | missing fixture detection | PASS | No missing fixture findings. |
-| targeted file manifests | PASS | No lane manifests generated. |
-| persistent lane manifests | PASS | No persistent manifest events. |
-| lane warm-start reuse | PASS | No warm-start events. |
-| dependency hydration reuse | PASS | No hydration events. |
+| targeted file manifests | PASS | workspace-contract:700e185462b7d8f1 |
+| persistent lane manifests | PASS | workspace-contract:REUSED |
+| lane warm-start reuse | PASS | workspace-contract:REUSED |
+| dependency hydration reuse | PASS | workspace-contract:REUSED |
 | lane input graph expansion | PASS | No inputs escaped manifest scope. |
-| scoped discovery targets | PASS | No Playwright discovery targets selected. |
+| scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
 | broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
 | invalid lane target detection | PASS | No invalid lane target findings. |
 | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |

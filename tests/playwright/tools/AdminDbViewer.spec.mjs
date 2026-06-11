@@ -400,6 +400,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Game Configuration\./);
     await expect(page.locator("[data-admin-db-table='game_configuration_records']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='game_configuration_records'] thead")).toContainText("summary");
+    await expect(page.locator("[data-admin-db-table='game_configuration_records'] thead")).toContainText("playerMode");
 
     await page.getByRole("button", { name: "Controls" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Controls\./);
@@ -407,7 +408,10 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='player_controller_profiles']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("gameAction");
     await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("inputFamily");
-    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("inputEventPhase");
+    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("usageLabel");
+    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("eventD");
+    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("eventU");
+    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).not.toContainText("inputEventPhase");
     await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).not.toContainText("binding");
     await expect(page.locator("[data-admin-db-table='player_controller_profiles'] thead")).toContainText("controllerId");
     await expect(page.locator("[data-admin-db-table='player_controller_profiles'] thead")).not.toContainText("gameAction");

@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Account User Controls - GameFoundryStudio</title>
+    <meta name="description" content="Map personal physical controls to generic normalized controls.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+</head>
+
+<body>
+    <div data-partial="header-nav"></div>
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Account</div>
+                <h1>Account User Controls</h1>
+                <p class="lede">Map your physical keyboard, mouse, gamepad, joystick, controller, or touch controls to generic normalized controls.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container account-panel">
+                <aside class="side-menu" aria-label="Account pages">
+                    <a href="index.html">Account Home</a>
+                    <a href="achievements.html">Achievements</a>
+                    <a href="preferences.html">Preferences</a>
+                    <a href="profile.html">Profile</a>
+                    <a href="security.html">Security</a>
+                    <a class="active" href="user-controls.html">User Controls</a>
+                </aside>
+                <div class="card">
+                    <div class="card-body content-stack">
+                        <div>
+                            <div class="kicker">Account User Controls</div>
+                            <h2>Physical Input Mapping</h2>
+                            <p>Account User Controls resolves physical input to normalized controls. Game behavior stays in Game Controls.</p>
+                        </div>
+                        <div class="content-cluster" aria-label="Account controller device selection">
+                            <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
+                            <label>
+                                Physical Controller
+                                <select data-account-user-controls-device></select>
+                            </label>
+                            <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
+                        </div>
+                        <p class="status" role="status" data-account-user-controls-device-status>Refresh devices, choose a physical controller, then create a user control profile.</p>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
+                                <thead>
+                                    <tr>
+                                        <th>Physical Controller</th>
+                                        <th>Physical Input</th>
+                                        <th>Normalized Control</th>
+                                        <th>Deadzone</th>
+                                        <th>Invert</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-account-user-controls-list></tbody>
+                            </table>
+                        </div>
+                        <details class="vertical-accordion" open>
+                            <summary>Supported Control Types</summary>
+                            <div class="accordion-body">
+                                <ul data-account-user-controls-types></ul>
+                            </div>
+                        </details>
+                        <details class="vertical-accordion" open>
+                            <summary>Status</summary>
+                            <div class="accordion-body">
+                                <div class="status" role="status" data-account-user-controls-status>Account User Controls ready.</div>
+                            </div>
+                        </details>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="user-controls.js"></script>
+</body>
+
+</html>

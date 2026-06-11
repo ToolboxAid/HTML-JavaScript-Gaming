@@ -1,14 +1,18 @@
 {
   "commandsHash": "39e16c9d480a1e51",
   "dependencies": [],
-  "dependencyGraphHash": "e6c1dfc842cef2a3",
+  "dependencyGraphHash": "94cfa45ea513c04a",
   "fileHashes": {
-    "tests/helpers/playwrightRepoServer.mjs": "5ca6bf7f3e5e7c2d",
+    "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+    "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+    "src/dev-runtime/persistence/mock-db-store.js": "c33037404771deea",
+    "src/dev-runtime/server/mock-api-router.mjs": "6692cc50e03bbe4c",
+    "tests/helpers/playwrightRepoServer.mjs": "654bc59251c146da",
     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-    "tests/helpers/playwrightV8CoverageReporter.mjs": "5fdc920c362b28b5",
+    "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
     "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "9055c4ffcc25bd5c",
-    "toolbox/toolRegistry.js": "25430f68dcca6613"
+    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "28c0a33526c9122d",
+    "toolbox/toolRegistry.js": "c2e9f1baeb21da28"
   },
   "fixtures": [],
   "helpers": [
@@ -18,21 +22,25 @@
     "tests/helpers/workspaceV2CoverageReporter.mjs"
   ],
   "imports": [
+    "src/dev-runtime/admin/admin-notes-directory.mjs",
+    "src/dev-runtime/admin/admin-notes-menu.mjs",
+    "src/dev-runtime/persistence/mock-db-store.js",
+    "src/dev-runtime/server/mock-api-router.mjs",
     "tests/helpers/playwrightRepoServer.mjs",
     "tests/helpers/playwrightStorageIsolation.mjs",
     "tests/helpers/playwrightV8CoverageReporter.mjs",
     "tests/helpers/workspaceV2CoverageReporter.mjs",
     "toolbox/toolRegistry.js"
   ],
-  "inputHash": "f89c15846a5cd456",
+  "inputHash": "44b266ccad7e8f4e",
   "lane": "workspace-contract",
   "laneDefinitionHash": "fcd48dbd6ff3f609",
-  "manifestHash": "f1160d4d69aec79b",
+  "manifestHash": "700e185462b7d8f1",
   "ownership": "tools",
   "tests": [
     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-06-05T20:50:48.629Z",
+  "generatedAt": "2026-06-11T15:54:47.702Z",
   "source": "generated"
 }

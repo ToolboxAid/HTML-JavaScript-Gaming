@@ -7,12 +7,17 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
-(94%) toolbox/controls/controls.js - executed lines 1509/1509; executed functions 160/171
-(96%) src/engine/input/NormalizedInputRegistry.js - executed lines 284/284; executed functions 27/28
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(60%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 604/604; executed functions 31/52
+(80%) src/engine/input/NormalizedInputRegistry.js - executed lines 285/285; executed functions 20/25
+(83%) toolbox/controls/controls.js - executed lines 914/914; executed functions 78/94
+(100%) toolbox/game-configuration/game-configuration-api-client.js - executed lines 11/11; executed functions 2/2
+(100%) toolbox/game-configuration/game-configuration.js - executed lines 193/193; executed functions 22/22
 
 Guardrail warnings:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(32%) src/engine/input/InputService.js - WARNING: advisory low coverage below 50%; executed lines 451/451; executed functions 21/66
+(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

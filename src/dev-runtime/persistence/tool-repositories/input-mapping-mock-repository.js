@@ -67,6 +67,50 @@ function normalizeList(value) {
     .filter(Boolean);
 }
 
+function legacyEventFields(record = {}) {
+  const phase = normalizeText(record.inputEventPhase);
+  if (phase === "Release") {
+    return {
+      eventAxis: false,
+      eventD: false,
+      eventDC: false,
+      eventDrag: false,
+      eventH: false,
+      eventU: true,
+    };
+  }
+  if (phase === "Press" || phase === "Down") {
+    return {
+      eventAxis: false,
+      eventD: true,
+      eventDC: false,
+      eventDrag: false,
+      eventH: false,
+      eventU: false,
+    };
+  }
+  return {
+    eventAxis: false,
+    eventD: true,
+    eventDC: false,
+    eventDrag: false,
+    eventH: false,
+    eventU: false,
+  };
+}
+
+function normalizedEventFields(source = {}) {
+  const legacy = legacyEventFields(source);
+  return {
+    eventAxis: source.eventAxis === undefined ? legacy.eventAxis : Boolean(source.eventAxis),
+    eventD: source.eventD === undefined ? legacy.eventD : Boolean(source.eventD),
+    eventDC: source.eventDC === undefined ? legacy.eventDC : Boolean(source.eventDC),
+    eventDrag: source.eventDrag === undefined ? legacy.eventDrag : Boolean(source.eventDrag),
+    eventH: source.eventH === undefined ? legacy.eventH : Boolean(source.eventH),
+    eventU: source.eventU === undefined ? legacy.eventU : Boolean(source.eventU),
+  };
+}
+
 function normalizeProfileInputMappings(value) {
   return (Array.isArray(value) ? value : []).map((mapping) => ({
     deadzone: Number.isFinite(Number(mapping?.deadzone)) ? Number(mapping.deadzone) : 0.2,
@@ -119,17 +163,20 @@ function customActionFromRecord(record = {}) {
 
 function mappingFromRecord(record = {}) {
   const action = normalizeText(record.gameAction || record.action);
-  const actionLabel = normalizeText(record.gameActionLabel || record.actionLabel);
+  const usageLabel = normalizeText(record.usageLabel || record.gameActionLabel || record.actionLabel);
+  const events = normalizedEventFields(record);
   return {
     action,
-    actionLabel,
+    actionLabel: usageLabel,
+    enabled: record.enabled === undefined ? true : Boolean(record.enabled),
+    ...events,
     id: normalizeText(record.id),
-    inputEventPhase: normalizeText(record.inputEventPhase) || "Down",
     inputFamily: normalizeText(record.inputFamily) || "Keyboard",
     normalizedInput: normalizeText(record.normalizedInput),
     objectKey: normalizeText(record.objectKey),
     objectName: normalizeText(record.objectName),
     state: normalizeText(record.state) || "Active",
+    usageLabel,
   };
 }
 
@@ -284,16 +331,24 @@ export function createInputMappingToolMockRepository(options = {}) {
     const nextRows = (Array.isArray(mappings) ? mappings : []).map((mapping, index) => {
       const action = normalizeText(mapping.action);
       const normalizedInput = normalizeText(mapping.normalizedInput);
+      const usageLabel = normalizeText(mapping.usageLabel || mapping.actionLabel || mapping.gameActionLabel);
       const objectKey = normalizeText(mapping.objectKey) || "global";
-      const id = normalizeText(mapping.id) || mappingKeyFromText(`${objectKey}-${action}-${normalizedInput}-${index + 1}`);
+      const events = normalizedEventFields(mapping);
+      const id = normalizeText(mapping.id) || mappingKeyFromText(`${objectKey}-${normalizedInput}-${usageLabel}-${index + 1}`);
       const previous = existingRows.get(id);
       return {
         createdAt: previous?.createdAt || timestamp,
         createdBy: previous?.createdBy || userKey,
-        gameAction: action,
-        gameActionLabel: normalizeText(mapping.actionLabel),
+        enabled: mapping.enabled === undefined ? true : Boolean(mapping.enabled),
+        eventAxis: events.eventAxis,
+        eventD: events.eventD,
+        eventDC: events.eventDC,
+        eventDrag: events.eventDrag,
+        eventH: events.eventH,
+        eventU: events.eventU,
+        gameAction: action || mappingKeyFromText(usageLabel),
+        gameActionLabel: usageLabel,
         id,
-        inputEventPhase: normalizeText(mapping.inputEventPhase) || "Down",
         inputFamily: normalizeText(mapping.inputFamily) || "Keyboard",
         key: previous?.key,
         normalizedInput,
@@ -304,6 +359,7 @@ export function createInputMappingToolMockRepository(options = {}) {
         state: normalizeText(mapping.state) || "Active",
         updatedAt: timestamp,
         updatedBy: userKey,
+        usageLabel,
       };
     });
 

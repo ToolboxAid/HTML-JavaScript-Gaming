@@ -15,6 +15,24 @@ export const GAME_CONFIGURATION_SECTIONS = Object.freeze([
   "testReadiness"
 ]);
 
+export const GAME_CONFIGURATION_PLAYER_MODES = Object.freeze([
+  Object.freeze({
+    description: "One active player.",
+    label: "1 Player",
+    value: "1 Player"
+  }),
+  Object.freeze({
+    description: "Multiple players, one active player receives input at a time.",
+    label: "2+ Turn Based",
+    value: "2+ Turn Based"
+  }),
+  Object.freeze({
+    description: "Multiple players active at the same time.",
+    label: "2+ Concurrent",
+    value: "2+ Concurrent"
+  })
+]);
+
 const SECTION_LABELS = Object.freeze({
   gameBasics: "Game Basics",
   gameRules: "Game Rules",
@@ -45,6 +63,13 @@ function createEmptyTables() {
 
 function normalizeText(value) {
   return String(value || "").trim();
+}
+
+function normalizePlayerMode(value) {
+  const normalized = normalizeText(value);
+  return GAME_CONFIGURATION_PLAYER_MODES.some((mode) => mode.value === normalized)
+    ? normalized
+    : "1 Player";
 }
 
 function configurationIdForProject(projectId) {
@@ -94,6 +119,7 @@ function createDocument(projectId, handoff, input = {}) {
     gameType: handoff.activeDesign?.gameType || "",
     genre: handoff.activeDesign?.genre || "",
     playStyle: handoff.activeDesign?.playStyle || "",
+    playerMode: normalizePlayerMode(input.playerMode),
     gameBasics: normalizeText(input.gameBasics),
     gameRules: normalizeText(input.gameRules),
     playerSetup: normalizeText(input.playerSetup),
@@ -258,7 +284,9 @@ export function createGameConfigurationMockRepository(options = {}) {
       genre: "Adventure",
       playStyle: "Single Player"
     });
-    tables = createEmptyTables();
+    if (!projectId) {
+      tables = createEmptyTables();
+    }
     return getSnapshot();
   }
 
