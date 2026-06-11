@@ -67,6 +67,17 @@ const SOURCE_DIAGNOSTICS = Object.freeze([
 
 const RUNTIME_LOOKUP_ORDER = "Runtime lookup order: user/player controller profile exact match, user/player keyboard/mouse profile, System Default Gamepad, System Default Keyboard/Mouse, Missing Controller Profile.";
 const SYSTEM_DEFAULT_PROFILES_LABEL = "Fallback profiles: System Default Gamepad, System Default Keyboard/Mouse.";
+const INPUT_EVENT_PHASE_OPTIONS = Object.freeze([
+  Object.freeze({ label: "Press", value: "Press" }),
+  Object.freeze({ label: "Down", value: "Down" }),
+  Object.freeze({ label: "Release", value: "Release" }),
+]);
+const INPUT_FAMILY_OPTIONS = Object.freeze([
+  Object.freeze({ label: "Keyboard", value: "Keyboard" }),
+  Object.freeze({ label: "Mouse", value: "Mouse" }),
+  Object.freeze({ label: "Gamepad", value: "Gamepad" }),
+  Object.freeze({ label: "Joystick", value: "Joystick" }),
+]);
 const KEYBOARD_PROFILE_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP"]);
 const MOUSE_PROFILE_INPUTS = Object.freeze(["MouseButton0", "MouseButton2", "MouseWheelUp", "MouseWheelDown", "MouseX", "MouseY"]);
 const KEYBOARD_MOUSE_PROFILE_INPUTS = Object.freeze([...KEYBOARD_PROFILE_INPUTS, ...MOUSE_PROFILE_INPUTS]);
@@ -137,6 +148,16 @@ function normalizeList(value) {
 function listLabel(values, fallback = "Not configured") {
   const normalizedValues = normalizeList(values);
   return normalizedValues.length ? normalizedValues.join(", ") : fallback;
+}
+
+function normalizeInputEventPhase(value) {
+  const normalized = normalizeText(value);
+  return INPUT_EVENT_PHASE_OPTIONS.some((option) => option.value === normalized) ? normalized : "Down";
+}
+
+function normalizeInputFamily(value) {
+  const normalized = normalizeText(value);
+  return INPUT_FAMILY_OPTIONS.some((option) => option.value === normalized) ? normalized : "Keyboard";
 }
 
 function setText(element, value) {
@@ -406,6 +427,7 @@ function actionCell(actions) {
 
 function selectControl({ ariaLabel, options, selectedValue }) {
   const select = document.createElement("select");
+  select.className = "tool-form-control";
   select.setAttribute("aria-label", ariaLabel);
   options.forEach((option) => {
     select.append(optionElement(option.value, option.label));
@@ -422,11 +444,20 @@ function controlCell(control) {
   return cell;
 }
 
+function labeledControl(labelText, control) {
+  const label = document.createElement("label");
+  label.textContent = labelText;
+  label.append(control);
+  return label;
+}
+
 function mappingIdFor(mapping) {
   const base = [
     "game-controls",
     mapping.objectKey || "global",
     mapping.action,
+    mapping.inputFamily,
+    mapping.inputEventPhase,
     mapping.normalizedInput,
   ].join("-");
   return keyFromText(base) || `mapping-${Date.now()}`;
@@ -470,6 +501,8 @@ function normalizeMapping(source = {}) {
     action: action.id,
     actionLabel: action.label,
     id: normalizeText(source.id),
+    inputEventPhase: normalizeInputEventPhase(source.inputEventPhase),
+    inputFamily: normalizeInputFamily(source.inputFamily),
     label: inputService.getNormalizedInputLabel(normalizedInput),
     normalizedInput,
     objectKey,
@@ -488,6 +521,8 @@ function payloadActions() {
       .filter((mapping) => mapping.action === action.id && mapping.state === "Active")
       .map((mapping) => ({
         engine: "src/engine/input/NormalizedInputRegistry",
+        inputEventPhase: mapping.inputEventPhase,
+        inputFamily: mapping.inputFamily,
         label: mapping.label,
         normalizedInput: mapping.normalizedInput,
         source: "normalized",
@@ -625,6 +660,7 @@ function renderSelect(select, options, selectedValue) {
   if (!select) {
     return;
   }
+  select.classList.add("tool-form-control");
   select.replaceChildren(...options.map((option) => optionElement(option.value, option.label)));
   select.value = options.some((option) => option.value === selectedValue)
     ? selectedValue
@@ -739,23 +775,45 @@ function profileInputMappingControl(profile, inputMapping, index) {
   wrapper.dataset.controllerProfileInputName = inputMapping.physicalInput;
   const label = document.createElement("strong");
   label.textContent = inputMapping.physicalInput;
-  const select = selectControl({
-    ariaLabel: `${inputMapping.physicalInput} Normalized Input`,
-    options: [
-      { label: "Unassigned", value: "" },
-      ...inputService.getNormalizedInputOptions(),
-    ],
-    selectedValue: inputMapping.normalizedInput,
-  });
-  select.dataset.controllerProfileInputNormalized = profile.id || "editing";
-  select.dataset.controllerProfileInputIndex = String(index);
   const inputStack = document.createElement("div");
   inputStack.className = "content-stack content-stack--compact";
+  const normalizedOptions = [
+    { label: "Unassigned", value: "" },
+    ...inputService.getNormalizedInputOptions(),
+  ];
+  if (physicalInputIsAnalog(inputMapping.physicalInput)) {
+    const negativeSelect = selectControl({
+      ariaLabel: `${inputMapping.physicalInput} Negative Normalized Input`,
+      options: normalizedOptions,
+      selectedValue: inputMapping.negativeNormalizedInput,
+    });
+    negativeSelect.dataset.controllerProfileInputNormalizedNegative = profile.id || "editing";
+    negativeSelect.dataset.controllerProfileInputIndex = String(index);
+    const positiveSelect = selectControl({
+      ariaLabel: `${inputMapping.physicalInput} Positive Normalized Input`,
+      options: normalizedOptions,
+      selectedValue: inputMapping.positiveNormalizedInput,
+    });
+    positiveSelect.dataset.controllerProfileInputNormalizedPositive = profile.id || "editing";
+    positiveSelect.dataset.controllerProfileInputIndex = String(index);
+    inputStack.append(
+      labeledControl("Negative", negativeSelect),
+      labeledControl("Positive", positiveSelect),
+    );
+  } else {
+    const select = selectControl({
+      ariaLabel: `${inputMapping.physicalInput} Normalized Input`,
+      options: normalizedOptions,
+      selectedValue: inputMapping.normalizedInput,
+    });
+    select.dataset.controllerProfileInputNormalized = profile.id || "editing";
+    select.dataset.controllerProfileInputIndex = String(index);
+    inputStack.append(select);
+  }
   const assignedInput = document.createElement("span");
   assignedInput.className = "status";
   assignedInput.dataset.controllerProfileInputAssignedNormalized = "true";
-  assignedInput.textContent = `Assigned Normalized Input: ${controllerProfileNormalizedLabel(select)}`;
-  inputStack.append(select, assignedInput);
+  inputStack.append(assignedInput);
   if (physicalInputIsAnalog(inputMapping.physicalInput) || normalizedInputIsAnalog(inputMapping.normalizedInput)) {
     const deadzoneLabel = document.createElement("label");
     deadzoneLabel.textContent = "Deadzone";
@@ -777,6 +835,7 @@ function profileInputMappingControl(profile, inputMapping, index) {
     inputStack.append(deadzoneLabel, invertLabel);
   }
   wrapper.append(label, inputStack);
+  updateProfileInputAssignedNormalized(wrapper);
   return wrapper;
 }
 
@@ -785,13 +844,21 @@ function controllerProfileNormalizedLabel(select) {
 }
 
 function updateProfileInputAssignedNormalized(select) {
-  const pair = select?.closest("[data-controller-profile-input-pair]");
+  const pair = select?.matches?.("[data-controller-profile-input-pair]")
+    ? select
+    : select?.closest("[data-controller-profile-input-pair]");
   const status = pair?.querySelector("[data-controller-profile-input-assigned-normalized]");
   if (!status) {
     return;
   }
-  const prefix = pair.dataset.controllerProfileInputActive === "true" ? "Selected Normalized Input" : "Assigned Normalized Input";
-  status.textContent = `${prefix}: ${controllerProfileNormalizedLabel(select)}`;
+  const prefix = pair.dataset.controllerProfileInputActive === "true" ? "Selected" : "Mapped";
+  const negativeSelect = pair.querySelector("[data-controller-profile-input-normalized-negative]");
+  const positiveSelect = pair.querySelector("[data-controller-profile-input-normalized-positive]");
+  if (negativeSelect || positiveSelect) {
+    status.textContent = `${prefix}: - ${controllerProfileNormalizedLabel(negativeSelect)}, + ${controllerProfileNormalizedLabel(positiveSelect)}`;
+    return;
+  }
+  status.textContent = `${prefix}: ${controllerProfileNormalizedLabel(pair.querySelector("[data-controller-profile-input-normalized]"))}`;
 }
 
 function clearControllerProfileInputHighlight() {
@@ -799,7 +866,7 @@ function clearControllerProfileInputHighlight() {
     delete pair.dataset.controllerProfileInputActive;
     const status = pair.querySelector("[data-controller-profile-input-assigned-normalized]");
     status?.classList.remove("text-gold");
-    updateProfileInputAssignedNormalized(pair.querySelector("[data-controller-profile-input-normalized]"));
+    updateProfileInputAssignedNormalized(pair);
   });
 }
 
@@ -815,11 +882,10 @@ function highlightControllerProfileInputs(inputNames = []) {
       return;
     }
     pair.dataset.controllerProfileInputActive = "true";
-    const select = pair.querySelector("[data-controller-profile-input-normalized]");
-    updateProfileInputAssignedNormalized(select);
+    updateProfileInputAssignedNormalized(pair);
     const status = pair.querySelector("[data-controller-profile-input-assigned-normalized]");
     status?.classList.add("text-gold");
-    selectedMessages.push(`${pair.dataset.controllerProfileInputName}: ${controllerProfileNormalizedLabel(select)}`);
+    selectedMessages.push(`${pair.dataset.controllerProfileInputName}: ${status?.textContent || "Selected"}`);
   });
   if (selectedMessages.length) {
     setText(elements.controllerProfileStatus, `Selected inputs: ${selectedMessages.join(", ")}.`);
@@ -870,8 +936,16 @@ function controllerProfileInputControls(profile) {
 }
 
 function profileInputSummary(profile) {
-  const assigned = profile.inputMappings.filter((mapping) => mapping.normalizedInput).length;
-  const total = profile.inputMappings.length;
+  const assigned = profile.inputMappings.reduce((count, mapping) => {
+    if (!physicalInputIsAnalog(mapping.physicalInput)) {
+      return count + (mapping.normalizedInput ? 1 : 0);
+    }
+    return count
+      + (mapping.negativeNormalizedInput ? 1 : 0)
+      + (mapping.positiveNormalizedInput ? 1 : 0);
+  }, 0);
+  const total = profile.inputMappings.reduce((count, mapping) =>
+    count + (physicalInputIsAnalog(mapping.physicalInput) ? 2 : 1), 0);
   if (!total) {
     return "No generated inputs";
   }
@@ -1050,6 +1124,8 @@ function renderMappingRow(mapping) {
   }
   row.append(
     tableCell(mapping.label),
+    tableCell(mapping.inputFamily),
+    tableCell(mapping.inputEventPhase),
     tableCell(mapping.actionLabel),
     tableCell(mapping.objectName),
     tableCell(mapping.state),
@@ -1089,6 +1165,20 @@ function renderEditingRow(values = {}) {
   });
   actionSelect.dataset.inputRowAction = "true";
 
+  const inputFamilySelect = selectControl({
+    ariaLabel: "Mapping Input Family",
+    options: INPUT_FAMILY_OPTIONS,
+    selectedValue: values.inputFamily || "Keyboard",
+  });
+  inputFamilySelect.dataset.inputRowFamily = "true";
+
+  const inputEventPhaseSelect = selectControl({
+    ariaLabel: "Mapping Input Event",
+    options: INPUT_EVENT_PHASE_OPTIONS,
+    selectedValue: values.inputEventPhase || "Down",
+  });
+  inputEventPhaseSelect.dataset.inputRowEvent = "true";
+
   const normalizedInputSelect = selectControl({
     ariaLabel: "Mapping Normalized Input",
     options: inputService.getNormalizedInputOptions(),
@@ -1117,6 +1207,8 @@ function renderEditingRow(values = {}) {
 
   row.append(
     controlCell(normalizedInputSelect),
+    controlCell(inputFamilySelect),
+    controlCell(inputEventPhaseSelect),
     controlCell(actionSelect),
     controlCell(objectSelect),
     controlCell(stateSelect),
@@ -1160,7 +1252,7 @@ function renderMappings() {
   if (!rows.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 5;
+    cell.colSpan = 7;
     cell.textContent = "Missing Game Control Mapping. Add a normalized input to game action mapping.";
     row.append(cell);
     rows.push(row);
@@ -1198,6 +1290,8 @@ function mappingFromEditingRow(row) {
     action: action.id,
     actionLabel: action.label,
     id: editingRow?.id || "",
+    inputEventPhase: row.querySelector("[data-input-row-event]")?.value || "Down",
+    inputFamily: row.querySelector("[data-input-row-family]")?.value || "Keyboard",
     normalizedInput,
     objectKey: object.key,
     objectName: object.label,
@@ -1233,13 +1327,19 @@ function controllerProfileFromEditingRow(row) {
   const actionsRow = elements.controllerProfileList?.querySelector("[data-controller-profile-editing-actions-row]");
   const inputMappings = (profileEditingRow?.values?.inputMappings || []).map((mapping, index) => {
     const normalizedSelect = actionsRow?.querySelector(`[data-controller-profile-input-normalized][data-controller-profile-input-index="${index}"]`);
+    const negativeSelect = actionsRow?.querySelector(`[data-controller-profile-input-normalized-negative][data-controller-profile-input-index="${index}"]`);
+    const positiveSelect = actionsRow?.querySelector(`[data-controller-profile-input-normalized-positive][data-controller-profile-input-index="${index}"]`);
     const deadzoneInput = actionsRow?.querySelector(`[data-controller-profile-deadzone="${index}"]`);
     const invertInput = actionsRow?.querySelector(`[data-controller-profile-invert="${index}"]`);
+    const negativeNormalizedInput = normalizeText(negativeSelect?.value ?? mapping.negativeNormalizedInput);
+    const positiveNormalizedInput = normalizeText(positiveSelect?.value ?? mapping.positiveNormalizedInput);
     return {
       deadzone: Number(deadzoneInput?.value ?? mapping.deadzone),
       invert: Boolean(invertInput?.checked ?? mapping.invert),
-      normalizedInput: normalizeText(normalizedSelect?.value ?? mapping.normalizedInput),
+      negativeNormalizedInput,
+      normalizedInput: positiveNormalizedInput || normalizeText(normalizedSelect?.value ?? mapping.normalizedInput) || negativeNormalizedInput,
       physicalInput: mapping.physicalInput,
+      positiveNormalizedInput,
     };
   }) || [];
   const values = profileEditingRow?.values || {};
@@ -1395,7 +1495,7 @@ function handleListClick(event) {
 
 function handleListChange(event) {
   const target = event.target instanceof Element ? event.target : null;
-  if (!target?.matches("[data-input-row-normalized], [data-input-row-object], [data-input-row-action]")) {
+  if (!target?.matches("[data-input-row-normalized], [data-input-row-object], [data-input-row-action], [data-input-row-family], [data-input-row-event]")) {
     return;
   }
   const row = target.closest("[data-input-editing-row]");
@@ -1428,10 +1528,10 @@ function handleControllerProfileClick(event) {
 
 function handleControllerProfileChange(event) {
   const target = event.target instanceof Element ? event.target : null;
-  if (!target?.matches("[data-controller-profile-input-normalized], [data-controller-profile-deadzone], [data-controller-profile-invert]")) {
+  if (!target?.matches("[data-controller-profile-input-normalized], [data-controller-profile-input-normalized-negative], [data-controller-profile-input-normalized-positive], [data-controller-profile-deadzone], [data-controller-profile-invert]")) {
     return;
   }
-  if (target.matches("[data-controller-profile-input-normalized]")) {
+  if (target.matches("[data-controller-profile-input-normalized], [data-controller-profile-input-normalized-negative], [data-controller-profile-input-normalized-positive]")) {
     updateProfileInputAssignedNormalized(target);
   }
 }
@@ -1479,6 +1579,8 @@ function init() {
       id: "",
       values: {
         action: selectedAction().id,
+        inputEventPhase: "Down",
+        inputFamily: "Keyboard",
         normalizedInput: "action.primary",
         objectKey: selectedObject().key,
         state: "Active",

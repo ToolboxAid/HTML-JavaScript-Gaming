@@ -9,8 +9,8 @@ Changed runtime JS files considered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
-(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
-(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
+(94%) toolbox/controls/controls.js - executed lines 1509/1509; executed functions 160/171
+(96%) src/engine/input/NormalizedInputRegistry.js - executed lines 284/284; executed functions 27/28
 
 Guardrail warnings:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only

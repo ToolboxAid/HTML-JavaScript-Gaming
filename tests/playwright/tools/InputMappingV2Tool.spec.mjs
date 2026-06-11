@@ -40,10 +40,14 @@ const DEFAULT_ACTION_DESCRIPTIONS = [
 ];
 
 const NORMALIZED_INPUTS = [
-  "move.x",
-  "move.y",
-  "aim.x",
-  "aim.y",
+  "move.x-",
+  "move.x+",
+  "move.y-",
+  "move.y+",
+  "aim.x-",
+  "aim.x+",
+  "aim.y-",
+  "aim.y+",
   "action.primary",
   "action.secondary",
   "action.tertiary",
@@ -173,7 +177,9 @@ async function seedInvalidCollectibleMapping(page) {
           action: "moveLeft",
           actionLabel: "Move Left",
           id: "coin-move-left",
-          normalizedInput: "move.x",
+          inputEventPhase: "Down",
+          inputFamily: "Keyboard",
+          normalizedInput: "move.x-",
           objectKey: "coin",
           objectName: "Coin",
           state: "Active",
@@ -248,6 +254,8 @@ test("Controls splits Game Input Mapping and Player Input Mapping with normalize
     await expect(page.locator("[data-controller-profile-accordion] summary")).toHaveText("Player Input Mapping");
     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
       "Normalized Input",
+      "Input Family",
+      "Input Event",
       "Game Action",
       "Object",
       "State",
@@ -300,7 +308,7 @@ test("Game Input Mapping saves normalized input to game action mappings and vali
     await seedInvalidCollectibleMapping(page);
     await page.reload({ waitUntil: "networkidle" });
 
-    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x");
+    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x-");
     await expect(page.locator("[data-input-mapping-row]")).toContainText("Move Left");
     await expect(page.locator("[data-input-mapping-row]")).toContainText("Coin");
     await expect(page.locator("[data-input-mapping-row]")).toContainText("Needs update:");
@@ -312,14 +320,24 @@ test("Game Input Mapping saves normalized input to game action mappings and vali
     await expect(page.locator("[data-input-action-select]")).toContainText("Move Left");
     await page.locator("[data-input-action-select]").selectOption("moveLeft");
     await page.locator("[data-input-add-mapping]").click();
-    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(5);
+    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(7);
     await expect(page.locator("[data-input-row-normalized] option")).toHaveText(NORMALIZED_INPUTS);
+    await expect(page.locator("[data-input-row-family] option")).toHaveText(["Keyboard", "Mouse", "Gamepad", "Joystick"]);
+    await expect(page.locator("[data-input-row-event] option")).toHaveText(["Press", "Down", "Release"]);
     await expect(page.locator("[data-input-row-object]")).toHaveValue("hero");
     await expect(page.locator("[data-input-row-action]")).toHaveValue("moveLeft");
-    await page.locator("[data-input-row-normalized]").selectOption("move.x");
+    const editingSelectHeights = await page.locator("[data-input-editing-row] select").evaluateAll((selects) =>
+      selects.map((select) => Math.round(select.getBoundingClientRect().height)),
+    );
+    expect(new Set(editingSelectHeights).size).toBe(1);
+    await page.locator("[data-input-row-normalized]").selectOption("move.x-");
+    await page.locator("[data-input-row-family]").selectOption("Gamepad");
+    await page.locator("[data-input-row-event]").selectOption("Release");
     await page.locator("[data-input-save-mapping]").click();
 
-    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x");
+    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x-");
+    await expect(page.locator("[data-input-mapping-row]")).toContainText("Gamepad");
+    await expect(page.locator("[data-input-mapping-row]")).toContainText("Release");
     await expect(page.locator("[data-input-mapping-row]")).toContainText("Move Left");
     await expect(page.locator("[data-input-mapping-row]")).toContainText("Hero");
     await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
@@ -329,7 +347,9 @@ test("Game Input Mapping saves normalized input to game action mappings and vali
     expect(records[0]).toMatchObject({
       gameAction: "moveLeft",
       gameActionLabel: "Move Left",
-      normalizedInput: "move.x",
+      inputEventPhase: "Release",
+      inputFamily: "Gamepad",
+      normalizedInput: "move.x-",
       objectKey: "hero",
       state: "Active",
     });
@@ -338,17 +358,24 @@ test("Game Input Mapping saves normalized input to game action mappings and vali
     expect(records[0]).not.toHaveProperty("controllerId");
     expect(records[0]).not.toHaveProperty("controllerName");
     expect(records[0]).not.toHaveProperty("controllerProfileId");
+    expect(records[0]).not.toHaveProperty("physicalInput");
 
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x");
+    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x-");
+    await expect(page.locator("[data-input-mapping-row]")).toContainText("Gamepad");
+    await expect(page.locator("[data-input-mapping-row]")).toContainText("Release");
     await page.locator("[data-input-edit-mapping]").click();
     await page.locator("[data-input-row-normalized]").selectOption("action.primary");
+    await page.locator("[data-input-row-family]").selectOption("Mouse");
+    await page.locator("[data-input-row-event]").selectOption("Press");
     await page.locator("[data-input-row-action]").selectOption("fire");
     await page.locator("[data-input-save-mapping]").click();
     records = await inputMappingRecords(page);
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({
       gameAction: "fire",
+      inputEventPhase: "Press",
+      inputFamily: "Mouse",
       normalizedInput: "action.primary",
       objectKey: "hero",
     });
@@ -395,9 +422,21 @@ test("Player Input Mapping persists physical-to-normalized mappings with analog 
     await expect(page.locator("[data-controller-profile-input-pair]")).toHaveCount(18);
     await expect(page.locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
     await expect(page.locator("[data-controller-profile-input-normalized]").first()).toHaveValue("action.primary");
-    await expect(page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-deadzone]")).toBeVisible();
-    await page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-deadzone]").fill("0.35");
-    await page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-invert]").check();
+    await expect(page.getByText("Assigned Normalized Input")).toHaveCount(0);
+    const axis0Pair = page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" });
+    await expect(axis0Pair.locator("[data-controller-profile-input-normalized-negative]")).toHaveValue("move.x-");
+    await expect(axis0Pair.locator("[data-controller-profile-input-normalized-positive]")).toHaveValue("move.x+");
+    await expect(axis0Pair.locator("[data-controller-profile-deadzone]")).toHaveCount(1);
+    await expect(axis0Pair.locator("[data-controller-profile-invert]")).toHaveCount(1);
+    await expect(axis0Pair.locator("[data-controller-profile-deadzone]")).toBeVisible();
+    await axis0Pair.locator("[data-controller-profile-deadzone]").fill("0.35");
+    await axis0Pair.locator("[data-controller-profile-invert]").check();
+    await axis0Pair.locator("[data-controller-profile-input-normalized-negative]").selectOption("aim.x-");
+    await axis0Pair.locator("[data-controller-profile-input-normalized-positive]").selectOption("aim.x+");
+    const profileSelectHeights = await page.locator("[data-controller-profile-editing-actions-row] select").evaluateAll((selects) =>
+      selects.map((select) => Math.round(select.getBoundingClientRect().height)),
+    );
+    expect(new Set(profileSelectHeights).size).toBe(1);
 
     await page.evaluate(() => {
       window.__arcadeButtons[0] = { pressed: true, value: 1 };
@@ -408,7 +447,8 @@ test("Player Input Mapping persists physical-to-normalized mappings with analog 
     const activeInputs = page.locator("[data-controller-profile-input-pair][data-controller-profile-input-active='true']");
     await expect(activeInputs).toHaveCount(2);
     await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toHaveCSS("color", "rgb(255, 200, 87)");
-    await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected Normalized Input: action.primary");
+    await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected: action.primary");
+    await expect(activeInputs.filter({ hasText: "Axis0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected: - aim.x-, + aim.x+");
 
     await page.locator("[data-controller-profile-save]").click();
     let profiles = await controllerProfileRecords(page);
@@ -418,8 +458,11 @@ test("Player Input Mapping persists physical-to-normalized mappings with analog 
     expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Axis0")).toMatchObject({
       deadzone: 0.35,
       invert: true,
-      normalizedInput: "move.x",
+      negativeNormalizedInput: "aim.x-",
+      normalizedInput: "aim.x+",
+      positiveNormalizedInput: "aim.x+",
     });
+    expect(gamepadProfile.inputMappings.filter((mapping) => mapping.physicalInput === "Axis0")).toHaveLength(1);
     expect(gamepadProfile).not.toHaveProperty("actions");
     expect(gamepadProfile).not.toHaveProperty("gameAction");
     expect(gamepadProfile).not.toHaveProperty("objectKey");

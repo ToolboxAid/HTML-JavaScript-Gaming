@@ -3,28 +3,26 @@ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M src/dev-runtime/persistence/mock-db-store.js
  M src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
- M src/engine/input/InputService.js
  M src/engine/input/NormalizedInputRegistry.js
  M tests/input/NormalizedInputRegistry.test.mjs
  M tests/playwright/tools/AdminDbViewer.spec.mjs
  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
  M toolbox/controls/controls.js
  M toolbox/controls/index.html
-?? docs_build/dev/reports/controls-normalized-default-input-architecture-report.md
+?? docs_build/dev/reports/controls-axis-direction-and-input-events-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/controls-normalized-default-input-architecture-report.md
+docs_build/dev/reports/controls-axis-direction-and-input-events-report.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  10 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  21 ++-
- src/dev-runtime/persistence/mock-db-store.js       |   6 +-
- .../input-mapping-mock-repository.js               |  93 +++++-------
- src/engine/input/InputService.js                   |  12 +-
- src/engine/input/NormalizedInputRegistry.js        | 167 ++++++++++++++++++---
- tests/input/NormalizedInputRegistry.test.mjs       |  75 +++++++--
- tests/playwright/tools/AdminDbViewer.spec.mjs      |  10 +-
- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 107 +++++++------
- toolbox/controls/controls.js                       | 103 ++++++-------
- toolbox/controls/index.html                        |  30 ++--
- 11 files changed, 410 insertions(+), 224 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  12 +-
+ src/dev-runtime/persistence/mock-db-store.js       |   2 +-
+ .../input-mapping-mock-repository.js               |   6 +
+ src/engine/input/NormalizedInputRegistry.js        |  83 ++++++++---
+ tests/input/NormalizedInputRegistry.test.mjs       |  56 ++++++--
+ tests/playwright/tools/AdminDbViewer.spec.mjs      |   2 +
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs |  75 +++++++---
+ toolbox/controls/controls.js                       | 154 +++++++++++++++++----
+ toolbox/controls/index.html                        |   4 +-
+ 10 files changed, 315 insertions(+), 83 deletions(-)

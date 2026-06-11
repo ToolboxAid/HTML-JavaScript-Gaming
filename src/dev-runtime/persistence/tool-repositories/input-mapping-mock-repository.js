@@ -71,8 +71,10 @@ function normalizeProfileInputMappings(value) {
   return (Array.isArray(value) ? value : []).map((mapping) => ({
     deadzone: Number.isFinite(Number(mapping?.deadzone)) ? Number(mapping.deadzone) : 0.2,
     invert: Boolean(mapping?.invert),
+    negativeNormalizedInput: normalizeText(mapping?.negativeNormalizedInput),
     normalizedInput: normalizeText(mapping?.normalizedInput),
     physicalInput: normalizeText(mapping?.physicalInput || mapping?.input),
+    positiveNormalizedInput: normalizeText(mapping?.positiveNormalizedInput),
   })).filter((mapping) => mapping.physicalInput);
 }
 
@@ -122,6 +124,8 @@ function mappingFromRecord(record = {}) {
     action,
     actionLabel,
     id: normalizeText(record.id),
+    inputEventPhase: normalizeText(record.inputEventPhase) || "Down",
+    inputFamily: normalizeText(record.inputFamily) || "Keyboard",
     normalizedInput: normalizeText(record.normalizedInput),
     objectKey: normalizeText(record.objectKey),
     objectName: normalizeText(record.objectName),
@@ -289,6 +293,8 @@ export function createInputMappingToolMockRepository(options = {}) {
         gameAction: action,
         gameActionLabel: normalizeText(mapping.actionLabel),
         id,
+        inputEventPhase: normalizeText(mapping.inputEventPhase) || "Down",
+        inputFamily: normalizeText(mapping.inputFamily) || "Keyboard",
         key: previous?.key,
         normalizedInput,
         objectKey,

@@ -6,10 +6,14 @@ NormalizedInputRegistry.js
 */
 
 export const NORMALIZED_INPUT_REGISTRY = Object.freeze([
-    Object.freeze({ id: 'move.x', label: 'move.x', kind: 'axis' }),
-    Object.freeze({ id: 'move.y', label: 'move.y', kind: 'axis' }),
-    Object.freeze({ id: 'aim.x', label: 'aim.x', kind: 'axis' }),
-    Object.freeze({ id: 'aim.y', label: 'aim.y', kind: 'axis' }),
+    Object.freeze({ id: 'move.x-', label: 'move.x-', kind: 'axis' }),
+    Object.freeze({ id: 'move.x+', label: 'move.x+', kind: 'axis' }),
+    Object.freeze({ id: 'move.y-', label: 'move.y-', kind: 'axis' }),
+    Object.freeze({ id: 'move.y+', label: 'move.y+', kind: 'axis' }),
+    Object.freeze({ id: 'aim.x-', label: 'aim.x-', kind: 'axis' }),
+    Object.freeze({ id: 'aim.x+', label: 'aim.x+', kind: 'axis' }),
+    Object.freeze({ id: 'aim.y-', label: 'aim.y-', kind: 'axis' }),
+    Object.freeze({ id: 'aim.y+', label: 'aim.y+', kind: 'axis' }),
     Object.freeze({ id: 'action.primary', label: 'action.primary', kind: 'action' }),
     Object.freeze({ id: 'action.secondary', label: 'action.secondary', kind: 'action' }),
     Object.freeze({ id: 'action.tertiary', label: 'action.tertiary', kind: 'action' }),
@@ -30,14 +34,14 @@ export const NORMALIZED_INPUT_REGISTRY = Object.freeze([
 const NORMALIZED_INPUT_IDS = new Set(NORMALIZED_INPUT_REGISTRY.map((input) => input.id));
 
 const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
-    ArrowDown: 'move.y',
-    ArrowLeft: 'move.x',
-    ArrowRight: 'move.x',
-    ArrowUp: 'move.y',
-    Axis0: 'move.x',
-    Axis1: 'move.y',
-    Axis2: 'aim.x',
-    Axis3: 'aim.y',
+    ArrowDown: 'move.y+',
+    ArrowLeft: 'move.x-',
+    ArrowRight: 'move.x+',
+    ArrowUp: 'move.y-',
+    Axis0: 'move.x+',
+    Axis1: 'move.y+',
+    Axis2: 'aim.x+',
+    Axis3: 'aim.y+',
     Button0: 'action.primary',
     Button1: 'action.secondary',
     Button2: 'action.tertiary',
@@ -50,18 +54,27 @@ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
     'DPad Up': 'dpad.up',
     Enter: 'action.confirm',
     Escape: 'action.cancel',
-    KeyA: 'move.x',
-    KeyD: 'move.x',
+    KeyA: 'move.x-',
+    KeyD: 'move.x+',
     KeyP: 'action.pause',
-    KeyS: 'move.y',
-    KeyW: 'move.y',
+    KeyS: 'move.y+',
+    KeyW: 'move.y-',
     MouseButton0: 'action.primary',
     MouseButton2: 'action.secondary',
-    MouseX: 'aim.x',
-    MouseY: 'aim.y',
+    MouseX: 'aim.x+',
+    MouseY: 'aim.y+',
     Space: 'action.primary',
     'Trigger Left': 'trigger.left',
     'Trigger Right': 'trigger.right',
+});
+
+const DEFAULT_PHYSICAL_AXIS_DIRECTION_MAP = Object.freeze({
+    Axis0: Object.freeze({ negative: 'move.x-', positive: 'move.x+' }),
+    Axis1: Object.freeze({ negative: 'move.y-', positive: 'move.y+' }),
+    Axis2: Object.freeze({ negative: 'aim.x-', positive: 'aim.x+' }),
+    Axis3: Object.freeze({ negative: 'aim.y-', positive: 'aim.y+' }),
+    MouseX: Object.freeze({ negative: 'aim.x-', positive: 'aim.x+' }),
+    MouseY: Object.freeze({ negative: 'aim.y-', positive: 'aim.y+' }),
 });
 
 const SYSTEM_DEFAULT_GAMEPAD_INPUTS = Object.freeze([
@@ -128,6 +141,14 @@ export function normalizeNormalizedInput(inputId, fallback = '') {
 export function defaultNormalizedInputForPhysicalInput(physicalInput) {
     const inputName = normalizeInputName(physicalInput);
     return DEFAULT_PHYSICAL_INPUT_MAP[inputName] || '';
+}
+
+export function defaultNormalizedInputDirectionsForPhysicalInput(physicalInput) {
+    const directions = DEFAULT_PHYSICAL_AXIS_DIRECTION_MAP[normalizeInputName(physicalInput)];
+    return {
+        negative: directions?.negative || '',
+        positive: directions?.positive || '',
+    };
 }
 
 export function systemDefaultInputMappings(deviceType = '') {
@@ -225,12 +246,21 @@ export function normalizedInputIsAnalog(inputId) {
 export function normalizeProfileInputMapping(inputName, source = {}) {
     const physicalInput = normalizeInputName(source.physicalInput || source.input || inputName);
     const fallbackNormalizedInput = defaultNormalizedInputForPhysicalInput(physicalInput);
+    const fallbackDirections = defaultNormalizedInputDirectionsForPhysicalInput(physicalInput);
     const deadzone = Number(source.deadzone);
+    const negativeNormalizedInput = normalizeNormalizedInput(source.negativeNormalizedInput, fallbackDirections.negative);
+    const positiveNormalizedInput = normalizeNormalizedInput(source.positiveNormalizedInput, fallbackDirections.positive);
+    const normalizedInput = normalizeNormalizedInput(
+        source.normalizedInput,
+        positiveNormalizedInput || fallbackNormalizedInput || negativeNormalizedInput,
+    );
     return {
         deadzone: Number.isFinite(deadzone) ? Math.max(0, Math.min(1, deadzone)) : 0.2,
         invert: Boolean(source.invert),
-        normalizedInput: normalizeNormalizedInput(source.normalizedInput, fallbackNormalizedInput),
+        negativeNormalizedInput,
+        normalizedInput,
         physicalInput,
+        positiveNormalizedInput,
     };
 }
 
@@ -253,6 +283,21 @@ function normalizeInputId(value) {
 
 function normalizeInputName(value) {
     return String(value || '').trim();
+}
+
+export function resolvePhysicalAxisNormalizedInput(inputMapping = {}, axisValue = 0) {
+    const deadzone = Number.isFinite(Number(inputMapping.deadzone))
+        ? Math.max(0, Math.min(1, Number(inputMapping.deadzone)))
+        : 0.2;
+    const value = Number(axisValue) || 0;
+    if (Math.abs(value) < deadzone) {
+        return '';
+    }
+    const resolvedValue = inputMapping.invert ? -value : value;
+    const directionInput = resolvedValue < 0
+        ? inputMapping.negativeNormalizedInput
+        : inputMapping.positiveNormalizedInput;
+    return normalizeNormalizedInput(directionInput);
 }
 
 function normalizeDeviceType(value) {

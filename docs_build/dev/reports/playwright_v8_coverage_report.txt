@@ -20,8 +20,8 @@ Changed runtime JS files covered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
-(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
-(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
+(94%) toolbox/controls/controls.js - executed lines 1509/1509; executed functions 160/171
+(96%) src/engine/input/NormalizedInputRegistry.js - executed lines 284/284; executed functions 27/28
 
 Files with executed line/function counts where available:
 (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
@@ -38,8 +38,8 @@ Files with executed line/function counts where available:
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
 (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
-(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
-(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
+(94%) toolbox/controls/controls.js - executed lines 1509/1509; executed functions 160/171
+(96%) src/engine/input/NormalizedInputRegistry.js - executed lines 284/284; executed functions 27/28
 (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
 (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
 
@@ -55,5 +55,5 @@ Changed JS files considered:
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
 (32%) src/engine/input/InputService.js - changed JS file with browser V8 coverage
-(93%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
-(100%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage
+(94%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
+(96%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage

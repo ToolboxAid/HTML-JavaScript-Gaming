@@ -7,20 +7,26 @@ NormalizedInputRegistry.test.mjs
 import assert from 'node:assert/strict';
 import {
   defaultNormalizedInputForPhysicalInput,
+  defaultNormalizedInputDirectionsForPhysicalInput,
   normalizeNormalizedInput,
   normalizeProfileInputMappings,
   normalizedInputOptions,
   physicalInputIsAnalog,
   resolveNormalizedInputProfile,
+  resolvePhysicalAxisNormalizedInput,
   systemDefaultProfileForDevice,
 } from '../../src/engine/input/NormalizedInputRegistry.js';
 
 function testRegistryContainsPlayableNormalizedInputs() {
   assert.deepEqual(normalizedInputOptions().map((option) => option.value), [
-    'move.x',
-    'move.y',
-    'aim.x',
-    'aim.y',
+    'move.x-',
+    'move.x+',
+    'move.y-',
+    'move.y+',
+    'aim.x-',
+    'aim.x+',
+    'aim.y-',
+    'aim.y+',
     'action.primary',
     'action.secondary',
     'action.tertiary',
@@ -44,11 +50,15 @@ function testPhysicalDefaultsRouteThroughNormalizedInputs() {
   assert.equal(defaultNormalizedInputForPhysicalInput('Button1'), 'action.secondary');
   assert.equal(defaultNormalizedInputForPhysicalInput('DPad Up'), 'dpad.up');
   assert.equal(defaultNormalizedInputForPhysicalInput('Trigger Right'), 'trigger.right');
-  assert.equal(defaultNormalizedInputForPhysicalInput('Axis0'), 'move.x');
-  assert.equal(defaultNormalizedInputForPhysicalInput('Axis3'), 'aim.y');
-  assert.equal(defaultNormalizedInputForPhysicalInput('KeyW'), 'move.y');
+  assert.equal(defaultNormalizedInputForPhysicalInput('Axis0'), 'move.x+');
+  assert.equal(defaultNormalizedInputForPhysicalInput('Axis3'), 'aim.y+');
+  assert.equal(defaultNormalizedInputForPhysicalInput('KeyW'), 'move.y-');
   assert.equal(defaultNormalizedInputForPhysicalInput('Space'), 'action.primary');
-  assert.equal(defaultNormalizedInputForPhysicalInput('MouseX'), 'aim.x');
+  assert.equal(defaultNormalizedInputForPhysicalInput('MouseX'), 'aim.x+');
+  assert.deepEqual(defaultNormalizedInputDirectionsForPhysicalInput('Axis0'), {
+    negative: 'move.x-',
+    positive: 'move.x+',
+  });
 }
 
 function testProfileInputMappingsPreserveAnalogSettings() {
@@ -56,16 +66,16 @@ function testProfileInputMappingsPreserveAnalogSettings() {
   assert.equal(physicalInputIsAnalog('Button0'), false);
   assert.deepEqual(normalizeProfileInputMappings(
     ['Button0', 'Axis0'],
-    [{ deadzone: 0.35, invert: true, normalizedInput: 'aim.x', physicalInput: 'Axis0' }],
+    [{ deadzone: 0.35, invert: true, negativeNormalizedInput: 'aim.x-', physicalInput: 'Axis0', positiveNormalizedInput: 'aim.x+' }],
   ), [
-    { deadzone: 0.2, invert: false, normalizedInput: 'action.primary', physicalInput: 'Button0' },
-    { deadzone: 0.35, invert: true, normalizedInput: 'aim.x', physicalInput: 'Axis0' },
+    { deadzone: 0.2, invert: false, negativeNormalizedInput: '', normalizedInput: 'action.primary', physicalInput: 'Button0', positiveNormalizedInput: '' },
+    { deadzone: 0.35, invert: true, negativeNormalizedInput: 'aim.x-', normalizedInput: 'aim.x+', physicalInput: 'Axis0', positiveNormalizedInput: 'aim.x+' },
   ]);
 }
 
 function testInvalidNormalizedInputDoesNotSilentlyBecomeAction() {
   assert.equal(normalizeNormalizedInput('fire', 'action.primary'), 'action.primary');
-  assert.equal(normalizeNormalizedInput('move.x', 'action.primary'), 'move.x');
+  assert.equal(normalizeNormalizedInput('move.x-', 'action.primary'), 'move.x-');
 }
 
 function testSystemDefaultProfilesAreVisibleFallbackContracts() {
@@ -77,6 +87,27 @@ function testSystemDefaultProfilesAreVisibleFallbackContracts() {
   assert.equal(keyboardMouseDefault.systemDefault, true);
   assert.equal(gamepadDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Button0').normalizedInput, 'action.primary');
   assert.equal(keyboardMouseDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Space').normalizedInput, 'action.primary');
+  assert.deepEqual(gamepadDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Axis0'), {
+    deadzone: 0.2,
+    invert: false,
+    negativeNormalizedInput: 'move.x-',
+    normalizedInput: 'move.x+',
+    physicalInput: 'Axis0',
+    positiveNormalizedInput: 'move.x+',
+  });
+}
+
+function testAxisDirectionResolutionUsesSharedDeadzoneAndInvert() {
+  const mapping = {
+    deadzone: 0.35,
+    invert: false,
+    negativeNormalizedInput: 'move.x-',
+    positiveNormalizedInput: 'move.x+',
+  };
+  assert.equal(resolvePhysicalAxisNormalizedInput(mapping, 0.2), '');
+  assert.equal(resolvePhysicalAxisNormalizedInput(mapping, -0.7), 'move.x-');
+  assert.equal(resolvePhysicalAxisNormalizedInput(mapping, 0.7), 'move.x+');
+  assert.equal(resolvePhysicalAxisNormalizedInput({ ...mapping, invert: true }, -0.7), 'move.x+');
 }
 
 function testRuntimeLookupOrder() {
@@ -119,6 +150,7 @@ export function run() {
   testProfileInputMappingsPreserveAnalogSettings();
   testInvalidNormalizedInputDoesNotSilentlyBecomeAction();
   testSystemDefaultProfilesAreVisibleFallbackContracts();
+  testAxisDirectionResolutionUsesSharedDeadzoneAndInvert();
   testRuntimeLookupOrder();
 }
 

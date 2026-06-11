@@ -406,6 +406,8 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='game_input_mappings']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='player_controller_profiles']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("gameAction");
+    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("inputFamily");
+    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("inputEventPhase");
     await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).not.toContainText("binding");
     await expect(page.locator("[data-admin-db-table='player_controller_profiles'] thead")).toContainText("controllerId");
     await expect(page.locator("[data-admin-db-table='player_controller_profiles'] thead")).not.toContainText("gameAction");

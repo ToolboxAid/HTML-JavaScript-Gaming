@@ -1,1452 +1,959 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 2ce687f2f..d24d7c505 100644
+index d24d7c505..509a2d0f5 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -8,13 +8,11 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- Changed runtime JS files considered:
+@@ -9,8 +9,8 @@ Changed runtime JS files considered:
  (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(31%) src/engine/input/InputService.js - executed lines 443/443; executed functions 20/64
--(61%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 23/38
--(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
--(93%) toolbox/controls/controls.js - executed lines 1417/1417; executed functions 154/165
--(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 120/120; executed functions 19/19
-+(32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
-+(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
-+(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
+ (32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
+-(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
+-(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
++(94%) toolbox/controls/controls.js - executed lines 1509/1509; executed functions 160/171
++(96%) src/engine/input/NormalizedInputRegistry.js - executed lines 284/284; executed functions 27/28
  
  Guardrail warnings:
  (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(31%) src/engine/input/InputService.js - WARNING: advisory low coverage below 50%; executed lines 443/443; executed functions 20/64
-+(32%) src/engine/input/InputService.js - WARNING: advisory low coverage below 50%; executed lines 451/451; executed functions 21/66
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 8edd6d46a..94dcdb0e6 100644
+index 94dcdb0e6..e7177dff5 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -19,16 +19,14 @@ Exercised tool entry points detected:
- Changed runtime JS files covered:
+@@ -20,8 +20,8 @@ Changed runtime JS files covered:
  (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(31%) src/engine/input/InputService.js - executed lines 443/443; executed functions 20/64
--(61%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 23/38
--(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
--(93%) toolbox/controls/controls.js - executed lines 1417/1417; executed functions 154/165
--(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 120/120; executed functions 19/19
-+(32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
-+(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
-+(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
+ (32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
+-(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
+-(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
++(94%) toolbox/controls/controls.js - executed lines 1509/1509; executed functions 160/171
++(96%) src/engine/input/NormalizedInputRegistry.js - executed lines 284/284; executed functions 27/28
  
  Files with executed line/function counts where available:
  (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
- (23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
--(31%) src/engine/input/InputService.js - executed lines 443/443; executed functions 20/64
-+(32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
- (33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
- (40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
- (43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
-@@ -40,23 +38,22 @@ Files with executed line/function counts where available:
+@@ -38,8 +38,8 @@ Files with executed line/function counts where available:
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
  (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
  (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
--(93%) toolbox/controls/controls.js - executed lines 1417/1417; executed functions 154/165
--(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 120/120; executed functions 19/19
-+(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
-+(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
+-(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
+-(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
++(94%) toolbox/controls/controls.js - executed lines 1509/1509; executed functions 160/171
++(96%) src/engine/input/NormalizedInputRegistry.js - executed lines 284/284; executed functions 27/28
  (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
  (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
  
- Uncovered or low-coverage changed JS files:
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(31%) src/engine/input/InputService.js - WARNING: advisory low coverage; executed lines 443/443
-+(32%) src/engine/input/InputService.js - WARNING: advisory low coverage; executed lines 451/451
- 
- Changed JS files considered:
- (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
- (0%) tests/input/NormalizedInputRegistry.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+@@ -55,5 +55,5 @@ Changed JS files considered:
+ (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(31%) src/engine/input/InputService.js - changed JS file with browser V8 coverage
--(61%) src/engine/input/GamepadInputClassifier.js - changed JS file with browser V8 coverage
--(80%) src/engine/input/GamepadState.js - changed JS file with browser V8 coverage
-+(32%) src/engine/input/InputService.js - changed JS file with browser V8 coverage
- (93%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
- (100%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage
+ (32%) src/engine/input/InputService.js - changed JS file with browser V8 coverage
+-(93%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
+-(100%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage
++(94%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
++(96%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage
 diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index 82861cf43..6525f800a 100644
+index 6525f800a..bb953a747 100644
 --- a/src/dev-runtime/persistence/mock-db-store.js
 +++ b/src/dev-runtime/persistence/mock-db-store.js
-@@ -89,7 +89,7 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
-   }),
-   controls: Object.freeze({
-     label: "Controls",
--    tableNames: Object.freeze(["input_mapping_records", "input_controller_profile_records", "input_custom_action_records"]),
-+    tableNames: Object.freeze(["game_input_mappings", "player_controller_profiles", "input_custom_action_records"]),
-   }),
-   "project-journey": Object.freeze({
-     label: "Project Journey",
-@@ -136,8 +136,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
+@@ -136,7 +136,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
    game_configuration_records: Object.freeze(["key", "projectKey", "status", "summary", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
    game_configuration_validation_items: Object.freeze(["key", "projectKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
    object_definition_records: Object.freeze(["key", "id", "projectId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
--  input_mapping_records: Object.freeze(["key", "id", "projectId", "objectKey", "objectName", "action", "actionLabel", "normalizedInput", "inputDevice", "source", "binding", "label", "engine", "controllerProfileId", "mappingProfile", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
--  input_controller_profile_records: Object.freeze(["key", "id", "projectId", "deviceType", "controllerName", "controllerId", "mappingProfile", "inputs", "actions", "inputMappings", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  game_input_mappings: Object.freeze(["key", "id", "projectId", "objectKey", "objectName", "gameAction", "gameActionLabel", "normalizedInput", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  player_controller_profiles: Object.freeze(["key", "id", "playerId", "deviceType", "controllerName", "controllerId", "profileName", "inputs", "inputMappings", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+-  game_input_mappings: Object.freeze(["key", "id", "projectId", "objectKey", "objectName", "gameAction", "gameActionLabel", "normalizedInput", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  game_input_mappings: Object.freeze(["key", "id", "projectId", "objectKey", "objectName", "gameAction", "gameActionLabel", "normalizedInput", "inputFamily", "inputEventPhase", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   player_controller_profiles: Object.freeze(["key", "id", "playerId", "deviceType", "controllerName", "controllerId", "profileName", "inputs", "inputMappings", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
    input_custom_action_records: Object.freeze(["key", "id", "projectId", "label", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
    project_journey_note_types: Object.freeze(["key", "typeSlug", "name", "seeded", "userExtensible", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   project_journey_notes: Object.freeze(["key", "slug", "projectKey", "ownerKey", "name", "typeKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
 diff --git a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-index 380077704..882749e78 100644
+index 882749e78..f837d38f9 100644
 --- a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
 +++ b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-@@ -5,8 +5,8 @@ import {
- } from "../mock-db-store.js";
- 
- export const INPUT_MAPPING_TOOL_TABLES = Object.freeze([
--  "input_mapping_records",
--  "input_controller_profile_records",
-+  "game_input_mappings",
-+  "player_controller_profiles",
-   "input_custom_action_records",
- ]);
- 
-@@ -26,9 +26,9 @@ function cloneTables(tables) {
- 
- function createEmptyTables() {
-   return {
--    input_controller_profile_records: [],
-+    game_input_mappings: [],
-     input_custom_action_records: [],
--    input_mapping_records: [],
-+    player_controller_profiles: [],
-   };
+@@ -71,8 +71,10 @@ function normalizeProfileInputMappings(value) {
+   return (Array.isArray(value) ? value : []).map((mapping) => ({
+     deadzone: Number.isFinite(Number(mapping?.deadzone)) ? Number(mapping.deadzone) : 0.2,
+     invert: Boolean(mapping?.invert),
++    negativeNormalizedInput: normalizeText(mapping?.negativeNormalizedInput),
+     normalizedInput: normalizeText(mapping?.normalizedInput),
+     physicalInput: normalizeText(mapping?.physicalInput || mapping?.input),
++    positiveNormalizedInput: normalizeText(mapping?.positiveNormalizedInput),
+   })).filter((mapping) => mapping.physicalInput);
  }
  
-@@ -44,14 +44,14 @@ function mappingKeyFromText(value) {
- }
- 
- function initialTables(options = {}) {
--  const explicitRows = options.memoryDbTables?.input_mapping_records;
--  const explicitProfiles = options.memoryDbTables?.input_controller_profile_records;
-+  const explicitRows = options.memoryDbTables?.game_input_mappings;
-+  const explicitProfiles = options.memoryDbTables?.player_controller_profiles;
-   const explicitCustomActions = options.memoryDbTables?.input_custom_action_records;
-   if (Array.isArray(explicitRows) || Array.isArray(explicitProfiles) || Array.isArray(explicitCustomActions)) {
-     return normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, {
--      input_controller_profile_records: Array.isArray(explicitProfiles) ? explicitProfiles : [],
-+      game_input_mappings: Array.isArray(explicitRows) ? explicitRows : [],
-       input_custom_action_records: Array.isArray(explicitCustomActions) ? explicitCustomActions : [],
--      input_mapping_records: Array.isArray(explicitRows) ? explicitRows : [],
-+      player_controller_profiles: Array.isArray(explicitProfiles) ? explicitProfiles : [],
-     }, options);
-   }
-   return normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, createEmptyTables(), options);
-@@ -77,31 +77,32 @@ function normalizeProfileInputMappings(value) {
- }
- 
- function sortedMappingRows(tables) {
--  return [...(tables.input_mapping_records || [])].sort((left, right) => (
-+  return [...(tables.game_input_mappings || [])].sort((left, right) => (
-     (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
--      || normalizeText(left.actionLabel).localeCompare(normalizeText(right.actionLabel))
--      || normalizeText(left.label).localeCompare(normalizeText(right.label))
-+      || normalizeText(left.gameActionLabel).localeCompare(normalizeText(right.gameActionLabel))
-+      || normalizeText(left.normalizedInput).localeCompare(normalizeText(right.normalizedInput))
-   ));
- }
- 
- function sortedControllerProfileRows(tables) {
--  return [...(tables.input_controller_profile_records || [])].sort((left, right) => (
-+  return [...(tables.player_controller_profiles || [])].sort((left, right) => (
-     (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
--      || normalizeText(left.mappingProfile).localeCompare(normalizeText(right.mappingProfile))
-+      || normalizeText(left.profileName).localeCompare(normalizeText(right.profileName))
-       || normalizeText(left.controllerName).localeCompare(normalizeText(right.controllerName))
-   ));
- }
- 
- function controllerProfileFromRecord(record = {}) {
-+  const profileName = normalizeText(record.profileName || record.mappingProfile);
-   return {
--    actions: normalizeList(record.actions),
-     controllerId: normalizeText(record.controllerId),
-     controllerName: normalizeText(record.controllerName),
-     deviceType: normalizeText(record.deviceType),
+@@ -122,6 +124,8 @@ function mappingFromRecord(record = {}) {
+     action,
+     actionLabel,
      id: normalizeText(record.id),
-     inputMappings: normalizeProfileInputMappings(record.inputMappings),
-     inputs: normalizeList(record.inputs),
--    mappingProfile: normalizeText(record.mappingProfile),
-+    mappingProfile: profileName,
-+    profileName,
-   };
- }
- 
-@@ -115,20 +116,15 @@ function customActionFromRecord(record = {}) {
- }
- 
- function mappingFromRecord(record = {}) {
-+  const action = normalizeText(record.gameAction || record.action);
-+  const actionLabel = normalizeText(record.gameActionLabel || record.actionLabel);
-   return {
--    action: normalizeText(record.action),
--    actionLabel: normalizeText(record.actionLabel),
--    binding: normalizeText(record.binding),
--    engine: normalizeText(record.engine),
-+    action,
-+    actionLabel,
-     id: normalizeText(record.id),
--    inputDevice: normalizeText(record.inputDevice),
--    label: normalizeText(record.label),
--    controllerProfileId: normalizeText(record.controllerProfileId),
--    mappingProfile: normalizeText(record.mappingProfile),
++    inputEventPhase: normalizeText(record.inputEventPhase) || "Down",
++    inputFamily: normalizeText(record.inputFamily) || "Keyboard",
      normalizedInput: normalizeText(record.normalizedInput),
      objectKey: normalizeText(record.objectKey),
      objectName: normalizeText(record.objectName),
--    source: normalizeText(record.source),
-     state: normalizeText(record.state) || "Active",
-   };
- }
-@@ -169,9 +165,9 @@ export function createInputMappingToolMockRepository(options = {}) {
-   }
- 
-   function listControllerProfiles(projectId = "") {
--    const targetProjectId = normalizeText(projectId) || activeProjectId();
-+    const targetPlayerId = activeUserKey();
-     return sortedControllerProfileRows(tables)
--      .filter((record) => normalizeText(record.projectId) === targetProjectId)
-+      .filter((record) => normalizeText(record.playerId) === targetPlayerId)
-       .map(controllerProfileFromRecord);
-   }
- 
-@@ -187,21 +183,20 @@ export function createInputMappingToolMockRepository(options = {}) {
-   }
- 
-   function replaceControllerProfiles(profiles = [], projectId = "") {
--    const targetProjectId = normalizeText(projectId) || activeProjectId();
-+    const targetPlayerId = activeUserKey();
-     const existingRows = new Map(
--      (tables.input_controller_profile_records || [])
--        .filter((record) => normalizeText(record.projectId) === targetProjectId)
-+      (tables.player_controller_profiles || [])
-+        .filter((record) => normalizeText(record.playerId) === targetPlayerId)
-         .map((record) => [normalizeText(record.id), record]),
-     );
-     const timestamp = new Date().toISOString();
-     const userKey = activeUserKey();
-     const nextRows = (Array.isArray(profiles) ? profiles : []).map((profile, index) => {
--      const mappingProfile = normalizeText(profile.mappingProfile);
-+      const profileName = normalizeText(profile.profileName || profile.mappingProfile);
-       const controllerId = normalizeText(profile.controllerId);
--      const id = normalizeText(profile.id) || mappingKeyFromText(`${controllerId}-${mappingProfile}-${index + 1}`);
-+      const id = normalizeText(profile.id) || mappingKeyFromText(`${controllerId}-${profileName}-${index + 1}`);
-       const previous = existingRows.get(id);
-       return {
--        actions: normalizeList(profile.actions),
-         controllerId,
-         controllerName: normalizeText(profile.controllerName),
-         createdAt: previous?.createdAt || timestamp,
-@@ -211,23 +206,23 @@ export function createInputMappingToolMockRepository(options = {}) {
-         inputMappings: normalizeProfileInputMappings(profile.inputMappings),
-         inputs: normalizeList(profile.inputs),
-         key: previous?.key,
--        mappingProfile,
--        projectId: targetProjectId,
-+        playerId: targetPlayerId,
-+        profileName,
-         recordOrder: index + 1,
-         updatedAt: timestamp,
-         updatedBy: userKey,
-       };
-     });
- 
--    tables.input_controller_profile_records = [
--      ...(tables.input_controller_profile_records || []).filter(
--        (record) => normalizeText(record.projectId) !== targetProjectId,
-+    tables.player_controller_profiles = [
-+      ...(tables.player_controller_profiles || []).filter(
-+        (record) => normalizeText(record.playerId) !== targetPlayerId,
-       ),
-       ...nextRows,
-     ];
-     persistTables();
-     return {
--      profiles: listControllerProfiles(targetProjectId),
-+      profiles: listControllerProfiles(),
-       saved: true,
-       snapshot: getSnapshot(),
-     };
-@@ -276,7 +271,7 @@ export function createInputMappingToolMockRepository(options = {}) {
-   function replaceMappings(mappings = [], projectId = "") {
-     const targetProjectId = normalizeText(projectId) || activeProjectId();
-     const existingRows = new Map(
--      (tables.input_mapping_records || [])
-+      (tables.game_input_mappings || [])
-         .filter((record) => normalizeText(record.projectId) === targetProjectId)
-         .map((record) => [normalizeText(record.id), record]),
-     );
-@@ -284,38 +279,30 @@ export function createInputMappingToolMockRepository(options = {}) {
-     const userKey = activeUserKey();
-     const nextRows = (Array.isArray(mappings) ? mappings : []).map((mapping, index) => {
-       const action = normalizeText(mapping.action);
--      const binding = normalizeText(mapping.binding);
-       const normalizedInput = normalizeText(mapping.normalizedInput);
-       const objectKey = normalizeText(mapping.objectKey) || "global";
--      const id = normalizeText(mapping.id) || mappingKeyFromText(`${objectKey}-${action}-${normalizedInput || binding}-${index + 1}`);
-+      const id = normalizeText(mapping.id) || mappingKeyFromText(`${objectKey}-${action}-${normalizedInput}-${index + 1}`);
-       const previous = existingRows.get(id);
-       return {
--        action,
--        actionLabel: normalizeText(mapping.actionLabel),
--        binding,
-         createdAt: previous?.createdAt || timestamp,
-         createdBy: previous?.createdBy || userKey,
--        engine: normalizeText(mapping.engine),
-+        gameAction: action,
-+        gameActionLabel: normalizeText(mapping.actionLabel),
+@@ -289,6 +293,8 @@ export function createInputMappingToolMockRepository(options = {}) {
+         gameAction: action,
+         gameActionLabel: normalizeText(mapping.actionLabel),
          id,
--        inputDevice: normalizeText(mapping.inputDevice),
++        inputEventPhase: normalizeText(mapping.inputEventPhase) || "Down",
++        inputFamily: normalizeText(mapping.inputFamily) || "Keyboard",
          key: previous?.key,
--        label: normalizeText(mapping.label),
--        controllerProfileId: normalizeText(mapping.controllerProfileId),
--        mappingProfile: normalizeText(mapping.mappingProfile),
          normalizedInput,
          objectKey,
-         objectName: normalizeText(mapping.objectName) || "Global",
-         projectId: targetProjectId,
-         recordOrder: index + 1,
--        source: normalizeText(mapping.source),
-         state: normalizeText(mapping.state) || "Active",
-         updatedAt: timestamp,
-         updatedBy: userKey,
-       };
-     });
- 
--    tables.input_mapping_records = [
--      ...(tables.input_mapping_records || []).filter(
-+    tables.game_input_mappings = [
-+      ...(tables.game_input_mappings || []).filter(
-         (record) => normalizeText(record.projectId) !== targetProjectId,
-       ),
-       ...nextRows,
-@@ -330,7 +317,7 @@ export function createInputMappingToolMockRepository(options = {}) {
- 
-   function resetMappings(projectId = "") {
-     const targetProjectId = normalizeText(projectId) || activeProjectId();
--    tables.input_mapping_records = (tables.input_mapping_records || []).filter(
-+    tables.game_input_mappings = (tables.game_input_mappings || []).filter(
-       (record) => normalizeText(record.projectId) !== targetProjectId,
-     );
-     persistTables();
-diff --git a/src/engine/input/InputService.js b/src/engine/input/InputService.js
-index 9cef3a66e..a945e6a96 100644
---- a/src/engine/input/InputService.js
-+++ b/src/engine/input/InputService.js
-@@ -25,7 +25,9 @@ import {
-     defaultNormalizedInputForPhysicalInput,
-     normalizedInputLabel,
-     normalizedInputOptions,
--    physicalInputIsAnalog
-+    physicalInputIsAnalog,
-+    resolveNormalizedInputProfile,
-+    systemDefaultProfileForDevice
- } from './NormalizedInputRegistry.js';
- 
- export default class InputService {
-@@ -272,6 +274,14 @@ export default class InputService {
-         return defaultNormalizedInputForPhysicalInput(physicalInput);
-     }
- 
-+    getSystemDefaultProfileForDevice(deviceType) {
-+        return systemDefaultProfileForDevice(deviceType);
-+    }
-+
-+    resolveNormalizedInputProfile(options = {}) {
-+        return resolveNormalizedInputProfile(options);
-+    }
-+
-     physicalInputIsAnalog(physicalInput) {
-         return physicalInputIsAnalog(physicalInput);
-     }
 diff --git a/src/engine/input/NormalizedInputRegistry.js b/src/engine/input/NormalizedInputRegistry.js
-index 39972731f..87381b841 100644
+index 87381b841..e5dbdde82 100644
 --- a/src/engine/input/NormalizedInputRegistry.js
 +++ b/src/engine/input/NormalizedInputRegistry.js
-@@ -10,18 +10,21 @@ export const NORMALIZED_INPUT_REGISTRY = Object.freeze([
-     Object.freeze({ id: 'move.y', label: 'move.y', kind: 'axis' }),
-     Object.freeze({ id: 'aim.x', label: 'aim.x', kind: 'axis' }),
-     Object.freeze({ id: 'aim.y', label: 'aim.y', kind: 'axis' }),
--    Object.freeze({ id: 'button.south', label: 'button.south', kind: 'button' }),
--    Object.freeze({ id: 'button.east', label: 'button.east', kind: 'button' }),
--    Object.freeze({ id: 'button.west', label: 'button.west', kind: 'button' }),
--    Object.freeze({ id: 'button.north', label: 'button.north', kind: 'button' }),
-+    Object.freeze({ id: 'action.primary', label: 'action.primary', kind: 'action' }),
-+    Object.freeze({ id: 'action.secondary', label: 'action.secondary', kind: 'action' }),
-+    Object.freeze({ id: 'action.tertiary', label: 'action.tertiary', kind: 'action' }),
-+    Object.freeze({ id: 'action.quaternary', label: 'action.quaternary', kind: 'action' }),
-+    Object.freeze({ id: 'action.confirm', label: 'action.confirm', kind: 'action' }),
-+    Object.freeze({ id: 'action.cancel', label: 'action.cancel', kind: 'action' }),
-+    Object.freeze({ id: 'action.start', label: 'action.start', kind: 'action' }),
-+    Object.freeze({ id: 'action.select', label: 'action.select', kind: 'action' }),
-+    Object.freeze({ id: 'action.pause', label: 'action.pause', kind: 'action' }),
-     Object.freeze({ id: 'dpad.up', label: 'dpad.up', kind: 'dpad' }),
-     Object.freeze({ id: 'dpad.down', label: 'dpad.down', kind: 'dpad' }),
-     Object.freeze({ id: 'dpad.left', label: 'dpad.left', kind: 'dpad' }),
-     Object.freeze({ id: 'dpad.right', label: 'dpad.right', kind: 'dpad' }),
-     Object.freeze({ id: 'trigger.left', label: 'trigger.left', kind: 'trigger' }),
-     Object.freeze({ id: 'trigger.right', label: 'trigger.right', kind: 'trigger' }),
--    Object.freeze({ id: 'start', label: 'start', kind: 'system' }),
--    Object.freeze({ id: 'select', label: 'select', kind: 'system' }),
- ]);
+@@ -6,10 +6,14 @@ NormalizedInputRegistry.js
+ */
  
+ export const NORMALIZED_INPUT_REGISTRY = Object.freeze([
+-    Object.freeze({ id: 'move.x', label: 'move.x', kind: 'axis' }),
+-    Object.freeze({ id: 'move.y', label: 'move.y', kind: 'axis' }),
+-    Object.freeze({ id: 'aim.x', label: 'aim.x', kind: 'axis' }),
+-    Object.freeze({ id: 'aim.y', label: 'aim.y', kind: 'axis' }),
++    Object.freeze({ id: 'move.x-', label: 'move.x-', kind: 'axis' }),
++    Object.freeze({ id: 'move.x+', label: 'move.x+', kind: 'axis' }),
++    Object.freeze({ id: 'move.y-', label: 'move.y-', kind: 'axis' }),
++    Object.freeze({ id: 'move.y+', label: 'move.y+', kind: 'axis' }),
++    Object.freeze({ id: 'aim.x-', label: 'aim.x-', kind: 'axis' }),
++    Object.freeze({ id: 'aim.x+', label: 'aim.x+', kind: 'axis' }),
++    Object.freeze({ id: 'aim.y-', label: 'aim.y-', kind: 'axis' }),
++    Object.freeze({ id: 'aim.y+', label: 'aim.y+', kind: 'axis' }),
+     Object.freeze({ id: 'action.primary', label: 'action.primary', kind: 'action' }),
+     Object.freeze({ id: 'action.secondary', label: 'action.secondary', kind: 'action' }),
+     Object.freeze({ id: 'action.tertiary', label: 'action.tertiary', kind: 'action' }),
+@@ -30,14 +34,14 @@ export const NORMALIZED_INPUT_REGISTRY = Object.freeze([
  const NORMALIZED_INPUT_IDS = new Set(NORMALIZED_INPUT_REGISTRY.map((input) => input.id));
-@@ -35,31 +38,69 @@ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
-     Axis1: 'move.y',
-     Axis2: 'aim.x',
-     Axis3: 'aim.y',
--    Button0: 'button.south',
--    Button1: 'button.east',
--    Button2: 'button.west',
--    Button3: 'button.north',
--    Button8: 'select',
--    Button9: 'start',
-+    Button0: 'action.primary',
-+    Button1: 'action.secondary',
-+    Button2: 'action.tertiary',
-+    Button3: 'action.quaternary',
-+    Button8: 'action.select',
-+    Button9: 'action.start',
-     'DPad Down': 'dpad.down',
-     'DPad Left': 'dpad.left',
-     'DPad Right': 'dpad.right',
+ 
+ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
+-    ArrowDown: 'move.y',
+-    ArrowLeft: 'move.x',
+-    ArrowRight: 'move.x',
+-    ArrowUp: 'move.y',
+-    Axis0: 'move.x',
+-    Axis1: 'move.y',
+-    Axis2: 'aim.x',
+-    Axis3: 'aim.y',
++    ArrowDown: 'move.y+',
++    ArrowLeft: 'move.x-',
++    ArrowRight: 'move.x+',
++    ArrowUp: 'move.y-',
++    Axis0: 'move.x+',
++    Axis1: 'move.y+',
++    Axis2: 'aim.x+',
++    Axis3: 'aim.y+',
+     Button0: 'action.primary',
+     Button1: 'action.secondary',
+     Button2: 'action.tertiary',
+@@ -50,20 +54,29 @@ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
      'DPad Up': 'dpad.up',
--    Enter: 'start',
--    Escape: 'select',
-+    Enter: 'action.confirm',
-+    Escape: 'action.cancel',
-     KeyA: 'move.x',
-     KeyD: 'move.x',
-+    KeyP: 'action.pause',
-     KeyS: 'move.y',
-     KeyW: 'move.y',
--    MouseButton0: 'button.south',
--    MouseButton2: 'button.east',
-+    MouseButton0: 'action.primary',
-+    MouseButton2: 'action.secondary',
-     MouseX: 'aim.x',
-     MouseY: 'aim.y',
--    Space: 'button.south',
-+    Space: 'action.primary',
+     Enter: 'action.confirm',
+     Escape: 'action.cancel',
+-    KeyA: 'move.x',
+-    KeyD: 'move.x',
++    KeyA: 'move.x-',
++    KeyD: 'move.x+',
+     KeyP: 'action.pause',
+-    KeyS: 'move.y',
+-    KeyW: 'move.y',
++    KeyS: 'move.y+',
++    KeyW: 'move.y-',
+     MouseButton0: 'action.primary',
+     MouseButton2: 'action.secondary',
+-    MouseX: 'aim.x',
+-    MouseY: 'aim.y',
++    MouseX: 'aim.x+',
++    MouseY: 'aim.y+',
+     Space: 'action.primary',
      'Trigger Left': 'trigger.left',
      'Trigger Right': 'trigger.right',
  });
  
-+const SYSTEM_DEFAULT_GAMEPAD_INPUTS = Object.freeze([
-+    'Button0',
-+    'Button1',
-+    'Button2',
-+    'Button3',
-+    'Button8',
-+    'Button9',
-+    'DPad Up',
-+    'DPad Down',
-+    'DPad Left',
-+    'DPad Right',
-+    'Trigger Left',
-+    'Trigger Right',
-+    'Axis0',
-+    'Axis1',
-+    'Axis2',
-+    'Axis3',
-+]);
++const DEFAULT_PHYSICAL_AXIS_DIRECTION_MAP = Object.freeze({
++    Axis0: Object.freeze({ negative: 'move.x-', positive: 'move.x+' }),
++    Axis1: Object.freeze({ negative: 'move.y-', positive: 'move.y+' }),
++    Axis2: Object.freeze({ negative: 'aim.x-', positive: 'aim.x+' }),
++    Axis3: Object.freeze({ negative: 'aim.y-', positive: 'aim.y+' }),
++    MouseX: Object.freeze({ negative: 'aim.x-', positive: 'aim.x+' }),
++    MouseY: Object.freeze({ negative: 'aim.y-', positive: 'aim.y+' }),
++});
 +
-+const SYSTEM_DEFAULT_KEYBOARD_MOUSE_INPUTS = Object.freeze([
-+    'KeyW',
-+    'KeyA',
-+    'KeyS',
-+    'KeyD',
-+    'Space',
-+    'Enter',
-+    'Escape',
-+    'KeyP',
-+    'MouseButton0',
-+    'MouseButton2',
-+    'MouseX',
-+    'MouseY',
-+]);
-+
-+export const SYSTEM_DEFAULT_GAMEPAD_PROFILE_NAME = 'System Default Gamepad';
-+export const SYSTEM_DEFAULT_KEYBOARD_MOUSE_PROFILE_NAME = 'System Default Keyboard/Mouse';
-+
- export function normalizedInputOptions() {
-     return NORMALIZED_INPUT_REGISTRY.map((input) => ({
-         label: input.label,
-@@ -89,6 +130,87 @@ export function defaultNormalizedInputForPhysicalInput(physicalInput) {
+ const SYSTEM_DEFAULT_GAMEPAD_INPUTS = Object.freeze([
+     'Button0',
+     'Button1',
+@@ -130,6 +143,14 @@ export function defaultNormalizedInputForPhysicalInput(physicalInput) {
      return DEFAULT_PHYSICAL_INPUT_MAP[inputName] || '';
  }
  
-+export function systemDefaultInputMappings(deviceType = '') {
-+    const inputs = normalizeDeviceType(deviceType) === 'gamepad'
-+        ? SYSTEM_DEFAULT_GAMEPAD_INPUTS
-+        : SYSTEM_DEFAULT_KEYBOARD_MOUSE_INPUTS;
-+    return normalizeProfileInputMappings(inputs);
-+}
-+
-+export function systemDefaultProfileForDevice(deviceType = '') {
-+    const isGamepad = normalizeDeviceType(deviceType) === 'gamepad';
-+    const profileName = isGamepad
-+        ? SYSTEM_DEFAULT_GAMEPAD_PROFILE_NAME
-+        : SYSTEM_DEFAULT_KEYBOARD_MOUSE_PROFILE_NAME;
-+    const deviceLabel = isGamepad ? 'Gamepad' : 'Keyboard/Mouse';
-+    const controllerId = isGamepad ? 'system-default-gamepad' : 'system-default-keyboard-mouse';
-+    const inputMappings = systemDefaultInputMappings(deviceLabel);
++export function defaultNormalizedInputDirectionsForPhysicalInput(physicalInput) {
++    const directions = DEFAULT_PHYSICAL_AXIS_DIRECTION_MAP[normalizeInputName(physicalInput)];
 +    return {
-+        controllerId,
-+        controllerName: profileName,
-+        deviceType: deviceLabel,
-+        id: controllerId,
-+        inputMappings,
-+        inputs: inputMappings.map((mapping) => mapping.physicalInput),
-+        mappingProfile: profileName,
-+        systemDefault: true,
++        negative: directions?.negative || '',
++        positive: directions?.positive || '',
 +    };
 +}
 +
-+export function resolveNormalizedInputProfile({ device = null, profiles = [] } = {}) {
-+    const normalizedProfiles = Array.isArray(profiles) ? profiles : [];
-+    const deviceType = normalizeDeviceType(device?.deviceType);
-+    const exactProfile = normalizedProfiles.find((profile) =>
-+        normalizeDeviceType(profile?.deviceType) === deviceType &&
-+            normalizeInputName(profile?.controllerId) === normalizeInputName(device?.controllerId),
+ export function systemDefaultInputMappings(deviceType = '') {
+     const inputs = normalizeDeviceType(deviceType) === 'gamepad'
+         ? SYSTEM_DEFAULT_GAMEPAD_INPUTS
+@@ -225,12 +246,21 @@ export function normalizedInputIsAnalog(inputId) {
+ export function normalizeProfileInputMapping(inputName, source = {}) {
+     const physicalInput = normalizeInputName(source.physicalInput || source.input || inputName);
+     const fallbackNormalizedInput = defaultNormalizedInputForPhysicalInput(physicalInput);
++    const fallbackDirections = defaultNormalizedInputDirectionsForPhysicalInput(physicalInput);
+     const deadzone = Number(source.deadzone);
++    const negativeNormalizedInput = normalizeNormalizedInput(source.negativeNormalizedInput, fallbackDirections.negative);
++    const positiveNormalizedInput = normalizeNormalizedInput(source.positiveNormalizedInput, fallbackDirections.positive);
++    const normalizedInput = normalizeNormalizedInput(
++        source.normalizedInput,
++        positiveNormalizedInput || fallbackNormalizedInput || negativeNormalizedInput,
 +    );
-+    if (exactProfile) {
-+        return {
-+            lookupStep: 1,
-+            profile: exactProfile,
-+            status: 'Exact saved profile',
-+            statusDetail: 'user/player controller profile exact match',
-+        };
-+    }
-+
-+    const keyboardMouseProfile = normalizedProfiles.find((profile) =>
-+        normalizeDeviceType(profile?.deviceType) === 'keyboard-mouse',
-+    );
-+    if (keyboardMouseProfile) {
-+        return {
-+            lookupStep: 2,
-+            profile: keyboardMouseProfile,
-+            status: 'Using saved Keyboard/Mouse Mapping',
-+            statusDetail: 'user/player keyboard/mouse profile',
-+        };
-+    }
-+
-+    if (deviceType === 'gamepad') {
-+        return {
-+            lookupStep: 3,
-+            profile: systemDefaultProfileForDevice('Gamepad'),
-+            status: 'Using Default Gamepad Mapping',
-+            statusDetail: 'system default gamepad profile',
-+        };
-+    }
-+
-+    if (deviceType === 'keyboard-mouse') {
-+        return {
-+            lookupStep: 4,
-+            profile: systemDefaultProfileForDevice('Keyboard/Mouse'),
-+            status: 'Using Default Keyboard/Mouse Mapping',
-+            statusDetail: 'system default keyboard/mouse profile',
-+        };
-+    }
-+
-+    return {
-+        lookupStep: 5,
-+        profile: null,
-+        status: 'Missing Controller Profile',
-+        statusDetail: 'missing mapping warning',
-+    };
-+}
-+
- export function physicalInputIsAnalog(physicalInput) {
-     return /^Axis\d+$/i.test(normalizeInputName(physicalInput))
-         || normalizeInputName(physicalInput) === 'MouseX'
-@@ -132,3 +254,14 @@ function normalizeInputId(value) {
- function normalizeInputName(value) {
+     return {
+         deadzone: Number.isFinite(deadzone) ? Math.max(0, Math.min(1, deadzone)) : 0.2,
+         invert: Boolean(source.invert),
+-        normalizedInput: normalizeNormalizedInput(source.normalizedInput, fallbackNormalizedInput),
++        negativeNormalizedInput,
++        normalizedInput,
+         physicalInput,
++        positiveNormalizedInput,
+     };
+ }
+ 
+@@ -255,6 +285,21 @@ function normalizeInputName(value) {
      return String(value || '').trim();
  }
-+
-+function normalizeDeviceType(value) {
-+    const normalized = String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
-+    if (normalized === 'keyboard' || normalized === 'mouse' || normalized === 'keyboard-mouse') {
-+        return 'keyboard-mouse';
+ 
++export function resolvePhysicalAxisNormalizedInput(inputMapping = {}, axisValue = 0) {
++    const deadzone = Number.isFinite(Number(inputMapping.deadzone))
++        ? Math.max(0, Math.min(1, Number(inputMapping.deadzone)))
++        : 0.2;
++    const value = Number(axisValue) || 0;
++    if (Math.abs(value) < deadzone) {
++        return '';
 +    }
-+    if (normalized === 'gamepad' || normalized === 'game-controller' || normalized === 'controller') {
-+        return 'gamepad';
-+    }
-+    return normalized;
++    const resolvedValue = inputMapping.invert ? -value : value;
++    const directionInput = resolvedValue < 0
++        ? inputMapping.negativeNormalizedInput
++        : inputMapping.positiveNormalizedInput;
++    return normalizeNormalizedInput(directionInput);
 +}
++
+ function normalizeDeviceType(value) {
+     const normalized = String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+     if (normalized === 'keyboard' || normalized === 'mouse' || normalized === 'keyboard-mouse') {
 diff --git a/tests/input/NormalizedInputRegistry.test.mjs b/tests/input/NormalizedInputRegistry.test.mjs
-index 3624d72d3..18603f029 100644
+index 18603f029..93a91cd91 100644
 --- a/tests/input/NormalizedInputRegistry.test.mjs
 +++ b/tests/input/NormalizedInputRegistry.test.mjs
-@@ -11,6 +11,8 @@ import {
+@@ -7,20 +7,26 @@ NormalizedInputRegistry.test.mjs
+ import assert from 'node:assert/strict';
+ import {
+   defaultNormalizedInputForPhysicalInput,
++  defaultNormalizedInputDirectionsForPhysicalInput,
+   normalizeNormalizedInput,
    normalizeProfileInputMappings,
    normalizedInputOptions,
    physicalInputIsAnalog,
-+  resolveNormalizedInputProfile,
-+  systemDefaultProfileForDevice,
+   resolveNormalizedInputProfile,
++  resolvePhysicalAxisNormalizedInput,
+   systemDefaultProfileForDevice,
  } from '../../src/engine/input/NormalizedInputRegistry.js';
  
  function testRegistryContainsPlayableNormalizedInputs() {
-@@ -19,29 +21,33 @@ function testRegistryContainsPlayableNormalizedInputs() {
-     'move.y',
-     'aim.x',
-     'aim.y',
--    'button.south',
--    'button.east',
--    'button.west',
--    'button.north',
-+    'action.primary',
-+    'action.secondary',
-+    'action.tertiary',
-+    'action.quaternary',
-+    'action.confirm',
-+    'action.cancel',
-+    'action.start',
-+    'action.select',
-+    'action.pause',
-     'dpad.up',
-     'dpad.down',
-     'dpad.left',
-     'dpad.right',
-     'trigger.left',
-     'trigger.right',
--    'start',
--    'select',
-   ]);
- }
- 
- function testPhysicalDefaultsRouteThroughNormalizedInputs() {
--  assert.equal(defaultNormalizedInputForPhysicalInput('Button0'), 'button.south');
--  assert.equal(defaultNormalizedInputForPhysicalInput('Button1'), 'button.east');
-+  assert.equal(defaultNormalizedInputForPhysicalInput('Button0'), 'action.primary');
-+  assert.equal(defaultNormalizedInputForPhysicalInput('Button1'), 'action.secondary');
+   assert.deepEqual(normalizedInputOptions().map((option) => option.value), [
+-    'move.x',
+-    'move.y',
+-    'aim.x',
+-    'aim.y',
++    'move.x-',
++    'move.x+',
++    'move.y-',
++    'move.y+',
++    'aim.x-',
++    'aim.x+',
++    'aim.y-',
++    'aim.y+',
+     'action.primary',
+     'action.secondary',
+     'action.tertiary',
+@@ -44,11 +50,15 @@ function testPhysicalDefaultsRouteThroughNormalizedInputs() {
+   assert.equal(defaultNormalizedInputForPhysicalInput('Button1'), 'action.secondary');
    assert.equal(defaultNormalizedInputForPhysicalInput('DPad Up'), 'dpad.up');
    assert.equal(defaultNormalizedInputForPhysicalInput('Trigger Right'), 'trigger.right');
-   assert.equal(defaultNormalizedInputForPhysicalInput('Axis0'), 'move.x');
-   assert.equal(defaultNormalizedInputForPhysicalInput('Axis3'), 'aim.y');
-   assert.equal(defaultNormalizedInputForPhysicalInput('KeyW'), 'move.y');
-+  assert.equal(defaultNormalizedInputForPhysicalInput('Space'), 'action.primary');
-   assert.equal(defaultNormalizedInputForPhysicalInput('MouseX'), 'aim.x');
+-  assert.equal(defaultNormalizedInputForPhysicalInput('Axis0'), 'move.x');
+-  assert.equal(defaultNormalizedInputForPhysicalInput('Axis3'), 'aim.y');
+-  assert.equal(defaultNormalizedInputForPhysicalInput('KeyW'), 'move.y');
++  assert.equal(defaultNormalizedInputForPhysicalInput('Axis0'), 'move.x+');
++  assert.equal(defaultNormalizedInputForPhysicalInput('Axis3'), 'aim.y+');
++  assert.equal(defaultNormalizedInputForPhysicalInput('KeyW'), 'move.y-');
+   assert.equal(defaultNormalizedInputForPhysicalInput('Space'), 'action.primary');
+-  assert.equal(defaultNormalizedInputForPhysicalInput('MouseX'), 'aim.x');
++  assert.equal(defaultNormalizedInputForPhysicalInput('MouseX'), 'aim.x+');
++  assert.deepEqual(defaultNormalizedInputDirectionsForPhysicalInput('Axis0'), {
++    negative: 'move.x-',
++    positive: 'move.x+',
++  });
  }
  
-@@ -52,14 +58,59 @@ function testProfileInputMappingsPreserveAnalogSettings() {
+ function testProfileInputMappingsPreserveAnalogSettings() {
+@@ -56,16 +66,16 @@ function testProfileInputMappingsPreserveAnalogSettings() {
+   assert.equal(physicalInputIsAnalog('Button0'), false);
+   assert.deepEqual(normalizeProfileInputMappings(
      ['Button0', 'Axis0'],
-     [{ deadzone: 0.35, invert: true, normalizedInput: 'aim.x', physicalInput: 'Axis0' }],
+-    [{ deadzone: 0.35, invert: true, normalizedInput: 'aim.x', physicalInput: 'Axis0' }],
++    [{ deadzone: 0.35, invert: true, negativeNormalizedInput: 'aim.x-', physicalInput: 'Axis0', positiveNormalizedInput: 'aim.x+' }],
    ), [
--    { deadzone: 0.2, invert: false, normalizedInput: 'button.south', physicalInput: 'Button0' },
-+    { deadzone: 0.2, invert: false, normalizedInput: 'action.primary', physicalInput: 'Button0' },
-     { deadzone: 0.35, invert: true, normalizedInput: 'aim.x', physicalInput: 'Axis0' },
+-    { deadzone: 0.2, invert: false, normalizedInput: 'action.primary', physicalInput: 'Button0' },
+-    { deadzone: 0.35, invert: true, normalizedInput: 'aim.x', physicalInput: 'Axis0' },
++    { deadzone: 0.2, invert: false, negativeNormalizedInput: '', normalizedInput: 'action.primary', physicalInput: 'Button0', positiveNormalizedInput: '' },
++    { deadzone: 0.35, invert: true, negativeNormalizedInput: 'aim.x-', normalizedInput: 'aim.x+', physicalInput: 'Axis0', positiveNormalizedInput: 'aim.x+' },
    ]);
  }
  
  function testInvalidNormalizedInputDoesNotSilentlyBecomeAction() {
--  assert.equal(normalizeNormalizedInput('fire', 'button.south'), 'button.south');
--  assert.equal(normalizeNormalizedInput('move.x', 'button.south'), 'move.x');
-+  assert.equal(normalizeNormalizedInput('fire', 'action.primary'), 'action.primary');
-+  assert.equal(normalizeNormalizedInput('move.x', 'action.primary'), 'move.x');
-+}
-+
-+function testSystemDefaultProfilesAreVisibleFallbackContracts() {
-+  const gamepadDefault = systemDefaultProfileForDevice('Gamepad');
-+  const keyboardMouseDefault = systemDefaultProfileForDevice('Keyboard/Mouse');
-+  assert.equal(gamepadDefault.mappingProfile, 'System Default Gamepad');
-+  assert.equal(keyboardMouseDefault.mappingProfile, 'System Default Keyboard/Mouse');
-+  assert.equal(gamepadDefault.systemDefault, true);
-+  assert.equal(keyboardMouseDefault.systemDefault, true);
-+  assert.equal(gamepadDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Button0').normalizedInput, 'action.primary');
-+  assert.equal(keyboardMouseDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Space').normalizedInput, 'action.primary');
-+}
-+
-+function testRuntimeLookupOrder() {
-+  const keyboardMouseProfile = {
-+    controllerId: 'keyboard-mouse',
-+    deviceType: 'Keyboard/Mouse',
-+    mappingProfile: 'My Keyboard/Mouse',
-+  };
-+  const exactGamepadProfile = {
-+    controllerId: 'Arcade Pad',
-+    deviceType: 'Gamepad',
-+    mappingProfile: 'My Arcade Pad',
-+  };
-+  assert.equal(resolveNormalizedInputProfile({
-+    device: { controllerId: 'Arcade Pad', deviceType: 'Gamepad' },
-+    profiles: [keyboardMouseProfile, exactGamepadProfile],
-+  }).lookupStep, 1);
-+  assert.equal(resolveNormalizedInputProfile({
-+    device: { controllerId: 'Other Pad', deviceType: 'Gamepad' },
-+    profiles: [keyboardMouseProfile],
-+  }).lookupStep, 2);
-+  const gamepadDefault = resolveNormalizedInputProfile({
-+    device: { controllerId: 'Other Pad', deviceType: 'Gamepad' },
-+    profiles: [],
-+  });
-+  assert.equal(gamepadDefault.lookupStep, 3);
-+  assert.equal(gamepadDefault.status, 'Using Default Gamepad Mapping');
-+  const keyboardDefault = resolveNormalizedInputProfile({
-+    device: { controllerId: 'keyboard-mouse', deviceType: 'Keyboard/Mouse' },
-+    profiles: [],
-+  });
-+  assert.equal(keyboardDefault.lookupStep, 4);
-+  assert.equal(keyboardDefault.status, 'Using Default Keyboard/Mouse Mapping');
-+  assert.equal(resolveNormalizedInputProfile({ device: null, profiles: [] }).lookupStep, 5);
+   assert.equal(normalizeNormalizedInput('fire', 'action.primary'), 'action.primary');
+-  assert.equal(normalizeNormalizedInput('move.x', 'action.primary'), 'move.x');
++  assert.equal(normalizeNormalizedInput('move.x-', 'action.primary'), 'move.x-');
  }
  
- export function run() {
-@@ -67,6 +118,8 @@ export function run() {
-   testPhysicalDefaultsRouteThroughNormalizedInputs();
+ function testSystemDefaultProfilesAreVisibleFallbackContracts() {
+@@ -77,6 +87,27 @@ function testSystemDefaultProfilesAreVisibleFallbackContracts() {
+   assert.equal(keyboardMouseDefault.systemDefault, true);
+   assert.equal(gamepadDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Button0').normalizedInput, 'action.primary');
+   assert.equal(keyboardMouseDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Space').normalizedInput, 'action.primary');
++  assert.deepEqual(gamepadDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Axis0'), {
++    deadzone: 0.2,
++    invert: false,
++    negativeNormalizedInput: 'move.x-',
++    normalizedInput: 'move.x+',
++    physicalInput: 'Axis0',
++    positiveNormalizedInput: 'move.x+',
++  });
++}
++
++function testAxisDirectionResolutionUsesSharedDeadzoneAndInvert() {
++  const mapping = {
++    deadzone: 0.35,
++    invert: false,
++    negativeNormalizedInput: 'move.x-',
++    positiveNormalizedInput: 'move.x+',
++  };
++  assert.equal(resolvePhysicalAxisNormalizedInput(mapping, 0.2), '');
++  assert.equal(resolvePhysicalAxisNormalizedInput(mapping, -0.7), 'move.x-');
++  assert.equal(resolvePhysicalAxisNormalizedInput(mapping, 0.7), 'move.x+');
++  assert.equal(resolvePhysicalAxisNormalizedInput({ ...mapping, invert: true }, -0.7), 'move.x+');
+ }
+ 
+ function testRuntimeLookupOrder() {
+@@ -119,6 +150,7 @@ export function run() {
    testProfileInputMappingsPreserveAnalogSettings();
    testInvalidNormalizedInputDoesNotSilentlyBecomeAction();
-+  testSystemDefaultProfilesAreVisibleFallbackContracts();
-+  testRuntimeLookupOrder();
+   testSystemDefaultProfilesAreVisibleFallbackContracts();
++  testAxisDirectionResolutionUsesSharedDeadzoneAndInvert();
+   testRuntimeLookupOrder();
  }
  
- run();
 diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
-index 8fc493faa..9f20cd2dd 100644
+index 9f20cd2dd..62d3585f9 100644
 --- a/tests/playwright/tools/AdminDbViewer.spec.mjs
 +++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
-@@ -403,10 +403,12 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
- 
-     await page.getByRole("button", { name: "Controls" }).click();
-     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Controls\./);
--    await expect(page.locator("[data-admin-db-table='input_mapping_records']")).toBeVisible();
--    await expect(page.locator("[data-admin-db-table='input_controller_profile_records']")).toBeVisible();
--    await expect(page.locator("[data-admin-db-table='input_mapping_records'] thead")).toContainText("binding");
--    await expect(page.locator("[data-admin-db-table='input_controller_profile_records'] thead")).toContainText("controllerId");
-+    await expect(page.locator("[data-admin-db-table='game_input_mappings']")).toBeVisible();
-+    await expect(page.locator("[data-admin-db-table='player_controller_profiles']")).toBeVisible();
-+    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("gameAction");
-+    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).not.toContainText("binding");
-+    await expect(page.locator("[data-admin-db-table='player_controller_profiles'] thead")).toContainText("controllerId");
-+    await expect(page.locator("[data-admin-db-table='player_controller_profiles'] thead")).not.toContainText("gameAction");
-     await expect(page.getByRole("button", { name: "Input Mapping" })).toHaveCount(0);
- 
-     await page.getByRole("button", { name: "Project Journey" }).click();
+@@ -406,6 +406,8 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+     await expect(page.locator("[data-admin-db-table='game_input_mappings']")).toBeVisible();
+     await expect(page.locator("[data-admin-db-table='player_controller_profiles']")).toBeVisible();
+     await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("gameAction");
++    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("inputFamily");
++    await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).toContainText("inputEventPhase");
+     await expect(page.locator("[data-admin-db-table='game_input_mappings'] thead")).not.toContainText("binding");
+     await expect(page.locator("[data-admin-db-table='player_controller_profiles'] thead")).toContainText("controllerId");
+     await expect(page.locator("[data-admin-db-table='player_controller_profiles'] thead")).not.toContainText("gameAction");
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 4975693b9..0206da9b6 100644
+index 0206da9b6..6c9ddd8e6 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -44,18 +44,21 @@ const NORMALIZED_INPUTS = [
-   "move.y",
-   "aim.x",
-   "aim.y",
--  "button.south",
--  "button.east",
--  "button.west",
--  "button.north",
-+  "action.primary",
-+  "action.secondary",
-+  "action.tertiary",
-+  "action.quaternary",
-+  "action.confirm",
-+  "action.cancel",
-+  "action.start",
-+  "action.select",
-+  "action.pause",
-   "dpad.up",
-   "dpad.down",
-   "dpad.left",
-   "dpad.right",
-   "trigger.left",
-   "trigger.right",
--  "start",
--  "select",
+@@ -40,10 +40,14 @@ const DEFAULT_ACTION_DESCRIPTIONS = [
  ];
  
- test.beforeEach(async ({ page }) => {
-@@ -187,7 +190,7 @@ async function inputMappingRecords(page) {
-   return page.evaluate(async () => {
-     const response = await fetch("/api/mock-db/snapshot");
-     const payload = await response.json();
--    return payload.data.tables.input_mapping_records || [];
-+    return payload.data.tables.game_input_mappings || [];
-   });
- }
- 
-@@ -195,7 +198,7 @@ async function controllerProfileRecords(page) {
-   return page.evaluate(async () => {
-     const response = await fetch("/api/mock-db/snapshot");
-     const payload = await response.json();
--    return payload.data.tables.input_controller_profile_records || [];
-+    return payload.data.tables.player_controller_profiles || [];
-   });
- }
- 
-@@ -234,15 +237,15 @@ async function exposeGamepad(page) {
-   });
- }
- 
--test("Controls splits Game Controls and Player Controller Profiles with normalized input ownership", async ({ page }) => {
-+test("Controls splits Game Input Mapping and Player Input Mapping with normalized input ownership", async ({ page }) => {
-   const failures = await openControlsPage(page, "/toolbox/controls/index.html?workspace=demo-project");
- 
-   try {
-     await expect(page.locator(".tool-workspace")).toBeVisible();
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
--    await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Controls");
--    await expect(page.locator("[data-input-mapping-accordion] summary")).toHaveText("Game Controls");
--    await expect(page.locator("[data-controller-profile-accordion] summary")).toHaveText("Player Controller Profiles");
-+    await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Input Mapping");
-+    await expect(page.locator("[data-input-mapping-accordion] summary")).toHaveText("Game Input Mapping");
-+    await expect(page.locator("[data-controller-profile-accordion] summary")).toHaveText("Player Input Mapping");
+ const NORMALIZED_INPUTS = [
+-  "move.x",
+-  "move.y",
+-  "aim.x",
+-  "aim.y",
++  "move.x-",
++  "move.x+",
++  "move.y-",
++  "move.y+",
++  "aim.x-",
++  "aim.x+",
++  "aim.y-",
++  "aim.y+",
+   "action.primary",
+   "action.secondary",
+   "action.tertiary",
+@@ -173,7 +177,9 @@ async function seedInvalidCollectibleMapping(page) {
+           action: "moveLeft",
+           actionLabel: "Move Left",
+           id: "coin-move-left",
+-          normalizedInput: "move.x",
++          inputEventPhase: "Down",
++          inputFamily: "Keyboard",
++          normalizedInput: "move.x-",
+           objectKey: "coin",
+           objectName: "Coin",
+           state: "Active",
+@@ -248,6 +254,8 @@ test("Controls splits Game Input Mapping and Player Input Mapping with normalize
+     await expect(page.locator("[data-controller-profile-accordion] summary")).toHaveText("Player Input Mapping");
      await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
        "Normalized Input",
++      "Input Family",
++      "Input Event",
        "Game Action",
-@@ -260,12 +263,11 @@ test("Controls splits Game Controls and Player Controller Profiles with normaliz
-     ]);
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("Missing Game Control Mapping");
-     await expect(page.locator("[data-input-output-status]")).toHaveText("Missing Game Control Mapping");
--    await expect(page.locator("[data-controller-profile-fallback-status]")).toHaveText("Missing Controller Profile. Create Player Controller Profile.");
-+    await expect(page.locator("[data-controller-profile-fallback-status]")).toHaveText("Missing Controller Profile. Create My Controller Profile.");
-     await expect(page.locator("[data-controller-profile-status]")).toContainText("Missing Controller Profile");
-     await expect(page.locator("[data-controller-device-select] option")).toHaveText([
-       "Choose a physical controller",
--      "Keyboard",
--      "Mouse",
-+      "Keyboard/Mouse",
-     ]);
-     await expect(page.locator("[data-input-action-catalog] th")).toHaveText(["Action Name", "Description"]);
-     await expect(page.locator("[data-input-action-label]")).toHaveText(DEFAULT_ACTION_LABELS);
-@@ -274,6 +276,8 @@ test("Controls splits Game Controls and Player Controller Profiles with normaliz
-     await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
-     await expect(page.getByText("Mapping JSON", { exact: true })).toHaveCount(0);
-     await expect(page.locator("[data-input-source-diagnostics]")).toContainText("Normalized Input Registry");
-+    await expect(page.locator("[data-input-source-diagnostics]")).toContainText("Fallback profiles: System Default Gamepad, System Default Keyboard/Mouse.");
-+    await expect(page.locator("[data-input-source-diagnostics]")).toContainText("Runtime lookup order: user/player controller profile exact match, user/player keyboard/mouse profile, System Default Gamepad, System Default Keyboard/Mouse, Missing Controller Profile.");
-     await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
+       "Object",
+       "State",
+@@ -300,7 +308,7 @@ test("Game Input Mapping saves normalized input to game action mappings and vali
+     await seedInvalidCollectibleMapping(page);
+     await page.reload({ waitUntil: "networkidle" });
  
-     const registryEntry = await controlsRegistryEntry(page);
-@@ -288,7 +292,7 @@ test("Controls splits Game Controls and Player Controller Profiles with normaliz
-   }
- });
+-    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x");
++    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x-");
+     await expect(page.locator("[data-input-mapping-row]")).toContainText("Move Left");
+     await expect(page.locator("[data-input-mapping-row]")).toContainText("Coin");
+     await expect(page.locator("[data-input-mapping-row]")).toContainText("Needs update:");
+@@ -312,14 +320,24 @@ test("Game Input Mapping saves normalized input to game action mappings and vali
+     await expect(page.locator("[data-input-action-select]")).toContainText("Move Left");
+     await page.locator("[data-input-action-select]").selectOption("moveLeft");
+     await page.locator("[data-input-add-mapping]").click();
+-    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(5);
++    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(7);
+     await expect(page.locator("[data-input-row-normalized] option")).toHaveText(NORMALIZED_INPUTS);
++    await expect(page.locator("[data-input-row-family] option")).toHaveText(["Keyboard", "Mouse", "Gamepad", "Joystick"]);
++    await expect(page.locator("[data-input-row-event] option")).toHaveText(["Press", "Down", "Release"]);
+     await expect(page.locator("[data-input-row-object]")).toHaveValue("hero");
+     await expect(page.locator("[data-input-row-action]")).toHaveValue("moveLeft");
+-    await page.locator("[data-input-row-normalized]").selectOption("move.x");
++    const editingSelectHeights = await page.locator("[data-input-editing-row] select").evaluateAll((selects) =>
++      selects.map((select) => Math.round(select.getBoundingClientRect().height)),
++    );
++    expect(new Set(editingSelectHeights).size).toBe(1);
++    await page.locator("[data-input-row-normalized]").selectOption("move.x-");
++    await page.locator("[data-input-row-family]").selectOption("Gamepad");
++    await page.locator("[data-input-row-event]").selectOption("Release");
+     await page.locator("[data-input-save-mapping]").click();
  
--test("Game Controls save normalized input to game action mappings and validate object actions", async ({ page }) => {
-+test("Game Input Mapping saves normalized input to game action mappings and validates object actions", async ({ page }) => {
-   const failures = await openControlsPage(page);
- 
-   try {
-@@ -323,27 +327,29 @@ test("Game Controls save normalized input to game action mappings and validate o
-     let records = await inputMappingRecords(page);
-     expect(records).toHaveLength(1);
+-    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x");
++    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x-");
++    await expect(page.locator("[data-input-mapping-row]")).toContainText("Gamepad");
++    await expect(page.locator("[data-input-mapping-row]")).toContainText("Release");
+     await expect(page.locator("[data-input-mapping-row]")).toContainText("Move Left");
+     await expect(page.locator("[data-input-mapping-row]")).toContainText("Hero");
+     await expect(page.locator("[data-input-output-status]")).toHaveText("Complete");
+@@ -329,7 +347,9 @@ test("Game Input Mapping saves normalized input to game action mappings and vali
      expect(records[0]).toMatchObject({
--      action: "moveLeft",
--      actionLabel: "Move Left",
--      binding: "",
--      inputDevice: "Normalized Input",
-+      gameAction: "moveLeft",
-+      gameActionLabel: "Move Left",
-       normalizedInput: "move.x",
+       gameAction: "moveLeft",
+       gameActionLabel: "Move Left",
+-      normalizedInput: "move.x",
++      inputEventPhase: "Release",
++      inputFamily: "Gamepad",
++      normalizedInput: "move.x-",
        objectKey: "hero",
--      source: "normalized",
        state: "Active",
      });
-+    expect(records[0]).not.toHaveProperty("binding");
-+    expect(records[0]).not.toHaveProperty("inputDevice");
-+    expect(records[0]).not.toHaveProperty("controllerId");
-+    expect(records[0]).not.toHaveProperty("controllerName");
-+    expect(records[0]).not.toHaveProperty("controllerProfileId");
+@@ -338,17 +358,24 @@ test("Game Input Mapping saves normalized input to game action mappings and vali
+     expect(records[0]).not.toHaveProperty("controllerId");
+     expect(records[0]).not.toHaveProperty("controllerName");
+     expect(records[0]).not.toHaveProperty("controllerProfileId");
++    expect(records[0]).not.toHaveProperty("physicalInput");
  
      await page.reload({ waitUntil: "networkidle" });
-     await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x");
+-    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x");
++    await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x-");
++    await expect(page.locator("[data-input-mapping-row]")).toContainText("Gamepad");
++    await expect(page.locator("[data-input-mapping-row]")).toContainText("Release");
      await page.locator("[data-input-edit-mapping]").click();
--    await page.locator("[data-input-row-normalized]").selectOption("button.south");
-+    await page.locator("[data-input-row-normalized]").selectOption("action.primary");
+     await page.locator("[data-input-row-normalized]").selectOption("action.primary");
++    await page.locator("[data-input-row-family]").selectOption("Mouse");
++    await page.locator("[data-input-row-event]").selectOption("Press");
      await page.locator("[data-input-row-action]").selectOption("fire");
      await page.locator("[data-input-save-mapping]").click();
      records = await inputMappingRecords(page);
      expect(records).toHaveLength(1);
      expect(records[0]).toMatchObject({
--      action: "fire",
--      normalizedInput: "button.south",
-+      gameAction: "fire",
-+      normalizedInput: "action.primary",
+       gameAction: "fire",
++      inputEventPhase: "Press",
++      inputFamily: "Mouse",
+       normalizedInput: "action.primary",
        objectKey: "hero",
      });
- 
-@@ -368,7 +374,7 @@ test("Game Controls save normalized input to game action mappings and validate o
-   }
- });
- 
--test("Player Controller Profiles persist physical-to-normalized mappings with analog settings", async ({ page }) => {
-+test("Player Input Mapping persists physical-to-normalized mappings with analog settings", async ({ page }) => {
-   const failures = await openControlsPage(page);
- 
-   try {
-@@ -376,29 +382,19 @@ test("Player Controller Profiles persist physical-to-normalized mappings with an
-     await page.locator("[data-input-refresh-devices]").click();
-     await expect(page.locator("[data-controller-device-select] option")).toContainText([
-       "Choose a physical controller",
--      "Keyboard",
--      "Mouse",
-+      "Keyboard/Mouse",
-       "Gamepad: Arcade Test Pad",
-     ]);
- 
--    await page.locator("[data-controller-device-select]").selectOption("keyboard");
--    await page.locator("[data-controller-profile-add]").click();
--    await expect(page.locator("[data-controller-profile-list]")).toContainText("Keyboard: Keyboard");
--    let profiles = await controllerProfileRecords(page);
--    expect(profiles).toHaveLength(1);
--    expect(profiles[0].inputMappings.find((mapping) => mapping.physicalInput === "KeyW")).toMatchObject({
--      normalizedInput: "move.y",
--      physicalInput: "KeyW",
--    });
--
-     await page.locator("[data-controller-device-select]").selectOption("gamepad-0");
-     await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Using Default Gamepad Mapping");
-+    expect(await controllerProfileRecords(page)).toHaveLength(0);
-     await expect(page.locator("[data-controller-profile-create-default]")).toBeVisible();
-     await page.locator("[data-controller-profile-create-default]").click();
-     await expect(page.locator("[data-controller-profile-editing-row]")).toContainText("Gamepad: Arcade Test Pad");
+@@ -395,9 +422,21 @@ test("Player Input Mapping persists physical-to-normalized mappings with analog
      await expect(page.locator("[data-controller-profile-input-pair]")).toHaveCount(18);
      await expect(page.locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
--    await expect(page.locator("[data-controller-profile-input-normalized]").first()).toHaveValue("button.south");
-+    await expect(page.locator("[data-controller-profile-input-normalized]").first()).toHaveValue("action.primary");
-     await expect(page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-deadzone]")).toBeVisible();
-     await page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-deadzone]").fill("0.35");
-     await page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-invert]").check();
-@@ -412,11 +408,11 @@ test("Player Controller Profiles persist physical-to-normalized mappings with an
+     await expect(page.locator("[data-controller-profile-input-normalized]").first()).toHaveValue("action.primary");
+-    await expect(page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-deadzone]")).toBeVisible();
+-    await page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-deadzone]").fill("0.35");
+-    await page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-invert]").check();
++    await expect(page.getByText("Assigned Normalized Input")).toHaveCount(0);
++    const axis0Pair = page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" });
++    await expect(axis0Pair.locator("[data-controller-profile-input-normalized-negative]")).toHaveValue("move.x-");
++    await expect(axis0Pair.locator("[data-controller-profile-input-normalized-positive]")).toHaveValue("move.x+");
++    await expect(axis0Pair.locator("[data-controller-profile-deadzone]")).toHaveCount(1);
++    await expect(axis0Pair.locator("[data-controller-profile-invert]")).toHaveCount(1);
++    await expect(axis0Pair.locator("[data-controller-profile-deadzone]")).toBeVisible();
++    await axis0Pair.locator("[data-controller-profile-deadzone]").fill("0.35");
++    await axis0Pair.locator("[data-controller-profile-invert]").check();
++    await axis0Pair.locator("[data-controller-profile-input-normalized-negative]").selectOption("aim.x-");
++    await axis0Pair.locator("[data-controller-profile-input-normalized-positive]").selectOption("aim.x+");
++    const profileSelectHeights = await page.locator("[data-controller-profile-editing-actions-row] select").evaluateAll((selects) =>
++      selects.map((select) => Math.round(select.getBoundingClientRect().height)),
++    );
++    expect(new Set(profileSelectHeights).size).toBe(1);
+ 
+     await page.evaluate(() => {
+       window.__arcadeButtons[0] = { pressed: true, value: 1 };
+@@ -408,7 +447,8 @@ test("Player Input Mapping persists physical-to-normalized mappings with analog
      const activeInputs = page.locator("[data-controller-profile-input-pair][data-controller-profile-input-active='true']");
      await expect(activeInputs).toHaveCount(2);
      await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toHaveCSS("color", "rgb(255, 200, 87)");
--    await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected Normalized Input: button.south");
-+    await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected Normalized Input: action.primary");
+-    await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected Normalized Input: action.primary");
++    await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected: action.primary");
++    await expect(activeInputs.filter({ hasText: "Axis0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected: - aim.x-, + aim.x+");
  
      await page.locator("[data-controller-profile-save]").click();
--    profiles = await controllerProfileRecords(page);
--    expect(profiles).toHaveLength(2);
-+    let profiles = await controllerProfileRecords(page);
-+    expect(profiles).toHaveLength(1);
-     const gamepadProfile = profiles.find((profile) => profile.controllerName === "Arcade Test Pad");
-     expect(gamepadProfile.inputMappings).toHaveLength(18);
+     let profiles = await controllerProfileRecords(page);
+@@ -418,8 +458,11 @@ test("Player Input Mapping persists physical-to-normalized mappings with analog
      expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Axis0")).toMatchObject({
-@@ -424,9 +420,24 @@ test("Player Controller Profiles persist physical-to-normalized mappings with an
+       deadzone: 0.35,
        invert: true,
-       normalizedInput: "move.x",
+-      normalizedInput: "move.x",
++      negativeNormalizedInput: "aim.x-",
++      normalizedInput: "aim.x+",
++      positiveNormalizedInput: "aim.x+",
      });
-+    expect(gamepadProfile).not.toHaveProperty("actions");
-+    expect(gamepadProfile).not.toHaveProperty("gameAction");
-+    expect(gamepadProfile).not.toHaveProperty("objectKey");
-+
-+    await page.locator("[data-controller-device-select]").selectOption("keyboard-mouse");
-+    await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Using Default Keyboard/Mouse Mapping");
-+    await page.locator("[data-controller-profile-add]").click();
-+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Keyboard/Mouse: Keyboard/Mouse");
-+    profiles = await controllerProfileRecords(page);
-+    expect(profiles).toHaveLength(2);
-+    const keyboardMouseProfile = profiles.find((profile) => profile.controllerName === "Keyboard/Mouse");
-+    expect(keyboardMouseProfile.inputMappings.find((mapping) => mapping.physicalInput === "Space")).toMatchObject({
-+      normalizedInput: "action.primary",
-+      physicalInput: "Space",
-+    });
- 
-     await page.reload({ waitUntil: "networkidle" });
--    await expect(page.locator("[data-controller-profile-list]")).toContainText("Keyboard: Keyboard");
-+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Keyboard/Mouse: Keyboard/Mouse");
-     await expect(page.locator("[data-controller-profile-list]")).toContainText("Gamepad: Arcade Test Pad");
-     profiles = await controllerProfileRecords(page);
-     expect(profiles).toHaveLength(2);
-@@ -451,7 +462,7 @@ test("Custom game Actions persist and do not appear in player controller normali
-     await expect(page.locator("[data-input-action-select]")).toContainText("Dash Burst");
-     expect(await customActionRecords(page)).toHaveLength(1);
- 
--    await page.locator("[data-controller-device-select]").selectOption("mouse");
-+    await page.locator("[data-controller-device-select]").selectOption("keyboard-mouse");
-     await page.locator("[data-controller-profile-add]").click();
-     await page.locator("[data-controller-profile-edit]").click();
-     await expect(page.locator("[data-controller-profile-input-normalized]").first()).not.toContainText("Dash Burst");
-@@ -460,16 +471,16 @@ test("Custom game Actions persist and do not appear in player controller normali
-     await page.locator("[data-input-object-select]").selectOption("hero");
-     await page.locator("[data-input-action-select]").selectOption("custom-dash-burst");
-     await page.locator("[data-input-add-mapping]").click();
--    await page.locator("[data-input-row-normalized]").selectOption("button.east");
-+    await page.locator("[data-input-row-normalized]").selectOption("action.secondary");
-     await page.locator("[data-input-save-mapping]").click();
-     await expect(page.locator("[data-input-mapping-row]")).toContainText("Dash Burst");
--    await expect(page.locator("[data-input-mapping-row]")).toContainText("button.east");
-+    await expect(page.locator("[data-input-mapping-row]")).toContainText("action.secondary");
-     let records = await inputMappingRecords(page);
-     expect(records).toHaveLength(1);
-     expect(records[0]).toMatchObject({
--      action: "custom-dash-burst",
--      actionLabel: "Dash Burst",
--      normalizedInput: "button.east",
-+      gameAction: "custom-dash-burst",
-+      gameActionLabel: "Dash Burst",
-+      normalizedInput: "action.secondary",
-       objectKey: "hero",
-     });
- 
++    expect(gamepadProfile.inputMappings.filter((mapping) => mapping.physicalInput === "Axis0")).toHaveLength(1);
+     expect(gamepadProfile).not.toHaveProperty("actions");
+     expect(gamepadProfile).not.toHaveProperty("gameAction");
+     expect(gamepadProfile).not.toHaveProperty("objectKey");
 diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
-index e0a2e3c6a..ee46aecb8 100644
+index ee46aecb8..bbb6ca559 100644
 --- a/toolbox/controls/controls.js
 +++ b/toolbox/controls/controls.js
-@@ -65,8 +65,11 @@ const SOURCE_DIAGNOSTICS = Object.freeze([
-   "Normalized Input Registry",
- ]);
+@@ -67,6 +67,17 @@ const SOURCE_DIAGNOSTICS = Object.freeze([
  
--const KEYBOARD_PROFILE_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape"]);
-+const RUNTIME_LOOKUP_ORDER = "Runtime lookup order: user/player controller profile exact match, user/player keyboard/mouse profile, System Default Gamepad, System Default Keyboard/Mouse, Missing Controller Profile.";
-+const SYSTEM_DEFAULT_PROFILES_LABEL = "Fallback profiles: System Default Gamepad, System Default Keyboard/Mouse.";
-+const KEYBOARD_PROFILE_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP"]);
+ const RUNTIME_LOOKUP_ORDER = "Runtime lookup order: user/player controller profile exact match, user/player keyboard/mouse profile, System Default Gamepad, System Default Keyboard/Mouse, Missing Controller Profile.";
+ const SYSTEM_DEFAULT_PROFILES_LABEL = "Fallback profiles: System Default Gamepad, System Default Keyboard/Mouse.";
++const INPUT_EVENT_PHASE_OPTIONS = Object.freeze([
++  Object.freeze({ label: "Press", value: "Press" }),
++  Object.freeze({ label: "Down", value: "Down" }),
++  Object.freeze({ label: "Release", value: "Release" }),
++]);
++const INPUT_FAMILY_OPTIONS = Object.freeze([
++  Object.freeze({ label: "Keyboard", value: "Keyboard" }),
++  Object.freeze({ label: "Mouse", value: "Mouse" }),
++  Object.freeze({ label: "Gamepad", value: "Gamepad" }),
++  Object.freeze({ label: "Joystick", value: "Joystick" }),
++]);
+ const KEYBOARD_PROFILE_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP"]);
  const MOUSE_PROFILE_INPUTS = Object.freeze(["MouseButton0", "MouseButton2", "MouseWheelUp", "MouseWheelDown", "MouseX", "MouseY"]);
-+const KEYBOARD_MOUSE_PROFILE_INPUTS = Object.freeze([...KEYBOARD_PROFILE_INPUTS, ...MOUSE_PROFILE_INPUTS]);
- 
- let controlsRepository = createControlsToolApiRepository();
- let objectsRepository = createObjectsToolApiRepository();
-@@ -197,22 +200,13 @@ function activeProfileGamepadInputNames(profile) {
- function controllerDeviceOptions() {
-   const baseDevices = [
-     {
--      controllerId: "keyboard",
--      controllerName: "Keyboard",
--      deviceType: "Keyboard",
--      inputs: [...KEYBOARD_PROFILE_INPUTS],
--      label: "Keyboard",
--      mappingProfile: "Keyboard Profile",
--      value: "keyboard",
--    },
--    {
--      controllerId: "mouse",
--      controllerName: "Mouse",
--      deviceType: "Mouse",
--      inputs: [...MOUSE_PROFILE_INPUTS],
--      label: "Mouse",
--      mappingProfile: "Mouse Profile",
--      value: "mouse",
-+      controllerId: "keyboard-mouse",
-+      controllerName: "Keyboard/Mouse",
-+      deviceType: "Keyboard/Mouse",
-+      inputs: [...KEYBOARD_MOUSE_PROFILE_INPUTS],
-+      label: "Keyboard/Mouse",
-+      mappingProfile: "Keyboard/Mouse Profile",
-+      value: "keyboard-mouse",
-     },
-   ];
-   const gamepadDevices = availableGamepads().map((gamepad) => {
-@@ -241,8 +235,7 @@ function exactProfileForDevice(device) {
-   }
-   return controllerProfiles.find((profile) =>
-     profile.deviceType === device.deviceType &&
--      profile.controllerId === device.controllerId &&
--      profile.mappingProfile === device.mappingProfile,
-+      profile.controllerId === device.controllerId,
-   ) || null;
+ const KEYBOARD_MOUSE_PROFILE_INPUTS = Object.freeze([...KEYBOARD_PROFILE_INPUTS, ...MOUSE_PROFILE_INPUTS]);
+@@ -139,6 +150,16 @@ function listLabel(values, fallback = "Not configured") {
+   return normalizedValues.length ? normalizedValues.join(", ") : fallback;
  }
  
-@@ -254,7 +247,6 @@ function selectedControllerProfile() {
++function normalizeInputEventPhase(value) {
++  const normalized = normalizeText(value);
++  return INPUT_EVENT_PHASE_OPTIONS.some((option) => option.value === normalized) ? normalized : "Down";
++}
++
++function normalizeInputFamily(value) {
++  const normalized = normalizeText(value);
++  return INPUT_FAMILY_OPTIONS.some((option) => option.value === normalized) ? normalized : "Keyboard";
++}
++
+ function setText(element, value) {
+   if (element) {
+     element.textContent = value;
+@@ -406,6 +427,7 @@ function actionCell(actions) {
  
- function profileFromDevice(device, source = "detected") {
-   const profile = normalizeControllerProfile({
--    actions: [],
-     controllerId: device.controllerId,
-     controllerName: device.controllerName,
-     deviceType: device.deviceType,
-@@ -277,22 +269,36 @@ function renderControllerProfileFallback() {
-     return;
-   }
-   if (!device || device.unavailable) {
--    setText(elements.controllerProfileFallbackStatus, "Missing Controller Profile. Create Player Controller Profile.");
-+    setText(elements.controllerProfileFallbackStatus, "Missing Controller Profile. Create My Controller Profile.");
-+    return;
-+  }
-+  const resolution = inputService.resolveNormalizedInputProfile({
-+    device,
-+    profiles: controllerProfiles,
-+  });
-+  if (resolution.lookupStep === 1) {
-+    setText(elements.controllerProfileFallbackStatus, `Exact saved profile: ${resolution.profile.mappingProfile}`);
-     return;
-   }
--  const exactProfile = exactProfileForDevice(device);
--  if (exactProfile) {
--    setText(elements.controllerProfileFallbackStatus, `Exact saved profile: ${exactProfile.mappingProfile}`);
-+  if (resolution.lookupStep === 2) {
-+    setText(elements.controllerProfileFallbackStatus, `Using saved Keyboard/Mouse Mapping: ${resolution.profile.mappingProfile}`);
-     return;
-   }
--  if (device.deviceType === "Gamepad") {
--    setText(elements.controllerProfileFallbackStatus, "Using Default Gamepad Mapping. Missing saved profile for this controller. Create Player Controller Profile.");
-+  if (resolution.lookupStep === 3) {
-+    setText(elements.controllerProfileFallbackStatus, "Using Default Gamepad Mapping. Missing saved profile for this controller. Create My Controller Profile.");
-     if (elements.controllerProfileCreateDefault) {
-       elements.controllerProfileCreateDefault.hidden = false;
-     }
-     return;
-   }
--  setText(elements.controllerProfileFallbackStatus, "Missing Controller Profile. Create Player Controller Profile.");
-+  if (resolution.lookupStep === 4) {
-+    setText(elements.controllerProfileFallbackStatus, "Using Default Keyboard/Mouse Mapping. Create My Controller Profile.");
-+    if (elements.controllerProfileCreateDefault) {
-+      elements.controllerProfileCreateDefault.hidden = false;
-+    }
-+    return;
-+  }
-+  setText(elements.controllerProfileFallbackStatus, "Missing Controller Profile. Create My Controller Profile.");
+ function selectControl({ ariaLabel, options, selectedValue }) {
+   const select = document.createElement("select");
++  select.className = "tool-form-control";
+   select.setAttribute("aria-label", ariaLabel);
+   options.forEach((option) => {
+     select.append(optionElement(option.value, option.label));
+@@ -422,11 +444,20 @@ function controlCell(control) {
+   return cell;
  }
  
- function selectedObject() {
-@@ -437,9 +443,6 @@ function controllerProfileIdFor(profile) {
- function normalizeControllerProfile(source = {}) {
-   const inputs = normalizeList(source.inputs);
-   const profile = {
--    actions: Array.isArray(source.actions)
--      ? source.actions.map(normalizeText)
--      : normalizeList(source.actions),
-     controllerId: normalizeText(source.controllerId),
-     controllerName: normalizeText(source.controllerName),
-     deviceType: normalizeText(source.deviceType) || "Gamepad",
-@@ -459,24 +462,18 @@ function normalizeMapping(source = {}) {
-   const binding = normalizeText(source.binding || source.input);
-   const normalizedInput = normalizeNormalizedInput(
-     source.normalizedInput,
--    inputService.getDefaultNormalizedInputForPhysicalInput(binding) || "button.south",
-+    inputService.getDefaultNormalizedInputForPhysicalInput(binding) || "action.primary",
-   );
-   const objectKey = normalizeText(source.objectKey) || "global";
-   const objectName = normalizeText(source.objectName) || objectOptions.find((object) => object.key === objectKey)?.label || "Global";
-   const mapping = {
++function labeledControl(labelText, control) {
++  const label = document.createElement("label");
++  label.textContent = labelText;
++  label.append(control);
++  return label;
++}
++
+ function mappingIdFor(mapping) {
+   const base = [
+     "game-controls",
+     mapping.objectKey || "global",
+     mapping.action,
++    mapping.inputFamily,
++    mapping.inputEventPhase,
+     mapping.normalizedInput,
+   ].join("-");
+   return keyFromText(base) || `mapping-${Date.now()}`;
+@@ -470,6 +501,8 @@ function normalizeMapping(source = {}) {
      action: action.id,
      actionLabel: action.label,
--    binding,
--    controllerProfileId: "",
--    engine: normalizeText(source.engine) || "NormalizedInputRegistry",
      id: normalizeText(source.id),
--    inputDevice: "Normalized Input",
++    inputEventPhase: normalizeInputEventPhase(source.inputEventPhase),
++    inputFamily: normalizeInputFamily(source.inputFamily),
      label: inputService.getNormalizedInputLabel(normalizedInput),
--    mappingProfile: "",
      normalizedInput,
      objectKey,
-     objectName,
--    source: "normalized",
-     state: normalizeText(source.state) || "Active",
-   };
-   return {
-@@ -728,11 +725,11 @@ function renderControllerProfileStatus() {
+@@ -488,6 +521,8 @@ function payloadActions() {
+       .filter((mapping) => mapping.action === action.id && mapping.state === "Active")
+       .map((mapping) => ({
+         engine: "src/engine/input/NormalizedInputRegistry",
++        inputEventPhase: mapping.inputEventPhase,
++        inputFamily: mapping.inputFamily,
+         label: mapping.label,
+         normalizedInput: mapping.normalizedInput,
+         source: "normalized",
+@@ -625,6 +660,7 @@ function renderSelect(select, options, selectedValue) {
+   if (!select) {
      return;
    }
-   if (!controllerProfiles.length) {
--    elements.controllerProfileStatus.textContent = "Missing Controller Profile. Select a physical controller and use Create Player Controller Profile.";
-+    elements.controllerProfileStatus.textContent = "Missing Controller Profile. Select a physical controller and use Create My Controller Profile.";
-     return;
++  select.classList.add("tool-form-control");
+   select.replaceChildren(...options.map((option) => optionElement(option.value, option.label)));
+   select.value = options.some((option) => option.value === selectedValue)
+     ? selectedValue
+@@ -739,23 +775,45 @@ function profileInputMappingControl(profile, inputMapping, index) {
+   wrapper.dataset.controllerProfileInputName = inputMapping.physicalInput;
+   const label = document.createElement("strong");
+   label.textContent = inputMapping.physicalInput;
+-  const select = selectControl({
+-    ariaLabel: `${inputMapping.physicalInput} Normalized Input`,
+-    options: [
+-      { label: "Unassigned", value: "" },
+-      ...inputService.getNormalizedInputOptions(),
+-    ],
+-    selectedValue: inputMapping.normalizedInput,
+-  });
+-  select.dataset.controllerProfileInputNormalized = profile.id || "editing";
+-  select.dataset.controllerProfileInputIndex = String(index);
+   const inputStack = document.createElement("div");
+   inputStack.className = "content-stack content-stack--compact";
++  const normalizedOptions = [
++    { label: "Unassigned", value: "" },
++    ...inputService.getNormalizedInputOptions(),
++  ];
++  if (physicalInputIsAnalog(inputMapping.physicalInput)) {
++    const negativeSelect = selectControl({
++      ariaLabel: `${inputMapping.physicalInput} Negative Normalized Input`,
++      options: normalizedOptions,
++      selectedValue: inputMapping.negativeNormalizedInput,
++    });
++    negativeSelect.dataset.controllerProfileInputNormalizedNegative = profile.id || "editing";
++    negativeSelect.dataset.controllerProfileInputIndex = String(index);
++    const positiveSelect = selectControl({
++      ariaLabel: `${inputMapping.physicalInput} Positive Normalized Input`,
++      options: normalizedOptions,
++      selectedValue: inputMapping.positiveNormalizedInput,
++    });
++    positiveSelect.dataset.controllerProfileInputNormalizedPositive = profile.id || "editing";
++    positiveSelect.dataset.controllerProfileInputIndex = String(index);
++    inputStack.append(
++      labeledControl("Negative", negativeSelect),
++      labeledControl("Positive", positiveSelect),
++    );
++  } else {
++    const select = selectControl({
++      ariaLabel: `${inputMapping.physicalInput} Normalized Input`,
++      options: normalizedOptions,
++      selectedValue: inputMapping.normalizedInput,
++    });
++    select.dataset.controllerProfileInputNormalized = profile.id || "editing";
++    select.dataset.controllerProfileInputIndex = String(index);
++    inputStack.append(select);
++  }
+   const assignedInput = document.createElement("span");
+   assignedInput.className = "status";
+   assignedInput.dataset.controllerProfileInputAssignedNormalized = "true";
+-  assignedInput.textContent = `Assigned Normalized Input: ${controllerProfileNormalizedLabel(select)}`;
+-  inputStack.append(select, assignedInput);
++  inputStack.append(assignedInput);
+   if (physicalInputIsAnalog(inputMapping.physicalInput) || normalizedInputIsAnalog(inputMapping.normalizedInput)) {
+     const deadzoneLabel = document.createElement("label");
+     deadzoneLabel.textContent = "Deadzone";
+@@ -777,6 +835,7 @@ function profileInputMappingControl(profile, inputMapping, index) {
+     inputStack.append(deadzoneLabel, invertLabel);
    }
-   const suffix = controllerProfiles.length === 1 ? "profile" : "profiles";
--  elements.controllerProfileStatus.textContent = `${controllerProfiles.length} player controller ${suffix} saved. New devices still need Create Player Controller Profile.`;
-+  elements.controllerProfileStatus.textContent = `${controllerProfiles.length} player input mapping ${suffix} saved. New devices still need Create My Controller Profile.`;
+   wrapper.append(label, inputStack);
++  updateProfileInputAssignedNormalized(wrapper);
+   return wrapper;
  }
  
- function profileInputMappingControl(profile, inputMapping, index) {
-@@ -920,7 +917,6 @@ function renderControllerProfileEditingRows(values = {}) {
+@@ -785,13 +844,21 @@ function controllerProfileNormalizedLabel(select) {
+ }
  
-   const actionsCell = document.createElement("td");
-   const profile = normalizeControllerProfile({
--    actions: values.actions,
-     controllerId: values.controllerId,
-     controllerName: values.controllerName,
-     deviceType: values.deviceType,
-@@ -973,7 +969,7 @@ function renderControllerProfiles() {
-     const row = document.createElement("tr");
-     const cell = document.createElement("td");
-     cell.colSpan = 6;
--    cell.textContent = "No controller profiles saved yet.";
-+    cell.textContent = "No player input mappings saved yet.";
-     row.append(cell);
-     rows.push(row);
+ function updateProfileInputAssignedNormalized(select) {
+-  const pair = select?.closest("[data-controller-profile-input-pair]");
++  const pair = select?.matches?.("[data-controller-profile-input-pair]")
++    ? select
++    : select?.closest("[data-controller-profile-input-pair]");
+   const status = pair?.querySelector("[data-controller-profile-input-assigned-normalized]");
+   if (!status) {
+     return;
    }
-@@ -997,7 +993,7 @@ function renderDiagnostics(message = "") {
-       return `${source}: ${gamepadStatus}`;
+-  const prefix = pair.dataset.controllerProfileInputActive === "true" ? "Selected Normalized Input" : "Assigned Normalized Input";
+-  status.textContent = `${prefix}: ${controllerProfileNormalizedLabel(select)}`;
++  const prefix = pair.dataset.controllerProfileInputActive === "true" ? "Selected" : "Mapped";
++  const negativeSelect = pair.querySelector("[data-controller-profile-input-normalized-negative]");
++  const positiveSelect = pair.querySelector("[data-controller-profile-input-normalized-positive]");
++  if (negativeSelect || positiveSelect) {
++    status.textContent = `${prefix}: - ${controllerProfileNormalizedLabel(negativeSelect)}, + ${controllerProfileNormalizedLabel(positiveSelect)}`;
++    return;
++  }
++  status.textContent = `${prefix}: ${controllerProfileNormalizedLabel(pair.querySelector("[data-controller-profile-input-normalized]"))}`;
+ }
+ 
+ function clearControllerProfileInputHighlight() {
+@@ -799,7 +866,7 @@ function clearControllerProfileInputHighlight() {
+     delete pair.dataset.controllerProfileInputActive;
+     const status = pair.querySelector("[data-controller-profile-input-assigned-normalized]");
+     status?.classList.remove("text-gold");
+-    updateProfileInputAssignedNormalized(pair.querySelector("[data-controller-profile-input-normalized]"));
++    updateProfileInputAssignedNormalized(pair);
+   });
+ }
+ 
+@@ -815,11 +882,10 @@ function highlightControllerProfileInputs(inputNames = []) {
+       return;
      }
-     return `${source}: Ready`;
--  });
-+  }).concat([SYSTEM_DEFAULT_PROFILES_LABEL, RUNTIME_LOOKUP_ORDER]);
-   if (elements.sourceDiagnostics) {
-     elements.sourceDiagnostics.replaceChildren(...diagnostics.map((diagnostic) => {
-       const item = document.createElement("li");
-@@ -1096,7 +1092,7 @@ function renderEditingRow(values = {}) {
+     pair.dataset.controllerProfileInputActive = "true";
+-    const select = pair.querySelector("[data-controller-profile-input-normalized]");
+-    updateProfileInputAssignedNormalized(select);
++    updateProfileInputAssignedNormalized(pair);
+     const status = pair.querySelector("[data-controller-profile-input-assigned-normalized]");
+     status?.classList.add("text-gold");
+-    selectedMessages.push(`${pair.dataset.controllerProfileInputName}: ${controllerProfileNormalizedLabel(select)}`);
++    selectedMessages.push(`${pair.dataset.controllerProfileInputName}: ${status?.textContent || "Selected"}`);
+   });
+   if (selectedMessages.length) {
+     setText(elements.controllerProfileStatus, `Selected inputs: ${selectedMessages.join(", ")}.`);
+@@ -870,8 +936,16 @@ function controllerProfileInputControls(profile) {
+ }
+ 
+ function profileInputSummary(profile) {
+-  const assigned = profile.inputMappings.filter((mapping) => mapping.normalizedInput).length;
+-  const total = profile.inputMappings.length;
++  const assigned = profile.inputMappings.reduce((count, mapping) => {
++    if (!physicalInputIsAnalog(mapping.physicalInput)) {
++      return count + (mapping.normalizedInput ? 1 : 0);
++    }
++    return count
++      + (mapping.negativeNormalizedInput ? 1 : 0)
++      + (mapping.positiveNormalizedInput ? 1 : 0);
++  }, 0);
++  const total = profile.inputMappings.reduce((count, mapping) =>
++    count + (physicalInputIsAnalog(mapping.physicalInput) ? 2 : 1), 0);
+   if (!total) {
+     return "No generated inputs";
+   }
+@@ -1050,6 +1124,8 @@ function renderMappingRow(mapping) {
+   }
+   row.append(
+     tableCell(mapping.label),
++    tableCell(mapping.inputFamily),
++    tableCell(mapping.inputEventPhase),
+     tableCell(mapping.actionLabel),
+     tableCell(mapping.objectName),
+     tableCell(mapping.state),
+@@ -1089,6 +1165,20 @@ function renderEditingRow(values = {}) {
+   });
+   actionSelect.dataset.inputRowAction = "true";
+ 
++  const inputFamilySelect = selectControl({
++    ariaLabel: "Mapping Input Family",
++    options: INPUT_FAMILY_OPTIONS,
++    selectedValue: values.inputFamily || "Keyboard",
++  });
++  inputFamilySelect.dataset.inputRowFamily = "true";
++
++  const inputEventPhaseSelect = selectControl({
++    ariaLabel: "Mapping Input Event",
++    options: INPUT_EVENT_PHASE_OPTIONS,
++    selectedValue: values.inputEventPhase || "Down",
++  });
++  inputEventPhaseSelect.dataset.inputRowEvent = "true";
++
    const normalizedInputSelect = selectControl({
      ariaLabel: "Mapping Normalized Input",
      options: inputService.getNormalizedInputOptions(),
--    selectedValue: values.normalizedInput || "button.south",
-+    selectedValue: values.normalizedInput || "action.primary",
-   });
-   normalizedInputSelect.dataset.inputRowNormalized = "true";
+@@ -1117,6 +1207,8 @@ function renderEditingRow(values = {}) {
  
-@@ -1197,7 +1193,7 @@ function mappingFromEditingRow(row) {
-   const objectKey = row.querySelector("[data-input-row-object]")?.value || "global";
-   const object = objectOptions.find((candidate) => candidate.key === objectKey) || objectOptions[0];
-   const action = actionById(row.querySelector("[data-input-row-action]")?.value);
--  const normalizedInput = normalizeNormalizedInput(row.querySelector("[data-input-row-normalized]")?.value, "button.south");
-+  const normalizedInput = normalizeNormalizedInput(row.querySelector("[data-input-row-normalized]")?.value, "action.primary");
-   return normalizeMapping({
+   row.append(
+     controlCell(normalizedInputSelect),
++    controlCell(inputFamilySelect),
++    controlCell(inputEventPhaseSelect),
+     controlCell(actionSelect),
+     controlCell(objectSelect),
+     controlCell(stateSelect),
+@@ -1160,7 +1252,7 @@ function renderMappings() {
+   if (!rows.length) {
+     const row = document.createElement("tr");
+     const cell = document.createElement("td");
+-    cell.colSpan = 5;
++    cell.colSpan = 7;
+     cell.textContent = "Missing Game Control Mapping. Add a normalized input to game action mapping.";
+     row.append(cell);
+     rows.push(row);
+@@ -1198,6 +1290,8 @@ function mappingFromEditingRow(row) {
      action: action.id,
      actionLabel: action.label,
-@@ -1248,7 +1244,6 @@ function controllerProfileFromEditingRow(row) {
+     id: editingRow?.id || "",
++    inputEventPhase: row.querySelector("[data-input-row-event]")?.value || "Down",
++    inputFamily: row.querySelector("[data-input-row-family]")?.value || "Keyboard",
+     normalizedInput,
+     objectKey: object.key,
+     objectName: object.label,
+@@ -1233,13 +1327,19 @@ function controllerProfileFromEditingRow(row) {
+   const actionsRow = elements.controllerProfileList?.querySelector("[data-controller-profile-editing-actions-row]");
+   const inputMappings = (profileEditingRow?.values?.inputMappings || []).map((mapping, index) => {
+     const normalizedSelect = actionsRow?.querySelector(`[data-controller-profile-input-normalized][data-controller-profile-input-index="${index}"]`);
++    const negativeSelect = actionsRow?.querySelector(`[data-controller-profile-input-normalized-negative][data-controller-profile-input-index="${index}"]`);
++    const positiveSelect = actionsRow?.querySelector(`[data-controller-profile-input-normalized-positive][data-controller-profile-input-index="${index}"]`);
+     const deadzoneInput = actionsRow?.querySelector(`[data-controller-profile-deadzone="${index}"]`);
+     const invertInput = actionsRow?.querySelector(`[data-controller-profile-invert="${index}"]`);
++    const negativeNormalizedInput = normalizeText(negativeSelect?.value ?? mapping.negativeNormalizedInput);
++    const positiveNormalizedInput = normalizeText(positiveSelect?.value ?? mapping.positiveNormalizedInput);
+     return {
+       deadzone: Number(deadzoneInput?.value ?? mapping.deadzone),
+       invert: Boolean(invertInput?.checked ?? mapping.invert),
+-      normalizedInput: normalizeText(normalizedSelect?.value ?? mapping.normalizedInput),
++      negativeNormalizedInput,
++      normalizedInput: positiveNormalizedInput || normalizeText(normalizedSelect?.value ?? mapping.normalizedInput) || negativeNormalizedInput,
+       physicalInput: mapping.physicalInput,
++      positiveNormalizedInput,
+     };
    }) || [];
    const values = profileEditingRow?.values || {};
-   return normalizeControllerProfile({
--    actions: [],
-     controllerId: values.controllerId,
-     controllerName: values.controllerName,
-     deviceType: values.deviceType,
-@@ -1266,7 +1261,7 @@ function saveControllerProfileEditingRow() {
-   }
-   const profile = controllerProfileFromEditingRow(row);
-   if (!profile.controllerId || !profile.mappingProfile) {
--    setText(elements.controllerProfileStatus, "WARN: Add Controller ID and profile name before saving the player controller profile.");
-+    setText(elements.controllerProfileStatus, "WARN: Add Controller ID and profile name before saving the player input mapping.");
-     return;
-   }
-   const nextProfiles = profileEditingRow?.id
-@@ -1278,7 +1273,7 @@ function saveControllerProfileEditingRow() {
-     return;
-   }
-   profileEditingRow = null;
--  renderAll(`Saved ${profile.mappingProfile} controller profile.`);
-+  renderAll(`Saved ${profile.mappingProfile} player input mapping.`);
- }
+@@ -1395,7 +1495,7 @@ function handleListClick(event) {
  
- function editControllerProfile(profileId) {
-@@ -1291,7 +1286,7 @@ function editControllerProfile(profileId) {
-     values: profile,
-   };
-   renderControllerProfiles();
--  setText(elements.controllerProfileStatus, `Editing ${profile.mappingProfile} controller profile.`);
-+  setText(elements.controllerProfileStatus, `Editing ${profile.mappingProfile} player input mapping.`);
- }
- 
- function addProfileForDevice(device, source = "detected") {
-@@ -1316,13 +1311,13 @@ function addProfileForDevice(device, source = "detected") {
+ function handleListChange(event) {
+   const target = event.target instanceof Element ? event.target : null;
+-  if (!target?.matches("[data-input-row-normalized], [data-input-row-object], [data-input-row-action]")) {
++  if (!target?.matches("[data-input-row-normalized], [data-input-row-object], [data-input-row-action], [data-input-row-family], [data-input-row-event]")) {
      return;
    }
-   const savedProfile = controllerProfiles.find((candidate) => candidate.id === profile.id) || profile;
--  if (source === "default-gamepad") {
-+  if (source === "system-default") {
-     profileEditingRow = {
-       id: savedProfile.id,
-       values: savedProfile,
-     };
-     renderAll(`${savedProfile.mappingProfile} saved. Review generated profile inputs.`);
--    setText(elements.controllerProfileStatus, `Editing ${savedProfile.mappingProfile} controller profile.`);
-+    setText(elements.controllerProfileStatus, `Editing ${savedProfile.mappingProfile} player input mapping.`);
+   const row = target.closest("[data-input-editing-row]");
+@@ -1428,10 +1528,10 @@ function handleControllerProfileClick(event) {
+ 
+ function handleControllerProfileChange(event) {
+   const target = event.target instanceof Element ? event.target : null;
+-  if (!target?.matches("[data-controller-profile-input-normalized], [data-controller-profile-deadzone], [data-controller-profile-invert]")) {
++  if (!target?.matches("[data-controller-profile-input-normalized], [data-controller-profile-input-normalized-negative], [data-controller-profile-input-normalized-positive], [data-controller-profile-deadzone], [data-controller-profile-invert]")) {
      return;
    }
-   profileEditingRow = null;
-@@ -1344,7 +1339,7 @@ function selectControllerDevice(value) {
-   profileEditingRow = null;
-   renderControllerProfiles();
-   renderControllerProfileFallback();
--  setText(elements.controllerProfileStatus, `${device.label} selected. Use Create Player Controller Profile to save this physical controller.`);
-+  setText(elements.controllerProfileStatus, `${device.label} selected. Use Create My Controller Profile to save this physical controller.`);
- }
- 
- function deleteControllerProfile(profileId) {
-@@ -1357,7 +1352,7 @@ function deleteControllerProfile(profileId) {
-     return;
+-  if (target.matches("[data-controller-profile-input-normalized]")) {
++  if (target.matches("[data-controller-profile-input-normalized], [data-controller-profile-input-normalized-negative], [data-controller-profile-input-normalized-positive]")) {
+     updateProfileInputAssignedNormalized(target);
    }
-   profileEditingRow = null;
--  renderAll(profile ? `Deleted ${profile.mappingProfile} controller profile.` : "Deleted controller profile.");
-+  renderAll(profile ? `Deleted ${profile.mappingProfile} player input mapping.` : "Deleted player input mapping.");
  }
- 
- function editMapping(mappingId) {
-@@ -1484,7 +1479,7 @@ function init() {
+@@ -1479,6 +1579,8 @@ function init() {
        id: "",
        values: {
          action: selectedAction().id,
--        normalizedInput: "button.south",
-+        normalizedInput: "action.primary",
++        inputEventPhase: "Down",
++        inputFamily: "Keyboard",
+         normalizedInput: "action.primary",
          objectKey: selectedObject().key,
          state: "Active",
-       },
-@@ -1496,7 +1491,7 @@ function init() {
-     addProfileForDevice(selectedControllerDevice(), "detected");
-   });
-   elements.controllerProfileCreateDefault?.addEventListener("click", () => {
--    addProfileForDevice(selectedControllerDevice(), "default-gamepad");
-+    addProfileForDevice(selectedControllerDevice(), "system-default");
-   });
-   elements.customActionAdd?.addEventListener("click", addCustomAction);
-   elements.customActionInput?.addEventListener("keydown", (event) => {
 diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index b041878f8..2e0f86e09 100644
+index 2e0f86e09..f2024b367 100644
 --- a/toolbox/controls/index.html
 +++ b/toolbox/controls/index.html
-@@ -56,8 +56,8 @@
-                     </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
-                     <section class="tool-center-panel">
--                        <h2>Game Controls</h2>
--                        <p>Use Game Controls for normalized inputs, game actions, objects, and mapping state.</p>
-+                        <h2>Game Input Mapping</h2>
-+                        <p>Map normalized inputs to game actions, objects, and mapping state.</p>
-                         <div class="grid cols-3" aria-label="Input mapping summary">
-                             <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
-                             <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
-@@ -67,11 +67,11 @@
-                             <div class="card-body">
-                                 <div class="accordion-stack">
-                                     <details class="vertical-accordion" open data-input-mapping-accordion>
--                                        <summary>Game Controls</summary>
-+                                        <summary>Game Input Mapping</summary>
-                                         <div class="accordion-body content-stack">
-                                             <div>
--                                                <div class="kicker">Table Input</div>
--                                                <h3>Game Controls</h3>
-+                                                <div class="kicker">Game Input Mapping</div>
-+                                                <h3>Game Input Mapping</h3>
-                                             </div>
-                                             <p class="status" data-input-state-explanation>State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.</p>
-                                             <div class="table-wrapper">
-@@ -118,24 +118,24 @@
-                                         </div>
-                                     </details>
-                                     <details class="vertical-accordion" open data-controller-profile-accordion>
--                                        <summary>Player Controller Profiles</summary>
-+                                        <summary>Player Input Mapping</summary>
-                                         <div class="accordion-body content-stack" data-controller-profile-planning>
-                                             <div>
--                                                <div class="kicker">Player Controller Profiles</div>
--                                                <h3>Player Controller Profiles</h3>
-+                                                <div class="kicker">Player Input Mapping</div>
-+                                                <h3>Player Input Mapping</h3>
-                                             </div>
--                                            <p>Map physical controller inputs to normalized inputs before game actions are assigned.</p>
-+                                            <p>Map physical inputs to normalized inputs before game actions are assigned.</p>
-                                             <div class="content-cluster" aria-label="Physical controller selection" data-controller-device-selection>
-                                                 <button class="btn" type="button" data-input-refresh-devices>Refresh Devices</button>
-                                                 <label>
-                                                     Physical Controller
-                                                     <select data-controller-device-select></select>
-                                                 </label>
--                                                <button class="btn" type="button" data-controller-profile-create-default hidden>Create Profile From Default</button>
-+                                                <button class="btn" type="button" data-controller-profile-create-default hidden>Create My Controller Profile</button>
-                                             </div>
-                                             <p class="status" role="status" data-controller-profile-fallback-status>Missing Controller Profile</p>
-                                             <div class="table-wrapper">
--                                                <table class="data-table" aria-label="Player controller profiles" data-controller-profile-table>
-+                                                <table class="data-table" aria-label="Player input mappings" data-controller-profile-table>
+@@ -79,6 +79,8 @@
                                                      <thead>
                                                          <tr>
-                                                             <th>Physical Controller</th>
-@@ -151,15 +151,15 @@
+                                                             <th>Normalized Input</th>
++                                                            <th>Input Family</th>
++                                                            <th>Input Event</th>
+                                                             <th>Game Action</th>
+                                                             <th>Object</th>
+                                                             <th>State</th>
+@@ -88,7 +90,7 @@
+                                                     <tbody data-input-mapping-list></tbody>
+                                                     <tfoot>
                                                          <tr>
-                                                             <td colspan="6">
-                                                                 <div class="content-cluster" aria-label="Controller profile table actions">
--                                                                    <button class="btn" type="button" data-controller-profile-add>Create Player Controller Profile</button>
-+                                                                    <button class="btn" type="button" data-controller-profile-add>Create My Controller Profile</button>
-                                                                 </div>
-                                                             </td>
-                                                         </tr>
-                                                     </tfoot>
-                                                 </table>
-                                             </div>
--                                            <p>Physical inputs route through normalized inputs before Game Controls assign game actions.</p>
--                                            <p class="status" role="status" data-controller-profile-status>Missing Controller Profile. Refresh Devices, select a physical controller, then create a player controller profile.</p>
-+                                            <p>Physical inputs route through normalized inputs before Game Input Mapping assigns game actions.</p>
-+                                            <p class="status" role="status" data-controller-profile-status>Missing Controller Profile. Refresh Devices, select a physical controller, then create a player input mapping.</p>
-                                         </div>
-                                     </details>
-                                 </div>
-@@ -174,7 +174,7 @@
-                             <details class="vertical-accordion" open>
-                                 <summary>Devices</summary>
-                                 <div class="accordion-body content-stack">
--                                    <p class="status" data-input-device-guidance>Press a button on the controller, then refresh Device Type.</p>
-+                                    <p class="status" data-input-device-guidance>Press a button on the controller, then refresh Physical Controller.</p>
-                                     <ul data-input-source-diagnostics></ul>
-                                 </div>
-                             </details>
-diff --git a/docs_build/dev/reports/controls-normalized-default-input-architecture-report.md b/docs_build/dev/reports/controls-normalized-default-input-architecture-report.md
+-                                                            <td colspan="5">
++                                                            <td colspan="7">
+                                                                 <div class="content-split" data-input-mapping-table-footer>
+                                                                     <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
+                                                                         <button class="btn" type="button" data-input-add-mapping>Add Game Control</button>
+diff --git a/docs_build/dev/reports/controls-axis-direction-and-input-events-report.md b/docs_build/dev/reports/controls-axis-direction-and-input-events-report.md
 new file mode 100644
-index 000000000..3f84cfedb
+index 000000000..d7f167be7
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-normalized-default-input-architecture-report.md
-@@ -0,0 +1,76 @@
-+# PR_26161_033 Controls Normalized Default Input Architecture
++++ b/docs_build/dev/reports/controls-axis-direction-and-input-events-report.md
+@@ -0,0 +1,68 @@
++# PR_26161_034 Controls Axis Direction And Input Events
 +
 +## Branch Validation
 +- PASS: Current git branch was verified as `main` before edits.
 +
 +## Impacted Lane
 +- Controls / Input Mapping
-+- `src/engine/input` normalized input helpers
++- `src/engine/input` normalized input registry
 +- Shared DB/mock adapter Controls tables
 +
 +## Playwright Impacted
 +- Yes.
 +
-+## Summary
-+- Renamed the visible Controls sections to `Game Input Mapping` and `Player Input Mapping`.
-+- Added the normalized input contract used by keyboard, mouse, and gamepad defaults:
-+  - `action.primary`, `action.secondary`, `action.tertiary`, `action.quaternary`
-+  - `action.confirm`, `action.cancel`, `action.start`, `action.select`, `action.pause`
-+  - movement, aim, d-pad, and trigger normalized inputs remain in the same registry.
-+- Added visible system default fallback profiles:
-+  - `System Default Gamepad`
-+  - `System Default Keyboard/Mouse`
-+- Documented and tested runtime lookup order:
-+  1. user/player controller profile exact match
-+  2. user/player keyboard/mouse profile
-+  3. system default gamepad profile
-+  4. system default keyboard/mouse profile
-+  5. missing mapping warning
-+- Replaced Controls persistence ownership with two DB-backed contracts:
-+  - `player_controller_profiles`: player-owned Physical Input -> Normalized Input
-+  - `game_input_mappings`: project-owned Normalized Input -> Game Action
-+- Confirmed `game_input_mappings` does not store raw physical input, controller name, or controller id.
-+- Confirmed `player_controller_profiles` does not store game actions or object actions.
++## Requirement Checklist
++- PASS: Controls status remains Wireframe. Playwright validates registry metadata for `controls` remains `wireframe`.
++- PASS: Controls data remains DB-backed through the shared DB/mock adapter. Mappings persist through `game_input_mappings`; player input mappings persist through `player_controller_profiles`.
++- PASS: Normalized axis choices are split into `move.x-`, `move.x+`, `move.y-`, `move.y+`, `aim.x-`, `aim.x+`, `aim.y-`, `aim.y+`.
++- PASS: Axis +/- directions use separate normalized input dropdown choices in Player Input Mapping.
++- PASS: Deadzone belongs to the physical axis and is shared by both +/- directions; Playwright verifies one Axis0 row with one Deadzone control and both direction dropdowns.
++- PASS: Invert belongs to the physical axis; engine normalization test validates invert changes axis direction resolution.
++- PASS: User-facing `Assigned Normalized Input` copy is removed; Playwright verifies it is absent.
++- PASS: Dropdown/list heights are consistent; Playwright compares generated select heights in Game Input Mapping and Player Input Mapping edit rows.
++- PASS: Game Input Mapping includes an Input Event column with `Press`, `Down`, and `Release`.
++- PASS: Game Input Mapping includes an Input Family column with `Keyboard`, `Mouse`, `Gamepad`, and `Joystick`.
++- PASS: Input Family stores only the family value; Playwright verifies `game_input_mappings` does not store controller name/id, binding, input device, or raw physical input.
++- PASS: Normalized architecture is preserved: Player Input Mapping maps physical input to normalized input; Game Input Mapping maps normalized input to game action.
++- PASS: Default fallback profiles, reset confirmation, accordions, status logging, and DB persistence are preserved by targeted Playwright.
++- PASS: No sample JSON alignment, auth behavior, production account system, or unrelated rewrites were added.
 +
-+## Validation
++## Testing Performed
 +- PASS: `node --check src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
 +- PASS: `node --check src/dev-runtime/persistence/mock-db-store.js`
-+- PASS: `node --check src/engine/input/InputService.js`
 +- PASS: `node --check src/engine/input/NormalizedInputRegistry.js`
 +- PASS: `node --check toolbox/controls/controls.js`
++- PASS: `node --check tests/input/NormalizedInputRegistry.test.mjs`
 +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
 +- PASS: `node --check tests/playwright/tools/AdminDbViewer.spec.mjs`
-+- PASS: `node --check tests/input/NormalizedInputRegistry.test.mjs`
 +- PASS: `node tests/input/NormalizedInputRegistry.test.mjs`
 +- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs`
 +
-+## Extra Check
-+- PARTIAL: `npx playwright test tests/playwright/tools/AdminDbViewer.spec.mjs`
-+- Result: 6 passed, 1 failed from unrelated missing asset requests for `assets/theme-v2/images/characters/palette-manager.png`.
-+- The changed Admin DB Viewer Controls table expectation passed before the unrelated failure.
-+
 +## Manual Validation Steps
 +1. Open `/toolbox/controls/index.html`.
-+2. Confirm the center accordions read `Game Input Mapping` and `Player Input Mapping`.
-+3. Open Inspector > Devices and confirm the fallback profiles and runtime lookup order are visible.
-+4. Select `Keyboard/Mouse`, create a player input mapping, and confirm `Space` maps to `action.primary`.
-+5. Add a Game Input Mapping row from `action.primary` to `Jump`, save, reload, and confirm persistence.
-+6. Open the mock DB snapshot and confirm game mappings are stored in `game_input_mappings`.
-+7. Confirm player physical mappings are stored in `player_controller_profiles`.
-+8. Confirm `game_input_mappings` has no controller id/name or raw physical input fields.
-+9. Confirm `player_controller_profiles` has no game action/object action fields.
++2. In Game Input Mapping, click Add Game Control and confirm columns include Normalized Input, Input Family, Input Event, Game Action, Object, State, and Actions.
++3. Select `move.x-`, `Gamepad`, and `Release`, save, reload, and confirm the row persists.
++4. Inspect the mock DB snapshot and confirm `game_input_mappings` stores `inputFamily` and `inputEventPhase` without controller id/name or raw physical input.
++5. Create a gamepad Player Input Mapping and edit `Axis0`.
++6. Confirm `Axis0` has separate Negative and Positive normalized input dropdowns, one Deadzone field, and one Invert checkbox.
++7. Confirm `Assigned Normalized Input` does not appear.
++8. Save, reload, and confirm the Axis0 mapping persists with one shared deadzone/invert pair and both direction values.
 +
 +## Skipped Lanes
 +- Full samples validation was skipped by request.
-+- Full repository Playwright was not run; targeted Controls/Input Mapping Playwright was the impacted lane.
-+- `npm run test:workspace-v2` was not run because this PR does not change Workspace V2 behavior.
++- Full repository Playwright was skipped because the impacted browser lane is Controls/Input Mapping.
++- Project Workspace validation was skipped because this PR does not change Project Workspace behavior.
 +
 +## Runtime Engine Behavior
-+- No production game runtime behavior or sample JSON alignment was added.
-+- `src/engine/input` was extended only for the requested normalized input/default profile contract and lookup helper used by Controls validation.
++- No production game runtime behavior was added.
++- `src/engine/input/NormalizedInputRegistry.js` received the smallest shared input extension required for directional normalized axes and deadzone/invert direction resolution.
 +
 +## Required Artifacts
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `tmp/PR_26161_033-controls-normalized-default-input-architecture_delta.zip`
++- `tmp/PR_26161_034-controls-axis-direction-and-input-events_delta.zip`
++
++## Completion Audit
++- PASS: Original PR request was re-read before packaging.
++- PASS: Every requested item is implemented, validated, and marked PASS above.
