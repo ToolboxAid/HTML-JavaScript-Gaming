@@ -1,5 +1,13 @@
 import { createObjectsToolApiRepository } from "../objects/objects-api-client.js";
 import { createControlsToolApiRepository } from "./controls-api-client.js";
+import InputCaptureService from "../../src/engine/input/InputCaptureService.js";
+import InputService from "../../src/engine/input/InputService.js";
+import {
+  activeGamepadProfileInputNames,
+  captureGamepadInput as captureGamepadInputFromEngine,
+  gamepadProfileInputNames,
+} from "../../src/engine/input/GamepadInputClassifier.js";
+import { mouseButtonLabel } from "../../src/engine/input/InputCapabilityDescriptors.js";
 
 const DEFAULT_ACTIONS = Object.freeze([
   Object.freeze({ description: "Back out of a menu or choice.", id: "cancel", label: "Cancel" }),
@@ -56,17 +64,7 @@ const DEVICE_TYPE_OPTIONS = Object.freeze([
   Object.freeze({ label: "Gamepad", value: "Gamepad" }),
 ]);
 
-const GAMEPAD_DPAD_LABELS = Object.freeze(new Map([
-  [12, "DPad Up"],
-  [13, "DPad Down"],
-  [14, "DPad Left"],
-  [15, "DPad Right"],
-]));
-
-const GAMEPAD_TRIGGER_LABELS = Object.freeze(new Map([
-  [6, "Trigger Left"],
-  [7, "Trigger Right"],
-]));
+const KEYBOARD_MOUSE_PROFILE_SCOPE = "keyboard-mouse-profile";
 
 const SOURCE_DIAGNOSTICS = Object.freeze([
   "InputService + KeyboardState",
@@ -85,7 +83,8 @@ let editingRow = null;
 let profileEditingRow = null;
 let rowCaptureSource = "";
 let profileInputMonitorId = 0;
-let profileInputHighlight = "";
+const inputService = new InputService({ target: window });
+const inputCaptureService = new InputCaptureService({ inputService });
 
 const elements = {
   actionSelect: document.querySelector("[data-input-action-select]"),
@@ -187,46 +186,9 @@ function profileById(profileId) {
   return controllerProfiles.find((profile) => profile.id === profileId) || null;
 }
 
-function profileOptions() {
-  return [
-    { label: "No saved profile", value: "" },
-    ...controllerProfiles.map((profile) => ({
-      label: profile.mappingProfile,
-      value: profile.id,
-    })),
-  ];
-}
-
-function profileLabel(profileId) {
-  return profileById(profileId)?.mappingProfile || "No saved profile";
-}
-
 function availableGamepads() {
-  if (typeof navigator.getGamepads !== "function") {
-    return [];
-  }
-  return Array.from(navigator.getGamepads() || [])
-    .map((pad, fallbackIndex) => (pad ? {
-      axes: Array.from(pad.axes || []),
-      buttons: Array.from(pad.buttons || []),
-      id: normalizeText(pad.id),
-      index: Number.isInteger(pad.index) ? pad.index : fallbackIndex,
-    } : null))
-    .filter(Boolean);
-}
-
-function gamepadInputNames(gamepad) {
-  const buttonNames = gamepad.buttons.map((_, index) =>
-    GAMEPAD_DPAD_LABELS.get(index) || GAMEPAD_TRIGGER_LABELS.get(index) || `Button${index}`,
-  );
-  return [
-    ...buttonNames,
-    ...gamepad.axes.map((_, index) => `Axis${index}`),
-  ];
-}
-
-function gamepadInputNameForButton(index) {
-  return GAMEPAD_DPAD_LABELS.get(index) || GAMEPAD_TRIGGER_LABELS.get(index) || `Button${index}`;
+  inputService.update();
+  return inputService.getGamepads();
 }
 
 function matchingGamepadForProfile(profile) {
@@ -235,19 +197,12 @@ function matchingGamepadForProfile(profile) {
   ) || null;
 }
 
-function activeProfileGamepadInputName(profile) {
+function activeProfileGamepadInputNames(profile) {
   const gamepad = matchingGamepadForProfile(profile);
   if (!gamepad) {
-    return "";
+    return [];
   }
-  const buttonIndex = gamepad.buttons.findIndex((button) =>
-    Number(button?.value || 0) > 0.5 || button?.pressed,
-  );
-  if (buttonIndex >= 0) {
-    return gamepadInputNameForButton(buttonIndex);
-  }
-  const axisIndex = gamepad.axes.findIndex((axis) => Math.abs(Number(axis) || 0) > 0.25);
-  return axisIndex >= 0 ? `Axis${axisIndex}` : "";
+  return activeGamepadProfileInputNames(gamepad);
 }
 
 function controllerDeviceOptions() {
@@ -257,7 +212,7 @@ function controllerDeviceOptions() {
       controllerId: gamepad.id || `gamepad-${gamepad.index}`,
       controllerName,
       deviceType: "Gamepad",
-      inputs: gamepadInputNames(gamepad),
+      inputs: gamepadProfileInputNames(gamepad),
       label: `Gamepad: ${controllerName}`,
       mappingProfile: `${controllerName} Profile`,
       value: `gamepad-${gamepad.index}`,
@@ -279,6 +234,12 @@ function exactProfileForDevice(device) {
       profile.controllerId === device.controllerId &&
       profile.mappingProfile === device.mappingProfile,
   ) || null;
+}
+
+function selectedControllerProfile() {
+  return exactProfileForDevice(selectedControllerDevice())
+    || profileById(profileEditingRow?.id || "")
+    || null;
 }
 
 function profileFromDevice(device, source = "detected") {
@@ -484,6 +445,7 @@ function controlCell(control) {
 
 function mappingIdFor(mapping) {
   const base = [
+    mapping.controllerProfileId || "default-profile",
     mapping.objectKey || "global",
     mapping.action,
     mapping.source,
@@ -502,7 +464,9 @@ function controllerProfileIdFor(profile) {
 
 function normalizeControllerProfile(source = {}) {
   const profile = {
-    actions: normalizeList(source.actions),
+    actions: Array.isArray(source.actions)
+      ? source.actions.map(normalizeText)
+      : normalizeList(source.actions),
     controllerId: normalizeText(source.controllerId),
     controllerName: normalizeText(source.controllerName),
     deviceType: normalizeText(source.deviceType) || "Gamepad",
@@ -522,17 +486,21 @@ function normalizeMapping(source = {}) {
   const binding = normalizeText(source.binding || source.input);
   const objectKey = normalizeText(source.objectKey) || "global";
   const objectName = normalizeText(source.objectName) || objectOptions.find((object) => object.key === objectKey)?.label || "Global";
-  const profile = profileById(normalizeText(source.controllerProfileId));
+  const requestedProfileId = normalizeText(source.controllerProfileId);
+  const profile = profileById(requestedProfileId);
+  const controllerProfileId = device.source === "keyboard" || device.source === "mouse"
+    ? KEYBOARD_MOUSE_PROFILE_SCOPE
+    : profile?.id || requestedProfileId;
   const mapping = {
     action: action.id,
     actionLabel: action.label,
     binding,
-    controllerProfileId: profile?.id || "",
+    controllerProfileId,
     engine: normalizeText(source.engine) || device.engine,
     id: normalizeText(source.id),
     inputDevice: device.label,
     label: normalizeText(source.label) || inputLabel(device.source, binding),
-    mappingProfile: profile?.mappingProfile || "",
+    mappingProfile: "",
     objectKey,
     objectName,
     source: device.source,
@@ -553,7 +521,13 @@ function inputLabel(source, binding) {
     return `${device.label} ${binding}`;
   }
   if (source === "mouse") {
-    return `${device.label} ${binding.replace(/^MouseButton/, "Button ")}`;
+    if (binding.startsWith("MouseWheel")) {
+      return inputService.getWheelDescriptor(binding)?.label || `${device.label} ${binding}`;
+    }
+    if (binding.startsWith("MouseButton")) {
+      return mouseButtonLabel(Number(binding.replace(/^MouseButton/, "")));
+    }
+    return `${device.label} ${binding}`;
   }
   if (source === "gamepad") {
     return `${device.label} ${binding.replace(/^Pad\d+:/, "")}`;
@@ -570,7 +544,6 @@ function payloadActions() {
         ...(mapping.controllerProfileId ? { controllerProfileId: mapping.controllerProfileId } : {}),
         engine: mapping.engine,
         label: mapping.label,
-        ...(mapping.mappingProfile ? { mappingProfile: mapping.mappingProfile } : {}),
         source: mapping.source,
       }));
     return {
@@ -823,7 +796,7 @@ function profileInputActionControl(profile, inputName, index) {
   const select = selectControl({
     ariaLabel: `${inputName} Action`,
     options: [
-      { label: "Action Required", value: "" },
+      { label: "Unassigned", value: "" },
       ...actionOptions(actionCatalog()),
     ],
     selectedValue: profile.actions[index] || "",
@@ -842,7 +815,7 @@ function profileInputActionControl(profile, inputName, index) {
 }
 
 function controllerProfileActionLabel(select) {
-  return select?.selectedOptions?.[0]?.textContent || "Action Required";
+  return select?.selectedOptions?.[0]?.textContent || "Unassigned";
 }
 
 function updateProfileInputAssignedAction(select) {
@@ -864,31 +837,35 @@ function clearControllerProfileInputHighlight() {
   });
 }
 
-function highlightControllerProfileInput(inputName) {
-  profileInputHighlight = inputName;
+function highlightControllerProfileInputs(inputNames = []) {
   clearControllerProfileInputHighlight();
-  if (!inputName) {
+  if (!inputNames.length) {
     return;
   }
-  const pair = [...(elements.controllerProfileList?.querySelectorAll("[data-controller-profile-input-pair]") || [])]
-    .find((candidate) => candidate.dataset.controllerProfileInputName === inputName);
-  if (!pair) {
-    return;
+  const selectedMessages = [];
+  const activeNames = new Set(inputNames);
+  elements.controllerProfileList?.querySelectorAll("[data-controller-profile-input-pair]").forEach((pair) => {
+    if (!activeNames.has(pair.dataset.controllerProfileInputName)) {
+      return;
+    }
+    pair.dataset.controllerProfileInputActive = "true";
+    const select = pair.querySelector("[data-controller-profile-input-action]");
+    updateProfileInputAssignedAction(select);
+    const status = pair.querySelector("[data-controller-profile-input-assigned-action]");
+    status?.classList.add("text-gold");
+    selectedMessages.push(`${pair.dataset.controllerProfileInputName}: ${controllerProfileActionLabel(select)}`);
+  });
+  if (selectedMessages.length) {
+    setText(elements.controllerProfileStatus, `Selected inputs: ${selectedMessages.join(", ")}.`);
   }
-  pair.dataset.controllerProfileInputActive = "true";
-  const select = pair.querySelector("[data-controller-profile-input-action]");
-  updateProfileInputAssignedAction(select);
-  const status = pair.querySelector("[data-controller-profile-input-assigned-action]");
-  status?.classList.add("text-gold");
-  setText(elements.controllerProfileStatus, `${inputName} selected. ${status?.textContent || "Assigned Action: Action Required"}.`);
 }
 
 function updateControllerProfileInputHighlight() {
   if (!profileEditingRow?.values) {
-    highlightControllerProfileInput("");
+    highlightControllerProfileInputs();
     return;
   }
-  highlightControllerProfileInput(activeProfileGamepadInputName(profileEditingRow.values));
+  highlightControllerProfileInputs(activeProfileGamepadInputNames(profileEditingRow.values));
 }
 
 function stopControllerProfileInputMonitor() {
@@ -896,7 +873,6 @@ function stopControllerProfileInputMonitor() {
     window.clearInterval(profileInputMonitorId);
     profileInputMonitorId = 0;
   }
-  profileInputHighlight = "";
 }
 
 function syncControllerProfileInputMonitor() {
@@ -922,7 +898,7 @@ function controllerProfileInputActions(profile) {
   }
   const required = document.createElement("p");
   required.className = "status";
-  required.textContent = "Action Required";
+  required.textContent = "No generated inputs.";
   actionControls.append(required);
   return actionControls;
 }
@@ -1053,14 +1029,13 @@ function renderDiagnostics(message = "") {
 }
 
 function gamepadSummary() {
-  if (typeof navigator.getGamepads !== "function") {
-    return "WARN: Gamepad API unavailable. Use a browser with navigator.getGamepads support.";
-  }
-  const pads = Array.from(navigator.getGamepads() || []).filter(Boolean);
+  const pads = availableGamepads();
   if (!pads.length) {
     return "WARN: No live gamepad value. Click inside this page, connect a gamepad, and press a button.";
   }
-  return `${pads.length} live gamepad value${pads.length === 1 ? "" : "s"} available`;
+  const activeInputs = [...new Set(pads.flatMap(activeGamepadProfileInputNames))];
+  const activeLabel = activeInputs.length ? ` Active inputs: ${activeInputs.join(", ")}.` : "";
+  return `${pads.length} live gamepad value${pads.length === 1 ? "" : "s"} available.${activeLabel}`;
 }
 
 function statusLabel() {
@@ -1106,7 +1081,6 @@ function renderMappingRow(mapping) {
     tableCell(mapping.objectName),
     tableCell(mapping.actionLabel),
     tableCell(mapping.inputDevice),
-    tableCell(profileLabel(mapping.controllerProfileId)),
   );
   const inputCell = document.createElement("td");
   inputCell.append(tokenButton(mapping));
@@ -1164,6 +1138,7 @@ function updateInputCaptureCell(row, source, binding = "") {
     hiddenInput.value = normalizedBinding;
   }
   if (currentInput) {
+    currentInput.classList.remove("text-gold");
     currentInput.textContent = label || "No input captured";
     currentInput.title = label || "No input captured";
     currentInput.hidden = !normalizedBinding;
@@ -1177,6 +1152,10 @@ function updateInputCaptureCell(row, source, binding = "") {
     }
   }
   return label;
+}
+
+function highlightEditingRowInput(row) {
+  row?.querySelector("[data-input-row-binding-value]")?.classList.add("text-gold");
 }
 
 function renderEditingRow(values = {}) {
@@ -1206,13 +1185,6 @@ function renderEditingRow(values = {}) {
   });
   deviceSelect.dataset.inputRowDevice = "true";
 
-  const profileSelect = selectControl({
-    ariaLabel: "Mapping Profile",
-    options: profileOptions(),
-    selectedValue: values.controllerProfileId || "",
-  });
-  profileSelect.dataset.inputRowProfile = "true";
-
   const stateSelect = selectControl({
     ariaLabel: "Mapping State",
     options: [
@@ -1236,7 +1208,6 @@ function renderEditingRow(values = {}) {
     controlCell(objectSelect),
     controlCell(actionSelect),
     controlCell(deviceSelect),
-    controlCell(profileSelect),
     inputCaptureCell(values),
     controlCell(stateSelect),
     actionsCell,
@@ -1279,7 +1250,7 @@ function renderMappings() {
   if (!rows.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 7;
+    cell.colSpan = 6;
     cell.textContent = "No mappings added yet.";
     row.append(cell);
     rows.push(row);
@@ -1341,6 +1312,7 @@ function applyCapturedInputToEditingRow({ binding, label, source }) {
     return;
   }
   const capturedLabel = setEditingRowInput(row, source, binding) || label;
+  highlightEditingRowInput(row);
   rowCaptureSource = "";
   setText(elements.statusLog, `${capturedLabel} captured. Save the mapping row to persist it.`);
   renderDiagnostics();
@@ -1357,15 +1329,15 @@ function captureKeyboardEvent(event) {
     return;
   }
   event.preventDefault();
-  const binding = normalizeText(event.code || event.key);
-  if (!binding) {
+  const input = inputCaptureService.captureKeyboard(event);
+  if (!normalizeText(input.binding)) {
     warnCapture("WARN: Keyboard capture did not receive a key code. Press a physical key and try again.");
     return;
   }
   applyCapturedInputToEditingRow({
-    binding,
-    label: inputLabel("keyboard", binding),
-    source: "keyboard",
+    binding: input.binding,
+    label: input.label,
+    source: input.source,
   });
 }
 
@@ -1374,46 +1346,53 @@ function captureMouseEvent(event) {
     return;
   }
   event.preventDefault();
-  const button = Number.isInteger(event.button) ? event.button : 0;
-  const binding = `MouseButton${button}`;
+  const input = inputCaptureService.captureMouse(event);
   applyCapturedInputToEditingRow({
-    binding,
-    label: inputLabel("mouse", binding),
-    source: "mouse",
+    binding: input.binding,
+    label: input.label,
+    source: input.source,
+  });
+}
+
+function captureWheelEvent(event) {
+  if (rowCaptureSource !== "mouse") {
+    return;
+  }
+  event.preventDefault();
+  const input = inputCaptureService.captureWheel(event);
+  applyCapturedInputToEditingRow({
+    binding: input.binding,
+    label: input.label,
+    source: input.source,
   });
 }
 
 function activeGamepadInput() {
-  if (typeof navigator.getGamepads !== "function") {
+  inputService.update();
+  const selectedDevice = selectedControllerDevice();
+  const gamepads = inputService.getGamepads();
+  const gamepadIndex = Number.isInteger(Number(selectedDevice?.value?.replace(/^gamepad-/, "")))
+    ? Number(selectedDevice.value.replace(/^gamepad-/, ""))
+    : gamepads[0]?.index;
+  const pad = Number.isInteger(gamepadIndex)
+    ? inputService.getGamepad(gamepadIndex)
+    : null;
+  if (!pad) {
     return {
-      message: "WARN: Gamepad capture unavailable. Use a browser with navigator.getGamepads support, then connect a gamepad.",
+      message: "WARN: Gamepad capture unavailable. Click inside this page, connect a gamepad, refresh devices, then press a button or move an axis.",
       ok: false,
     };
   }
-  const pads = Array.from(navigator.getGamepads() || []).filter(Boolean);
-  for (const pad of pads) {
-    const buttonIndex = (pad.buttons || []).findIndex((button) => Number(button?.value || 0) > 0.5 || button?.pressed);
-    if (buttonIndex >= 0) {
-      const binding = `Pad${Number(pad.index) || 0}:Button${buttonIndex}`;
-      return {
-        binding,
-        label: inputLabel("gamepad", binding),
-        ok: true,
-      };
-    }
-    const axisIndex = (pad.axes || []).findIndex((axis) => Math.abs(Number(axis) || 0) > 0.25);
-    if (axisIndex >= 0) {
-      const direction = Number(pad.axes[axisIndex]) < 0 ? "-" : "+";
-      const binding = `Pad${Number(pad.index) || 0}:Axis${axisIndex}${direction}`;
-      return {
-        binding,
-        label: inputLabel("gamepad", binding),
-        ok: true,
-      };
-    }
+  const result = captureGamepadInputFromEngine({ gamepadIndex, pad });
+  if (result.ok) {
+    return {
+      binding: result.input.binding,
+      label: inputLabel("gamepad", result.input.binding),
+      ok: true,
+    };
   }
   return {
-    message: "WARN: Gamepad capture unavailable. Click inside this page, connect a gamepad, press a button or move an axis, then click Capture Gamepad again.",
+    message: `WARN: ${result.message}`,
     ok: false,
   };
 }
@@ -1434,7 +1413,7 @@ function startRowCapture(source) {
     return;
   }
   if (source === "mouse") {
-    setText(elements.statusLog, "Click a mouse button to capture input for this row.");
+    setText(elements.statusLog, "Click a mouse button or move the mouse wheel to capture input for this row.");
   }
 }
 
@@ -1472,24 +1451,29 @@ function captureGamepadInput() {
   captureGamepadInputForRow();
 }
 
+function controllerProfileIdForMappingSource(source) {
+  if (source === "keyboard" || source === "mouse") {
+    return KEYBOARD_MOUSE_PROFILE_SCOPE;
+  }
+  return selectedControllerProfile()?.id || "";
+}
+
 function mappingFromEditingRow(row) {
   const objectKey = row.querySelector("[data-input-row-object]")?.value || "global";
   const object = objectOptions.find((candidate) => candidate.key === objectKey) || objectOptions[0];
   const action = actionById(row.querySelector("[data-input-row-action]")?.value);
   const source = row.querySelector("[data-input-row-device]")?.value || "keyboard";
-  const profile = profileById(row.querySelector("[data-input-row-profile]")?.value || "");
   const binding = normalizeText(row.querySelector("[data-input-row-binding]")?.value);
   const device = deviceBySource(source);
   return normalizeMapping({
     action: action.id,
     actionLabel: action.label,
     binding,
-    controllerProfileId: profile?.id || "",
+    controllerProfileId: controllerProfileIdForMappingSource(source),
     engine: device.engine,
     id: editingRow?.id || "",
     inputDevice: device.label,
     label: inputLabel(source, binding),
-    mappingProfile: profile?.mappingProfile || "",
     objectKey: object.key,
     objectName: object.label,
     source,
@@ -1505,6 +1489,10 @@ function saveEditingRow() {
   const mapping = mappingFromEditingRow(row);
   if (!mapping.binding) {
     setText(elements.statusLog, "WARN: Add an input before saving the mapping row.");
+    return;
+  }
+  if (mapping.source === "gamepad" && !profileById(mapping.controllerProfileId)) {
+    setText(elements.statusLog, "WARN: Select a saved Controller Profile before saving a Gamepad mapping.");
     return;
   }
   const validation = validateMappingAction(mapping);
@@ -1547,13 +1535,6 @@ function saveControllerProfileEditingRow() {
   const profile = controllerProfileFromEditingRow(row);
   if (!profile.controllerId || !profile.mappingProfile) {
     setText(elements.controllerProfileStatus, "WARN: Add Controller ID and Mapping Profile before saving the controller profile.");
-    return;
-  }
-  if (profile.inputs.length && (
-    profile.actions.length !== profile.inputs.length
-    || !profile.actions.every(Boolean)
-  )) {
-    setText(elements.controllerProfileStatus, "Action Required: assign an Action to each generated profile input before using this profile.");
     return;
   }
   const nextProfiles = profileEditingRow?.id
@@ -1608,12 +1589,12 @@ function addProfileForDevice(device, source = "detected") {
       id: savedProfile.id,
       values: savedProfile,
     };
-    renderAll(`${savedProfile.mappingProfile} saved. Assign Actions for generated profile inputs.`);
+    renderAll(`${savedProfile.mappingProfile} saved. Review generated profile inputs.`);
     setText(elements.controllerProfileStatus, `Editing ${savedProfile.mappingProfile} controller profile.`);
     return;
   }
   profileEditingRow = null;
-  renderAll(`${profile.mappingProfile} saved. Action Required for generated profile inputs.`);
+  renderAll(`${profile.mappingProfile} saved. Generated inputs may stay unassigned.`);
 }
 
 function selectControllerDevice(value) {
@@ -1764,6 +1745,7 @@ function showWorkspaceReturnIfNeeded() {
 }
 
 function init() {
+  inputService.attach();
   showWorkspaceReturnIfNeeded();
   objectOptions = readObjectOptions();
   controllerProfiles = readControllerProfiles();
@@ -1836,6 +1818,7 @@ function init() {
   elements.list?.addEventListener("change", handleListChange);
   window.addEventListener("keydown", captureKeyboardEvent);
   window.addEventListener("pointerdown", captureMouseEvent);
+  window.addEventListener("wheel", captureWheelEvent, { passive: false });
 }
 
 init();

@@ -297,7 +297,6 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
       "Object",
       "Action",
       "Input Device",
-      "Mapping Profile",
       "Input",
       "State",
       "Actions",
@@ -366,7 +365,7 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await addButton.click();
     await expect(addButton).toBeDisabled();
     await expect(page.locator("[data-input-editing-row]")).toHaveCount(1);
-    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(7);
+    await expect(page.locator("[data-input-editing-row] td")).toHaveCount(6);
     await expect(page.locator("[data-input-editing-row] td").last().locator("button")).toHaveText(["Save", "Cancel"]);
     await expect(page.locator("[data-input-editing-row] td").last().locator("button").last()).toHaveText("Cancel");
     await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
@@ -377,6 +376,17 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
     await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
     await expect(page.locator("[data-input-row-capture-gamepad]")).toHaveCount(0);
+    await page.locator("[data-input-row-capture-mouse]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Click a mouse button or move the mouse wheel to capture input for this row.");
+    await page.mouse.click(20, 20);
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Mouse Left Button");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveClass(/text-gold/);
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveCSS("color", "rgb(255, 200, 87)");
+    await page.locator("[data-input-row-binding-value]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Click a mouse button or move the mouse wheel to capture input for this row.");
+    await page.mouse.wheel(0, -120);
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Mouse Wheel Up");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveClass(/text-gold/);
     await page.locator("[data-input-row-device]").selectOption("gamepad");
     await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
     await expect(page.locator("[data-input-row-capture-mouse]")).toHaveCount(0);
@@ -400,12 +410,14 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await addButton.click();
     await page.locator("[data-input-row-action]").selectOption("fire");
     await page.locator("[data-input-row-device]").selectOption("keyboard");
-    await expect(page.locator("[data-input-row-profile] option")).toHaveText(["No saved profile"]);
+    await expect(page.locator("[data-input-row-profile]")).toHaveCount(0);
     await expect(page.locator("[data-input-row-binding]")).toHaveAttribute("type", "hidden");
     await page.locator("[data-input-row-capture-keyboard]").click();
     await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
     await page.keyboard.press("KeyF");
     await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyF");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveClass(/text-gold/);
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveCSS("color", "rgb(255, 200, 87)");
     await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
     await page.locator("[data-input-row-binding-value]").click();
     await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
@@ -425,7 +437,6 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await expect(page.locator("[data-input-editing-row]")).toHaveCount(0);
     await expect(page.locator("[data-input-mapping-list] tr")).toHaveCount(1);
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Fire");
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("No saved profile");
     await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyF");
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(1);
@@ -446,6 +457,7 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await expect(page.locator("[data-input-status-log]")).toHaveText("Press a keyboard key to capture input for this row.");
     await page.keyboard.press("KeyG");
     await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Keyboard KeyG");
+    await expect(page.locator("[data-input-row-binding-value]")).toHaveClass(/text-gold/);
     await page.locator("[data-input-save-mapping]").click();
     await expect(addButton).toBeEnabled();
     await expect(page.locator("[data-input-token]")).toHaveText("Keyboard KeyG");
@@ -698,10 +710,16 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
     await expect(editingActionsRow.locator("[data-controller-profile-input-action]")).toHaveCount(18);
 
+    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").first().locator("[data-controller-profile-input-assigned-action]")).toHaveText("Assigned Action: Unassigned");
     await page.locator("[data-controller-profile-save]").click();
-    await expect(page.locator("[data-controller-profile-status]")).toContainText("Action Required");
+    await expect(page.locator("[data-controller-profile-status]")).toContainText("1 controller profile saved.");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("0/18 Actions assigned");
     profiles = await controllerProfileRecords(page);
     expect(profiles[0].actions).toEqual([]);
+    await expect(page.locator("[data-controller-profile-input-action]")).toHaveCount(0);
+
+    await page.locator("[data-controller-profile-edit]").click();
+    await expect(editingActionsRow.locator("[data-controller-profile-input-action]")).toHaveCount(18);
 
     const inputActionSelects = editingActionsRow.locator("[data-controller-profile-input-action]");
     const inputActionCount = await inputActionSelects.count();
@@ -712,9 +730,15 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     await expect(inputActionSelects.nth(1)).toHaveValue("moveRight");
     await page.evaluate(() => {
       window.__arcadeButtons[0] = { pressed: true, value: 1 };
+      window.__arcadeButtons[1] = { pressed: true, value: 1 };
     });
-    const activeProfileInput = page.locator("[data-controller-profile-input-pair][data-controller-profile-input-active='true']");
-    await expect(activeProfileInput.locator("strong")).toHaveText("Button0");
+    await page.locator("[data-input-refresh-devices]").click();
+    await expect(page.locator("[data-input-source-diagnostics]")).toContainText("Active inputs: Button0, Button1");
+    const activeProfileInputs = page.locator("[data-controller-profile-input-pair][data-controller-profile-input-active='true']");
+    await expect(activeProfileInputs).toHaveCount(2);
+    await expect(activeProfileInputs.nth(0).locator("strong")).toHaveText("Button0");
+    await expect(activeProfileInputs.nth(1).locator("strong")).toHaveText("Button1");
+    const activeProfileInput = activeProfileInputs.nth(0);
     const activeActionText = activeProfileInput.locator("[data-controller-profile-input-assigned-action]");
     await expect(activeActionText).toHaveText("Selected Action: Fire");
     await expect(activeActionText).toHaveClass(/text-gold/);
@@ -732,8 +756,9 @@ test("Controls generates controller profiles, shows fallback status, and mapping
       borderTopStyle: "none",
       borderTopWidth: "0px",
     });
-    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1)).not.toHaveAttribute("data-controller-profile-input-active", "true");
-    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1).locator("[data-controller-profile-input-assigned-action]")).toHaveText("Assigned Action: Move Right");
+    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1)).toHaveAttribute("data-controller-profile-input-active", "true");
+    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1).locator("[data-controller-profile-input-assigned-action]")).toHaveText("Selected Action: Move Right");
+    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1).locator("[data-controller-profile-input-assigned-action]")).toHaveCSS("color", "rgb(255, 200, 87)");
 
     await page.locator("[data-controller-profile-save]").click();
     profiles = await controllerProfileRecords(page);
@@ -784,11 +809,11 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     await page.locator("[data-input-add-mapping]").click();
     await page.locator("[data-input-row-action]").selectOption("fire");
     await page.locator("[data-input-row-device]").selectOption("gamepad");
-    await page.locator("[data-input-row-profile]").selectOption({ label: "Arcade Test Pad Profile" });
+    await expect(page.locator("[data-input-row-profile]")).toHaveCount(0);
     await page.locator("[data-input-row-capture-gamepad]").click();
     await expect(page.locator("[data-input-row-binding-value]")).toHaveText("Gamepad Button0");
     await page.locator("[data-input-save-mapping]").click();
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Test Pad Profile");
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Fire" })).not.toContainText("Arcade Test Pad Profile");
     await expect(page.locator("[data-input-token]")).toHaveText("Gamepad Button0");
 
     let records = await inputMappingRecords(page);
@@ -797,13 +822,13 @@ test("Controls generates controller profiles, shows fallback status, and mapping
       action: "fire",
       binding: "Pad0:Button0",
       controllerProfileId: profiles[0].id,
-      mappingProfile: "Arcade Test Pad Profile",
+      mappingProfile: "",
       source: "gamepad",
     });
 
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad Profile");
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Arcade Test Pad Profile");
+    await expect(page.locator("[data-input-mapping-row]").filter({ hasText: "Fire" })).not.toContainText("Arcade Test Pad Profile");
     profiles = await controllerProfileRecords(page);
     records = await inputMappingRecords(page);
     expect(profiles).toHaveLength(1);

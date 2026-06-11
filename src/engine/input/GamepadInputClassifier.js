@@ -140,6 +140,36 @@ export function activeGamepadBindings(gamepad) {
     return [...buttonBindings, ...buttonReleaseBindings, ...axisBindings];
 }
 
+export function gamepadProfileInputNames(gamepad) {
+    const deviceInfo = gamepadDeviceInfo(gamepad);
+    const buttonCount = Math.max(
+        gamepad?.buttonsDown?.length ?? 0,
+        gamepad?.buttons?.length ?? 0
+    );
+    const buttonNames = Array.from({ length: buttonCount }).map((_, buttonIndex) =>
+        gamepadProfileButtonLabel(deviceInfo, buttonIndex)
+    );
+    const axisNames = (gamepad?.axes ?? []).map((_, axisIndex) => `Axis${axisIndex}`);
+    return [...buttonNames, ...axisNames];
+}
+
+export function activeGamepadProfileInputNames(gamepad) {
+    return [...new Set(activeGamepadBindings(gamepad)
+        .map((binding) => gamepadProfileInputNameFromBinding(binding, gamepad))
+        .filter(Boolean))];
+}
+
+export function gamepadProfileInputNameFromBinding(binding, gamepad = {}) {
+    const match = /^Pad\d+:(Button|Axis)(\d+)/.exec(String(binding || ''));
+    if (!match) {
+        return '';
+    }
+    if (match[1] === 'Axis') {
+        return `Axis${Number(match[2])}`;
+    }
+    return gamepadProfileButtonLabel(gamepadDeviceInfo(gamepad), Number(match[2]));
+}
+
 function captureLines({ vendorProductLine }) {
     return ['Capture Game', vendorProductLine].filter(Boolean);
 }
@@ -336,6 +366,19 @@ function gamepadButtonLabel(deviceInfo, buttonIndex) {
         return STANDARD_GAMEPAD_BUTTON_NAMES[buttonIndex];
     }
     return `Button ${buttonIndex}`;
+}
+
+function gamepadProfileButtonLabel(deviceInfo, buttonIndex) {
+    if (buttonIndex === 6) {
+        return 'Trigger Left';
+    }
+    if (buttonIndex === 7) {
+        return 'Trigger Right';
+    }
+    if (buttonIndex >= 12 && buttonIndex <= 15) {
+        return STANDARD_GAMEPAD_BUTTON_NAMES[buttonIndex];
+    }
+    return `Button${buttonIndex}`;
 }
 
 function gamepadGestureDetail(gesture, defaultDetail) {

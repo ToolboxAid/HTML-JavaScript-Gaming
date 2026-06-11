@@ -55,7 +55,7 @@ export default class GamepadState {
 
         const axes = Array.isArray(gamepad.axes) ? [...gamepad.axes] : [];
         const buttonsDown = Array.isArray(gamepad.buttons)
-            ? gamepad.buttons.map((button) => Boolean(button?.pressed))
+            ? gamepad.buttons.map((button) => Boolean(button?.pressed) || Number(button?.value ?? 0) > 0.5)
             : [];
 
         return {

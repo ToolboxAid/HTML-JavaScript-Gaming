@@ -131,7 +131,8 @@ dd {
   padding-block: var(--space-6)
 }
 
-.text-gold {
+.text-gold,
+.btn.text-gold {
   color: var(--gold)
 }
 

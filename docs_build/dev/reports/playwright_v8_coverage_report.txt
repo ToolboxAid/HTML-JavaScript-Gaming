@@ -12,25 +12,42 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(92%) Toolbox Index - exercised 4 runtime JS files
+(93%) Toolbox Index - exercised 4 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(94%) toolbox/controls/controls.js - executed lines 1698/1698; executed functions 187/198
+(37%) src/engine/input/InputService.js - executed lines 425/425; executed functions 22/60
+(74%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 31/42
+(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
+(95%) toolbox/controls/controls.js - executed lines 1684/1684; executed functions 181/190
 
 Files with executed line/function counts where available:
+(11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
+(23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
+(33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
+(37%) src/engine/input/InputService.js - executed lines 425/425; executed functions 22/60
+(40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
+(43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
 (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+(57%) src/engine/input/InputCaptureService.js - executed lines 163/163; executed functions 8/14
 (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
+(59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+(73%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 11/15
+(74%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 31/42
 (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
-(94%) toolbox/controls/controls.js - executed lines 1698/1698; executed functions 187/198
+(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
+(95%) toolbox/controls/controls.js - executed lines 1684/1684; executed functions 181/190
 (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
 (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(100%) none - no low-coverage changed runtime JS files
+(37%) src/engine/input/InputService.js - WARNING: advisory low coverage; executed lines 425/425
 
 Changed JS files considered:
 (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
-(94%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
+(37%) src/engine/input/InputService.js - changed JS file with browser V8 coverage
+(74%) src/engine/input/GamepadInputClassifier.js - changed JS file with browser V8 coverage
+(80%) src/engine/input/GamepadState.js - changed JS file with browser V8 coverage
+(95%) toolbox/controls/controls.js - changed JS file with browser V8 coverage

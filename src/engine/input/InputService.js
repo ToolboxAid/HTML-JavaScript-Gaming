@@ -451,7 +451,10 @@ export default class InputService {
                 timestamp: gamepad.timestamp ?? 0,
                 axes: Array.isArray(gamepad.axes) ? [...gamepad.axes] : [],
                 buttons: Array.isArray(gamepad.buttons)
-                    ? gamepad.buttons.map((button) => ({ pressed: Boolean(button?.pressed) }))
+                    ? gamepad.buttons.map((button) => ({
+                        pressed: Boolean(button?.pressed) || Number(button?.value ?? 0) > 0.5,
+                        value: Number(button?.value ?? 0)
+                    }))
                     : [],
             }));
     }

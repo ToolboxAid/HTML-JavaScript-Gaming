@@ -1,9 +1,12 @@
 assets/theme-v2/css/typography.css
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/controls-device-refresh-profile-polish-report.md
+docs_build/dev/reports/controls-engine-input-and-profile-scope-report.md
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
 docs_build/dev/reports/playwright_v8_coverage_report.txt
+src/engine/input/GamepadInputClassifier.js
+src/engine/input/GamepadState.js
+src/engine/input/InputService.js
 tests/playwright/tools/InputMappingV2Tool.spec.mjs
 toolbox/controls/controls.js
 toolbox/controls/index.html
