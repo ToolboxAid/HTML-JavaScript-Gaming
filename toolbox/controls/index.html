@@ -56,8 +56,8 @@
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Game Controls</h2>
-                        <p>Use Game Controls for normalized inputs, game actions, objects, and mapping state.</p>
+                        <h2>Game Input Mapping</h2>
+                        <p>Map normalized inputs to game actions, objects, and mapping state.</p>
                         <div class="grid cols-3" aria-label="Input mapping summary">
                             <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
                             <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
@@ -67,11 +67,11 @@
                             <div class="card-body">
                                 <div class="accordion-stack">
                                     <details class="vertical-accordion" open data-input-mapping-accordion>
-                                        <summary>Game Controls</summary>
+                                        <summary>Game Input Mapping</summary>
                                         <div class="accordion-body content-stack">
                                             <div>
-                                                <div class="kicker">Table Input</div>
-                                                <h3>Game Controls</h3>
+                                                <div class="kicker">Game Input Mapping</div>
+                                                <h3>Game Input Mapping</h3>
                                             </div>
                                             <p class="status" data-input-state-explanation>State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.</p>
                                             <div class="table-wrapper">
@@ -118,24 +118,24 @@
                                         </div>
                                     </details>
                                     <details class="vertical-accordion" open data-controller-profile-accordion>
-                                        <summary>Player Controller Profiles</summary>
+                                        <summary>Player Input Mapping</summary>
                                         <div class="accordion-body content-stack" data-controller-profile-planning>
                                             <div>
-                                                <div class="kicker">Player Controller Profiles</div>
-                                                <h3>Player Controller Profiles</h3>
+                                                <div class="kicker">Player Input Mapping</div>
+                                                <h3>Player Input Mapping</h3>
                                             </div>
-                                            <p>Map physical controller inputs to normalized inputs before game actions are assigned.</p>
+                                            <p>Map physical inputs to normalized inputs before game actions are assigned.</p>
                                             <div class="content-cluster" aria-label="Physical controller selection" data-controller-device-selection>
                                                 <button class="btn" type="button" data-input-refresh-devices>Refresh Devices</button>
                                                 <label>
                                                     Physical Controller
                                                     <select data-controller-device-select></select>
                                                 </label>
-                                                <button class="btn" type="button" data-controller-profile-create-default hidden>Create Profile From Default</button>
+                                                <button class="btn" type="button" data-controller-profile-create-default hidden>Create My Controller Profile</button>
                                             </div>
                                             <p class="status" role="status" data-controller-profile-fallback-status>Missing Controller Profile</p>
                                             <div class="table-wrapper">
-                                                <table class="data-table" aria-label="Player controller profiles" data-controller-profile-table>
+                                                <table class="data-table" aria-label="Player input mappings" data-controller-profile-table>
                                                     <thead>
                                                         <tr>
                                                             <th>Physical Controller</th>
@@ -151,15 +151,15 @@
                                                         <tr>
                                                             <td colspan="6">
                                                                 <div class="content-cluster" aria-label="Controller profile table actions">
-                                                                    <button class="btn" type="button" data-controller-profile-add>Create Player Controller Profile</button>
+                                                                    <button class="btn" type="button" data-controller-profile-add>Create My Controller Profile</button>
                                                                 </div>
                                                             </td>
                                                         </tr>
                                                     </tfoot>
                                                 </table>
                                             </div>
-                                            <p>Physical inputs route through normalized inputs before Game Controls assign game actions.</p>
-                                            <p class="status" role="status" data-controller-profile-status>Missing Controller Profile. Refresh Devices, select a physical controller, then create a player controller profile.</p>
+                                            <p>Physical inputs route through normalized inputs before Game Input Mapping assigns game actions.</p>
+                                            <p class="status" role="status" data-controller-profile-status>Missing Controller Profile. Refresh Devices, select a physical controller, then create a player input mapping.</p>
                                         </div>
                                     </details>
                                 </div>
@@ -174,7 +174,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Devices</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" data-input-device-guidance>Press a button on the controller, then refresh Device Type.</p>
+                                    <p class="status" data-input-device-guidance>Press a button on the controller, then refresh Physical Controller.</p>
                                     <ul data-input-source-diagnostics></ul>
                                 </div>
                             </details>

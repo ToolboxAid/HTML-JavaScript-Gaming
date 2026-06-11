@@ -5,8 +5,8 @@ import {
 } from "../mock-db-store.js";
 
 export const INPUT_MAPPING_TOOL_TABLES = Object.freeze([
-  "input_mapping_records",
-  "input_controller_profile_records",
+  "game_input_mappings",
+  "player_controller_profiles",
   "input_custom_action_records",
 ]);
 
@@ -26,9 +26,9 @@ function cloneTables(tables) {
 
 function createEmptyTables() {
   return {
-    input_controller_profile_records: [],
+    game_input_mappings: [],
     input_custom_action_records: [],
-    input_mapping_records: [],
+    player_controller_profiles: [],
   };
 }
 
@@ -44,14 +44,14 @@ function mappingKeyFromText(value) {
 }
 
 function initialTables(options = {}) {
-  const explicitRows = options.memoryDbTables?.input_mapping_records;
-  const explicitProfiles = options.memoryDbTables?.input_controller_profile_records;
+  const explicitRows = options.memoryDbTables?.game_input_mappings;
+  const explicitProfiles = options.memoryDbTables?.player_controller_profiles;
   const explicitCustomActions = options.memoryDbTables?.input_custom_action_records;
   if (Array.isArray(explicitRows) || Array.isArray(explicitProfiles) || Array.isArray(explicitCustomActions)) {
     return normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, {
-      input_controller_profile_records: Array.isArray(explicitProfiles) ? explicitProfiles : [],
+      game_input_mappings: Array.isArray(explicitRows) ? explicitRows : [],
       input_custom_action_records: Array.isArray(explicitCustomActions) ? explicitCustomActions : [],
-      input_mapping_records: Array.isArray(explicitRows) ? explicitRows : [],
+      player_controller_profiles: Array.isArray(explicitProfiles) ? explicitProfiles : [],
     }, options);
   }
   return normalizeMockDbTables(INPUT_MAPPING_DB_OWNER, createEmptyTables(), options);
@@ -77,31 +77,32 @@ function normalizeProfileInputMappings(value) {
 }
 
 function sortedMappingRows(tables) {
-  return [...(tables.input_mapping_records || [])].sort((left, right) => (
+  return [...(tables.game_input_mappings || [])].sort((left, right) => (
     (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
-      || normalizeText(left.actionLabel).localeCompare(normalizeText(right.actionLabel))
-      || normalizeText(left.label).localeCompare(normalizeText(right.label))
+      || normalizeText(left.gameActionLabel).localeCompare(normalizeText(right.gameActionLabel))
+      || normalizeText(left.normalizedInput).localeCompare(normalizeText(right.normalizedInput))
   ));
 }
 
 function sortedControllerProfileRows(tables) {
-  return [...(tables.input_controller_profile_records || [])].sort((left, right) => (
+  return [...(tables.player_controller_profiles || [])].sort((left, right) => (
     (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
-      || normalizeText(left.mappingProfile).localeCompare(normalizeText(right.mappingProfile))
+      || normalizeText(left.profileName).localeCompare(normalizeText(right.profileName))
       || normalizeText(left.controllerName).localeCompare(normalizeText(right.controllerName))
   ));
 }
 
 function controllerProfileFromRecord(record = {}) {
+  const profileName = normalizeText(record.profileName || record.mappingProfile);
   return {
-    actions: normalizeList(record.actions),
     controllerId: normalizeText(record.controllerId),
     controllerName: normalizeText(record.controllerName),
     deviceType: normalizeText(record.deviceType),
     id: normalizeText(record.id),
     inputMappings: normalizeProfileInputMappings(record.inputMappings),
     inputs: normalizeList(record.inputs),
-    mappingProfile: normalizeText(record.mappingProfile),
+    mappingProfile: profileName,
+    profileName,
   };
 }
 
@@ -115,20 +116,15 @@ function customActionFromRecord(record = {}) {
 }
 
 function mappingFromRecord(record = {}) {
+  const action = normalizeText(record.gameAction || record.action);
+  const actionLabel = normalizeText(record.gameActionLabel || record.actionLabel);
   return {
-    action: normalizeText(record.action),
-    actionLabel: normalizeText(record.actionLabel),
-    binding: normalizeText(record.binding),
-    engine: normalizeText(record.engine),
+    action,
+    actionLabel,
     id: normalizeText(record.id),
-    inputDevice: normalizeText(record.inputDevice),
-    label: normalizeText(record.label),
-    controllerProfileId: normalizeText(record.controllerProfileId),
-    mappingProfile: normalizeText(record.mappingProfile),
     normalizedInput: normalizeText(record.normalizedInput),
     objectKey: normalizeText(record.objectKey),
     objectName: normalizeText(record.objectName),
-    source: normalizeText(record.source),
     state: normalizeText(record.state) || "Active",
   };
 }
@@ -169,9 +165,9 @@ export function createInputMappingToolMockRepository(options = {}) {
   }
 
   function listControllerProfiles(projectId = "") {
-    const targetProjectId = normalizeText(projectId) || activeProjectId();
+    const targetPlayerId = activeUserKey();
     return sortedControllerProfileRows(tables)
-      .filter((record) => normalizeText(record.projectId) === targetProjectId)
+      .filter((record) => normalizeText(record.playerId) === targetPlayerId)
       .map(controllerProfileFromRecord);
   }
 
@@ -187,21 +183,20 @@ export function createInputMappingToolMockRepository(options = {}) {
   }
 
   function replaceControllerProfiles(profiles = [], projectId = "") {
-    const targetProjectId = normalizeText(projectId) || activeProjectId();
+    const targetPlayerId = activeUserKey();
     const existingRows = new Map(
-      (tables.input_controller_profile_records || [])
-        .filter((record) => normalizeText(record.projectId) === targetProjectId)
+      (tables.player_controller_profiles || [])
+        .filter((record) => normalizeText(record.playerId) === targetPlayerId)
         .map((record) => [normalizeText(record.id), record]),
     );
     const timestamp = new Date().toISOString();
     const userKey = activeUserKey();
     const nextRows = (Array.isArray(profiles) ? profiles : []).map((profile, index) => {
-      const mappingProfile = normalizeText(profile.mappingProfile);
+      const profileName = normalizeText(profile.profileName || profile.mappingProfile);
       const controllerId = normalizeText(profile.controllerId);
-      const id = normalizeText(profile.id) || mappingKeyFromText(`${controllerId}-${mappingProfile}-${index + 1}`);
+      const id = normalizeText(profile.id) || mappingKeyFromText(`${controllerId}-${profileName}-${index + 1}`);
       const previous = existingRows.get(id);
       return {
-        actions: normalizeList(profile.actions),
         controllerId,
         controllerName: normalizeText(profile.controllerName),
         createdAt: previous?.createdAt || timestamp,
@@ -211,23 +206,23 @@ export function createInputMappingToolMockRepository(options = {}) {
         inputMappings: normalizeProfileInputMappings(profile.inputMappings),
         inputs: normalizeList(profile.inputs),
         key: previous?.key,
-        mappingProfile,
-        projectId: targetProjectId,
+        playerId: targetPlayerId,
+        profileName,
         recordOrder: index + 1,
         updatedAt: timestamp,
         updatedBy: userKey,
       };
     });
 
-    tables.input_controller_profile_records = [
-      ...(tables.input_controller_profile_records || []).filter(
-        (record) => normalizeText(record.projectId) !== targetProjectId,
+    tables.player_controller_profiles = [
+      ...(tables.player_controller_profiles || []).filter(
+        (record) => normalizeText(record.playerId) !== targetPlayerId,
       ),
       ...nextRows,
     ];
     persistTables();
     return {
-      profiles: listControllerProfiles(targetProjectId),
+      profiles: listControllerProfiles(),
       saved: true,
       snapshot: getSnapshot(),
     };
@@ -276,7 +271,7 @@ export function createInputMappingToolMockRepository(options = {}) {
   function replaceMappings(mappings = [], projectId = "") {
     const targetProjectId = normalizeText(projectId) || activeProjectId();
     const existingRows = new Map(
-      (tables.input_mapping_records || [])
+      (tables.game_input_mappings || [])
         .filter((record) => normalizeText(record.projectId) === targetProjectId)
         .map((record) => [normalizeText(record.id), record]),
     );
@@ -284,38 +279,30 @@ export function createInputMappingToolMockRepository(options = {}) {
     const userKey = activeUserKey();
     const nextRows = (Array.isArray(mappings) ? mappings : []).map((mapping, index) => {
       const action = normalizeText(mapping.action);
-      const binding = normalizeText(mapping.binding);
       const normalizedInput = normalizeText(mapping.normalizedInput);
       const objectKey = normalizeText(mapping.objectKey) || "global";
-      const id = normalizeText(mapping.id) || mappingKeyFromText(`${objectKey}-${action}-${normalizedInput || binding}-${index + 1}`);
+      const id = normalizeText(mapping.id) || mappingKeyFromText(`${objectKey}-${action}-${normalizedInput}-${index + 1}`);
       const previous = existingRows.get(id);
       return {
-        action,
-        actionLabel: normalizeText(mapping.actionLabel),
-        binding,
         createdAt: previous?.createdAt || timestamp,
         createdBy: previous?.createdBy || userKey,
-        engine: normalizeText(mapping.engine),
+        gameAction: action,
+        gameActionLabel: normalizeText(mapping.actionLabel),
         id,
-        inputDevice: normalizeText(mapping.inputDevice),
         key: previous?.key,
-        label: normalizeText(mapping.label),
-        controllerProfileId: normalizeText(mapping.controllerProfileId),
-        mappingProfile: normalizeText(mapping.mappingProfile),
         normalizedInput,
         objectKey,
         objectName: normalizeText(mapping.objectName) || "Global",
         projectId: targetProjectId,
         recordOrder: index + 1,
-        source: normalizeText(mapping.source),
         state: normalizeText(mapping.state) || "Active",
         updatedAt: timestamp,
         updatedBy: userKey,
       };
     });
 
-    tables.input_mapping_records = [
-      ...(tables.input_mapping_records || []).filter(
+    tables.game_input_mappings = [
+      ...(tables.game_input_mappings || []).filter(
         (record) => normalizeText(record.projectId) !== targetProjectId,
       ),
       ...nextRows,
@@ -330,7 +317,7 @@ export function createInputMappingToolMockRepository(options = {}) {
 
   function resetMappings(projectId = "") {
     const targetProjectId = normalizeText(projectId) || activeProjectId();
-    tables.input_mapping_records = (tables.input_mapping_records || []).filter(
+    tables.game_input_mappings = (tables.game_input_mappings || []).filter(
       (record) => normalizeText(record.projectId) !== targetProjectId,
     );
     persistTables();

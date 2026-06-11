@@ -25,7 +25,9 @@ import {
     defaultNormalizedInputForPhysicalInput,
     normalizedInputLabel,
     normalizedInputOptions,
-    physicalInputIsAnalog
+    physicalInputIsAnalog,
+    resolveNormalizedInputProfile,
+    systemDefaultProfileForDevice
 } from './NormalizedInputRegistry.js';
 
 export default class InputService {
@@ -270,6 +272,14 @@ export default class InputService {
 
     getDefaultNormalizedInputForPhysicalInput(physicalInput) {
         return defaultNormalizedInputForPhysicalInput(physicalInput);
+    }
+
+    getSystemDefaultProfileForDevice(deviceType) {
+        return systemDefaultProfileForDevice(deviceType);
+    }
+
+    resolveNormalizedInputProfile(options = {}) {
+        return resolveNormalizedInputProfile(options);
     }
 
     physicalInputIsAnalog(physicalInput) {

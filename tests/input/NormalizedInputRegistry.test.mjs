@@ -11,6 +11,8 @@ import {
   normalizeProfileInputMappings,
   normalizedInputOptions,
   physicalInputIsAnalog,
+  resolveNormalizedInputProfile,
+  systemDefaultProfileForDevice,
 } from '../../src/engine/input/NormalizedInputRegistry.js';
 
 function testRegistryContainsPlayableNormalizedInputs() {
@@ -19,29 +21,33 @@ function testRegistryContainsPlayableNormalizedInputs() {
     'move.y',
     'aim.x',
     'aim.y',
-    'button.south',
-    'button.east',
-    'button.west',
-    'button.north',
+    'action.primary',
+    'action.secondary',
+    'action.tertiary',
+    'action.quaternary',
+    'action.confirm',
+    'action.cancel',
+    'action.start',
+    'action.select',
+    'action.pause',
     'dpad.up',
     'dpad.down',
     'dpad.left',
     'dpad.right',
     'trigger.left',
     'trigger.right',
-    'start',
-    'select',
   ]);
 }
 
 function testPhysicalDefaultsRouteThroughNormalizedInputs() {
-  assert.equal(defaultNormalizedInputForPhysicalInput('Button0'), 'button.south');
-  assert.equal(defaultNormalizedInputForPhysicalInput('Button1'), 'button.east');
+  assert.equal(defaultNormalizedInputForPhysicalInput('Button0'), 'action.primary');
+  assert.equal(defaultNormalizedInputForPhysicalInput('Button1'), 'action.secondary');
   assert.equal(defaultNormalizedInputForPhysicalInput('DPad Up'), 'dpad.up');
   assert.equal(defaultNormalizedInputForPhysicalInput('Trigger Right'), 'trigger.right');
   assert.equal(defaultNormalizedInputForPhysicalInput('Axis0'), 'move.x');
   assert.equal(defaultNormalizedInputForPhysicalInput('Axis3'), 'aim.y');
   assert.equal(defaultNormalizedInputForPhysicalInput('KeyW'), 'move.y');
+  assert.equal(defaultNormalizedInputForPhysicalInput('Space'), 'action.primary');
   assert.equal(defaultNormalizedInputForPhysicalInput('MouseX'), 'aim.x');
 }
 
@@ -52,14 +58,59 @@ function testProfileInputMappingsPreserveAnalogSettings() {
     ['Button0', 'Axis0'],
     [{ deadzone: 0.35, invert: true, normalizedInput: 'aim.x', physicalInput: 'Axis0' }],
   ), [
-    { deadzone: 0.2, invert: false, normalizedInput: 'button.south', physicalInput: 'Button0' },
+    { deadzone: 0.2, invert: false, normalizedInput: 'action.primary', physicalInput: 'Button0' },
     { deadzone: 0.35, invert: true, normalizedInput: 'aim.x', physicalInput: 'Axis0' },
   ]);
 }
 
 function testInvalidNormalizedInputDoesNotSilentlyBecomeAction() {
-  assert.equal(normalizeNormalizedInput('fire', 'button.south'), 'button.south');
-  assert.equal(normalizeNormalizedInput('move.x', 'button.south'), 'move.x');
+  assert.equal(normalizeNormalizedInput('fire', 'action.primary'), 'action.primary');
+  assert.equal(normalizeNormalizedInput('move.x', 'action.primary'), 'move.x');
+}
+
+function testSystemDefaultProfilesAreVisibleFallbackContracts() {
+  const gamepadDefault = systemDefaultProfileForDevice('Gamepad');
+  const keyboardMouseDefault = systemDefaultProfileForDevice('Keyboard/Mouse');
+  assert.equal(gamepadDefault.mappingProfile, 'System Default Gamepad');
+  assert.equal(keyboardMouseDefault.mappingProfile, 'System Default Keyboard/Mouse');
+  assert.equal(gamepadDefault.systemDefault, true);
+  assert.equal(keyboardMouseDefault.systemDefault, true);
+  assert.equal(gamepadDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Button0').normalizedInput, 'action.primary');
+  assert.equal(keyboardMouseDefault.inputMappings.find((mapping) => mapping.physicalInput === 'Space').normalizedInput, 'action.primary');
+}
+
+function testRuntimeLookupOrder() {
+  const keyboardMouseProfile = {
+    controllerId: 'keyboard-mouse',
+    deviceType: 'Keyboard/Mouse',
+    mappingProfile: 'My Keyboard/Mouse',
+  };
+  const exactGamepadProfile = {
+    controllerId: 'Arcade Pad',
+    deviceType: 'Gamepad',
+    mappingProfile: 'My Arcade Pad',
+  };
+  assert.equal(resolveNormalizedInputProfile({
+    device: { controllerId: 'Arcade Pad', deviceType: 'Gamepad' },
+    profiles: [keyboardMouseProfile, exactGamepadProfile],
+  }).lookupStep, 1);
+  assert.equal(resolveNormalizedInputProfile({
+    device: { controllerId: 'Other Pad', deviceType: 'Gamepad' },
+    profiles: [keyboardMouseProfile],
+  }).lookupStep, 2);
+  const gamepadDefault = resolveNormalizedInputProfile({
+    device: { controllerId: 'Other Pad', deviceType: 'Gamepad' },
+    profiles: [],
+  });
+  assert.equal(gamepadDefault.lookupStep, 3);
+  assert.equal(gamepadDefault.status, 'Using Default Gamepad Mapping');
+  const keyboardDefault = resolveNormalizedInputProfile({
+    device: { controllerId: 'keyboard-mouse', deviceType: 'Keyboard/Mouse' },
+    profiles: [],
+  });
+  assert.equal(keyboardDefault.lookupStep, 4);
+  assert.equal(keyboardDefault.status, 'Using Default Keyboard/Mouse Mapping');
+  assert.equal(resolveNormalizedInputProfile({ device: null, profiles: [] }).lookupStep, 5);
 }
 
 export function run() {
@@ -67,6 +118,8 @@ export function run() {
   testPhysicalDefaultsRouteThroughNormalizedInputs();
   testProfileInputMappingsPreserveAnalogSettings();
   testInvalidNormalizedInputDoesNotSilentlyBecomeAction();
+  testSystemDefaultProfilesAreVisibleFallbackContracts();
+  testRuntimeLookupOrder();
 }
 
 run();

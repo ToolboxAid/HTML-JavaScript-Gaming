@@ -44,18 +44,21 @@ const NORMALIZED_INPUTS = [
   "move.y",
   "aim.x",
   "aim.y",
-  "button.south",
-  "button.east",
-  "button.west",
-  "button.north",
+  "action.primary",
+  "action.secondary",
+  "action.tertiary",
+  "action.quaternary",
+  "action.confirm",
+  "action.cancel",
+  "action.start",
+  "action.select",
+  "action.pause",
   "dpad.up",
   "dpad.down",
   "dpad.left",
   "dpad.right",
   "trigger.left",
   "trigger.right",
-  "start",
-  "select",
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -187,7 +190,7 @@ async function inputMappingRecords(page) {
   return page.evaluate(async () => {
     const response = await fetch("/api/mock-db/snapshot");
     const payload = await response.json();
-    return payload.data.tables.input_mapping_records || [];
+    return payload.data.tables.game_input_mappings || [];
   });
 }
 
@@ -195,7 +198,7 @@ async function controllerProfileRecords(page) {
   return page.evaluate(async () => {
     const response = await fetch("/api/mock-db/snapshot");
     const payload = await response.json();
-    return payload.data.tables.input_controller_profile_records || [];
+    return payload.data.tables.player_controller_profiles || [];
   });
 }
 
@@ -234,15 +237,15 @@ async function exposeGamepad(page) {
   });
 }
 
-test("Controls splits Game Controls and Player Controller Profiles with normalized input ownership", async ({ page }) => {
+test("Controls splits Game Input Mapping and Player Input Mapping with normalized input ownership", async ({ page }) => {
   const failures = await openControlsPage(page, "/toolbox/controls/index.html?workspace=demo-project");
 
   try {
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Controls");
-    await expect(page.locator("[data-input-mapping-accordion] summary")).toHaveText("Game Controls");
-    await expect(page.locator("[data-controller-profile-accordion] summary")).toHaveText("Player Controller Profiles");
+    await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Input Mapping");
+    await expect(page.locator("[data-input-mapping-accordion] summary")).toHaveText("Game Input Mapping");
+    await expect(page.locator("[data-controller-profile-accordion] summary")).toHaveText("Player Input Mapping");
     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
       "Normalized Input",
       "Game Action",
@@ -260,12 +263,11 @@ test("Controls splits Game Controls and Player Controller Profiles with normaliz
     ]);
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Missing Game Control Mapping");
     await expect(page.locator("[data-input-output-status]")).toHaveText("Missing Game Control Mapping");
-    await expect(page.locator("[data-controller-profile-fallback-status]")).toHaveText("Missing Controller Profile. Create Player Controller Profile.");
+    await expect(page.locator("[data-controller-profile-fallback-status]")).toHaveText("Missing Controller Profile. Create My Controller Profile.");
     await expect(page.locator("[data-controller-profile-status]")).toContainText("Missing Controller Profile");
     await expect(page.locator("[data-controller-device-select] option")).toHaveText([
       "Choose a physical controller",
-      "Keyboard",
-      "Mouse",
+      "Keyboard/Mouse",
     ]);
     await expect(page.locator("[data-input-action-catalog] th")).toHaveText(["Action Name", "Description"]);
     await expect(page.locator("[data-input-action-label]")).toHaveText(DEFAULT_ACTION_LABELS);
@@ -274,6 +276,8 @@ test("Controls splits Game Controls and Player Controller Profiles with normaliz
     await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
     await expect(page.getByText("Mapping JSON", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-input-source-diagnostics]")).toContainText("Normalized Input Registry");
+    await expect(page.locator("[data-input-source-diagnostics]")).toContainText("Fallback profiles: System Default Gamepad, System Default Keyboard/Mouse.");
+    await expect(page.locator("[data-input-source-diagnostics]")).toContainText("Runtime lookup order: user/player controller profile exact match, user/player keyboard/mouse profile, System Default Gamepad, System Default Keyboard/Mouse, Missing Controller Profile.");
     await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
 
     const registryEntry = await controlsRegistryEntry(page);
@@ -288,7 +292,7 @@ test("Controls splits Game Controls and Player Controller Profiles with normaliz
   }
 });
 
-test("Game Controls save normalized input to game action mappings and validate object actions", async ({ page }) => {
+test("Game Input Mapping saves normalized input to game action mappings and validates object actions", async ({ page }) => {
   const failures = await openControlsPage(page);
 
   try {
@@ -323,27 +327,29 @@ test("Game Controls save normalized input to game action mappings and validate o
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({
-      action: "moveLeft",
-      actionLabel: "Move Left",
-      binding: "",
-      inputDevice: "Normalized Input",
+      gameAction: "moveLeft",
+      gameActionLabel: "Move Left",
       normalizedInput: "move.x",
       objectKey: "hero",
-      source: "normalized",
       state: "Active",
     });
+    expect(records[0]).not.toHaveProperty("binding");
+    expect(records[0]).not.toHaveProperty("inputDevice");
+    expect(records[0]).not.toHaveProperty("controllerId");
+    expect(records[0]).not.toHaveProperty("controllerName");
+    expect(records[0]).not.toHaveProperty("controllerProfileId");
 
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-input-mapping-row]")).toContainText("move.x");
     await page.locator("[data-input-edit-mapping]").click();
-    await page.locator("[data-input-row-normalized]").selectOption("button.south");
+    await page.locator("[data-input-row-normalized]").selectOption("action.primary");
     await page.locator("[data-input-row-action]").selectOption("fire");
     await page.locator("[data-input-save-mapping]").click();
     records = await inputMappingRecords(page);
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({
-      action: "fire",
-      normalizedInput: "button.south",
+      gameAction: "fire",
+      normalizedInput: "action.primary",
       objectKey: "hero",
     });
 
@@ -368,7 +374,7 @@ test("Game Controls save normalized input to game action mappings and validate o
   }
 });
 
-test("Player Controller Profiles persist physical-to-normalized mappings with analog settings", async ({ page }) => {
+test("Player Input Mapping persists physical-to-normalized mappings with analog settings", async ({ page }) => {
   const failures = await openControlsPage(page);
 
   try {
@@ -376,29 +382,19 @@ test("Player Controller Profiles persist physical-to-normalized mappings with an
     await page.locator("[data-input-refresh-devices]").click();
     await expect(page.locator("[data-controller-device-select] option")).toContainText([
       "Choose a physical controller",
-      "Keyboard",
-      "Mouse",
+      "Keyboard/Mouse",
       "Gamepad: Arcade Test Pad",
     ]);
 
-    await page.locator("[data-controller-device-select]").selectOption("keyboard");
-    await page.locator("[data-controller-profile-add]").click();
-    await expect(page.locator("[data-controller-profile-list]")).toContainText("Keyboard: Keyboard");
-    let profiles = await controllerProfileRecords(page);
-    expect(profiles).toHaveLength(1);
-    expect(profiles[0].inputMappings.find((mapping) => mapping.physicalInput === "KeyW")).toMatchObject({
-      normalizedInput: "move.y",
-      physicalInput: "KeyW",
-    });
-
     await page.locator("[data-controller-device-select]").selectOption("gamepad-0");
     await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Using Default Gamepad Mapping");
+    expect(await controllerProfileRecords(page)).toHaveLength(0);
     await expect(page.locator("[data-controller-profile-create-default]")).toBeVisible();
     await page.locator("[data-controller-profile-create-default]").click();
     await expect(page.locator("[data-controller-profile-editing-row]")).toContainText("Gamepad: Arcade Test Pad");
     await expect(page.locator("[data-controller-profile-input-pair]")).toHaveCount(18);
     await expect(page.locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
-    await expect(page.locator("[data-controller-profile-input-normalized]").first()).toHaveValue("button.south");
+    await expect(page.locator("[data-controller-profile-input-normalized]").first()).toHaveValue("action.primary");
     await expect(page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-deadzone]")).toBeVisible();
     await page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-deadzone]").fill("0.35");
     await page.locator("[data-controller-profile-input-pair]").filter({ hasText: "Axis0" }).locator("[data-controller-profile-invert]").check();
@@ -412,11 +408,11 @@ test("Player Controller Profiles persist physical-to-normalized mappings with an
     const activeInputs = page.locator("[data-controller-profile-input-pair][data-controller-profile-input-active='true']");
     await expect(activeInputs).toHaveCount(2);
     await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toHaveCSS("color", "rgb(255, 200, 87)");
-    await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected Normalized Input: button.south");
+    await expect(activeInputs.filter({ hasText: "Button0" }).locator("[data-controller-profile-input-assigned-normalized]")).toContainText("Selected Normalized Input: action.primary");
 
     await page.locator("[data-controller-profile-save]").click();
-    profiles = await controllerProfileRecords(page);
-    expect(profiles).toHaveLength(2);
+    let profiles = await controllerProfileRecords(page);
+    expect(profiles).toHaveLength(1);
     const gamepadProfile = profiles.find((profile) => profile.controllerName === "Arcade Test Pad");
     expect(gamepadProfile.inputMappings).toHaveLength(18);
     expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Axis0")).toMatchObject({
@@ -424,9 +420,24 @@ test("Player Controller Profiles persist physical-to-normalized mappings with an
       invert: true,
       normalizedInput: "move.x",
     });
+    expect(gamepadProfile).not.toHaveProperty("actions");
+    expect(gamepadProfile).not.toHaveProperty("gameAction");
+    expect(gamepadProfile).not.toHaveProperty("objectKey");
+
+    await page.locator("[data-controller-device-select]").selectOption("keyboard-mouse");
+    await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Using Default Keyboard/Mouse Mapping");
+    await page.locator("[data-controller-profile-add]").click();
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Keyboard/Mouse: Keyboard/Mouse");
+    profiles = await controllerProfileRecords(page);
+    expect(profiles).toHaveLength(2);
+    const keyboardMouseProfile = profiles.find((profile) => profile.controllerName === "Keyboard/Mouse");
+    expect(keyboardMouseProfile.inputMappings.find((mapping) => mapping.physicalInput === "Space")).toMatchObject({
+      normalizedInput: "action.primary",
+      physicalInput: "Space",
+    });
 
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-controller-profile-list]")).toContainText("Keyboard: Keyboard");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("Keyboard/Mouse: Keyboard/Mouse");
     await expect(page.locator("[data-controller-profile-list]")).toContainText("Gamepad: Arcade Test Pad");
     profiles = await controllerProfileRecords(page);
     expect(profiles).toHaveLength(2);
@@ -451,7 +462,7 @@ test("Custom game Actions persist and do not appear in player controller normali
     await expect(page.locator("[data-input-action-select]")).toContainText("Dash Burst");
     expect(await customActionRecords(page)).toHaveLength(1);
 
-    await page.locator("[data-controller-device-select]").selectOption("mouse");
+    await page.locator("[data-controller-device-select]").selectOption("keyboard-mouse");
     await page.locator("[data-controller-profile-add]").click();
     await page.locator("[data-controller-profile-edit]").click();
     await expect(page.locator("[data-controller-profile-input-normalized]").first()).not.toContainText("Dash Burst");
@@ -460,16 +471,16 @@ test("Custom game Actions persist and do not appear in player controller normali
     await page.locator("[data-input-object-select]").selectOption("hero");
     await page.locator("[data-input-action-select]").selectOption("custom-dash-burst");
     await page.locator("[data-input-add-mapping]").click();
-    await page.locator("[data-input-row-normalized]").selectOption("button.east");
+    await page.locator("[data-input-row-normalized]").selectOption("action.secondary");
     await page.locator("[data-input-save-mapping]").click();
     await expect(page.locator("[data-input-mapping-row]")).toContainText("Dash Burst");
-    await expect(page.locator("[data-input-mapping-row]")).toContainText("button.east");
+    await expect(page.locator("[data-input-mapping-row]")).toContainText("action.secondary");
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(1);
     expect(records[0]).toMatchObject({
-      action: "custom-dash-burst",
-      actionLabel: "Dash Burst",
-      normalizedInput: "button.east",
+      gameAction: "custom-dash-burst",
+      gameActionLabel: "Dash Burst",
+      normalizedInput: "action.secondary",
       objectKey: "hero",
     });
 

@@ -19,16 +19,14 @@ Exercised tool entry points detected:
 Changed runtime JS files covered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(31%) src/engine/input/InputService.js - executed lines 443/443; executed functions 20/64
-(61%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 23/38
-(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
-(93%) toolbox/controls/controls.js - executed lines 1417/1417; executed functions 154/165
-(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 120/120; executed functions 19/19
+(32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
+(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
+(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
 
 Files with executed line/function counts where available:
 (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
 (23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
-(31%) src/engine/input/InputService.js - executed lines 443/443; executed functions 20/64
+(32%) src/engine/input/InputService.js - executed lines 451/451; executed functions 21/66
 (33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
 (40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
 (43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
@@ -40,23 +38,22 @@ Files with executed line/function counts where available:
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
 (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
-(93%) toolbox/controls/controls.js - executed lines 1417/1417; executed functions 154/165
-(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 120/120; executed functions 19/19
+(93%) toolbox/controls/controls.js - executed lines 1412/1412; executed functions 154/165
+(100%) src/engine/input/NormalizedInputRegistry.js - executed lines 242/242; executed functions 26/26
 (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
 (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-(31%) src/engine/input/InputService.js - WARNING: advisory low coverage; executed lines 443/443
+(32%) src/engine/input/InputService.js - WARNING: advisory low coverage; executed lines 451/451
 
 Changed JS files considered:
 (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) tests/input/NormalizedInputRegistry.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
-(31%) src/engine/input/InputService.js - changed JS file with browser V8 coverage
-(61%) src/engine/input/GamepadInputClassifier.js - changed JS file with browser V8 coverage
-(80%) src/engine/input/GamepadState.js - changed JS file with browser V8 coverage
+(32%) src/engine/input/InputService.js - changed JS file with browser V8 coverage
 (93%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
 (100%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage

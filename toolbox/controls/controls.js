@@ -65,8 +65,11 @@ const SOURCE_DIAGNOSTICS = Object.freeze([
   "Normalized Input Registry",
 ]);
 
-const KEYBOARD_PROFILE_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape"]);
+const RUNTIME_LOOKUP_ORDER = "Runtime lookup order: user/player controller profile exact match, user/player keyboard/mouse profile, System Default Gamepad, System Default Keyboard/Mouse, Missing Controller Profile.";
+const SYSTEM_DEFAULT_PROFILES_LABEL = "Fallback profiles: System Default Gamepad, System Default Keyboard/Mouse.";
+const KEYBOARD_PROFILE_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP"]);
 const MOUSE_PROFILE_INPUTS = Object.freeze(["MouseButton0", "MouseButton2", "MouseWheelUp", "MouseWheelDown", "MouseX", "MouseY"]);
+const KEYBOARD_MOUSE_PROFILE_INPUTS = Object.freeze([...KEYBOARD_PROFILE_INPUTS, ...MOUSE_PROFILE_INPUTS]);
 
 let controlsRepository = createControlsToolApiRepository();
 let objectsRepository = createObjectsToolApiRepository();
@@ -197,22 +200,13 @@ function activeProfileGamepadInputNames(profile) {
 function controllerDeviceOptions() {
   const baseDevices = [
     {
-      controllerId: "keyboard",
-      controllerName: "Keyboard",
-      deviceType: "Keyboard",
-      inputs: [...KEYBOARD_PROFILE_INPUTS],
-      label: "Keyboard",
-      mappingProfile: "Keyboard Profile",
-      value: "keyboard",
-    },
-    {
-      controllerId: "mouse",
-      controllerName: "Mouse",
-      deviceType: "Mouse",
-      inputs: [...MOUSE_PROFILE_INPUTS],
-      label: "Mouse",
-      mappingProfile: "Mouse Profile",
-      value: "mouse",
+      controllerId: "keyboard-mouse",
+      controllerName: "Keyboard/Mouse",
+      deviceType: "Keyboard/Mouse",
+      inputs: [...KEYBOARD_MOUSE_PROFILE_INPUTS],
+      label: "Keyboard/Mouse",
+      mappingProfile: "Keyboard/Mouse Profile",
+      value: "keyboard-mouse",
     },
   ];
   const gamepadDevices = availableGamepads().map((gamepad) => {
@@ -241,8 +235,7 @@ function exactProfileForDevice(device) {
   }
   return controllerProfiles.find((profile) =>
     profile.deviceType === device.deviceType &&
-      profile.controllerId === device.controllerId &&
-      profile.mappingProfile === device.mappingProfile,
+      profile.controllerId === device.controllerId,
   ) || null;
 }
 
@@ -254,7 +247,6 @@ function selectedControllerProfile() {
 
 function profileFromDevice(device, source = "detected") {
   const profile = normalizeControllerProfile({
-    actions: [],
     controllerId: device.controllerId,
     controllerName: device.controllerName,
     deviceType: device.deviceType,
@@ -277,22 +269,36 @@ function renderControllerProfileFallback() {
     return;
   }
   if (!device || device.unavailable) {
-    setText(elements.controllerProfileFallbackStatus, "Missing Controller Profile. Create Player Controller Profile.");
+    setText(elements.controllerProfileFallbackStatus, "Missing Controller Profile. Create My Controller Profile.");
     return;
   }
-  const exactProfile = exactProfileForDevice(device);
-  if (exactProfile) {
-    setText(elements.controllerProfileFallbackStatus, `Exact saved profile: ${exactProfile.mappingProfile}`);
+  const resolution = inputService.resolveNormalizedInputProfile({
+    device,
+    profiles: controllerProfiles,
+  });
+  if (resolution.lookupStep === 1) {
+    setText(elements.controllerProfileFallbackStatus, `Exact saved profile: ${resolution.profile.mappingProfile}`);
     return;
   }
-  if (device.deviceType === "Gamepad") {
-    setText(elements.controllerProfileFallbackStatus, "Using Default Gamepad Mapping. Missing saved profile for this controller. Create Player Controller Profile.");
+  if (resolution.lookupStep === 2) {
+    setText(elements.controllerProfileFallbackStatus, `Using saved Keyboard/Mouse Mapping: ${resolution.profile.mappingProfile}`);
+    return;
+  }
+  if (resolution.lookupStep === 3) {
+    setText(elements.controllerProfileFallbackStatus, "Using Default Gamepad Mapping. Missing saved profile for this controller. Create My Controller Profile.");
     if (elements.controllerProfileCreateDefault) {
       elements.controllerProfileCreateDefault.hidden = false;
     }
     return;
   }
-  setText(elements.controllerProfileFallbackStatus, "Missing Controller Profile. Create Player Controller Profile.");
+  if (resolution.lookupStep === 4) {
+    setText(elements.controllerProfileFallbackStatus, "Using Default Keyboard/Mouse Mapping. Create My Controller Profile.");
+    if (elements.controllerProfileCreateDefault) {
+      elements.controllerProfileCreateDefault.hidden = false;
+    }
+    return;
+  }
+  setText(elements.controllerProfileFallbackStatus, "Missing Controller Profile. Create My Controller Profile.");
 }
 
 function selectedObject() {
@@ -437,9 +443,6 @@ function controllerProfileIdFor(profile) {
 function normalizeControllerProfile(source = {}) {
   const inputs = normalizeList(source.inputs);
   const profile = {
-    actions: Array.isArray(source.actions)
-      ? source.actions.map(normalizeText)
-      : normalizeList(source.actions),
     controllerId: normalizeText(source.controllerId),
     controllerName: normalizeText(source.controllerName),
     deviceType: normalizeText(source.deviceType) || "Gamepad",
@@ -459,24 +462,18 @@ function normalizeMapping(source = {}) {
   const binding = normalizeText(source.binding || source.input);
   const normalizedInput = normalizeNormalizedInput(
     source.normalizedInput,
-    inputService.getDefaultNormalizedInputForPhysicalInput(binding) || "button.south",
+    inputService.getDefaultNormalizedInputForPhysicalInput(binding) || "action.primary",
   );
   const objectKey = normalizeText(source.objectKey) || "global";
   const objectName = normalizeText(source.objectName) || objectOptions.find((object) => object.key === objectKey)?.label || "Global";
   const mapping = {
     action: action.id,
     actionLabel: action.label,
-    binding,
-    controllerProfileId: "",
-    engine: normalizeText(source.engine) || "NormalizedInputRegistry",
     id: normalizeText(source.id),
-    inputDevice: "Normalized Input",
     label: inputService.getNormalizedInputLabel(normalizedInput),
-    mappingProfile: "",
     normalizedInput,
     objectKey,
     objectName,
-    source: "normalized",
     state: normalizeText(source.state) || "Active",
   };
   return {
@@ -728,11 +725,11 @@ function renderControllerProfileStatus() {
     return;
   }
   if (!controllerProfiles.length) {
-    elements.controllerProfileStatus.textContent = "Missing Controller Profile. Select a physical controller and use Create Player Controller Profile.";
+    elements.controllerProfileStatus.textContent = "Missing Controller Profile. Select a physical controller and use Create My Controller Profile.";
     return;
   }
   const suffix = controllerProfiles.length === 1 ? "profile" : "profiles";
-  elements.controllerProfileStatus.textContent = `${controllerProfiles.length} player controller ${suffix} saved. New devices still need Create Player Controller Profile.`;
+  elements.controllerProfileStatus.textContent = `${controllerProfiles.length} player input mapping ${suffix} saved. New devices still need Create My Controller Profile.`;
 }
 
 function profileInputMappingControl(profile, inputMapping, index) {
@@ -920,7 +917,6 @@ function renderControllerProfileEditingRows(values = {}) {
 
   const actionsCell = document.createElement("td");
   const profile = normalizeControllerProfile({
-    actions: values.actions,
     controllerId: values.controllerId,
     controllerName: values.controllerName,
     deviceType: values.deviceType,
@@ -973,7 +969,7 @@ function renderControllerProfiles() {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
     cell.colSpan = 6;
-    cell.textContent = "No controller profiles saved yet.";
+    cell.textContent = "No player input mappings saved yet.";
     row.append(cell);
     rows.push(row);
   }
@@ -997,7 +993,7 @@ function renderDiagnostics(message = "") {
       return `${source}: ${gamepadStatus}`;
     }
     return `${source}: Ready`;
-  });
+  }).concat([SYSTEM_DEFAULT_PROFILES_LABEL, RUNTIME_LOOKUP_ORDER]);
   if (elements.sourceDiagnostics) {
     elements.sourceDiagnostics.replaceChildren(...diagnostics.map((diagnostic) => {
       const item = document.createElement("li");
@@ -1096,7 +1092,7 @@ function renderEditingRow(values = {}) {
   const normalizedInputSelect = selectControl({
     ariaLabel: "Mapping Normalized Input",
     options: inputService.getNormalizedInputOptions(),
-    selectedValue: values.normalizedInput || "button.south",
+    selectedValue: values.normalizedInput || "action.primary",
   });
   normalizedInputSelect.dataset.inputRowNormalized = "true";
 
@@ -1197,7 +1193,7 @@ function mappingFromEditingRow(row) {
   const objectKey = row.querySelector("[data-input-row-object]")?.value || "global";
   const object = objectOptions.find((candidate) => candidate.key === objectKey) || objectOptions[0];
   const action = actionById(row.querySelector("[data-input-row-action]")?.value);
-  const normalizedInput = normalizeNormalizedInput(row.querySelector("[data-input-row-normalized]")?.value, "button.south");
+  const normalizedInput = normalizeNormalizedInput(row.querySelector("[data-input-row-normalized]")?.value, "action.primary");
   return normalizeMapping({
     action: action.id,
     actionLabel: action.label,
@@ -1248,7 +1244,6 @@ function controllerProfileFromEditingRow(row) {
   }) || [];
   const values = profileEditingRow?.values || {};
   return normalizeControllerProfile({
-    actions: [],
     controllerId: values.controllerId,
     controllerName: values.controllerName,
     deviceType: values.deviceType,
@@ -1266,7 +1261,7 @@ function saveControllerProfileEditingRow() {
   }
   const profile = controllerProfileFromEditingRow(row);
   if (!profile.controllerId || !profile.mappingProfile) {
-    setText(elements.controllerProfileStatus, "WARN: Add Controller ID and profile name before saving the player controller profile.");
+    setText(elements.controllerProfileStatus, "WARN: Add Controller ID and profile name before saving the player input mapping.");
     return;
   }
   const nextProfiles = profileEditingRow?.id
@@ -1278,7 +1273,7 @@ function saveControllerProfileEditingRow() {
     return;
   }
   profileEditingRow = null;
-  renderAll(`Saved ${profile.mappingProfile} controller profile.`);
+  renderAll(`Saved ${profile.mappingProfile} player input mapping.`);
 }
 
 function editControllerProfile(profileId) {
@@ -1291,7 +1286,7 @@ function editControllerProfile(profileId) {
     values: profile,
   };
   renderControllerProfiles();
-  setText(elements.controllerProfileStatus, `Editing ${profile.mappingProfile} controller profile.`);
+  setText(elements.controllerProfileStatus, `Editing ${profile.mappingProfile} player input mapping.`);
 }
 
 function addProfileForDevice(device, source = "detected") {
@@ -1316,13 +1311,13 @@ function addProfileForDevice(device, source = "detected") {
     return;
   }
   const savedProfile = controllerProfiles.find((candidate) => candidate.id === profile.id) || profile;
-  if (source === "default-gamepad") {
+  if (source === "system-default") {
     profileEditingRow = {
       id: savedProfile.id,
       values: savedProfile,
     };
     renderAll(`${savedProfile.mappingProfile} saved. Review generated profile inputs.`);
-    setText(elements.controllerProfileStatus, `Editing ${savedProfile.mappingProfile} controller profile.`);
+    setText(elements.controllerProfileStatus, `Editing ${savedProfile.mappingProfile} player input mapping.`);
     return;
   }
   profileEditingRow = null;
@@ -1344,7 +1339,7 @@ function selectControllerDevice(value) {
   profileEditingRow = null;
   renderControllerProfiles();
   renderControllerProfileFallback();
-  setText(elements.controllerProfileStatus, `${device.label} selected. Use Create Player Controller Profile to save this physical controller.`);
+  setText(elements.controllerProfileStatus, `${device.label} selected. Use Create My Controller Profile to save this physical controller.`);
 }
 
 function deleteControllerProfile(profileId) {
@@ -1357,7 +1352,7 @@ function deleteControllerProfile(profileId) {
     return;
   }
   profileEditingRow = null;
-  renderAll(profile ? `Deleted ${profile.mappingProfile} controller profile.` : "Deleted controller profile.");
+  renderAll(profile ? `Deleted ${profile.mappingProfile} player input mapping.` : "Deleted player input mapping.");
 }
 
 function editMapping(mappingId) {
@@ -1484,7 +1479,7 @@ function init() {
       id: "",
       values: {
         action: selectedAction().id,
-        normalizedInput: "button.south",
+        normalizedInput: "action.primary",
         objectKey: selectedObject().key,
         state: "Active",
       },
@@ -1496,7 +1491,7 @@ function init() {
     addProfileForDevice(selectedControllerDevice(), "detected");
   });
   elements.controllerProfileCreateDefault?.addEventListener("click", () => {
-    addProfileForDevice(selectedControllerDevice(), "default-gamepad");
+    addProfileForDevice(selectedControllerDevice(), "system-default");
   });
   elements.customActionAdd?.addEventListener("click", addCustomAction);
   elements.customActionInput?.addEventListener("keydown", (event) => {

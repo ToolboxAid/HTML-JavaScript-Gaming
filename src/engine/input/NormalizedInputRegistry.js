@@ -10,18 +10,21 @@ export const NORMALIZED_INPUT_REGISTRY = Object.freeze([
     Object.freeze({ id: 'move.y', label: 'move.y', kind: 'axis' }),
     Object.freeze({ id: 'aim.x', label: 'aim.x', kind: 'axis' }),
     Object.freeze({ id: 'aim.y', label: 'aim.y', kind: 'axis' }),
-    Object.freeze({ id: 'button.south', label: 'button.south', kind: 'button' }),
-    Object.freeze({ id: 'button.east', label: 'button.east', kind: 'button' }),
-    Object.freeze({ id: 'button.west', label: 'button.west', kind: 'button' }),
-    Object.freeze({ id: 'button.north', label: 'button.north', kind: 'button' }),
+    Object.freeze({ id: 'action.primary', label: 'action.primary', kind: 'action' }),
+    Object.freeze({ id: 'action.secondary', label: 'action.secondary', kind: 'action' }),
+    Object.freeze({ id: 'action.tertiary', label: 'action.tertiary', kind: 'action' }),
+    Object.freeze({ id: 'action.quaternary', label: 'action.quaternary', kind: 'action' }),
+    Object.freeze({ id: 'action.confirm', label: 'action.confirm', kind: 'action' }),
+    Object.freeze({ id: 'action.cancel', label: 'action.cancel', kind: 'action' }),
+    Object.freeze({ id: 'action.start', label: 'action.start', kind: 'action' }),
+    Object.freeze({ id: 'action.select', label: 'action.select', kind: 'action' }),
+    Object.freeze({ id: 'action.pause', label: 'action.pause', kind: 'action' }),
     Object.freeze({ id: 'dpad.up', label: 'dpad.up', kind: 'dpad' }),
     Object.freeze({ id: 'dpad.down', label: 'dpad.down', kind: 'dpad' }),
     Object.freeze({ id: 'dpad.left', label: 'dpad.left', kind: 'dpad' }),
     Object.freeze({ id: 'dpad.right', label: 'dpad.right', kind: 'dpad' }),
     Object.freeze({ id: 'trigger.left', label: 'trigger.left', kind: 'trigger' }),
     Object.freeze({ id: 'trigger.right', label: 'trigger.right', kind: 'trigger' }),
-    Object.freeze({ id: 'start', label: 'start', kind: 'system' }),
-    Object.freeze({ id: 'select', label: 'select', kind: 'system' }),
 ]);
 
 const NORMALIZED_INPUT_IDS = new Set(NORMALIZED_INPUT_REGISTRY.map((input) => input.id));
@@ -35,30 +38,68 @@ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
     Axis1: 'move.y',
     Axis2: 'aim.x',
     Axis3: 'aim.y',
-    Button0: 'button.south',
-    Button1: 'button.east',
-    Button2: 'button.west',
-    Button3: 'button.north',
-    Button8: 'select',
-    Button9: 'start',
+    Button0: 'action.primary',
+    Button1: 'action.secondary',
+    Button2: 'action.tertiary',
+    Button3: 'action.quaternary',
+    Button8: 'action.select',
+    Button9: 'action.start',
     'DPad Down': 'dpad.down',
     'DPad Left': 'dpad.left',
     'DPad Right': 'dpad.right',
     'DPad Up': 'dpad.up',
-    Enter: 'start',
-    Escape: 'select',
+    Enter: 'action.confirm',
+    Escape: 'action.cancel',
     KeyA: 'move.x',
     KeyD: 'move.x',
+    KeyP: 'action.pause',
     KeyS: 'move.y',
     KeyW: 'move.y',
-    MouseButton0: 'button.south',
-    MouseButton2: 'button.east',
+    MouseButton0: 'action.primary',
+    MouseButton2: 'action.secondary',
     MouseX: 'aim.x',
     MouseY: 'aim.y',
-    Space: 'button.south',
+    Space: 'action.primary',
     'Trigger Left': 'trigger.left',
     'Trigger Right': 'trigger.right',
 });
+
+const SYSTEM_DEFAULT_GAMEPAD_INPUTS = Object.freeze([
+    'Button0',
+    'Button1',
+    'Button2',
+    'Button3',
+    'Button8',
+    'Button9',
+    'DPad Up',
+    'DPad Down',
+    'DPad Left',
+    'DPad Right',
+    'Trigger Left',
+    'Trigger Right',
+    'Axis0',
+    'Axis1',
+    'Axis2',
+    'Axis3',
+]);
+
+const SYSTEM_DEFAULT_KEYBOARD_MOUSE_INPUTS = Object.freeze([
+    'KeyW',
+    'KeyA',
+    'KeyS',
+    'KeyD',
+    'Space',
+    'Enter',
+    'Escape',
+    'KeyP',
+    'MouseButton0',
+    'MouseButton2',
+    'MouseX',
+    'MouseY',
+]);
+
+export const SYSTEM_DEFAULT_GAMEPAD_PROFILE_NAME = 'System Default Gamepad';
+export const SYSTEM_DEFAULT_KEYBOARD_MOUSE_PROFILE_NAME = 'System Default Keyboard/Mouse';
 
 export function normalizedInputOptions() {
     return NORMALIZED_INPUT_REGISTRY.map((input) => ({
@@ -87,6 +128,87 @@ export function normalizeNormalizedInput(inputId, fallback = '') {
 export function defaultNormalizedInputForPhysicalInput(physicalInput) {
     const inputName = normalizeInputName(physicalInput);
     return DEFAULT_PHYSICAL_INPUT_MAP[inputName] || '';
+}
+
+export function systemDefaultInputMappings(deviceType = '') {
+    const inputs = normalizeDeviceType(deviceType) === 'gamepad'
+        ? SYSTEM_DEFAULT_GAMEPAD_INPUTS
+        : SYSTEM_DEFAULT_KEYBOARD_MOUSE_INPUTS;
+    return normalizeProfileInputMappings(inputs);
+}
+
+export function systemDefaultProfileForDevice(deviceType = '') {
+    const isGamepad = normalizeDeviceType(deviceType) === 'gamepad';
+    const profileName = isGamepad
+        ? SYSTEM_DEFAULT_GAMEPAD_PROFILE_NAME
+        : SYSTEM_DEFAULT_KEYBOARD_MOUSE_PROFILE_NAME;
+    const deviceLabel = isGamepad ? 'Gamepad' : 'Keyboard/Mouse';
+    const controllerId = isGamepad ? 'system-default-gamepad' : 'system-default-keyboard-mouse';
+    const inputMappings = systemDefaultInputMappings(deviceLabel);
+    return {
+        controllerId,
+        controllerName: profileName,
+        deviceType: deviceLabel,
+        id: controllerId,
+        inputMappings,
+        inputs: inputMappings.map((mapping) => mapping.physicalInput),
+        mappingProfile: profileName,
+        systemDefault: true,
+    };
+}
+
+export function resolveNormalizedInputProfile({ device = null, profiles = [] } = {}) {
+    const normalizedProfiles = Array.isArray(profiles) ? profiles : [];
+    const deviceType = normalizeDeviceType(device?.deviceType);
+    const exactProfile = normalizedProfiles.find((profile) =>
+        normalizeDeviceType(profile?.deviceType) === deviceType &&
+            normalizeInputName(profile?.controllerId) === normalizeInputName(device?.controllerId),
+    );
+    if (exactProfile) {
+        return {
+            lookupStep: 1,
+            profile: exactProfile,
+            status: 'Exact saved profile',
+            statusDetail: 'user/player controller profile exact match',
+        };
+    }
+
+    const keyboardMouseProfile = normalizedProfiles.find((profile) =>
+        normalizeDeviceType(profile?.deviceType) === 'keyboard-mouse',
+    );
+    if (keyboardMouseProfile) {
+        return {
+            lookupStep: 2,
+            profile: keyboardMouseProfile,
+            status: 'Using saved Keyboard/Mouse Mapping',
+            statusDetail: 'user/player keyboard/mouse profile',
+        };
+    }
+
+    if (deviceType === 'gamepad') {
+        return {
+            lookupStep: 3,
+            profile: systemDefaultProfileForDevice('Gamepad'),
+            status: 'Using Default Gamepad Mapping',
+            statusDetail: 'system default gamepad profile',
+        };
+    }
+
+    if (deviceType === 'keyboard-mouse') {
+        return {
+            lookupStep: 4,
+            profile: systemDefaultProfileForDevice('Keyboard/Mouse'),
+            status: 'Using Default Keyboard/Mouse Mapping',
+            statusDetail: 'system default keyboard/mouse profile',
+        };
+    }
+
+    return {
+        lookupStep: 5,
+        profile: null,
+        status: 'Missing Controller Profile',
+        statusDetail: 'missing mapping warning',
+    };
 }
 
 export function physicalInputIsAnalog(physicalInput) {
@@ -131,4 +253,15 @@ function normalizeInputId(value) {
 
 function normalizeInputName(value) {
     return String(value || '').trim();
+}
+
+function normalizeDeviceType(value) {
+    const normalized = String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    if (normalized === 'keyboard' || normalized === 'mouse' || normalized === 'keyboard-mouse') {
+        return 'keyboard-mouse';
+    }
+    if (normalized === 'gamepad' || normalized === 'game-controller' || normalized === 'controller') {
+        return 'gamepad';
+    }
+    return normalized;
 }
