@@ -1,8 +1,7 @@
-docs_build/dev/reports/controls-compact-controller-profile-report.md
-docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/controls-controller-profile-edit-mode-report.md
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
 tests/playwright/tools/InputMappingV2Tool.spec.mjs
 toolbox/controls/controls.js
-toolbox/controls/index.html

@@ -600,11 +600,13 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
     await page.evaluate(() => {
+      window.__arcadeButtons = Array.from({ length: 16 }, () => ({ pressed: false, value: 0 }));
+      window.__arcadeAxes = [0, 0];
       Object.defineProperty(navigator, "getGamepads", {
         configurable: true,
         value: () => [{
-          axes: [0, 0],
-          buttons: Array.from({ length: 16 }, () => ({ pressed: false, value: 0 })),
+          axes: window.__arcadeAxes,
+          buttons: window.__arcadeButtons,
           id: "Arcade Test Pad",
           index: 0,
         }],
@@ -628,7 +630,7 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     await page.locator("[data-controller-profile-add]").click();
     await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad");
     await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad Profile");
-    await expect(page.locator("[data-controller-profile-list]")).toContainText("Action Required");
+    await expect(page.locator("[data-controller-profile-list]")).toContainText("0/18 Actions assigned");
     await expect(page.locator("[data-controller-profile-table] th")).toHaveText([
       "Device Type",
       "Controller Name",
@@ -637,10 +639,8 @@ test("Controls generates controller profiles, shows fallback status, and mapping
       "Action",
     ]);
     await expect(page.locator("[data-controller-profile-row]").first()).not.toContainText("Button0");
-    await expect(page.locator("[data-controller-profile-actions-row]").first().locator(".content-grid--three")).toBeVisible();
-    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]")).toHaveCount(18);
-    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
-    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]").first().locator("select")).toBeVisible();
+    await expect(page.locator("[data-controller-profile-actions-row]")).toHaveCount(0);
+    await expect(page.locator("[data-controller-profile-input-action]")).toHaveCount(0);
     await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Exact saved profile");
 
     let profiles = await controllerProfileRecords(page);
@@ -673,22 +673,56 @@ test("Controls generates controller profiles, shows fallback status, and mapping
       "Axis1",
     ]);
 
-    await page.locator("[data-controller-profile-save-actions]").click();
+    await page.locator("[data-controller-profile-edit]").click();
+    const editRow = page.locator("[data-controller-profile-editing-row]");
+    await expect(editRow.locator("td").nth(0)).toHaveText("Gamepad");
+    await expect(editRow.locator("td").nth(1)).toHaveText("Arcade Test Pad");
+    await expect(editRow.locator("td").nth(2)).toHaveText("Arcade Test Pad");
+    await expect(editRow.locator("td").nth(3)).toHaveText("Arcade Test Pad Profile");
+    await expect(editRow.locator("select")).toHaveCount(0);
+    await expect(editRow.locator("input")).toHaveCount(0);
+    await expect(editRow.locator("button")).toHaveText(["Save", "Cancel"]);
+
+    const editingActionsRow = page.locator("[data-controller-profile-editing-actions-row]");
+    await expect(editingActionsRow.locator(".content-grid--three")).toBeVisible();
+    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]")).toHaveCount(18);
+    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
+    await expect(editingActionsRow.locator("[data-controller-profile-input-action]")).toHaveCount(18);
+
+    await page.locator("[data-controller-profile-save]").click();
     await expect(page.locator("[data-controller-profile-status]")).toContainText("Action Required");
     profiles = await controllerProfileRecords(page);
     expect(profiles[0].actions).toEqual([]);
 
-    const inputActionSelects = page.locator("[data-controller-profile-input-action]");
+    const inputActionSelects = editingActionsRow.locator("[data-controller-profile-input-action]");
     const inputActionCount = await inputActionSelects.count();
     expect(inputActionCount).toBe(profiles[0].inputs.length);
     for (let index = 0; index < inputActionCount; index += 1) {
       await inputActionSelects.nth(index).selectOption(index === 0 ? "fire" : "moveRight");
     }
-    await page.locator("[data-controller-profile-save-actions]").click();
+    await expect(inputActionSelects.nth(1)).toHaveValue("moveRight");
+    await page.evaluate(() => {
+      window.__arcadeButtons[0] = { pressed: true, value: 1 };
+    });
+    const activeProfileInput = page.locator("[data-controller-profile-input-pair][data-controller-profile-input-active='true']");
+    await expect(activeProfileInput.locator("strong")).toHaveText("Button0");
+    await expect(activeProfileInput.locator("[data-controller-profile-input-assigned-action]")).toHaveText("Selected Action: Fire");
+    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1)).not.toHaveAttribute("data-controller-profile-input-active", "true");
+    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1).locator("[data-controller-profile-input-assigned-action]")).toHaveText("Assigned Action: Move Right");
+
+    await page.locator("[data-controller-profile-save]").click();
     profiles = await controllerProfileRecords(page);
     expect(profiles[0].actions).toHaveLength(profiles[0].inputs.length);
     expect(profiles[0].actions[0]).toBe("fire");
     expect(profiles[0].actions[1]).toBe("moveRight");
+    await expect(page.locator("[data-controller-profile-input-action]")).toHaveCount(0);
+
+    await page.locator("[data-controller-profile-edit]").click();
+    await page.locator("[data-controller-profile-input-action]").first().selectOption("jump");
+    await page.locator("[data-controller-profile-cancel]").click();
+    profiles = await controllerProfileRecords(page);
+    expect(profiles[0].actions[0]).toBe("fire");
+    await expect(page.locator("[data-controller-profile-input-action]")).toHaveCount(0);
 
     await page.locator("[data-controller-profile-trash]").click();
     await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");

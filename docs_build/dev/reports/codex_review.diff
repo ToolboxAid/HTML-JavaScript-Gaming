@@ -1,487 +1,613 @@
-﻿diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index d21e371ef..13db27abd 100644
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 13db27abd..e0ddbe89b 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -8,7 +8,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -6,10 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
  Changed runtime JS files considered:
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(92%) toolbox/controls/controls.js - executed lines 1622/1622; executed functions 165/180
-+(91%) toolbox/controls/controls.js - executed lines 1626/1626; executed functions 165/181
- 
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(91%) toolbox/controls/controls.js - executed lines 1626/1626; executed functions 165/181
++(94%) toolbox/controls/controls.js - executed lines 1686/1686; executed functions 186/197
+
  Guardrail warnings:
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none - no changed runtime JS coverage warnings
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index ce4ed8cfa..0879c9cc9 100644
+index 0879c9cc9..b1de82748 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,21 +12,21 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,30 +12,25 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
+
  Exercised tool entry points detected:
--(90%) Toolbox Index - exercised 4 runtime JS files
-+(89%) Toolbox Index - exercised 4 runtime JS files
+-(89%) Toolbox Index - exercised 4 runtime JS files
++(92%) Toolbox Index - exercised 4 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
  (59%) Theme V2 Shared JS - exercised 2 runtime JS files
- 
+
  Changed runtime JS files covered:
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(92%) toolbox/controls/controls.js - executed lines 1622/1622; executed functions 165/180
-+(91%) toolbox/controls/controls.js - executed lines 1626/1626; executed functions 165/181
- 
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(91%) toolbox/controls/controls.js - executed lines 1626/1626; executed functions 165/181
++(94%) toolbox/controls/controls.js - executed lines 1686/1686; executed functions 186/197
+
  Files with executed line/function counts where available:
  (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
  (58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 603/603; executed functions 30/52
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
  (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
--(92%) toolbox/controls/controls.js - executed lines 1622/1622; executed functions 165/180
-+(91%) toolbox/controls/controls.js - executed lines 1626/1626; executed functions 165/181
+-(91%) toolbox/controls/controls.js - executed lines 1626/1626; executed functions 165/181
++(94%) toolbox/controls/controls.js - executed lines 1686/1686; executed functions 186/197
  (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
  (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
- 
-@@ -38,4 +38,4 @@ Changed JS files considered:
- (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none - no low-coverage changed runtime JS files
+
+ Changed JS files considered:
+-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(92%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
-+(91%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
+-(91%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
++(94%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 5f2bb34ae..d701414cf 100644
+index d701414cf..1ef375f84 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -268,7 +268,6 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
-       "Controller Name",
-       "Controller ID",
-       "Mapping Profile",
--      "Input",
-       "Action",
-     ]);
-     await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
-@@ -280,11 +279,10 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
-     await expect(page.locator("[data-controller-profile-planning]")).toContainText("Future game launch will match Controller ID to a saved Mapping Profile");
-     await expect(page.locator("[data-controller-profile-add]")).toBeVisible();
-     await expect(page.locator("[data-controller-device-select] option")).toHaveText([
--      "Choose a controller",
--      "Keyboard",
--      "Mouse",
--      "Unknown or unavailable controller",
-+      "Choose a game controller",
-     ]);
-+    await expect(page.locator("[data-controller-device-select]")).not.toContainText("Keyboard");
-+    await expect(page.locator("[data-controller-device-select]")).not.toContainText("Mouse");
+@@ -600,11 +600,13 @@ test("Controls generates controller profiles, shows fallback status, and mapping
      expect(await controllerProfileRecords(page)).toHaveLength(0);
-     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
-       "Object",
-@@ -365,6 +363,7 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and
-     await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
-     await expect(page.locator("[data-input-row-capture-mouse]")).toHaveCount(0);
-     await expect(page.locator("[data-input-row-capture-gamepad]")).toHaveCount(0);
-+    await expect(page.locator("[data-input-row-device] option")).toHaveText(["Keyboard", "Mouse", "Gamepad"]);
-     await page.locator("[data-input-row-device]").selectOption("mouse");
-     await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
-     await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
-@@ -613,12 +612,11 @@ test("Controls generates controller profiles, shows fallback status, and mapping
-     });
-     await page.locator("[data-input-refresh-devices]").click();
-     await expect(page.locator("[data-controller-device-select] option")).toHaveText([
--      "Choose a controller",
--      "Keyboard",
--      "Mouse",
-+      "Choose a game controller",
-       "Gamepad: Arcade Test Pad",
--      "Unknown or unavailable controller",
-     ]);
-+    await expect(page.locator("[data-controller-device-select]")).not.toContainText("Keyboard");
-+    await expect(page.locator("[data-controller-device-select]")).not.toContainText("Mouse");
- 
-     await page.locator("[data-controller-device-select]").selectOption("gamepad-0");
-     await expect(page.locator("[data-controller-profile-editing-row]")).toHaveCount(0);
-@@ -631,6 +629,18 @@ test("Controls generates controller profiles, shows fallback status, and mapping
+
+     await page.evaluate(() => {
++      window.__arcadeButtons = Array.from({ length: 16 }, () => ({ pressed: false, value: 0 }));
++      window.__arcadeAxes = [0, 0];
+       Object.defineProperty(navigator, "getGamepads", {
+         configurable: true,
+         value: () => [{
+-          axes: [0, 0],
+-          buttons: Array.from({ length: 16 }, () => ({ pressed: false, value: 0 })),
++          axes: window.__arcadeAxes,
++          buttons: window.__arcadeButtons,
+           id: "Arcade Test Pad",
+           index: 0,
+         }],
+@@ -628,7 +630,7 @@ test("Controls generates controller profiles, shows fallback status, and mapping
+     await page.locator("[data-controller-profile-add]").click();
      await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad");
      await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad Profile");
-     await expect(page.locator("[data-controller-profile-list]")).toContainText("Action Required");
-+    await expect(page.locator("[data-controller-profile-table] th")).toHaveText([
-+      "Device Type",
-+      "Controller Name",
-+      "Controller ID",
-+      "Mapping Profile",
-+      "Action",
-+    ]);
-+    await expect(page.locator("[data-controller-profile-row]").first()).not.toContainText("Button0");
-+    await expect(page.locator("[data-controller-profile-actions-row]").first().locator(".content-grid--three")).toBeVisible();
-+    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]")).toHaveCount(18);
-+    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
-+    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]").first().locator("select")).toBeVisible();
+-    await expect(page.locator("[data-controller-profile-list]")).toContainText("Action Required");
++    await expect(page.locator("[data-controller-profile-list]")).toContainText("0/18 Actions assigned");
+     await expect(page.locator("[data-controller-profile-table] th")).toHaveText([
+       "Device Type",
+       "Controller Name",
+@@ -637,10 +639,8 @@ test("Controls generates controller profiles, shows fallback status, and mapping
+       "Action",
+     ]);
+     await expect(page.locator("[data-controller-profile-row]").first()).not.toContainText("Button0");
+-    await expect(page.locator("[data-controller-profile-actions-row]").first().locator(".content-grid--three")).toBeVisible();
+-    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]")).toHaveCount(18);
+-    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
+-    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]").first().locator("select")).toBeVisible();
++    await expect(page.locator("[data-controller-profile-actions-row]")).toHaveCount(0);
++    await expect(page.locator("[data-controller-profile-input-action]")).toHaveCount(0);
      await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Exact saved profile");
- 
+
      let profiles = await controllerProfileRecords(page);
-@@ -689,10 +699,6 @@ test("Controls generates controller profiles, shows fallback status, and mapping
-     expect(profiles).toHaveLength(1);
-     expect(profiles[0].mappingProfile).toBe("Arcade Test Pad Profile");
- 
--    await page.locator("[data-controller-device-select]").selectOption("unavailable-controller");
--    await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown or unavailable controller.");
--    await expect(page.locator("[data-controller-profile-status]")).toContainText("refresh devices");
--    await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Missing Mapping");
-     expect(profiles).toHaveLength(1);
- 
-     await page.reload({ waitUntil: "networkidle" });
+@@ -673,22 +673,56 @@ test("Controls generates controller profiles, shows fallback status, and mapping
+       "Axis1",
+     ]);
+
+-    await page.locator("[data-controller-profile-save-actions]").click();
++    await page.locator("[data-controller-profile-edit]").click();
++    const editRow = page.locator("[data-controller-profile-editing-row]");
++    await expect(editRow.locator("td").nth(0)).toHaveText("Gamepad");
++    await expect(editRow.locator("td").nth(1)).toHaveText("Arcade Test Pad");
++    await expect(editRow.locator("td").nth(2)).toHaveText("Arcade Test Pad");
++    await expect(editRow.locator("td").nth(3)).toHaveText("Arcade Test Pad Profile");
++    await expect(editRow.locator("select")).toHaveCount(0);
++    await expect(editRow.locator("input")).toHaveCount(0);
++    await expect(editRow.locator("button")).toHaveText(["Save", "Cancel"]);
++
++    const editingActionsRow = page.locator("[data-controller-profile-editing-actions-row]");
++    await expect(editingActionsRow.locator(".content-grid--three")).toBeVisible();
++    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]")).toHaveCount(18);
++    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
++    await expect(editingActionsRow.locator("[data-controller-profile-input-action]")).toHaveCount(18);
++
++    await page.locator("[data-controller-profile-save]").click();
+     await expect(page.locator("[data-controller-profile-status]")).toContainText("Action Required");
+     profiles = await controllerProfileRecords(page);
+     expect(profiles[0].actions).toEqual([]);
+
+-    const inputActionSelects = page.locator("[data-controller-profile-input-action]");
++    const inputActionSelects = editingActionsRow.locator("[data-controller-profile-input-action]");
+     const inputActionCount = await inputActionSelects.count();
+     expect(inputActionCount).toBe(profiles[0].inputs.length);
+     for (let index = 0; index < inputActionCount; index += 1) {
+       await inputActionSelects.nth(index).selectOption(index === 0 ? "fire" : "moveRight");
+     }
+-    await page.locator("[data-controller-profile-save-actions]").click();
++    await expect(inputActionSelects.nth(1)).toHaveValue("moveRight");
++    await page.evaluate(() => {
++      window.__arcadeButtons[0] = { pressed: true, value: 1 };
++    });
++    const activeProfileInput = page.locator("[data-controller-profile-input-pair][data-controller-profile-input-active='true']");
++    await expect(activeProfileInput.locator("strong")).toHaveText("Button0");
++    await expect(activeProfileInput.locator("[data-controller-profile-input-assigned-action]")).toHaveText("Selected Action: Fire");
++    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1)).not.toHaveAttribute("data-controller-profile-input-active", "true");
++    await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1).locator("[data-controller-profile-input-assigned-action]")).toHaveText("Assigned Action: Move Right");
++
++    await page.locator("[data-controller-profile-save]").click();
+     profiles = await controllerProfileRecords(page);
+     expect(profiles[0].actions).toHaveLength(profiles[0].inputs.length);
+     expect(profiles[0].actions[0]).toBe("fire");
+     expect(profiles[0].actions[1]).toBe("moveRight");
++    await expect(page.locator("[data-controller-profile-input-action]")).toHaveCount(0);
++
++    await page.locator("[data-controller-profile-edit]").click();
++    await page.locator("[data-controller-profile-input-action]").first().selectOption("jump");
++    await page.locator("[data-controller-profile-cancel]").click();
++    profiles = await controllerProfileRecords(page);
++    expect(profiles[0].actions[0]).toBe("fire");
++    await expect(page.locator("[data-controller-profile-input-action]")).toHaveCount(0);
+
+     await page.locator("[data-controller-profile-trash]").click();
+     await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
 diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
-index eae9b912e..54fa794c1 100644
+index 54fa794c1..963ad9a76 100644
 --- a/toolbox/controls/controls.js
 +++ b/toolbox/controls/controls.js
-@@ -54,9 +54,6 @@ const DEVICE_OPTIONS = Object.freeze([
- 
- const DEVICE_TYPE_OPTIONS = Object.freeze([
+@@ -56,6 +56,18 @@ const DEVICE_TYPE_OPTIONS = Object.freeze([
    Object.freeze({ label: "Gamepad", value: "Gamepad" }),
--  Object.freeze({ label: "Keyboard", value: "Keyboard" }),
--  Object.freeze({ label: "Mouse", value: "Mouse" }),
--  Object.freeze({ label: "Custom", value: "Custom" }),
  ]);
- 
+
++const GAMEPAD_DPAD_LABELS = Object.freeze(new Map([
++  [12, "DPad Up"],
++  [13, "DPad Down"],
++  [14, "DPad Left"],
++  [15, "DPad Right"],
++]));
++
++const GAMEPAD_TRIGGER_LABELS = Object.freeze(new Map([
++  [6, "Trigger Left"],
++  [7, "Trigger Right"],
++]));
++
  const SOURCE_DIAGNOSTICS = Object.freeze([
-@@ -225,43 +222,18 @@ function gamepadInputNames(gamepad) {
+   "InputService + KeyboardState",
+   "InputService + MouseState",
+@@ -72,6 +84,8 @@ let objectOptions = [];
+ let editingRow = null;
+ let profileEditingRow = null;
+ let rowCaptureSource = "";
++let profileInputMonitorId = 0;
++let profileInputHighlight = "";
+
+ const elements = {
+   actionSelect: document.querySelector("[data-input-action-select]"),
+@@ -202,18 +216,8 @@ function availableGamepads() {
  }
- 
- function controllerDeviceOptions() {
--  return [
--    {
--      controllerId: "keyboard",
--      controllerName: "Keyboard",
--      deviceType: "Keyboard",
--      inputs: ["Keyboard Key"],
--      label: "Keyboard",
--      mappingProfile: "Keyboard Profile",
--      value: "keyboard",
--    },
--    {
--      controllerId: "mouse",
--      controllerName: "Mouse",
--      deviceType: "Mouse",
--      inputs: ["Mouse Button"],
--      label: "Mouse",
--      mappingProfile: "Mouse Profile",
--      value: "mouse",
--    },
--    ...availableGamepads().map((gamepad) => {
--      const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
--      return {
--        controllerId: gamepad.id || `gamepad-${gamepad.index}`,
--        controllerName,
--        deviceType: "Gamepad",
--        inputs: gamepadInputNames(gamepad),
--        label: `Gamepad: ${controllerName}`,
--        mappingProfile: `${controllerName} Profile`,
--        value: `gamepad-${gamepad.index}`,
--      };
--    }),
--    {
--      label: "Unknown or unavailable controller",
--      unavailable: true,
--      value: "unavailable-controller",
--    },
--  ];
-+  return availableGamepads().map((gamepad) => {
-+    const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
-+    return {
-+      controllerId: gamepad.id || `gamepad-${gamepad.index}`,
-+      controllerName,
-+      deviceType: "Gamepad",
-+      inputs: gamepadInputNames(gamepad),
-+      label: `Gamepad: ${controllerName}`,
-+      mappingProfile: `${controllerName} Profile`,
-+      value: `gamepad-${gamepad.index}`,
-+    };
-+  });
+
+ function gamepadInputNames(gamepad) {
+-  const dpadLabels = new Map([
+-    [12, "DPad Up"],
+-    [13, "DPad Down"],
+-    [14, "DPad Left"],
+-    [15, "DPad Right"],
+-  ]);
+-  const triggerLabels = new Map([
+-    [6, "Trigger Left"],
+-    [7, "Trigger Right"],
+-  ]);
+   const buttonNames = gamepad.buttons.map((_, index) =>
+-    dpadLabels.get(index) || triggerLabels.get(index) || `Button${index}`,
++    GAMEPAD_DPAD_LABELS.get(index) || GAMEPAD_TRIGGER_LABELS.get(index) || `Button${index}`,
+   );
+   return [
+     ...buttonNames,
+@@ -221,6 +225,31 @@ function gamepadInputNames(gamepad) {
+   ];
  }
- 
- function selectedControllerDevice() {
-@@ -319,7 +291,6 @@ function renderControllerProfileFallback() {
-     }
-     return;
-   }
--  setText(elements.controllerProfileFallbackStatus, "Keyboard/Mouse Default");
- }
- 
- function selectedObject() {
-@@ -793,7 +764,7 @@ function renderControllerDeviceSelect(selectedValue = elements.controllerDeviceS
-   renderSelect(
-     elements.controllerDeviceSelect,
-     [
--      { label: "Choose a controller", value: "" },
-+      { label: "Choose a game controller", value: "" },
-       ...controllerDeviceOptions().map((device) => ({ label: device.label, value: device.value })),
-     ],
-     selectedValue,
-@@ -814,9 +785,10 @@ function renderControllerProfileStatus() {
- }
- 
- function profileInputActionControl(profile, inputName, index) {
--  const wrapper = document.createElement("label");
--  wrapper.className = "content-stack content-stack--compact";
--  const label = document.createElement("span");
-+  const wrapper = document.createElement("div");
-+  wrapper.className = "content-grid";
-+  wrapper.dataset.controllerProfileInputPair = "true";
-+  const label = document.createElement("strong");
-   label.textContent = inputName;
-   const select = selectControl({
-     ariaLabel: `${inputName} Action`,
-@@ -826,13 +798,29 @@ function profileInputActionControl(profile, inputName, index) {
-     ],
-     selectedValue: profile.actions[index] || "",
-   });
--  select.dataset.controllerProfileInputAction = profile.id;
-+  select.dataset.controllerProfileInputAction = profile.id || "editing";
-   select.dataset.controllerProfileInputIndex = String(index);
-   wrapper.append(label, select);
-   return wrapper;
- }
- 
--function renderControllerProfileRow(profile) {
-+function controllerProfileInputActions(profile) {
-+  const actionControls = document.createElement("div");
-+  actionControls.className = "content-grid content-grid--three";
-+  if (profile.inputs.length) {
-+    actionControls.append(...profile.inputs.map((inputName, index) =>
-+      profileInputActionControl(profile, inputName, index),
-+    ));
-+    return actionControls;
-+  }
-+  const required = document.createElement("p");
-+  required.className = "status";
-+  required.textContent = "Action Required";
-+  actionControls.append(required);
-+  return actionControls;
+
++function gamepadInputNameForButton(index) {
++  return GAMEPAD_DPAD_LABELS.get(index) || GAMEPAD_TRIGGER_LABELS.get(index) || `Button${index}`;
 +}
 +
-+function renderControllerProfileRows(profile) {
++function matchingGamepadForProfile(profile) {
++  return availableGamepads().find((gamepad) =>
++    gamepad.id === profile.controllerId || `gamepad-${gamepad.index}` === profile.controllerId,
++  ) || null;
++}
++
++function activeProfileGamepadInputName(profile) {
++  const gamepad = matchingGamepadForProfile(profile);
++  if (!gamepad) {
++    return "";
++  }
++  const buttonIndex = gamepad.buttons.findIndex((button) =>
++    Number(button?.value || 0) > 0.5 || button?.pressed,
++  );
++  if (buttonIndex >= 0) {
++    return gamepadInputNameForButton(buttonIndex);
++  }
++  const axisIndex = gamepad.axes.findIndex((axis) => Math.abs(Number(axis) || 0) > 0.25);
++  return axisIndex >= 0 ? `Axis${axisIndex}` : "";
++}
++
+ function controllerDeviceOptions() {
+   return availableGamepads().map((gamepad) => {
+     const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
+@@ -788,6 +817,7 @@ function profileInputActionControl(profile, inputName, index) {
+   const wrapper = document.createElement("div");
+   wrapper.className = "content-grid";
+   wrapper.dataset.controllerProfileInputPair = "true";
++  wrapper.dataset.controllerProfileInputName = inputName;
+   const label = document.createElement("strong");
+   label.textContent = inputName;
+   const select = selectControl({
+@@ -800,10 +830,85 @@ function profileInputActionControl(profile, inputName, index) {
+   });
+   select.dataset.controllerProfileInputAction = profile.id || "editing";
+   select.dataset.controllerProfileInputIndex = String(index);
+-  wrapper.append(label, select);
++  const actionStack = document.createElement("div");
++  actionStack.className = "content-stack content-stack--compact";
++  const assignedAction = document.createElement("span");
++  assignedAction.className = "status";
++  assignedAction.dataset.controllerProfileInputAssignedAction = "true";
++  assignedAction.textContent = `Assigned Action: ${controllerProfileActionLabel(select)}`;
++  actionStack.append(select, assignedAction);
++  wrapper.append(label, actionStack);
+   return wrapper;
+ }
+
++function controllerProfileActionLabel(select) {
++  return select?.selectedOptions?.[0]?.textContent || "Action Required";
++}
++
++function updateProfileInputAssignedAction(select) {
++  const pair = select?.closest("[data-controller-profile-input-pair]");
++  const status = pair?.querySelector("[data-controller-profile-input-assigned-action]");
++  if (!status) {
++    return;
++  }
++  const prefix = pair.dataset.controllerProfileInputActive === "true" ? "Selected Action" : "Assigned Action";
++  status.textContent = `${prefix}: ${controllerProfileActionLabel(select)}`;
++}
++
++function clearControllerProfileInputHighlight() {
++  elements.controllerProfileList?.querySelectorAll("[data-controller-profile-input-pair]").forEach((pair) => {
++    pair.classList.remove("feedback");
++    delete pair.dataset.controllerProfileInputActive;
++    updateProfileInputAssignedAction(pair.querySelector("[data-controller-profile-input-action]"));
++  });
++}
++
++function highlightControllerProfileInput(inputName) {
++  profileInputHighlight = inputName;
++  clearControllerProfileInputHighlight();
++  if (!inputName) {
++    return;
++  }
++  const pair = [...(elements.controllerProfileList?.querySelectorAll("[data-controller-profile-input-pair]") || [])]
++    .find((candidate) => candidate.dataset.controllerProfileInputName === inputName);
++  if (!pair) {
++    return;
++  }
++  pair.classList.add("feedback");
++  pair.dataset.controllerProfileInputActive = "true";
++  const select = pair.querySelector("[data-controller-profile-input-action]");
++  updateProfileInputAssignedAction(select);
++  setText(elements.controllerProfileStatus, `${inputName} selected. ${pair.querySelector("[data-controller-profile-input-assigned-action]")?.textContent || "Assigned Action: Action Required"}.`);
++}
++
++function updateControllerProfileInputHighlight() {
++  if (!profileEditingRow?.values) {
++    highlightControllerProfileInput("");
++    return;
++  }
++  highlightControllerProfileInput(activeProfileGamepadInputName(profileEditingRow.values));
++}
++
++function stopControllerProfileInputMonitor() {
++  if (profileInputMonitorId) {
++    window.clearInterval(profileInputMonitorId);
++    profileInputMonitorId = 0;
++  }
++  profileInputHighlight = "";
++}
++
++function syncControllerProfileInputMonitor() {
++  if (!profileEditingRow?.values) {
++    stopControllerProfileInputMonitor();
++    clearControllerProfileInputHighlight();
++    return;
++  }
++  if (!profileInputMonitorId) {
++    profileInputMonitorId = window.setInterval(updateControllerProfileInputHighlight, 120);
++  }
++  updateControllerProfileInputHighlight();
++}
++
+ function controllerProfileInputActions(profile) {
+   const actionControls = document.createElement("div");
+   actionControls.className = "content-grid content-grid--three";
+@@ -820,7 +925,16 @@ function controllerProfileInputActions(profile) {
+   return actionControls;
+ }
+
+-function renderControllerProfileRows(profile) {
++function profileActionSummary(profile) {
++  const assigned = profile.actions.filter(Boolean).length;
++  const total = profile.inputs.length;
++  if (!total) {
++    return "No generated inputs";
++  }
++  return `${assigned}/${total} Actions assigned`;
++}
++
++function renderControllerProfileRow(profile) {
    const row = document.createElement("tr");
    row.dataset.controllerProfileRow = profile.id;
    row.append(
-@@ -840,24 +828,8 @@ function renderControllerProfileRow(profile) {
-     tableCell(profile.controllerName),
+@@ -829,7 +943,7 @@ function renderControllerProfileRows(profile) {
      tableCell(profile.controllerId),
      tableCell(profile.mappingProfile),
--    tableCell(listLabel(profile.inputs)),
    );
-   const actionsCell = document.createElement("td");
--  const actionControls = document.createElement("div");
--  actionControls.className = "content-stack content-stack--compact";
--  if (profile.inputs.length) {
--    actionControls.append(...profile.inputs.map((inputName, index) =>
--      profileInputActionControl(profile, inputName, index),
--    ));
--  } else {
--    const required = document.createElement("p");
--    required.className = "status";
--    required.textContent = "Action Required";
--    actionControls.append(required);
--  }
--  const saveActions = actionButton("Save Actions", "controllerProfileSaveActions", profile.id);
--  actionControls.append(saveActions);
--  actionsCell.append(actionControls);
+-  const actionsCell = document.createElement("td");
++  const actionsCell = tableCell(profileActionSummary(profile));
    const group = document.createElement("div");
    group.className = "action-group action-group--tight";
    group.append(
-@@ -866,10 +838,23 @@ function renderControllerProfileRow(profile) {
+@@ -838,48 +952,13 @@ function renderControllerProfileRows(profile) {
    );
    actionsCell.append(group);
    row.append(actionsCell);
--  return row;
-+
-+  const actionsRow = document.createElement("tr");
-+  actionsRow.dataset.controllerProfileActionsRow = profile.id;
-+  const detailsCell = document.createElement("td");
-+  detailsCell.colSpan = 5;
-+  const stack = document.createElement("div");
-+  stack.className = "content-stack content-stack--compact";
-+  stack.append(
-+    controllerProfileInputActions(profile),
-+    actionButton("Save Actions", "controllerProfileSaveActions", profile.id),
-+  );
-+  detailsCell.append(stack);
-+  actionsRow.append(detailsCell);
-+  return [row, actionsRow];
+-
+-  const actionsRow = document.createElement("tr");
+-  actionsRow.dataset.controllerProfileActionsRow = profile.id;
+-  const detailsCell = document.createElement("td");
+-  detailsCell.colSpan = 5;
+-  const stack = document.createElement("div");
+-  stack.className = "content-stack content-stack--compact";
+-  stack.append(
+-    controllerProfileInputActions(profile),
+-    actionButton("Save Actions", "controllerProfileSaveActions", profile.id),
+-  );
+-  detailsCell.append(stack);
+-  actionsRow.append(detailsCell);
+-  return [row, actionsRow];
++  return row;
  }
- 
--function renderControllerProfileEditingRow(values = {}) {
-+function renderControllerProfileEditingRows(values = {}) {
+
+ function renderControllerProfileEditingRows(values = {}) {
    const row = document.createElement("tr");
    row.dataset.controllerProfileEditingRow = "true";
- 
-@@ -889,13 +874,22 @@ function renderControllerProfileEditingRow(values = {}) {
-   const mappingProfile = textControl({ ariaLabel: "Mapping Profile", value: values.mappingProfile || "" });
-   mappingProfile.dataset.controllerProfileMapping = "true";
- 
--  const inputs = textControl({ ariaLabel: "Controller Inputs", value: listLabel(values.inputs, "") });
-+  const inputs = hiddenControl({ value: listLabel(values.inputs, "") });
-   inputs.dataset.controllerProfileInputs = "true";
- 
--  const actions = textControl({ ariaLabel: "Controller Actions", value: listLabel(values.actions, "") });
-+  const actions = hiddenControl({ value: listLabel(values.actions, "") });
-   actions.dataset.controllerProfileActions = "true";
- 
--  const actionsCell = controlCell(actions);
-+  const actionsCell = document.createElement("td");
-+  const profile = normalizeControllerProfile({
-+    actions: values.actions,
-+    controllerId: values.controllerId,
-+    controllerName: values.controllerName,
-+    deviceType: values.deviceType,
-+    id: profileEditingRow?.id || "",
-+    inputs: values.inputs,
-+    mappingProfile: values.mappingProfile,
-+  });
-   const group = document.createElement("div");
-   group.className = "action-group action-group--tight";
-   group.append(
-@@ -908,10 +902,19 @@ function renderControllerProfileEditingRow(values = {}) {
-     controlCell(controllerName),
-     controlCell(controllerId),
-     controlCell(mappingProfile),
--    controlCell(inputs),
+
+-  const deviceType = selectControl({
+-    ariaLabel: "Controller Device Type",
+-    options: DEVICE_TYPE_OPTIONS,
+-    selectedValue: values.deviceType || "Gamepad",
+-  });
+-  deviceType.dataset.controllerProfileDeviceType = "true";
+-
+-  const controllerName = textControl({ ariaLabel: "Controller Name", value: values.controllerName || "" });
+-  controllerName.dataset.controllerProfileName = "true";
+-
+-  const controllerId = textControl({ ariaLabel: "Controller ID", value: values.controllerId || "" });
+-  controllerId.dataset.controllerProfileIdValue = "true";
+-
+-  const mappingProfile = textControl({ ariaLabel: "Mapping Profile", value: values.mappingProfile || "" });
+-  mappingProfile.dataset.controllerProfileMapping = "true";
+-
+-  const inputs = hiddenControl({ value: listLabel(values.inputs, "") });
+-  inputs.dataset.controllerProfileInputs = "true";
+-
+-  const actions = hiddenControl({ value: listLabel(values.actions, "") });
+-  actions.dataset.controllerProfileActions = "true";
+-
+   const actionsCell = document.createElement("td");
+   const profile = normalizeControllerProfile({
+     actions: values.actions,
+@@ -898,10 +977,10 @@ function renderControllerProfileEditingRows(values = {}) {
+   );
+   actionsCell.append(group);
+   row.append(
+-    controlCell(deviceType),
+-    controlCell(controllerName),
+-    controlCell(controllerId),
+-    controlCell(mappingProfile),
++    tableCell(profile.deviceType),
++    tableCell(profile.controllerName),
++    tableCell(profile.controllerId),
++    tableCell(profile.mappingProfile),
      actionsCell,
    );
--  return row;
-+
-+  const actionsRow = document.createElement("tr");
-+  actionsRow.dataset.controllerProfileEditingActionsRow = "true";
-+  const detailsCell = document.createElement("td");
-+  detailsCell.colSpan = 5;
-+  const stack = document.createElement("div");
-+  stack.className = "content-stack content-stack--compact";
-+  stack.append(controllerProfileInputActions(profile), inputs, actions);
-+  detailsCell.append(stack);
-+  actionsRow.append(detailsCell);
-+  return [row, actionsRow];
- }
- 
- function renderControllerProfiles() {
-@@ -920,16 +923,16 @@ function renderControllerProfiles() {
-   }
-   const rows = [];
-   if (profileEditingRow) {
--    rows.push(renderControllerProfileEditingRow(profileEditingRow.values));
-+    rows.push(...renderControllerProfileEditingRows(profileEditingRow.values));
-   }
+
+@@ -911,7 +990,7 @@ function renderControllerProfileEditingRows(values = {}) {
+   detailsCell.colSpan = 5;
+   const stack = document.createElement("div");
+   stack.className = "content-stack content-stack--compact";
+-  stack.append(controllerProfileInputActions(profile), inputs, actions);
++  stack.append(controllerProfileInputActions(profile));
+   detailsCell.append(stack);
+   actionsRow.append(detailsCell);
+   return [row, actionsRow];
+@@ -928,7 +1007,7 @@ function renderControllerProfiles() {
    const visibleProfiles = profileEditingRow?.id
      ? controllerProfiles.filter((profile) => profile.id !== profileEditingRow.id)
      : controllerProfiles;
--  rows.push(...visibleProfiles.map(renderControllerProfileRow));
-+  rows.push(...visibleProfiles.flatMap(renderControllerProfileRows));
+-  rows.push(...visibleProfiles.flatMap(renderControllerProfileRows));
++  rows.push(...visibleProfiles.map(renderControllerProfileRow));
    if (!rows.length) {
      const row = document.createElement("tr");
      const cell = document.createElement("td");
--    cell.colSpan = 6;
-+    cell.colSpan = 5;
-     cell.textContent = "No controller profiles saved yet.";
-     row.append(cell);
-     rows.push(row);
-@@ -1437,7 +1440,11 @@ function saveEditingRow() {
+@@ -943,6 +1022,7 @@ function renderControllerProfiles() {
+   }
+   renderControllerProfileStatus();
+   renderControllerProfileFallback();
++  syncControllerProfileInputMonitor();
  }
- 
- function controllerProfileFromEditingRow(row) {
--  const actions = normalizeList(row.querySelector("[data-controller-profile-actions]")?.value);
-+  const actionsRow = elements.controllerProfileList?.querySelector("[data-controller-profile-editing-actions-row]");
-+  const actionSelects = [...(actionsRow || row).querySelectorAll("[data-controller-profile-input-action]")];
-+  const actions = actionSelects.length
-+    ? actionSelects.map((select) => normalizeText(select.value))
-+    : normalizeList(row.querySelector("[data-controller-profile-actions]")?.value);
-   const controllerId = normalizeText(row.querySelector("[data-controller-profile-id-value]")?.value);
-   const mappingProfile = normalizeText(row.querySelector("[data-controller-profile-mapping]")?.value);
+
+ function renderDiagnostics(message = "") {
+@@ -1444,17 +1524,16 @@ function controllerProfileFromEditingRow(row) {
+   const actionSelects = [...(actionsRow || row).querySelectorAll("[data-controller-profile-input-action]")];
+   const actions = actionSelects.length
+     ? actionSelects.map((select) => normalizeText(select.value))
+-    : normalizeList(row.querySelector("[data-controller-profile-actions]")?.value);
+-  const controllerId = normalizeText(row.querySelector("[data-controller-profile-id-value]")?.value);
+-  const mappingProfile = normalizeText(row.querySelector("[data-controller-profile-mapping]")?.value);
++    : normalizeList(profileEditingRow?.values?.actions);
++  const values = profileEditingRow?.values || {};
    return normalizeControllerProfile({
-@@ -1475,7 +1482,7 @@ function saveControllerProfileEditingRow() {
- 
- function saveControllerProfileInputActions(profileId) {
-   const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
--  const row = elements.controllerProfileList?.querySelector(`[data-controller-profile-row="${CSS.escape(profileId)}"]`);
-+  const row = elements.controllerProfileList?.querySelector(`[data-controller-profile-actions-row="${CSS.escape(profileId)}"]`);
-   if (!profile || !row) {
+     actions,
+-    controllerId,
+-    controllerName: normalizeText(row.querySelector("[data-controller-profile-name]")?.value),
+-    deviceType: row.querySelector("[data-controller-profile-device-type]")?.value || "Gamepad",
++    controllerId: values.controllerId,
++    controllerName: values.controllerName,
++    deviceType: values.deviceType,
+     id: profileEditingRow?.id || "",
+-    inputs: normalizeList(row.querySelector("[data-controller-profile-inputs]")?.value),
+-    mappingProfile,
++    inputs: values.inputs,
++    mappingProfile: values.mappingProfile,
+   });
+ }
+
+@@ -1468,6 +1547,13 @@ function saveControllerProfileEditingRow() {
+     setText(elements.controllerProfileStatus, "WARN: Add Controller ID and Mapping Profile before saving the controller profile.");
      return;
    }
-diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index 9988d2a7b..6614a2be4 100644
---- a/toolbox/controls/index.html
-+++ b/toolbox/controls/index.html
-@@ -143,14 +143,13 @@
-                                                             <th>Controller Name</th>
-                                                             <th>Controller ID</th>
-                                                             <th>Mapping Profile</th>
--                                                            <th>Input</th>
-                                                             <th>Action</th>
-                                                         </tr>
-                                                     </thead>
-                                                     <tbody data-controller-profile-list></tbody>
-                                                     <tfoot>
-                                                         <tr>
--                                                            <td colspan="6">
-+                                                            <td colspan="5">
-                                                                 <div class="content-cluster" aria-label="Controller profile table actions">
-                                                                     <button class="btn" type="button" data-controller-profile-add>Add Profile</button>
-                                                                 </div>
-diff --git a/docs_build/dev/reports/controls-compact-controller-profile-report.md b/docs_build/dev/reports/controls-compact-controller-profile-report.md
++  if (profile.inputs.length && (
++    profile.actions.length !== profile.inputs.length
++    || !profile.actions.every(Boolean)
++  )) {
++    setText(elements.controllerProfileStatus, "Action Required: assign an Action to each generated profile input before using this profile.");
++    return;
++  }
+   const nextProfiles = profileEditingRow?.id
+     ? controllerProfiles.map((candidate) => (candidate.id === profileEditingRow.id ? profile : candidate))
+     : [profile, ...controllerProfiles];
+@@ -1480,33 +1566,6 @@ function saveControllerProfileEditingRow() {
+   renderAll(`Saved ${profile.mappingProfile} controller profile.`);
+ }
+
+-function saveControllerProfileInputActions(profileId) {
+-  const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
+-  const row = elements.controllerProfileList?.querySelector(`[data-controller-profile-actions-row="${CSS.escape(profileId)}"]`);
+-  if (!profile || !row) {
+-    return;
+-  }
+-  const actions = profile.inputs.map((_, index) =>
+-    normalizeText(row.querySelector(`[data-controller-profile-input-index="${index}"]`)?.value),
+-  );
+-  const nextProfile = normalizeControllerProfile({
+-    ...profile,
+-    actions,
+-  });
+-  if (!actions.every(Boolean)) {
+-    setText(elements.controllerProfileStatus, "Action Required: assign an Action to each generated profile input before using this profile.");
+-    return;
+-  }
+-  if (!saveControllerProfiles(controllerProfiles.map((candidate) =>
+-    candidate.id === profileId ? nextProfile : candidate,
+-  ))) {
+-    controllerProfiles = readControllerProfiles();
+-    renderControllerProfiles();
+-    return;
+-  }
+-  renderAll(`Saved actions for ${nextProfile.mappingProfile}.`);
+-}
+-
+ function editControllerProfile(profileId) {
+   const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
+   if (!profile) {
+@@ -1660,8 +1719,6 @@ function handleControllerProfileClick(event) {
+   }
+   if (target.dataset.controllerProfileSave !== undefined) {
+     saveControllerProfileEditingRow();
+-  } else if (target.dataset.controllerProfileSaveActions !== undefined) {
+-    saveControllerProfileInputActions(target.dataset.controllerProfileSaveActions || "");
+   } else if (target.dataset.controllerProfileCancel !== undefined) {
+     profileEditingRow = null;
+     renderControllerProfiles();
+@@ -1673,6 +1730,14 @@ function handleControllerProfileClick(event) {
+   }
+ }
+
++function handleControllerProfileChange(event) {
++  const target = event.target instanceof Element ? event.target : null;
++  if (!target?.matches("[data-controller-profile-input-action]")) {
++    return;
++  }
++  updateProfileInputAssignedAction(target);
++}
++
+ function showWorkspaceReturnIfNeeded() {
+   if (!elements.returnWorkspace) {
+     return;
+@@ -1754,6 +1819,7 @@ function init() {
+     renderControllerProfileFallback();
+   });
+   elements.controllerProfileList?.addEventListener("click", handleControllerProfileClick);
++  elements.controllerProfileList?.addEventListener("change", handleControllerProfileChange);
+   elements.list?.addEventListener("click", handleListClick);
+   elements.list?.addEventListener("change", handleListChange);
+   window.addEventListener("keydown", captureKeyboardEvent);
+diff --git a/docs_build/dev/reports/controls-controller-profile-edit-mode-report.md b/docs_build/dev/reports/controls-controller-profile-edit-mode-report.md
 new file mode 100644
-index 000000000..b57e98924
+index 000000000..75a2a0ba8
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-compact-controller-profile-report.md
-@@ -0,0 +1,58 @@
-+# PR_26161_028 Controls Compact Controller Profile
++++ b/docs_build/dev/reports/controls-controller-profile-edit-mode-report.md
+@@ -0,0 +1,46 @@
++# PR_26161_029 Controls Controller Profile Edit Mode Report
++
++## Scope
++- Updated Controls controller profile rows so saved profiles render as compact summaries outside edit mode.
++- Moved generated controller input Action dropdowns into profile edit mode only.
++- Added edit-mode gamepad input highlighting for matching generated controller inputs.
++- Kept Controls status as Wireframe and kept persistence through the shared DB/mock adapter.
 +
 +## Branch Validation
-+PASS: current branch was verified as `main` before edits.
++- PASS: current branch verified as `main` before edits.
 +
 +## Impacted Lane
-+Controls / Input Mapping targeted lane.
++- Controls / Input Mapping.
 +
 +## Playwright Impacted
-+Yes.
++- Yes.
 +
-+## Request Checklist
-+- PASS: Controls status remains Wireframe.
-+- PASS: Controls mappings, controller profiles, and custom actions remain DB-backed through the shared DB/mock adapter.
-+- PASS: Controller Profile Device Type dropdown now shows detected game controllers only.
-+- PASS: Keyboard and Mouse no longer appear in the Controller Profile Device Type dropdown.
-+- PASS: Keyboard and Mouse remain valid in Input Mapping row Input Device selection.
-+- PASS: Controller Profile vertical space was reduced by removing the standalone Input column.
-+- PASS: Generated controller inputs are displayed as compact Button/Input plus Action dropdown pairs.
-+- PASS: Generated Actions are placed under the controller row in a full-width grid that stacks left to right and top to bottom.
-+- PASS: Actions are displayed under the Controller Profile details row instead of a separate Input column.
-+- PASS: Add Profile still creates DB-backed controller profile records.
-+- PASS: Generated gamepad buttons, axes, triggers, and d-pad inputs are preserved.
-+- PASS: Custom Action creation still persists and appears in Action dropdowns after reload.
-+- PASS: Reset Mappings confirmation remains unchanged.
-+- PASS: Input Mapping and Controller Profile remain accordions.
-+- PASS: Mapping/profile persistence after reload remains covered.
-+- PASS: No sample JSON alignment, auth behavior, production game runtime behavior, or unrelated rewrites were added.
-+- PASS: Theme V2-only restrictions were preserved; no inline CSS, inline JS, script blocks, style blocks, or inline event handlers were added.
-+
-+## Testing Performed
-+- `node --check toolbox/controls/controls.js`
-+- `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+  - Result: 7 passed.
-+- `git diff --check -- . ':!docs_build/dev/reports/codex_review.diff'`
-+  - Result: PASS, with Git line-ending warnings only.
-+
-+## Playwright Coverage
-+- Produced `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
-+- Changed browser runtime JS covered: `toolbox/controls/controls.js` at 91% function coverage.
-+- The V8 report lists prior server-side DB/mock adapter files as advisory WARN entries from the repository diff baseline; this PR did not change those files, and the targeted Controls browser runtime behavior is covered.
++## Validation Performed
++- PASS: `node --check toolbox/controls/controls.js`
++- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++- PASS: `git diff --check`
++- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs`
 +
 +## Manual Validation Steps
-+1. Open `toolbox/controls/index.html`.
-+2. Verify Controller Profile Device Type only lists detected game controllers and does not list Keyboard or Mouse.
-+3. Add a mapping row and verify Input Device still offers Keyboard, Mouse, and Gamepad.
-+4. Mock or connect a gamepad, click Refresh Devices, select the detected gamepad, and click Add Profile.
-+5. Verify the saved profile shows generated inputs as compact input/action pairs under the controller row and no separate Input column.
-+6. Assign Actions, save profile actions, reload, and verify profile/mapping data persists.
-+7. Add a custom Action, reload, and verify it appears in Action dropdowns.
++- Open Controls and refresh devices with a detected gamepad.
++- Add a controller profile and confirm the saved profile row shows only the compact summary.
++- Click Edit and confirm profile row values are text while generated input Action dropdowns appear underneath.
++- Press a controller button during edit and confirm the matching generated input row highlights with the selected Action.
++- Assign generated input Actions, Save, reload, and confirm assignments persist.
++- Edit a profile, change an Action, Cancel, reload, and confirm the unsaved change did not persist.
 +
 +## Skipped Lanes
-+- Full samples validation was skipped as requested. This PR is scoped to Controls UI/tool behavior and does not change samples or production game runtime behavior.
-+- Broad workspace/full-suite validation was skipped because targeted Controls/Input Mapping Playwright covers the changed tool behavior directly.
++- Full samples validation skipped by request because this PR only changes Controls UI behavior and targeted Playwright coverage exercises the impacted lane.
 +
 +## Runtime Engine Behavior
-+Confirmed: no production game runtime behavior was changed.
++- Confirmed: no runtime engine behavior changed.
++
++## Completion Check
++- PASS: Controller Profile Edit shows profile row values as text, not dropdowns.
++- PASS: Generated input Action dropdowns appear only in edit mode.
++- PASS: Generated input Action dropdowns are hidden outside edit mode.
++- PASS: Controller input press during edit highlights the matching generated input.
++- PASS: Selected/assigned Action is visibly shown for the pressed input.
++- PASS: Editing one input does not alter other inputs.
++- PASS: Save persists generated input action assignments after reload.
++- PASS: Cancel does not persist unsaved generated input action changes.

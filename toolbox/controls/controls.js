@@ -56,6 +56,18 @@ const DEVICE_TYPE_OPTIONS = Object.freeze([
   Object.freeze({ label: "Gamepad", value: "Gamepad" }),
 ]);
 
+const GAMEPAD_DPAD_LABELS = Object.freeze(new Map([
+  [12, "DPad Up"],
+  [13, "DPad Down"],
+  [14, "DPad Left"],
+  [15, "DPad Right"],
+]));
+
+const GAMEPAD_TRIGGER_LABELS = Object.freeze(new Map([
+  [6, "Trigger Left"],
+  [7, "Trigger Right"],
+]));
+
 const SOURCE_DIAGNOSTICS = Object.freeze([
   "InputService + KeyboardState",
   "InputService + MouseState",
@@ -72,6 +84,8 @@ let objectOptions = [];
 let editingRow = null;
 let profileEditingRow = null;
 let rowCaptureSource = "";
+let profileInputMonitorId = 0;
+let profileInputHighlight = "";
 
 const elements = {
   actionSelect: document.querySelector("[data-input-action-select]"),
@@ -202,23 +216,38 @@ function availableGamepads() {
 }
 
 function gamepadInputNames(gamepad) {
-  const dpadLabels = new Map([
-    [12, "DPad Up"],
-    [13, "DPad Down"],
-    [14, "DPad Left"],
-    [15, "DPad Right"],
-  ]);
-  const triggerLabels = new Map([
-    [6, "Trigger Left"],
-    [7, "Trigger Right"],
-  ]);
   const buttonNames = gamepad.buttons.map((_, index) =>
-    dpadLabels.get(index) || triggerLabels.get(index) || `Button${index}`,
+    GAMEPAD_DPAD_LABELS.get(index) || GAMEPAD_TRIGGER_LABELS.get(index) || `Button${index}`,
   );
   return [
     ...buttonNames,
     ...gamepad.axes.map((_, index) => `Axis${index}`),
   ];
+}
+
+function gamepadInputNameForButton(index) {
+  return GAMEPAD_DPAD_LABELS.get(index) || GAMEPAD_TRIGGER_LABELS.get(index) || `Button${index}`;
+}
+
+function matchingGamepadForProfile(profile) {
+  return availableGamepads().find((gamepad) =>
+    gamepad.id === profile.controllerId || `gamepad-${gamepad.index}` === profile.controllerId,
+  ) || null;
+}
+
+function activeProfileGamepadInputName(profile) {
+  const gamepad = matchingGamepadForProfile(profile);
+  if (!gamepad) {
+    return "";
+  }
+  const buttonIndex = gamepad.buttons.findIndex((button) =>
+    Number(button?.value || 0) > 0.5 || button?.pressed,
+  );
+  if (buttonIndex >= 0) {
+    return gamepadInputNameForButton(buttonIndex);
+  }
+  const axisIndex = gamepad.axes.findIndex((axis) => Math.abs(Number(axis) || 0) > 0.25);
+  return axisIndex >= 0 ? `Axis${axisIndex}` : "";
 }
 
 function controllerDeviceOptions() {
@@ -788,6 +817,7 @@ function profileInputActionControl(profile, inputName, index) {
   const wrapper = document.createElement("div");
   wrapper.className = "content-grid";
   wrapper.dataset.controllerProfileInputPair = "true";
+  wrapper.dataset.controllerProfileInputName = inputName;
   const label = document.createElement("strong");
   label.textContent = inputName;
   const select = selectControl({
@@ -800,8 +830,83 @@ function profileInputActionControl(profile, inputName, index) {
   });
   select.dataset.controllerProfileInputAction = profile.id || "editing";
   select.dataset.controllerProfileInputIndex = String(index);
-  wrapper.append(label, select);
+  const actionStack = document.createElement("div");
+  actionStack.className = "content-stack content-stack--compact";
+  const assignedAction = document.createElement("span");
+  assignedAction.className = "status";
+  assignedAction.dataset.controllerProfileInputAssignedAction = "true";
+  assignedAction.textContent = `Assigned Action: ${controllerProfileActionLabel(select)}`;
+  actionStack.append(select, assignedAction);
+  wrapper.append(label, actionStack);
   return wrapper;
+}
+
+function controllerProfileActionLabel(select) {
+  return select?.selectedOptions?.[0]?.textContent || "Action Required";
+}
+
+function updateProfileInputAssignedAction(select) {
+  const pair = select?.closest("[data-controller-profile-input-pair]");
+  const status = pair?.querySelector("[data-controller-profile-input-assigned-action]");
+  if (!status) {
+    return;
+  }
+  const prefix = pair.dataset.controllerProfileInputActive === "true" ? "Selected Action" : "Assigned Action";
+  status.textContent = `${prefix}: ${controllerProfileActionLabel(select)}`;
+}
+
+function clearControllerProfileInputHighlight() {
+  elements.controllerProfileList?.querySelectorAll("[data-controller-profile-input-pair]").forEach((pair) => {
+    pair.classList.remove("feedback");
+    delete pair.dataset.controllerProfileInputActive;
+    updateProfileInputAssignedAction(pair.querySelector("[data-controller-profile-input-action]"));
+  });
+}
+
+function highlightControllerProfileInput(inputName) {
+  profileInputHighlight = inputName;
+  clearControllerProfileInputHighlight();
+  if (!inputName) {
+    return;
+  }
+  const pair = [...(elements.controllerProfileList?.querySelectorAll("[data-controller-profile-input-pair]") || [])]
+    .find((candidate) => candidate.dataset.controllerProfileInputName === inputName);
+  if (!pair) {
+    return;
+  }
+  pair.classList.add("feedback");
+  pair.dataset.controllerProfileInputActive = "true";
+  const select = pair.querySelector("[data-controller-profile-input-action]");
+  updateProfileInputAssignedAction(select);
+  setText(elements.controllerProfileStatus, `${inputName} selected. ${pair.querySelector("[data-controller-profile-input-assigned-action]")?.textContent || "Assigned Action: Action Required"}.`);
+}
+
+function updateControllerProfileInputHighlight() {
+  if (!profileEditingRow?.values) {
+    highlightControllerProfileInput("");
+    return;
+  }
+  highlightControllerProfileInput(activeProfileGamepadInputName(profileEditingRow.values));
+}
+
+function stopControllerProfileInputMonitor() {
+  if (profileInputMonitorId) {
+    window.clearInterval(profileInputMonitorId);
+    profileInputMonitorId = 0;
+  }
+  profileInputHighlight = "";
+}
+
+function syncControllerProfileInputMonitor() {
+  if (!profileEditingRow?.values) {
+    stopControllerProfileInputMonitor();
+    clearControllerProfileInputHighlight();
+    return;
+  }
+  if (!profileInputMonitorId) {
+    profileInputMonitorId = window.setInterval(updateControllerProfileInputHighlight, 120);
+  }
+  updateControllerProfileInputHighlight();
 }
 
 function controllerProfileInputActions(profile) {
@@ -820,7 +925,16 @@ function controllerProfileInputActions(profile) {
   return actionControls;
 }
 
-function renderControllerProfileRows(profile) {
+function profileActionSummary(profile) {
+  const assigned = profile.actions.filter(Boolean).length;
+  const total = profile.inputs.length;
+  if (!total) {
+    return "No generated inputs";
+  }
+  return `${assigned}/${total} Actions assigned`;
+}
+
+function renderControllerProfileRow(profile) {
   const row = document.createElement("tr");
   row.dataset.controllerProfileRow = profile.id;
   row.append(
@@ -829,7 +943,7 @@ function renderControllerProfileRows(profile) {
     tableCell(profile.controllerId),
     tableCell(profile.mappingProfile),
   );
-  const actionsCell = document.createElement("td");
+  const actionsCell = tableCell(profileActionSummary(profile));
   const group = document.createElement("div");
   group.className = "action-group action-group--tight";
   group.append(
@@ -838,47 +952,12 @@ function renderControllerProfileRows(profile) {
   );
   actionsCell.append(group);
   row.append(actionsCell);
-
-  const actionsRow = document.createElement("tr");
-  actionsRow.dataset.controllerProfileActionsRow = profile.id;
-  const detailsCell = document.createElement("td");
-  detailsCell.colSpan = 5;
-  const stack = document.createElement("div");
-  stack.className = "content-stack content-stack--compact";
-  stack.append(
-    controllerProfileInputActions(profile),
-    actionButton("Save Actions", "controllerProfileSaveActions", profile.id),
-  );
-  detailsCell.append(stack);
-  actionsRow.append(detailsCell);
-  return [row, actionsRow];
+  return row;
 }
 
 function renderControllerProfileEditingRows(values = {}) {
   const row = document.createElement("tr");
   row.dataset.controllerProfileEditingRow = "true";
-
-  const deviceType = selectControl({
-    ariaLabel: "Controller Device Type",
-    options: DEVICE_TYPE_OPTIONS,
-    selectedValue: values.deviceType || "Gamepad",
-  });
-  deviceType.dataset.controllerProfileDeviceType = "true";
-
-  const controllerName = textControl({ ariaLabel: "Controller Name", value: values.controllerName || "" });
-  controllerName.dataset.controllerProfileName = "true";
-
-  const controllerId = textControl({ ariaLabel: "Controller ID", value: values.controllerId || "" });
-  controllerId.dataset.controllerProfileIdValue = "true";
-
-  const mappingProfile = textControl({ ariaLabel: "Mapping Profile", value: values.mappingProfile || "" });
-  mappingProfile.dataset.controllerProfileMapping = "true";
-
-  const inputs = hiddenControl({ value: listLabel(values.inputs, "") });
-  inputs.dataset.controllerProfileInputs = "true";
-
-  const actions = hiddenControl({ value: listLabel(values.actions, "") });
-  actions.dataset.controllerProfileActions = "true";
 
   const actionsCell = document.createElement("td");
   const profile = normalizeControllerProfile({
@@ -898,10 +977,10 @@ function renderControllerProfileEditingRows(values = {}) {
   );
   actionsCell.append(group);
   row.append(
-    controlCell(deviceType),
-    controlCell(controllerName),
-    controlCell(controllerId),
-    controlCell(mappingProfile),
+    tableCell(profile.deviceType),
+    tableCell(profile.controllerName),
+    tableCell(profile.controllerId),
+    tableCell(profile.mappingProfile),
     actionsCell,
   );
 
@@ -911,7 +990,7 @@ function renderControllerProfileEditingRows(values = {}) {
   detailsCell.colSpan = 5;
   const stack = document.createElement("div");
   stack.className = "content-stack content-stack--compact";
-  stack.append(controllerProfileInputActions(profile), inputs, actions);
+  stack.append(controllerProfileInputActions(profile));
   detailsCell.append(stack);
   actionsRow.append(detailsCell);
   return [row, actionsRow];
@@ -928,7 +1007,7 @@ function renderControllerProfiles() {
   const visibleProfiles = profileEditingRow?.id
     ? controllerProfiles.filter((profile) => profile.id !== profileEditingRow.id)
     : controllerProfiles;
-  rows.push(...visibleProfiles.flatMap(renderControllerProfileRows));
+  rows.push(...visibleProfiles.map(renderControllerProfileRow));
   if (!rows.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
@@ -943,6 +1022,7 @@ function renderControllerProfiles() {
   }
   renderControllerProfileStatus();
   renderControllerProfileFallback();
+  syncControllerProfileInputMonitor();
 }
 
 function renderDiagnostics(message = "") {
@@ -1444,17 +1524,16 @@ function controllerProfileFromEditingRow(row) {
   const actionSelects = [...(actionsRow || row).querySelectorAll("[data-controller-profile-input-action]")];
   const actions = actionSelects.length
     ? actionSelects.map((select) => normalizeText(select.value))
-    : normalizeList(row.querySelector("[data-controller-profile-actions]")?.value);
-  const controllerId = normalizeText(row.querySelector("[data-controller-profile-id-value]")?.value);
-  const mappingProfile = normalizeText(row.querySelector("[data-controller-profile-mapping]")?.value);
+    : normalizeList(profileEditingRow?.values?.actions);
+  const values = profileEditingRow?.values || {};
   return normalizeControllerProfile({
     actions,
-    controllerId,
-    controllerName: normalizeText(row.querySelector("[data-controller-profile-name]")?.value),
-    deviceType: row.querySelector("[data-controller-profile-device-type]")?.value || "Gamepad",
+    controllerId: values.controllerId,
+    controllerName: values.controllerName,
+    deviceType: values.deviceType,
     id: profileEditingRow?.id || "",
-    inputs: normalizeList(row.querySelector("[data-controller-profile-inputs]")?.value),
-    mappingProfile,
+    inputs: values.inputs,
+    mappingProfile: values.mappingProfile,
   });
 }
 
@@ -1468,6 +1547,13 @@ function saveControllerProfileEditingRow() {
     setText(elements.controllerProfileStatus, "WARN: Add Controller ID and Mapping Profile before saving the controller profile.");
     return;
   }
+  if (profile.inputs.length && (
+    profile.actions.length !== profile.inputs.length
+    || !profile.actions.every(Boolean)
+  )) {
+    setText(elements.controllerProfileStatus, "Action Required: assign an Action to each generated profile input before using this profile.");
+    return;
+  }
   const nextProfiles = profileEditingRow?.id
     ? controllerProfiles.map((candidate) => (candidate.id === profileEditingRow.id ? profile : candidate))
     : [profile, ...controllerProfiles];
@@ -1478,33 +1564,6 @@ function saveControllerProfileEditingRow() {
   }
   profileEditingRow = null;
   renderAll(`Saved ${profile.mappingProfile} controller profile.`);
-}
-
-function saveControllerProfileInputActions(profileId) {
-  const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
-  const row = elements.controllerProfileList?.querySelector(`[data-controller-profile-actions-row="${CSS.escape(profileId)}"]`);
-  if (!profile || !row) {
-    return;
-  }
-  const actions = profile.inputs.map((_, index) =>
-    normalizeText(row.querySelector(`[data-controller-profile-input-index="${index}"]`)?.value),
-  );
-  const nextProfile = normalizeControllerProfile({
-    ...profile,
-    actions,
-  });
-  if (!actions.every(Boolean)) {
-    setText(elements.controllerProfileStatus, "Action Required: assign an Action to each generated profile input before using this profile.");
-    return;
-  }
-  if (!saveControllerProfiles(controllerProfiles.map((candidate) =>
-    candidate.id === profileId ? nextProfile : candidate,
-  ))) {
-    controllerProfiles = readControllerProfiles();
-    renderControllerProfiles();
-    return;
-  }
-  renderAll(`Saved actions for ${nextProfile.mappingProfile}.`);
 }
 
 function editControllerProfile(profileId) {
@@ -1660,8 +1719,6 @@ function handleControllerProfileClick(event) {
   }
   if (target.dataset.controllerProfileSave !== undefined) {
     saveControllerProfileEditingRow();
-  } else if (target.dataset.controllerProfileSaveActions !== undefined) {
-    saveControllerProfileInputActions(target.dataset.controllerProfileSaveActions || "");
   } else if (target.dataset.controllerProfileCancel !== undefined) {
     profileEditingRow = null;
     renderControllerProfiles();
@@ -1671,6 +1728,14 @@ function handleControllerProfileClick(event) {
   } else if (target.dataset.controllerProfileTrash !== undefined) {
     deleteControllerProfile(target.dataset.controllerProfileTrash || "");
   }
+}
+
+function handleControllerProfileChange(event) {
+  const target = event.target instanceof Element ? event.target : null;
+  if (!target?.matches("[data-controller-profile-input-action]")) {
+    return;
+  }
+  updateProfileInputAssignedAction(target);
 }
 
 function showWorkspaceReturnIfNeeded() {
@@ -1754,6 +1819,7 @@ function init() {
     renderControllerProfileFallback();
   });
   elements.controllerProfileList?.addEventListener("click", handleControllerProfileClick);
+  elements.controllerProfileList?.addEventListener("change", handleControllerProfileChange);
   elements.list?.addEventListener("click", handleListClick);
   elements.list?.addEventListener("change", handleListChange);
   window.addEventListener("keydown", captureKeyboardEvent);
