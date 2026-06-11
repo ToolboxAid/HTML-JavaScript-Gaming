@@ -5,16 +5,6 @@ import {
   normalizeNormalizedInput,
 } from "../../src/engine/input/NormalizedInputRegistry.js";
 
-const SOURCE_DIAGNOSTICS = Object.freeze([
-  "InputService + KeyboardState",
-  "InputService + MouseState",
-  "InputService + GamepadState + GamepadInputAdapter",
-  "GamepadInputAdapter",
-  "Normalized Input Registry",
-]);
-
-const RUNTIME_LOOKUP_ORDER = "Game Controls owns normalized action type to usage label mappings. Account User Controls owns physical input to normalized control profiles.";
-const SYSTEM_DEFAULT_PROFILES_LABEL = "User control fallback profiles are configured in Account User Controls.";
 const CONTROL_EVENT_OPTIONS = Object.freeze([
   Object.freeze({ field: "eventD", label: "D" }),
   Object.freeze({ field: "eventH", label: "H" }),
@@ -83,6 +73,28 @@ const COMMON_FULL_CONTROL_INPUTS = new Set([
   "move.y-",
   "move.y+",
 ]);
+const GENERIC_INPUT_FAMILY_ROWS = Object.freeze({
+  Keyboard: Object.freeze([
+    "move.x-",
+    "move.x+",
+    "move.y-",
+    "move.y+",
+    "action.primary",
+    "action.secondary",
+    "action.confirm",
+    "action.cancel",
+    "action.pause",
+    "action.start",
+  ]),
+  Mouse: Object.freeze([
+    "aim.x-",
+    "aim.x+",
+    "aim.y-",
+    "aim.y+",
+    "action.primary",
+    "action.secondary",
+  ]),
+});
 const NORMALIZED_USAGE_LABELS = Object.freeze({
   "action.cancel": "Cancel",
   "action.confirm": "Confirm",
@@ -182,7 +194,9 @@ const inputService = new InputService({ target: window });
 
 const elements = {
   actionSelect: document.querySelector("[data-input-action-select]"),
+  addKeyboardFamily: document.querySelector("[data-input-add-keyboard-family]"),
   addMapping: document.querySelector("[data-input-add-mapping]"),
+  addMouseFamily: document.querySelector("[data-input-add-mouse-family]"),
   accountUserControlsLink: document.querySelector("[data-account-user-controls-link]"),
   customActionStatus: document.querySelector("[data-input-custom-action-status]"),
   defaultActions: document.querySelector("[data-input-default-actions]"),
@@ -568,6 +582,29 @@ function createFullGameControlSet(object = selectedObject()) {
   });
 }
 
+function createGenericInputFamilyRows(inputFamily, object = selectedObject()) {
+  const family = normalizeInputFamily(inputFamily);
+  const normalizedInputs = GENERIC_INPUT_FAMILY_ROWS[family] || [];
+  return normalizedInputs.map((normalizedInput, index) => normalizeMapping({
+    ...defaultEventFieldsForNormalizedInput(normalizedInput),
+    enabled: true,
+    id: `generic-${keyFromText(family)}-control-${keyFromText(object.key)}-${index + 1}-${keyFromText(normalizedInput)}`,
+    inputFamily: family,
+    normalizedInput,
+    objectKey: object.key,
+    objectName: object.label,
+    state: "Active",
+    usageLabel: NORMALIZED_USAGE_LABELS[normalizedInput] || inputService.getNormalizedInputLabel(normalizedInput),
+  }));
+}
+
+function renderCurrentState(message = "") {
+  renderActionsAndObjects();
+  renderDefaults();
+  renderDiagnostics(message);
+  renderMappings();
+}
+
 function addFullGameControlSet() {
   const existingIds = new Set(mappings.map((mapping) => mapping.id));
   const nextMappings = [...mappings];
@@ -578,7 +615,20 @@ function addFullGameControlSet() {
   });
   saveMappings(nextMappings);
   editingRow = null;
-  renderAll("Added the full normalized game control set. Common rows are enabled; alternate rows are disabled.");
+  renderCurrentState("Added the full normalized game control set. Common rows are enabled; alternate rows are disabled.");
+}
+
+function addGenericInputFamilyRows(inputFamily) {
+  const existingIds = new Set(mappings.map((mapping) => mapping.id));
+  const nextMappings = [...mappings];
+  createGenericInputFamilyRows(inputFamily).forEach((mapping) => {
+    if (!existingIds.has(mapping.id)) {
+      nextMappings.push(mapping);
+    }
+  });
+  saveMappings(nextMappings);
+  editingRow = null;
+  renderCurrentState(`Added generic ${inputFamily} game control rows.`);
 }
 
 function applyGameControlPreset(presetKey) {
@@ -597,7 +647,7 @@ function applyGameControlPreset(presetKey) {
   }));
   saveMappings(nextMappings);
   editingRow = null;
-  renderAll(`Applied ${presetKey.replace(/-/g, " ")} preset. Common rows are enabled; alternate rows are disabled.`);
+  renderCurrentState(`Applied ${presetKey.replace(/-/g, " ")} preset. Common rows are enabled; alternate rows are disabled.`);
 }
 
 function readObjectOptions() {
@@ -685,21 +735,23 @@ function renderObjectSummary(object = selectedObject()) {
 }
 
 function renderDiagnostics(message = "") {
-  const gamepadStatus = gamepadSummary();
-  const mouseAvailable = typeof window.PointerEvent === "function" || typeof window.MouseEvent === "function";
-  const diagnostics = SOURCE_DIAGNOSTICS.map((source) => {
-    if (source === "InputService + MouseState") {
-      return `${source}: ${mouseAvailable ? "Ready" : "WARN: Mouse input is unavailable in this browser context."}`;
-    }
-    if (source === "InputService + GamepadState + GamepadInputAdapter" || source === "GamepadInputAdapter") {
-      return `${source}: ${gamepadStatus}`;
-    }
-    return `${source}: Ready`;
-  }).concat([SYSTEM_DEFAULT_PROFILES_LABEL, RUNTIME_LOOKUP_ORDER]);
+  const pads = availableGamepads();
+  const gamepadWarning = pads.length ? "" : gamepadSummary();
+  const diagnostics = inputService.getInputDeviceCapabilities({
+    gamepadCount: pads.length,
+    gamepadWarning,
+    webXrAvailable: typeof navigator !== "undefined" && Boolean(navigator.xr),
+  });
   if (elements.sourceDiagnostics) {
     elements.sourceDiagnostics.replaceChildren(...diagnostics.map((diagnostic) => {
       const item = document.createElement("li");
-      item.textContent = diagnostic;
+      const detail = diagnostic.emptyState || diagnostic.detail || "No additional setup guidance.";
+      const status = diagnostic.available === false ? "WARN" : "Ready";
+      item.dataset.inputDeviceDiagnostic = diagnostic.id;
+      item.dataset.inputDeviceStatus = diagnostic.available === false ? "warn" : "ready";
+      item.title = detail;
+      item.setAttribute("aria-label", `${diagnostic.label}: ${status}. ${detail}`);
+      item.textContent = `${diagnostic.label}: ${status}. ${detail}`;
       return item;
     }));
   }
@@ -880,9 +932,11 @@ function renderMappings() {
     rows.push(row);
   }
   elements.list.replaceChildren(...rows);
-  if (elements.addMapping) {
-    elements.addMapping.disabled = Boolean(editingRow);
-  }
+  [elements.addMapping, elements.addKeyboardFamily, elements.addMouseFamily].forEach((button) => {
+    if (button) {
+      button.disabled = Boolean(editingRow);
+    }
+  });
   renderOutput();
 }
 
@@ -1030,6 +1084,12 @@ function init() {
     setText(elements.statusLog, `Selected ${object.label} for new mappings.`);
   });
   elements.addMapping?.addEventListener("click", addFullGameControlSet);
+  elements.addKeyboardFamily?.addEventListener("click", () => {
+    addGenericInputFamilyRows("Keyboard");
+  });
+  elements.addMouseFamily?.addEventListener("click", () => {
+    addGenericInputFamilyRows("Mouse");
+  });
   elements.resetMappings?.addEventListener("click", () => {
     if (!window.confirm("This will delete all Mappings, are you sure?")) {
       setText(elements.statusLog, "Reset canceled.");

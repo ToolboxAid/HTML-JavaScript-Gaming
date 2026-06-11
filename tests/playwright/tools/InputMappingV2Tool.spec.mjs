@@ -207,6 +207,11 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
     await expect(page.locator("[data-input-action-label]")).toContainText(NORMALIZED_INPUTS);
     await expect(page.locator("[data-input-control-type-list]")).toContainText("Keyboard Key");
     await expect(page.locator("[data-input-control-type-list]")).toContainText("Pointer Drag");
+    await expect(page.locator("[data-input-source-diagnostics] li")).toHaveCount(7);
+    await expect(page.locator("[data-input-device-count]")).toHaveText("7");
+    await expect(page.locator("[data-input-source-diagnostics] li[data-input-device-diagnostic='keyboard']")).toHaveAttribute("title", /Keyboard key states/);
+    await expect(page.locator("[data-input-source-diagnostics] li[data-input-device-diagnostic='mouse']")).toHaveAttribute("aria-label", /Mouse buttons/);
+    await expect(page.locator("[data-input-device-guidance]")).toContainText("game-owned");
     await expect(page.locator("[data-input-action-select] option")).toHaveText(NORMALIZED_INPUTS);
     await expect(page.locator("[data-input-preset]")).toHaveText([
       "Platformer",
@@ -220,6 +225,17 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
 
     await page.locator("[data-input-add-mapping]").click();
     await expect(page.locator("[data-input-status-log]")).toHaveText("Added the full normalized game control set. Common rows are enabled; alternate rows are disabled.");
+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
+    await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
+    await expect(page.locator("[data-input-output-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
+    await expect(page.locator("[data-input-save-status]")).toHaveText("Complete");
+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
+    const primaryActionRow = page.locator("[data-input-mapping-row]").filter({ hasText: "action.primary" }).first();
+    await expect(primaryActionRow.locator("td").nth(0).locator("input")).toBeChecked();
+    await expect(primaryActionRow.locator("td").nth(11)).toHaveText("Active");
+    const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "aim.x+" }).first();
+    await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
+    await expect(aimRightRow.locator("td").nth(11)).toHaveText("Disabled");
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(NORMALIZED_INPUTS.length);
     expect(records.map((record) => record.normalizedInput).sort()).toEqual([...NORMALIZED_INPUTS].sort());
@@ -234,6 +250,31 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
       state: "Disabled",
       usageLabel: "Aim Right",
     });
+
+    await page.locator("[data-input-add-keyboard-family]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Added generic Keyboard game control rows.");
+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length + 10);
+    const genericKeyboardPrimary = page.locator("[data-input-mapping-row='generic-keyboard-control-global-5-action-primary']");
+    await expect(genericKeyboardPrimary).toContainText("Keyboard");
+    await genericKeyboardPrimary.getByRole("button", { name: "Edit" }).click();
+    await expect(page.locator("[data-input-row-family]")).toHaveValue("Keyboard");
+    await page.locator("[data-input-row-usage-label]").fill("Keyboard Jump");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(page.locator("[data-input-mapping-row='generic-keyboard-control-global-5-action-primary']")).toContainText("Keyboard Jump");
+    records = await inputMappingRecords(page);
+    expect(records.filter((record) => record.id.startsWith("generic-keyboard-control-"))).toHaveLength(10);
+    expect(records.find((record) => record.usageLabel === "Keyboard Jump")).toMatchObject({
+      inputFamily: "Keyboard",
+      normalizedInput: "action.primary",
+    });
+
+    await page.locator("[data-input-add-mouse-family]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Added generic Mouse game control rows.");
+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length + 16);
+    await expect(page.locator("[data-input-mapping-row='generic-mouse-control-global-2-aim-x']")).toContainText("Mouse");
+    records = await inputMappingRecords(page);
+    expect(records.filter((record) => record.id.startsWith("generic-mouse-control-"))).toHaveLength(6);
+    expect(records.filter((record) => record.id.startsWith("generic-mouse-control-")).every((record) => record.inputFamily === "Mouse")).toBe(true);
 
     await page.locator("[data-input-preset='platformer']").click();
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Move Left");

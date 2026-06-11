@@ -46,6 +46,21 @@ async function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
+test("Deprecated project workspace route points creators to Game Workspace", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
+
+  try {
+    await expect(page.getByRole("heading", { name: "Game Workspace" })).toBeVisible();
+    await expect(page.locator("main")).toContainText("This route is kept for older links.");
+    await expect(page.locator("main")).not.toContainText("Project Workspace");
+    await expect(page.getByRole("link", { name: "Open Game Workspace" })).toHaveAttribute("href", "toolbox/game-workspace/index.html");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
 test("Game Workspace creates, opens, and deletes mock games", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
