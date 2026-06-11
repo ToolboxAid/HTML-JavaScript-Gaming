@@ -104,7 +104,7 @@ test("Game Configuration saves and updates creator-facing sections with readable
   const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html");
 
   try {
-    await expect(page.locator("[data-game-configuration-handoff-context]")).toHaveText("Demo Project - Game Project - Puzzle / Adventure / Single Player");
+    await expect(page.locator("[data-game-configuration-handoff-context]")).toHaveText("Demo Project - Game Project - Puzzle / Adventure / Single Player / 1 Player");
     await expect(page.locator("[data-game-configuration-handoff-overlay]")).toBeHidden();
     await expect(page.locator("[data-game-configuration-form-card]")).toBeVisible();
     await expect(page.locator(".tool-center-panel [data-game-configuration-form]")).toBeVisible();
@@ -133,18 +133,19 @@ test("Game Configuration saves and updates creator-facing sections with readable
       "Game Basics",
       "Game Rules",
       "Player Setup",
-      "Player Mode",
       "World Setup",
       "Object Setup",
       "Audio Setup",
       "Test Readiness"
     ]);
+    await expect(page.locator("[data-game-configuration-player-mode]")).toHaveCount(0);
     await expect(page.locator("[data-game-configuration-playable-setup-table] textarea")).toHaveCount(7);
     expect(await page.locator("[data-game-configuration-playable-setup-table] textarea").evaluateAll((textareas) => (
       textareas.every((textarea) => textarea.getAttribute("rows") === "4")
     ))).toBe(true);
     await expect(page.locator("[data-game-configuration-output] pre, [data-game-configuration-output] code")).toHaveCount(0);
     await expect(page.locator("[data-game-configuration-output]")).toContainText("Configuration Summary");
+    await expect(page.locator("[data-game-configuration-output]")).toContainText("Player Mode");
     await expect(page.locator("[data-game-configuration-output]")).toContainText("Readiness Status");
     await expect(page.locator("[data-game-configuration-output]")).toContainText("Missing Items");
     await expect(page.locator("[data-game-configuration-output]")).toContainText("Next Step");
@@ -156,6 +157,7 @@ test("Game Configuration saves and updates creator-facing sections with readable
 
     await expect(page.locator("[data-game-configuration-log]")).toHaveText("Saved Game Configuration as ready. Assets is the recommended next tool.");
     await expect(page.locator("[data-game-configuration-status]")).toHaveText("Ready");
+    await expect(page.locator("[data-game-configuration-output-player-mode]")).toHaveText("1 Player");
     await expect(page.locator("[data-game-configuration-output-readiness]")).toHaveText("Ready");
     await expect(page.locator("[data-game-configuration-output-next-step]")).toHaveText("Assets");
     await expect(page.locator("[data-game-configuration-output-missing]")).toHaveText("None");

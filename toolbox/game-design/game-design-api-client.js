@@ -8,6 +8,7 @@ const constants = readServerToolConstants("game-design");
 
 export const GAME_DESIGN_GAME_TYPES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GAME_TYPES", "game-design"));
 export const GAME_DESIGN_GENRES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_GENRES", "game-design"));
+export const GAME_DESIGN_PLAYER_MODES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAYER_MODES", "game-design"));
 export const GAME_DESIGN_PLAY_STYLES = Object.freeze(requireServerConstant(constants, "GAME_DESIGN_PLAY_STYLES", "game-design"));
 
 export function createGameDesignApiRepository(options = {}) {

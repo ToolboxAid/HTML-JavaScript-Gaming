@@ -101,13 +101,13 @@ export const TOOL_REGISTRY = Object.freeze([
   },
   {
     "id": "project-workspace",
-    "name": "Project Workspace",
-    "displayName": "Project Workspace",
+    "name": "Game Workspace",
+    "displayName": "Game Workspace",
     "shortDescription": "Coordinate Build, Play, and Share readiness for one game project.",
-    "shortLabel": "Project Workspace",
-    "path": "project-workspace",
-    "folderName": "project-workspace",
-    "entryPoint": "project-workspace/index.html",
+    "shortLabel": "Game Workspace",
+    "path": "game-workspace",
+    "folderName": "game-workspace",
+    "entryPoint": "game-workspace/index.html",
     "badge": "/assets/theme-v2/images/badges/project-workspace.png",
     "tool": "/assets/theme-v2/images/tools/project-workspace.png",
     "description": "Coordinate Build, Play, and Share readiness for one game project.",
@@ -156,7 +156,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "status": "beta",
     "releaseChannel": "beta",
     "progressChecklist": [
-      "Open Project Workspace",
+      "Open Game Workspace",
       "Review project-scoped notes",
       "Track open journey rows"
     ],

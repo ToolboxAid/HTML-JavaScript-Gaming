@@ -11,6 +11,7 @@ import {
   normalizeNormalizedInput,
   normalizeProfileInputMappings,
   normalizedInputOptions,
+  physicalInputSensitivityDescriptor,
   physicalInputIsAnalog,
   resolveNormalizedInputProfile,
   resolvePhysicalAxisNormalizedInput,
@@ -69,9 +70,20 @@ function testProfileInputMappingsPreserveAnalogSettings() {
     ['Button0', 'Axis0'],
     [{ deadzone: 0.35, invert: true, negativeNormalizedInput: 'aim.x-', physicalInput: 'Axis0', positiveNormalizedInput: 'aim.x+' }],
   ), [
-    { deadzone: 0.2, invert: false, negativeNormalizedInput: '', normalizedInput: 'action.primary', physicalInput: 'Button0', positiveNormalizedInput: '' },
-    { deadzone: 0.35, invert: true, negativeNormalizedInput: 'aim.x-', normalizedInput: 'aim.x+', physicalInput: 'Axis0', positiveNormalizedInput: 'aim.x+' },
+    { deadzone: 0.2, invert: false, negativeNormalizedInput: '', normalizedInput: 'action.primary', physicalInput: 'Button0', positiveNormalizedInput: '', sensitivity: undefined },
+    { deadzone: 0.35, invert: true, negativeNormalizedInput: 'aim.x-', normalizedInput: 'aim.x+', physicalInput: 'Axis0', positiveNormalizedInput: 'aim.x+', sensitivity: 100 },
   ]);
+}
+
+function testPhysicalSensitivityDescriptors() {
+  assert.equal(physicalInputSensitivityDescriptor('MouseX').label, 'Mouse movement sensitivity');
+  assert.equal(physicalInputSensitivityDescriptor('MouseWheelUp').label, 'Mouse wheel sensitivity');
+  assert.equal(physicalInputSensitivityDescriptor('Potentiometer0').label, 'Potentiometer/analog knob sensitivity');
+  assert.equal(physicalInputSensitivityDescriptor('Knob0').label, 'Potentiometer/analog knob sensitivity');
+  assert.equal(physicalInputSensitivityDescriptor('Axis0').label, 'Joystick/gamepad axis sensitivity');
+  assert.equal(physicalInputSensitivityDescriptor('LT').label, 'Trigger sensitivity');
+  assert.equal(physicalInputSensitivityDescriptor('RT').label, 'Trigger sensitivity');
+  assert.equal(physicalInputSensitivityDescriptor('Button0'), null);
 }
 
 function testInvalidNormalizedInputDoesNotSilentlyBecomeAction() {
@@ -95,6 +107,7 @@ function testSystemDefaultProfilesAreVisibleFallbackContracts() {
     normalizedInput: 'move.x+',
     physicalInput: 'Axis0',
     positiveNormalizedInput: 'move.x+',
+    sensitivity: 100,
   });
 }
 
@@ -149,6 +162,7 @@ export function run() {
   testRegistryContainsPlayableNormalizedInputs();
   testPhysicalDefaultsRouteThroughNormalizedInputs();
   testProfileInputMappingsPreserveAnalogSettings();
+  testPhysicalSensitivityDescriptors();
   testInvalidNormalizedInputDoesNotSilentlyBecomeAction();
   testSystemDefaultProfilesAreVisibleFallbackContracts();
   testAxisDirectionResolutionUsesSharedDeadzoneAndInvert();

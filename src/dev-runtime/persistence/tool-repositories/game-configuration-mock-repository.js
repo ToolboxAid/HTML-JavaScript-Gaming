@@ -119,7 +119,7 @@ function createDocument(projectId, handoff, input = {}) {
     gameType: handoff.activeDesign?.gameType || "",
     genre: handoff.activeDesign?.genre || "",
     playStyle: handoff.activeDesign?.playStyle || "",
-    playerMode: normalizePlayerMode(input.playerMode),
+    playerMode: normalizePlayerMode(handoff.activeDesign?.playerMode),
     gameBasics: normalizeText(input.gameBasics),
     gameRules: normalizeText(input.gameRules),
     playerSetup: normalizeText(input.playerSetup),
@@ -173,6 +173,7 @@ function createSeededGameDesignRepository() {
     designSummary: "A compact puzzle adventure with a clear rules handoff for configuration.",
     gameType: "Puzzle",
     genre: "Adventure",
+    playerMode: "1 Player",
     playStyle: "Single Player"
   });
   return repository;
@@ -282,6 +283,7 @@ export function createGameConfigurationMockRepository(options = {}) {
       designSummary: "A compact puzzle adventure with a clear rules handoff for configuration.",
       gameType: "Puzzle",
       genre: "Adventure",
+      playerMode: "1 Player",
       playStyle: "Single Player"
     });
     if (!projectId) {

@@ -41,6 +41,24 @@ export const GAME_DESIGN_PLAY_STYLES = Object.freeze([
   "Turn-Based"
 ]);
 
+export const GAME_DESIGN_PLAYER_MODES = Object.freeze([
+  Object.freeze({
+    description: "One active player receives input.",
+    label: "1 Player",
+    value: "1 Player"
+  }),
+  Object.freeze({
+    description: "Multiple players participate, one active player receives input at a time.",
+    label: "2+ Turn Based",
+    value: "2+ Turn Based"
+  }),
+  Object.freeze({
+    description: "Multiple players can be active at the same time.",
+    label: "2+ Concurrent",
+    value: "2+ Concurrent"
+  })
+]);
+
 const PROJECT_WORKSPACE_USER_ID = PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY;
 const REQUIRED_FIELDS = Object.freeze([
   {
@@ -56,7 +74,12 @@ const REQUIRED_FIELDS = Object.freeze([
   {
     field: "playStyle",
     label: "Play Style",
-    action: "Select the player mode that best describes the intended experience."
+    action: "Select the play style that best describes the intended experience."
+  },
+  {
+    field: "playerMode",
+    label: "Player Mode",
+    action: "Select how players participate and receive input."
   },
   {
     field: "designSummary",
@@ -79,6 +102,13 @@ function cloneTables(tables) {
 
 function normalizeChoice(value, choices) {
   return choices.includes(value) ? value : "";
+}
+
+function normalizePlayerMode(value) {
+  const normalized = normalizeText(value);
+  return GAME_DESIGN_PLAYER_MODES.some((mode) => mode.value === normalized)
+    ? normalized
+    : "1 Player";
 }
 
 function normalizeText(value) {
@@ -116,6 +146,7 @@ function createDesignForProject(project, input = {}) {
     gameType: normalizeChoice(input.gameType, GAME_DESIGN_GAME_TYPES),
     genre: normalizeChoice(input.genre, GAME_DESIGN_GENRES),
     playStyle: normalizeChoice(input.playStyle, GAME_DESIGN_PLAY_STYLES),
+    playerMode: normalizePlayerMode(input.playerMode),
     designSummary: normalizeText(input.designSummary),
     capabilityDemoAuthoring: project.purpose === "Capability Demo" || Boolean(input.capabilityDemoAuthoring),
     capabilityDemoNotes: normalizeText(input.capabilityDemoNotes),
@@ -169,7 +200,7 @@ export function createGameDesignMockRepository(options = {}) {
           {
             field: "project",
             label: "Project Context",
-            action: "Open or seed a Project Workspace project before saving Game Design."
+            action: "Open or seed a Game Workspace game before saving Game Design."
           }
         ]
       };
@@ -179,6 +210,7 @@ export function createGameDesignMockRepository(options = {}) {
       gameType: normalizeChoice(input.gameType, GAME_DESIGN_GAME_TYPES),
       genre: normalizeChoice(input.genre, GAME_DESIGN_GENRES),
       playStyle: normalizeChoice(input.playStyle, GAME_DESIGN_PLAY_STYLES),
+      playerMode: normalizePlayerMode(input.playerMode),
       designSummary: normalizeText(input.designSummary)
     };
     const findings = REQUIRED_FIELDS.filter((requirement) => !design[requirement.field]);
@@ -247,11 +279,12 @@ export function createGameDesignMockRepository(options = {}) {
     listCapabilityDemoProjects().forEach((project) => {
       const { document, findings } = createDesignForProject(project, {
         capabilityDemoAuthoring: true,
-        capabilityDemoNotes: `${project.name} remains a Project Workspace project.`,
+        capabilityDemoNotes: `${project.name} remains a Game Workspace game.`,
         designSummary: `${project.name} demonstrates one planned capability as a project-owned demo.`,
         gameType: "Capability Demo",
         genre: "Utility",
-        playStyle: "Guided Tutorial"
+        playStyle: "Guided Tutorial",
+        playerMode: "1 Player"
       });
       tables.game_design_documents = tables.game_design_documents.filter(
         (row) => row.projectId !== project.id
@@ -294,9 +327,9 @@ export function createGameDesignMockRepository(options = {}) {
     if (!activeProject) {
       return {
         projectProgress: "No active project",
-        publishingProgress: "Blocked until Project Workspace has an active project",
-        currentFocus: "Open a Project Workspace project",
-        recommendedNextTool: "Project Workspace",
+        publishingProgress: "Blocked until Game Workspace has an active game",
+        currentFocus: "Open a Game Workspace game",
+        recommendedNextTool: "Game Workspace",
         progressChecklist: [
           "Project context: Missing",
           "Game Design document: Blocked",
@@ -322,6 +355,7 @@ export function createGameDesignMockRepository(options = {}) {
         `Game type: ${design?.gameType || "Missing"}`,
         `Genre: ${design?.genre || "Missing"}`,
         `Play style: ${design?.playStyle || "Missing"}`,
+        `Player mode: ${design?.playerMode || "Missing"}`,
         `Validation: ${validation.status}`
       ]
     };

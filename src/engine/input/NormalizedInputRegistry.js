@@ -112,6 +112,11 @@ const SYSTEM_DEFAULT_KEYBOARD_MOUSE_INPUTS = Object.freeze([
     'MouseY',
 ]);
 
+const DEFAULT_SENSITIVITY = 100;
+const SENSITIVITY_MIN = 10;
+const SENSITIVITY_MAX = 200;
+const SENSITIVITY_STEP = 5;
+
 export const SYSTEM_DEFAULT_GAMEPAD_PROFILE_NAME = 'System Default Gamepad';
 export const SYSTEM_DEFAULT_KEYBOARD_MOUSE_PROFILE_NAME = 'System Default Keyboard/Mouse';
 
@@ -239,6 +244,34 @@ export function physicalInputIsAnalog(physicalInput) {
         || normalizeInputName(physicalInput) === 'MouseY';
 }
 
+export function physicalInputSensitivityDescriptor(physicalInput) {
+    const inputName = normalizeInputName(physicalInput);
+    const lowerName = inputName.toLowerCase();
+    let label = '';
+    if (inputName === 'MouseX' || inputName === 'MouseY') {
+        label = 'Mouse movement sensitivity';
+    } else if (lowerName.includes('wheel')) {
+        label = 'Mouse wheel sensitivity';
+    } else if (lowerName.includes('trigger') || inputName === 'LT' || inputName === 'RT') {
+        label = 'Trigger sensitivity';
+    } else if (lowerName.includes('knob') || lowerName.includes('potentiometer')) {
+        label = 'Potentiometer/analog knob sensitivity';
+    } else if (/^Axis\d+$/i.test(inputName)) {
+        label = 'Joystick/gamepad axis sensitivity';
+    }
+    if (!label) {
+        return null;
+    }
+    return {
+        defaultValue: DEFAULT_SENSITIVITY,
+        label,
+        max: SENSITIVITY_MAX,
+        min: SENSITIVITY_MIN,
+        step: SENSITIVITY_STEP,
+        unit: '%',
+    };
+}
+
 export function normalizedInputIsAnalog(inputId) {
     const kind = normalizedInputById(inputId)?.kind || '';
     return kind === 'axis' || kind === 'trigger';
@@ -249,6 +282,8 @@ export function normalizeProfileInputMapping(inputName, source = {}) {
     const fallbackNormalizedInput = defaultNormalizedInputForPhysicalInput(physicalInput);
     const fallbackDirections = defaultNormalizedInputDirectionsForPhysicalInput(physicalInput);
     const deadzone = Number(source.deadzone);
+    const sensitivityDescriptor = physicalInputSensitivityDescriptor(physicalInput);
+    const sensitivity = Number(source.sensitivity);
     const negativeNormalizedInput = normalizeNormalizedInput(source.negativeNormalizedInput, fallbackDirections.negative);
     const positiveNormalizedInput = normalizeNormalizedInput(source.positiveNormalizedInput, fallbackDirections.positive);
     const normalizedInput = normalizeNormalizedInput(
@@ -262,6 +297,9 @@ export function normalizeProfileInputMapping(inputName, source = {}) {
         normalizedInput,
         physicalInput,
         positiveNormalizedInput,
+        sensitivity: sensitivityDescriptor && Number.isFinite(sensitivity)
+            ? Math.max(sensitivityDescriptor.min, Math.min(sensitivityDescriptor.max, sensitivity))
+            : sensitivityDescriptor?.defaultValue,
     };
 }
 

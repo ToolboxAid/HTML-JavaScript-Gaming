@@ -45,6 +45,7 @@ import {
 import {
   GAME_DESIGN_GAME_TYPES,
   GAME_DESIGN_GENRES,
+  GAME_DESIGN_PLAYER_MODES,
   GAME_DESIGN_PLAY_STYLES,
   createGameDesignMockRepository,
 } from "../persistence/tool-repositories/game-design-mock-repository.js";
@@ -108,14 +109,14 @@ const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
 });
 const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
   Owner: null,
-  Designer: Object.freeze(["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"]),
+  Designer: Object.freeze(["Game Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"]),
   "World Builder": Object.freeze(["Worlds", "Objects", "Assets", "Colors", "Animations"]),
   Artist: Object.freeze(["Assets", "Colors", "Fonts", "Sprites", "Characters", "Objects", "Animations"]),
   "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"]),
   Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Voice Output"]),
   Tester: Object.freeze(["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"]),
   Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
-  Viewer: Object.freeze(["Project Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
+  Viewer: Object.freeze(["Game Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
 });
 const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
@@ -1483,6 +1484,7 @@ class LocalDevMockDataSource {
       return {
         GAME_DESIGN_GAME_TYPES,
         GAME_DESIGN_GENRES,
+        GAME_DESIGN_PLAYER_MODES,
         GAME_DESIGN_PLAY_STYLES,
       };
     }

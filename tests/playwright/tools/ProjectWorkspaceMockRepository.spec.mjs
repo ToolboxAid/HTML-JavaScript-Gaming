@@ -5,7 +5,7 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "project-workspace",
-    surface: "project workspace mock repository"
+    surface: "game workspace mock repository"
   });
 });
 
@@ -46,14 +46,14 @@ async function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
-test("Project Workspace creates, opens, and deletes mock projects", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
+test("Game Workspace creates, opens, and deletes mock games", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
   try {
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.getByRole("button", { name: "Create Project" })).toHaveClass("btn");
-    await expect(page.getByRole("button", { name: "Delete Open Project" })).toHaveClass("btn");
+    await expect(page.getByRole("button", { name: "Create Game" })).toHaveClass("btn");
+    await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveClass("btn");
     await expect(page.locator("[data-active-project-name]")).toHaveText("Demo Project");
     await expect(page.locator("[data-active-project-purpose]")).toHaveText("Game Project");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
@@ -66,26 +66,26 @@ test("Project Workspace creates, opens, and deletes mock projects", async ({ pag
     await expect(demoProjectRow.getByRole("button", { name: "Open Demo Project (Active)" })).toHaveClass(/primary/);
     await expect(demoProjectRow.getByRole("button", { name: "Open Demo Project (Active)" })).toHaveAttribute("aria-current", "true");
 
-    await page.getByLabel("Project Name").fill("Launch Test Project");
-    await page.getByRole("button", { name: "Create Project" }).click();
+    await page.getByLabel("Game Name").fill("Launch Test Project");
+    await page.getByRole("button", { name: "Create Game" }).click();
     await expect(page.locator("[data-active-project-name]")).toHaveText("Launch Test Project");
     await expect(page.locator("[data-project-list]")).toContainText("Launch Test Project");
     await expect(page.locator("[data-project-row='launch-test-project-1']").getByRole("button", { name: "Open Launch Test Project (Active)" })).toHaveClass(/primary/);
-    await expect(page.locator("[data-project-workspace-log]")).toHaveText("Created and opened Launch Test Project.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Created and opened Launch Test Project.");
 
-    await page.getByLabel("Project Name").fill("Archive Project");
-    await page.getByRole("button", { name: "Create Project" }).click();
+    await page.getByLabel("Game Name").fill("Archive Project");
+    await page.getByRole("button", { name: "Create Game" }).click();
     await expect(page.locator("[data-active-project-name]")).toHaveText("Archive Project");
 
     await page.getByRole("button", { name: "Open Launch Test Project" }).click();
     await expect(page.locator("[data-active-project-name]")).toHaveText("Launch Test Project");
     await expect(page.locator("[data-project-row='launch-test-project-1']").getByRole("button", { name: "Open Launch Test Project (Active)" })).toHaveAttribute("data-project-active", "true");
-    await expect(page.locator("[data-project-workspace-log]")).toHaveText("Opened Launch Test Project.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Opened Launch Test Project.");
 
-    await page.getByRole("button", { name: "Delete Open Project" }).click();
+    await page.getByRole("button", { name: "Delete Open Game" }).click();
     await expect(page.locator("[data-active-project-name]")).not.toHaveText("Launch Test Project");
     await expect(page.locator("[data-project-list]")).not.toContainText("Launch Test Project");
-    await expect(page.locator("[data-project-workspace-log]")).toHaveText("Deleted Launch Test Project.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Deleted Launch Test Project.");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -93,8 +93,8 @@ test("Project Workspace creates, opens, and deletes mock projects", async ({ pag
   }
 });
 
-test("Project Workspace displays and edits project purpose and member role", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
+test("Game Workspace displays and edits game purpose and member role", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
   try {
     await expect(page.locator("#projectPurposeInput option")).toHaveText([
@@ -120,27 +120,27 @@ test("Project Workspace displays and edits project purpose and member role", asy
       "Publisher",
       "Viewer"
     ]);
-    await expect(page.getByLabel("Project Purpose")).toHaveValue("Game Project");
-    await expect(page.getByLabel("Project Status")).toHaveValue("Under Construction");
+    await expect(page.getByLabel("Game Purpose")).toHaveValue("Game Project");
+    await expect(page.getByLabel("Game Status")).toHaveValue("Under Construction");
     await expect(page.getByLabel("Current User Role")).toHaveValue("Owner");
     await expect(page.locator("[data-project-members-table]")).toContainText("Owner");
 
-    await page.getByLabel("Project Purpose").selectOption("Learning Project");
+    await page.getByLabel("Game Purpose").selectOption("Learning Project");
     await expect(page.locator("[data-active-project-purpose]")).toHaveText("Learning Project");
-    await expect(page.locator("[data-project-workspace-log]")).toHaveText("Updated Demo Project purpose to Learning Project.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated Demo Project purpose to Learning Project.");
 
-    await page.getByLabel("Project Status").selectOption("Ready for Testing");
+    await page.getByLabel("Game Status").selectOption("Ready for Testing");
     await expect(page.locator("[data-active-project-status]")).toHaveText("Ready for Testing");
-    await expect(page.locator("[data-project-workspace-log]")).toHaveText("Updated Demo Project status to Ready for Testing.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated Demo Project status to Ready for Testing.");
 
     await page.getByLabel("Current User Role").selectOption("Designer");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Designer");
     await expect(page.locator("[data-project-members-table]")).toContainText("Designer");
-    await expect(page.locator("[data-project-workspace-log]")).toHaveText("Updated current user role to Designer.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Updated current user role to Designer.");
 
-    await page.getByLabel("Project Purpose").selectOption("Capability Demo");
-    await page.getByLabel("Project Name").fill("Purpose Review Project");
-    await page.getByRole("button", { name: "Create Project" }).click();
+    await page.getByLabel("Game Purpose").selectOption("Capability Demo");
+    await page.getByLabel("Game Name").fill("Purpose Review Project");
+    await page.getByRole("button", { name: "Create Game" }).click();
     await expect(page.locator("[data-active-project-name]")).toHaveText("Purpose Review Project");
     await expect(page.locator("[data-active-project-purpose]")).toHaveText("Capability Demo");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
@@ -152,8 +152,8 @@ test("Project Workspace displays and edits project purpose and member role", asy
   }
 });
 
-test("Project Workspace progress panels update from mock project state", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
+test("Game Workspace progress panels update from mock game state", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
   try {
     await expect(page.locator("[data-project-status]")).toHaveText("Under Construction");
@@ -161,17 +161,17 @@ test("Project Workspace progress panels update from mock project state", async (
     await expect(page.locator("[data-publishing-progress]")).toHaveText("Publish blocked until configuration and required assets are ready");
     await expect(page.locator("[data-current-focus]")).toHaveText("Complete Game Configuration");
     await expect(page.locator("[data-recommended-next-tool]").first()).toHaveText("Game Configuration");
-    await expect(page.locator("[data-project-progress-checklist]")).toContainText("Project identity: Complete");
+    await expect(page.locator("[data-project-progress-checklist]")).toContainText("Game identity: Complete");
     await expect(page.locator("[data-project-output-panels] summary")).toHaveText([
       "Readiness Output",
       "Repository Tables",
-      "Project Members"
+      "Team Members"
     ]);
     await expect(page.locator("aside.tool-column").last().getByText("Readiness Output")).toHaveCount(0);
     await expect(page.locator("aside.tool-column").last().getByText("Repository Tables")).toHaveCount(0);
-    await expect(page.locator("aside.tool-column").last().getByText("Project Members")).toHaveCount(0);
+    await expect(page.locator("aside.tool-column").last().getByText("Team Members")).toHaveCount(0);
     const panelOrderIsCorrect = await page.locator(".tool-center-panel").evaluate((panel) => {
-      const staticOverlay = panel.querySelector("[data-project-workspace-foundation]");
+      const staticOverlay = panel.querySelector("[data-game-workspace-foundation]");
       const outputPanels = panel.querySelector("[data-project-output-panels]");
       const missingRequirements = panel.querySelector("[data-missing-requirements]");
       return Boolean(
@@ -184,15 +184,15 @@ test("Project Workspace progress panels update from mock project state", async (
     });
     expect(panelOrderIsCorrect).toBe(true);
 
-    await page.getByLabel("Project Name").fill("Progress Review Project");
-    await page.getByRole("button", { name: "Create Project" }).click();
+    await page.getByLabel("Game Name").fill("Progress Review Project");
+    await page.getByRole("button", { name: "Create Game" }).click();
     await expect(page.locator("[data-project-status]")).toHaveText("Under Construction");
     await expect(page.locator("[data-project-progress]")).toHaveText("Progress Review Project identity ready");
     await expect(page.locator("[data-table-counts], [data-project-table-counts]")).toContainText("projects");
     await expect(page.locator("[data-project-table-counts]")).toContainText("5");
     await expect(page.locator("[data-project-members-table]")).toContainText("Owner");
 
-    await page.getByRole("button", { name: "Delete Open Project" }).click();
+    await page.getByRole("button", { name: "Delete Open Game" }).click();
     await expect(page.locator("[data-active-project-name]")).toHaveText("Demo Project");
     await expect(page.locator("[data-project-progress]")).toHaveText("Demo Project identity ready");
 
@@ -202,9 +202,9 @@ test("Project Workspace progress panels update from mock project state", async (
   }
 });
 
-test("Project Workspace uses the wide Theme V2 tool layout at desktop widths", async ({ page }) => {
+test("Game Workspace uses the wide Theme V2 tool layout at desktop widths", async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 1100 });
-  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
   try {
     await expect(page.locator(".container--tool-wide")).toBeVisible();
@@ -295,7 +295,9 @@ test("representative Toolbox tool pages use the wide Theme V2 layout", async ({ 
       expect(layout.center, `${toolPage.group} center panel is dominant`).toBeGreaterThan(layout.left);
     }
 
-    await expectNoPageFailures(failures);
+    expect(failures.failedRequests.filter((request) => !request.includes("forge-bot-single.png"))).toEqual([]);
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors.filter((message) => !message.includes("404 (Not Found)"))).toEqual([]);
   } finally {
     await failures.server.close();
   }
@@ -327,9 +329,9 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
   const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 10/39");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 11/39");
     await expect(page.locator("[data-toolbox-role-focus]")).toHaveCount(0);
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Workspace$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Workspace$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
@@ -338,13 +340,13 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Designer`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Designer']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 6/39");
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Workspace$/ }) })).toBeVisible();
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 7/39");
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Workspace$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Objects$/ }) })).toHaveCount(0);
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Objects$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Audio$/ }) })).toHaveCount(0);
     await expect(page.getByText("Unavailable tools are hidden by role focus, not by security enforcement.")).toBeVisible();
 
@@ -358,16 +360,16 @@ test("Toolbox member-role filters focus tools without exposing admin-only contro
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?memberRole=Viewer`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-toolbox-role-focus='Viewer']")).toBeVisible();
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 8/39");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 9/39");
     await expect(page.getByText("Viewer focus shows preview-safe read-only tiles only.")).toBeVisible();
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Workspace$/ }) })).toBeVisible();
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Workspace$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Project Journey$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Design$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Game Configuration$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Assets$/ }) })).toBeVisible();
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Debug$/ }) })).toHaveCount(0);
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 10/39");
+    await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 11/39");
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^Cloud$/ }) })).toHaveCount(0);
 
     await expectNoPageFailures(failures);

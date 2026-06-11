@@ -1,8 +1,8 @@
 {
   "commandsHash": "39e16c9d480a1e51",
-  "dependencyGraphHash": "94cfa45ea513c04a",
+  "dependencyGraphHash": "fbb928f82cd79709",
   "dependencyHydration": {
-    "dependencyHydrationHash": "0915c28e16ee9b06",
+    "dependencyHydrationHash": "362cbfab36e610b3",
     "fixtureHashes": {},
     "fixtures": [],
     "helperHashes": {
@@ -21,7 +21,7 @@
       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
       "src/dev-runtime/persistence/mock-db-store.js": "c33037404771deea",
-      "src/dev-runtime/server/mock-api-router.mjs": "6692cc50e03bbe4c",
+      "src/dev-runtime/server/mock-api-router.mjs": "a07e8d26ceb60601",
       "tests/helpers/playwrightRepoServer.mjs": "654bc59251c146da",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -40,16 +40,16 @@
       "toolbox/toolRegistry.js"
     ]
   },
-  "dependencyHydrationHash": "0915c28e16ee9b06",
-  "inputHash": "44b266ccad7e8f4e",
+  "dependencyHydrationHash": "362cbfab36e610b3",
+  "inputHash": "e6ca66e228916d9b",
   "lane": "workspace-contract",
   "laneConfigHash": "3d8db02cddc33911",
   "laneDefinitionHash": "fcd48dbd6ff3f609",
-  "manifestHash": "700e185462b7d8f1",
+  "manifestHash": "f51c571da39319ff",
   "ownership": "tools",
-  "warmStartHash": "245e923a9934f7bb",
+  "warmStartHash": "d2fab6b3e3abef70",
   "version": 1,
-  "generatedAt": "2026-06-11T15:54:47.709Z",
+  "generatedAt": "2026-06-11T16:58:28.723Z",
   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
   "sourceManifest": "generated"
 }

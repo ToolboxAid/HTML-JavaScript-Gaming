@@ -834,7 +834,7 @@ function renderDiagnostics(activeProject, note, notes) {
   const canWrite = sessionUserCanWrite();
 
   if (!activeProject) {
-    messages.push("No active project is open. Open a project in Project Workspace to enable editing.");
+    messages.push("No active game is open. Open a game in Game Workspace to enable editing.");
   } else {
     messages.push(`Active project: ${activeProject.name}.`);
   }

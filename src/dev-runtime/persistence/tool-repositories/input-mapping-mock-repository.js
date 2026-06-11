@@ -119,6 +119,7 @@ function normalizeProfileInputMappings(value) {
     normalizedInput: normalizeText(mapping?.normalizedInput),
     physicalInput: normalizeText(mapping?.physicalInput || mapping?.input),
     positiveNormalizedInput: normalizeText(mapping?.positiveNormalizedInput),
+    sensitivity: Number.isFinite(Number(mapping?.sensitivity)) ? Number(mapping.sensitivity) : undefined,
   })).filter((mapping) => mapping.physicalInput);
 }
 

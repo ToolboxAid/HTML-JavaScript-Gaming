@@ -146,16 +146,16 @@ export const PROJECT_JOURNEY_STATUS_BY_ID = Object.fromEntries(
 );
 
 export const PROJECT_JOURNEY_SUGGESTED_TOOLS = Object.freeze({
-  blocker: Object.freeze(["Project Workspace", "Debug"]),
-  default: Object.freeze(["Project Workspace", "Game Design"]),
+  blocker: Object.freeze(["Game Workspace", "Debug"]),
+  default: Object.freeze(["Game Workspace", "Game Design"]),
   byNoteType: Object.freeze({
     design: Object.freeze(["Game Design", "Colors", "Assets"]),
-    story: Object.freeze(["Game Design", "Project Workspace", "AI Assistant"]),
-    release: Object.freeze(["Publish", "Game Testing", "Project Workspace"]),
-    research: Object.freeze(["AI Assistant", "Game Design", "Project Workspace"]),
+    story: Object.freeze(["Game Design", "Game Workspace", "AI Assistant"]),
+    release: Object.freeze(["Publish", "Game Testing", "Game Workspace"]),
+    research: Object.freeze(["AI Assistant", "Game Design", "Game Workspace"]),
     idea: Object.freeze(["AI Assistant", "Game Design", "Assets"]),
-    question: Object.freeze(["AI Assistant", "Project Workspace", "Game Design"]),
-    task: Object.freeze(["Project Workspace", "Game Testing", "Debug"]),
+    question: Object.freeze(["AI Assistant", "Game Workspace", "Game Design"]),
+    task: Object.freeze(["Game Workspace", "Game Testing", "Debug"]),
   }),
 });
 
@@ -291,7 +291,7 @@ function getSeedTables() {
       "palette.swatch-affordance",
       "Review palette swatch affordance in the active project palette.",
       "Check whether selected swatches clearly expose batch tagging, checked state, and keyboard-friendly scanning.",
-      ["Colors", "Project Workspace"],
+      ["Colors", "Game Workspace"],
       1,
     ),
     makeTemplate(
@@ -299,7 +299,7 @@ function getSeedTables() {
       "palette.batch-tag-language",
       "Confirm batch tag language after checked swatches are applied.",
       "Keep the copy focused on what happens to checked swatches and avoid implying tags are auto-added.",
-      ["Colors", "Project Workspace"],
+      ["Colors", "Game Workspace"],
       2,
     ),
     makeTemplate(
@@ -323,7 +323,7 @@ function getSeedTables() {
       "release.archive-boundary",
       "Confirm no archived Tool V1/V2 files were touched.",
       "Use the active Toolbox paths for implementation and keep archived V1/V2 material read-only.",
-      ["Publish", "Project Workspace"],
+      ["Publish", "Game Workspace"],
       5,
     ),
     makeTemplate(
@@ -331,7 +331,7 @@ function getSeedTables() {
       "story.opening-player-goal",
       "Outline the opening player goal.",
       "Describe the first player-readable goal in one sentence before expanding beats.",
-      ["Game Design", "Project Workspace"],
+      ["Game Design", "Game Workspace"],
       6,
     ),
     makeTemplate(
@@ -339,7 +339,7 @@ function getSeedTables() {
       "story.tutorial-workspace-milestones",
       "Connect tutorial beats to workspace milestones.",
       "Attach tutorial beats to concrete build path milestones so story work stays testable.",
-      ["Game Design", "Project Workspace"],
+      ["Game Design", "Game Workspace"],
       7,
     ),
     makeTemplate(
@@ -347,7 +347,7 @@ function getSeedTables() {
       "research.ux-subnote-decision",
       "Decide which unanswered UX questions need their own notes.",
       "Promote only durable UX questions into separate notes; keep short follow-ups inline as item details.",
-      ["AI Assistant", "Project Workspace"],
+      ["AI Assistant", "Game Workspace"],
       8,
     ),
     {
@@ -356,7 +356,7 @@ function getSeedTables() {
         "diagnostic.inactive-guidance",
         "Inactive template diagnostic.",
         "This inactive template exists only for Project Journey diagnostics validation.",
-        ["Project Workspace"],
+        ["Game Workspace"],
         9,
       ),
       isActive: false,

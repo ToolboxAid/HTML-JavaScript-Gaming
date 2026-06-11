@@ -22,14 +22,7 @@
         </section>
         <section class="section">
             <div class="container account-panel">
-                <aside class="side-menu" aria-label="Account pages">
-                    <a href="index.html">Account Home</a>
-                    <a href="achievements.html">Achievements</a>
-                    <a href="preferences.html">Preferences</a>
-                    <a href="profile.html">Profile</a>
-                    <a href="security.html">Security</a>
-                    <a class="active" href="user-controls.html">User Controls</a>
-                </aside>
+                <div data-partial="account-side-nav" data-partial-replace></div>
                 <div class="card">
                     <div class="card-body content-stack">
                         <div>
@@ -44,6 +37,7 @@
                                 <select data-account-user-controls-device></select>
                             </label>
                             <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
+                            <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
                         </div>
                         <p class="status" role="status" data-account-user-controls-device-status>Refresh devices, choose a physical controller, then create a user control profile.</p>
                         <div class="table-wrapper">
@@ -55,6 +49,7 @@
                                         <th>Normalized Control</th>
                                         <th>Deadzone</th>
                                         <th>Invert</th>
+                                        <th>Sensitivity</th>
                                         <th>Actions</th>
                                     </tr>
                                 </thead>

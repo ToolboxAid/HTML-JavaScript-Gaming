@@ -71,6 +71,44 @@ const NORMALIZED_CONTROL_DESCRIPTIONS = Object.freeze({
   "trigger.left": "Left trigger.",
   "trigger.right": "Right trigger.",
 });
+const COMMON_FULL_CONTROL_INPUTS = new Set([
+  "action.cancel",
+  "action.confirm",
+  "action.pause",
+  "action.primary",
+  "action.secondary",
+  "action.start",
+  "move.x-",
+  "move.x+",
+  "move.y-",
+  "move.y+",
+]);
+const NORMALIZED_USAGE_LABELS = Object.freeze({
+  "action.cancel": "Cancel",
+  "action.confirm": "Confirm",
+  "action.menu": "Menu",
+  "action.pause": "Pause",
+  "action.primary": "Primary Action",
+  "action.quaternary": "Fourth Action",
+  "action.secondary": "Secondary Action",
+  "action.select": "Select",
+  "action.start": "Start",
+  "action.tertiary": "Third Action",
+  "aim.x-": "Aim Left",
+  "aim.x+": "Aim Right",
+  "aim.y-": "Aim Up",
+  "aim.y+": "Aim Down",
+  "dpad.down": "D-Pad Down",
+  "dpad.left": "D-Pad Left",
+  "dpad.right": "D-Pad Right",
+  "dpad.up": "D-Pad Up",
+  "move.x-": "Move Left",
+  "move.x+": "Move Right",
+  "move.y-": "Move Up",
+  "move.y+": "Move Down",
+  "trigger.left": "Left Trigger",
+  "trigger.right": "Right Trigger",
+});
 const GAME_CONTROL_PRESETS = Object.freeze({
   fighting: Object.freeze([
     Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
@@ -488,6 +526,59 @@ function resetStoredMappings() {
     result = controlsRepository.resetMappings();
   }
   mappings = Array.isArray(result?.mappings) ? result.mappings.map(normalizeMapping) : [];
+}
+
+function defaultInputFamilyForNormalizedInput(normalizedInput) {
+  if (normalizedInput.startsWith("aim.")) {
+    return "Mouse";
+  }
+  if (normalizedInput.startsWith("trigger.") || normalizedInput.startsWith("dpad.")) {
+    return "Gamepad";
+  }
+  return "Keyboard";
+}
+
+function defaultEventFieldsForNormalizedInput(normalizedInput) {
+  const isContinuous = normalizedInput.startsWith("aim.") || normalizedInput.startsWith("trigger.");
+  return {
+    eventAxis: isContinuous,
+    eventD: !isContinuous,
+    eventDC: false,
+    eventDrag: false,
+    eventH: false,
+    eventU: false,
+  };
+}
+
+function createFullGameControlSet(object = selectedObject()) {
+  return normalizedControlCatalog().map((control, index) => {
+    const normalizedInput = control.id;
+    const enabled = COMMON_FULL_CONTROL_INPUTS.has(normalizedInput);
+    return normalizeMapping({
+      ...defaultEventFieldsForNormalizedInput(normalizedInput),
+      enabled,
+      id: `full-game-control-${keyFromText(object.key)}-${index + 1}-${keyFromText(normalizedInput)}`,
+      inputFamily: defaultInputFamilyForNormalizedInput(normalizedInput),
+      normalizedInput,
+      objectKey: object.key,
+      objectName: object.label,
+      state: enabled ? "Active" : "Disabled",
+      usageLabel: NORMALIZED_USAGE_LABELS[normalizedInput] || control.label,
+    });
+  });
+}
+
+function addFullGameControlSet() {
+  const existingIds = new Set(mappings.map((mapping) => mapping.id));
+  const nextMappings = [...mappings];
+  createFullGameControlSet().forEach((mapping) => {
+    if (!existingIds.has(mapping.id)) {
+      nextMappings.push(mapping);
+    }
+  });
+  saveMappings(nextMappings);
+  editingRow = null;
+  renderAll("Added the full normalized game control set. Common rows are enabled; alternate rows are disabled.");
 }
 
 function applyGameControlPreset(presetKey) {
@@ -914,7 +1005,7 @@ function showWorkspaceReturnIfNeeded() {
   const params = new URLSearchParams(window.location.search);
   const returnTo = normalizeText(params.get("returnTo"));
   const shouldShow = params.has("workspace") || params.has("project") || params.get("source") === "workspace" || params.has("workspaceLaunch") || returnTo;
-  if (returnTo.startsWith("/toolbox/project-workspace/")) {
+  if (returnTo.startsWith("/toolbox/game-workspace/") || returnTo.startsWith("/toolbox/project-workspace/")) {
     elements.returnWorkspace.href = returnTo;
   }
   elements.returnWorkspace.hidden = !shouldShow;
@@ -938,23 +1029,7 @@ function init() {
     renderObjectSummary(object);
     setText(elements.statusLog, `Selected ${object.label} for new mappings.`);
   });
-  elements.addMapping?.addEventListener("click", () => {
-    editingRow = {
-      id: "",
-      values: {
-        action: "",
-        enabled: true,
-        eventD: true,
-        inputFamily: "Keyboard",
-        normalizedInput: selectedAction().id,
-        objectKey: selectedObject().key,
-        state: "Active",
-        usageLabel: "",
-      },
-    };
-    renderMappings();
-    setText(elements.statusLog, "Add a game control mapping row.");
-  });
+  elements.addMapping?.addEventListener("click", addFullGameControlSet);
   elements.resetMappings?.addEventListener("click", () => {
     if (!window.confirm("This will delete all Mappings, are you sure?")) {
       setText(elements.statusLog, "Reset canceled.");

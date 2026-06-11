@@ -27,7 +27,8 @@
         home: "index.html",
         toolbox: "toolbox/index.html",
         "ai-assistant": "toolbox/ai-assistant/index.html",
-        "project-workspace": "toolbox/project-workspace/index.html",
+        "game-workspace": "toolbox/game-workspace/index.html",
+        "project-workspace": "toolbox/game-workspace/index.html",
         "game-design": "toolbox/game-design/index.html",
         "game-configuration": "toolbox/game-configuration/index.html",
         "tool-assets": "toolbox/assets/index.html",
@@ -126,6 +127,7 @@
     };
 
     const partials = {
+        "account-side-nav": "assets/partials/account-side-nav.html",
         "header-nav": "assets/partials/header-nav.html",
         footer: "assets/partials/footer.html"
     };
@@ -552,6 +554,20 @@
         });
     }
 
+    function markActiveAccountSideNavigation(root) {
+        const pagePath = currentPagePath() || "index.html";
+        root.querySelectorAll("[data-account-side-nav-link]").forEach(function (link) {
+            const route = routeMap[link.dataset.route] || "";
+            if (route === pagePath) {
+                link.classList.add("active");
+                link.setAttribute("aria-current", "page");
+            } else {
+                link.classList.remove("active");
+                link.removeAttribute("aria-current");
+            }
+        });
+    }
+
     function wireReturnToTop(root) {
         const button = root.querySelector("[data-return-to-top]");
         if (!button) return;
@@ -607,6 +623,8 @@
             applyLocalDevLoginState(element);
             markActiveNavigation(element);
             wireAccountLogout(element);
+        } else if (partialName === "account-side-nav") {
+            markActiveAccountSideNavigation(element);
         } else if (partialName === "footer") {
             wireReturnToTop(element);
         }
@@ -616,7 +634,11 @@
     async function loadPartial(slot) {
         const element = await partialElement(slot.dataset.partial);
         if (element) {
-            slot.replaceChildren(element);
+            if (slot.dataset.partialReplace !== undefined) {
+                slot.replaceWith(element);
+            } else {
+                slot.replaceChildren(element);
+            }
         }
     }
 

@@ -117,13 +117,13 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.getByText("Build Path Wireframe")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-wireframe]")).toHaveCount(0);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    const readyProjectWorkspaceCard = page.locator("main .control-card").filter({
-      has: page.locator("h3", { hasText: "Project Workspace" })
+    const readyGameWorkspaceCard = page.locator("main .control-card").filter({
+      has: page.locator("h3", { hasText: "Game Workspace" })
     });
-    await expect(readyProjectWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/project-workspace/index.html");
+    await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Languages", "Objects", "Project Journey", "Project Workspace", "Saved Data"]);
-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Wireframe", "Beta", "Beta", "Beta", "Wireframe"]);
+    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Workspace", "Languages", "Objects", "Project Journey", "Saved Data"]);
+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Wireframe", "Beta", "Beta", "Wireframe"]);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Assistant$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
@@ -235,7 +235,7 @@ test("root tools surface links current tool pages without old_* routes", async (
       "Platform Settings"
     ]));
     await expect(page.locator("main .control-card").filter({
-      has: page.locator("h3", { hasText: /^Project Workspace$/ })
+      has: page.locator("h3", { hasText: /^Game Workspace$/ })
     }).locator("[data-toolbox-readiness]")).toHaveText("Beta");
     await expect(page.locator("main .control-card").filter({
       has: page.locator("h3", { hasText: /^Game Configuration$/ })

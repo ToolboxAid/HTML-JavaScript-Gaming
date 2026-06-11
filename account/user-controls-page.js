@@ -3,6 +3,7 @@ import InputService from "../src/engine/input/InputService.js";
 import { gamepadProfileInputNames } from "../src/engine/input/GamepadInputClassifier.js";
 import {
   normalizeProfileInputMappings,
+  physicalInputSensitivityDescriptor,
   normalizedInputIsAnalog,
   physicalInputIsAnalog,
 } from "../src/engine/input/NormalizedInputRegistry.js";
@@ -89,6 +90,31 @@ function labeledControl(labelText, control) {
   return label;
 }
 
+function rangeValueLabel(value, unit = "") {
+  return `${value}${unit}`;
+}
+
+function createSliderControl({ ariaLabel, dataName, defaultValue, index, max, min, step, unit, value }) {
+  const input = document.createElement("input");
+  input.type = "range";
+  input.min = String(min);
+  input.max = String(max);
+  input.step = String(step);
+  input.value = String(value);
+  input.dataset[dataName] = String(index);
+  input.dataset.defaultValue = String(defaultValue);
+  input.dataset.unit = unit;
+  input.setAttribute("aria-label", ariaLabel);
+  const valueLabel = document.createElement("span");
+  valueLabel.className = "status";
+  valueLabel.dataset.sliderValueFor = dataName;
+  valueLabel.textContent = rangeValueLabel(input.value, unit);
+  const wrapper = document.createElement("div");
+  wrapper.className = "content-cluster";
+  wrapper.append(input, valueLabel);
+  return wrapper;
+}
+
 export class AccountUserControlsPage {
   constructor(root) {
     this.root = root;
@@ -102,6 +128,7 @@ export class AccountUserControlsPage {
       deviceStatus: root.querySelector("[data-account-user-controls-device-status]"),
       list: root.querySelector("[data-account-user-controls-list]"),
       refresh: root.querySelector("[data-account-user-controls-refresh]"),
+      saveAll: root.querySelector("[data-account-user-controls-save-all]"),
       status: root.querySelector("[data-account-user-controls-status]"),
       types: root.querySelector("[data-account-user-controls-types]"),
     };
@@ -115,12 +142,15 @@ export class AccountUserControlsPage {
     this.renderProfiles();
     this.elements.refresh?.addEventListener("click", () => {
       this.renderDeviceSelect();
-      this.setStatus("Device list refreshed.");
+      this.setStatus(this.deviceRefreshMessage());
     });
     this.elements.addProfile?.addEventListener("click", () => this.addProfileForSelectedDevice());
+    this.elements.saveAll?.addEventListener("click", () => this.saveCurrentState());
     this.elements.deviceSelect?.addEventListener("change", () => this.renderDeviceStatus());
     this.elements.list?.addEventListener("click", (event) => this.handleListClick(event));
     this.elements.list?.addEventListener("change", (event) => this.handleListChange(event));
+    this.elements.list?.addEventListener("input", (event) => this.handleListInput(event));
+    this.elements.list?.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
   }
 
   setStatus(message) {
@@ -163,6 +193,14 @@ export class AccountUserControlsPage {
       };
     });
     return [keyboardMouse, ...gamepads];
+  }
+
+  deviceRefreshMessage() {
+    const gamepadCount = this.availableGamepads().length;
+    if (gamepadCount > 0) {
+      return `PASS: Device list refreshed. Keyboard/Mouse and ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} available.`;
+    }
+    return "PASS: Keyboard/Mouse available. To enumerate a game controller, connect it, press a button, allow browser gamepad access, then refresh devices.";
   }
 
   selectedDevice() {
@@ -246,7 +284,7 @@ export class AccountUserControlsPage {
   renderDeviceStatus() {
     const device = this.selectedDevice();
     if (!device) {
-      this.setDeviceStatus("Choose a physical controller before creating a user control profile.");
+      this.setDeviceStatus(this.deviceRefreshMessage());
       return;
     }
     this.setDeviceStatus(`${device.label} selected. Create a user control profile to map physical inputs to normalized controls.`);
@@ -278,7 +316,7 @@ export class AccountUserControlsPage {
     if (!rows.length) {
       const row = document.createElement("tr");
       const cell = document.createElement("td");
-      cell.colSpan = 6;
+      cell.colSpan = 7;
       cell.textContent = "No account user control profiles saved yet.";
       row.append(cell);
       rows.push(row);
@@ -311,6 +349,18 @@ export class AccountUserControlsPage {
     return `${analogMappings.length} analog axes, ${inverted} inverted`;
   }
 
+  profileSensitivitySummary(profile) {
+    const sensitiveInputs = profile.inputMappings.filter((mapping) => physicalInputSensitivityDescriptor(mapping.physicalInput));
+    if (!sensitiveInputs.length) {
+      return "No sensitivity controls";
+    }
+    const adjusted = sensitiveInputs.filter((mapping) => {
+      const descriptor = physicalInputSensitivityDescriptor(mapping.physicalInput);
+      return descriptor && Number(mapping.sensitivity ?? descriptor.defaultValue) !== descriptor.defaultValue;
+    }).length;
+    return `${sensitiveInputs.length} sensitivity controls, ${adjusted} adjusted`;
+  }
+
   renderProfileRow(profile) {
     const row = document.createElement("tr");
     row.dataset.accountUserControlsProfileRow = profile.id;
@@ -320,6 +370,7 @@ export class AccountUserControlsPage {
       tableCell(this.profileInputSummary(profile)),
       tableCell(this.profileAnalogSummary(profile)),
       tableCell(profile.inputMappings.some((mapping) => mapping.invert) ? "Invert configured" : "No invert"),
+      tableCell(this.profileSensitivitySummary(profile)),
     );
     const actions = document.createElement("td");
     const group = document.createElement("div");
@@ -382,6 +433,28 @@ export class AccountUserControlsPage {
       invert.dataset.accountUserControlsInvert = String(index);
       stack.append(labeledControl("Deadzone", deadzone), labeledControl("Invert", invert));
     }
+    const sensitivity = physicalInputSensitivityDescriptor(inputMapping.physicalInput);
+    if (sensitivity) {
+      const value = Number.isFinite(Number(inputMapping.sensitivity))
+        ? Number(inputMapping.sensitivity)
+        : sensitivity.defaultValue;
+      const slider = createSliderControl({
+        ariaLabel: sensitivity.label,
+        dataName: "accountUserControlsSensitivity",
+        defaultValue: sensitivity.defaultValue,
+        index,
+        max: sensitivity.max,
+        min: sensitivity.min,
+        step: sensitivity.step,
+        unit: sensitivity.unit,
+        value,
+      });
+      stack.append(labeledControl(sensitivity.label, slider));
+    }
+    const validation = document.createElement("p");
+    validation.className = "status";
+    validation.dataset.accountUserControlsInputValidation = String(index);
+    stack.append(validation);
     wrapper.append(label, stack);
     return wrapper;
   }
@@ -404,13 +477,14 @@ export class AccountUserControlsPage {
       tableCell(this.profileInputSummary(profile)),
       tableCell(this.profileAnalogSummary(profile)),
       tableCell(profile.inputMappings.some((mapping) => mapping.invert) ? "Invert configured" : "No invert"),
+      tableCell(this.profileSensitivitySummary(profile)),
       actions,
     );
 
     const detailsRow = document.createElement("tr");
     detailsRow.dataset.accountUserControlsEditingDetails = "true";
     const detailsCell = document.createElement("td");
-    detailsCell.colSpan = 6;
+    detailsCell.colSpan = 7;
     const grid = document.createElement("div");
     grid.className = "content-grid content-grid--three";
     grid.append(...profile.inputMappings.map((inputMapping, index) => this.inputControl(profile, inputMapping, index)));
@@ -447,6 +521,7 @@ export class AccountUserControlsPage {
       const positiveSelect = details?.querySelector(`[data-account-user-controls-input-positive="${index}"]`);
       const deadzoneInput = details?.querySelector(`[data-account-user-controls-deadzone="${index}"]`);
       const invertInput = details?.querySelector(`[data-account-user-controls-invert="${index}"]`);
+      const sensitivityInput = details?.querySelector(`[data-account-user-controls-sensitivity="${index}"]`);
       const negativeNormalizedInput = normalizeText(negativeSelect?.value ?? mapping.negativeNormalizedInput);
       const positiveNormalizedInput = normalizeText(positiveSelect?.value ?? mapping.positiveNormalizedInput);
       return {
@@ -456,6 +531,7 @@ export class AccountUserControlsPage {
         normalizedInput: positiveNormalizedInput || normalizeText(normalizedSelect?.value ?? mapping.normalizedInput) || negativeNormalizedInput,
         physicalInput: mapping.physicalInput,
         positiveNormalizedInput,
+        sensitivity: sensitivityInput ? Number(sensitivityInput.value) : mapping.sensitivity,
       };
     });
     return this.normalizeProfile({
@@ -465,17 +541,103 @@ export class AccountUserControlsPage {
     });
   }
 
+  mappingHasNormalizedControl(mapping) {
+    return Boolean(
+      normalizeText(mapping.normalizedInput)
+        || normalizeText(mapping.negativeNormalizedInput)
+        || normalizeText(mapping.positiveNormalizedInput),
+    );
+  }
+
+  validateProfile(profile) {
+    if (!normalizeText(profile.controllerId) || !normalizeText(profile.mappingProfile)) {
+      return {
+        invalidIndexes: [],
+        message: "Choose a physical controller before saving.",
+        ok: false,
+      };
+    }
+    const invalidIndexes = [];
+    let assignedCount = 0;
+    profile.inputMappings.forEach((mapping, index) => {
+      if (this.mappingHasNormalizedControl(mapping)) {
+        assignedCount += 1;
+      }
+      const deadzone = Number(mapping.deadzone);
+      const descriptor = physicalInputSensitivityDescriptor(mapping.physicalInput);
+      const sensitivity = Number(mapping.sensitivity ?? descriptor?.defaultValue);
+      const invalidDeadzone = Number.isFinite(deadzone) && (deadzone < 0 || deadzone > 1);
+      const invalidSensitivity = descriptor && (!Number.isFinite(sensitivity) || sensitivity < descriptor.min || sensitivity > descriptor.max);
+      if (invalidDeadzone || invalidSensitivity) {
+        invalidIndexes.push(index);
+      }
+    });
+    if (!assignedCount) {
+      return {
+        invalidIndexes: profile.inputMappings.map((_, index) => index),
+        message: "Assign at least one physical input to a normalized control before saving.",
+        ok: false,
+      };
+    }
+    if (invalidIndexes.length) {
+      return {
+        invalidIndexes,
+        message: "Resolve highlighted input rows before saving.",
+        ok: false,
+      };
+    }
+    return {
+      invalidIndexes: [],
+      message: "",
+      ok: true,
+    };
+  }
+
+  renderInputValidation(validation) {
+    const invalidIndexes = new Set(validation.invalidIndexes || []);
+    this.elements.list?.querySelectorAll("[data-account-user-controls-input-validation]").forEach((status) => {
+      const index = Number(status.dataset.accountUserControlsInputValidation);
+      status.textContent = invalidIndexes.has(index)
+        ? "Needs normalized control, valid deadzone, and valid sensitivity."
+        : "";
+    });
+  }
+
   saveEditingProfile() {
     const profile = this.profileFromEditingRow();
+    const validation = this.validateProfile(profile);
+    this.renderInputValidation(validation);
+    if (!validation.ok) {
+      this.setStatus(`FAIL: ${validation.message}`);
+      return;
+    }
     const nextProfiles = this.editingProfile?.id && this.profiles.some((candidate) => candidate.id === this.editingProfile.id)
       ? this.profiles.map((candidate) => (candidate.id === this.editingProfile.id ? profile : candidate))
       : [profile, ...this.profiles];
     if (!this.saveProfiles(nextProfiles)) {
+      this.setStatus("FAIL: Account user controls could not reach the shared DB adapter.");
       return;
     }
     this.editingProfile = null;
     this.renderProfiles();
-    this.setStatus(`Saved ${profile.mappingProfile}.`);
+    this.setStatus(`PASS: Saved ${profile.mappingProfile}.`);
+  }
+
+  saveCurrentState() {
+    if (this.editingProfile) {
+      this.saveEditingProfile();
+      return;
+    }
+    if (!this.profiles.length) {
+      this.setStatus("FAIL: Create a user control profile before saving.");
+      return;
+    }
+    if (!this.saveProfiles(this.profiles)) {
+      this.setStatus("FAIL: Account user controls could not reach the shared DB adapter.");
+      return;
+    }
+    this.renderProfiles();
+    this.setStatus("PASS: Saved account user controls.");
   }
 
   handleListClick(event) {
@@ -508,5 +670,29 @@ export class AccountUserControlsPage {
 
   handleListChange() {
     this.setStatus("Unsaved user control profile changes.");
+  }
+
+  handleListInput(event) {
+    const target = event.target instanceof HTMLInputElement ? event.target : null;
+    if (target?.matches("[data-account-user-controls-sensitivity]")) {
+      const valueLabel = target.parentElement?.querySelector("[data-slider-value-for='accountUserControlsSensitivity']");
+      if (valueLabel) {
+        valueLabel.textContent = rangeValueLabel(target.value, target.dataset.unit || "");
+      }
+    }
+    this.setStatus("Unsaved user control profile changes.");
+  }
+
+  handleListDoubleClick(event) {
+    const target = event.target instanceof HTMLInputElement ? event.target : null;
+    if (!target?.matches("[data-account-user-controls-sensitivity]")) {
+      return;
+    }
+    target.value = target.dataset.defaultValue || "100";
+    const valueLabel = target.parentElement?.querySelector("[data-slider-value-for='accountUserControlsSensitivity']");
+    if (valueLabel) {
+      valueLabel.textContent = rangeValueLabel(target.value, target.dataset.unit || "");
+    }
+    target.dispatchEvent(new Event("input", { bubbles: true }));
   }
 }

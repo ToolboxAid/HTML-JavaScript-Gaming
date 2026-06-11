@@ -1,6 +1,7 @@
 import {
   GAME_DESIGN_GAME_TYPES,
   GAME_DESIGN_GENRES,
+  GAME_DESIGN_PLAYER_MODES,
   GAME_DESIGN_PLAY_STYLES,
   createGameDesignApiRepository
 } from "./game-design-api-client.js";
@@ -33,8 +34,10 @@ const elements = {
   outputCapability: document.querySelector("[data-game-design-output-capability]"),
   outputMissing: document.querySelector("[data-game-design-output-missing]"),
   outputNextStep: document.querySelector("[data-game-design-output-next-step]"),
+  outputPlayerMode: document.querySelector("[data-game-design-output-player-mode]"),
   outputSummary: document.querySelector("[data-game-design-output-summary]"),
   outputValidation: document.querySelector("[data-game-design-output-validation]"),
+  playerMode: document.querySelector("[data-game-design-player-mode]"),
   playStyle: document.querySelector("[data-game-design-play-style]"),
   projectContext: document.querySelector("[data-game-design-project-context]"),
   projectOverlay: document.querySelector("[data-game-design-project-overlay]"),
@@ -83,6 +86,7 @@ function readForm() {
     designSummary: elements.designSummary?.value,
     gameType: elements.gameType?.value,
     genre: elements.genre?.value,
+    playerMode: elements.playerMode?.value,
     playStyle: elements.playStyle?.value
   };
 }
@@ -96,6 +100,9 @@ function clearForm() {
   }
   if (elements.playStyle) {
     elements.playStyle.value = "";
+  }
+  if (elements.playerMode) {
+    elements.playerMode.value = "1 Player";
   }
   if (elements.designSummary) {
     elements.designSummary.value = "";
@@ -119,6 +126,9 @@ function applyDesignToForm(design) {
   }
   if (elements.playStyle) {
     elements.playStyle.value = design.playStyle;
+  }
+  if (elements.playerMode) {
+    elements.playerMode.value = design.playerMode || "1 Player";
   }
   if (elements.designSummary) {
     elements.designSummary.value = design.designSummary;
@@ -157,7 +167,7 @@ function renderCapabilityDemos(snapshot) {
 
   snapshot.capabilityDemoProjects.forEach((project) => {
     const item = document.createElement("li");
-    item.textContent = `${project.name}: Project Workspace project`;
+    item.textContent = `${project.name}: Game Workspace game`;
     elements.capabilityDemoList.append(item);
   });
 
@@ -207,13 +217,14 @@ function renderOutput(snapshot, validation) {
   const missingRequirements = validation.findings.map((finding) => finding.label).join(", ");
 
   setText(elements.outputSummary, activeDesign?.designSummary || "No design summary saved yet.");
+  setText(elements.outputPlayerMode, activeDesign?.playerMode || "1 Player");
   setText(elements.outputValidation, validation.status);
   setText(elements.outputNextStep, snapshot.progressHandoff.recommendedNextTool);
   setText(elements.outputMissing, missingRequirements || "None");
   setText(
     elements.outputCapability,
     activeProject?.purpose === "Capability Demo"
-      ? `${activeProject.name} remains a Project Workspace project.`
+      ? `${activeProject.name} remains a Game Workspace game.`
       : "Not a capability demo project."
   );
 }
@@ -244,7 +255,7 @@ function render() {
 
   setText(
     elements.projectContext,
-    activeProject ? `${activeProject.name} - ${activeProject.purpose}` : "No Project Workspace project"
+    activeProject ? `${activeProject.name} - ${activeProject.purpose}` : "No Game Workspace game"
   );
   setText(elements.designStatus, activeDesign?.status || validation.status);
 
@@ -278,5 +289,6 @@ elements.form?.addEventListener("submit", (event) => {
 
 populateSelect(elements.gameType, GAME_DESIGN_GAME_TYPES, "Select game type");
 populateSelect(elements.genre, GAME_DESIGN_GENRES, "Select genre");
+populateSelect(elements.playerMode, GAME_DESIGN_PLAYER_MODES.map((mode) => mode.value), "Select player mode");
 populateSelect(elements.playStyle, GAME_DESIGN_PLAY_STYLES, "Select play style");
 render();

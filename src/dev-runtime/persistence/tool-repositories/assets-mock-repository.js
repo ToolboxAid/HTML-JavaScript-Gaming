@@ -698,7 +698,7 @@ export function createAssetToolMockRepository(options = {}) {
         findings.push({
           field: "palette",
           label: "Palette Tool",
-          action: "Open Project Workspace before selecting a Palette Tool swatch."
+          action: "Open Game Workspace before selecting a Palette Tool swatch."
         });
       } else if (paletteSnapshot.swatches.length === 0) {
         findings.push({

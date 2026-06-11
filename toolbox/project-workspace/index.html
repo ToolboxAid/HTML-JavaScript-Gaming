@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Project Workspace - GameFoundryStudio</title>
-    <meta name="description" content="Project Workspace Toolbox page for project identity, progress, and publish readiness.">
+    <title>Game Workspace - GameFoundryStudio</title>
+    <meta name="description" content="Game Workspace replaced the Project Workspace route for active toolbox navigation.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -16,187 +16,15 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Toolbox / Project Workspace</div>
-                <h1>Project Workspace</h1>
-                <p class="lede">Create, open, and delete projects while reviewing progress and publish readiness.</p>
-            </div>
-        </section>
-        <section class="section">
-            <div class="container container--tool-wide">
-                <div class="tool-workspace tool-workspace--wide">
-                    <aside class="tool-column tool-group-build">
-                        <div class="tool-column-header">
-                            <h2>Project Workspace</h2>
-                        </div>
-                        <div class="accordion-stack">
-                            <details class="vertical-accordion" open>
-                                <summary>Project Setup</summary>
-                                <div class="accordion-body content-stack">
-                                    <form class="content-stack content-stack--compact" data-project-form>
-                                        <div class="table-wrapper">
-                                            <table class="data-table tool-form-table" aria-label="Project setup fields">
-                                                <tbody>
-                                                    <tr>
-                                                        <th scope="row"><label for="projectNameInput">Project Name</label></th>
-                                                        <td><input id="projectNameInput" type="text" placeholder="Untitled game project" data-project-name-input></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="projectPurposeInput">Project Purpose</label></th>
-                                                        <td><select id="projectPurposeInput" data-project-purpose-input></select></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="projectStatusInput">Project Status</label></th>
-                                                        <td><select id="projectStatusInput" data-project-status-input></select></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <button class="btn" type="submit">Create Project</button>
-                                    </form>
-                                    <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
-                                    <button class="btn" type="button" data-project-delete-active>Delete Open Project</button>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Open Projects</summary>
-                                <div class="accordion-body">
-                                    <div class="content-stack content-stack--compact" aria-label="Projects" data-project-list></div>
-                                </div>
-                            </details>
-                        </div>
-                    </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="project-workspace" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
-                    <section class="tool-center-panel"><h2>Workspace Overview</h2>
-                        <p>Project Workspace manages project identity, project status, project progress, and publishing progress against the local mock repository. Not implemented yet: real database persistence, authentication, cloud sync, or public release promotion.</p>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Open Project</div>
-                                    <h3 data-active-project-name>Demo Project</h3>
-                                </div>
-                                <div class="grid cols-3" aria-label="Active project summary">
-                                    <article class="mini-stat"><strong data-active-project-status>Under Construction</strong>Project Status</article>
-                                    <article class="mini-stat"><strong data-active-project-purpose>Game Project</strong>Project Purpose</article>
-                                    <article class="mini-stat"><strong data-active-project-owner>No owner</strong>Owner</article>
-                                    <article class="mini-stat"><strong data-current-user-role>Owner</strong>Current User Role</article>
-                                    <article class="mini-stat"><strong data-recommended-next-tool>Game Configuration</strong>Recommended Next Tool</article>
-                                </div>
-                                <div class="action-group">
-                                    <a class="btn primary" href="toolbox/project-journey/index.html?project=demo-project" data-project-journey-link>Open Project Journey</a>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="card" data-project-workspace-foundation>
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Project Foundation</div>
-                                    <h3>Project Progress</h3>
-                                </div>
-                                <div class="grid cols-3">
-                                    <article class="callout"><h3>Project Status</h3><p data-project-status>Under Construction</p></article>
-                                    <article class="callout"><h3>Project Progress</h3><p data-project-progress>Demo Project identity ready</p></article>
-                                    <article class="callout"><h3>Publishing Progress</h3><p data-publishing-progress>Publish blocked until configuration and required assets are ready</p></article>
-                                </div>
-                                <div class="grid cols-3">
-                                    <article class="callout"><h3>Current Focus</h3><p data-current-focus>Complete Game Configuration</p></article>
-                                    <article class="callout"><h3>Recommended Next Tool</h3><p data-recommended-next-tool>Game Configuration</p></article>
-                                    <article class="callout"><h3>Checklist</h3><ul data-project-progress-checklist><li>Project identity: Complete</li></ul></article>
-                                </div>
-                                <div class="status" role="status" data-project-workspace-log>Demo Project seeded.</div>
-                            </div>
-                        </article>
-                        <div class="accordion-stack" data-project-output-panels>
-                            <details class="vertical-accordion" open>
-                                <summary>Readiness Output</summary>
-                                <div class="accordion-body">
-                                    <div class="table-wrapper">
-                                        <table class="data-table">
-                                            <caption>Readiness output</caption>
-                                            <thead>
-                                                <tr><th scope="col">Path</th><th scope="col">Status</th><th scope="col">Next Tool</th></tr>
-                                            </thead>
-                                            <tbody>
-                                                <tr><td>Plan</td><td>Under Construction</td><td>Game Configuration</td></tr>
-                                                <tr><td>Configure</td><td>Planned</td><td>Build Game</td></tr>
-                                                <tr><td>Release</td><td>Planned</td><td>Publish</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Repository Tables</summary>
-                                <div class="accordion-body">
-                                    <div class="table-wrapper">
-                                        <table class="data-table">
-                                            <caption>Project data row counts</caption>
-                                            <thead>
-                                                <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
-                                            </thead>
-                                            <tbody data-project-table-counts>
-                                                <tr><td>users</td><td>3</td></tr>
-                                                <tr><td>projects</td><td>4</td></tr>
-                                                <tr><td>project_members</td><td>12</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Project Members</summary>
-                                <div class="accordion-body">
-                                    <div class="table-wrapper">
-                                        <table class="data-table">
-                                            <caption>Open project members</caption>
-                                            <thead>
-                                                <tr><th scope="col">User</th><th scope="col">User ID</th><th scope="col">Role</th><th scope="col">Permission</th></tr>
-                                            </thead>
-                                            <tbody data-project-members-table>
-                                                <tr><td>No project</td><td>-</td><td>-</td><td>-</td></tr>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </details>
-                        </div>
-                        <article class="card" role="dialog" aria-labelledby="project-workspace-missing-requirements-title" data-missing-requirements>
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Requirements</div>
-                                    <h3 id="project-workspace-missing-requirements-title">Missing Requirements</h3>
-                                </div>
-                                <p>Not implemented yet: cross-tool blocking, publish validation, or persisted release gates. This review surface lists the next requirements only.</p>
-                                <div class="grid cols-3">
-                                    <article class="callout"><h3>Game Design</h3><p><span class="pill">Under Construction</span> Define win and lose conditions.</p></article>
-                                    <article class="callout"><h3>Game Configuration</h3><p><span class="pill">Planned</span> Choose release profile and debug policy.</p></article>
-                                    <article class="callout"><h3>Publish</h3><p><span class="pill">Planned</span> Prepare share metadata later.</p></article>
-                                </div>
-                                <div class="status" role="status">Project Workspace does not run real publish gating yet.</div>
-                            </div>
-                        </article>
-                    </section>
-                    <aside class="tool-column tool-group-build">
-                        <div class="tool-column-header">
-                            <h2>Inspector</h2>
-                        </div>
-                        <div class="accordion-stack">
-                            <details class="vertical-accordion" open>
-                                <summary>Status Log</summary>
-                                <div class="accordion-body">
-                                    <p>Project Workspace operations report status in the center panel while the right column stays reserved for inspector status and diagnostics.</p>
-                                    <div class="status" role="status">Project data ready.</div>
-                                </div>
-                            </details>
-                        </div>
-                    </aside>
-                </div>
+                <div class="kicker">Toolbox / Game Workspace</div>
+                <h1>Game Workspace</h1>
+                <p class="lede">This route is kept for older links. The active workspace is Game Workspace.</p>
+                <p><a class="btn primary" href="toolbox/game-workspace/index.html">Open Game Workspace</a></p>
             </div>
         </section>
     </main>
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-    <script type="module" src="toolbox/project-workspace/project-workspace.js"></script>
 </body>
 
 </html>

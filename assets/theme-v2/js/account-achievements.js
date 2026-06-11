@@ -53,11 +53,11 @@ function renderBuildRows(projects) {
     buildRows.replaceChildren();
     if (!projects.length) {
         const row = document.createElement("tr");
-        const cell = createCell("No Project Workspace projects are available.");
+        const cell = createCell("No Game Workspace games are available.");
         cell.colSpan = 5;
         row.append(cell);
         buildRows.append(row);
-        setText(buildStatus, "No Project Workspace projects are available for Build achievements.");
+        setText(buildStatus, "No Game Workspace games are available for Build achievements.");
         return;
     }
 
@@ -77,7 +77,7 @@ function renderBuildRows(projects) {
     const readyProjects = projects.filter((project) => project.status === "Ready for Publish").length;
     setText(createdCount, String(projects.length));
     setText(readyCount, String(readyProjects));
-    setText(buildStatus, "Build project rows use the Project Workspace project source. Stats and ratings are not tracked yet.");
+    setText(buildStatus, "Build project rows use the Game Workspace game source. Stats and ratings are not tracked yet.");
 }
 
 function renderBuildError(message) {
@@ -86,13 +86,13 @@ function renderBuildError(message) {
     }
     buildRows.replaceChildren();
     const row = document.createElement("tr");
-    const cell = createCell(message || "Project Workspace data is unavailable.");
+    const cell = createCell(message || "Game Workspace data is unavailable.");
     cell.colSpan = 5;
     row.append(cell);
     buildRows.append(row);
     setText(createdCount, "0");
     setText(readyCount, "0");
-    setText(buildStatus, message || "Project Workspace data is unavailable.");
+    setText(buildStatus, message || "Game Workspace data is unavailable.");
 }
 
 function currentBuildUserId() {
@@ -111,11 +111,11 @@ function loadBuildProjects() {
     const userId = currentBuildUserId();
     const result = repository.listProjects(userId ? { userId } : {});
     if (result?.error) {
-        renderBuildError(result.message || "Project Workspace data is unavailable.");
+        renderBuildError(result.message || "Game Workspace data is unavailable.");
         return;
     }
     if (!Array.isArray(result)) {
-        renderBuildError("Project Workspace did not return project rows.");
+        renderBuildError("Game Workspace did not return game rows.");
         return;
     }
     renderBuildRows(result);

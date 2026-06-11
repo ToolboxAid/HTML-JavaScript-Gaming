@@ -1,5 +1,4 @@
 import {
-  GAME_CONFIGURATION_PLAYER_MODES,
   GAME_CONFIGURATION_SECTIONS,
   createGameConfigurationApiRepository
 } from "./game-configuration-api-client.js";
@@ -33,7 +32,6 @@ const elements = {
   outputPlayerMode: document.querySelector("[data-game-configuration-output-player-mode]"),
   outputReadiness: document.querySelector("[data-game-configuration-output-readiness]"),
   outputSummary: document.querySelector("[data-game-configuration-output-summary]"),
-  playerMode: document.querySelector("[data-game-configuration-player-mode]"),
   playerSetup: document.querySelector("[data-game-configuration-player-setup]"),
   progressCurrentFocus: document.querySelector("[data-game-configuration-current-focus]"),
   progressProject: document.querySelector("[data-game-configuration-project-progress]"),
@@ -63,31 +61,12 @@ function createListItem(text) {
   return item;
 }
 
-function optionElement(value, text) {
-  const option = document.createElement("option");
-  option.value = value;
-  option.textContent = text;
-  return option;
-}
-
-function renderPlayerModeOptions(selectedValue = "1 Player") {
-  if (!elements.playerMode) {
-    return;
-  }
-  elements.playerMode.classList.add("tool-form-control");
-  elements.playerMode.replaceChildren(...GAME_CONFIGURATION_PLAYER_MODES.map((mode) => optionElement(mode.value, mode.label)));
-  elements.playerMode.value = GAME_CONFIGURATION_PLAYER_MODES.some((mode) => mode.value === selectedValue)
-    ? selectedValue
-    : "1 Player";
-}
-
 function readForm() {
   return {
     audioSetup: elements.audioSetup?.value,
     gameBasics: elements.gameBasics?.value,
     gameRules: elements.gameRules?.value,
     objectSetup: elements.objectSetup?.value,
-    playerMode: elements.playerMode?.value || "1 Player",
     playerSetup: elements.playerSetup?.value,
     testReadiness: elements.testReadiness?.value,
     worldSetup: elements.worldSetup?.value
@@ -101,7 +80,6 @@ function clearForm() {
       input.value = "";
     }
   });
-  renderPlayerModeOptions("1 Player");
 }
 
 function applyConfigurationToForm(configuration) {
@@ -116,7 +94,6 @@ function applyConfigurationToForm(configuration) {
       input.value = configuration[section] || "";
     }
   });
-  renderPlayerModeOptions(configuration.playerMode || "1 Player");
 }
 
 function renderValidation(validation) {
@@ -141,7 +118,7 @@ function renderHandoff(snapshot) {
   const project = snapshot.handoff.activeProject;
   const design = snapshot.handoff.activeDesign;
   const context = project && design
-    ? `${project.name} - ${project.purpose} - ${design.gameType} / ${design.genre} / ${design.playStyle}`
+    ? `${project.name} - ${project.purpose} - ${design.gameType} / ${design.genre} / ${design.playStyle} / ${design.playerMode || "1 Player"}`
     : "No valid Game Design handoff";
 
   setText(elements.handoffContext, context);
@@ -164,7 +141,7 @@ function renderOutput(snapshot) {
     : "Standard game project configuration.";
 
   setText(elements.outputSummary, summary);
-  setText(elements.outputPlayerMode, configuration?.playerMode || "1 Player");
+  setText(elements.outputPlayerMode, configuration?.playerMode || snapshot.handoff.activeDesign?.playerMode || "1 Player");
   setText(elements.outputReadiness, snapshot.progressHandoff.readinessStatus);
   setText(elements.outputNextStep, snapshot.progressHandoff.recommendedNextTool);
   setText(elements.missingItems, missing || "None");

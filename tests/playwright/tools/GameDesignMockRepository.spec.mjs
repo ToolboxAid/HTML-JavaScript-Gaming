@@ -61,7 +61,7 @@ test("Game Design shows an actionable overlay when project context is missing", 
     await expect(page.locator("[data-game-design-project-overlay]")).toBeVisible();
     await expect(page.locator("[data-game-design-validation-overlay]")).toBeVisible();
     await expect(page.locator("[data-game-design-validation-list]")).toContainText("Project Context");
-    await expect(page.locator("[data-game-design-project-context]")).toHaveText("No Project Workspace project");
+    await expect(page.locator("[data-game-design-project-context]")).toHaveText("No Game Workspace game");
     await expect(page.locator("[data-game-design-output]")).not.toContainText("{");
     await expect(page.locator("[data-game-design-output]")).not.toContainText('"activeProjectId"');
 
@@ -92,11 +92,12 @@ test("Game Design saves and updates design fields against the active project", a
     await expect(projectDesignTable).toBeVisible();
     await expect(projectDesignTable).toHaveClass(/data-table/);
     await expect(projectDesignTable).toHaveClass(/tool-form-table/);
-    await expect(projectDesignTable.locator("tbody tr")).toHaveCount(5);
+    await expect(projectDesignTable.locator("tbody tr")).toHaveCount(6);
     await expect(projectDesignTable.locator("th[scope='row'] label")).toHaveText([
       "Game Type",
       "Genre",
       "Play Style",
+      "Player Mode",
       "Design Summary",
       "Capability Demo Notes"
     ]);
@@ -115,6 +116,7 @@ test("Game Design saves and updates design fields against the active project", a
       { cellCount: 2, controlId: "gameDesignType", controlTag: "select", labelFor: "gameDesignType", labelText: "Game Type" },
       { cellCount: 2, controlId: "gameDesignGenre", controlTag: "select", labelFor: "gameDesignGenre", labelText: "Genre" },
       { cellCount: 2, controlId: "gameDesignPlayStyle", controlTag: "select", labelFor: "gameDesignPlayStyle", labelText: "Play Style" },
+      { cellCount: 2, controlId: "gameDesignPlayerMode", controlTag: "select", labelFor: "gameDesignPlayerMode", labelText: "Player Mode" },
       { cellCount: 2, controlId: "gameDesignSummary", controlTag: "textarea", labelFor: "gameDesignSummary", labelText: "Design Summary" },
       { cellCount: 2, controlId: "gameDesignCapabilityNotes", controlTag: "textarea", labelFor: "gameDesignCapabilityNotes", labelText: "Capability Demo Notes" }
     ]);
@@ -152,6 +154,7 @@ test("Game Design saves and updates design fields against the active project", a
     });
     await expect(page.locator("[data-game-design-output] pre, [data-game-design-output] code")).toHaveCount(0);
     await expect(page.locator("[data-game-design-output]")).toContainText("Design Summary");
+    await expect(page.locator("[data-game-design-output]")).toContainText("Player Mode");
     await expect(page.locator("[data-game-design-output]")).toContainText("Validation Status");
     await expect(page.locator("[data-game-design-output]")).toContainText("Next Step");
     await expect(page.locator("[data-game-design-output]")).not.toContainText("{");
@@ -165,6 +168,7 @@ test("Game Design saves and updates design fields against the active project", a
     await page.getByLabel("Game Type").selectOption("Puzzle");
     await page.getByLabel("Genre").selectOption("Adventure");
     await page.getByLabel("Play Style").selectOption("Single Player");
+    await page.getByLabel("Player Mode").selectOption("2+ Concurrent");
     await page.getByLabel("Design Summary").fill("A compact puzzle adventure with one clear project promise.");
     await page.getByRole("button", { name: "Save Game Design" }).click();
 
@@ -173,6 +177,7 @@ test("Game Design saves and updates design fields against the active project", a
     await expect(page.locator("[data-game-design-status]")).toHaveText("Ready");
     await expect(page.locator("[data-game-design-recommended-tool]").first()).toHaveText("Game Configuration");
     await expect(page.locator("[data-game-design-output-summary]")).toHaveText("A compact puzzle adventure with one clear project promise.");
+    await expect(page.locator("[data-game-design-output-player-mode]")).toHaveText("2+ Concurrent");
     await expect(page.locator("[data-game-design-output-validation]")).toHaveText("Ready");
     await expect(page.locator("[data-game-design-output-next-step]")).toHaveText("Game Configuration");
     await expect(page.locator("[data-game-design-output-missing]")).toHaveText("None");
@@ -193,13 +198,13 @@ test("Game Design saves and updates design fields against the active project", a
   }
 });
 
-test("Game Design authors capability demos as Project Workspace projects", async ({ page }) => {
+test("Game Design authors capability demos as Game Workspace games", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-design/index.html?project=gravity-demo");
 
   try {
     await expect(page.locator("[data-game-design-project-context]")).toHaveText("Gravity Demo - Capability Demo");
-    await expect(page.getByText("Capability demos remain Project Workspace projects.")).toBeVisible();
-    await expect(page.locator("[data-game-design-capability-demos]")).toContainText("Gravity Demo: Project Workspace project");
+    await expect(page.getByText("Capability demos remain Game Workspace games.")).toBeVisible();
+    await expect(page.locator("[data-game-design-capability-demos]")).toContainText("Gravity Demo: Game Workspace game");
     await expect(page.getByLabel("Game Type")).toHaveValue("Capability Demo");
     await expect(page.getByLabel("Genre")).toHaveValue("Utility");
     await expect(page.getByLabel("Play Style")).toHaveValue("Guided Tutorial");
@@ -209,7 +214,7 @@ test("Game Design authors capability demos as Project Workspace projects", async
     await page.getByRole("button", { name: "Save Game Design" }).click();
     await expect(page.locator("[data-game-design-output]")).not.toContainText("{");
     await expect(page.locator("[data-game-design-output]")).not.toContainText('"capabilityDemoAuthoring"');
-    await expect(page.locator("[data-game-design-output-capability]")).toHaveText("Gravity Demo remains a Project Workspace project.");
+    await expect(page.locator("[data-game-design-output-capability]")).toHaveText("Gravity Demo remains a Game Workspace game.");
     await expect(page.locator("[data-game-design-table-counts]")).toContainText("game_design_capability_demos");
 
     await expectNoPageFailures(failures);
@@ -219,7 +224,7 @@ test("Game Design authors capability demos as Project Workspace projects", async
   }
 });
 
-test("Toolbox Build Path view shows the Game Design handoff", async ({ page }) => {
+test("Toolbox Build Path view shows the active workflow table", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html");
 
   try {
@@ -227,9 +232,8 @@ test("Toolbox Build Path view shows the Game Design handoff", async ({ page }) =
 
     await page.getByRole("button", { name: "Build Path" }).click();
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
-    await expect(page.locator("[data-build-path-tool='Game Design']")).toContainText("Game Design");
-    await expect(page.locator("[data-build-path-tool='Game Design']")).toContainText("🟡 In Progress");
-    await expect(page.locator("[data-build-path-tool='Game Configuration']")).toContainText("🟡 In Progress");
+    await expect(page.locator("[data-build-path-tool='Colors']")).toContainText("Colors");
+    await expect(page.locator("[data-build-path-tool='Colors']")).toContainText("Complete");
 
     await expectNoPageFailures(failures);
   } finally {

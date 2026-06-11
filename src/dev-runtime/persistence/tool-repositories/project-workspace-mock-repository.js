@@ -263,16 +263,16 @@ export function createProjectWorkspaceMockRepository() {
 
     if (!project) {
       return {
-        projectStatus: "No Project",
-        projectProgress: "No active project",
+        projectStatus: "No Game",
+        projectProgress: "No active game",
         publishingProgress: "Not started",
         currentFocus: "Create or seed a project",
-        recommendedNextTool: "Project Workspace",
+        recommendedNextTool: "Game Workspace",
         requiredForTestable: false,
         requiredForPublish: false,
         progressChecklist: [
-          { label: "Create project identity", status: "Ready" },
-          { label: "Configure project details", status: "Planned" },
+          { label: "Create game identity", status: "Ready" },
+          { label: "Configure game details", status: "Planned" },
           { label: "Prepare publish requirements", status: "Planned" },
         ],
       };
@@ -287,7 +287,7 @@ export function createProjectWorkspaceMockRepository() {
       requiredForTestable: true,
       requiredForPublish: true,
       progressChecklist: [
-        { label: "Project identity", status: "Complete" },
+        { label: "Game identity", status: "Complete" },
         { label: "Game configuration", status: "Under Construction" },
         { label: "Playable build", status: "Planned" },
         { label: "Publishing review", status: "Planned" },
