@@ -131,6 +131,10 @@ dd {
   padding-block: var(--space-6)
 }
 
+.text-gold {
+  color: var(--gold)
+}
+
 .lede {
   color: var(--muted);
   font-size: var(--font-size-2xl);

@@ -256,11 +256,20 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-mapping-accordion] summary")).toHaveText("Input Mapping");
     await expect(page.locator("[data-controller-profile-accordion] summary")).toHaveText("Controller Profile");
     await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();
+    const controllerDeviceSelection = page.locator("[data-controller-device-selection]");
+    await expect(controllerDeviceSelection.locator("[data-input-refresh-devices]")).toBeVisible();
+    expect(await controllerDeviceSelection.evaluate((node) =>
+      Array.from(node.children).slice(0, 2).map((child) =>
+        child.matches("[data-input-refresh-devices]") ? "Refresh Devices" : child.textContent.trim().split(/\s+/)[0],
+      ),
+    )).toEqual(["Refresh Devices", "Device"]);
     await expect(page.getByRole("heading", { name: "Mappings" })).toBeVisible();
     await expect(page.locator("[data-input-state-explanation]")).toHaveText("State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.");
     await expect(page.getByText("Mapping JSON", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-input-mapping-json]")).toHaveCount(0);
     await expect(page.getByText("Devices", { exact: true })).toBeVisible();
+    await expect(page.locator("[data-input-device-guidance]")).toHaveText("Press a button on the controller, then refresh Device Type.");
+    await expect(page.locator("aside").last().locator("[data-input-refresh-devices]")).toHaveCount(0);
     await expect(page.getByText("Status", { exact: true })).toBeVisible();
     await expect(page.locator("[data-input-return-workspace]")).toBeVisible();
     await expect(page.locator("[data-controller-profile-table] th")).toHaveText([
@@ -706,7 +715,23 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     });
     const activeProfileInput = page.locator("[data-controller-profile-input-pair][data-controller-profile-input-active='true']");
     await expect(activeProfileInput.locator("strong")).toHaveText("Button0");
-    await expect(activeProfileInput.locator("[data-controller-profile-input-assigned-action]")).toHaveText("Selected Action: Fire");
+    const activeActionText = activeProfileInput.locator("[data-controller-profile-input-assigned-action]");
+    await expect(activeActionText).toHaveText("Selected Action: Fire");
+    await expect(activeActionText).toHaveClass(/text-gold/);
+    await expect(activeActionText).toHaveCSS("color", "rgb(255, 200, 87)");
+    await expect(activeProfileInput).not.toHaveClass(/feedback/);
+    expect(await activeProfileInput.evaluate((node) => {
+      const style = getComputedStyle(node);
+      return {
+        backgroundColor: style.backgroundColor,
+        borderTopStyle: style.borderTopStyle,
+        borderTopWidth: style.borderTopWidth,
+      };
+    })).toEqual({
+      backgroundColor: "rgba(0, 0, 0, 0)",
+      borderTopStyle: "none",
+      borderTopWidth: "0px",
+    });
     await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1)).not.toHaveAttribute("data-controller-profile-input-active", "true");
     await expect(editingActionsRow.locator("[data-controller-profile-input-pair]").nth(1).locator("[data-controller-profile-input-assigned-action]")).toHaveText("Assigned Action: Move Right");
 
@@ -732,6 +757,8 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     profiles = await controllerProfileRecords(page);
     expect(profiles).toHaveLength(1);
     expect(profiles[0].mappingProfile).toBe("Arcade Test Pad Profile");
+    await expect(page.locator("[data-controller-profile-editing-row]")).toContainText("Arcade Test Pad Profile");
+    await expect(page.locator("[data-controller-profile-editing-actions-row] [data-controller-profile-input-action]")).toHaveCount(18);
 
     expect(profiles).toHaveLength(1);
 

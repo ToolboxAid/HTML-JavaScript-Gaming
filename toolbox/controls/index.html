@@ -127,7 +127,8 @@
                                                 <h3>Controller Profiles</h3>
                                             </div>
                                             <p>Plan how gamepad identities will match saved mapping profiles.</p>
-                                            <div class="content-cluster" aria-label="Controller device selection">
+                                            <div class="content-cluster" aria-label="Controller device selection" data-controller-device-selection>
+                                                <button class="btn" type="button" data-input-refresh-devices>Refresh Devices</button>
                                                 <label>
                                                     Device Type
                                                     <select data-controller-device-select></select>
@@ -174,9 +175,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Devices</summary>
                                 <div class="accordion-body content-stack">
-                                    <div class="content-cluster" aria-label="Device diagnostics controls">
-                                        <button class="btn" type="button" data-input-refresh-devices>Refresh Devices</button>
-                                    </div>
+                                    <p class="status" data-input-device-guidance>Press a button on the controller, then refresh Device Type.</p>
                                     <ul data-input-source-diagnostics></ul>
                                 </div>
                             </details>

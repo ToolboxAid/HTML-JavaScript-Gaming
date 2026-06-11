@@ -857,8 +857,9 @@ function updateProfileInputAssignedAction(select) {
 
 function clearControllerProfileInputHighlight() {
   elements.controllerProfileList?.querySelectorAll("[data-controller-profile-input-pair]").forEach((pair) => {
-    pair.classList.remove("feedback");
     delete pair.dataset.controllerProfileInputActive;
+    const status = pair.querySelector("[data-controller-profile-input-assigned-action]");
+    status?.classList.remove("text-gold");
     updateProfileInputAssignedAction(pair.querySelector("[data-controller-profile-input-action]"));
   });
 }
@@ -874,11 +875,12 @@ function highlightControllerProfileInput(inputName) {
   if (!pair) {
     return;
   }
-  pair.classList.add("feedback");
   pair.dataset.controllerProfileInputActive = "true";
   const select = pair.querySelector("[data-controller-profile-input-action]");
   updateProfileInputAssignedAction(select);
-  setText(elements.controllerProfileStatus, `${inputName} selected. ${pair.querySelector("[data-controller-profile-input-assigned-action]")?.textContent || "Assigned Action: Action Required"}.`);
+  const status = pair.querySelector("[data-controller-profile-input-assigned-action]");
+  status?.classList.add("text-gold");
+  setText(elements.controllerProfileStatus, `${inputName} selected. ${status?.textContent || "Assigned Action: Action Required"}.`);
 }
 
 function updateControllerProfileInputHighlight() {
@@ -1598,6 +1600,16 @@ function addProfileForDevice(device, source = "detected") {
   if (!saveControllerProfiles([profile, ...controllerProfiles])) {
     controllerProfiles = readControllerProfiles();
     renderControllerProfiles();
+    return;
+  }
+  const savedProfile = controllerProfiles.find((candidate) => candidate.id === profile.id) || profile;
+  if (source === "default-gamepad") {
+    profileEditingRow = {
+      id: savedProfile.id,
+      values: savedProfile,
+    };
+    renderAll(`${savedProfile.mappingProfile} saved. Assign Actions for generated profile inputs.`);
+    setText(elements.controllerProfileStatus, `Editing ${savedProfile.mappingProfile} controller profile.`);
     return;
   }
   profileEditingRow = null;
