@@ -54,9 +54,6 @@ const DEVICE_OPTIONS = Object.freeze([
 
 const DEVICE_TYPE_OPTIONS = Object.freeze([
   Object.freeze({ label: "Gamepad", value: "Gamepad" }),
-  Object.freeze({ label: "Keyboard", value: "Keyboard" }),
-  Object.freeze({ label: "Mouse", value: "Mouse" }),
-  Object.freeze({ label: "Custom", value: "Custom" }),
 ]);
 
 const SOURCE_DIAGNOSTICS = Object.freeze([
@@ -225,43 +222,18 @@ function gamepadInputNames(gamepad) {
 }
 
 function controllerDeviceOptions() {
-  return [
-    {
-      controllerId: "keyboard",
-      controllerName: "Keyboard",
-      deviceType: "Keyboard",
-      inputs: ["Keyboard Key"],
-      label: "Keyboard",
-      mappingProfile: "Keyboard Profile",
-      value: "keyboard",
-    },
-    {
-      controllerId: "mouse",
-      controllerName: "Mouse",
-      deviceType: "Mouse",
-      inputs: ["Mouse Button"],
-      label: "Mouse",
-      mappingProfile: "Mouse Profile",
-      value: "mouse",
-    },
-    ...availableGamepads().map((gamepad) => {
-      const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
-      return {
-        controllerId: gamepad.id || `gamepad-${gamepad.index}`,
-        controllerName,
-        deviceType: "Gamepad",
-        inputs: gamepadInputNames(gamepad),
-        label: `Gamepad: ${controllerName}`,
-        mappingProfile: `${controllerName} Profile`,
-        value: `gamepad-${gamepad.index}`,
-      };
-    }),
-    {
-      label: "Unknown or unavailable controller",
-      unavailable: true,
-      value: "unavailable-controller",
-    },
-  ];
+  return availableGamepads().map((gamepad) => {
+    const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
+    return {
+      controllerId: gamepad.id || `gamepad-${gamepad.index}`,
+      controllerName,
+      deviceType: "Gamepad",
+      inputs: gamepadInputNames(gamepad),
+      label: `Gamepad: ${controllerName}`,
+      mappingProfile: `${controllerName} Profile`,
+      value: `gamepad-${gamepad.index}`,
+    };
+  });
 }
 
 function selectedControllerDevice() {
@@ -319,7 +291,6 @@ function renderControllerProfileFallback() {
     }
     return;
   }
-  setText(elements.controllerProfileFallbackStatus, "Keyboard/Mouse Default");
 }
 
 function selectedObject() {
@@ -793,7 +764,7 @@ function renderControllerDeviceSelect(selectedValue = elements.controllerDeviceS
   renderSelect(
     elements.controllerDeviceSelect,
     [
-      { label: "Choose a controller", value: "" },
+      { label: "Choose a game controller", value: "" },
       ...controllerDeviceOptions().map((device) => ({ label: device.label, value: device.value })),
     ],
     selectedValue,
@@ -814,9 +785,10 @@ function renderControllerProfileStatus() {
 }
 
 function profileInputActionControl(profile, inputName, index) {
-  const wrapper = document.createElement("label");
-  wrapper.className = "content-stack content-stack--compact";
-  const label = document.createElement("span");
+  const wrapper = document.createElement("div");
+  wrapper.className = "content-grid";
+  wrapper.dataset.controllerProfileInputPair = "true";
+  const label = document.createElement("strong");
   label.textContent = inputName;
   const select = selectControl({
     ariaLabel: `${inputName} Action`,
@@ -826,13 +798,29 @@ function profileInputActionControl(profile, inputName, index) {
     ],
     selectedValue: profile.actions[index] || "",
   });
-  select.dataset.controllerProfileInputAction = profile.id;
+  select.dataset.controllerProfileInputAction = profile.id || "editing";
   select.dataset.controllerProfileInputIndex = String(index);
   wrapper.append(label, select);
   return wrapper;
 }
 
-function renderControllerProfileRow(profile) {
+function controllerProfileInputActions(profile) {
+  const actionControls = document.createElement("div");
+  actionControls.className = "content-grid content-grid--three";
+  if (profile.inputs.length) {
+    actionControls.append(...profile.inputs.map((inputName, index) =>
+      profileInputActionControl(profile, inputName, index),
+    ));
+    return actionControls;
+  }
+  const required = document.createElement("p");
+  required.className = "status";
+  required.textContent = "Action Required";
+  actionControls.append(required);
+  return actionControls;
+}
+
+function renderControllerProfileRows(profile) {
   const row = document.createElement("tr");
   row.dataset.controllerProfileRow = profile.id;
   row.append(
@@ -840,24 +828,8 @@ function renderControllerProfileRow(profile) {
     tableCell(profile.controllerName),
     tableCell(profile.controllerId),
     tableCell(profile.mappingProfile),
-    tableCell(listLabel(profile.inputs)),
   );
   const actionsCell = document.createElement("td");
-  const actionControls = document.createElement("div");
-  actionControls.className = "content-stack content-stack--compact";
-  if (profile.inputs.length) {
-    actionControls.append(...profile.inputs.map((inputName, index) =>
-      profileInputActionControl(profile, inputName, index),
-    ));
-  } else {
-    const required = document.createElement("p");
-    required.className = "status";
-    required.textContent = "Action Required";
-    actionControls.append(required);
-  }
-  const saveActions = actionButton("Save Actions", "controllerProfileSaveActions", profile.id);
-  actionControls.append(saveActions);
-  actionsCell.append(actionControls);
   const group = document.createElement("div");
   group.className = "action-group action-group--tight";
   group.append(
@@ -866,10 +838,23 @@ function renderControllerProfileRow(profile) {
   );
   actionsCell.append(group);
   row.append(actionsCell);
-  return row;
+
+  const actionsRow = document.createElement("tr");
+  actionsRow.dataset.controllerProfileActionsRow = profile.id;
+  const detailsCell = document.createElement("td");
+  detailsCell.colSpan = 5;
+  const stack = document.createElement("div");
+  stack.className = "content-stack content-stack--compact";
+  stack.append(
+    controllerProfileInputActions(profile),
+    actionButton("Save Actions", "controllerProfileSaveActions", profile.id),
+  );
+  detailsCell.append(stack);
+  actionsRow.append(detailsCell);
+  return [row, actionsRow];
 }
 
-function renderControllerProfileEditingRow(values = {}) {
+function renderControllerProfileEditingRows(values = {}) {
   const row = document.createElement("tr");
   row.dataset.controllerProfileEditingRow = "true";
 
@@ -889,13 +874,22 @@ function renderControllerProfileEditingRow(values = {}) {
   const mappingProfile = textControl({ ariaLabel: "Mapping Profile", value: values.mappingProfile || "" });
   mappingProfile.dataset.controllerProfileMapping = "true";
 
-  const inputs = textControl({ ariaLabel: "Controller Inputs", value: listLabel(values.inputs, "") });
+  const inputs = hiddenControl({ value: listLabel(values.inputs, "") });
   inputs.dataset.controllerProfileInputs = "true";
 
-  const actions = textControl({ ariaLabel: "Controller Actions", value: listLabel(values.actions, "") });
+  const actions = hiddenControl({ value: listLabel(values.actions, "") });
   actions.dataset.controllerProfileActions = "true";
 
-  const actionsCell = controlCell(actions);
+  const actionsCell = document.createElement("td");
+  const profile = normalizeControllerProfile({
+    actions: values.actions,
+    controllerId: values.controllerId,
+    controllerName: values.controllerName,
+    deviceType: values.deviceType,
+    id: profileEditingRow?.id || "",
+    inputs: values.inputs,
+    mappingProfile: values.mappingProfile,
+  });
   const group = document.createElement("div");
   group.className = "action-group action-group--tight";
   group.append(
@@ -908,10 +902,19 @@ function renderControllerProfileEditingRow(values = {}) {
     controlCell(controllerName),
     controlCell(controllerId),
     controlCell(mappingProfile),
-    controlCell(inputs),
     actionsCell,
   );
-  return row;
+
+  const actionsRow = document.createElement("tr");
+  actionsRow.dataset.controllerProfileEditingActionsRow = "true";
+  const detailsCell = document.createElement("td");
+  detailsCell.colSpan = 5;
+  const stack = document.createElement("div");
+  stack.className = "content-stack content-stack--compact";
+  stack.append(controllerProfileInputActions(profile), inputs, actions);
+  detailsCell.append(stack);
+  actionsRow.append(detailsCell);
+  return [row, actionsRow];
 }
 
 function renderControllerProfiles() {
@@ -920,16 +923,16 @@ function renderControllerProfiles() {
   }
   const rows = [];
   if (profileEditingRow) {
-    rows.push(renderControllerProfileEditingRow(profileEditingRow.values));
+    rows.push(...renderControllerProfileEditingRows(profileEditingRow.values));
   }
   const visibleProfiles = profileEditingRow?.id
     ? controllerProfiles.filter((profile) => profile.id !== profileEditingRow.id)
     : controllerProfiles;
-  rows.push(...visibleProfiles.map(renderControllerProfileRow));
+  rows.push(...visibleProfiles.flatMap(renderControllerProfileRows));
   if (!rows.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 6;
+    cell.colSpan = 5;
     cell.textContent = "No controller profiles saved yet.";
     row.append(cell);
     rows.push(row);
@@ -1437,7 +1440,11 @@ function saveEditingRow() {
 }
 
 function controllerProfileFromEditingRow(row) {
-  const actions = normalizeList(row.querySelector("[data-controller-profile-actions]")?.value);
+  const actionsRow = elements.controllerProfileList?.querySelector("[data-controller-profile-editing-actions-row]");
+  const actionSelects = [...(actionsRow || row).querySelectorAll("[data-controller-profile-input-action]")];
+  const actions = actionSelects.length
+    ? actionSelects.map((select) => normalizeText(select.value))
+    : normalizeList(row.querySelector("[data-controller-profile-actions]")?.value);
   const controllerId = normalizeText(row.querySelector("[data-controller-profile-id-value]")?.value);
   const mappingProfile = normalizeText(row.querySelector("[data-controller-profile-mapping]")?.value);
   return normalizeControllerProfile({
@@ -1475,7 +1482,7 @@ function saveControllerProfileEditingRow() {
 
 function saveControllerProfileInputActions(profileId) {
   const profile = controllerProfiles.find((candidate) => candidate.id === profileId);
-  const row = elements.controllerProfileList?.querySelector(`[data-controller-profile-row="${CSS.escape(profileId)}"]`);
+  const row = elements.controllerProfileList?.querySelector(`[data-controller-profile-actions-row="${CSS.escape(profileId)}"]`);
   if (!profile || !row) {
     return;
   }

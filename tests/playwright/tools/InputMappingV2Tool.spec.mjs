@@ -268,7 +268,6 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
       "Controller Name",
       "Controller ID",
       "Mapping Profile",
-      "Input",
       "Action",
     ]);
     await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
@@ -280,11 +279,10 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-controller-profile-planning]")).toContainText("Future game launch will match Controller ID to a saved Mapping Profile");
     await expect(page.locator("[data-controller-profile-add]")).toBeVisible();
     await expect(page.locator("[data-controller-device-select] option")).toHaveText([
-      "Choose a controller",
-      "Keyboard",
-      "Mouse",
-      "Unknown or unavailable controller",
+      "Choose a game controller",
     ]);
+    await expect(page.locator("[data-controller-device-select]")).not.toContainText("Keyboard");
+    await expect(page.locator("[data-controller-device-select]")).not.toContainText("Mouse");
     expect(await controllerProfileRecords(page)).toHaveLength(0);
     await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
       "Object",
@@ -365,6 +363,7 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
     await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
     await expect(page.locator("[data-input-row-capture-mouse]")).toHaveCount(0);
     await expect(page.locator("[data-input-row-capture-gamepad]")).toHaveCount(0);
+    await expect(page.locator("[data-input-row-device] option")).toHaveText(["Keyboard", "Mouse", "Gamepad"]);
     await page.locator("[data-input-row-device]").selectOption("mouse");
     await expect(page.locator("[data-input-row-capture-keyboard]")).toHaveCount(0);
     await expect(page.locator("[data-input-row-capture-mouse]")).toBeVisible();
@@ -613,12 +612,11 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     });
     await page.locator("[data-input-refresh-devices]").click();
     await expect(page.locator("[data-controller-device-select] option")).toHaveText([
-      "Choose a controller",
-      "Keyboard",
-      "Mouse",
+      "Choose a game controller",
       "Gamepad: Arcade Test Pad",
-      "Unknown or unavailable controller",
     ]);
+    await expect(page.locator("[data-controller-device-select]")).not.toContainText("Keyboard");
+    await expect(page.locator("[data-controller-device-select]")).not.toContainText("Mouse");
 
     await page.locator("[data-controller-device-select]").selectOption("gamepad-0");
     await expect(page.locator("[data-controller-profile-editing-row]")).toHaveCount(0);
@@ -631,6 +629,18 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad");
     await expect(page.locator("[data-controller-profile-list]")).toContainText("Arcade Test Pad Profile");
     await expect(page.locator("[data-controller-profile-list]")).toContainText("Action Required");
+    await expect(page.locator("[data-controller-profile-table] th")).toHaveText([
+      "Device Type",
+      "Controller Name",
+      "Controller ID",
+      "Mapping Profile",
+      "Action",
+    ]);
+    await expect(page.locator("[data-controller-profile-row]").first()).not.toContainText("Button0");
+    await expect(page.locator("[data-controller-profile-actions-row]").first().locator(".content-grid--three")).toBeVisible();
+    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]")).toHaveCount(18);
+    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]").first().locator("strong")).toHaveText("Button0");
+    await expect(page.locator("[data-controller-profile-actions-row]").first().locator("[data-controller-profile-input-pair]").first().locator("select")).toBeVisible();
     await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Exact saved profile");
 
     let profiles = await controllerProfileRecords(page);
@@ -689,10 +699,6 @@ test("Controls generates controller profiles, shows fallback status, and mapping
     expect(profiles).toHaveLength(1);
     expect(profiles[0].mappingProfile).toBe("Arcade Test Pad Profile");
 
-    await page.locator("[data-controller-device-select]").selectOption("unavailable-controller");
-    await expect(page.locator("[data-controller-profile-status]")).toContainText("WARN: Unknown or unavailable controller.");
-    await expect(page.locator("[data-controller-profile-status]")).toContainText("refresh devices");
-    await expect(page.locator("[data-controller-profile-fallback-status]")).toContainText("Missing Mapping");
     expect(profiles).toHaveLength(1);
 
     await page.reload({ waitUntil: "networkidle" });
