@@ -67,6 +67,15 @@ function normalizeList(value) {
     .filter(Boolean);
 }
 
+function normalizeProfileInputMappings(value) {
+  return (Array.isArray(value) ? value : []).map((mapping) => ({
+    deadzone: Number.isFinite(Number(mapping?.deadzone)) ? Number(mapping.deadzone) : 0.2,
+    invert: Boolean(mapping?.invert),
+    normalizedInput: normalizeText(mapping?.normalizedInput),
+    physicalInput: normalizeText(mapping?.physicalInput || mapping?.input),
+  })).filter((mapping) => mapping.physicalInput);
+}
+
 function sortedMappingRows(tables) {
   return [...(tables.input_mapping_records || [])].sort((left, right) => (
     (Number(left.recordOrder) || 0) - (Number(right.recordOrder) || 0)
@@ -90,6 +99,7 @@ function controllerProfileFromRecord(record = {}) {
     controllerName: normalizeText(record.controllerName),
     deviceType: normalizeText(record.deviceType),
     id: normalizeText(record.id),
+    inputMappings: normalizeProfileInputMappings(record.inputMappings),
     inputs: normalizeList(record.inputs),
     mappingProfile: normalizeText(record.mappingProfile),
   };
@@ -115,6 +125,7 @@ function mappingFromRecord(record = {}) {
     label: normalizeText(record.label),
     controllerProfileId: normalizeText(record.controllerProfileId),
     mappingProfile: normalizeText(record.mappingProfile),
+    normalizedInput: normalizeText(record.normalizedInput),
     objectKey: normalizeText(record.objectKey),
     objectName: normalizeText(record.objectName),
     source: normalizeText(record.source),
@@ -197,6 +208,7 @@ export function createInputMappingToolMockRepository(options = {}) {
         createdBy: previous?.createdBy || userKey,
         deviceType: normalizeText(profile.deviceType) || "Gamepad",
         id,
+        inputMappings: normalizeProfileInputMappings(profile.inputMappings),
         inputs: normalizeList(profile.inputs),
         key: previous?.key,
         mappingProfile,
@@ -273,8 +285,9 @@ export function createInputMappingToolMockRepository(options = {}) {
     const nextRows = (Array.isArray(mappings) ? mappings : []).map((mapping, index) => {
       const action = normalizeText(mapping.action);
       const binding = normalizeText(mapping.binding);
+      const normalizedInput = normalizeText(mapping.normalizedInput);
       const objectKey = normalizeText(mapping.objectKey) || "global";
-      const id = normalizeText(mapping.id) || mappingKeyFromText(`${objectKey}-${action}-${binding}-${index + 1}`);
+      const id = normalizeText(mapping.id) || mappingKeyFromText(`${objectKey}-${action}-${normalizedInput || binding}-${index + 1}`);
       const previous = existingRows.get(id);
       return {
         action,
@@ -289,6 +302,7 @@ export function createInputMappingToolMockRepository(options = {}) {
         label: normalizeText(mapping.label),
         controllerProfileId: normalizeText(mapping.controllerProfileId),
         mappingProfile: normalizeText(mapping.mappingProfile),
+        normalizedInput,
         objectKey,
         objectName: normalizeText(mapping.objectName) || "Global",
         projectId: targetProjectId,

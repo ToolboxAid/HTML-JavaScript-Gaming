@@ -21,6 +21,12 @@ import {
     wheelDescriptorFromEvent,
     wheelInputDescriptor
 } from './InputCapabilityDescriptors.js';
+import {
+    defaultNormalizedInputForPhysicalInput,
+    normalizedInputLabel,
+    normalizedInputOptions,
+    physicalInputIsAnalog
+} from './NormalizedInputRegistry.js';
 
 export default class InputService {
     constructor({
@@ -252,6 +258,22 @@ export default class InputService {
             MouseWheelRight: 'Wheel Right',
         };
         return detailByBinding[binding] ? wheelInputDescriptor(binding, detailByBinding[binding]) : null;
+    }
+
+    getNormalizedInputOptions() {
+        return normalizedInputOptions();
+    }
+
+    getNormalizedInputLabel(inputId) {
+        return normalizedInputLabel(inputId);
+    }
+
+    getDefaultNormalizedInputForPhysicalInput(physicalInput) {
+        return defaultNormalizedInputForPhysicalInput(physicalInput);
+    }
+
+    physicalInputIsAnalog(physicalInput) {
+        return physicalInputIsAnalog(physicalInput);
     }
 
     captureWheelDescriptor(event) {
