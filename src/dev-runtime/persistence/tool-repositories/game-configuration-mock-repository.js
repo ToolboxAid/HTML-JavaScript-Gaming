@@ -184,13 +184,14 @@ export function createGameConfigurationMockRepository(options = {}) {
   let tables = createEmptyTables();
 
   function getGameDesignHandoff() {
-    const activeProject = gameDesignRepository.getActiveProject();
+    const activeProject = gameDesignRepository.getActiveGame?.() || gameDesignRepository.getActiveProject();
     const activeDesign = gameDesignRepository.getActiveDesign();
     const validation = gameDesignRepository.validateDesign(activeDesign || {});
     const ready = Boolean(activeProject && activeDesign && validation.findings.length === 0);
 
     return {
       activeDesign,
+      activeGame: activeProject,
       activeProject,
       ready,
       validation
@@ -255,14 +256,14 @@ export function createGameConfigurationMockRepository(options = {}) {
   }
 
   function makeMissingGameDesign() {
-    gameDesignRepository.clearProjectContext();
+    gameDesignRepository.clearGameContext();
     tables = createEmptyTables();
     return getSnapshot();
   }
 
   function openRequestedProject(projectId) {
     if (projectId) {
-      gameDesignRepository.openProjectContext(projectId);
+      gameDesignRepository.openGameContext(projectId);
     }
   }
 
@@ -305,6 +306,7 @@ export function createGameConfigurationMockRepository(options = {}) {
     if (!handoff.ready) {
       return {
         currentFocus: "Complete Game Design",
+        gameProgress: "Game Configuration blocked until Game Design is ready",
         projectProgress: "Game Configuration blocked until Game Design is ready",
         publishingProgress: "Build Game blocked by missing Game Design handoff",
         recommendedNextTool: "Game Design",
@@ -315,6 +317,7 @@ export function createGameConfigurationMockRepository(options = {}) {
     if (!configuration || validation.findings.length > 0) {
       return {
         currentFocus: "Complete Game Configuration",
+        gameProgress: `${handoff.activeProject.name} configuration needs ${validation.findings.length} item${validation.findings.length === 1 ? "" : "s"}`,
         projectProgress: `${handoff.activeProject.name} configuration needs ${validation.findings.length} item${validation.findings.length === 1 ? "" : "s"}`,
         publishingProgress: "Build Game blocked until configuration is ready",
         recommendedNextTool: "Game Configuration",
@@ -324,6 +327,7 @@ export function createGameConfigurationMockRepository(options = {}) {
 
     return {
       currentFocus: "Prepare Assets",
+      gameProgress: `${handoff.activeProject.name} Game Configuration ready`,
       projectProgress: `${handoff.activeProject.name} Game Configuration ready`,
       publishingProgress: "Build Game remains blocked until required assets are ready",
       recommendedNextTool: "Assets",

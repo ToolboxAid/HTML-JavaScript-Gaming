@@ -597,13 +597,13 @@ test("Account logout clears only the current session and blocks protected pages"
 });
 
 test("Guest can explore allowed Toolbox pages without persistence access", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project", {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game", {
     sessionUserKey: "",
   });
 
   try {
     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Project Journey", level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Game Journey", level: 1 })).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("[data-journey-diagnostics]")).toContainText("Guest is unauthenticated");
     await expect(page.locator("[data-journey-new-note-name]")).toBeDisabled();

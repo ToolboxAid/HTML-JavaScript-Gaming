@@ -21,6 +21,7 @@ import {
   getActiveToolRegistry,
   getToolImageDiagnostics,
   getToolImageSource,
+  getToolById,
   getToolProgressReadiness,
   getToolReleaseChannel,
   getToolReleaseChannelLabel,
@@ -33,7 +34,7 @@ import {
   PALETTE_SOURCE_USER,
   PALETTE_TOOL_KEY,
   PALETTE_WORKSPACE_PATH,
-  createProjectWorkspacePaletteRepository,
+  createGameWorkspacePaletteRepository,
   normalizePaletteSwatchInput,
   validatePaletteSwatchInput,
 } from "../persistence/tool-repositories/palette-workspace-repository.js";
@@ -50,18 +51,18 @@ import {
   createGameDesignMockRepository,
 } from "../persistence/tool-repositories/game-design-mock-repository.js";
 import {
-  PROJECT_JOURNEY_KEYS,
-  PROJECT_JOURNEY_STATUS_BY_ID,
-  PROJECT_JOURNEY_STATUSES,
-  PROJECT_JOURNEY_SUGGESTED_TOOLS,
-  createProjectJourneyMockRepository,
-} from "../persistence/tool-repositories/project-journey-mock-repository.js";
+  GAME_JOURNEY_KEYS,
+  GAME_JOURNEY_STATUS_BY_ID,
+  GAME_JOURNEY_STATUSES,
+  GAME_JOURNEY_SUGGESTED_TOOLS,
+  createGameJourneyMockRepository,
+} from "../persistence/tool-repositories/game-journey-mock-repository.js";
 import {
-  PROJECT_WORKSPACE_MEMBER_ROLES,
-  PROJECT_WORKSPACE_PROJECT_PURPOSES,
-  PROJECT_WORKSPACE_PROJECT_STATUSES,
-  createProjectWorkspaceMockRepository,
-} from "../persistence/tool-repositories/project-workspace-mock-repository.js";
+  GAME_WORKSPACE_MEMBER_ROLES,
+  GAME_WORKSPACE_GAME_PURPOSES,
+  GAME_WORKSPACE_GAME_STATUSES,
+  createGameWorkspaceMockRepository,
+} from "../persistence/tool-repositories/game-workspace-mock-repository.js";
 import {
   MOCK_DB_KEYS,
   MOCK_DB_SESSION_MODES,
@@ -78,7 +79,7 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 const LOCAL_MEM_MODE_ID = "local-mem";
 const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
-const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "objects", "controls", "project-journey", "palette", "asset"];
+const TOOL_ORDER = ["game-workspace", "game-design", "game-configuration", "objects", "controls", "game-journey", "palette", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
 const TOOLBOX_PLANNING_FIELDS = Object.freeze([
@@ -109,14 +110,14 @@ const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
 });
 const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
   Owner: null,
-  Designer: Object.freeze(["Game Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"]),
+  Designer: Object.freeze(["Game Workspace", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"]),
   "World Builder": Object.freeze(["Worlds", "Objects", "Assets", "Colors", "Animations"]),
   Artist: Object.freeze(["Assets", "Colors", "Fonts", "Sprites", "Characters", "Objects", "Animations"]),
   "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"]),
   Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Voice Output"]),
   Tester: Object.freeze(["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"]),
   Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
-  Viewer: Object.freeze(["Game Workspace", "Project Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
+  Viewer: Object.freeze(["Game Workspace", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
 });
 const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
@@ -321,11 +322,13 @@ function requiredToolMetadataDiagnostics(row) {
 
 function serverRegistryTool(tool, index = 0) {
   const toolKey = normalizedToolKey(tool);
+  const registryTool = getToolById(toolKey);
   const toolName = tool.toolName || tool.displayName || tool.name || toolKey;
   const releaseChannel = getToolReleaseChannel(tool.status || tool.releaseChannel);
   const route = String(tool.path || tool.route || getToolRoute(tool) || "").replace(/^\/+/, "");
   const badgePath = tool.badge || tool.imageSources?.badge || "";
   const toolImagePath = tool.toolImage || tool.tool || tool.imageSources?.tool || "";
+  const navigation = tool.navigation || registryTool?.navigation || null;
   const imageProbe = {
     badge: badgePath,
     tool: toolImagePath,
@@ -348,6 +351,7 @@ function serverRegistryTool(tool, index = 0) {
       tool: getToolImageSource(imageProbe, "tool"),
     },
     name: toolName,
+    navigation: navigation ? JSON.parse(JSON.stringify(navigation)) : undefined,
     order: Math.max(1, Math.round(Number(tool.order) || index + 1)),
     path: route,
     planningSource: "toolbox_tool_planning",
@@ -524,15 +528,15 @@ function normalizeOwnedTables(ownerId, tables) {
   return normalizeMockDbTables(ownerId, tables);
 }
 
-const WORKSPACE_PROJECT_KEYS = Object.freeze({
+const GAME_WORKSPACE_GAME_KEYS = Object.freeze({
   "camera-follow-demo": "01K2GFSJ0Y0000000080002104",
   "collision-demo": "01K2GFSJ0Y0000000080002103",
-  "demo-project": PROJECT_JOURNEY_KEYS.project,
+  "demo-game": GAME_JOURNEY_KEYS.game,
   "gravity-demo": "01K2GFSJ0Y0000000080002102",
 });
 
-function workspaceProjectKey(projectId) {
-  return WORKSPACE_PROJECT_KEYS[projectId] || projectId || "";
+function gameWorkspaceGameKey(gameId) {
+  return GAME_WORKSPACE_GAME_KEYS[gameId] || gameId || "";
 }
 
 function serverGeneratedUlid(source) {
@@ -557,26 +561,26 @@ function snapshotAuditFields(index = 0, userKey = MOCK_DB_KEYS.users.forgeBot) {
   return createMockDbAuditFields(index, userKey);
 }
 
-function workspaceTables(repository) {
+function gameWorkspaceTables(repository) {
   const tables = repository.getTables();
-  const activeProject = repository.getActiveProject();
-  const progress = repository.getProjectProgress();
-  const workspaceProjects = tables.projects.map((project, index) => ({
+  const activeGame = repository.getActiveGame();
+  const progress = repository.getGameProgress();
+  const gameWorkspaceGames = tables.games.map((project, index) => ({
     ...snapshotAuditFields(index + 20, MOCK_DB_KEYS.users.user1),
-    key: workspaceProjectKey(project.id),
+    key: gameWorkspaceGameKey(project.id),
     name: project.name,
     ownerKey: MOCK_DB_KEYS.users.user1,
     status: project.status,
   }));
-  const activeProjectKey = workspaceProjectKey(activeProject?.id);
-  return normalizeOwnedTables("workspace", {
-    workspace_projects: workspaceProjects,
-    workspace_progress: activeProject ? [{
+  const activeGameKey = gameWorkspaceGameKey(activeGame?.id);
+  return normalizeOwnedTables("game-workspace", {
+    game_workspace_games: gameWorkspaceGames,
+    game_workspace_progress: activeGame ? [{
       ...snapshotAuditFields(80, MOCK_DB_KEYS.users.user1),
       key: "01K2GFSJ0Y0000000080001001",
-      projectKey: activeProjectKey,
+      gameKey: activeGameKey,
       currentFocus: progress.currentFocus,
-      projectProgress: progress.projectProgress,
+      gameProgress: progress.gameProgress,
       publishingProgress: progress.publishingProgress,
       recommendedNextTool: progress.recommendedNextTool,
     }] : [],
@@ -589,9 +593,9 @@ function gameDesignTables(repository) {
     game_design_documents: (tables.game_design_documents || []).map((record, index) => ({
       ...snapshotAuditFields(index + 100, MOCK_DB_KEYS.users.user1),
       key: record.key,
-      projectKey: workspaceProjectKey(record.projectKey || record.projectId),
+      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
       status: record.status,
-      title: record.title || `${record.projectPurpose || "Game"} Design`,
+      title: record.title || `${record.gamePurpose || record.projectPurpose || "Game"} Design`,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
       createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
@@ -600,7 +604,7 @@ function gameDesignTables(repository) {
     game_design_validation_items: (tables.game_design_validation_items || []).map((record, index) => ({
       ...snapshotAuditFields(index + 140, MOCK_DB_KEYS.users.user1),
       key: record.key,
-      projectKey: workspaceProjectKey(record.projectKey || record.projectId),
+      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
       label: record.label,
       status: record.status,
       action: record.action,
@@ -618,7 +622,7 @@ function gameConfigurationTables(repository) {
     game_configuration_records: (tables.game_configuration_documents || []).map((record, index) => ({
       ...snapshotAuditFields(index + 180, MOCK_DB_KEYS.users.user1),
       key: record.key,
-      projectKey: workspaceProjectKey(record.projectKey || record.projectId),
+      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
       playerMode: record.playerMode || "1 Player",
       status: record.status || record.readinessStatus || "Ready",
       summary: record.gameBasics || [
@@ -635,7 +639,7 @@ function gameConfigurationTables(repository) {
     game_configuration_validation_items: (tables.game_configuration_validation_items || []).map((record, index) => ({
       ...snapshotAuditFields(index + 220, MOCK_DB_KEYS.users.user1),
       key: record.key,
-      projectKey: workspaceProjectKey(record.projectKey || record.projectId),
+      gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
       label: record.label,
       status: record.status,
       action: record.action,
@@ -655,8 +659,8 @@ function controlsTables(repository) {
   return normalizeOwnedTables("controls", repository.getTables());
 }
 
-function projectJourneyTables(repository) {
-  return normalizeOwnedTables("project-journey", repository.getTables());
+function gameJourneyTables(repository) {
+  return normalizeOwnedTables("game-journey", repository.getTables());
 }
 
 function paletteTables(repository) {
@@ -916,16 +920,16 @@ class LocalDevMockDataSource {
       sessionMode: this.sessionModeId,
       sessionUserKey: this.sessionUserKey,
     };
-    this.workspaceRepository = createProjectWorkspaceMockRepository();
-    this.workspaceRepository.resetProjectData();
+    this.gameWorkspaceRepository = createGameWorkspaceMockRepository();
+    this.gameWorkspaceRepository.resetGameData();
     this.gameDesignRepository = createGameDesignMockRepository({
-      projectRepository: this.workspaceRepository,
+      gameWorkspaceRepository: this.gameWorkspaceRepository,
     });
     this.gameConfigurationRepository = createGameConfigurationMockRepository({
       gameDesignRepository: this.gameDesignRepository,
     });
-    this.paletteRepository = createProjectWorkspacePaletteRepository({
-      projectWorkspaceRepository: this.workspaceRepository,
+    this.paletteRepository = createGameWorkspacePaletteRepository({
+      gameWorkspaceRepository: this.gameWorkspaceRepository,
       ...this.sharedOptions,
     });
     this.assetRepository = createAssetToolMockRepository({
@@ -934,16 +938,16 @@ class LocalDevMockDataSource {
       ...this.sharedOptions,
     });
     this.objectsRepository = createObjectsToolMockRepository({
-      projectWorkspaceRepository: this.workspaceRepository,
+      gameWorkspaceRepository: this.gameWorkspaceRepository,
       ...this.sharedOptions,
     });
     this.inputMappingRepository = createInputMappingToolMockRepository({
-      projectWorkspaceRepository: this.workspaceRepository,
+      gameWorkspaceRepository: this.gameWorkspaceRepository,
       ...this.sharedOptions,
     });
     this.assetReadyInitialized = false;
-    this.sharedOptions.workspaceRepository = this.workspaceRepository;
-    this.projectJourneyRepository = createProjectJourneyMockRepository(this.sharedOptions);
+    this.sharedOptions.gameWorkspaceRepository = this.gameWorkspaceRepository;
+    this.gameJourneyRepository = createGameJourneyMockRepository(this.sharedOptions);
     this.repositoryById.clear();
   }
 
@@ -1457,13 +1461,13 @@ class LocalDevMockDataSource {
 
   repositoryForTool(toolId) {
     this.assertConfiguredAdapter(`Opening ${toolId} repository`);
-    if (toolId === "workspace") return this.workspaceRepository;
-    if (toolId === "project-workspace") return this.workspaceRepository;
+    if (toolId === "workspace") return this.gameWorkspaceRepository;
+    if (toolId === "game-workspace") return this.gameWorkspaceRepository;
     if (toolId === "game-design") return this.gameDesignRepository;
     if (toolId === "game-configuration") return this.gameConfigurationRepository;
     if (toolId === "objects") return this.objectsRepository;
     if (toolId === "controls") return this.inputMappingRepository;
-    if (toolId === "project-journey") return this.projectJourneyRepository;
+    if (toolId === "game-journey") return this.gameJourneyRepository;
     if (toolId === "palette") return this.paletteRepository;
     if (toolId === "colors") return this.paletteRepository;
     if (toolId === "asset") return this.assetRepository;
@@ -1473,11 +1477,11 @@ class LocalDevMockDataSource {
 
   constantsForTool(toolId) {
     this.assertConfiguredAdapter(`Reading ${toolId} constants`);
-    if (toolId === "workspace" || toolId === "project-workspace") {
+    if (toolId === "game-workspace") {
       return {
-        PROJECT_WORKSPACE_MEMBER_ROLES,
-        PROJECT_WORKSPACE_PROJECT_PURPOSES,
-        PROJECT_WORKSPACE_PROJECT_STATUSES,
+        GAME_WORKSPACE_MEMBER_ROLES,
+        GAME_WORKSPACE_GAME_PURPOSES,
+        GAME_WORKSPACE_GAME_STATUSES,
       };
     }
     if (toolId === "game-design") {
@@ -1504,12 +1508,12 @@ class LocalDevMockDataSource {
         INPUT_MAPPING_TOOL_TABLES: this.inputMappingRepository.INPUT_MAPPING_TOOL_TABLES,
       };
     }
-    if (toolId === "project-journey") {
+    if (toolId === "game-journey") {
       return {
-        PROJECT_JOURNEY_KEYS,
-        PROJECT_JOURNEY_STATUS_BY_ID,
-        PROJECT_JOURNEY_STATUSES,
-        PROJECT_JOURNEY_SUGGESTED_TOOLS,
+        GAME_JOURNEY_KEYS,
+        GAME_JOURNEY_STATUS_BY_ID,
+        GAME_JOURNEY_STATUSES,
+        GAME_JOURNEY_SUGGESTED_TOOLS,
       };
     }
     if (toolId === "palette" || toolId === "colors") {
@@ -1551,8 +1555,8 @@ class LocalDevMockDataSource {
     let repository = this.repositoryForTool(toolId);
     if (hasCustomOptions && (toolId === "palette" || toolId === "colors")) {
       const paletteOptions = { ...options };
-      repository = createProjectWorkspacePaletteRepository({
-        projectWorkspaceRepository: this.workspaceRepository,
+      repository = createGameWorkspacePaletteRepository({
+        gameWorkspaceRepository: this.gameWorkspaceRepository,
         ...this.sharedOptions,
         ...paletteOptions,
       });
@@ -1639,12 +1643,12 @@ class LocalDevMockDataSource {
 
     const tables = {
       ...this.standaloneTables,
-      ...workspaceTables(this.workspaceRepository),
+      ...gameWorkspaceTables(this.gameWorkspaceRepository),
       ...gameDesignTables(this.gameDesignRepository),
       ...gameConfigurationTables(this.gameConfigurationRepository),
       ...objectsTables(this.objectsRepository),
       ...controlsTables(this.inputMappingRepository),
-      ...projectJourneyTables(this.projectJourneyRepository),
+      ...gameJourneyTables(this.gameJourneyRepository),
       ...paletteTables(this.paletteRepository),
       ...assetTables(this.assetRepository),
     };

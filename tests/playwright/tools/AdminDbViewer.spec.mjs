@@ -3,7 +3,7 @@ import path from "node:path";
 import process from "node:process";
 import { expect, test } from "@playwright/test";
 import { createAssetToolMockRepository } from "../../../src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js";
-import { createProjectWorkspacePaletteRepository } from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
+import { createGameWorkspacePaletteRepository } from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
 import {
   MOCK_DB_KEYS,
   getStandaloneMockDbSeedTables,
@@ -187,7 +187,7 @@ function expectSeedIntegrity(seedData) {
   const userSamples = seedData.samples.filter((sample) => sample.audience === "user");
   const guestToolKeys = [...new Set(guestSamples.map((sample) => sample.toolKey))].sort();
   const userKeys = userSamples.map((sample) => sample.userKey).sort();
-  const projectKeys = userSamples.map((sample) => sample.projectKey);
+  const gameKeys = userSamples.map((sample) => sample.gameKey);
   const toolStateKeys = userSamples.map((sample) => sample.toolStateKey);
 
   expect(guestToolKeys).toEqual(seedData.activeToolKeys);
@@ -197,7 +197,7 @@ function expectSeedIntegrity(seedData) {
     MOCK_DB_KEYS.users.user2,
     MOCK_DB_KEYS.users.user3,
   ].sort());
-  expect(new Set(projectKeys).size).toBe(projectKeys.length);
+  expect(new Set(gameKeys).size).toBe(gameKeys.length);
   expect(new Set(toolStateKeys).size).toBe(toolStateKeys.length);
   expect(guestSamples.every((sample) => sample.createdBy === MOCK_DB_KEYS.users.forgeBot)).toBe(true);
   expect(userSamples.every((sample) => sample.createdBy === sample.userKey)).toBe(true);
@@ -241,7 +241,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       "Game Configuration",
       "Objects",
       "Controls",
-      "Project Journey",
+      "Game Journey",
       "Palette",
       "Asset",
       "User Roles",
@@ -257,17 +257,17 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-filter='user_roles']")).toHaveCount(1);
 
     for (const tableName of [
-      "workspace_projects",
-      "workspace_progress",
+      "workspace_games",
+      "game_workspace_progress",
       "game_design_documents",
       "game_design_validation_items",
       "game_configuration_records",
       "game_configuration_validation_items",
-      "project_journey_items",
-      "project_journey_templates",
-      "project_journey_notes",
-      "project_journey_note_types",
-      "project_journey_activity",
+      "game_journey_items",
+      "game_journey_templates",
+      "game_journey_notes",
+      "game_journey_note_types",
+      "game_journey_activity",
       "palette_colors",
       "palette_source_swatches",
       "asset_library_items",
@@ -304,10 +304,10 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       await expect(page.locator(`[data-admin-db-table='${tableName}']`)).toContainText("No records in this table.");
     }
 
-    const itemHeaders = await page.locator("[data-admin-db-table='project_journey_items'] thead th").allTextContents();
+    const itemHeaders = await page.locator("[data-admin-db-table='game_journey_items'] thead th").allTextContents();
     expect(itemHeaders[0]).toBe("Key");
     expect(itemHeaders).toEqual(expect.arrayContaining([
-      "projectKey",
+      "gameKey",
       "noteKey",
       "status",
       "title",
@@ -319,9 +319,9 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       "templateKey",
     ]));
     expect(itemHeaders).not.toEqual(expect.arrayContaining(["key"]));
-    expect(itemHeaders).not.toEqual(expect.arrayContaining(["id", "itemId", "projectId", "noteId", "templateId"]));
+    expect(itemHeaders).not.toEqual(expect.arrayContaining(["id", "itemId", "gameId", "noteId", "templateId"]));
     expect(itemHeaders).not.toEqual(expect.arrayContaining(["CREATEDAT", "UPDATEDAT"]));
-    const createdAtHeader = page.locator("[data-admin-db-table='project_journey_items'] thead th", { hasText: "createdAt" });
+    const createdAtHeader = page.locator("[data-admin-db-table='game_journey_items'] thead th", { hasText: "createdAt" });
     await expect(createdAtHeader).toHaveCSS("text-transform", "none");
 
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
@@ -344,7 +344,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(sampleTable).toContainText("User 2");
     await expect(sampleTable).toContainText("User 3");
     await expect(sampleTable).toContainText("DavidQ");
-    await expect(sampleTable).toContainText("Guest Project Journey starter");
+    await expect(sampleTable).toContainText("Guest Game Journey starter");
     await expect(sampleTable).toContainText("local-seeds/user-3/");
     await expect(sampleTable).toContainText(seedData.samples[0].createdAt);
     await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("Colors");
@@ -361,10 +361,10 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       "No stale display data detected; tables are rendered from current Local Mem DB snapshots."
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "project_journey_items.noteKey -> project_journey_notes.key:"
+      "game_journey_items.noteKey -> game_journey_notes.key:"
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
-      "system project_journey_items.templateKey -> active project_journey_templates.key:"
+      "system game_journey_items.templateKey -> active game_journey_templates.key:"
     );
     await expect(page.locator("[data-admin-db-relationship-summary]")).toContainText(
       "*.createdBy -> users.key:"
@@ -387,14 +387,14 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
 
     await page.getByRole("button", { name: "Workspace" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Workspace\./);
-    await expect(page.locator("[data-admin-db-table='workspace_projects']")).toBeVisible();
-    await expect(page.locator("[data-admin-db-table='workspace_projects'] thead")).toContainText("ownerKey");
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toHaveCount(0);
+    await expect(page.locator("[data-admin-db-table='workspace_games']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='workspace_games'] thead")).toContainText("ownerKey");
+    await expect(page.locator("[data-admin-db-table='game_journey_items']")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Game Design" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Game Design\./);
     await expect(page.locator("[data-admin-db-table='game_design_documents']")).toBeVisible();
-    await expect(page.locator("[data-admin-db-table='game_design_documents'] thead")).toContainText("projectKey");
+    await expect(page.locator("[data-admin-db-table='game_design_documents'] thead")).toContainText("gameKey");
 
     await page.getByRole("button", { name: "Game Configuration" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Game Configuration\./);
@@ -417,10 +417,10 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='player_controller_profiles'] thead")).not.toContainText("gameAction");
     await expect(page.getByRole("button", { name: "Input Mapping" })).toHaveCount(0);
 
-    await page.getByRole("button", { name: "Project Journey" }).click();
-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Project Journey\./);
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toBeVisible();
-    await expect(page.locator("[data-admin-db-table='project_journey_items'] > summary")).toContainText("Active runtime data");
+    await page.getByRole("button", { name: "Game Journey" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Game Journey\./);
+    await expect(page.locator("[data-admin-db-table='game_journey_items']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='game_journey_items'] > summary")).toContainText("Active runtime data");
     await expect(page.locator("[data-admin-db-table='palette_colors']")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-table='asset_library_items']")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-table='users']")).toHaveCount(0);
@@ -434,7 +434,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='palette_source_swatches']")).toContainText(
       "Current Colors grid rendering, editing, save/load, and import/export do not read this table."
     );
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toHaveCount(0);
+    await expect(page.locator("[data-admin-db-table='game_journey_items']")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Asset" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Asset\./);
@@ -457,7 +457,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await page.getByRole("button", { name: "Tool State Samples" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Tool State Samples\./);
     await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toBeVisible();
-    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("Guest Project Journey starter");
+    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("Guest Game Journey starter");
     await expect(page.locator("[data-admin-db-table='users']")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Tool Metadata" }).click();
@@ -494,8 +494,8 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await page.locator("[data-admin-db-clear]").click();
     await expect(page.locator("[data-admin-db-clear]")).toHaveText("Seed Local Mem DB");
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local Mem DB loaded \d+ tables and 0 records for All\./);
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("No records in this table.");
-    await expect(page.locator("[data-admin-db-table='project_journey_items'] thead")).toContainText("projectKey");
+    await expect(page.locator("[data-admin-db-table='game_journey_items']")).toContainText("No records in this table.");
+    await expect(page.locator("[data-admin-db-table='game_journey_items'] thead")).toContainText("gameKey");
     await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("No records in this table.");
     await expect(page.locator("[data-admin-db-table='tool_state_samples'] thead")).toContainText("toolStatePayload");
     await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("No records in this table.");
@@ -509,7 +509,7 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local Mem DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("Designer review");
+    await expect(page.locator("[data-admin-db-table='game_journey_items']")).toContainText("Designer review");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Local Mem DB");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
@@ -538,7 +538,7 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
       "Game Configuration",
       "Objects",
       "Controls",
-      "Project Journey",
+      "Game Journey",
       "Palette",
       "Asset",
       "User Roles",
@@ -556,7 +556,7 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
     await expect(page.locator("[data-admin-db-table='asset_library_items'] thead")).toContainText("storageObjectId");
     const localDbSeedData = await seedIntegritySnapshot(page);
     expectSeedIntegrity(localDbSeedData);
-    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("Guest Project Journey starter");
+    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("Guest Game Journey starter");
     await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText(localDbSeedData.samples[0].createdAt);
     await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
       "All current Local DB tables include createdAt, updatedAt, createdBy, and updatedBy."
@@ -615,7 +615,7 @@ test("Admin DB Viewer shows a visible Local DB diagnostic when adapter storage i
 });
 
 test("Local Mem DB viewer renders live persisted tool records after refresh", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html", {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html", {
     sessionUserKey: MOCK_DB_KEYS.users.user1,
   });
   const server = failures.server;
@@ -662,11 +662,11 @@ test("Local Mem DB viewer renders live persisted tool records after refresh", as
       method: "POST",
     });
     await page.goto(`${server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
-    await page.getByRole("button", { name: "Project Journey" }).click();
-    await expect(page.locator("[data-admin-db-table='project_journey_notes']")).toContainText("Persistence Review");
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("Persisted DB item");
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).toContainText("Persisted DB item after reload");
-    const journeyItemKeys = await page.locator("[data-admin-db-table='project_journey_items'] tbody tr").evaluateAll((rows) => (
+    await page.getByRole("button", { name: "Game Journey" }).click();
+    await expect(page.locator("[data-admin-db-table='game_journey_notes']")).toContainText("Persistence Review");
+    await expect(page.locator("[data-admin-db-table='game_journey_items']")).toContainText("Persisted DB item");
+    await expect(page.locator("[data-admin-db-table='game_journey_items']")).toContainText("Persisted DB item after reload");
+    const journeyItemKeys = await page.locator("[data-admin-db-table='game_journey_items'] tbody tr").evaluateAll((rows) => (
       rows.map((row) => row.dataset.adminDbRecord)
     ));
     expect(new Set(journeyItemKeys).size).toBe(journeyItemKeys.length);
@@ -708,7 +708,7 @@ test("Local Mem DB viewer shows a visible diagnostic for invalid persisted audit
 });
 
 test("Palette and Asset raw Local Mem DB tables are DB-shaped before viewer rendering", () => {
-  const paletteRepository = createProjectWorkspacePaletteRepository({ persist: false });
+  const paletteRepository = createGameWorkspacePaletteRepository({ persist: false });
   const assetRepository = createAssetToolMockRepository({ persist: false });
   const paletteTables = paletteRepository.getTables();
   const assetTables = assetRepository.getTables();

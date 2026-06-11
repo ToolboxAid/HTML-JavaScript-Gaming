@@ -122,25 +122,25 @@ const laneDefinitions = Object.freeze({
     requiresPreflight: true,
     reason: "Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes."
   },
-  "project-workspace": {
-    affectedSurface: "Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge",
+  "game-workspace": {
+    affectedSurface: "Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge",
     commands: [
-      playwrightCommand("tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs")
+      playwrightCommand("tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs")
     ],
     dependencies: [],
     discoveryTargets: [
-      "tests/playwright/tools/ProjectWorkspaceMockRepository.spec.mjs"
+      "tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs"
     ],
     fixtures: [
-      "repo-served Project Workspace page",
+      "repo-served Game Workspace page",
       "repo-served Toolbox page with role simulation",
-      "in-memory SQL-shaped mock project repository"
+      "in-memory SQL-shaped mock game repository"
     ],
     fixturePaths: [],
     ownership: "tools",
     playwrightDir: "tests/playwright/tools",
     requiresPreflight: true,
-    reason: "Project Workspace rebuild slice validates mock users/projects/project_members data actions, project lifecycle controls, and project-driven Progress/Build Path copy without exercising unrelated toolbox routes."
+    reason: "Game Workspace rebuild slice validates mock users/games/game_members data actions, game lifecycle controls, and game-driven Progress/Build Path copy without exercising unrelated toolbox routes."
   },
   "game-design": {
     affectedSurface: "Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff",
@@ -155,13 +155,13 @@ const laneDefinitions = Object.freeze({
       "repo-served Game Design page",
       "repo-served Toolbox Progress and Build Path views",
       "in-memory SQL-shaped Game Design mock repository",
-      "Project Workspace mock project context"
+      "Game Workspace mock game context"
     ],
     fixturePaths: [],
     ownership: "tools",
     playwrightDir: "tests/playwright/tools",
     requiresPreflight: true,
-    reason: "Game Design rebuild slice validates the active project context, design save/update, actionable validation, capability demo authoring, and Toolbox progress handoff without exercising unrelated toolbox routes."
+    reason: "Game Design rebuild slice validates the active game context, design save/update, actionable validation, capability demo authoring, and Toolbox progress handoff without exercising unrelated toolbox routes."
   },
   "game-configuration": {
     affectedSurface: "Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff",
@@ -218,7 +218,7 @@ const laneDefinitions = Object.freeze({
     fixtures: [
       "repo-served Toolbox page",
       "repo-served Admin Tools Progress page",
-      "Project Workspace mock project context",
+      "Game Workspace mock game context",
       "Toolbox role simulation"
     ],
     fixturePaths: [],
@@ -228,7 +228,7 @@ const laneDefinitions = Object.freeze({
     reason: "Build Path simplification validates removal of the separate Progress view, workflow-order status/completion table behavior, contributor N/A rows, and Admin Tools Progress navigation without exercising unrelated toolbox routes."
   },
   "tools-progress": {
-    affectedSurface: "Admin Tools Progress hydration, Toolbox Group view color model, and Project Build Path separation",
+    affectedSurface: "Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation",
     commands: [
       playwrightCommand("tests/playwright/tools/ToolsProgressHydration.spec.mjs")
     ],
@@ -240,13 +240,13 @@ const laneDefinitions = Object.freeze({
       "repo-served Admin Tools Progress page",
       "repo-served Toolbox Group view",
       "Toolbox registry build sequence",
-      "Project Build Path workflow table"
+      "Game Build Path workflow table"
     ],
     fixturePaths: [],
     ownership: "tools",
     playwrightDir: "tests/playwright/tools",
     requiresPreflight: true,
-    reason: "Tools Progress validates that Admin platform progress hydrates every planned/active Toolbox registry entry in build order, the restored semantic group colors render in Toolbox Group view, and Project Build Path stays workflow-order and project-specific."
+    reason: "Tools Progress validates that Admin platform progress hydrates every planned/active Toolbox registry entry in build order, the restored semantic group colors render in Toolbox Group view, and Game Build Path stays workflow-order and project-specific."
   },
   "tool-navigation": {
     affectedSurface: "Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing",
@@ -259,7 +259,7 @@ const laneDefinitions = Object.freeze({
     ],
     fixtures: [
       "repo-served Admin Tools Progress page",
-      "repo-served Project Workspace, Game Design, and Game Configuration tool pages",
+      "repo-served Game Workspace, Game Design, and Game Configuration tool pages",
       "repo-served Toolbox Group view with URL-selected accordion",
       "Toolbox registry build sequence and route metadata"
     ],
@@ -279,7 +279,7 @@ const laneDefinitions = Object.freeze({
       "tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs"
     ],
     fixtures: [
-      "repo-served Project Workspace, Game Design, Game Configuration, and AI Assistant tool pages",
+      "repo-served Game Workspace, Game Design, Game Configuration, and AI Assistant tool pages",
       "repo-served Toolbox Group view with URL-selected accordion",
       "Toolbox registry build sequence and route metadata",
       "shared Theme V2 Tool Display Mode script"

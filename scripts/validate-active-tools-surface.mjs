@@ -123,7 +123,7 @@ async function main() {
   }
 
   if (/<button[^>]+data-tools-view="progress"[^>]*>\s*Progress\s*<\/button>/i.test(toolboxIndex)) {
-    issues.push("Toolbox index must not expose the removed Project Progress view mode control.");
+    issues.push("Toolbox index must not expose the removed Game Progress view mode control.");
   }
   if (!/<button[^>]+data-tools-view="build-path"[^>]*>\s*Build Path\s*<\/button>/i.test(toolboxIndex)) {
     issues.push("Toolbox index is missing the Build Path view mode control.");

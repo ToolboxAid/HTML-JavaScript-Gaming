@@ -1,4 +1,4 @@
-import { createProjectWorkspaceMockRepository } from "./project-workspace-mock-repository.js";
+import { createGameWorkspaceMockRepository } from "./game-workspace-mock-repository.js";
 import {
   loadMockDbTables,
   MOCK_DB_KEYS,
@@ -159,7 +159,7 @@ export function createPaletteToolMockDbTables(tables = {}) {
 
 function cloneWorkspaceRecord(record) {
   return {
-    projectId: record.projectId,
+    gameId: record.gameId,
     tools: {
       [PALETTE_TOOL_KEY]: {
         swatches: record.tools[PALETTE_TOOL_KEY].swatches.map(cloneSwatch)
@@ -240,9 +240,9 @@ function displayHarmonySource(value) {
   return PALETTE_HARMONY_SCHEMES.find((scheme) => scheme.id === normalized)?.label || "";
 }
 
-function createEmptyWorkspaceRecord(projectId) {
+function createEmptyWorkspaceRecord(gameId) {
   return {
-    projectId,
+    gameId,
     tools: {
       [PALETTE_TOOL_KEY]: {
         swatches: []
@@ -338,11 +338,11 @@ export function validatePaletteWorkspacePayload(payload = {}) {
   }
 
   if (!tools || typeof tools !== "object" || Array.isArray(tools)) {
-    issues.push(createIssue("tools", "Workspace Tools", "Colors payload must contain active project swatches."));
+    issues.push(createIssue("tools", "Workspace Tools", "Colors payload must contain active game swatches."));
   }
 
   if (!paletteSection || typeof paletteSection !== "object" || Array.isArray(paletteSection)) {
-    issues.push(createIssue(PALETTE_TOOL_KEY, "Colors Section", "Colors section must be an object in the active project tool data."));
+    issues.push(createIssue(PALETTE_TOOL_KEY, "Colors Section", "Colors section must be an object in the active game tool data."));
   }
 
   if (!Array.isArray(swatches)) {
@@ -634,12 +634,12 @@ function nextGeneratedHarmonyName(name, existingSwatches) {
   return candidate;
 }
 
-function createUsageId(projectId, swatchKey, assetId) {
-  return `${projectId || "project"}-${swatchKey || "swatch"}-${assetId || "asset"}`;
+function createUsageId(gameId, swatchKey, assetId) {
+  return `${gameId || "project"}-${swatchKey || "swatch"}-${assetId || "asset"}`;
 }
 
-export function createProjectWorkspacePaletteRepository(options = {}) {
-  const projectWorkspaceRepository = options.projectWorkspaceRepository || createProjectWorkspaceMockRepository();
+export function createGameWorkspacePaletteRepository(options = {}) {
+  const gameWorkspaceRepository = options.gameWorkspaceRepository || createGameWorkspaceMockRepository();
   const seedMockDbTables = {
     palette_colors: [],
     palette_swatch_usages: [],
@@ -654,8 +654,8 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }));
   const usageRows = (loadedMockDbTables.palette_swatch_usages || []).map((row) => ({ ...row }));
   (loadedMockDbTables.project_workspace_palette_globals || []).forEach((row) => {
-    if (row.projectId) {
-      workspaceRecords.set(row.projectId, createEmptyWorkspaceRecord(row.projectId));
+    if (row.gameId) {
+      workspaceRecords.set(row.gameId, createEmptyWorkspaceRecord(row.gameId));
     }
   });
   const undoStacks = new Map();
@@ -666,24 +666,24 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     saveMockDbTables(PALETTE_DB_OWNER, getTables(), options);
   }
 
-  function getActiveProject() {
-    return projectWorkspaceRepository.getActiveProject();
+  function getActiveGame() {
+    return gameWorkspaceRepository.getActiveGame();
   }
 
   function activeProjectId() {
-    return getActiveProject()?.id || "";
+    return getActiveGame()?.id || "";
   }
 
-  function ensureWorkspaceRecord(projectId) {
-    if (!workspaceRecords.has(projectId)) {
-      workspaceRecords.set(projectId, createEmptyWorkspaceRecord(projectId));
+  function ensureWorkspaceRecord(gameId) {
+    if (!workspaceRecords.has(gameId)) {
+      workspaceRecords.set(gameId, createEmptyWorkspaceRecord(gameId));
     }
-    return workspaceRecords.get(projectId);
+    return workspaceRecords.get(gameId);
   }
 
-  function swatchesFromColorRows(projectId) {
+  function swatchesFromColorRows(gameId) {
     return paletteColorRows
-      .filter((row) => row.projectId === projectId)
+      .filter((row) => row.gameId === gameId)
       .map((row) => ({
         hex: row.hex,
         key: row.swatchKey,
@@ -695,14 +695,14 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       }));
   }
 
-  function replacePaletteColorRows(projectId, swatches) {
+  function replacePaletteColorRows(gameId, swatches) {
     const existingRows = new Map(
       paletteColorRows
-        .filter((row) => row.projectId === projectId)
+        .filter((row) => row.gameId === gameId)
         .map((row) => [row.swatchKey, row])
     );
     for (let index = paletteColorRows.length - 1; index >= 0; index -= 1) {
-      if (paletteColorRows[index].projectId === projectId) {
+      if (paletteColorRows[index].gameId === gameId) {
         paletteColorRows.splice(index, 1);
       }
     }
@@ -716,11 +716,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
           updatedBy: PALETTE_SYSTEM_USER_KEY
         }, index),
         hex: swatch.hex,
-        id: `${projectId}-palette-color-${index + 1}`,
+        id: `${gameId}-palette-color-${index + 1}`,
         metadata: cloneColorMetadata(swatch.metadata) || undefined,
         name: swatch.name,
         pickerSettings: clonePickerSettings(swatch.pickerSettings) || undefined,
-        projectId,
+        gameId,
         source: swatch.source,
         swatchKey: swatch.key,
         tags: [...swatch.tags]
@@ -728,20 +728,20 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     });
   }
 
-  function syncWorkspaceRecordFromColors(projectId) {
-    const record = ensureWorkspaceRecord(projectId);
-    record.tools[PALETTE_TOOL_KEY].swatches = swatchesFromColorRows(projectId).map(cloneSwatch);
+  function syncWorkspaceRecordFromColors(gameId) {
+    const record = ensureWorkspaceRecord(gameId);
+    record.tools[PALETTE_TOOL_KEY].swatches = swatchesFromColorRows(gameId).map(cloneSwatch);
     return record;
   }
 
   function activeWorkspaceRecord() {
-    const projectId = activeProjectId();
-    return projectId ? ensureWorkspaceRecord(projectId) : null;
+    const gameId = activeProjectId();
+    return gameId ? ensureWorkspaceRecord(gameId) : null;
   }
 
   function getActiveSwatches() {
-    const projectId = activeProjectId();
-    const record = projectId ? syncWorkspaceRecordFromColors(projectId) : activeWorkspaceRecord();
+    const gameId = activeProjectId();
+    const record = gameId ? syncWorkspaceRecordFromColors(gameId) : activeWorkspaceRecord();
     if (!record) {
       return [];
     }
@@ -752,16 +752,16 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     return record.tools[PALETTE_TOOL_KEY].swatches;
   }
 
-  function replaceSwatches(projectId, nextSwatches, optionsForReplace = {}) {
-    if (!projectId) {
+  function replaceSwatches(gameId, nextSwatches, optionsForReplace = {}) {
+    if (!gameId) {
       return {
         ok: false,
-        message: "Colors edit blocked: no active project.",
+        message: "Colors edit blocked: no active game.",
         snapshot: getSnapshot()
       };
     }
 
-    const record = ensureWorkspaceRecord(projectId);
+    const record = ensureWorkspaceRecord(gameId);
     const previousSwatches = record.tools[PALETTE_TOOL_KEY].swatches.map(cloneSwatch);
     const candidatePayload = {
       tools: {
@@ -781,15 +781,15 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
 
     if (optionsForReplace.history !== false) {
-      const undoStack = undoStacks.get(projectId) || [];
+      const undoStack = undoStacks.get(gameId) || [];
       undoStack.push(previousSwatches);
-      undoStacks.set(projectId, undoStack);
-      redoStacks.set(projectId, []);
+      undoStacks.set(gameId, undoStack);
+      redoStacks.set(gameId, []);
     }
 
-    replacePaletteColorRows(projectId, validation.normalized.tools[PALETTE_TOOL_KEY].swatches);
-    syncWorkspaceRecordFromColors(projectId);
-    const activeSwatches = swatchesFromColorRows(projectId);
+    replacePaletteColorRows(gameId, validation.normalized.tools[PALETTE_TOOL_KEY].swatches);
+    syncWorkspaceRecordFromColors(gameId);
+    const activeSwatches = swatchesFromColorRows(gameId);
     if (optionsForReplace.selection === "clear") {
       selectedSwatchKey = "";
     } else if (optionsForReplace.selectedKey) {
@@ -807,7 +807,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function saveSwatch(input = {}, optionsForSave = {}) {
-    const projectId = activeProjectId();
+    const gameId = activeProjectId();
     const swatches = getActiveSwatches();
     const inputWithKey = {
       ...input,
@@ -818,11 +818,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       source: optionsForSave.source || PALETTE_SOURCE_USER
     });
 
-    if (!projectId) {
+    if (!gameId) {
       return {
-        issues: [createIssue("activeProject", "Active Project", "Open a project before editing Project Swatches.")],
+        issues: [createIssue("activeProject", "Active Project", "Open a game before editing Project Swatches.")],
         ok: false,
-        message: "Colors edit blocked: no active project.",
+        message: "Colors edit blocked: no active game.",
         snapshot: getSnapshot()
       };
     }
@@ -840,7 +840,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       ? swatches.map((swatch) => (swatch.key === optionsForSave.excludeKey ? validation.swatch : swatch))
       : [...swatches, validation.swatch];
     selectedSwatchKey = validation.swatch.key;
-    return replaceSwatches(projectId, nextSwatches, {
+    return replaceSwatches(gameId, nextSwatches, {
       selectedKey: validation.swatch.key
     });
   }
@@ -888,10 +888,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function updateSelectedSwatchTags(tags = []) {
-    const projectId = activeProjectId();
+    const gameId = activeProjectId();
     const swatches = getActiveSwatches();
     const selectedSwatch = getSelectedSwatch();
-    if (!projectId || !selectedSwatch) {
+    if (!gameId || !selectedSwatch) {
       return {
         issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a Project Swatches color before editing tags.")],
         ok: false,
@@ -916,7 +916,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const result = replaceSwatches(projectId, swatches.map((swatch) => (
+    const result = replaceSwatches(gameId, swatches.map((swatch) => (
       swatch.key === selectedSwatch.key ? validation.swatch : swatch
     )), { selection: "preserve" });
     return {
@@ -926,17 +926,17 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function addTagToSwatches(keys = [], tag = "") {
-    const projectId = activeProjectId();
+    const gameId = activeProjectId();
     const swatches = getActiveSwatches();
     const normalizedTag = normalizeTags([tag])[0] || "";
     const targetKeys = [...new Set(keys.map(normalizeText))]
       .filter((key) => swatches.some((swatch) => swatch.key === key));
 
-    if (!projectId) {
+    if (!gameId) {
       return {
-        issues: [createIssue("activeProject", "Active Project", "Open a project before editing Project Swatches.")],
+        issues: [createIssue("activeProject", "Active Project", "Open a game before editing Project Swatches.")],
         ok: false,
-        message: "Project Swatches tag update blocked: no active project.",
+        message: "Project Swatches tag update blocked: no active game.",
         snapshot: getSnapshot()
       };
     }
@@ -964,7 +964,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         ? { ...swatch, tags: normalizeTags([...swatch.tags, normalizedTag]) }
         : swatch
     ));
-    const result = replaceSwatches(projectId, nextSwatches, { selection: "preserve" });
+    const result = replaceSwatches(gameId, nextSwatches, { selection: "preserve" });
     return {
       ...result,
       message: result.ok
@@ -974,10 +974,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function removeSwatch(key) {
-    const projectId = activeProjectId();
+    const gameId = activeProjectId();
     const normalizedKey = normalizeText(key);
     const swatchToRemove = getActiveSwatches().find((swatch) => swatch.key === normalizedKey);
-    if (!projectId || !swatchToRemove) {
+    if (!gameId || !swatchToRemove) {
       return {
         issues: [createIssue("selectedSwatch", "Selected Swatch", "Select a Project Swatches color before removing.")],
         ok: false,
@@ -997,7 +997,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     }
 
     const nextSwatches = getActiveSwatches().filter((swatch) => swatch.key !== swatchToRemove.key);
-    const result = replaceSwatches(projectId, nextSwatches, {
+    const result = replaceSwatches(gameId, nextSwatches, {
       selection: selectedSwatchKey === swatchToRemove.key ? "clear" : "preserve"
     });
     return {
@@ -1082,13 +1082,13 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function addHarmonySuggestion(suggestion = {}) {
-    const projectId = activeProjectId();
+    const gameId = activeProjectId();
     const swatches = getActiveSwatches();
-    if (!projectId) {
+    if (!gameId) {
       return {
-        issues: [createIssue("activeProject", "Active Project", "Open a project before adding harmony colors.")],
+        issues: [createIssue("activeProject", "Active Project", "Open a game before adding harmony colors.")],
         ok: false,
-        message: "Harmony color blocked: no active project.",
+        message: "Harmony color blocked: no active game.",
         snapshot: getSnapshot()
       };
     }
@@ -1120,7 +1120,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    return replaceSwatches(projectId, [...swatches, validation.swatch], {
+    return replaceSwatches(gameId, [...swatches, validation.swatch], {
       selectedKey: validation.swatch.key
     });
   }
@@ -1149,10 +1149,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function undo() {
-    const projectId = activeProjectId();
-    const record = projectId ? syncWorkspaceRecordFromColors(projectId) : activeWorkspaceRecord();
-    const undoStack = undoStacks.get(projectId) || [];
-    if (!projectId || !record || undoStack.length === 0) {
+    const gameId = activeProjectId();
+    const record = gameId ? syncWorkspaceRecordFromColors(gameId) : activeWorkspaceRecord();
+    const undoStack = undoStacks.get(gameId) || [];
+    if (!gameId || !record || undoStack.length === 0) {
       return {
         ok: false,
         message: "Undo unavailable.",
@@ -1160,12 +1160,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const redoStack = redoStacks.get(projectId) || [];
+    const redoStack = redoStacks.get(gameId) || [];
     redoStack.push(record.tools[PALETTE_TOOL_KEY].swatches.map(cloneSwatch));
-    redoStacks.set(projectId, redoStack);
+    redoStacks.set(gameId, redoStack);
     const previousSwatches = undoStack.pop();
-    replacePaletteColorRows(projectId, previousSwatches);
-    syncWorkspaceRecordFromColors(projectId);
+    replacePaletteColorRows(gameId, previousSwatches);
+    syncWorkspaceRecordFromColors(gameId);
     selectedSwatchKey = previousSwatches[0]?.key || "";
     return {
       ok: true,
@@ -1175,10 +1175,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function redo() {
-    const projectId = activeProjectId();
-    const record = projectId ? syncWorkspaceRecordFromColors(projectId) : activeWorkspaceRecord();
-    const redoStack = redoStacks.get(projectId) || [];
-    if (!projectId || !record || redoStack.length === 0) {
+    const gameId = activeProjectId();
+    const record = gameId ? syncWorkspaceRecordFromColors(gameId) : activeWorkspaceRecord();
+    const redoStack = redoStacks.get(gameId) || [];
+    if (!gameId || !record || redoStack.length === 0) {
       return {
         ok: false,
         message: "Redo unavailable.",
@@ -1186,12 +1186,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const undoStack = undoStacks.get(projectId) || [];
+    const undoStack = undoStacks.get(gameId) || [];
     undoStack.push(record.tools[PALETTE_TOOL_KEY].swatches.map(cloneSwatch));
-    undoStacks.set(projectId, undoStack);
+    undoStacks.set(gameId, undoStack);
     const nextSwatches = redoStack.pop();
-    replacePaletteColorRows(projectId, nextSwatches);
-    syncWorkspaceRecordFromColors(projectId);
+    replacePaletteColorRows(gameId, nextSwatches);
+    syncWorkspaceRecordFromColors(gameId);
     selectedSwatchKey = nextSwatches[0]?.key || "";
     return {
       ok: true,
@@ -1201,13 +1201,13 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function loadActiveProjectPalettePayload(payload = {}) {
-    const projectId = activeProjectId();
+    const gameId = activeProjectId();
     const validation = validatePaletteWorkspacePayload(payload);
-    if (!projectId) {
+    if (!gameId) {
       return {
-        issues: [createIssue("activeProject", "Active Project", "Open a project before loading Colors payloads.")],
+        issues: [createIssue("activeProject", "Active Project", "Open a game before loading Colors payloads.")],
         ok: false,
-        message: "Colors payload rejected: no active project.",
+        message: "Colors payload rejected: no active game.",
         snapshot: getSnapshot()
       };
     }
@@ -1220,15 +1220,15 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    replacePaletteColorRows(projectId, validation.normalized.tools[PALETTE_TOOL_KEY].swatches);
-    syncWorkspaceRecordFromColors(projectId);
-    selectedSwatchKey = swatchesFromColorRows(projectId)[0]?.key || "";
-    undoStacks.set(projectId, []);
-    redoStacks.set(projectId, []);
+    replacePaletteColorRows(gameId, validation.normalized.tools[PALETTE_TOOL_KEY].swatches);
+    syncWorkspaceRecordFromColors(gameId);
+    selectedSwatchKey = swatchesFromColorRows(gameId)[0]?.key || "";
+    undoStacks.set(gameId, []);
+    redoStacks.set(gameId, []);
     persistTables();
     return {
       ok: true,
-      message: "Colors payload loaded into the active project.",
+      message: "Colors payload loaded into the active game.",
       snapshot: getSnapshot()
     };
   }
@@ -1248,9 +1248,9 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function recordSwatchUsage(input = {}) {
-    const projectId = activeProjectId();
+    const gameId = activeProjectId();
     const swatch = findSwatch(input.key || input.swatchKey);
-    if (!projectId || !swatch) {
+    if (!gameId || !swatch) {
       return {
         ok: false,
         message: "Swatch usage not recorded: Project Swatches color is missing.",
@@ -1258,7 +1258,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       };
     }
 
-    const existingIndex = usageRows.findIndex((usage) => usage.id === createUsageId(projectId, swatch.key, input.assetId));
+    const existingIndex = usageRows.findIndex((usage) => usage.id === createUsageId(gameId, swatch.key, input.assetId));
     const existingRow = existingIndex >= 0 ? usageRows[existingIndex] : {};
     const timestamp = new Date().toISOString();
     const row = {
@@ -1268,8 +1268,8 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         updatedBy: PALETTE_SYSTEM_USER_KEY
       }),
       assetId: normalizeText(input.assetId),
-      id: createUsageId(projectId, swatch.key, input.assetId),
-      projectId,
+      id: createUsageId(gameId, swatch.key, input.assetId),
+      gameId,
       swatchHex: swatch.hex,
       swatchKey: swatch.key,
       swatchName: swatch.name,
@@ -1289,10 +1289,10 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function getSwatchUsage(key) {
-    const projectId = activeProjectId();
+    const gameId = activeProjectId();
     const normalizedKey = normalizeText(key);
     return usageRows
-      .filter((row) => row.projectId === projectId && row.swatchKey === normalizedKey)
+      .filter((row) => row.gameId === gameId && row.swatchKey === normalizedKey)
       .map((row) => ({ ...row }));
   }
 
@@ -1302,7 +1302,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function clearProjectData() {
-    projectWorkspaceRepository.clearTestData();
+    gameWorkspaceRepository.clearTestData();
     paletteColorRows.splice(0);
     usageRows.splice(0);
     workspaceRecords.clear();
@@ -1311,8 +1311,8 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     return getSnapshot();
   }
 
-  function resetProjectData() {
-    projectWorkspaceRepository.resetProjectData();
+  function resetGameData() {
+    gameWorkspaceRepository.resetGameData();
     paletteColorRows.splice(0);
     usageRows.splice(0);
     workspaceRecords.clear();
@@ -1330,8 +1330,8 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
       palette_swatch_usages: usageRows.map((row) => ({ ...row })),
       project_workspace_palette_globals: [...workspaceRecords.values()].map((record, index) => ({
         ...auditFields(timestampForIndex(index + 30), PALETTE_SYSTEM_USER_KEY),
-        projectId: record.projectId,
-        swatchCount: swatchesFromColorRows(record.projectId).length,
+        gameId: record.gameId,
+        swatchCount: swatchesFromColorRows(record.gameId).length,
         toolKey: PALETTE_TOOL_KEY,
         workspacePath: PALETTE_WORKSPACE_PATH
       }))
@@ -1339,8 +1339,8 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
   }
 
   function getSnapshot(optionsForSnapshot = {}) {
-    const activeProject = getActiveProject();
-    const projectId = activeProject?.id || "";
+    const activeProject = getActiveGame();
+    const gameId = activeProject?.id || "";
     let swatches = [];
     let validation = {
       findings: [],
@@ -1348,8 +1348,8 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     };
     let workspace = null;
 
-    if (projectId) {
-      workspace = cloneWorkspaceRecord(syncWorkspaceRecordFromColors(projectId));
+    if (gameId) {
+      workspace = cloneWorkspaceRecord(syncWorkspaceRecordFromColors(gameId));
       const payloadValidation = validatePaletteWorkspacePayload(workspace);
       validation = {
         findings: payloadValidation.issues,
@@ -1360,12 +1360,12 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
         : [];
     } else {
       validation = {
-        findings: [createIssue("activeProject", "Active Project", "Open a project before editing Project Swatches.")],
+        findings: [createIssue("activeProject", "Active Project", "Open a game before editing Project Swatches.")],
         status: "Blocked"
       };
     }
 
-    const selectedSwatch = projectId && validation.status === "Ready" ? getSelectedSwatch() : null;
+    const selectedSwatch = gameId && validation.status === "Ready" ? getSelectedSwatch() : null;
     const tableCounts = Object.entries(getTables()).map(([table, rows]) => ({
       rows: rows.length,
       table
@@ -1373,11 +1373,11 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
 
     return {
       activeProject,
-      canRedo: Boolean(projectId && (redoStacks.get(projectId) || []).length),
-      canUndo: Boolean(projectId && (undoStacks.get(projectId) || []).length),
+      canRedo: Boolean(gameId && (redoStacks.get(gameId) || []).length),
+      canUndo: Boolean(gameId && (undoStacks.get(gameId) || []).length),
       harmony: createHarmonySuggestions(selectedSwatch),
       palettePath: PALETTE_WORKSPACE_PATH,
-      projectRequired: !projectId,
+      projectRequired: !gameId,
       selectedSwatch: selectedSwatch ? cloneSwatch(selectedSwatch) : null,
       swatches,
       tableCounts,
@@ -1395,7 +1395,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     createHarmonySuggestions,
     displaySource: displaySwatchSource,
     findSwatch,
-    getActiveProject,
+    getActiveGame,
     getSnapshot,
     getSwatchUsage,
     getTables,
@@ -1408,7 +1408,7 @@ export function createProjectWorkspacePaletteRepository(options = {}) {
     redo,
     removeSwatch,
     removeSelectedSwatch,
-    resetProjectData,
+    resetGameData,
     seedActiveProjectPalette,
     selectSwatch,
     toggleHarmonySuggestionPin,

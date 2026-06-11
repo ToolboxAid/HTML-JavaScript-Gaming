@@ -123,7 +123,7 @@ export function createObjectsToolMockRepository(options = {}) {
   let tables = initialTables(options);
 
   function activeProjectId() {
-    return normalizeText(options.projectWorkspaceRepository?.getActiveProject?.()?.id) || DEFAULT_PROJECT_ID;
+    return normalizeText(options.gameWorkspaceRepository?.getActiveGame?.()?.id) || DEFAULT_PROJECT_ID;
   }
 
   function activeUserKey() {

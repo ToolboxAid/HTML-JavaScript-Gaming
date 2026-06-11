@@ -1,8 +1,8 @@
 {
   "commandsHash": "39e16c9d480a1e51",
-  "dependencyGraphHash": "fbb928f82cd79709",
+  "dependencyGraphHash": "0e4e45b146ae24a2",
   "dependencyHydration": {
-    "dependencyHydrationHash": "362cbfab36e610b3",
+    "dependencyHydrationHash": "24678cbf69e8345f",
     "fixtureHashes": {},
     "fixtures": [],
     "helperHashes": {
@@ -20,13 +20,13 @@
     "importHashes": {
       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
-      "src/dev-runtime/persistence/mock-db-store.js": "c33037404771deea",
-      "src/dev-runtime/server/mock-api-router.mjs": "a07e8d26ceb60601",
+      "src/dev-runtime/persistence/mock-db-store.js": "5c42bfc08d232e24",
+      "src/dev-runtime/server/mock-api-router.mjs": "0b4765a5041062b3",
       "tests/helpers/playwrightRepoServer.mjs": "654bc59251c146da",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
-      "toolbox/toolRegistry.js": "c2e9f1baeb21da28"
+      "toolbox/toolRegistry.js": "d10726a2c2ece0d0"
     },
     "imports": [
       "src/dev-runtime/admin/admin-notes-directory.mjs",
@@ -40,16 +40,16 @@
       "toolbox/toolRegistry.js"
     ]
   },
-  "dependencyHydrationHash": "362cbfab36e610b3",
-  "inputHash": "e6ca66e228916d9b",
+  "dependencyHydrationHash": "24678cbf69e8345f",
+  "inputHash": "d6960402a61f2e3b",
   "lane": "workspace-contract",
   "laneConfigHash": "3d8db02cddc33911",
-  "laneDefinitionHash": "fcd48dbd6ff3f609",
-  "manifestHash": "f51c571da39319ff",
+  "laneDefinitionHash": "fde48767b345621c",
+  "manifestHash": "0b0229bf83a32394",
   "ownership": "tools",
-  "warmStartHash": "d2fab6b3e3abef70",
+  "warmStartHash": "85ed9dde3b71d0d9",
   "version": 1,
-  "generatedAt": "2026-06-11T16:58:28.723Z",
+  "generatedAt": "2026-06-11T18:11:40.851Z",
   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
   "sourceManifest": "generated"
 }

@@ -3,7 +3,7 @@ import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store
 import {
   PALETTE_WORKSPACE_PATH,
   PALETTE_TOOL_TABLES,
-  createProjectWorkspacePaletteRepository,
+  createGameWorkspacePaletteRepository,
   validatePaletteWorkspacePayload
 } from "../../../src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
@@ -246,7 +246,7 @@ async function expectSortToggle(page, key, label) {
 }
 
 test("Palette repository owns project swatches and protects invalid payloads", async () => {
-  const repository = createProjectWorkspacePaletteRepository();
+  const repository = createGameWorkspacePaletteRepository();
   const baseline = repository.getSnapshot();
 
   expect(baseline.palettePath).toBe(PALETTE_WORKSPACE_PATH);
@@ -298,7 +298,7 @@ test("Palette repository owns project swatches and protects invalid payloads", a
     name: "Symbol Free Swatch"
   });
 
-  const lifecycleRepository = createProjectWorkspacePaletteRepository();
+  const lifecycleRepository = createGameWorkspacePaletteRepository();
   const lifecycleAdd = lifecycleRepository.addSwatch({ hex: "#224466", name: "Lifecycle Blue" });
   expect(lifecycleAdd.ok).toBe(true);
   const lifecycleKey = lifecycleAdd.snapshot.selectedSwatch.key;
@@ -471,13 +471,13 @@ test("Colors renders curated swatch selector controls and live preview", async (
     await expect(page.locator("[data-palette-project-accordion] > summary")).toContainText("Project Swatches");
     await expect(page.locator("[data-palette-preview-accordion] > summary > span").first()).toHaveText("Picker Preview");
     const accordionOrder = await page.locator("[data-palette-picker-accordion]").evaluate((pickerAccordion) => {
-      const projectWorkspaceAccordion = pickerAccordion.previousElementSibling;
+      const gameWorkspaceAccordion = pickerAccordion.previousElementSibling;
       return {
         pickerTop: Math.round(pickerAccordion.getBoundingClientRect().top),
-        projectWorkspaceTop: Math.round(projectWorkspaceAccordion.getBoundingClientRect().top)
+        gameWorkspaceTop: Math.round(gameWorkspaceAccordion.getBoundingClientRect().top)
       };
     });
-    expect(accordionOrder.projectWorkspaceTop).toBeLessThan(accordionOrder.pickerTop);
+    expect(accordionOrder.gameWorkspaceTop).toBeLessThan(accordionOrder.pickerTop);
     await expect(page.locator("[data-palette-picker-accordion]")).toBeVisible();
     await expect(page.locator("[data-palette-project-accordion] [data-palette-generator-preview]")).toHaveCount(0);
     await expect(page.locator("[data-palette-picker-accordion] [data-palette-generator-preview]")).toHaveCount(0);

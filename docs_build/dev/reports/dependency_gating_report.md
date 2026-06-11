@@ -1,6 +1,6 @@
 # Dependency Gating Report
 
-Generated: 2026-06-11T16:58:29.577Z
+Generated: 2026-06-11T18:11:41.722Z
 Status: PASS
 
 ## Gate Order
@@ -15,12 +15,12 @@ Status: PASS
 | Lane | Selected | Status | Dependencies | Affected Surface | Reason |
 | --- | --- | --- | --- | --- | --- |
 | workspace-contract | Yes | PASS | none | Root tools future-state navigation and Tool Template V2 contract | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
-| project-workspace | No | SKIP | none | Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| game-workspace | No | SKIP | none | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | game-design | No | SKIP | none | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | game-configuration | No | SKIP | none | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | asset-tool | No | SKIP | none | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | build-path | No | SKIP | none | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
-| tools-progress | No | SKIP | none | Admin Tools Progress hydration, Toolbox Group view color model, and Project Build Path separation | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
+| tools-progress | No | SKIP | none | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | tool-navigation | No | SKIP | none | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | tool-display-mode | No | SKIP | none | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | tool-images | No | SKIP | none | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | Lane was not selected, so dependency-gated runtime scheduling skipped it. |

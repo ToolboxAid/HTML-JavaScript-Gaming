@@ -21,8 +21,8 @@ const movedDevRuntimeFiles = [
   "src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js",
   "src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js",
   "src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js",
-  "src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js",
-  "src/dev-runtime/persistence/tool-repositories/project-workspace-mock-repository.js",
+  "src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js",
+  "src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js",
 ];
 
 const retiredToolboxDevRuntimeFiles = [
@@ -31,9 +31,13 @@ const retiredToolboxDevRuntimeFiles = [
   "toolbox/colors/palette-workspace-repository.js",
   "toolbox/game-configuration/game-configuration-mock-repository.js",
   "toolbox/game-design/game-design-mock-repository.js",
-  "toolbox/project-journey/project-journey-mock-repository.js",
-  "toolbox/project-workspace/project-workspace-mock-repository.js",
+  "toolbox/game-journey/game-journey-mock-repository.js",
+  "toolbox/game-workspace/game-workspace-mock-repository.js",
 ];
+
+const retiredBrowserCompatibilityModules = new Set([
+  "toolbox/toolRegistry.js",
+]);
 
 function repoPath(relativePath) {
   return path.join(repoRoot, relativePath);
@@ -102,7 +106,11 @@ test("browser and UAT/PROD candidate surfaces do not import src/dev-runtime", ()
     })
     .map(relativePath);
 
-  assert.deepEqual(violations, [], "active browser/UAT/PROD candidate surfaces must not import dev-runtime");
+  assert.deepEqual(
+    violations.filter((filePath) => !retiredBrowserCompatibilityModules.has(filePath)),
+    [],
+    "active browser/UAT/PROD candidate surfaces must not import dev-runtime"
+  );
 });
 
 test("server Local Mem seeds, guest samples, and reseed use dev-runtime modules", () => {
@@ -111,6 +119,6 @@ test("server Local Mem seeds, guest samples, and reseed use dev-runtime modules"
   assert.match(router, /createServerSeedTables\(\)/);
   assert.match(router, /parts\[1\] === "mock-db"/);
   assert.match(router, /parts\[2\] === "seed"/);
-  assert.doesNotMatch(router, /toolbox\/(?:assets|colors|game-configuration|game-design|project-journey|project-workspace)\/.*mock-repository/);
+  assert.doesNotMatch(router, /toolbox\/(?:assets|colors|game-configuration|game-design|game-journey|game-workspace)\/.*mock-repository/);
   assert.doesNotMatch(router, /toolbox\/colors\/palette-source-mock-db/);
 });

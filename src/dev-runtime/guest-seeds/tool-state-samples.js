@@ -10,7 +10,7 @@ import {
 } from "../persistence/mock-db-store.js";
 
 const HUMAN_SEED_USERS = Object.freeze([
-  Object.freeze({ displayName: "User 1", toolKey: "project-journey", userKey: MOCK_DB_KEYS.users.user1 }),
+  Object.freeze({ displayName: "User 1", toolKey: "game-journey", userKey: MOCK_DB_KEYS.users.user1 }),
   Object.freeze({ displayName: "User 2", toolKey: "palette", userKey: MOCK_DB_KEYS.users.user2 }),
   Object.freeze({ displayName: "User 3", toolKey: "asset", userKey: MOCK_DB_KEYS.users.user3 }),
   Object.freeze({ displayName: "DavidQ", toolKey: "workspace", userKey: MOCK_DB_KEYS.users.admin }),
@@ -50,7 +50,7 @@ function guestToolStateSampleRows() {
     toolKey: tool.toolKey,
     toolName: tool.toolName,
     route: tool.route,
-    projectKey: "",
+    gameKey: "",
     toolStateKey: serverSeedUlid(7_501 + index),
     manifestPath: "",
     sampleLabel: `Guest ${tool.toolName} starter`,
@@ -74,7 +74,7 @@ function humanToolStateSampleRows() {
       toolKey: user.toolKey,
       toolName: user.toolKey,
     };
-    const projectKey = serverSeedUlid(7_801 + index);
+    const gameKey = serverSeedUlid(7_801 + index);
     const toolStateKey = serverSeedUlid(7_901 + index);
     return {
       key: serverSeedUlid(7_701 + index),
@@ -84,7 +84,7 @@ function humanToolStateSampleRows() {
       toolKey: tool.toolKey,
       toolName: tool.toolName,
       route: tool.route,
-      projectKey,
+      gameKey,
       toolStateKey,
       manifestPath: `local-seeds/${user.displayName.toLowerCase().replaceAll(" ", "-")}/${tool.toolKey}.manifest.json`,
       sampleLabel: `${user.displayName} ${tool.toolName} seed`,
@@ -93,7 +93,7 @@ function humanToolStateSampleRows() {
       toolStatePayload: {
         audience: "user",
         ownerUserKey: user.userKey,
-        projectKey,
+        gameKey,
         toolKey: tool.toolKey,
         toolStateKey,
       },

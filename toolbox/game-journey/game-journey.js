@@ -1,16 +1,16 @@
 import {
-  PROJECT_JOURNEY_KEYS,
-  PROJECT_JOURNEY_STATUS_BY_ID,
-  PROJECT_JOURNEY_STATUSES,
-  PROJECT_JOURNEY_SUGGESTED_TOOLS,
-  createProjectJourneyApiRepository,
-} from "./project-journey-api-client.js";
+  GAME_JOURNEY_KEYS,
+  GAME_JOURNEY_STATUS_BY_ID,
+  GAME_JOURNEY_STATUSES,
+  GAME_JOURNEY_SUGGESTED_TOOLS,
+  createGameJourneyApiRepository,
+} from "./game-journey-api-client.js";
 import {
   getActiveToolRegistry,
   getToolRegistryApiDiagnostic,
 } from "../tool-registry-api-client.js";
 
-const repository = createProjectJourneyApiRepository();
+const repository = createGameJourneyApiRepository();
 const registryDiagnostic = getToolRegistryApiDiagnostic();
 const registryTools = getActiveToolRegistry();
 const params = new URLSearchParams(window.location.search);
@@ -23,7 +23,7 @@ const sortHeaders = Array.from(document.querySelectorAll("[data-journey-sort-hea
 const summaryBody = document.querySelector("[data-journey-summary-body]");
 const itemTree = document.querySelector("[data-journey-item-tree]");
 const selectedNoteMessage = document.querySelector("[data-journey-selected-note]");
-const activeProjectMessage = document.querySelector("[data-journey-active-project]");
+const activeGameMessage = document.querySelector("[data-journey-active-game]");
 const editorForm = document.querySelector("[data-journey-editor-form]");
 const statusInput = document.querySelector("[data-journey-status-input]");
 const titleInput = document.querySelector("[data-journey-title-input]");
@@ -65,8 +65,8 @@ const sortButtonLabels = new Map(
 );
 
 let activeFilter = "all";
-let selectedSummaryNoteKey = PROJECT_JOURNEY_KEYS.notes.designPass;
-let selectedSummaryNoteKeyBeforeSearch = PROJECT_JOURNEY_KEYS.notes.designPass;
+let selectedSummaryNoteKey = GAME_JOURNEY_KEYS.notes.designPass;
+let selectedSummaryNoteKeyBeforeSearch = GAME_JOURNEY_KEYS.notes.designPass;
 let searchSelectionSnapshotTaken = false;
 let preferredNewNoteTypeKey = "";
 let statusSelectionChanged = false;
@@ -75,15 +75,15 @@ let summarySort = {
   direction: "desc",
 };
 
-function applyInitialProjectRoute() {
-  const projectId = params.get("project");
-  if (projectId === "none") {
-    repository.clearActiveProject();
+function applyInitialGameRoute() {
+  const gameId = params.get("game");
+  if (gameId === "none") {
+    repository.clearActiveGame();
     return;
   }
 
-  if (projectId) {
-    repository.openProject(projectId);
+  if (gameId) {
+    repository.openGame(gameId);
   }
 
   if (params.get("templateDiagnostic") === "all") {
@@ -140,7 +140,7 @@ function setEditingDisabled(disabled) {
   });
 }
 
-function setProjectScopedControlsDisabled(disabled) {
+function setGameScopedControlsDisabled(disabled) {
   [
     searchInput,
   ].forEach((control) => {
@@ -150,7 +150,7 @@ function setProjectScopedControlsDisabled(disabled) {
   });
 }
 
-function setProjectWriteControlsDisabled(disabled) {
+function setGameWriteControlsDisabled(disabled) {
   [
     newNoteNameInput,
     newNoteTypeSelect,
@@ -179,7 +179,7 @@ function updateFilterButtons() {
 
 function renderStatusOptions() {
   statusInput.innerHTML = "";
-  PROJECT_JOURNEY_STATUSES.forEach((status) => {
+  GAME_JOURNEY_STATUSES.forEach((status) => {
     const option = createElement("option", {
       text: `${status.icon} ${status.label}`,
     });
@@ -208,7 +208,7 @@ function renderNoteTypeOptions(note) {
 }
 
 function createStatusText(statusId) {
-  const status = PROJECT_JOURNEY_STATUS_BY_ID[statusId];
+  const status = GAME_JOURNEY_STATUS_BY_ID[statusId];
   return status ? `${status.icon} ${status.label}` : "Unknown";
 }
 
@@ -230,7 +230,7 @@ function isUserItem(item) {
 
 function countItems(items) {
   return items.reduce((counts, item) => {
-    const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
+    const status = GAME_JOURNEY_STATUS_BY_ID[item.status];
     if (!status) {
       return counts;
     }
@@ -325,7 +325,7 @@ function renderSummary(notes) {
   if (!notes.length) {
     const row = createElement("tr");
     const cell = createElement("td", {
-      text: "No notes match the current Project Journey filter.",
+      text: "No notes match the current Game Journey filter.",
     });
     cell.colSpan = 11;
     row.append(cell);
@@ -541,7 +541,7 @@ function renderEditor(editingDisabled, note) {
       if (canAddItem) {
         editorStatus.textContent = "No item selected. Add Item will create a user-created editable item.";
       } else if (!repository.getSessionUser().userKey) {
-        editorStatus.textContent = "Guest is unauthenticated. Log in as a user before editing Project Journey records.";
+        editorStatus.textContent = "Guest is unauthenticated. Log in as a user before editing Game Journey records.";
       } else {
         editorStatus.textContent = "Select a journey item to review ownership.";
       }
@@ -602,7 +602,7 @@ function matchesSearch(value, query) {
 }
 
 function itemMatchesSearch(item, query) {
-  const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
+  const status = GAME_JOURNEY_STATUS_BY_ID[item.status];
   const values = [
     item.title,
     item.userDetails,
@@ -729,7 +729,7 @@ function findToolByName(name) {
 
 function getSuggestedToolNames(note) {
   if (!note) {
-    return PROJECT_JOURNEY_SUGGESTED_TOOLS.default || [];
+    return GAME_JOURNEY_SUGGESTED_TOOLS.default || [];
   }
 
   const selectedItem = getSelectedItem();
@@ -740,14 +740,14 @@ function getSuggestedToolNames(note) {
   const names = [
     ...templateToolNames,
     ...(
-      PROJECT_JOURNEY_SUGGESTED_TOOLS.byNoteType?.[noteTypeSlug] ||
-      PROJECT_JOURNEY_SUGGESTED_TOOLS.default ||
+      GAME_JOURNEY_SUGGESTED_TOOLS.byNoteType?.[noteTypeSlug] ||
+      GAME_JOURNEY_SUGGESTED_TOOLS.default ||
       []
     ),
   ];
 
   if (note.counts?.blocker > 0) {
-    return [...(PROJECT_JOURNEY_SUGGESTED_TOOLS.blocker || []), ...names];
+    return [...(GAME_JOURNEY_SUGGESTED_TOOLS.blocker || []), ...names];
   }
 
   return names;
@@ -800,7 +800,7 @@ function renderSuggestedTools(note) {
       text: tool.displayName || tool.name,
     });
     const group = groupSlug(tool.toolboxGroup || tool.category);
-    link.href = `toolbox/index.html?view=group&group=${encodeURIComponent(group)}&context=project-journey&tool=${encodeURIComponent(tool.id)}`;
+    link.href = `toolbox/index.html?view=group&group=${encodeURIComponent(group)}&context=game-journey&tool=${encodeURIComponent(tool.id)}`;
     suggestedTools.append(link);
   });
 }
@@ -811,7 +811,7 @@ function renderRecentActivity() {
   if (!activity.length) {
     recentActivity.append(
       createElement("p", {
-        text: "No Project Journey activity is available for the active project yet.",
+        text: "No Game Journey activity is available for the active game yet.",
       }),
     );
     return;
@@ -828,40 +828,40 @@ function renderRecentActivity() {
   recentActivity.append(list);
 }
 
-function renderDiagnostics(activeProject, note, notes) {
+function renderDiagnostics(activeGame, note, notes) {
   diagnostics.innerHTML = "";
   const messages = [];
   const canWrite = sessionUserCanWrite();
 
-  if (!activeProject) {
+  if (!activeGame) {
     messages.push("No active game is open. Open a game in Game Workspace to enable editing.");
   } else {
-    messages.push(`Active project: ${activeProject.name}.`);
+    messages.push(`Active game: ${activeGame.name}.`);
   }
 
-  if (activeProject && !canWrite) {
-    messages.push("Guest is unauthenticated. Log in as User 1, User 2, User 3, or Admin before adding or editing Project Journey records.");
+  if (activeGame && !canWrite) {
+    messages.push("Guest is unauthenticated. Log in as User 1, User 2, User 3, or Admin before adding or editing Game Journey records.");
   }
 
-  if (activeProject && !notes.length) {
+  if (activeGame && !notes.length) {
     messages.push("The selected filter has no matching notes; switch filters or add items to an existing note.");
   }
 
   if (note) {
     const selectedItem = getSelectedItem();
     messages.push(`Selected note: ${note.name}.`);
-    messages.push(`Total counts every item; Open counts ${PROJECT_JOURNEY_STATUS_BY_ID["not-started"].icon}, ${PROJECT_JOURNEY_STATUS_BY_ID.blocker.icon}, ${PROJECT_JOURNEY_STATUS_BY_ID.decide.icon}, and ${PROJECT_JOURNEY_STATUS_BY_ID["in-progress"].icon} items.`);
+    messages.push(`Total counts every item; Open counts ${GAME_JOURNEY_STATUS_BY_ID["not-started"].icon}, ${GAME_JOURNEY_STATUS_BY_ID.blocker.icon}, ${GAME_JOURNEY_STATUS_BY_ID.decide.icon}, and ${GAME_JOURNEY_STATUS_BY_ID["in-progress"].icon} items.`);
     if (selectedItem) {
       messages.push(`Selected item updatedBy: ${selectedItem.updatedBy}.`);
       messages.push(`Selected item createdBy: ${selectedItem.createdBy}.`);
     }
   }
 
-  const templateDiagnostics = activeProject ? repository.getTemplateDiagnostics() : [];
+  const templateDiagnostics = activeGame ? repository.getTemplateDiagnostics() : [];
   if (templateDiagnostics.length) {
     templateDiagnostics.forEach((diagnostic) => messages.push(diagnostic.message));
-  } else if (activeProject) {
-    messages.push("All system-created Project Journey items resolve active templates.");
+  } else if (activeGame) {
+    messages.push("All system-created Game Journey items resolve active templates.");
   }
 
   const list = createElement("ul");
@@ -887,7 +887,7 @@ function selectFirstVisibleNote(notes) {
 }
 
 function render() {
-  const activeProject = repository.getActiveProject();
+  const activeGame = repository.getActiveGame();
   const searchQuery = currentSearchQuery();
   const notes = applySearch(repository.listNotes(activeFilter), searchQuery);
   const note = selectFirstVisibleNote(notes);
@@ -899,20 +899,20 @@ function render() {
     : null;
   const statCounts = selectedStatsNote ? selectedStatsNote.counts : aggregateCounts(notes);
   const canWrite = sessionUserCanWrite();
-  const editingDisabled = !activeProject || !note || !canWrite;
-  const projectControlsDisabled = !activeProject;
-  const projectWriteControlsDisabled = !activeProject || !canWrite;
+  const editingDisabled = !activeGame || !note || !canWrite;
+  const gameControlsDisabled = !activeGame;
+  const gameWriteControlsDisabled = !activeGame || !canWrite;
 
-  activeProjectMessage.textContent = activeProject
-    ? `Active project: ${activeProject.name}.`
-    : "No active project is open. Editing actions are disabled.";
+  activeGameMessage.textContent = activeGame
+    ? `Active game: ${activeGame.name}.`
+    : "No active game is open. Editing actions are disabled.";
   selectedNoteMessage.textContent = note
     ? `${note.name} (${note.type?.name || "Unknown"})`
     : "Choose a note from the summary table.";
 
   setEditingDisabled(editingDisabled);
-  setProjectScopedControlsDisabled(projectControlsDisabled);
-  setProjectWriteControlsDisabled(projectWriteControlsDisabled);
+  setGameScopedControlsDisabled(gameControlsDisabled);
+  setGameWriteControlsDisabled(gameWriteControlsDisabled);
   updateFilterButtons();
   renderNoteTypeOptions(note);
   renderSummary(notes);
@@ -922,7 +922,7 @@ function render() {
   renderStats(statCounts);
   renderSuggestedTools(displayNote);
   renderRecentActivity();
-  renderDiagnostics(activeProject, displayNote, notes);
+  renderDiagnostics(activeGame, displayNote, notes);
   renderSearchStatus(searchQuery, notes);
 }
 
@@ -1000,7 +1000,7 @@ itemTree.addEventListener("input", (event) => {
   repository.updateItem(selectedItem.key, {
     userDetails: detailsInput.value,
   });
-  renderDiagnostics(repository.getActiveProject(), repository.getSelectedNote(), applySearch(repository.listNotes(activeFilter), currentSearchQuery()));
+  renderDiagnostics(repository.getActiveGame(), repository.getSelectedNote(), applySearch(repository.listNotes(activeFilter), currentSearchQuery()));
 });
 
 addItemButton.addEventListener("click", () => {
@@ -1077,8 +1077,8 @@ addNoteButton.addEventListener("click", () => {
   if (!note) {
     if (noteStatus) {
       noteStatus.textContent = sessionUserCanWrite()
-        ? "Open a project before adding a Project Journey note."
-        : "Log in as a user before adding a Project Journey note.";
+        ? "Open a game before adding a Game Journey note."
+        : "Log in as a user before adding a Game Journey note.";
     }
     return;
   }
@@ -1109,5 +1109,5 @@ addTypeButton.addEventListener("click", () => {
 });
 
 renderStatusOptions();
-applyInitialProjectRoute();
+applyInitialGameRoute();
 render();

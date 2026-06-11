@@ -101,7 +101,7 @@ test("Toolbox removes Progress view and renders the DB-backed Build Path table",
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
     await expect(page.locator("[data-build-path-table='workflow'] th")).toHaveText(["Order", "Tool", "Status"]);
     await expect(page.getByText("What should I do next? Game Configuration")).toBeVisible();
-    await expect(page.getByText("Project Completion: Demo Project identity ready")).toBeVisible();
+    await expect(page.getByText("Game Progress: Demo Game identity ready")).toBeVisible();
     await expect(page.getByText("Work top-to-bottom and left-to-right through the workflow table.")).toBeVisible();
 
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
@@ -138,12 +138,12 @@ test("Build Path preserves DB order across selected status filters", async ({ pa
 
     const rows = await buildPathRows(page);
     expect(rows.map((row) => row.tool)).toEqual([
-      "Project Workspace",
+      "Game Workspace",
       "Game Design",
       "Colors",
       "Assets",
       "Game Configuration",
-      "Project Journey",
+      "Game Journey",
     ]);
     expect(rows.map((row) => row.order)).toEqual([1, 2, 3, 4, 5, 14]);
     expect(rows.map((row) => row.releaseChannel)).toEqual(["beta", "beta", "complete", "beta", "beta", "beta"]);
@@ -207,14 +207,14 @@ test("Admin navigation exposes Tool Votes and removes Tools Progress", async ({ 
     await expect(page.locator("nav.nav-links a[data-route='admin-tool-votes']")).toHaveText("Tool Votes");
     await expect(page.locator("nav.nav-links a[data-route='admin-tools-progress']")).toHaveCount(0);
     await expect(page.locator("nav.nav-links").getByText("Tools Progress", { exact: true })).toHaveCount(0);
-    await expect(page.locator("nav.nav-links").getByText("Project Progress", { exact: true })).toHaveCount(0);
+    await expect(page.locator("nav.nav-links").getByText("Game Progress", { exact: true })).toHaveCount(0);
 
     await page.goto(`${failures.server.baseUrl}/admin/tool-votes.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { name: "Tool Votes" })).toBeVisible();
     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Showing Toolbox vote totals");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("nav.nav-links").getByText("Tools Progress", { exact: true })).toHaveCount(0);
-    await expect(page.locator("nav.nav-links").getByText("Project Progress", { exact: true })).toHaveCount(0);
+    await expect(page.locator("nav.nav-links").getByText("Game Progress", { exact: true })).toHaveCount(0);
 
     await expectNoPageFailures(failures);
   } finally {

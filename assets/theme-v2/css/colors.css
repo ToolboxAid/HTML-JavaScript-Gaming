@@ -66,7 +66,7 @@
   --cta-background: linear-gradient(135deg, rgba(255, 122, 0, .18), rgba(77, 163, 255, .11));
   --icon-background: linear-gradient(135deg, rgba(255, 122, 0, .28), rgba(77, 163, 255, .16));
   --release-current-background: color-mix(in srgb, var(--gold) 14%, var(--panel));
-  --about-hero-background-image: url("../images/forge-bot-single.png");
+  --about-hero-background-image: url("../images/mascots/forge-bot-single.png");
   --about-hero-background: linear-gradient(90deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 86%, transparent) 42%, color-mix(in srgb, var(--bg) 38%, transparent) 100%), var(--about-hero-background-image) right center / min(50vw, 620px) auto no-repeat;
   --about-hero-mobile-background: linear-gradient(180deg, var(--bg) 0%, color-mix(in srgb, var(--bg) 70%, transparent) 100%), var(--about-hero-background-image) center bottom / 340px auto no-repeat;
   --forgebot-stage-background: radial-gradient(circle at 50% 55%, rgba(255, 122, 0, .25), var(--transparent) 48%), linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025));

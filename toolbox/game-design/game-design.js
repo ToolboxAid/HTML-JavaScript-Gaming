@@ -8,12 +8,12 @@ import {
 
 const repository = createGameDesignApiRepository();
 const params = new URLSearchParams(window.location.search);
-const requestedProject = params.get("project");
+const requestedGame = params.get("game") || params.get("project");
 
-if (requestedProject === "missing") {
-  repository.clearProjectContext();
-} else if (requestedProject) {
-  repository.openProjectContext(requestedProject);
+if (requestedGame === "missing") {
+  repository.clearGameContext();
+} else if (requestedGame) {
+  repository.openGameContext(requestedGame);
 }
 
 const elements = {
@@ -28,7 +28,7 @@ const elements = {
   genre: document.querySelector("[data-game-design-genre]"),
   handoffChecklist: document.querySelector("[data-game-design-handoff-checklist]"),
   handoffCurrentFocus: document.querySelector("[data-game-design-current-focus]"),
-  handoffProgress: document.querySelector("[data-game-design-project-progress]"),
+  handoffProgress: document.querySelector("[data-game-design-game-progress]"),
   handoffPublishing: document.querySelector("[data-game-design-publishing-progress]"),
   handoffRecommended: document.querySelector("[data-game-design-recommended-tool]"),
   outputCapability: document.querySelector("[data-game-design-output-capability]"),
@@ -39,8 +39,8 @@ const elements = {
   outputValidation: document.querySelector("[data-game-design-output-validation]"),
   playerMode: document.querySelector("[data-game-design-player-mode]"),
   playStyle: document.querySelector("[data-game-design-play-style]"),
-  projectContext: document.querySelector("[data-game-design-project-context]"),
-  projectOverlay: document.querySelector("[data-game-design-project-overlay]"),
+  gameContext: document.querySelector("[data-game-design-game-context]"),
+  gameOverlay: document.querySelector("[data-game-design-game-overlay]"),
   statusLog: document.querySelector("[data-game-design-log]"),
   tableCounts: document.querySelector("[data-game-design-table-counts]"),
   validationList: document.querySelector("[data-game-design-validation-list]"),
@@ -81,7 +81,7 @@ function createStatusItem(text) {
 
 function readForm() {
   return {
-    capabilityDemoAuthoring: repository.getActiveProject()?.purpose === "Capability Demo",
+    capabilityDemoAuthoring: repository.getActiveGame()?.purpose === "Capability Demo",
     capabilityDemoNotes: elements.capabilityDemoNotes?.value,
     designSummary: elements.designSummary?.value,
     gameType: elements.gameType?.value,
@@ -162,17 +162,17 @@ function renderCapabilityDemos(snapshot) {
   }
 
   elements.capabilityDemoList.replaceChildren();
-  const activeProject = snapshot.activeProject;
-  elements.capabilityDemoPanel.hidden = !activeProject;
+  const activeGame = snapshot.activeGame || snapshot.activeProject;
+  elements.capabilityDemoPanel.hidden = !activeGame;
 
-  snapshot.capabilityDemoProjects.forEach((project) => {
+  (snapshot.capabilityDemoGames || snapshot.capabilityDemoProjects || []).forEach((game) => {
     const item = document.createElement("li");
-    item.textContent = `${project.name}: Game Workspace game`;
+    item.textContent = `${game.name}: Game Workspace game`;
     elements.capabilityDemoList.append(item);
   });
 
-  if (snapshot.capabilityDemoProjects.length === 0) {
-    elements.capabilityDemoList.append(createStatusItem("No capability demo projects seeded."));
+  if ((snapshot.capabilityDemoGames || snapshot.capabilityDemoProjects || []).length === 0) {
+    elements.capabilityDemoList.append(createStatusItem("No capability demo games seeded."));
   }
 }
 
@@ -196,7 +196,7 @@ function renderTables(tables) {
 }
 
 function renderHandoff(handoff) {
-  setText(elements.handoffProgress, handoff.projectProgress);
+  setText(elements.handoffProgress, handoff.gameProgress || handoff.projectProgress);
   setText(elements.handoffPublishing, handoff.publishingProgress);
   setText(elements.handoffCurrentFocus, handoff.currentFocus);
   setText(elements.handoffRecommended, handoff.recommendedNextTool);
@@ -213,7 +213,7 @@ function renderHandoff(handoff) {
 
 function renderOutput(snapshot, validation) {
   const activeDesign = snapshot.activeDesign;
-  const activeProject = snapshot.activeProject;
+  const activeGame = snapshot.activeGame || snapshot.activeProject;
   const missingRequirements = validation.findings.map((finding) => finding.label).join(", ");
 
   setText(elements.outputSummary, activeDesign?.designSummary || "No design summary saved yet.");
@@ -223,9 +223,9 @@ function renderOutput(snapshot, validation) {
   setText(elements.outputMissing, missingRequirements || "None");
   setText(
     elements.outputCapability,
-    activeProject?.purpose === "Capability Demo"
-      ? `${activeProject.name} remains a Game Workspace game.`
-      : "Not a capability demo project."
+    activeGame?.purpose === "Capability Demo"
+      ? `${activeGame.name} remains a Game Workspace game.`
+      : "Not a capability demo game."
   );
 }
 
@@ -234,33 +234,33 @@ function renderConfigurationLink(snapshot, validation) {
     return;
   }
 
-  const activeProject = snapshot.activeProject;
-  const ready = Boolean(activeProject && validation.findings.length === 0);
+  const activeGame = snapshot.activeGame || snapshot.activeProject;
+  const ready = Boolean(activeGame && validation.findings.length === 0);
   const target = new URL("toolbox/game-configuration/index.html", window.location.origin + "/");
-  target.searchParams.set("handoff", ready ? "valid" : activeProject ? "invalid" : "missing");
-  if (activeProject) {
-    target.searchParams.set("project", activeProject.id);
+  target.searchParams.set("handoff", ready ? "valid" : activeGame ? "invalid" : "missing");
+  if (activeGame) {
+    target.searchParams.set("game", activeGame.id);
   }
   elements.configurationLink.href = target.pathname.replace(/^\/+/, "") + target.search;
   elements.configurationLink.textContent = ready
-    ? `Review ${activeProject.name} Game Configuration`
+    ? `Review ${activeGame.name} Game Configuration`
     : "Review Game Configuration";
 }
 
 function render() {
   const snapshot = repository.getSnapshot();
-  const activeProject = snapshot.activeProject;
+  const activeGame = snapshot.activeGame || snapshot.activeProject;
   const activeDesign = snapshot.activeDesign;
   const validation = repository.validateDesign(activeDesign || readForm());
 
   setText(
-    elements.projectContext,
-    activeProject ? `${activeProject.name} - ${activeProject.purpose}` : "No Game Workspace game"
+    elements.gameContext,
+    activeGame ? `${activeGame.name} - ${activeGame.purpose}` : "No Game Workspace game"
   );
   setText(elements.designStatus, activeDesign?.status || validation.status);
 
-  if (elements.projectOverlay) {
-    elements.projectOverlay.hidden = Boolean(activeProject);
+  if (elements.gameOverlay) {
+    elements.gameOverlay.hidden = Boolean(activeGame);
   }
 
   applyDesignToForm(activeDesign);

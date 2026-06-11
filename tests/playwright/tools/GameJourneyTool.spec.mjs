@@ -6,11 +6,11 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 import {
-  PROJECT_JOURNEY_KEYS,
-  PROJECT_JOURNEY_STATUS_BY_ID,
-  PROJECT_JOURNEY_STATUSES,
-  createProjectJourneyMockRepository,
-} from "../../../src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js";
+  GAME_JOURNEY_KEYS,
+  GAME_JOURNEY_STATUS_BY_ID,
+  GAME_JOURNEY_STATUSES,
+  createGameJourneyMockRepository,
+} from "../../../src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js";
 import { MOCK_DB_KEYS, getStandaloneMockDbSeedTables } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -20,8 +20,8 @@ const standaloneSeedTables = getStandaloneMockDbSeedTables();
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
-    lane: "project-journey",
-    surface: "Project Journey tool"
+    lane: "game-journey",
+    surface: "Game Journey tool"
   });
 });
 
@@ -82,11 +82,11 @@ function expectNoPageFailures(failures) {
 }
 
 function statusLabels() {
-  return PROJECT_JOURNEY_STATUSES.map((status) => `${status.icon} ${status.label}`);
+  return GAME_JOURNEY_STATUSES.map((status) => `${status.icon} ${status.label}`);
 }
 
 function statusLabel(statusId) {
-  const status = PROJECT_JOURNEY_STATUS_BY_ID[statusId];
+  const status = GAME_JOURNEY_STATUS_BY_ID[statusId];
   return status ? `${status.icon} ${status.label}` : statusId;
 }
 
@@ -140,14 +140,14 @@ async function closeWithCoverage(page, failures) {
   await failures.server.close();
 }
 
-test("Project Journey edits rows and updates note summary counts live", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project");
+test("Game Journey edits rows and updates note summary counts live", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game");
 
   try {
-    await expect(page.locator("h1")).toHaveText("Project Journey");
+    await expect(page.locator("h1")).toHaveText("Game Journey");
     await expect(page.locator(".tool-workspace--wide")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator("[data-journey-active-project]")).toHaveText("Active project: Demo Project.");
+    await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Demo Game.");
     await expect(page.locator("[data-journey-selected-note]")).toContainText("Palette and Input Density");
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for selected note: Palette and Input Density.");
     await expect(page.locator("[data-journey-stat-open]")).toHaveText("3");
@@ -233,10 +233,10 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     expect(Number.parseFloat(dividerPlacement.borderTopWidth)).toBeGreaterThanOrEqual(0.75);
     expect(Number.parseFloat(dividerPlacement.borderTopWidth)).toBeLessThanOrEqual(1);
     expect(dividerPlacement.borderTopColor).toBe(dividerPlacement.columnBorderColor);
-    await expect(page.locator(`[data-journey-note-button="${PROJECT_JOURNEY_KEYS.notes.designPass}"]`)).toHaveClass(/primary/);
-    await expect(page.locator(`[data-journey-item-button="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`)).toHaveClass(/primary/);
-    await expect(page.locator(`[data-journey-item-button="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`)).toContainText("Designer review should focus on checkbox visibility");
-    const treeRowLayout = await page.locator(`[data-journey-item-row="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`).evaluate((row) => {
+    await expect(page.locator(`[data-journey-note-button="${GAME_JOURNEY_KEYS.notes.designPass}"]`)).toHaveClass(/primary/);
+    await expect(page.locator(`[data-journey-item-button="${GAME_JOURNEY_KEYS.items.designAffordance}"]`)).toHaveClass(/primary/);
+    await expect(page.locator(`[data-journey-item-button="${GAME_JOURNEY_KEYS.items.designAffordance}"]`)).toContainText("Designer review should focus on checkbox visibility");
+    const treeRowLayout = await page.locator(`[data-journey-item-row="${GAME_JOURNEY_KEYS.items.designAffordance}"]`).evaluate((row) => {
       const content = row.querySelector("[data-journey-item-button]");
       const action = row.querySelector("[data-journey-system-item-indicator], [data-journey-delete-item]");
       const contentStyles = getComputedStyle(content);
@@ -272,14 +272,14 @@ test("Project Journey edits rows and updates note summary counts live", async ({
       usesAvailableWidth: true,
       wrapsNaturally: true,
     });
-    await expect(page.locator(`[data-journey-selected-item-details="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`)).toContainText("Item Details");
+    await expect(page.locator(`[data-journey-selected-item-details="${GAME_JOURNEY_KEYS.items.designAffordance}"]`)).toContainText("Item Details");
     await expect(page.locator("[data-journey-item-details-input]")).toHaveValue("Designer review should focus on checkbox visibility and selected-row contrast.");
-    const detailsFollowsSelectedRow = await page.locator(`[data-journey-selected-item-details="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`).evaluate((details, itemKey) => {
+    const detailsFollowsSelectedRow = await page.locator(`[data-journey-selected-item-details="${GAME_JOURNEY_KEYS.items.designAffordance}"]`).evaluate((details, itemKey) => {
       const previous = details.previousElementSibling;
       return Boolean(previous?.matches(`[data-journey-item-row="${itemKey}"]`));
-    }, PROJECT_JOURNEY_KEYS.items.designAffordance);
+    }, GAME_JOURNEY_KEYS.items.designAffordance);
     expect(detailsFollowsSelectedRow).toBe(true);
-    const itemDetailsLayout = await page.locator(`[data-journey-selected-item-details="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`).evaluate((details) => {
+    const itemDetailsLayout = await page.locator(`[data-journey-selected-item-details="${GAME_JOURNEY_KEYS.items.designAffordance}"]`).evaluate((details) => {
       const label = details.querySelector("label[for='journeyItemDetailsInput']");
       const input = details.querySelector("#journeyItemDetailsInput");
       const labelRect = label.getBoundingClientRect();
@@ -300,15 +300,15 @@ test("Project Journey edits rows and updates note summary counts live", async ({
     await expect(page.locator("aside.tool-column").last().locator(".callout", { hasText: "Status Legend" })).toHaveCount(0);
     await expect(page.locator("details > summary", { hasText: /^Note Tree$/ })).toHaveCount(1);
     await expect(page.locator("details > summary", { hasText: /^Selected Note Tree$/ })).toHaveCount(0);
-    await expect(page.locator("table[aria-label='Project Journey note summary'] thead th")).toHaveText([
+    await expect(page.locator("table[aria-label='Game Journey note summary'] thead th")).toHaveText([
       "Name",
       "Type",
-      PROJECT_JOURNEY_STATUSES[0].icon,
-      PROJECT_JOURNEY_STATUSES[1].icon,
-      PROJECT_JOURNEY_STATUSES[2].icon,
-      PROJECT_JOURNEY_STATUSES[3].icon,
-      PROJECT_JOURNEY_STATUSES[4].icon,
-      PROJECT_JOURNEY_STATUSES[5].icon,
+      GAME_JOURNEY_STATUSES[0].icon,
+      GAME_JOURNEY_STATUSES[1].icon,
+      GAME_JOURNEY_STATUSES[2].icon,
+      GAME_JOURNEY_STATUSES[3].icon,
+      GAME_JOURNEY_STATUSES[4].icon,
+      GAME_JOURNEY_STATUSES[5].icon,
       "Open",
       "Total",
       "Updated ↓"
@@ -377,7 +377,7 @@ test("Project Journey edits rows and updates note summary counts live", async ({
 
     const suggestedLinks = page.locator("[data-journey-suggested-tools] a");
     await expect(suggestedLinks.first()).toHaveAttribute("href", /toolbox\/index\.html\?view=group&group=/);
-    await expect(suggestedLinks.first()).toHaveAttribute("href", /context=project-journey/);
+    await expect(suggestedLinks.first()).toHaveAttribute("href", /context=game-journey/);
 
     await expectNoPageFailures(failures);
   } finally {
@@ -385,16 +385,16 @@ test("Project Journey edits rows and updates note summary counts live", async ({
   }
 });
 
-test("Project Journey updates selected note types from the mock DB", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project", {
+test("Game Journey updates selected note types from the mock DB", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game", {
     collectCoverage: false,
   });
 
   try {
     const selectedNoteType = page.locator("[data-journey-note-type-select]");
     const newNoteType = page.locator("[data-journey-new-note-type]");
-    await expect(selectedNoteType).toHaveValue(PROJECT_JOURNEY_KEYS.noteTypes.design);
-    await page.locator("[data-journey-note-type-select]").selectOption(PROJECT_JOURNEY_KEYS.noteTypes.task);
+    await expect(selectedNoteType).toHaveValue(GAME_JOURNEY_KEYS.noteTypes.design);
+    await page.locator("[data-journey-note-type-select]").selectOption(GAME_JOURNEY_KEYS.noteTypes.task);
     await expect(page.locator("tbody tr", { hasText: "Palette and Input Density" }).locator("td").nth(1)).toHaveText("Task");
     const typeOptionCountBefore = await selectedNoteType.locator("option").count();
     await page.getByLabel("Add Note Type").fill("Playtest");
@@ -416,8 +416,8 @@ test("Project Journey updates selected note types from the mock DB", async ({ pa
   }
 });
 
-test("Project Journey sorts summary columns and adds user-owned notes", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project");
+test("Game Journey sorts summary columns and adds user-owned notes", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game");
 
   try {
     const sortKeys = [
@@ -456,7 +456,7 @@ test("Project Journey sorts summary columns and adds user-owned notes", async ({
 
     const noteRowsBefore = await page.locator("[data-journey-note-button]").count();
     await page.locator("[data-journey-new-note-name]").fill("Usability Audit");
-    await page.locator("[data-journey-new-note-type]").selectOption(PROJECT_JOURNEY_KEYS.noteTypes.task);
+    await page.locator("[data-journey-new-note-type]").selectOption(GAME_JOURNEY_KEYS.noteTypes.task);
     await page.getByRole("button", { name: "Add Note", exact: true }).click();
     await expect(page.locator("[data-journey-note-status]")).toContainText("Added Usability Audit");
     await expect(page.locator("[data-journey-note-button]")).toHaveCount(noteRowsBefore + 1);
@@ -502,8 +502,8 @@ test("Project Journey sorts summary columns and adds user-owned notes", async ({
   }
 });
 
-test("Project Journey filters all notes, my notes, and status-specific notes", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project");
+test("Game Journey filters all notes, my notes, and status-specific notes", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game");
 
   try {
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
@@ -630,8 +630,8 @@ test("Project Journey filters all notes, my notes, and status-specific notes", a
   }
 });
 
-test("Project Journey supports Guest as the selected shared session user", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project", {
+test("Game Journey supports Guest as the selected shared session user", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game", {
     sessionUserKey: "",
   });
 
@@ -639,7 +639,7 @@ test("Project Journey supports Guest as the selected shared session user", async
     await expect(page.locator("[data-session-user-header]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
-    await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
+    await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Game Journey filter.");
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: All Notes (0 notes).");
     await expect(page.locator("[data-journey-diagnostics]")).toContainText("Guest is unauthenticated");
     await expect(page.locator("[data-journey-editor-status]")).toContainText("Guest is unauthenticated");
@@ -653,7 +653,7 @@ test("Project Journey supports Guest as the selected shared session user", async
 
     await page.locator("[data-journey-filter='mine']").click();
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: My Notes (0 notes).");
-    await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
+    await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Game Journey filter.");
 
     await fetch(`${failures.server.baseUrl}/api/mock-db/seed`, { method: "POST" });
     await fetch(`${failures.server.baseUrl}/api/session/user`, {
@@ -663,9 +663,9 @@ test("Project Journey supports Guest as the selected shared session user", async
     });
     await page.goto(`${failures.server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("DavidQ");
-    await page.getByRole("button", { name: "Project Journey" }).click();
-    await expect(page.locator("[data-admin-db-table='project_journey_notes']")).not.toContainText("Guest Scratch Note");
-    await expect(page.locator("[data-admin-db-table='project_journey_items']")).not.toContainText("Guest first task");
+    await page.getByRole("button", { name: "Game Journey" }).click();
+    await expect(page.locator("[data-admin-db-table='game_journey_notes']")).not.toContainText("Guest Scratch Note");
+    await expect(page.locator("[data-admin-db-table='game_journey_items']")).not.toContainText("Guest first task");
     await page.getByRole("button", { name: "User Roles" }).click();
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
 
@@ -684,9 +684,9 @@ test("Project Journey supports Guest as the selected shared session user", async
         .sort();
     }, MOCK_DB_KEYS.users.user3);
     expect(user3TableReferences).toEqual(["tool_state_samples", "user_roles", "users"]);
-    await page.goto(`${failures.server.baseUrl}/toolbox/project-journey/index.html?project=demo-project`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/game-journey/index.html?game=demo-game`, { waitUntil: "networkidle" });
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 3");
-    await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Project Journey filter.");
+    await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Game Journey filter.");
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: All Notes (0 notes).");
 
     await expectNoPageFailures(failures);
@@ -695,8 +695,8 @@ test("Project Journey supports Guest as the selected shared session user", async
   }
 });
 
-test("Project Journey search filters notes, tree items, and visible counts", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project");
+test("Game Journey search filters notes, tree items, and visible counts", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game");
 
   try {
     const searchInput = page.locator("[data-journey-search-input]");
@@ -745,7 +745,7 @@ test("Project Journey search filters notes, tree items, and visible counts", asy
       headers: { "content-type": "application/json" },
       method: "POST",
     });
-    await page.goto(`${failures.server.baseUrl}/toolbox/project-journey/index.html?project=demo-project`, { waitUntil: "networkidle" });
+    await page.goto(`${failures.server.baseUrl}/toolbox/game-journey/index.html?game=demo-game`, { waitUntil: "networkidle" });
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 2");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Release Readiness");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("Research Questions");
@@ -799,14 +799,14 @@ test("Project Journey search filters notes, tree items, and visible counts", asy
   }
 });
 
-test("Project Journey enforces item ownership while resolving template guidance", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project");
+test("Game Journey enforces item ownership while resolving template guidance", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game");
 
   try {
-    await expect(page.locator(`[data-journey-item-button="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`)).toHaveClass(/primary/);
+    await expect(page.locator(`[data-journey-item-button="${GAME_JOURNEY_KEYS.items.designAffordance}"]`)).toHaveClass(/primary/);
     await expect(page.getByRole("button", { name: "Delete Row" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Delete user-created item" })).toHaveCount(0);
-    const systemRow = page.locator(`[data-journey-item-row="${PROJECT_JOURNEY_KEYS.items.designAffordance}"]`);
+    const systemRow = page.locator(`[data-journey-item-row="${GAME_JOURNEY_KEYS.items.designAffordance}"]`);
     await expect(systemRow.locator("[data-journey-delete-item]")).toHaveCount(0);
     const systemIndicator = systemRow.locator("[data-journey-system-item-indicator]");
     await expect(systemIndicator).toHaveAttribute("src", /forge-bot\.svg$/);
@@ -831,7 +831,7 @@ test("Project Journey enforces item ownership while resolving template guidance"
     await page.locator("[data-journey-item-details-input]").fill("System item details edited by user.");
     await page.getByLabel("Status").selectOption("blocker");
     await page.getByRole("button", { name: "Update Item" }).click();
-    await expect(page.locator("[data-journey-item-tree]")).toContainText("Review palette swatch affordance in the active project palette.");
+    await expect(page.locator("[data-journey-item-tree]")).toContainText("Review palette swatch affordance in the active game palette.");
     await expect(page.locator("[data-journey-item-tree]")).not.toContainText("System row edited label");
     await expect(systemRow.locator("[data-journey-delete-item]")).toHaveCount(0);
     await expect(page.locator("[data-journey-editor-status]")).toContainText("Original meaning: Review palette swatch affordance");
@@ -887,13 +887,13 @@ test("Project Journey enforces item ownership while resolving template guidance"
   }
 });
 
-test("Project Journey displays system template diagnostics", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=demo-project&templateDiagnostic=all");
+test("Game Journey displays system template diagnostics", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=demo-game&templateDiagnostic=all");
 
   try {
     await expect(page.locator("[data-journey-diagnostics]")).toContainText("missing templateKey");
-    await expect(page.locator("[data-journey-diagnostics]")).toContainText(`inactive templateKey ${PROJECT_JOURNEY_KEYS.templates.inactiveGuidance}`);
-    await expect(page.locator("[data-journey-diagnostics]")).toContainText(`references missing templateKey ${PROJECT_JOURNEY_KEYS.templates.invalidMissing}`);
+    await expect(page.locator("[data-journey-diagnostics]")).toContainText(`inactive templateKey ${GAME_JOURNEY_KEYS.templates.inactiveGuidance}`);
+    await expect(page.locator("[data-journey-diagnostics]")).toContainText(`references missing templateKey ${GAME_JOURNEY_KEYS.templates.invalidMissing}`);
     await page.getByRole("button", { name: /Missing template diagnostic item/ }).click();
     await expect(page.locator("[data-journey-item-tree]")).toContainText("System guidance is unavailable until the linked template is repaired.");
 
@@ -903,18 +903,18 @@ test("Project Journey displays system template diagnostics", async ({ page }) =>
   }
 });
 
-test("Project Journey mock data keeps system guidance template-owned", () => {
-  const repository = createProjectJourneyMockRepository({
+test("Game Journey mock data keeps system guidance template-owned", () => {
+  const repository = createGameJourneyMockRepository({
     memoryDbTables: standaloneSeedTables,
     persist: false,
     sessionUserKey: MOCK_DB_KEYS.users.user1,
   });
-  repository.openProject("demo-project");
+  repository.openGame("demo-game");
 
   const tables = repository.getTables();
-  expect(tables.project_journey_items).toBeTruthy();
-  expect(tables.project_journey_templates).toBeTruthy();
-  expect(tables.project_journey_entries).toBeUndefined();
+  expect(tables.game_journey_items).toBeTruthy();
+  expect(tables.game_journey_templates).toBeTruthy();
+  expect(tables.game_journey_entries).toBeUndefined();
 
   const auditFields = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
   for (const [tableName, records] of Object.entries(tables)) {
@@ -927,54 +927,54 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   }
 
   const primaryKeyFields = {
-    project_journey_note_types: "key",
-    project_journey_notes: "key",
-    project_journey_templates: "key",
-    project_journey_items: "key",
-    project_journey_activity: "key",
+    game_journey_note_types: "key",
+    game_journey_notes: "key",
+    game_journey_templates: "key",
+    game_journey_items: "key",
+    game_journey_activity: "key",
   };
   for (const [tableName, primaryKeyField] of Object.entries(primaryKeyFields)) {
     for (const record of tables[tableName]) {
       expect(record[primaryKeyField], `${tableName}.${primaryKeyField} must be ULID-style`).toMatch(ULID_PATTERN);
-      expect(record[primaryKeyField], `${tableName}.${primaryKeyField} must not be a readable demo key`).not.toMatch(/^(activity|demo-project|note-|item-|template-|custom-type-)/);
+      expect(record[primaryKeyField], `${tableName}.${primaryKeyField} must not be a readable demo key`).not.toMatch(/^(activity|demo-game|note-|item-|template-|custom-type-)/);
     }
   }
 
-  tables.project_journey_notes.forEach((note) => {
-    expect(note.projectKey).toMatch(ULID_PATTERN);
+  tables.game_journey_notes.forEach((note) => {
+    expect(note.gameKey).toMatch(ULID_PATTERN);
     expect(note.ownerKey).toMatch(ULID_PATTERN);
     expect(note.typeKey).toMatch(ULID_PATTERN);
     expect(note).not.toHaveProperty("id");
-    expect(note).not.toHaveProperty("projectId");
+    expect(note).not.toHaveProperty("gameId");
     expect(note).not.toHaveProperty("ownerId");
     expect(note).not.toHaveProperty("typeId");
   });
-  tables.project_journey_items.forEach((item) => {
-    expect(item.projectKey).toMatch(ULID_PATTERN);
+  tables.game_journey_items.forEach((item) => {
+    expect(item.gameKey).toMatch(ULID_PATTERN);
     expect(item.noteKey).toMatch(ULID_PATTERN);
     if (item.templateKey) {
       expect(item.templateKey).toMatch(ULID_PATTERN);
     }
     expect(item).not.toHaveProperty("itemId");
-    expect(item).not.toHaveProperty("projectId");
+    expect(item).not.toHaveProperty("gameId");
     expect(item).not.toHaveProperty("noteId");
     expect(item).not.toHaveProperty("templateId");
   });
-  tables.project_journey_activity.forEach((activity) => {
-    expect(activity.projectKey).toMatch(ULID_PATTERN);
+  tables.game_journey_activity.forEach((activity) => {
+    expect(activity.gameKey).toMatch(ULID_PATTERN);
     expect(activity.noteKey).toMatch(ULID_PATTERN);
     expect(activity).not.toHaveProperty("id");
-    expect(activity).not.toHaveProperty("projectId");
+    expect(activity).not.toHaveProperty("gameId");
     expect(activity).not.toHaveProperty("noteId");
   });
 
   const forbiddenItemFields = ["originalMeaning", "systemGuidance", "linkedToolContexts"];
-  for (const item of tables.project_journey_items) {
+  for (const item of tables.game_journey_items) {
     for (const field of forbiddenItemFields) {
       expect(item).not.toHaveProperty(field);
     }
     expect(item).toHaveProperty("key");
-    expect(item).toHaveProperty("projectKey");
+    expect(item).toHaveProperty("gameKey");
     expect(item).toHaveProperty("noteKey");
     expect(item).toHaveProperty("status");
     expect(item).toHaveProperty("title");
@@ -989,11 +989,11 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   }
 
   const activeTemplateIds = new Set(
-    tables.project_journey_templates
+    tables.game_journey_templates
       .filter((template) => template.isActive)
       .map((template) => template.key),
   );
-  const systemItems = tables.project_journey_items.filter((item) => item.createdBy === MOCK_DB_KEYS.users.forgeBot);
+  const systemItems = tables.game_journey_items.filter((item) => item.createdBy === MOCK_DB_KEYS.users.forgeBot);
   expect(systemItems.length).toBeGreaterThan(0);
   for (const item of systemItems) {
     expect(activeTemplateIds.has(item.templateKey)).toBe(true);
@@ -1003,18 +1003,18 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   expect(selectedSystemItem.systemGuidance).toContain("Check whether selected swatches");
   expect(selectedSystemItem.originalMeaning).toContain("Review palette swatch affordance");
 
-  const userUpdate = repository.updateItem(PROJECT_JOURNEY_KEYS.items.designAffordance, {
+  const userUpdate = repository.updateItem(GAME_JOURNEY_KEYS.items.designAffordance, {
     title: "User should not rewrite the system title",
     status: "blocker",
     userDetails: "User-owned details on a system-created item.",
   });
-  expect(userUpdate.title).toBe("Review palette swatch affordance in the active project palette.");
+  expect(userUpdate.title).toBe("Review palette swatch affordance in the active game palette.");
   expect(userUpdate.status).toBe("blocker");
   expect(userUpdate.userDetails).toBe("User-owned details on a system-created item.");
   expect(userUpdate.updatedBy).toBe(MOCK_DB_KEYS.users.user1);
   expect(userUpdate.createdBy).toBe(MOCK_DB_KEYS.users.forgeBot);
 
-  const systemUpdate = repository.applySystemItemUpdate(PROJECT_JOURNEY_KEYS.items.designAffordance, {
+  const systemUpdate = repository.applySystemItemUpdate(GAME_JOURNEY_KEYS.items.designAffordance, {
     title: "System automation title",
     status: "complete",
     userDetails: "System automation detail.",
@@ -1033,7 +1033,7 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   expect(userItem.key).toMatch(ULID_PATTERN);
   expect(userItem.templateKey).toBe("");
   expect(repository.deleteItem(userItem.key).deleted).toBe(true);
-  expect(repository.deleteItem(PROJECT_JOURNEY_KEYS.items.designAffordance).deleted).toBe(false);
+  expect(repository.deleteItem(GAME_JOURNEY_KEYS.items.designAffordance).deleted).toBe(false);
 
   const typeCount = repository.listNoteTypes().length;
   const typeResult = repository.addNoteType("Playtest");
@@ -1045,7 +1045,7 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   expect(duplicateResult.duplicate).toBe(true);
   expect(repository.listNoteTypes()).toHaveLength(typeCount + 1);
 
-  repository.updateSelectedNoteType(PROJECT_JOURNEY_KEYS.noteTypes.task);
+  repository.updateSelectedNoteType(GAME_JOURNEY_KEYS.noteTypes.task);
   expect(repository.getSelectedNote().type.name).toBe("Task");
 
   const addedNote = repository.addNote({
@@ -1067,12 +1067,12 @@ test("Project Journey mock data keeps system guidance template-owned", () => {
   expect(firstAddedItem.title).toBe("First editable user item");
 });
 
-test("Project Journey requires an active project before editing", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-journey/index.html?project=none");
+test("Game Journey requires an active game before editing", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-journey/index.html?game=none");
 
   try {
-    await expect(page.locator("[data-journey-active-project]")).toContainText("No active project is open");
-    await expect(page.locator("[data-journey-diagnostics]")).toContainText("Open a project in Project Workspace");
+    await expect(page.locator("[data-journey-active-game]")).toContainText("No active game is open");
+    await expect(page.locator("[data-journey-diagnostics]")).toContainText("Open a game in Game Workspace");
     await expect(page.getByRole("button", { name: "Add Item" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Update Item" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Add Note", exact: true })).toBeDisabled();
@@ -1086,15 +1086,15 @@ test("Project Journey requires an active project before editing", async ({ page 
   }
 });
 
-test("Project Workspace hands the active project route to Project Journey", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
+test("Game Workspace hands the active game route to Game Journey", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
   try {
-    const journeyLink = page.getByRole("link", { name: "Open Project Journey" });
-    await expect(journeyLink).toHaveAttribute("href", /toolbox\/project-journey\/index\.html\?project=demo-project$/);
+    const journeyLink = page.getByRole("link", { name: "Open Game Journey" });
+    await expect(journeyLink).toHaveAttribute("href", /toolbox\/game-journey\/index\.html\?game=demo-game$/);
     await journeyLink.click();
-    await page.waitForURL(/toolbox\/project-journey\/index\.html\?project=demo-project$/);
-    await expect(page.locator("[data-journey-active-project]")).toHaveText("Active project: Demo Project.");
+    await page.waitForURL(/toolbox\/game-journey\/index\.html\?game=demo-game$/);
+    await expect(page.locator("[data-journey-active-game]")).toHaveText("Active game: Demo Game.");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -1102,20 +1102,20 @@ test("Project Workspace hands the active project route to Project Journey", asyn
   }
 });
 
-test("Toolbox registration exposes Project Journey navigation", async ({ page }) => {
+test("Toolbox registration exposes Game Journey navigation", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/index.html?view=group&group=build");
 
   try {
-    const journeyLink = page.locator("[data-toolbox-tool-name-link='Project Journey']").first();
-    await expect(journeyLink).toHaveText("Project Journey");
-    await expect(journeyLink).toHaveAttribute("href", /\/project-journey\/index\.html$/);
-    await expect(journeyLink).toHaveAttribute("data-registered-tool-route", "toolbox/project-journey/index.html");
+    const journeyLink = page.locator("[data-toolbox-tool-name-link='Game Journey']").first();
+    await expect(journeyLink).toHaveText("Game Journey");
+    await expect(journeyLink).toHaveAttribute("href", /\/game-journey\/index\.html$/);
+    await expect(journeyLink).toHaveAttribute("data-registered-tool-route", "toolbox/game-journey/index.html");
 
     await page.goto(`${failures.server.baseUrl}/toolbox/index.html?view=group&group=build`, { waitUntil: "networkidle" });
-    const userJourneyLink = page.locator("[data-toolbox-tool-name-link='Project Journey']").first();
-    await expect(userJourneyLink).toHaveText("Project Journey");
-    await expect(userJourneyLink).toHaveAttribute("href", /\/project-journey\/index\.html$/);
-    await expect(userJourneyLink).toHaveAttribute("data-registered-tool-route", "toolbox/project-journey/index.html");
+    const userJourneyLink = page.locator("[data-toolbox-tool-name-link='Game Journey']").first();
+    await expect(userJourneyLink).toHaveText("Game Journey");
+    await expect(userJourneyLink).toHaveAttribute("href", /\/game-journey\/index\.html$/);
+    await expect(userJourneyLink).toHaveAttribute("data-registered-tool-route", "toolbox/game-journey/index.html");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -1123,11 +1123,11 @@ test("Toolbox registration exposes Project Journey navigation", async ({ page })
   }
 });
 
-test("Project Journey source stays separate from notes files and browser persistence", async () => {
+test("Game Journey source stays separate from notes files and browser persistence", async () => {
   const sourcePaths = [
-    "toolbox/project-journey/index.html",
-    "toolbox/project-journey/project-journey.js",
-    "src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js"
+    "toolbox/game-journey/index.html",
+    "toolbox/game-journey/game-journey.js",
+    "src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js"
   ];
   const banned = [
     "admin" + "-notes",
@@ -1147,10 +1147,10 @@ test("Project Journey source stays separate from notes files and browser persist
   try {
     const response = await fetch(`${server.baseUrl}/api/toolbox/registry/snapshot`);
     const payload = await response.json();
-    const projectJourneyRegistry = payload.data.activeTools.find((tool) => tool.id === "project-journey");
-    expect(projectJourneyRegistry).toMatchObject({
+    const gameJourneyRegistry = payload.data.activeTools.find((tool) => tool.id === "game-journey");
+    expect(gameJourneyRegistry).toMatchObject({
       adminOnly: false,
-      id: "project-journey",
+      id: "game-journey",
       planningSource: "toolbox_tool_planning",
       requiredForPublish: true,
       status: "beta",

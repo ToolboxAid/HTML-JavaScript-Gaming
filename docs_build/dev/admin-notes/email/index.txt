@@ -1,0 +1,71 @@
+is there a free way to send emails from techsupport@gamefoundrystudio.com
+
+Yes, especially at your current stage.
+
+For Game Foundry Studio, I would use Resend.
+
+Why:
+
+Easy custom domain setup (gamefoundrystudio.com)
+Modern API
+Great for transactional email
+Simple DNS configuration
+Free tier is enough for early-stage notifications
+Good fit for password resets, account verification, deployment notices, maintenance windows, and release announcements.
+
+Example addresses:
+
+techsupport@gamefoundrystudio.com
+noreply@gamefoundrystudio.com
+notifications@gamefoundrystudio.com
+releases@gamefoundrystudio.com
+
+My recommended progression:
+
+Stage	Solution
+Solo developer	Resend Free
+Early users (<100/day)	Resend Free
+Growing platform	Resend Pro
+Large scale	Postmark or dedicated provider evaluation
+
+Current free-tier options commonly include:
+
+Provider	Free Tier
+Resend	3,000/month, 100/day limit
+Mailgun	100/day free tier
+Brevo	300/day free tier
+
+For your planned platform notifications, you probably won't exceed:
+
+Account verification
+Password reset
+Maintenance notices
+Release notes
+Support acknowledgements
+
+for quite a while.
+
+What I would not do:
+
+Run my own SMTP server
+
+Even though it's technically free, deliverability, spam reputation, DKIM/SPF/DMARC management, and mailbox-provider trust become a constant headache.
+
+For Game Foundry Studio today:
+
+Domain:
+gamefoundrystudio.com
+
+Provider:
+Resend
+
+Addresses:
+techsupport@
+noreply@
+notifications@
+releases@
+
+Future:
+platform-status@
+
+That gives you a professional email system for essentially $0 while you're building out the platform.

@@ -11,14 +11,14 @@ import {
   SIZE_OPTIONS,
   SORT_OPTIONS,
   SUGGESTED_TAGS,
-  createProjectWorkspacePaletteApiRepository,
+  createGameWorkspacePaletteApiRepository,
   normalizePaletteSwatchInput,
   validatePaletteSwatchInput
 } from "./palette-api-client.js";
 
 const params = new URLSearchParams(window.location.search);
 
-const repository = createProjectWorkspacePaletteApiRepository();
+const repository = createGameWorkspacePaletteApiRepository();
 
 
 const PALETTE_SORTER = new Intl.Collator("en", {

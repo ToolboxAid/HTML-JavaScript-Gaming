@@ -104,7 +104,7 @@ test("Game Configuration saves and updates creator-facing sections with readable
   const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html");
 
   try {
-    await expect(page.locator("[data-game-configuration-handoff-context]")).toHaveText("Demo Project - Game Project - Puzzle / Adventure / Single Player / 1 Player");
+    await expect(page.locator("[data-game-configuration-handoff-context]")).toHaveText("Demo Game - Game - Puzzle / Adventure / Single Player / 1 Player");
     await expect(page.locator("[data-game-configuration-handoff-overlay]")).toBeHidden();
     await expect(page.locator("[data-game-configuration-form-card]")).toBeVisible();
     await expect(page.locator(".tool-center-panel [data-game-configuration-form]")).toBeVisible();
@@ -161,7 +161,7 @@ test("Game Configuration saves and updates creator-facing sections with readable
     await expect(page.locator("[data-game-configuration-output-readiness]")).toHaveText("Ready");
     await expect(page.locator("[data-game-configuration-output-next-step]")).toHaveText("Assets");
     await expect(page.locator("[data-game-configuration-output-missing]")).toHaveText("None");
-    await expect(page.locator("[data-game-configuration-project-progress]")).toContainText("Game Configuration ready");
+    await expect(page.locator("[data-game-configuration-game-progress]")).toContainText("Game Configuration ready");
     await expect(page.locator("[data-game-configuration-current-focus]")).toHaveText("Prepare Assets");
     await expect(page.locator("[data-game-configuration-recommended-tool]").first()).toHaveText("Assets");
 

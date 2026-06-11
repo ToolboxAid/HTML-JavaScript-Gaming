@@ -71,9 +71,9 @@ export const MOCK_DB_SESSION_MODES = Object.freeze([
 ]);
 
 export const MOCK_DB_TOOL_GROUPS = Object.freeze({
-  workspace: Object.freeze({
-    label: "Workspace",
-    tableNames: Object.freeze(["workspace_projects", "workspace_progress"]),
+  "game-workspace": Object.freeze({
+    label: "Game Workspace",
+    tableNames: Object.freeze(["game_workspace_games", "game_workspace_progress"]),
   }),
   "game-design": Object.freeze({
     label: "Game Design",
@@ -91,14 +91,14 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
     label: "Controls",
     tableNames: Object.freeze(["game_input_mappings", "player_controller_profiles", "input_custom_action_records"]),
   }),
-  "project-journey": Object.freeze({
-    label: "Project Journey",
+  "game-journey": Object.freeze({
+    label: "Game Journey",
     tableNames: Object.freeze([
-      "project_journey_note_types",
-      "project_journey_notes",
-      "project_journey_templates",
-      "project_journey_items",
-      "project_journey_activity",
+      "game_journey_note_types",
+      "game_journey_notes",
+      "game_journey_templates",
+      "game_journey_items",
+      "game_journey_activity",
     ]),
   }),
   palette: Object.freeze({
@@ -129,31 +129,31 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   toolbox_tool_metadata: Object.freeze(["key", "toolKey", "toolName", "shortLabel", "shortDescription", "description", "group", "category", "colorGroup", "toolboxGroup", "subgroup", "path", "order", "status", "badge", "toolImage", "active", "adminOnly", "hidden", "deferred", "visibleInToolsList", "capabilityLabel", "childCapabilities", "requiredRole", "statusDiagnostic", "toolId", "releaseChannel", "releaseChannelLabel", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   toolbox_tool_planning: Object.freeze(["key", "toolKey", "readiness", "requiredForPlayable", "requiredForTestable", "requiredForPublish", "requires", "progressChecklist", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   toolbox_votes: Object.freeze(["key", "toolId", "userKey", "direction", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  workspace_projects: Object.freeze(["key", "name", "status", "ownerKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  workspace_progress: Object.freeze(["key", "projectKey", "currentFocus", "projectProgress", "publishingProgress", "recommendedNextTool", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  game_design_documents: Object.freeze(["key", "projectKey", "title", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  game_design_validation_items: Object.freeze(["key", "projectKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  game_configuration_records: Object.freeze(["key", "projectKey", "status", "summary", "playerMode", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  game_configuration_validation_items: Object.freeze(["key", "projectKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  object_definition_records: Object.freeze(["key", "id", "projectId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  game_input_mappings: Object.freeze(["key", "id", "projectId", "objectKey", "objectName", "gameAction", "gameActionLabel", "usageLabel", "normalizedInput", "inputFamily", "eventD", "eventH", "eventU", "eventDC", "eventDrag", "eventAxis", "enabled", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_workspace_games: Object.freeze(["key", "name", "status", "ownerKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_workspace_progress: Object.freeze(["key", "gameKey", "currentFocus", "gameProgress", "publishingProgress", "recommendedNextTool", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_design_documents: Object.freeze(["key", "gameKey", "title", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_design_validation_items: Object.freeze(["key", "gameKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_configuration_records: Object.freeze(["key", "gameKey", "status", "summary", "playerMode", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_configuration_validation_items: Object.freeze(["key", "gameKey", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  object_definition_records: Object.freeze(["key", "id", "gameId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_input_mappings: Object.freeze(["key", "id", "gameId", "objectKey", "objectName", "gameAction", "gameActionLabel", "usageLabel", "normalizedInput", "inputFamily", "eventD", "eventH", "eventU", "eventDC", "eventDrag", "eventAxis", "enabled", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   player_controller_profiles: Object.freeze(["key", "id", "playerId", "deviceType", "controllerName", "controllerId", "profileName", "inputs", "inputMappings", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  input_custom_action_records: Object.freeze(["key", "id", "projectId", "label", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  project_journey_note_types: Object.freeze(["key", "typeSlug", "name", "seeded", "userExtensible", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  project_journey_notes: Object.freeze(["key", "slug", "projectKey", "ownerKey", "name", "typeKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  project_journey_templates: Object.freeze(["key", "templateSlug", "originalMeaning", "systemGuidance", "linkedToolContexts", "version", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  project_journey_items: Object.freeze(["key", "projectKey", "noteKey", "status", "title", "userDetails", "templateKey", "linkedRecordType", "linkedRecordId", "indent", "order", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  project_journey_activity: Object.freeze(["key", "projectKey", "noteKey", "message", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  palette_colors: Object.freeze(["key", "projectId", "swatchKey", "hex", "name", "source", "tags", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  input_custom_action_records: Object.freeze(["key", "id", "gameId", "label", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_journey_note_types: Object.freeze(["key", "typeSlug", "name", "seeded", "userExtensible", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_journey_notes: Object.freeze(["key", "slug", "gameKey", "ownerKey", "name", "typeKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_journey_templates: Object.freeze(["key", "templateSlug", "originalMeaning", "systemGuidance", "linkedToolContexts", "version", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_journey_items: Object.freeze(["key", "gameKey", "noteKey", "status", "title", "userDetails", "templateKey", "linkedRecordType", "linkedRecordId", "indent", "order", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  game_journey_activity: Object.freeze(["key", "gameKey", "noteKey", "message", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  palette_colors: Object.freeze(["key", "gameId", "swatchKey", "hex", "name", "source", "tags", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   palette_source_swatches: Object.freeze(["key", "id", "swatchKey", "hex", "name", "source", "sourceLabel", "tags", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  palette_swatch_usages: Object.freeze(["key", "id", "projectId", "assetId", "swatchHex", "swatchName", "swatchKey", "toolId", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  project_workspace_palette_globals: Object.freeze(["key", "projectId", "swatchCount", "toolKey", "workspacePath", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  palette_swatch_usages: Object.freeze(["key", "id", "gameId", "assetId", "swatchHex", "swatchName", "swatchKey", "toolId", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  project_workspace_palette_globals: Object.freeze(["key", "gameId", "swatchCount", "toolKey", "workspacePath", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_role_definitions: Object.freeze(["key", "id", "label", "storageFolder", "extensions", "mimeTypes", "previewBehavior", "uploadEnabled", "inputMode", "usageRoles", "maxSizeBytes", "dbFields", "validationNeeds", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  asset_library_items: Object.freeze(["key", "id", "projectId", "ownerProjectId", "ownerUserId", "assetRole", "assetRoleLabel", "name", "fileName", "originalName", "mimeType", "size", "checksum", "storageObjectId", "storedPath", "path", "previewKind", "role", "type", "usage", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  asset_storage_objects: Object.freeze(["key", "id", "assetId", "projectId", "ownerProjectId", "role", "originalName", "storedPath", "mimeType", "size", "checksum", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  asset_import_events: Object.freeze(["key", "id", "assetId", "projectId", "fileName", "mimeType", "storedPath", "status", "type", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  asset_validation_items: Object.freeze(["key", "id", "projectId", "field", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  tool_state_samples: Object.freeze(["key", "audience", "userKey", "displayName", "toolKey", "toolName", "route", "projectKey", "toolStateKey", "manifestPath", "sampleLabel", "sampleKind", "loadablePath", "toolStatePayload", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  asset_library_items: Object.freeze(["key", "id", "gameId", "ownerProjectId", "ownerUserId", "assetRole", "assetRoleLabel", "name", "fileName", "originalName", "mimeType", "size", "checksum", "storageObjectId", "storedPath", "path", "previewKind", "role", "type", "usage", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  asset_storage_objects: Object.freeze(["key", "id", "assetId", "gameId", "ownerProjectId", "role", "originalName", "storedPath", "mimeType", "size", "checksum", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  asset_import_events: Object.freeze(["key", "id", "assetId", "gameId", "fileName", "mimeType", "storedPath", "status", "type", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  asset_validation_items: Object.freeze(["key", "id", "gameId", "field", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  tool_state_samples: Object.freeze(["key", "audience", "userKey", "displayName", "toolKey", "toolName", "route", "gameKey", "toolStateKey", "manifestPath", "sampleLabel", "sampleKind", "loadablePath", "toolStatePayload", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
 });
 
 const DEFAULT_TABLE_OWNERS = Object.freeze(Object.fromEntries([
@@ -332,7 +332,7 @@ function generatedRecordKey(tableName, record, index) {
     record?.name,
     record?.displayName,
     record?.swatchKey,
-    record?.projectId,
+    record?.gameId,
     index,
   ].filter((part) => part !== undefined && part !== null && part !== "").join(":");
   return makeMockUlid(8_000_000_000 + hashString(stableSource));

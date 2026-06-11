@@ -1,131 +1,131 @@
 import { MOCK_DB_KEYS } from "../mock-db-store.js";
 
-export const PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY = MOCK_DB_KEYS.users.user1;
-export const PROJECT_WORKSPACE_ADMIN_USER_KEY = MOCK_DB_KEYS.users.admin;
-export const PROJECT_WORKSPACE_VIEWER_USER_KEY = MOCK_DB_KEYS.users.user3;
+export const GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY = MOCK_DB_KEYS.users.user1;
+export const GAME_WORKSPACE_ADMIN_USER_KEY = MOCK_DB_KEYS.users.admin;
+export const GAME_WORKSPACE_VIEWER_USER_KEY = MOCK_DB_KEYS.users.user3;
 
 const SEED_USERS = Object.freeze([
   {
-    id: PROJECT_WORKSPACE_ADMIN_USER_KEY,
+    id: GAME_WORKSPACE_ADMIN_USER_KEY,
     displayName: "DavidQ",
     email: "admin@example.test",
     role: "Admin",
   },
   {
-    id: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    id: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     displayName: "User 1",
     email: "creator@example.test",
     role: "Creator",
   },
   {
-    id: PROJECT_WORKSPACE_VIEWER_USER_KEY,
+    id: GAME_WORKSPACE_VIEWER_USER_KEY,
     displayName: "User 3",
     email: "guest@example.test",
     role: "Guest",
   },
 ]);
 
-const DEMO_PROJECT = Object.freeze({
-  id: "demo-project",
-  ownerUserId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
-  name: "Demo Project",
-  purpose: "Game Project",
+const DEMO_GAME = Object.freeze({
+  id: "demo-game",
+  ownerUserId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+  name: "Demo Game",
+  purpose: "Game",
   status: "Under Construction",
 });
 
-const CAPABILITY_DEMO_PROJECTS = Object.freeze([
+const CAPABILITY_DEMO_GAMES = Object.freeze([
   {
     id: "gravity-demo",
-    ownerUserId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    ownerUserId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     name: "Gravity Demo",
     purpose: "Capability Demo",
     status: "Wireframe",
   },
   {
     id: "collision-demo",
-    ownerUserId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    ownerUserId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     name: "Collision Demo",
     purpose: "Capability Demo",
     status: "Wireframe",
   },
   {
     id: "camera-follow-demo",
-    ownerUserId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    ownerUserId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     name: "Camera Follow Demo",
     purpose: "Capability Demo",
     status: "Wireframe",
   },
 ]);
 
-const DEMO_PROJECT_MEMBERS = Object.freeze([
+const DEMO_GAME_MEMBERS = Object.freeze([
   {
-    projectId: "demo-project",
-    userId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    gameId: "demo-game",
+    userId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     permission: "Owner",
     role: "Owner",
   },
   {
-    projectId: "demo-project",
-    userId: PROJECT_WORKSPACE_ADMIN_USER_KEY,
+    gameId: "demo-game",
+    userId: GAME_WORKSPACE_ADMIN_USER_KEY,
     permission: "Admin",
     role: "Owner",
   },
   {
-    projectId: "demo-project",
-    userId: PROJECT_WORKSPACE_VIEWER_USER_KEY,
+    gameId: "demo-game",
+    userId: GAME_WORKSPACE_VIEWER_USER_KEY,
     permission: "Viewer",
     role: "Viewer",
   },
 ]);
 
-const CAPABILITY_DEMO_PROJECT_MEMBERS = Object.freeze(
-  CAPABILITY_DEMO_PROJECTS.flatMap((project) => [
+const CAPABILITY_DEMO_GAME_MEMBERS = Object.freeze(
+  CAPABILITY_DEMO_GAMES.flatMap((game) => [
     {
-      projectId: project.id,
-      userId: PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+      gameId: game.id,
+      userId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
       permission: "Owner",
       role: "Owner",
     },
     {
-      projectId: project.id,
-      userId: PROJECT_WORKSPACE_ADMIN_USER_KEY,
+      gameId: game.id,
+      userId: GAME_WORKSPACE_ADMIN_USER_KEY,
       permission: "Admin",
       role: "Owner",
     },
     {
-      projectId: project.id,
-      userId: PROJECT_WORKSPACE_VIEWER_USER_KEY,
+      gameId: game.id,
+      userId: GAME_WORKSPACE_VIEWER_USER_KEY,
       permission: "Viewer",
       role: "Viewer",
     },
   ]),
 );
 
-const SEED_PROJECTS = Object.freeze([
-  DEMO_PROJECT,
-  ...CAPABILITY_DEMO_PROJECTS,
+const SEED_GAMES = Object.freeze([
+  DEMO_GAME,
+  ...CAPABILITY_DEMO_GAMES,
 ]);
 
-const SEED_PROJECT_MEMBERS = Object.freeze([
-  ...DEMO_PROJECT_MEMBERS,
-  ...CAPABILITY_DEMO_PROJECT_MEMBERS,
+const SEED_GAME_MEMBERS = Object.freeze([
+  ...DEMO_GAME_MEMBERS,
+  ...CAPABILITY_DEMO_GAME_MEMBERS,
 ]);
 
-export const PROJECT_WORKSPACE_PROJECT_PURPOSES = Object.freeze([
-  "Game Project",
+export const GAME_WORKSPACE_GAME_PURPOSES = Object.freeze([
+  "Game",
   "Capability Demo",
-  "Learning Project",
-  "Template Project",
+  "Learning Game",
+  "Template Game",
 ]);
 
-export const PROJECT_WORKSPACE_PROJECT_STATUSES = Object.freeze([
+export const GAME_WORKSPACE_GAME_STATUSES = Object.freeze([
   "Planning",
   "Under Construction",
   "Ready for Testing",
   "Ready for Publish",
 ]);
 
-export const PROJECT_WORKSPACE_MEMBER_ROLES = Object.freeze([
+export const GAME_WORKSPACE_MEMBER_ROLES = Object.freeze([
   "Owner",
   "Designer",
   "World Builder",
@@ -137,23 +137,23 @@ export const PROJECT_WORKSPACE_MEMBER_ROLES = Object.freeze([
   "Viewer",
 ]);
 
-export const PROJECT_WORKSPACE_TABLES = Object.freeze([
+export const GAME_WORKSPACE_TABLES = Object.freeze([
   "users",
-  "projects",
-  "project_members",
+  "games",
+  "game_members",
 ]);
 
-export const PROJECT_WORKSPACE_PERMISSIONS = Object.freeze([
+export const GAME_WORKSPACE_PERMISSIONS = Object.freeze([
   "Owner",
   "Editor",
   "Viewer",
   "Admin",
 ]);
 
-export const PROJECT_WORKSPACE_SCHEMA = Object.freeze({
+export const GAME_WORKSPACE_SCHEMA = Object.freeze({
   users: Object.freeze(["id", "displayName", "email", "role"]),
-  projects: Object.freeze(["id", "ownerUserId", "name", "purpose", "status"]),
-  project_members: Object.freeze(["projectId", "userId", "permission", "role"]),
+  games: Object.freeze(["id", "ownerUserId", "name", "purpose", "status"]),
+  game_members: Object.freeze(["gameId", "userId", "permission", "role"]),
 });
 
 function cloneRows(rows) {
@@ -163,39 +163,39 @@ function cloneRows(rows) {
 function cloneTables(tables) {
   return {
     users: cloneRows(tables.users),
-    projects: cloneRows(tables.projects),
-    project_members: cloneRows(tables.project_members),
+    games: cloneRows(tables.games),
+    game_members: cloneRows(tables.game_members),
   };
 }
 
-function slugifyProjectName(name) {
+function slugifyGameName(name) {
   const slug = name
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-+|-+$/g, "");
 
-  return slug || "project";
+  return slug || "game";
 }
 
 function createSeedTables() {
   return {
     users: cloneRows(SEED_USERS),
-    projects: cloneRows(SEED_PROJECTS),
-    project_members: cloneRows(SEED_PROJECT_MEMBERS),
+    games: cloneRows(SEED_GAMES),
+    game_members: cloneRows(SEED_GAME_MEMBERS),
   };
 }
 
-export function createProjectWorkspaceMockRepository() {
+export function createGameWorkspaceMockRepository() {
   let tables = createSeedTables();
-  let activeProjectId = DEMO_PROJECT.id;
-  let projectCounter = 1;
+  let activeGameId = DEMO_GAME.id;
+  let gameCounter = 1;
 
   function getUserById(userId) {
     return tables.users.find((user) => user.id === userId) || null;
   }
 
-  function getProjectById(projectId) {
-    return tables.projects.find((project) => project.id === projectId) || null;
+  function getGameById(gameId) {
+    return tables.games.find((game) => game.id === gameId) || null;
   }
 
   function ensureSeedUsers() {
@@ -206,9 +206,9 @@ export function createProjectWorkspaceMockRepository() {
     });
   }
 
-  function getProjectMembers(projectId) {
-    return tables.project_members
-      .filter((member) => member.projectId === projectId)
+  function getGameMembers(gameId) {
+    return tables.game_members
+      .filter((member) => member.gameId === gameId)
       .map((member) => ({
         ...member,
         permission: member.permission || member.role || "Viewer",
@@ -217,18 +217,18 @@ export function createProjectWorkspaceMockRepository() {
       }));
   }
 
-  function describeProject(project) {
-    if (!project) {
+  function describeGame(game) {
+    if (!game) {
       return null;
     }
 
-    const owner = getUserById(project.ownerUserId);
+    const owner = getUserById(game.ownerUserId);
 
     return {
-      ...project,
-      purpose: project.purpose || "Game Project",
-      ownerDisplayName: owner?.displayName || project.ownerUserId,
-      members: getProjectMembers(project.id),
+      ...game,
+      purpose: game.purpose || "Game",
+      ownerDisplayName: owner?.displayName || game.ownerUserId,
+      members: getGameMembers(game.id),
     };
   }
 
@@ -236,37 +236,37 @@ export function createProjectWorkspaceMockRepository() {
     return cloneTables(tables);
   }
 
-  function listProjects(options = {}) {
+  function listGames(options = {}) {
     const { userId } = options;
 
     if (!userId) {
-      return tables.projects.map(describeProject);
+      return tables.games.map(describeGame);
     }
 
-    const projectIds = new Set(
-      tables.project_members
+    const gameIds = new Set(
+      tables.game_members
         .filter((member) => member.userId === userId)
-        .map((member) => member.projectId),
+        .map((member) => member.gameId),
     );
 
-    return tables.projects
-      .filter((project) => projectIds.has(project.id))
-      .map(describeProject);
+    return tables.games
+      .filter((game) => gameIds.has(game.id))
+      .map(describeGame);
   }
 
-  function getActiveProject() {
-    return describeProject(getProjectById(activeProjectId));
+  function getActiveGame() {
+    return describeGame(getGameById(activeGameId));
   }
 
-  function getProjectProgress(projectId = activeProjectId) {
-    const project = getProjectById(projectId);
+  function getGameProgress(gameId = activeGameId) {
+    const game = getGameById(gameId);
 
-    if (!project) {
+    if (!game) {
       return {
-        projectStatus: "No Game",
-        projectProgress: "No active game",
+        gameStatus: "No Game",
+        gameProgress: "No active game",
         publishingProgress: "Not started",
-        currentFocus: "Create or seed a project",
+        currentFocus: "Create or seed a game",
         recommendedNextTool: "Game Workspace",
         requiredForTestable: false,
         requiredForPublish: false,
@@ -279,8 +279,8 @@ export function createProjectWorkspaceMockRepository() {
     }
 
     return {
-      projectStatus: project.status,
-      projectProgress: `${project.name} identity ready`,
+      gameStatus: game.status,
+      gameProgress: `${game.name} identity ready`,
       publishingProgress: "Publish blocked until configuration and required assets are ready",
       currentFocus: "Complete Game Configuration",
       recommendedNextTool: "Game Configuration",
@@ -298,75 +298,75 @@ export function createProjectWorkspaceMockRepository() {
   function getSnapshot() {
     return {
       tables: getTables(),
-      activeProject: getActiveProject(),
-      progress: getProjectProgress(),
+      activeGame: getActiveGame(),
+      progress: getGameProgress(),
     };
   }
 
-  function resetProjectData() {
+  function resetGameData() {
     tables = createSeedTables();
-    activeProjectId = DEMO_PROJECT.id;
-    projectCounter = 1;
+    activeGameId = DEMO_GAME.id;
+    gameCounter = 1;
     return getSnapshot();
   }
 
-  function seedDemoProject() {
+  function seedDemoGame() {
     ensureSeedUsers();
 
-    SEED_PROJECTS.forEach((seedProject) => {
-      if (!getProjectById(seedProject.id)) {
-        tables.projects.push({ ...seedProject });
+    SEED_GAMES.forEach((seedGame) => {
+      if (!getGameById(seedGame.id)) {
+        tables.games.push({ ...seedGame });
       }
     });
 
-    SEED_PROJECT_MEMBERS.forEach((seedMember) => {
-      const exists = tables.project_members.some(
+    SEED_GAME_MEMBERS.forEach((seedMember) => {
+      const exists = tables.game_members.some(
         (member) =>
-          member.projectId === seedMember.projectId &&
+          member.gameId === seedMember.gameId &&
           member.userId === seedMember.userId,
       );
 
       if (!exists) {
-        tables.project_members.push({ ...seedMember });
+        tables.game_members.push({ ...seedMember });
       }
     });
 
-    activeProjectId = DEMO_PROJECT.id;
+    activeGameId = DEMO_GAME.id;
     return getSnapshot();
   }
 
   function clearTestData() {
     tables = {
       users: cloneRows(SEED_USERS),
-      projects: [],
-      project_members: [],
+      games: [],
+      game_members: [],
     };
-    activeProjectId = null;
+    activeGameId = null;
     return getSnapshot();
   }
 
-  function createProject(input = {}) {
+  function createGame(input = {}) {
     ensureSeedUsers();
 
-    const name = String(input.name || "").trim() || "Untitled Project";
-    const ownerUserId = input.ownerUserId || PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY;
-    const purpose = PROJECT_WORKSPACE_PROJECT_PURPOSES.includes(input.purpose)
+    const name = String(input.name || "").trim() || "Untitled Game";
+    const ownerUserId = input.ownerUserId || GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY;
+    const purpose = GAME_WORKSPACE_GAME_PURPOSES.includes(input.purpose)
       ? input.purpose
-      : "Game Project";
-    const baseId = slugifyProjectName(name);
-    let candidateId = `${baseId}-${projectCounter}`;
-    projectCounter += 1;
+      : "Game";
+    const baseId = slugifyGameName(name);
+    let candidateId = `${baseId}-${gameCounter}`;
+    gameCounter += 1;
 
-    while (getProjectById(candidateId)) {
-      candidateId = `${baseId}-${projectCounter}`;
-      projectCounter += 1;
+    while (getGameById(candidateId)) {
+      candidateId = `${baseId}-${gameCounter}`;
+      gameCounter += 1;
     }
 
-    const status = PROJECT_WORKSPACE_PROJECT_STATUSES.includes(input.status)
+    const status = GAME_WORKSPACE_GAME_STATUSES.includes(input.status)
       ? input.status
       : "Under Construction";
 
-    const project = {
+    const game = {
       id: candidateId,
       ownerUserId,
       name,
@@ -374,47 +374,47 @@ export function createProjectWorkspaceMockRepository() {
       status,
     };
 
-    tables.projects.push(project);
-    tables.project_members.push({
-      projectId: project.id,
+    tables.games.push(game);
+    tables.game_members.push({
+      gameId: game.id,
       userId: ownerUserId,
       permission: "Owner",
       role: "Owner",
     });
 
-    activeProjectId = project.id;
-    return describeProject(project);
+    activeGameId = game.id;
+    return describeGame(game);
   }
 
-  function updateProjectPurpose(projectId, purpose) {
-    const project = getProjectById(projectId);
+  function updateGamePurpose(gameId, purpose) {
+    const game = getGameById(gameId);
 
-    if (!project || !PROJECT_WORKSPACE_PROJECT_PURPOSES.includes(purpose)) {
-      return describeProject(project);
+    if (!game || !GAME_WORKSPACE_GAME_PURPOSES.includes(purpose)) {
+      return describeGame(game);
     }
 
-    project.purpose = purpose;
-    return describeProject(project);
+    game.purpose = purpose;
+    return describeGame(game);
   }
 
-  function updateProjectStatus(projectId, status) {
-    const project = getProjectById(projectId);
+  function updateGameStatus(gameId, status) {
+    const game = getGameById(gameId);
 
-    if (!project || !PROJECT_WORKSPACE_PROJECT_STATUSES.includes(status)) {
-      return describeProject(project);
+    if (!game || !GAME_WORKSPACE_GAME_STATUSES.includes(status)) {
+      return describeGame(game);
     }
 
-    project.status = status;
-    return describeProject(project);
+    game.status = status;
+    return describeGame(game);
   }
 
-  function updateProjectMemberRole(projectId, userId, role) {
-    if (!PROJECT_WORKSPACE_MEMBER_ROLES.includes(role)) {
+  function updateGameMemberRole(gameId, userId, role) {
+    if (!GAME_WORKSPACE_MEMBER_ROLES.includes(role)) {
       return getSnapshot();
     }
 
-    const member = tables.project_members.find(
-      (item) => item.projectId === projectId && item.userId === userId,
+    const member = tables.game_members.find(
+      (item) => item.gameId === gameId && item.userId === userId,
     );
 
     if (member) {
@@ -427,50 +427,50 @@ export function createProjectWorkspaceMockRepository() {
     return getSnapshot();
   }
 
-  function openProject(projectId) {
-    const project = getProjectById(projectId);
+  function openGame(gameId) {
+    const game = getGameById(gameId);
 
-    if (!project) {
+    if (!game) {
       return null;
     }
 
-    activeProjectId = project.id;
-    return describeProject(project);
+    activeGameId = game.id;
+    return describeGame(game);
   }
 
-  function deleteProject(projectId) {
-    const project = getProjectById(projectId);
+  function deleteGame(gameId) {
+    const game = getGameById(gameId);
 
-    if (!project) {
+    if (!game) {
       return getSnapshot();
     }
 
-    tables.projects = tables.projects.filter((item) => item.id !== project.id);
-    tables.project_members = tables.project_members.filter(
-      (member) => member.projectId !== project.id,
+    tables.games = tables.games.filter((item) => item.id !== game.id);
+    tables.game_members = tables.game_members.filter(
+      (member) => member.gameId !== game.id,
     );
 
-    if (activeProjectId === project.id) {
-      activeProjectId = tables.projects[0]?.id || null;
+    if (activeGameId === game.id) {
+      activeGameId = tables.games[0]?.id || null;
     }
 
     return getSnapshot();
   }
 
   return {
-    createProject,
-    deleteProject,
-    getActiveProject,
-    getProjectProgress,
+    createGame,
+    deleteGame,
+    getActiveGame,
+    getGameProgress,
     getSnapshot,
     getTables,
-    listProjects,
-    openProject,
-    resetProjectData,
-    seedDemoProject,
+    listGames,
+    openGame,
+    resetGameData,
+    seedDemoGame,
     clearTestData,
-    updateProjectMemberRole,
-    updateProjectPurpose,
-    updateProjectStatus,
+    updateGameMemberRole,
+    updateGamePurpose,
+    updateGameStatus,
   };
 }

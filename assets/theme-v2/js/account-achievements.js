@@ -7,7 +7,7 @@ const buildRows = document.querySelector("[data-achievements-build-rows]");
 const buildStatus = document.querySelector("[data-achievements-build-status]");
 const createdCount = document.querySelector("[data-achievements-build-created-count]");
 const readyCount = document.querySelector("[data-achievements-build-ready-count]");
-const repository = createServerRepositoryClient("project-workspace");
+const repository = createServerRepositoryClient("game-workspace");
 
 function setText(element, value) {
     if (element) {
@@ -45,13 +45,13 @@ function createActionCell(project) {
     return cell;
 }
 
-function renderBuildRows(projects) {
+function renderBuildRows(games) {
     if (!buildRows) {
         return;
     }
 
     buildRows.replaceChildren();
-    if (!projects.length) {
+    if (!games.length) {
         const row = document.createElement("tr");
         const cell = createCell("No Game Workspace games are available.");
         cell.colSpan = 5;
@@ -61,11 +61,11 @@ function renderBuildRows(projects) {
         return;
     }
 
-    projects.forEach((project) => {
+    games.forEach((project) => {
         const row = document.createElement("tr");
         row.dataset.achievementsBuildProject = project.id || "";
         row.append(
-            createCell(project.name || "Untitled Project"),
+            createCell(project.name || "Untitled Game"),
             createCell(project.status || "Not tracked yet"),
             createCell("Not tracked yet"),
             createCell("Not tracked yet"),
@@ -74,10 +74,10 @@ function renderBuildRows(projects) {
         buildRows.append(row);
     });
 
-    const readyProjects = projects.filter((project) => project.status === "Ready for Publish").length;
-    setText(createdCount, String(projects.length));
-    setText(readyCount, String(readyProjects));
-    setText(buildStatus, "Build project rows use the Game Workspace game source. Stats and ratings are not tracked yet.");
+    const readyGames = games.filter((project) => project.status === "Ready for Publish").length;
+    setText(createdCount, String(games.length));
+    setText(readyCount, String(readyGames));
+    setText(buildStatus, "Build game rows use the Game Workspace game source. Stats and ratings are not tracked yet.");
 }
 
 function renderBuildError(message) {
@@ -103,13 +103,13 @@ function currentBuildUserId() {
         }
     } catch {}
 
-    const activeProject = repository.getActiveProject?.();
+    const activeProject = repository.getActiveGame?.();
     return activeProject?.ownerUserId || "";
 }
 
-function loadBuildProjects() {
+function loadBuildGames() {
     const userId = currentBuildUserId();
-    const result = repository.listProjects(userId ? { userId } : {});
+    const result = repository.listGames(userId ? { userId } : {});
     if (result?.error) {
         renderBuildError(result.message || "Game Workspace data is unavailable.");
         return;
@@ -128,6 +128,6 @@ if (tabs.length && panels.length) {
         });
     });
 
-    loadBuildProjects();
+    loadBuildGames();
     showTab("build");
 }

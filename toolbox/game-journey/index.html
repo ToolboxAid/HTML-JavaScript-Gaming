@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Project Journey - GameFoundryStudio</title>
-    <meta name="description" content="Project Journey Tool V2 page for project-scoped notes, entry status, activity, and suggested toolbox handoffs.">
+    <title>Game Journey - GameFoundryStudio</title>
+    <meta name="description" content="Game Journey Tool V2 page for game-scoped notes, entry status, activity, and suggested toolbox handoffs.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -16,9 +16,9 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Toolbox / Project Journey</div>
-                <h1>Project Journey</h1>
-                <p class="lede">Track project-scoped notes, nested work rows, status counts, and toolbox handoffs from the active project.</p>
+                <div class="kicker">Toolbox / Game Journey</div>
+                <h1>Game Journey</h1>
+                <p class="lede">Track game-scoped notes, nested work rows, status counts, and toolbox handoffs from the active game.</p>
             </div>
         </section>
         <section class="section">
@@ -34,7 +34,7 @@
                                 <div class="accordion-body content-stack">
                                     <label for="journeySearchInput">Search <input id="journeySearchInput" type="search" placeholder="Type, status, item, tool" data-journey-search-input></label>
                                     <div class="status" role="status" data-journey-search-status>Search is clear.</div>
-                                    <div class="action-group" role="group" aria-label="Project Journey note filters">
+                                    <div class="action-group" role="group" aria-label="Game Journey note filters">
                                         <button class="btn btn--compact" type="button" data-journey-filter="all">All Notes</button>
                                         <button class="btn btn--compact" type="button" data-journey-filter="mine">My Notes</button>
                                         <button class="btn btn--compact" type="button" data-journey-filter="not-started">Not Started</button>
@@ -53,7 +53,7 @@
                                     <label for="journeyNewNoteName">Note Name <input id="journeyNewNoteName" type="text" placeholder="Playtest follow-ups" data-journey-new-note-name></label>
                                     <label for="journeyNewNoteType">Type <select id="journeyNewNoteType" data-journey-new-note-type></select></label>
                                     <button class="btn primary" type="button" data-journey-add-note>Add Note</button>
-                                    <div class="status" role="status" data-journey-note-status>Add a project-scoped note to the summary table.</div>
+                                    <div class="status" role="status" data-journey-note-status>Add a game-scoped note to the summary table.</div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -69,7 +69,7 @@
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="journeyItemTitleInput">Title</label></th>
-                                                        <td><input id="journeyItemTitleInput" type="text" placeholder="Write the next project journey item" data-journey-title-input></td>
+                                                        <td><input id="journeyItemTitleInput" type="text" placeholder="Write the next game journey item" data-journey-title-input></td>
                                                     </tr>
                                                     <tr>
                                                         <th scope="row"><label for="journeyNewItemTitleInput">New Item Title</label></th>
@@ -95,7 +95,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Selected Note Metadata</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Seeded defaults stay extensible in the Project Journey mock data.</p>
+                                    <p>Seeded defaults stay extensible in the Game Journey mock data.</p>
                                     <label for="journeyNoteTypeSelect">Type <select id="journeyNoteTypeSelect" data-journey-note-type-select></select></label>
                                     <label for="journeyTypeInput">Add Note Type <input id="journeyTypeInput" type="text" placeholder="Playtest" data-journey-type-input></label>
                                     <button class="btn" type="button" data-journey-add-type>Add Note Type</button>
@@ -104,16 +104,16 @@
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="project-journey" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-journey" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Project Journey Board</h2>
-                        <p data-journey-active-project>Waiting for active project data.</p>
+                        <h2>Game Journey Board</h2>
+                        <p data-journey-active-game>Waiting for active game data.</p>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
                                 <summary>Summary Table</summary>
                                 <div class="accordion-body">
                                     <div class="table-wrapper">
-                                        <table class="data-table data-table--fixed" aria-label="Project Journey note summary" data-journey-summary-table>
+                                        <table class="data-table data-table--fixed" aria-label="Game Journey note summary" data-journey-summary-table>
                                             <thead>
                                                 <tr>
                                                     <th scope="col" data-journey-sort-header="name"><button class="btn btn--compact" type="button" data-journey-sort="name">Name</button></th>
@@ -195,7 +195,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js"></script>
     <script src="assets/theme-v2/js/tool-display-mode.js"></script>
-    <script type="module" src="toolbox/project-journey/project-journey.js"></script>
+    <script type="module" src="toolbox/game-journey/game-journey.js"></script>
 </body>
 
 </html>

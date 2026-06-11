@@ -92,7 +92,7 @@ test("account achievements page switches Build Play Share views", async ({ page 
     await expect(page.getByText("Games I shared")).toBeHidden();
     await expect(page.locator("[data-achievements-build-created-count]")).toHaveText("4");
     await expect(page.locator("[data-achievements-build-ready-count]")).toHaveText("0");
-    await expect(page.locator("[data-achievements-build-status]")).toContainText("Project Workspace project source");
+    await expect(page.locator("[data-achievements-build-status]")).toContainText("Game Workspace game source");
     const buildRows = await page.locator("[data-achievements-build-rows] tr").evaluateAll((rows) => rows.map((row) => {
       const cells = Array.from(row.querySelectorAll("td")).map((cell) => cell.textContent.trim());
       return {
@@ -103,7 +103,7 @@ test("account achievements page switches Build Play Share views", async ({ page 
       };
     }));
     expect(buildRows).toEqual([
-      { name: "Demo Project", status: "Under Construction", stats: "Not tracked yet", rating: "Not tracked yet" },
+      { name: "Demo Game", status: "Under Construction", stats: "Not tracked yet", rating: "Not tracked yet" },
       { name: "Gravity Demo", status: "Wireframe", stats: "Not tracked yet", rating: "Not tracked yet" },
       { name: "Collision Demo", status: "Wireframe", stats: "Not tracked yet", rating: "Not tracked yet" },
       { name: "Camera Follow Demo", status: "Wireframe", stats: "Not tracked yet", rating: "Not tracked yet" },
@@ -114,7 +114,7 @@ test("account achievements page switches Build Play Share views", async ({ page 
     await expect(page.locator("body")).not.toContainText("Sky Forge Sprint");
     await expect(page.locator("body")).not.toContainText("Crystal Circuit");
     await expect(page.locator("body")).not.toContainText("Moonlit Maze");
-    await expect(page.getByRole("button", { name: "Open Demo Project" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Open Demo Game" })).toBeVisible();
 
     await page.locator("[data-achievements-tab='play']").click();
     await expect(page.locator("[data-achievements-panel='build']")).toBeHidden();

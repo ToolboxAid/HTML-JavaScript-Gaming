@@ -6,14 +6,14 @@ import {
 const repository = createGameConfigurationApiRepository();
 const params = new URLSearchParams(window.location.search);
 const handoffMode = params.get("handoff");
-const requestedProject = params.get("project") || "";
+const requestedGame = params.get("game") || params.get("project") || "";
 
 if (handoffMode === "missing") {
   repository.makeMissingGameDesign();
 } else if (handoffMode === "invalid") {
-  repository.makeInvalidGameDesign(requestedProject);
+  repository.makeInvalidGameDesign(requestedGame);
 } else {
-  repository.makeValidGameDesign(requestedProject);
+  repository.makeValidGameDesign(requestedGame);
 }
 
 const elements = {
@@ -34,7 +34,7 @@ const elements = {
   outputSummary: document.querySelector("[data-game-configuration-output-summary]"),
   playerSetup: document.querySelector("[data-game-configuration-player-setup]"),
   progressCurrentFocus: document.querySelector("[data-game-configuration-current-focus]"),
-  progressProject: document.querySelector("[data-game-configuration-project-progress]"),
+  progressGame: document.querySelector("[data-game-configuration-game-progress]"),
   progressPublishing: document.querySelector("[data-game-configuration-publishing-progress]"),
   progressRecommended: document.querySelectorAll("[data-game-configuration-recommended-tool]"),
   statusLog: document.querySelector("[data-game-configuration-log]"),
@@ -115,10 +115,10 @@ function renderValidation(validation) {
 }
 
 function renderHandoff(snapshot) {
-  const project = snapshot.handoff.activeProject;
+  const game = snapshot.handoff.activeGame || snapshot.handoff.activeProject;
   const design = snapshot.handoff.activeDesign;
-  const context = project && design
-    ? `${project.name} - ${project.purpose} - ${design.gameType} / ${design.genre} / ${design.playStyle} / ${design.playerMode || "1 Player"}`
+  const context = game && design
+    ? `${game.name} - ${game.purpose} - ${design.gameType} / ${design.genre} / ${design.playStyle} / ${design.playerMode || "1 Player"}`
     : "No valid Game Design handoff";
 
   setText(elements.handoffContext, context);
@@ -136,9 +136,10 @@ function renderOutput(snapshot) {
   const validation = snapshot.validation;
   const missing = validation.findings.map((finding) => finding.label).join(", ");
   const summary = configuration?.gameBasics || "No configuration summary saved yet.";
-  const capability = snapshot.handoff.activeProject?.purpose === "Capability Demo"
-    ? `${snapshot.handoff.activeProject.name} remains a project-owned capability demo.`
-    : "Standard game project configuration.";
+  const activeGame = snapshot.handoff.activeGame || snapshot.handoff.activeProject;
+  const capability = activeGame?.purpose === "Capability Demo"
+    ? `${activeGame.name} remains a game-owned capability demo.`
+    : "Standard game configuration.";
 
   setText(elements.outputSummary, summary);
   setText(elements.outputPlayerMode, configuration?.playerMode || snapshot.handoff.activeDesign?.playerMode || "1 Player");
@@ -149,7 +150,7 @@ function renderOutput(snapshot) {
 }
 
 function renderProgress(progress) {
-  setText(elements.progressProject, progress.projectProgress);
+  setText(elements.progressGame, progress.gameProgress || progress.projectProgress);
   setText(elements.progressPublishing, progress.publishingProgress);
   setText(elements.progressCurrentFocus, progress.currentFocus);
   setText(elements.progressRecommended, progress.recommendedNextTool);

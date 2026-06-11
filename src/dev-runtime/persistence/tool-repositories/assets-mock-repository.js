@@ -1,6 +1,6 @@
 import { createGameConfigurationMockRepository } from "./game-configuration-mock-repository.js";
 import {
-  createProjectWorkspacePaletteRepository
+  createGameWorkspacePaletteRepository
 } from "./palette-workspace-repository.js";
 import {
   loadMockDbTables,
@@ -249,7 +249,7 @@ function assetProjectIdForProject(project) {
     return "";
   }
 
-  if (project.id === "demo-project") {
+  if (project.id === "demo-game") {
     return DEMO_ASSET_PROJECT_ID;
   }
 
@@ -433,8 +433,8 @@ function auditFields(timestamp, userKey = ASSET_SYSTEM_USER_KEY) {
 
 function createReadyGameConfigurationRepository() {
   const repository = createGameConfigurationMockRepository();
-  repository.makeValidGameDesign("demo-project");
-  repository.updateConfiguration("demo-project", READY_CONFIGURATION_INPUT);
+  repository.makeValidGameDesign("demo-game");
+  repository.updateConfiguration("demo-game", READY_CONFIGURATION_INPUT);
   return repository;
 }
 
@@ -557,7 +557,7 @@ function createEditableSpriteAssetRecord({ assetKey, project }) {
 
 export function createAssetToolMockRepository(options = {}) {
   const configurationRepository = options.configurationRepository || createReadyGameConfigurationRepository();
-  const paletteRepository = options.paletteRepository || createProjectWorkspacePaletteRepository();
+  const paletteRepository = options.paletteRepository || createGameWorkspacePaletteRepository();
   const loadedMockDbTables = loadMockDbTables(ASSET_DB_OWNER, createEmptyTables(), options);
   const databaseCleared = Boolean(loadedMockDbTables.cleared);
   const persistenceEnabled = mockDbPersistenceEnabled(options);
@@ -1066,16 +1066,16 @@ export function createAssetToolMockRepository(options = {}) {
   }
 
   function makeInvalidGameConfiguration() {
-    configurationRepository.makeValidGameDesign("demo-project");
-    configurationRepository.updateConfiguration("demo-project", {
+    configurationRepository.makeValidGameDesign("demo-game");
+    configurationRepository.updateConfiguration("demo-game", {
       gameBasics: "Only basics are present."
     });
     return clearAssetLibrary();
   }
 
   function makeReadyGameConfiguration() {
-    configurationRepository.makeValidGameDesign("demo-project");
-    configurationRepository.updateConfiguration("demo-project", READY_CONFIGURATION_INPUT);
+    configurationRepository.makeValidGameDesign("demo-game");
+    configurationRepository.updateConfiguration("demo-game", READY_CONFIGURATION_INPUT);
     if (hasPersistedTables) {
       selectedAssetId = tables.asset_library_items[0]?.id || "";
       return getSnapshot();

@@ -1,0 +1,269 @@
+Getting Started
+
+New to Game Foundry Studio? Start here.
+
+Learn the fundamentals of building games, creating projects, understanding the creator workflow, and turning ideas into playable experiences. These videos provide the foundation for everything else in Game Foundry Studio.
+
+Build your first game. Learn the tools. Start creating.
+
+Tool Tutorials
+
+Step-by-step walkthroughs of Game Foundry Studio tools.
+
+Explore Project Workspace, Game Design, Assets, Objects, Controls, Events, Publishing, and more. Learn how each tool works, how they connect together, and how to use them effectively in your game projects.
+
+Master the tools that power your games.
+
+Game Design
+
+Learn the art and science of game design.
+
+Discover gameplay mechanics, level design, player engagement, balancing, progression systems, scoring, game loops, and design best practices. Whether you're building an arcade classic or an original game concept, great design starts here.
+
+Design games players love to play.
+
+Asset Creation
+
+Create the visuals, audio, and content that bring your games to life.
+
+Learn pixel art, sprites, animations, sound effects, music, environments, characters, and visual storytelling. Build assets that make your games unique and memorable.
+
+Create assets. Create worlds.
+
+Dev Logs
+
+Follow the development journey of Game Foundry Studio.
+
+See new features, upcoming tools, design decisions, challenges, milestones, and behind-the-scenes development updates. Watch the platform evolve from concept to creator ecosystem.
+
+Building in public, one feature at a time.
+
+King of the Iceberg
+
+Follow the creation of King of the Iceberg from idea to release.
+
+Watch gameplay development, mechanics design, balancing, level creation, art updates, testing, and feature implementation. This playlist showcases how a complete game is built using Game Foundry Studio.
+
+Build. Test. Improve. Play.
+
+Community Creations
+
+Discover games, assets, projects, and creations from the Game Foundry Studio community.
+
+Featuring creator spotlights, project showcases, tutorials, challenges, and innovative ideas from builders around the world.
+
+Create. Share. Inspire.
+
+Channel Home Message
+
+Use this as the overall channel positioning:
+
+Build Games.
+
+Create Assets.
+
+Learn Game Development.
+
+Share With Others.
+
+Welcome to Game Foundry Studio — a creator platform designed to help anyone turn ideas into playable games. Whether you're building your first arcade game or creating an entire game world, you'll find the tools, tutorials, inspiration, and community to help bring your vision to life.
+
+Build. Play. Share.
+
+This gives visitors an immediate understanding of what the channel is about within a few seconds of arriving.
+
+-----------------------------------------------------------------
+
+I agree completely.
+
+For Game Foundry Studio, I would keep **all deployment validation assets under `docs_build/`** because:
+
+* Never ships to UAT/Prod bundles.
+* Clearly separated from runtime code.
+* Keeps deployment verification as an engineering process, not a product feature.
+* Easier to archive historical deployment results.
+* Easier to compare UAT vs Prod deployment runs.
+
+I'd structure it like:
+
+```text
+docs_build/
+└── deployment/
+    ├── packages/
+    │   ├── dev/
+    │   ├── uat/
+    │   └── prod/
+    │
+    ├── scripts/
+    │   ├── package-dev.ps1
+    │   ├── package-uat.ps1
+    │   ├── package-prod.ps1
+    │   ├── deploy-uat.ps1
+    │   ├── deploy-prod.ps1
+    │   ├── verify-uat.ps1
+    │   └── verify-prod.ps1
+    │
+    ├── db/
+    │   ├── migrations/
+    │   ├── seeds/
+    │   ├── rollbacks/
+    │   └── validation/
+    │
+    ├── baselines/
+    │   ├── required-routes.json
+    │   ├── required-labels.json
+    │   ├── required-tools.json
+    │   └── db-contracts.json
+    │
+    ├── playwright/
+    │   ├── routes.smoke.spec.mjs
+    │   ├── assets.smoke.spec.mjs
+    │   ├── controls.smoke.spec.mjs
+    │   └── account.smoke.spec.mjs
+    │
+    └── manifests/
+        ├── uat-deployment-manifest.json
+        └── prod-deployment-manifest.json
+
+docs_build/
+└── reports/
+    └── deployments/
+        ├── uat/
+        └── prod/
+```
+
+The part I think you're missing is a **deployment contract**.
+
+Example:
+
+```json
+{
+  "requiredRoutes": [
+    "/",
+    "/toolbox/",
+    "/toolbox/game-workspace/",
+    "/toolbox/game-journey/",
+    "/toolbox/controls/",
+    "/account/user-controls.html"
+  ]
+}
+```
+
+Then the validation scripts don't hardcode anything.
+
+They read:
+
+```text
+docs_build/deployment/baselines/
+```
+
+and verify:
+
+* routes exist
+* labels exist
+* tools exist
+* pages exist
+* no console errors
+* no missing assets
+
+For Game Foundry Studio specifically, I'd eventually grow this into:
+
+```text
+Level 1 - Infrastructure
+```
+
+* Site responds
+* SSL valid
+* Health endpoint valid
+
+```text
+Level 2 - Navigation
+```
+
+* Header
+* Footer
+* Toolbox
+* Account
+
+```text
+Level 3 - Tool Validation
+```
+
+* Every Beta/Complete tool opens
+
+```text
+Level 4 - Creator Workflow
+```
+
+* Game Workspace
+* Game Design
+* Controls
+* Assets
+* Publish
+
+```text
+Level 5 - Regression
+```
+
+* No removed routes
+* No missing tools
+* No missing labels
+* No JS errors
+
+```text
+Level 6 - Release Gate
+```
+
+Generate:
+
+```text
+docs_build/reports/deployments/uat/2026-06-11/
+docs_build/reports/deployments/prod/2026-06-11/
+```
+
+with:
+
+* PASS
+* FAIL
+* WARN
+* screenshots
+* console logs
+* network failures
+
+Then before promoting:
+
+```text
+DEV
+  ↓
+UAT Validation
+  ↓
+PROMOTE
+  ↓
+PROD Validation
+  ↓
+RELEASE
+```
+
+Everything lives under `docs_build/`, nothing deploys to production, and deployment validation becomes a first-class engineering process rather than runtime code.
+
+---------------------------------------------------------------------------------
+I’d keep actual generated deployment bundles out of long-term source unless you intentionally archive them. Use:
+
+docs_build/deployment/packages/
+
+for local generated output, but make it cleanable.
+
+DB updates fit here:
+
+docs_build/deployment/db/migrations/
+docs_build/deployment/db/seeds/
+docs_build/deployment/db/rollbacks/
+docs_build/deployment/db/validation/
+
+The flow becomes:
+
+package → deploy → migrate DB → seed if needed → validate DB → run smoke tests → write report
+
+Best rule:
+
+Runtime app code lives outside docs_build/. Deployment instructions, packages, scripts, migrations, validation contracts, and reports live inside docs_build/

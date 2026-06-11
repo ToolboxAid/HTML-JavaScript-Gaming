@@ -52,23 +52,23 @@ async function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
-test("Game Design shows an actionable overlay when project context is missing", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-design/index.html?project=missing");
+test("Game Design shows an actionable overlay when game context is missing", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-design/index.html?game=missing");
 
   try {
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator("[data-game-design-project-overlay]")).toBeVisible();
+    await expect(page.locator("[data-game-design-game-overlay]")).toBeVisible();
     await expect(page.locator("[data-game-design-validation-overlay]")).toBeVisible();
-    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Project Context");
-    await expect(page.locator("[data-game-design-project-context]")).toHaveText("No Game Workspace game");
+    await expect(page.locator("[data-game-design-validation-list]")).toContainText("Game Context");
+    await expect(page.locator("[data-game-design-game-context]")).toHaveText("No Game Workspace game");
     await expect(page.locator("[data-game-design-output]")).not.toContainText("{");
-    await expect(page.locator("[data-game-design-output]")).not.toContainText('"activeProjectId"');
+    await expect(page.locator("[data-game-design-output]")).not.toContainText('"activeGameId"');
 
     await page.getByRole("button", { name: "Save Game Design" }).click();
-    await expect(page.locator("[data-game-design-log]")).toHaveText("Open or seed a project before saving Game Design.");
+    await expect(page.locator("[data-game-design-log]")).toHaveText("Open or seed a game before saving Game Design.");
     await expect(page.locator("[data-game-design-output-validation]")).toHaveText("Blocked");
-    await expect(page.locator("[data-game-design-output-missing]")).toHaveText("Project Context");
+    await expect(page.locator("[data-game-design-output-missing]")).toHaveText("Game Context");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -77,23 +77,23 @@ test("Game Design shows an actionable overlay when project context is missing", 
   }
 });
 
-test("Game Design saves and updates design fields against the active project", async ({ page }) => {
+test("Game Design saves and updates design fields against the active game", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
 
   try {
-    await expect(page.locator("[data-game-design-project-context]")).toHaveText("Demo Project - Game Project");
-    await expect(page.getByText("Project Context", { exact: true })).toHaveCount(1);
-    await expect(page.locator("[data-game-design-project-context] select, [data-game-design-project-context] input, [data-game-design-project-context] button, [data-game-design-project-context] a")).toHaveCount(0);
-    await expect(page.locator("[data-game-design-active-project], [data-game-design-project-purpose], [data-game-design-project-status], [data-game-design-project-select]")).toHaveCount(0);
+    await expect(page.locator("[data-game-design-game-context]")).toHaveText("Demo Game - Game");
+    await expect(page.getByText("Game Context", { exact: true })).toHaveCount(1);
+    await expect(page.locator("[data-game-design-game-context] select, [data-game-design-game-context] input, [data-game-design-game-context] button, [data-game-design-game-context] a")).toHaveCount(0);
+    await expect(page.locator("[data-game-design-active-game], [data-game-design-game-purpose], [data-game-design-game-status], [data-game-design-game-select]")).toHaveCount(0);
     await expect(page.locator(".tool-center-panel [data-game-design-form]")).toBeVisible();
     await expect(page.locator("aside [data-game-design-form]")).toHaveCount(0);
     await expect(page.locator("[data-game-design-form] style, [data-game-design-form] [style], [data-game-design-form] script:not([src])")).toHaveCount(0);
-    const projectDesignTable = page.locator("[data-game-design-project-design-table]");
-    await expect(projectDesignTable).toBeVisible();
-    await expect(projectDesignTable).toHaveClass(/data-table/);
-    await expect(projectDesignTable).toHaveClass(/tool-form-table/);
-    await expect(projectDesignTable.locator("tbody tr")).toHaveCount(6);
-    await expect(projectDesignTable.locator("th[scope='row'] label")).toHaveText([
+    const gameDesignTable = page.locator("[data-game-design-game-design-table]");
+    await expect(gameDesignTable).toBeVisible();
+    await expect(gameDesignTable).toHaveClass(/data-table/);
+    await expect(gameDesignTable).toHaveClass(/tool-form-table/);
+    await expect(gameDesignTable.locator("tbody tr")).toHaveCount(6);
+    await expect(gameDesignTable.locator("th[scope='row'] label")).toHaveText([
       "Game Type",
       "Genre",
       "Play Style",
@@ -101,7 +101,7 @@ test("Game Design saves and updates design fields against the active project", a
       "Design Summary",
       "Capability Demo Notes"
     ]);
-    const projectDesignPairs = await projectDesignTable.locator("tbody tr").evaluateAll((rows) => rows.map((row) => {
+    const gameDesignPairs = await gameDesignTable.locator("tbody tr").evaluateAll((rows) => rows.map((row) => {
       const label = row.querySelector("th label");
       const control = row.querySelector("td select, td textarea");
       return {
@@ -112,7 +112,7 @@ test("Game Design saves and updates design fields against the active project", a
         labelText: label?.textContent.trim() ?? null
       };
     }));
-    expect(projectDesignPairs).toEqual([
+    expect(gameDesignPairs).toEqual([
       { cellCount: 2, controlId: "gameDesignType", controlTag: "select", labelFor: "gameDesignType", labelText: "Game Type" },
       { cellCount: 2, controlId: "gameDesignGenre", controlTag: "select", labelFor: "gameDesignGenre", labelText: "Genre" },
       { cellCount: 2, controlId: "gameDesignPlayStyle", controlTag: "select", labelFor: "gameDesignPlayStyle", labelText: "Play Style" },
@@ -122,7 +122,7 @@ test("Game Design saves and updates design fields against the active project", a
     ]);
     await expect(page.locator("#gameDesignSummary")).toHaveAttribute("rows", "4");
     await expect(page.locator("#gameDesignCapabilityNotes")).toHaveAttribute("rows", "4");
-    const projectDesignLayout = await projectDesignTable.evaluate((table) => {
+    const gameDesignLayout = await gameDesignTable.evaluate((table) => {
       const wrapper = table.closest(".table-wrapper");
       const firstRow = table.querySelector("tbody tr");
       const labelCell = firstRow?.querySelector("th");
@@ -144,7 +144,7 @@ test("Game Design saves and updates design fields against the active project", a
         textareaFillsInputColumn: Boolean(textareaBox && inputBox && textareaBox.width >= inputBox.width - 32)
       };
     });
-    expect(projectDesignLayout).toEqual({
+    expect(gameDesignLayout).toEqual({
       controlColumnIsDominant: true,
       labelColumnIsCompact: true,
       labelTextAlign: "right",
@@ -169,27 +169,27 @@ test("Game Design saves and updates design fields against the active project", a
     await page.getByLabel("Genre").selectOption("Adventure");
     await page.getByLabel("Play Style").selectOption("Single Player");
     await page.getByLabel("Player Mode").selectOption("2+ Concurrent");
-    await page.getByLabel("Design Summary").fill("A compact puzzle adventure with one clear project promise.");
+    await page.getByLabel("Design Summary").fill("A compact puzzle adventure with one clear game promise.");
     await page.getByRole("button", { name: "Save Game Design" }).click();
 
-    await expect(page.locator("[data-game-design-log]")).toHaveText("Saved Demo Project Game Design as ready.");
+    await expect(page.locator("[data-game-design-log]")).toHaveText("Saved Demo Game as ready for Game Design.");
     await expect(page.locator("[data-game-design-validation-overlay]")).toBeHidden();
     await expect(page.locator("[data-game-design-status]")).toHaveText("Ready");
     await expect(page.locator("[data-game-design-recommended-tool]").first()).toHaveText("Game Configuration");
-    await expect(page.locator("[data-game-design-output-summary]")).toHaveText("A compact puzzle adventure with one clear project promise.");
+    await expect(page.locator("[data-game-design-output-summary]")).toHaveText("A compact puzzle adventure with one clear game promise.");
     await expect(page.locator("[data-game-design-output-player-mode]")).toHaveText("2+ Concurrent");
     await expect(page.locator("[data-game-design-output-validation]")).toHaveText("Ready");
     await expect(page.locator("[data-game-design-output-next-step]")).toHaveText("Game Configuration");
     await expect(page.locator("[data-game-design-output-missing]")).toHaveText("None");
     await expect(page.locator("[data-game-design-configuration-link]")).toHaveAttribute(
       "href",
-      "toolbox/game-configuration/index.html?handoff=valid&project=demo-project"
+      "toolbox/game-configuration/index.html?handoff=valid&game=demo-game"
     );
 
     await page.getByLabel("Genre").selectOption("Fantasy");
     await page.getByRole("button", { name: "Save Game Design" }).click();
     await expect(page.locator("[data-game-design-output]")).not.toContainText('"genre"');
-    await expect(page.locator("[data-game-design-log]")).toHaveText("Saved Demo Project Game Design as ready.");
+    await expect(page.locator("[data-game-design-log]")).toHaveText("Saved Demo Game as ready for Game Design.");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -199,10 +199,10 @@ test("Game Design saves and updates design fields against the active project", a
 });
 
 test("Game Design authors capability demos as Game Workspace games", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-design/index.html?project=gravity-demo");
+  const failures = await openRepoPage(page, "/toolbox/game-design/index.html?game=gravity-demo");
 
   try {
-    await expect(page.locator("[data-game-design-project-context]")).toHaveText("Gravity Demo - Capability Demo");
+    await expect(page.locator("[data-game-design-game-context]")).toHaveText("Gravity Demo - Capability Demo");
     await expect(page.getByText("Capability demos remain Game Workspace games.")).toBeVisible();
     await expect(page.locator("[data-game-design-capability-demos]")).toContainText("Gravity Demo: Game Workspace game");
     await expect(page.getByLabel("Game Type")).toHaveValue("Capability Demo");
@@ -210,7 +210,7 @@ test("Game Design authors capability demos as Game Workspace games", async ({ pa
     await expect(page.getByLabel("Play Style")).toHaveValue("Guided Tutorial");
     await expect(page.locator("[data-game-design-validation-overlay]")).toBeHidden();
 
-    await page.getByLabel("Capability Demo Notes").fill("Gravity demo remains project-owned authoring data.");
+    await page.getByLabel("Capability Demo Notes").fill("Gravity demo remains game-owned authoring data.");
     await page.getByRole("button", { name: "Save Game Design" }).click();
     await expect(page.locator("[data-game-design-output]")).not.toContainText("{");
     await expect(page.locator("[data-game-design-output]")).not.toContainText('"capabilityDemoAuthoring"');

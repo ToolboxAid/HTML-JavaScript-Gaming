@@ -100,7 +100,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "toolboxGroup": "Create"
   },
   {
-    "id": "project-workspace",
+    "id": "game-workspace",
     "name": "Game Workspace",
     "displayName": "Game Workspace",
     "shortDescription": "Coordinate Build, Play, and Share readiness for one game project.",
@@ -108,8 +108,8 @@ export const TOOL_REGISTRY = Object.freeze([
     "path": "game-workspace",
     "folderName": "game-workspace",
     "entryPoint": "game-workspace/index.html",
-    "badge": "/assets/theme-v2/images/badges/project-workspace.png",
-    "tool": "/assets/theme-v2/images/tools/project-workspace.png",
+    "badge": "/assets/theme-v2/images/badges/game-workspace.png",
+    "tool": "/assets/theme-v2/images/tools/game-workspace.png",
     "description": "Coordinate Build, Play, and Share readiness for one game project.",
     "category": "Build/Create",
     "colorGroup": "tool-group-build",
@@ -132,17 +132,17 @@ export const TOOL_REGISTRY = Object.freeze([
     "toolboxGroup": "Build"
   },
   {
-    "id": "project-journey",
-    "name": "Project Journey",
-    "displayName": "Project Journey",
-    "shortDescription": "Track project notes, nested work rows, status counts, and suggested toolbox handoffs.",
-    "shortLabel": "Project Journey",
-    "path": "project-journey",
-    "folderName": "project-journey",
-    "entryPoint": "project-journey/index.html",
-    "badge": "/assets/theme-v2/images/badges/project-workspace.png",
-    "tool": "/assets/theme-v2/images/tools/project-workspace.png",
-    "description": "Track project notes, nested work rows, status counts, and suggested toolbox handoffs.",
+    "id": "game-journey",
+    "name": "Game Journey",
+    "displayName": "Game Journey",
+    "shortDescription": "Track game notes, nested work rows, status counts, and suggested toolbox handoffs.",
+    "shortLabel": "Game Journey",
+    "path": "game-journey",
+    "folderName": "game-journey",
+    "entryPoint": "game-journey/index.html",
+    "badge": "/assets/theme-v2/images/badges/game-workspace.png",
+    "tool": "/assets/theme-v2/images/tools/game-workspace.png",
+    "description": "Track game notes, nested work rows, status counts, and suggested toolbox handoffs.",
     "category": "Build/Create",
     "colorGroup": "tool-group-build",
     "active": true,
@@ -151,13 +151,13 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [
-      "project-workspace"
+      "game-workspace"
     ],
     "status": "beta",
     "releaseChannel": "beta",
     "progressChecklist": [
       "Open Game Workspace",
-      "Review project-scoped notes",
+      "Review game-scoped notes",
       "Track open journey rows"
     ],
     "deferred": false,
@@ -186,7 +186,7 @@ export const TOOL_REGISTRY = Object.freeze([
     "requiredForTestable": true,
     "requiredForPublish": true,
     "requires": [
-      "project-workspace"
+      "game-workspace"
     ],
     "status": "Ready",
     "releaseChannel": "beta",
@@ -1573,7 +1573,7 @@ const AVAILABLE_TOOL_IMAGE_PATHS = Object.freeze([
   "/assets/theme-v2/images/badges/particles.png",
   "/assets/theme-v2/images/badges/performance.png",
   "/assets/theme-v2/images/badges/platform-settings.png",
-  "/assets/theme-v2/images/badges/project-workspace.png",
+  "/assets/theme-v2/images/badges/game-workspace.png",
   "/assets/theme-v2/images/badges/publish-studio.png",
   "/assets/theme-v2/images/badges/publish.png",
   "/assets/theme-v2/images/badges/ratings.png",
@@ -1635,7 +1635,7 @@ const AVAILABLE_TOOL_IMAGE_PATHS = Object.freeze([
   "/assets/theme-v2/images/tools/particles.png",
   "/assets/theme-v2/images/tools/performance.png",
   "/assets/theme-v2/images/tools/platform-settings.png",
-  "/assets/theme-v2/images/tools/project-workspace.png",
+  "/assets/theme-v2/images/tools/game-workspace.png",
   "/assets/theme-v2/images/tools/publish-studio.png",
   "/assets/theme-v2/images/tools/publish.png",
   "/assets/theme-v2/images/tools/ratings.png",

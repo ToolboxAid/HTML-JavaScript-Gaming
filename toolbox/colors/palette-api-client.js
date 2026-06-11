@@ -20,7 +20,7 @@ export const SIZE_OPTIONS = Object.freeze(requireServerConstant(constants, "SIZE
 export const SORT_OPTIONS = Object.freeze(requireServerConstant(constants, "SORT_OPTIONS", "palette"));
 export const SUGGESTED_TAGS = Object.freeze(requireServerConstant(constants, "SUGGESTED_TAGS", "palette"));
 
-export function createProjectWorkspacePaletteApiRepository(options = {}) {
+export function createGameWorkspacePaletteApiRepository(options = {}) {
   return createServerRepositoryClient("palette", options);
 }
 

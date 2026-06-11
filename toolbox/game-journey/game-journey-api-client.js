@@ -4,13 +4,13 @@ import {
   requireServerConstant,
 } from "../../src/engine/api/server-api-client.js";
 
-const constants = readServerToolConstants("project-journey");
+const constants = readServerToolConstants("game-journey");
 
-export const PROJECT_JOURNEY_KEYS = Object.freeze(requireServerConstant(constants, "PROJECT_JOURNEY_KEYS", "project-journey"));
-export const PROJECT_JOURNEY_STATUS_BY_ID = Object.freeze(requireServerConstant(constants, "PROJECT_JOURNEY_STATUS_BY_ID", "project-journey"));
-export const PROJECT_JOURNEY_STATUSES = Object.freeze(requireServerConstant(constants, "PROJECT_JOURNEY_STATUSES", "project-journey"));
-export const PROJECT_JOURNEY_SUGGESTED_TOOLS = Object.freeze(requireServerConstant(constants, "PROJECT_JOURNEY_SUGGESTED_TOOLS", "project-journey"));
+export const GAME_JOURNEY_KEYS = Object.freeze(requireServerConstant(constants, "GAME_JOURNEY_KEYS", "game-journey"));
+export const GAME_JOURNEY_STATUS_BY_ID = Object.freeze(requireServerConstant(constants, "GAME_JOURNEY_STATUS_BY_ID", "game-journey"));
+export const GAME_JOURNEY_STATUSES = Object.freeze(requireServerConstant(constants, "GAME_JOURNEY_STATUSES", "game-journey"));
+export const GAME_JOURNEY_SUGGESTED_TOOLS = Object.freeze(requireServerConstant(constants, "GAME_JOURNEY_SUGGESTED_TOOLS", "game-journey"));
 
-export function createProjectJourneyApiRepository(options = {}) {
-  return createServerRepositoryClient("project-journey", options);
+export function createGameJourneyApiRepository(options = {}) {
+  return createServerRepositoryClient("game-journey", options);
 }

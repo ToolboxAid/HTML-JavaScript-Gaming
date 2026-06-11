@@ -1,7 +1,7 @@
 import {
-  PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY,
-  createProjectWorkspaceMockRepository,
-} from "./project-workspace-mock-repository.js";
+  GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+  createGameWorkspaceMockRepository,
+} from "./game-workspace-mock-repository.js";
 
 export const GAME_DESIGN_TABLES = Object.freeze([
   "game_design_documents",
@@ -59,7 +59,7 @@ export const GAME_DESIGN_PLAYER_MODES = Object.freeze([
   })
 ]);
 
-const PROJECT_WORKSPACE_USER_ID = PROJECT_WORKSPACE_DEFAULT_OWNER_USER_KEY;
+const GAME_WORKSPACE_USER_ID = GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY;
 const REQUIRED_FIELDS = Object.freeze([
   {
     field: "gameType",
@@ -69,7 +69,7 @@ const REQUIRED_FIELDS = Object.freeze([
   {
     field: "genre",
     label: "Genre",
-    action: "Select a genre so project discovery and expectations are clear."
+    action: "Select a genre so game discovery and expectations are clear."
   },
   {
     field: "playStyle",
@@ -84,7 +84,7 @@ const REQUIRED_FIELDS = Object.freeze([
   {
     field: "designSummary",
     label: "Design Summary",
-    action: "Write a short design summary that explains the project promise."
+    action: "Write a short design summary that explains the game promise."
   }
 ]);
 
@@ -123,14 +123,14 @@ function createEmptyTables() {
   };
 }
 
-function designIdForProject(projectId) {
-  return `${projectId}-game-design`;
+function designIdForGame(gameId) {
+  return `${gameId}-game-design`;
 }
 
-function createValidationRows(projectId, findings) {
+function createValidationRows(gameId, findings) {
   return findings.map((finding, index) => ({
-    id: `${projectId}-validation-${index + 1}`,
-    projectId,
+    id: `${gameId}-validation-${index + 1}`,
+    gameId,
     field: finding.field,
     label: finding.label,
     action: finding.action,
@@ -138,17 +138,17 @@ function createValidationRows(projectId, findings) {
   }));
 }
 
-function createDesignForProject(project, input = {}) {
+function createDesignForGame(game, input = {}) {
   const document = {
-    id: designIdForProject(project.id),
-    projectId: project.id,
-    projectPurpose: project.purpose,
+    id: designIdForGame(game.id),
+    gameId: game.id,
+    gamePurpose: game.purpose,
     gameType: normalizeChoice(input.gameType, GAME_DESIGN_GAME_TYPES),
     genre: normalizeChoice(input.genre, GAME_DESIGN_GENRES),
     playStyle: normalizeChoice(input.playStyle, GAME_DESIGN_PLAY_STYLES),
     playerMode: normalizePlayerMode(input.playerMode),
     designSummary: normalizeText(input.designSummary),
-    capabilityDemoAuthoring: project.purpose === "Capability Demo" || Boolean(input.capabilityDemoAuthoring),
+    capabilityDemoAuthoring: game.purpose === "Capability Demo" || Boolean(input.capabilityDemoAuthoring),
     capabilityDemoNotes: normalizeText(input.capabilityDemoNotes),
     status: "Under Construction",
     updatedAt: new Date().toISOString()
@@ -160,46 +160,47 @@ function createDesignForProject(project, input = {}) {
 }
 
 export function createGameDesignMockRepository(options = {}) {
-  const projectRepository = options.projectRepository || createProjectWorkspaceMockRepository();
+  const gameWorkspaceRepository =
+    options.gameWorkspaceRepository || options.projectRepository || createGameWorkspaceMockRepository();
   let tables = createEmptyTables();
 
-  function getActiveProject() {
-    return projectRepository.getActiveProject();
+  function getActiveGame() {
+    return gameWorkspaceRepository.getActiveGame();
   }
 
-  function listProjectContexts() {
-    return projectRepository
-      .listProjects({ userId: PROJECT_WORKSPACE_USER_ID })
+  function listGameContexts() {
+    return gameWorkspaceRepository
+      .listGames({ userId: GAME_WORKSPACE_USER_ID })
       .slice()
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
-  function listCapabilityDemoProjects() {
-    return projectRepository
-      .listProjects({ userId: PROJECT_WORKSPACE_USER_ID })
-      .filter((project) => project.purpose === "Capability Demo")
+  function listCapabilityDemoGames() {
+    return gameWorkspaceRepository
+      .listGames({ userId: GAME_WORKSPACE_USER_ID })
+      .filter((game) => game.purpose === "Capability Demo")
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   function getActiveDesign() {
-    const activeProject = getActiveProject();
-    if (!activeProject) {
+    const activeGame = getActiveGame();
+    if (!activeGame) {
       return null;
     }
 
-    return tables.game_design_documents.find((document) => document.projectId === activeProject.id) || null;
+    return tables.game_design_documents.find((document) => document.gameId === activeGame.id) || null;
   }
 
   function validateDesign(input = {}) {
-    const activeProject = getActiveProject();
+    const activeGame = getActiveGame();
 
-    if (!activeProject) {
+    if (!activeGame) {
       return {
         status: "Blocked",
         findings: [
           {
-            field: "project",
-            label: "Project Context",
+            field: "game",
+            label: "Game Context",
             action: "Open or seed a Game Workspace game before saving Game Design."
           }
         ]
@@ -221,16 +222,16 @@ export function createGameDesignMockRepository(options = {}) {
     };
   }
 
-  function replaceValidationRows(projectId, findings) {
+  function replaceValidationRows(gameId, findings) {
     tables.game_design_validation_items = tables.game_design_validation_items.filter(
-      (row) => row.projectId !== projectId
+      (row) => row.gameId !== gameId
     );
-    tables.game_design_validation_items.push(...createValidationRows(projectId, findings));
+    tables.game_design_validation_items.push(...createValidationRows(gameId, findings));
   }
 
-  function replaceCapabilityDemoRow(project, document) {
+  function replaceCapabilityDemoRow(game, document) {
     tables.game_design_capability_demos = tables.game_design_capability_demos.filter(
-      (row) => row.projectId !== project.id
+      (row) => row.gameId !== game.id
     );
 
     if (!document.capabilityDemoAuthoring) {
@@ -238,79 +239,83 @@ export function createGameDesignMockRepository(options = {}) {
     }
 
     tables.game_design_capability_demos.push({
-      id: `${project.id}-capability-demo-authoring`,
-      projectId: project.id,
-      projectName: project.name,
-      projectPurpose: project.purpose,
-      authoringMode: "Project-owned capability demo",
+      id: `${game.id}-capability-demo-authoring`,
+      gameId: game.id,
+      gameName: game.name,
+      gamePurpose: game.purpose,
+      authoringMode: "Game-owned capability demo",
       status: document.status
     });
   }
 
   function saveDesign(input = {}) {
-    const activeProject = getActiveProject();
+    const activeGame = getActiveGame();
 
-    if (!activeProject) {
+    if (!activeGame) {
       return {
         saved: false,
-        message: "Open or seed a project before saving Game Design.",
+        message: "Open or seed a game before saving Game Design.",
         snapshot: getSnapshot()
       };
     }
 
-    const { document, findings } = createDesignForProject(activeProject, input);
+    const { document, findings } = createDesignForGame(activeGame, input);
     tables.game_design_documents = tables.game_design_documents.filter(
-      (row) => row.projectId !== activeProject.id
+      (row) => row.gameId !== activeGame.id
     );
     tables.game_design_documents.push(document);
-    replaceValidationRows(activeProject.id, findings);
-    replaceCapabilityDemoRow(activeProject, document);
+    replaceValidationRows(activeGame.id, findings);
+    replaceCapabilityDemoRow(activeGame, document);
 
     return {
       saved: true,
       message: findings.length === 0
-        ? `Saved ${activeProject.name} Game Design as ready.`
-        : `Saved ${activeProject.name} Game Design with ${findings.length} missing requirement${findings.length === 1 ? "" : "s"}.`,
+        ? `Saved ${activeGame.name} as ready for Game Design.`
+        : `Saved ${activeGame.name} with ${findings.length} missing Game Design requirement${findings.length === 1 ? "" : "s"}.`,
       snapshot: getSnapshot()
     };
   }
 
   function seedCapabilityDemoDesigns() {
-    listCapabilityDemoProjects().forEach((project) => {
-      const { document, findings } = createDesignForProject(project, {
+    listCapabilityDemoGames().forEach((game) => {
+      const { document, findings } = createDesignForGame(game, {
         capabilityDemoAuthoring: true,
-        capabilityDemoNotes: `${project.name} remains a Game Workspace game.`,
-        designSummary: `${project.name} demonstrates one planned capability as a project-owned demo.`,
+        capabilityDemoNotes: `${game.name} remains a Game Workspace game.`,
+        designSummary: `${game.name} demonstrates one planned capability as a game-owned demo.`,
         gameType: "Capability Demo",
         genre: "Utility",
         playStyle: "Guided Tutorial",
         playerMode: "1 Player"
       });
       tables.game_design_documents = tables.game_design_documents.filter(
-        (row) => row.projectId !== project.id
+        (row) => row.gameId !== game.id
       );
       tables.game_design_documents.push(document);
-      replaceValidationRows(project.id, findings);
-      replaceCapabilityDemoRow(project, document);
+      replaceValidationRows(game.id, findings);
+      replaceCapabilityDemoRow(game, document);
     });
   }
 
-  function openProjectContext(projectId) {
-    const project = projectRepository.openProject(projectId);
+  function openGameContext(gameId) {
+    const game = gameWorkspaceRepository.openGame(gameId);
     return {
-      opened: Boolean(project),
+      opened: Boolean(game),
       snapshot: getSnapshot()
     };
   }
 
-  function clearProjectContext() {
-    projectRepository.clearTestData();
+  function clearGameContext() {
+    gameWorkspaceRepository.clearTestData();
     tables = createEmptyTables();
     return getSnapshot();
   }
 
+  function clearProjectContext() {
+    return clearGameContext();
+  }
+
   function resetDesignData() {
-    projectRepository.resetProjectData();
+    gameWorkspaceRepository.resetGameData();
     tables = createEmptyTables();
     seedCapabilityDemoDesigns();
     return getSnapshot();
@@ -320,18 +325,18 @@ export function createGameDesignMockRepository(options = {}) {
     return cloneTables(tables);
   }
 
-  function getProjectProgressHandoff() {
-    const activeProject = getActiveProject();
+  function getGameProgressHandoff() {
+    const activeGame = getActiveGame();
     const design = getActiveDesign();
 
-    if (!activeProject) {
+    if (!activeGame) {
       return {
-        projectProgress: "No active project",
+        gameProgress: "No active game",
         publishingProgress: "Blocked until Game Workspace has an active game",
         currentFocus: "Open a Game Workspace game",
         recommendedNextTool: "Game Workspace",
         progressChecklist: [
-          "Project context: Missing",
+          "Game context: Missing",
           "Game Design document: Blocked",
           "Game Configuration handoff: Blocked"
         ]
@@ -342,16 +347,16 @@ export function createGameDesignMockRepository(options = {}) {
     const ready = validation.findings.length === 0;
 
     return {
-      projectProgress: ready
-        ? `${activeProject.name} Game Design ready`
-        : `${activeProject.name} Game Design needs ${validation.findings.length} requirement${validation.findings.length === 1 ? "" : "s"}`,
+      gameProgress: ready
+        ? `${activeGame.name} Game Design ready`
+        : `${activeGame.name} Game Design needs ${validation.findings.length} requirement${validation.findings.length === 1 ? "" : "s"}`,
       publishingProgress: ready
         ? "Publish remains blocked until Game Configuration and release gates are ready"
         : "Publish blocked until Game Design requirements are complete",
       currentFocus: ready ? "Review Game Configuration" : "Complete Game Design",
       recommendedNextTool: ready ? "Game Configuration" : "Game Design",
       progressChecklist: [
-        `Project purpose: ${activeProject.purpose}`,
+        `Game purpose: ${activeGame.purpose}`,
         `Game type: ${design?.gameType || "Missing"}`,
         `Genre: ${design?.genre || "Missing"}`,
         `Play style: ${design?.playStyle || "Missing"}`,
@@ -364,9 +369,11 @@ export function createGameDesignMockRepository(options = {}) {
   function getSnapshot() {
     return {
       activeDesign: getActiveDesign(),
-      activeProject: getActiveProject(),
-      capabilityDemoProjects: listCapabilityDemoProjects(),
-      progressHandoff: getProjectProgressHandoff(),
+      activeProject: getActiveGame(),
+      activeGame: getActiveGame(),
+      capabilityDemoGames: listCapabilityDemoGames(),
+      capabilityDemoProjects: listCapabilityDemoGames(),
+      progressHandoff: getGameProgressHandoff(),
       tables: getTables()
     };
   }
@@ -374,15 +381,18 @@ export function createGameDesignMockRepository(options = {}) {
   resetDesignData();
 
   return {
+    clearGameContext,
     clearProjectContext,
     getActiveDesign,
-    getActiveProject,
-    getProjectProgressHandoff,
+    getActiveProject: getActiveGame,
+    getActiveGame,
+    getGameProgressHandoff,
     getSnapshot,
     getTables,
-    listCapabilityDemoProjects,
-    listProjectContexts,
-    openProjectContext,
+    listCapabilityDemoGames,
+    listProjectContexts: listGameContexts,
+    listGameContexts,
+    openGameContext,
     resetDesignData,
     saveDesign,
     seedCapabilityDemoDesigns,

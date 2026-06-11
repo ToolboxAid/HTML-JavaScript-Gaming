@@ -1,7 +1,7 @@
 import {
-    PROJECT_WORKSPACE_MEMBER_ROLES,
-    createProjectWorkspaceApiRepository
-} from "./project-workspace/project-workspace-api-client.js";
+    GAME_WORKSPACE_MEMBER_ROLES,
+    createGameWorkspaceApiRepository
+} from "./game-workspace/game-workspace-api-client.js";
 import {
     castToolboxVote,
     readToolboxVoteSnapshot
@@ -31,13 +31,13 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     const statusFilterList = document.querySelector("[data-toolbox-status-filters]");
     const launchStatus = document.querySelector("[data-toolbox-launch-status]");
     const searchParams = new URLSearchParams(window.location.search);
-    const projectWorkspaceRepository = createProjectWorkspaceApiRepository();
-    projectWorkspaceRepository.resetProjectData();
+    const gameWorkspaceRepository = createGameWorkspaceApiRepository();
+    gameWorkspaceRepository.resetGameData();
     const urlMemberRole = searchParams.get("memberRole");
-    const defaultProjectMemberRole = "Owner";
-    const projectMemberRole = PROJECT_WORKSPACE_MEMBER_ROLES.includes(urlMemberRole)
+    const defaultGameMemberRole = "Owner";
+    const gameMemberRole = GAME_WORKSPACE_MEMBER_ROLES.includes(urlMemberRole)
         ? urlMemberRole
-        : defaultProjectMemberRole;
+        : defaultGameMemberRole;
     const session = getSessionCurrent();
     const adminSession = session?.isAdmin === true;
     const authenticatedSession = session?.authenticated === true && Boolean(session?.userKey);
@@ -98,12 +98,12 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     } catch (error) {
         voteDiagnostic = error instanceof Error ? error.message : String(error || "Toolbox vote data unavailable.");
     }
-    function getProjectProgressSummary() {
-        const activeProject = projectWorkspaceRepository.getActiveProject();
-        const progress = projectWorkspaceRepository.getProjectProgress();
+    function getGameProgressSummary() {
+        const activeGame = gameWorkspaceRepository.getActiveGame();
+        const progress = gameWorkspaceRepository.getGameProgress();
         return {
-            activeProjectName: activeProject?.name || "No active project",
-            projectProgress: progress.projectProgress,
+            activeGameName: activeGame?.name || "No active game",
+            gameProgress: progress.gameProgress,
             publishingProgress: progress.publishingProgress,
             currentFocus: progress.currentFocus,
             recommendedNextTool: progress.recommendedNextTool
@@ -219,7 +219,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function activeRoleFocus() {
-        return projectMemberRole;
+        return gameMemberRole;
     }
 
     function isFocusedRoleView() {
@@ -381,32 +381,32 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     }
 
     function createBuildPathSummary() {
-        const projectProgressSummary = getProjectProgressSummary();
+        const gameProgressSummary = getGameProgressSummary();
         const article = document.createElement("article");
         article.className = "callout";
 
         const title = document.createElement("h3");
         title.textContent = "Build Path Guidance";
 
-        const activeProject = document.createElement("p");
-        activeProject.textContent = "Active Project: " + projectProgressSummary.activeProjectName;
+        const activeGame = document.createElement("p");
+        activeGame.textContent = "Active Game: " + gameProgressSummary.activeGameName;
 
         const nextAction = document.createElement("p");
-        nextAction.textContent = "What should I do next? " + projectProgressSummary.recommendedNextTool;
+        nextAction.textContent = "What should I do next? " + gameProgressSummary.recommendedNextTool;
 
-        const projectCompletion = document.createElement("p");
-        projectCompletion.textContent = "Project Completion: " + projectProgressSummary.projectProgress;
+        const gameCompletion = document.createElement("p");
+        gameCompletion.textContent = "Game Progress: " + gameProgressSummary.gameProgress;
 
         const publishingProgress = document.createElement("p");
-        publishingProgress.textContent = "Publishing Progress: " + projectProgressSummary.publishingProgress;
+        publishingProgress.textContent = "Publishing Progress: " + gameProgressSummary.publishingProgress;
 
         const currentFocus = document.createElement("p");
-        currentFocus.textContent = "Current Focus: " + projectProgressSummary.currentFocus;
+        currentFocus.textContent = "Current Focus: " + gameProgressSummary.currentFocus;
 
         const direction = document.createElement("p");
         direction.textContent = "Work top-to-bottom and left-to-right through the workflow table.";
 
-        article.append(title, activeProject, nextAction, projectCompletion, publishingProgress, currentFocus, direction);
+        article.append(title, activeGame, nextAction, gameCompletion, publishingProgress, currentFocus, direction);
         return article;
     }
 
@@ -481,7 +481,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         table.setAttribute("aria-label", "Build Path workflow status");
 
         const caption = document.createElement("caption");
-        caption.textContent = "Project Build Path";
+        caption.textContent = "Game Build Path";
 
         const head = document.createElement("thead");
         const headRow = document.createElement("tr");

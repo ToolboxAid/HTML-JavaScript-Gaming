@@ -8,40 +8,54 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 Changed runtime JS files considered:
 (0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/project-workspace-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/game-workspace/game-workspace-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/project-journey/project-journey.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/input/NormalizedInputRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/colors/colors.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/colors/palette-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/game-journey/game-journey-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/project-workspace/project-workspace-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/project-workspace/project-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 33/54
-(78%) toolbox/game-configuration/game-configuration.js - executed lines 172/172; executed functions 14/18
-(81%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 21/26
-(82%) toolbox/controls/controls.js - executed lines 985/985; executed functions 81/99
-(100%) toolbox/game-configuration/game-configuration-api-client.js - executed lines 11/11; executed functions 2/2
+(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 30/53
+(68%) toolbox/game-workspace/game-workspace.js - executed lines 281/281; executed functions 19/28
+(78%) toolbox/game-configuration/game-configuration.js - executed lines 173/173; executed functions 14/18
+(84%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 91/108
+(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
 (100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
-(100%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 23/23
+(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Guardrail warnings:
 (0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/project-journey-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/project-workspace-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/game-workspace/game-workspace-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) toolbox/project-journey/project-journey.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/engine/input/NormalizedInputRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/colors/colors.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/colors/palette-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/game-journey/game-journey-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) toolbox/project-workspace/project-workspace-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) toolbox/project-workspace/project-workspace.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only

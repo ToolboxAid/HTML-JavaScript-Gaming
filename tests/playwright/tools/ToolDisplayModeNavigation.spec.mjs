@@ -1,4 +1,9 @@
 import { expect, test } from "@playwright/test";
+import {
+  getActiveToolRegistry,
+  getToolNavigationTargets,
+  getToolRoute,
+} from "../../../toolbox/toolRegistry.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -50,6 +55,18 @@ function expectNoPageFailures(failures) {
   expect(failures.failedRequests).toEqual([]);
   expect(failures.pageErrors).toEqual([]);
   expect(failures.consoleErrors).toEqual([]);
+}
+
+async function expectNavigationTarget(locator, prefix, target) {
+  await expect(locator).toHaveText(`${prefix}: ${target.label}`);
+  if (target.disabled) {
+    await expect(locator).not.toHaveAttribute("href");
+    return;
+  }
+  await expect(locator).toHaveAttribute("href", target.href);
+  if (target.kind === "group") {
+    await expect(locator).toHaveAttribute("data-tool-nav-group", target.group);
+  }
 }
 
 async function expectPlainNavigationLinks(page) {
@@ -182,6 +199,7 @@ async function expectToolDisplayModeFullscreenBadge(page) {
 
 test("Game Design renders identity and navigation rows with registry anchor links", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-design/index.html");
+  const navigation = getToolNavigationTargets("game-design");
 
   try {
     const rows = await toolDisplayRows(page);
@@ -194,10 +212,8 @@ test("Game Design renders identity and navigation rows with registry anchor link
 
     const previous = page.locator("[data-tool-nav-previous]");
     const next = page.locator("[data-tool-nav-next]");
-    await expect(previous).toHaveText("Previous: Project Journey");
-    await expect(previous).toHaveAttribute("href", "toolbox/project-journey/index.html");
-    await expect(next).toHaveText("Next: Game Configuration");
-    await expect(next).toHaveAttribute("href", "toolbox/game-configuration/index.html");
+    await expectNavigationTarget(previous, "Previous", navigation.previous);
+    await expectNavigationTarget(next, "Next", navigation.next);
     await expectPlainNavigationLinks(page);
     await expectToolDisplayModeVisualLayout(page);
     await expectToolDisplayModeFullscreenBadge(page);
@@ -208,23 +224,20 @@ test("Game Design renders identity and navigation rows with registry anchor link
   }
 });
 
-test("Project Workspace and Game Configuration use registry order without page hardcoding", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/project-workspace/index.html");
+test("Game Workspace and Game Configuration use registry order without page hardcoding", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+  const gameWorkspaceNavigation = getToolNavigationTargets("game-workspace");
+  const gameConfigurationNavigation = getToolNavigationTargets("game-configuration");
 
   try {
-    await expect(page.locator("[data-tool-display-mode-row='identity']")).toContainText("Project Workspace");
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: AI Assistant");
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/ai-assistant/index.html");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Project Journey");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/project-journey/index.html");
+    await expect(page.locator("[data-tool-display-mode-row='identity']")).toContainText("Game Workspace");
+    await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", gameWorkspaceNavigation.previous);
+    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", gameWorkspaceNavigation.next);
 
     await page.goto(`${failures.server.baseUrl}/toolbox/game-configuration/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tool-display-mode-row='identity']")).toContainText("Game Configuration");
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveText("Previous: Game Design");
-    await expect(page.locator("[data-tool-nav-previous]")).toHaveAttribute("href", "toolbox/game-design/index.html");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Design Tools");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/index.html?view=group&group=design");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("data-tool-nav-group", "design");
+    await expectNavigationTarget(page.locator("[data-tool-nav-previous]"), "Previous", gameConfigurationNavigation.previous);
+    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", gameConfigurationNavigation.next);
     await expectPlainNavigationLinks(page);
     await expectNoPageFailures(failures);
   } finally {
@@ -233,17 +246,17 @@ test("Project Workspace and Game Configuration use registry order without page h
   }
 });
 
-test("missing previous target renders disabled text instead of a broken link", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/ai-assistant/index.html");
+test("first registry tool renders disabled previous text instead of a broken link", async ({ page }) => {
+  const firstTool = getActiveToolRegistry()[0];
+  const navigation = getToolNavigationTargets(firstTool.id);
+  const failures = await openRepoPage(page, `/${getToolRoute(firstTool)}`);
 
   try {
     const previous = page.locator("[data-tool-nav-previous]");
-    await expect(previous).toHaveText("Previous: No previous tool");
-    await expect(previous).not.toHaveAttribute("href");
+    await expectNavigationTarget(previous, "Previous", navigation.previous);
     await expect(previous).not.toHaveJSProperty("tagName", "A");
-    await expect(page.locator("[data-tool-display-mode-row='navigation'] a")).toHaveCount(1);
-    await expect(page.locator("[data-tool-nav-next]")).toHaveText("Next: Project Workspace");
-    await expect(page.locator("[data-tool-nav-next]")).toHaveAttribute("href", "toolbox/project-workspace/index.html");
+    await expect(page.locator("[data-tool-display-mode-row='navigation'] a")).toHaveCount(navigation.next.disabled ? 0 : 1);
+    await expectNavigationTarget(page.locator("[data-tool-nav-next]"), "Next", navigation.next);
     await expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
@@ -253,6 +266,7 @@ test("missing previous target renders disabled text instead of a broken link", a
 
 test("Build Game renders plain previous and next links in the second row", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/build-game/index.html");
+  const navigation = getToolNavigationTargets("build-game");
 
   try {
     const rows = await toolDisplayRows(page);
@@ -263,10 +277,8 @@ test("Build Game renders plain previous and next links in the second row", async
 
     const previous = page.locator("[data-tool-nav-previous]");
     const next = page.locator("[data-tool-nav-next]");
-    await expect(previous).toHaveText("Previous: Videos");
-    await expect(previous).toHaveAttribute("href", "toolbox/videos/index.html");
-    await expect(next).toHaveText("Next: Game Testing");
-    await expect(next).toHaveAttribute("href", "toolbox/game-testing/index.html");
+    await expectNavigationTarget(previous, "Previous", navigation.previous);
+    await expectNavigationTarget(next, "Next", navigation.next);
     await expectPlainNavigationLinks(page);
     await expectToolDisplayModeVisualLayout(page);
     await expectNoPageFailures(failures);
@@ -278,12 +290,14 @@ test("Build Game renders plain previous and next links in the second row", async
 
 test("multi-path fallback opens Toolbox Group view with only the target group expanded", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-configuration/index.html");
+  const navigation = getToolNavigationTargets("game-configuration");
 
   try {
     const next = page.locator("[data-tool-nav-next]");
-    await expect(next).toHaveAttribute("href", "toolbox/index.html?view=group&group=design");
+    expect(navigation.next.kind).toBe("group");
+    await expectNavigationTarget(next, "Next", navigation.next);
     await next.click();
-    await page.waitForURL(/\/toolbox\/index\.html\?view=group&group=design$/);
+    await page.waitForURL(new RegExp(`${navigation.next.href.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}$`));
     await page.waitForLoadState("networkidle");
     await expect(page.getByRole("button", { name: "Group" })).toHaveAttribute("aria-pressed", "true");
 

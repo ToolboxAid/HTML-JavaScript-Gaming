@@ -32,21 +32,21 @@
                             <details class="vertical-accordion" open>
                                 <summary>Game Setup</summary>
                                 <div class="accordion-body content-stack">
-                                    <form class="content-stack content-stack--compact" data-project-form>
+                                    <form class="content-stack content-stack--compact" data-game-form>
                                         <div class="table-wrapper">
                                             <table class="data-table tool-form-table" aria-label="Game setup fields">
                                                 <tbody>
                                                     <tr>
-                                                        <th scope="row"><label for="projectNameInput">Game Name</label></th>
-                                                        <td><input id="projectNameInput" type="text" placeholder="Untitled game project" data-project-name-input></td>
+                                                        <th scope="row"><label for="gameNameInput">Game Name</label></th>
+                                                        <td><input id="gameNameInput" type="text" placeholder="Untitled game" data-game-name-input></td>
                                                     </tr>
                                                     <tr>
-                                                        <th scope="row"><label for="projectPurposeInput">Game Purpose</label></th>
-                                                        <td><select id="projectPurposeInput" data-project-purpose-input></select></td>
+                                                        <th scope="row"><label for="gamePurposeInput">Game Purpose</label></th>
+                                                        <td><select id="gamePurposeInput" data-game-purpose-input></select></td>
                                                     </tr>
                                                     <tr>
-                                                        <th scope="row"><label for="projectStatusInput">Game Status</label></th>
-                                                        <td><select id="projectStatusInput" data-project-status-input></select></td>
+                                                        <th scope="row"><label for="gameStatusInput">Game Status</label></th>
+                                                        <td><select id="gameStatusInput" data-game-status-input></select></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
@@ -54,58 +54,58 @@
                                         <button class="btn" type="submit">Create Game</button>
                                     </form>
                                     <label for="currentUserRoleInput">Current User Role <select id="currentUserRoleInput" data-current-user-role-input></select></label>
-                                    <button class="btn" type="button" data-project-delete-active>Delete Open Game</button>
+                                    <button class="btn" type="button" data-game-delete-active>Delete Open Game</button>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
                                 <summary>Open Games</summary>
                                 <div class="accordion-body">
-                                    <div class="content-stack content-stack--compact" aria-label="Games" data-project-list></div>
+                                    <div class="content-stack content-stack--compact" aria-label="Games" data-game-list></div>
                                 </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="project-workspace" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="game-workspace" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
                     <section class="tool-center-panel"><h2>Workspace Overview</h2>
                         <p>Game Workspace manages game identity, game status, game progress, and publishing progress against the local mock repository. Not implemented yet: real database persistence, authentication, cloud sync, or public release promotion.</p>
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
                                     <div class="kicker">Open Game</div>
-                                    <h3 data-active-project-name>Demo Project</h3>
+                                    <h3 data-active-game-name>Demo Game</h3>
                                 </div>
                                 <div class="grid cols-3" aria-label="Active game summary">
-                                    <article class="mini-stat"><strong data-active-project-status>Under Construction</strong>Game Status</article>
-                                    <article class="mini-stat"><strong data-active-project-purpose>Game Project</strong>Game Purpose</article>
-                                    <article class="mini-stat"><strong data-active-project-owner>No owner</strong>Owner</article>
+                                    <article class="mini-stat"><strong data-active-game-status>Under Construction</strong>Game Status</article>
+                                    <article class="mini-stat"><strong data-active-game-purpose>Game</strong>Game Purpose</article>
+                                    <article class="mini-stat"><strong data-active-game-owner>No owner</strong>Owner</article>
                                     <article class="mini-stat"><strong data-current-user-role>Owner</strong>Current User Role</article>
                                     <article class="mini-stat"><strong data-recommended-next-tool>Game Configuration</strong>Recommended Next Tool</article>
                                 </div>
                                 <div class="action-group">
-                                    <a class="btn primary" href="toolbox/project-journey/index.html?project=demo-project" data-project-journey-link>Open Project Journey</a>
+                                    <a class="btn primary" href="toolbox/game-journey/index.html?game=demo-game" data-game-journey-link>Open Game Journey</a>
                                 </div>
                             </div>
                         </article>
-                        <article class="card" data-game-workspace-foundation data-project-workspace-foundation>
+                        <article class="card" data-game-workspace-foundation>
                             <div class="card-body content-stack">
                                 <div>
                                     <div class="kicker">Game Foundation</div>
                                     <h3>Game Progress</h3>
                                 </div>
                                 <div class="grid cols-3">
-                                    <article class="callout"><h3>Game Status</h3><p data-project-status>Under Construction</p></article>
-                                    <article class="callout"><h3>Game Progress</h3><p data-project-progress>Demo Project identity ready</p></article>
+                                    <article class="callout"><h3>Game Status</h3><p data-game-status>Under Construction</p></article>
+                                    <article class="callout"><h3>Game Progress</h3><p data-game-progress>Demo Game identity ready</p></article>
                                     <article class="callout"><h3>Publishing Progress</h3><p data-publishing-progress>Publish blocked until configuration and required assets are ready</p></article>
                                 </div>
                                 <div class="grid cols-3">
                                     <article class="callout"><h3>Current Focus</h3><p data-current-focus>Complete Game Configuration</p></article>
                                     <article class="callout"><h3>Recommended Next Tool</h3><p data-recommended-next-tool>Game Configuration</p></article>
-                                    <article class="callout"><h3>Checklist</h3><ul data-project-progress-checklist><li>Game identity: Complete</li></ul></article>
+                                    <article class="callout"><h3>Checklist</h3><ul data-game-progress-checklist><li>Game identity: Complete</li></ul></article>
                                 </div>
-                                <div class="status" role="status" data-game-workspace-log data-project-workspace-log>Demo Project seeded.</div>
+                                <div class="status" role="status" data-game-workspace-log>Demo Game seeded.</div>
                             </div>
                         </article>
-                        <div class="accordion-stack" data-project-output-panels>
+                        <div class="accordion-stack" data-game-output-panels>
                             <details class="vertical-accordion" open>
                                 <summary>Readiness Output</summary>
                                 <div class="accordion-body">
@@ -133,10 +133,10 @@
                                             <thead>
                                                 <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
                                             </thead>
-                                            <tbody data-project-table-counts>
+                                            <tbody data-game-table-counts>
                                                 <tr><td>users</td><td>3</td></tr>
-                                                <tr><td>projects</td><td>4</td></tr>
-                                                <tr><td>project_members</td><td>12</td></tr>
+                                                <tr><td>games</td><td>4</td></tr>
+                                                <tr><td>game_members</td><td>12</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -151,7 +151,7 @@
                                             <thead>
                                                 <tr><th scope="col">User</th><th scope="col">User ID</th><th scope="col">Role</th><th scope="col">Permission</th></tr>
                                             </thead>
-                                            <tbody data-project-members-table>
+                                            <tbody data-game-members-table>
                                                 <tr><td>No game</td><td>-</td><td>-</td><td>-</td></tr>
                                             </tbody>
                                         </table>

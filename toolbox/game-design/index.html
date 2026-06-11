@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Game Design - GameFoundryStudio</title>
-    <meta name="description" content="Game Design Toolbox runtime for project purpose, game type, genre, play style, capability demos, and configuration readiness.">
+    <meta name="description" content="Game Design Toolbox runtime for game purpose, game type, genre, play style, capability demos, and configuration readiness.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Game Design</div>
                 <h1>Game Design</h1>
-                <p class="lede">Define the playable concept for the active Game Workspace project before Game Configuration begins.</p>
+                <p class="lede">Define the playable concept for the active Game Workspace game before Game Configuration begins.</p>
             </div>
         </section>
         <section class="section">
@@ -30,9 +30,9 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Project Context</summary>
+                                <summary>Game Context</summary>
                                 <div class="accordion-body content-stack">
-                                    <p data-game-design-project-context>No Game Workspace game</p>
+                                    <p data-game-design-game-context>No Game Workspace game</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -65,11 +65,11 @@
                             <div class="card-body content-stack">
                                 <div>
                                     <div class="kicker">Design Fields</div>
-                                    <h3>Project Design</h3>
+                                    <h3>Game Design</h3>
                                 </div>
                                 <form class="content-stack" data-game-design-form>
                                     <div class="table-wrapper">
-                                        <table class="data-table tool-form-table" aria-label="Project Design fields" data-game-design-project-design-table>
+                                        <table class="data-table tool-form-table" aria-label="Game Design fields" data-game-design-game-design-table>
                                             <tbody>
                                                 <tr>
                                                     <th scope="row"><label for="gameDesignType">Game Type</label></th>
@@ -92,11 +92,11 @@
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><label for="gameDesignSummary">Design Summary</label></th>
-                                                    <td><textarea id="gameDesignSummary" rows="4" data-game-design-summary placeholder="Describe the project promise, core loop, and player goal."></textarea></td>
+                                                    <td><textarea id="gameDesignSummary" rows="4" data-game-design-summary placeholder="Describe the game promise, core loop, and player goal."></textarea></td>
                                                 </tr>
                                                 <tr>
                                                     <th scope="row"><label for="gameDesignCapabilityNotes">Capability Demo Notes</label></th>
-                                                    <td><textarea id="gameDesignCapabilityNotes" rows="4" data-game-design-capability-notes placeholder="Optional notes when this project demonstrates a specific capability."></textarea></td>
+                                                    <td><textarea id="gameDesignCapabilityNotes" rows="4" data-game-design-capability-notes placeholder="Optional notes when this game demonstrates a specific capability."></textarea></td>
                                                 </tr>
                                             </tbody>
                                         </table>
@@ -109,7 +109,7 @@
                             <div class="card-body content-stack">
                                 <div>
                                     <div class="kicker">Capability Demo Authoring</div>
-                                    <h3>Capability Demos Remain Projects</h3>
+                                    <h3>Capability Demos Remain Games</h3>
                                 </div>
                                 <p>Capability demos remain Game Workspace games. Authoring data is stored as Game Design data, not as a separate demo system.</p>
                                 <ul data-game-design-capability-demos></ul>
@@ -129,17 +129,17 @@
                                     <p>Validation Status: <span data-game-design-output-validation>Needs Input</span></p>
                                     <p>Next Step: <span data-game-design-output-next-step>Complete Game Design</span></p>
                                     <p>Missing Requirements: <span data-game-design-output-missing>Review required fields.</span></p>
-                                    <p>Capability Demo: <span data-game-design-output-capability>Not a capability demo project.</span></p>
+                                    <p>Capability Demo: <span data-game-design-output-capability>Not a capability demo game.</span></p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
                                 <summary>Validation</summary>
                                 <div class="accordion-body content-stack">
-                                    <article class="card" role="dialog" aria-labelledby="game-design-project-overlay-title" data-game-design-project-overlay hidden>
+                                    <article class="card" role="dialog" aria-labelledby="game-design-game-overlay-title" data-game-design-game-overlay hidden>
                                         <div class="card-body content-stack">
                                             <div>
                                                 <div class="kicker">Validation Overlay</div>
-                                                <h3 id="game-design-project-overlay-title">Missing Project</h3>
+                                                <h3 id="game-design-game-overlay-title">Missing Game</h3>
                                             </div>
                                             <p>Open or seed a Game Workspace game before saving Game Design.</p>
                                             <a class="btn" href="toolbox/game-workspace/index.html">Open Game Workspace</a>
@@ -173,9 +173,9 @@
                             <details class="vertical-accordion" open>
                                 <summary>Toolbox Progress Handoff</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Project Progress: <span data-game-design-project-progress>No active project</span></p>
+                                    <p>Game Progress: <span data-game-design-game-progress>No active game</span></p>
                                     <p>Publishing Progress: <span data-game-design-publishing-progress>Blocked</span></p>
-                                    <p>Current Focus: <span data-game-design-current-focus>Open a project</span></p>
+                                    <p>Current Focus: <span data-game-design-current-focus>Open a game</span></p>
                                     <p>Recommended Next Tool: <span data-game-design-recommended-tool>Game Workspace</span></p>
                                     <ul data-game-design-handoff-checklist></ul>
                                 </div>

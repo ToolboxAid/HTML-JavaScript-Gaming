@@ -1,6 +1,6 @@
 import {
-  createProjectWorkspaceMockRepository,
-} from "./project-workspace-mock-repository.js";
+  createGameWorkspaceMockRepository,
+} from "./game-workspace-mock-repository.js";
 import {
   loadMockDbTables,
   MOCK_DB_KEYS,
@@ -29,8 +29,8 @@ function nextUlidSequence(records, startAt, endBefore) {
   return maxSequence + 1;
 }
 
-export const PROJECT_JOURNEY_KEYS = Object.freeze({
-  project: makeUlid(1),
+export const GAME_JOURNEY_KEYS = Object.freeze({
+  game: makeUlid(1),
   users: Object.freeze({
     user1: MOCK_DB_KEYS.users.user1,
     user2: MOCK_DB_KEYS.users.user2,
@@ -84,10 +84,10 @@ export const PROJECT_JOURNEY_KEYS = Object.freeze({
   }),
 });
 
-export const PROJECT_JOURNEY_CURRENT_USER_KEY = PROJECT_JOURNEY_KEYS.users.user1;
+export const GAME_JOURNEY_CURRENT_USER_KEY = GAME_JOURNEY_KEYS.users.user1;
 
-const PROJECT_JOURNEY_ROUTE_PROJECT_ALIAS = "demo-project";
-const PROJECT_JOURNEY_DB_OWNER = "project-journey";
+const GAME_JOURNEY_ROUTE_GAME_ALIAS = "demo-game";
+const GAME_JOURNEY_DB_OWNER = "game-journey";
 const GENERATED_ULID_SEQUENCE = Object.freeze({
   item: 1001,
   activity: 2001,
@@ -96,7 +96,7 @@ const GENERATED_ULID_SEQUENCE = Object.freeze({
   diagnostic: 5001,
 });
 
-export const PROJECT_JOURNEY_STATUSES = [
+export const GAME_JOURNEY_STATUSES = [
   {
     id: "not-started",
     marker: "[ ]",
@@ -141,11 +141,11 @@ export const PROJECT_JOURNEY_STATUSES = [
   },
 ];
 
-export const PROJECT_JOURNEY_STATUS_BY_ID = Object.fromEntries(
-  PROJECT_JOURNEY_STATUSES.map((status) => [status.id, status]),
+export const GAME_JOURNEY_STATUS_BY_ID = Object.fromEntries(
+  GAME_JOURNEY_STATUSES.map((status) => [status.id, status]),
 );
 
-export const PROJECT_JOURNEY_SUGGESTED_TOOLS = Object.freeze({
+export const GAME_JOURNEY_SUGGESTED_TOOLS = Object.freeze({
   blocker: Object.freeze(["Game Workspace", "Debug"]),
   default: Object.freeze(["Game Workspace", "Game Design"]),
   byNoteType: Object.freeze({
@@ -214,14 +214,14 @@ function makeSystemItem({
   userDetails = "",
   templateKey,
   linkedRecordType = "tool",
-  linkedRecordId = "project-journey",
+  linkedRecordId = "game-journey",
   indent = 0,
   order,
   minutes,
 }) {
   return {
     key,
-    projectKey: PROJECT_JOURNEY_KEYS.project,
+    gameKey: GAME_JOURNEY_KEYS.game,
     noteKey,
     status,
     title,
@@ -236,66 +236,66 @@ function makeSystemItem({
 }
 
 function getSeedTables() {
-  const project_journey_note_types = [
-    { key: PROJECT_JOURNEY_KEYS.noteTypes.design, typeSlug: "design", name: "Design", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { key: PROJECT_JOURNEY_KEYS.noteTypes.story, typeSlug: "story", name: "Story", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { key: PROJECT_JOURNEY_KEYS.noteTypes.release, typeSlug: "release", name: "Release", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { key: PROJECT_JOURNEY_KEYS.noteTypes.research, typeSlug: "research", name: "Research", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { key: PROJECT_JOURNEY_KEYS.noteTypes.idea, typeSlug: "idea", name: "Idea", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { key: PROJECT_JOURNEY_KEYS.noteTypes.question, typeSlug: "question", name: "Question", seeded: true, userExtensible: true, ...makeAuditFields(0) },
-    { key: PROJECT_JOURNEY_KEYS.noteTypes.task, typeSlug: "task", name: "Task", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+  const game_journey_note_types = [
+    { key: GAME_JOURNEY_KEYS.noteTypes.design, typeSlug: "design", name: "Design", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: GAME_JOURNEY_KEYS.noteTypes.story, typeSlug: "story", name: "Story", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: GAME_JOURNEY_KEYS.noteTypes.release, typeSlug: "release", name: "Release", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: GAME_JOURNEY_KEYS.noteTypes.research, typeSlug: "research", name: "Research", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: GAME_JOURNEY_KEYS.noteTypes.idea, typeSlug: "idea", name: "Idea", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: GAME_JOURNEY_KEYS.noteTypes.question, typeSlug: "question", name: "Question", seeded: true, userExtensible: true, ...makeAuditFields(0) },
+    { key: GAME_JOURNEY_KEYS.noteTypes.task, typeSlug: "task", name: "Task", seeded: true, userExtensible: true, ...makeAuditFields(0) },
   ];
 
-  const project_journey_notes = [
+  const game_journey_notes = [
     {
-      key: PROJECT_JOURNEY_KEYS.notes.designPass,
+      key: GAME_JOURNEY_KEYS.notes.designPass,
       slug: "design-pass",
-      projectKey: PROJECT_JOURNEY_KEYS.project,
-      ownerKey: PROJECT_JOURNEY_KEYS.users.user1,
+      gameKey: GAME_JOURNEY_KEYS.game,
+      ownerKey: GAME_JOURNEY_KEYS.users.user1,
       name: "Palette and Input Density",
-      typeKey: PROJECT_JOURNEY_KEYS.noteTypes.design,
+      typeKey: GAME_JOURNEY_KEYS.noteTypes.design,
       ...makeAuditFields(5, MOCK_DB_KEYS.users.user1),
     },
     {
-      key: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
+      key: GAME_JOURNEY_KEYS.notes.releaseReadiness,
       slug: "release-readiness",
-      projectKey: PROJECT_JOURNEY_KEYS.project,
-      ownerKey: PROJECT_JOURNEY_KEYS.users.user2,
+      gameKey: GAME_JOURNEY_KEYS.game,
+      ownerKey: GAME_JOURNEY_KEYS.users.user2,
       name: "Release Readiness",
-      typeKey: PROJECT_JOURNEY_KEYS.noteTypes.release,
+      typeKey: GAME_JOURNEY_KEYS.noteTypes.release,
       ...makeAuditFields(9, MOCK_DB_KEYS.users.user2),
     },
     {
-      key: PROJECT_JOURNEY_KEYS.notes.storyMap,
+      key: GAME_JOURNEY_KEYS.notes.storyMap,
       slug: "story-map",
-      projectKey: PROJECT_JOURNEY_KEYS.project,
-      ownerKey: PROJECT_JOURNEY_KEYS.users.user1,
+      gameKey: GAME_JOURNEY_KEYS.game,
+      ownerKey: GAME_JOURNEY_KEYS.users.user1,
       name: "Story Beats",
-      typeKey: PROJECT_JOURNEY_KEYS.noteTypes.story,
+      typeKey: GAME_JOURNEY_KEYS.noteTypes.story,
       ...makeAuditFields(14, MOCK_DB_KEYS.users.user1),
     },
     {
-      key: PROJECT_JOURNEY_KEYS.notes.researchUx,
+      key: GAME_JOURNEY_KEYS.notes.researchUx,
       slug: "research-ux",
-      projectKey: PROJECT_JOURNEY_KEYS.project,
-      ownerKey: PROJECT_JOURNEY_KEYS.users.user2,
+      gameKey: GAME_JOURNEY_KEYS.game,
+      ownerKey: GAME_JOURNEY_KEYS.users.user2,
       name: "Research Questions",
-      typeKey: PROJECT_JOURNEY_KEYS.noteTypes.research,
+      typeKey: GAME_JOURNEY_KEYS.noteTypes.research,
       ...makeAuditFields(18, MOCK_DB_KEYS.users.user2),
     },
   ];
 
-  const project_journey_templates = [
+  const game_journey_templates = [
     makeTemplate(
-      PROJECT_JOURNEY_KEYS.templates.paletteAffordance,
+      GAME_JOURNEY_KEYS.templates.paletteAffordance,
       "palette.swatch-affordance",
-      "Review palette swatch affordance in the active project palette.",
+      "Review palette swatch affordance in the active game palette.",
       "Check whether selected swatches clearly expose batch tagging, checked state, and keyboard-friendly scanning.",
       ["Colors", "Game Workspace"],
       1,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_KEYS.templates.batchTagLanguage,
+      GAME_JOURNEY_KEYS.templates.batchTagLanguage,
       "palette.batch-tag-language",
       "Confirm batch tag language after checked swatches are applied.",
       "Keep the copy focused on what happens to checked swatches and avoid implying tags are auto-added.",
@@ -303,15 +303,15 @@ function getSeedTables() {
       2,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_KEYS.templates.compactTagState,
+      GAME_JOURNEY_KEYS.templates.compactTagState,
       "palette.compact-tag-state",
       "Decide whether tag chips need a compact state for small canvases.",
-      "Compare dense palette screens against the normal Project Palette Tags view before creating another display mode.",
+      "Compare dense palette screens against the normal Game Palette Tags view before creating another display mode.",
       ["Colors", "Game Design"],
       3,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_KEYS.templates.releaseLaneOwnership,
+      GAME_JOURNEY_KEYS.templates.releaseLaneOwnership,
       "release.validation-lane-ownership",
       "Resolve final validation lane ownership before release.",
       "Confirm the targeted lane owner is named before publish readiness moves forward.",
@@ -319,7 +319,7 @@ function getSeedTables() {
       4,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_KEYS.templates.archiveBoundary,
+      GAME_JOURNEY_KEYS.templates.archiveBoundary,
       "release.archive-boundary",
       "Confirm no archived Tool V1/V2 files were touched.",
       "Use the active Toolbox paths for implementation and keep archived V1/V2 material read-only.",
@@ -327,7 +327,7 @@ function getSeedTables() {
       5,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_KEYS.templates.openingGoal,
+      GAME_JOURNEY_KEYS.templates.openingGoal,
       "story.opening-player-goal",
       "Outline the opening player goal.",
       "Describe the first player-readable goal in one sentence before expanding beats.",
@@ -335,7 +335,7 @@ function getSeedTables() {
       6,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_KEYS.templates.tutorialMilestones,
+      GAME_JOURNEY_KEYS.templates.tutorialMilestones,
       "story.tutorial-workspace-milestones",
       "Connect tutorial beats to workspace milestones.",
       "Attach tutorial beats to concrete build path milestones so story work stays testable.",
@@ -343,7 +343,7 @@ function getSeedTables() {
       7,
     ),
     makeTemplate(
-      PROJECT_JOURNEY_KEYS.templates.uxSubnotes,
+      GAME_JOURNEY_KEYS.templates.uxSubnotes,
       "research.ux-subnote-decision",
       "Decide which unanswered UX questions need their own notes.",
       "Promote only durable UX questions into separate notes; keep short follow-ups inline as item details.",
@@ -352,10 +352,10 @@ function getSeedTables() {
     ),
     {
       ...makeTemplate(
-        PROJECT_JOURNEY_KEYS.templates.inactiveGuidance,
+        GAME_JOURNEY_KEYS.templates.inactiveGuidance,
         "diagnostic.inactive-guidance",
         "Inactive template diagnostic.",
-        "This inactive template exists only for Project Journey diagnostics validation.",
+        "This inactive template exists only for Game Journey diagnostics validation.",
         ["Game Workspace"],
         9,
       ),
@@ -364,137 +364,137 @@ function getSeedTables() {
     },
   ];
 
-  const project_journey_items = [
+  const game_journey_items = [
     makeSystemItem({
-      key: PROJECT_JOURNEY_KEYS.items.designAffordance,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.designPass,
+      key: GAME_JOURNEY_KEYS.items.designAffordance,
+      noteKey: GAME_JOURNEY_KEYS.notes.designPass,
       status: "in-progress",
-      title: "Review palette swatch affordance in the active project palette.",
+      title: "Review palette swatch affordance in the active game palette.",
       userDetails: "Designer review should focus on checkbox visibility and selected-row contrast.",
-      templateKey: PROJECT_JOURNEY_KEYS.templates.paletteAffordance,
+      templateKey: GAME_JOURNEY_KEYS.templates.paletteAffordance,
       indent: 0,
       order: 1,
       minutes: 10,
     }),
     makeSystemItem({
-      key: PROJECT_JOURNEY_KEYS.items.designBatchTag,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.designPass,
+      key: GAME_JOURNEY_KEYS.items.designBatchTag,
+      noteKey: GAME_JOURNEY_KEYS.notes.designPass,
       status: "not-started",
       title: "Confirm batch tag language after checked swatches are applied.",
-      templateKey: PROJECT_JOURNEY_KEYS.templates.batchTagLanguage,
+      templateKey: GAME_JOURNEY_KEYS.templates.batchTagLanguage,
       indent: 1,
       order: 2,
       minutes: 11,
     }),
     makeSystemItem({
-      key: PROJECT_JOURNEY_KEYS.items.designCompactTag,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.designPass,
+      key: GAME_JOURNEY_KEYS.items.designCompactTag,
+      noteKey: GAME_JOURNEY_KEYS.notes.designPass,
       status: "decide",
       title: "Decide whether tag chips need a compact state for small canvases.",
-      templateKey: PROJECT_JOURNEY_KEYS.templates.compactTagState,
+      templateKey: GAME_JOURNEY_KEYS.templates.compactTagState,
       indent: 1,
       order: 3,
       minutes: 12,
     }),
     makeSystemItem({
-      key: PROJECT_JOURNEY_KEYS.items.releaseLaneOwnership,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
+      key: GAME_JOURNEY_KEYS.items.releaseLaneOwnership,
+      noteKey: GAME_JOURNEY_KEYS.notes.releaseReadiness,
       status: "blocker",
       title: "Resolve final validation lane ownership before release.",
-      templateKey: PROJECT_JOURNEY_KEYS.templates.releaseLaneOwnership,
+      templateKey: GAME_JOURNEY_KEYS.templates.releaseLaneOwnership,
       indent: 0,
       order: 1,
       minutes: 13,
     }),
     makeSystemItem({
-      key: PROJECT_JOURNEY_KEYS.items.releaseArchiveBoundary,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
+      key: GAME_JOURNEY_KEYS.items.releaseArchiveBoundary,
+      noteKey: GAME_JOURNEY_KEYS.notes.releaseReadiness,
       status: "complete",
       title: "Confirm no archived Tool V1/V2 files were touched.",
-      templateKey: PROJECT_JOURNEY_KEYS.templates.archiveBoundary,
+      templateKey: GAME_JOURNEY_KEYS.templates.archiveBoundary,
       indent: 0,
       order: 2,
       minutes: 14,
     }),
     makeSystemItem({
-      key: PROJECT_JOURNEY_KEYS.items.releaseSkippedChecklist,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
+      key: GAME_JOURNEY_KEYS.items.releaseSkippedChecklist,
+      noteKey: GAME_JOURNEY_KEYS.notes.releaseReadiness,
       status: "skipped",
       title: "Skip launch-day checklist items that no longer apply.",
-      templateKey: PROJECT_JOURNEY_KEYS.templates.archiveBoundary,
+      templateKey: GAME_JOURNEY_KEYS.templates.archiveBoundary,
       indent: 0,
       order: 3,
       minutes: 15,
     }),
     makeSystemItem({
-      key: PROJECT_JOURNEY_KEYS.items.storyOpeningGoal,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.storyMap,
+      key: GAME_JOURNEY_KEYS.items.storyOpeningGoal,
+      noteKey: GAME_JOURNEY_KEYS.notes.storyMap,
       status: "not-started",
       title: "Outline the opening player goal.",
-      templateKey: PROJECT_JOURNEY_KEYS.templates.openingGoal,
+      templateKey: GAME_JOURNEY_KEYS.templates.openingGoal,
       indent: 0,
       order: 1,
       minutes: 16,
     }),
     makeSystemItem({
-      key: PROJECT_JOURNEY_KEYS.items.storyTutorialMilestones,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.storyMap,
+      key: GAME_JOURNEY_KEYS.items.storyTutorialMilestones,
+      noteKey: GAME_JOURNEY_KEYS.notes.storyMap,
       status: "in-progress",
       title: "Connect tutorial beats to workspace milestones.",
-      templateKey: PROJECT_JOURNEY_KEYS.templates.tutorialMilestones,
+      templateKey: GAME_JOURNEY_KEYS.templates.tutorialMilestones,
       indent: 1,
       order: 2,
       minutes: 17,
     }),
     makeSystemItem({
-      key: PROJECT_JOURNEY_KEYS.items.researchUxSubnotes,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.researchUx,
+      key: GAME_JOURNEY_KEYS.items.researchUxSubnotes,
+      noteKey: GAME_JOURNEY_KEYS.notes.researchUx,
       status: "decide",
       title: "Decide which unanswered UX questions need their own notes.",
-      templateKey: PROJECT_JOURNEY_KEYS.templates.uxSubnotes,
+      templateKey: GAME_JOURNEY_KEYS.templates.uxSubnotes,
       indent: 0,
       order: 1,
       minutes: 18,
     }),
   ];
 
-  const project_journey_activity = [
+  const game_journey_activity = [
     {
-      key: PROJECT_JOURNEY_KEYS.activity.paletteDensityUpdated,
-      projectKey: PROJECT_JOURNEY_KEYS.project,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.designPass,
+      key: GAME_JOURNEY_KEYS.activity.paletteDensityUpdated,
+      gameKey: GAME_JOURNEY_KEYS.game,
+      noteKey: GAME_JOURNEY_KEYS.notes.designPass,
       message: "Palette and Input Density updated by User 1",
       ...makeAuditFields(20, MOCK_DB_KEYS.users.user1),
     },
     {
-      key: PROJECT_JOURNEY_KEYS.activity.releaseBlocked,
-      projectKey: PROJECT_JOURNEY_KEYS.project,
-      noteKey: PROJECT_JOURNEY_KEYS.notes.releaseReadiness,
+      key: GAME_JOURNEY_KEYS.activity.releaseBlocked,
+      gameKey: GAME_JOURNEY_KEYS.game,
+      noteKey: GAME_JOURNEY_KEYS.notes.releaseReadiness,
       message: "Release Readiness marked with a blocker",
       ...makeAuditFields(22, MOCK_DB_KEYS.users.user2),
     },
   ];
 
   return {
-    project_journey_note_types,
-    project_journey_notes,
-    project_journey_templates,
-    project_journey_items,
-    project_journey_activity,
+    game_journey_note_types,
+    game_journey_notes,
+    game_journey_templates,
+    game_journey_items,
+    game_journey_activity,
   };
 }
 
-export function createProjectJourneyMockRepository(options = {}) {
-  const workspaceRepository =
-    options.workspaceRepository || createProjectWorkspaceMockRepository();
-  const tables = loadMockDbTables(PROJECT_JOURNEY_DB_OWNER, getSeedTables(), options).tables;
-  let selectedNoteKey = PROJECT_JOURNEY_KEYS.notes.designPass;
-  let selectedItemKey = PROJECT_JOURNEY_KEYS.items.designAffordance;
-  let nextItemNumber = nextUlidSequence(tables.project_journey_items, GENERATED_ULID_SEQUENCE.item, GENERATED_ULID_SEQUENCE.activity);
-  let nextActivityNumber = nextUlidSequence(tables.project_journey_activity, GENERATED_ULID_SEQUENCE.activity, GENERATED_ULID_SEQUENCE.type);
-  let nextTypeNumber = nextUlidSequence(tables.project_journey_note_types, GENERATED_ULID_SEQUENCE.type, GENERATED_ULID_SEQUENCE.note);
-  let nextNoteNumber = nextUlidSequence(tables.project_journey_notes, GENERATED_ULID_SEQUENCE.note, GENERATED_ULID_SEQUENCE.diagnostic);
-  let nextDiagnosticNumber = nextUlidSequence(tables.project_journey_items, GENERATED_ULID_SEQUENCE.diagnostic, Number.POSITIVE_INFINITY);
+export function createGameJourneyMockRepository(options = {}) {
+  const gameWorkspaceRepository =
+    options.gameWorkspaceRepository || options.workspaceRepository || createGameWorkspaceMockRepository();
+  const tables = loadMockDbTables(GAME_JOURNEY_DB_OWNER, getSeedTables(), options).tables;
+  let selectedNoteKey = GAME_JOURNEY_KEYS.notes.designPass;
+  let selectedItemKey = GAME_JOURNEY_KEYS.items.designAffordance;
+  let nextItemNumber = nextUlidSequence(tables.game_journey_items, GENERATED_ULID_SEQUENCE.item, GENERATED_ULID_SEQUENCE.activity);
+  let nextActivityNumber = nextUlidSequence(tables.game_journey_activity, GENERATED_ULID_SEQUENCE.activity, GENERATED_ULID_SEQUENCE.type);
+  let nextTypeNumber = nextUlidSequence(tables.game_journey_note_types, GENERATED_ULID_SEQUENCE.type, GENERATED_ULID_SEQUENCE.note);
+  let nextNoteNumber = nextUlidSequence(tables.game_journey_notes, GENERATED_ULID_SEQUENCE.note, GENERATED_ULID_SEQUENCE.diagnostic);
+  let nextDiagnosticNumber = nextUlidSequence(tables.game_journey_items, GENERATED_ULID_SEQUENCE.diagnostic, Number.POSITIVE_INFINITY);
 
   function currentSessionUser() {
     return getMockDbSessionUser(options);
@@ -522,11 +522,11 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function persistTables() {
-    saveMockDbTables(PROJECT_JOURNEY_DB_OWNER, tables, options);
+    saveMockDbTables(GAME_JOURNEY_DB_OWNER, tables, options);
   }
 
   function touchNote(noteKey, updatedBy = currentUserKey()) {
-    const note = tables.project_journey_notes.find((item) => item.key === noteKey);
+    const note = tables.game_journey_notes.find((item) => item.key === noteKey);
     if (note) {
       note.updatedAt = new Date().toISOString();
       note.updatedBy = updatedBy;
@@ -534,11 +534,11 @@ export function createProjectJourneyMockRepository(options = {}) {
     }
   }
 
-  function addActivity(projectKey, noteKey, message, userKey = currentUserKey()) {
+  function addActivity(gameKey, noteKey, message, userKey = currentUserKey()) {
     const timestampValue = new Date().toISOString();
-    tables.project_journey_activity.unshift({
+    tables.game_journey_activity.unshift({
       key: makeUlid(nextActivityNumber),
-      projectKey,
+      gameKey,
       noteKey,
       message,
       createdAt: timestampValue,
@@ -550,23 +550,23 @@ export function createProjectJourneyMockRepository(options = {}) {
     persistTables();
   }
 
-  function getActiveProject() {
-    const project = workspaceRepository.getActiveProject();
-    if (!project) {
+  function getActiveGame() {
+    const game = gameWorkspaceRepository.getActiveGame();
+    if (!game) {
       return null;
     }
     return {
-      ...project,
-      key: PROJECT_JOURNEY_KEYS.project,
+      ...game,
+      key: GAME_JOURNEY_KEYS.game,
     };
   }
 
-  function requireActiveProject() {
-    const project = getActiveProject();
-    if (!project) {
+  function requireActiveGame() {
+    const game = getActiveGame();
+    if (!game) {
       return null;
     }
-    return project;
+    return game;
   }
 
   function resolveTemplate(item) {
@@ -587,7 +587,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       };
     }
 
-    const template = tables.project_journey_templates.find(
+    const template = tables.game_journey_templates.find(
       (candidate) => candidate.key === item.templateKey,
     );
     if (!template) {
@@ -629,7 +629,7 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function getItemsForNote(noteKey) {
-    return tables.project_journey_items
+    return tables.game_journey_items
       .filter((item) => item.noteKey === noteKey)
       .sort((left, right) => left.order - right.order);
   }
@@ -638,7 +638,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     if (filterId === "system") {
       return isSystemItem(item);
     }
-    if (PROJECT_JOURNEY_STATUS_BY_ID[filterId]) {
+    if (GAME_JOURNEY_STATUS_BY_ID[filterId]) {
       return item.status === filterId;
     }
     return true;
@@ -661,7 +661,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     };
 
     getItemsForNoteFilter(noteKey, filterId).forEach((item) => {
-      const status = PROJECT_JOURNEY_STATUS_BY_ID[item.status];
+      const status = GAME_JOURNEY_STATUS_BY_ID[item.status];
       if (!status) {
         return;
       }
@@ -692,13 +692,13 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function listNotes(filterId = "all") {
-    const activeProject = requireActiveProject();
-    if (!activeProject) {
+    const activeGame = requireActiveGame();
+    if (!activeGame) {
       return [];
     }
 
-    return tables.project_journey_notes
-      .filter((note) => note.projectKey === activeProject.key)
+    return tables.game_journey_notes
+      .filter((note) => note.gameKey === activeGame.key)
       .filter(currentUserCanSeeNote)
       .filter((note) => noteMatchesFilter(note, filterId))
       .map((note) => {
@@ -706,7 +706,7 @@ export function createProjectJourneyMockRepository(options = {}) {
         return {
           ...clone(note),
           type: clone(
-            tables.project_journey_note_types.find((type) => type.key === note.typeKey),
+            tables.game_journey_note_types.find((type) => type.key === note.typeKey),
           ),
           counts: getNoteCounts(note.key, filterId),
           items: items.map(hydrateItem),
@@ -716,20 +716,20 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function addNote({ name, typeKey } = {}) {
-    const activeProject = requireActiveProject();
-    if (!activeProject || !currentUserCanWrite()) {
+    const activeGame = requireActiveGame();
+    if (!activeGame || !currentUserCanWrite()) {
       return null;
     }
 
-    const normalizedName = String(name || "").trim() || "New Project Journey Note";
+    const normalizedName = String(name || "").trim() || "New Game Journey Note";
     const selectedType =
-      tables.project_journey_note_types.find((type) => type.key === typeKey) ||
-      tables.project_journey_note_types[0];
+      tables.game_journey_note_types.find((type) => type.key === typeKey) ||
+      tables.game_journey_note_types[0];
     const timestampValue = new Date().toISOString();
     const note = {
       key: makeUlid(nextNoteNumber),
       slug: `user-note-${nextNoteNumber}`,
-      projectKey: activeProject.key,
+      gameKey: activeGame.key,
       ownerKey: currentUserKey(),
       name: normalizedName,
       typeKey: selectedType?.key || "",
@@ -739,30 +739,30 @@ export function createProjectJourneyMockRepository(options = {}) {
       updatedBy: currentUserKey(),
     };
     nextNoteNumber += 1;
-    tables.project_journey_notes.push(note);
+    tables.game_journey_notes.push(note);
     selectedNoteKey = note.key;
     selectedItemKey = "";
-    addActivity(activeProject.key, note.key, `Added note ${note.name}`);
+    addActivity(activeGame.key, note.key, `Added note ${note.name}`);
     return getSelectedNote();
   }
 
   function getSelectedNote() {
-    const activeProject = requireActiveProject();
-    if (!activeProject) {
+    const activeGame = requireActiveGame();
+    if (!activeGame) {
       return null;
     }
 
     const note =
-      tables.project_journey_notes.find(
-        (item) => item.key === selectedNoteKey && item.projectKey === activeProject.key && currentUserCanSeeNote(item),
-      ) || tables.project_journey_notes.find((item) => item.projectKey === activeProject.key && currentUserCanSeeNote(item));
+      tables.game_journey_notes.find(
+        (item) => item.key === selectedNoteKey && item.gameKey === activeGame.key && currentUserCanSeeNote(item),
+      ) || tables.game_journey_notes.find((item) => item.gameKey === activeGame.key && currentUserCanSeeNote(item));
 
     if (!note) {
       return null;
     }
 
     selectedNoteKey = note.key;
-    const selectedItem = tables.project_journey_items.find(
+    const selectedItem = tables.game_journey_items.find(
       (item) => item.key === selectedItemKey && item.noteKey === note.key,
     );
     if (!selectedItem) {
@@ -772,7 +772,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     return {
       ...clone(note),
       type: clone(
-        tables.project_journey_note_types.find((type) => type.key === note.typeKey),
+        tables.game_journey_note_types.find((type) => type.key === note.typeKey),
       ),
       counts: getNoteCounts(note.key),
       items: getItemsForNote(note.key).map(hydrateItem),
@@ -780,7 +780,7 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function selectNote(noteKey) {
-    const note = tables.project_journey_notes.find((item) => item.key === noteKey && currentUserCanSeeNote(item));
+    const note = tables.game_journey_notes.find((item) => item.key === noteKey && currentUserCanSeeNote(item));
     if (!note) {
       return getSelectedNote();
     }
@@ -791,8 +791,8 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function selectItem(itemKey) {
-    const item = tables.project_journey_items.find((candidate) => candidate.key === itemKey);
-    const note = item ? tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
+    const item = tables.game_journey_items.find((candidate) => candidate.key === itemKey);
+    const note = item ? tables.game_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
     if (item && note && currentUserCanSeeNote(note)) {
       selectedItemKey = item.key;
       selectedNoteKey = item.noteKey;
@@ -801,15 +801,15 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function getSelectedItem() {
-    const item = tables.project_journey_items.find((candidate) => candidate.key === selectedItemKey);
-    const note = item ? tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
+    const item = tables.game_journey_items.find((candidate) => candidate.key === selectedItemKey);
+    const note = item ? tables.game_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
     return item && note && currentUserCanSeeNote(note) ? hydrateItem(item) : null;
   }
 
   function addItem({ title, status, userDetails = "", indent = 0 }) {
-    const activeProject = requireActiveProject();
-    const note = tables.project_journey_notes.find((item) => item.key === selectedNoteKey && currentUserCanSeeNote(item));
-    if (!activeProject || !note || !currentUserCanWrite()) {
+    const activeGame = requireActiveGame();
+    const note = tables.game_journey_notes.find((item) => item.key === selectedNoteKey && currentUserCanSeeNote(item));
+    if (!activeGame || !note || !currentUserCanWrite()) {
       return null;
     }
 
@@ -817,9 +817,9 @@ export function createProjectJourneyMockRepository(options = {}) {
     const timestampValue = new Date().toISOString();
     const item = {
       key: makeUlid(nextItemNumber),
-      projectKey: activeProject.key,
+      gameKey: activeGame.key,
       noteKey: note.key,
-      status: PROJECT_JOURNEY_STATUS_BY_ID[status] ? status : "not-started",
+      status: GAME_JOURNEY_STATUS_BY_ID[status] ? status : "not-started",
       title: String(title || "").trim() || "New journey item",
       userDetails: String(userDetails || "").trim(),
       createdBy: currentUserKey(),
@@ -833,19 +833,19 @@ export function createProjectJourneyMockRepository(options = {}) {
       updatedAt: timestampValue,
     };
     nextItemNumber += 1;
-    tables.project_journey_items.push(item);
+    tables.game_journey_items.push(item);
     selectedItemKey = item.key;
     touchNote(note.key);
-    addActivity(activeProject.key, note.key, `Added item to ${note.name}`);
+    addActivity(activeGame.key, note.key, `Added item to ${note.name}`);
     persistTables();
     return hydrateItem(item);
   }
 
   function deleteItem(itemKey) {
-    const activeProject = requireActiveProject();
-    const item = tables.project_journey_items.find((candidate) => candidate.key === itemKey);
-    const noteForItem = item ? tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
-    if (!activeProject || !item || !noteForItem || !currentUserCanSeeNote(noteForItem) || !currentUserCanWrite()) {
+    const activeGame = requireActiveGame();
+    const item = tables.game_journey_items.find((candidate) => candidate.key === itemKey);
+    const noteForItem = item ? tables.game_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
+    if (!activeGame || !item || !noteForItem || !currentUserCanSeeNote(noteForItem) || !currentUserCanWrite()) {
       return {
         deleted: false,
         reason: "No journey item is selected for deletion.",
@@ -860,9 +860,9 @@ export function createProjectJourneyMockRepository(options = {}) {
       };
     }
 
-    const note = tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey);
+    const note = tables.game_journey_notes.find((candidate) => candidate.key === item.noteKey);
     const deletedOrder = item.order;
-    tables.project_journey_items = tables.project_journey_items.filter(
+    tables.game_journey_items = tables.game_journey_items.filter(
       (candidate) => candidate.key !== item.key,
     );
     const remainingItems = getItemsForNote(item.noteKey);
@@ -872,7 +872,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       remainingItems.at(-1)?.key ||
       "";
     touchNote(item.noteKey);
-    addActivity(activeProject.key, item.noteKey, `Deleted user item from ${note?.name || "Project Journey"}`);
+    addActivity(activeGame.key, item.noteKey, `Deleted user item from ${note?.name || "Game Journey"}`);
     persistTables();
     return {
       deleted: true,
@@ -882,12 +882,12 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function updateItem(itemKey, updates = {}, updatedBy = currentUserKey()) {
-    const activeProject = requireActiveProject();
-    const item = tables.project_journey_items.find((candidate) => candidate.key === itemKey);
-    const note = item ? tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
+    const activeGame = requireActiveGame();
+    const item = tables.game_journey_items.find((candidate) => candidate.key === itemKey);
+    const note = item ? tables.game_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
     const systemUpdate = updatedBy === systemUserKey();
     const canReachNote = systemUpdate || currentUserCanSeeNote(note);
-    if (!activeProject || !item || !note || !canReachNote || (!systemUpdate && !currentUserCanWrite())) {
+    if (!activeGame || !item || !note || !canReachNote || (!systemUpdate && !currentUserCanWrite())) {
       return null;
     }
 
@@ -895,7 +895,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     if (!systemOwned && typeof updates.title === "string") {
       item.title = updates.title.trim() || item.title;
     }
-    if (PROJECT_JOURNEY_STATUS_BY_ID[updates.status]) {
+    if (GAME_JOURNEY_STATUS_BY_ID[updates.status]) {
       item.status = updates.status;
     }
     if (typeof updates.userDetails === "string") {
@@ -913,7 +913,7 @@ export function createProjectJourneyMockRepository(options = {}) {
     selectedItemKey = item.key;
     selectedNoteKey = item.noteKey;
     touchNote(item.noteKey, updatedBy);
-    addActivity(activeProject.key, item.noteKey, `${systemUpdate ? "System" : "User"} updated selected journey item`, updatedBy);
+    addActivity(activeGame.key, item.noteKey, `${systemUpdate ? "System" : "User"} updated selected journey item`, updatedBy);
     persistTables();
     return hydrateItem(item);
   }
@@ -923,10 +923,10 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function moveSelectedItem(direction) {
-    const activeProject = requireActiveProject();
-    const item = tables.project_journey_items.find((candidate) => candidate.key === selectedItemKey);
-    const note = item ? tables.project_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
-    if (!activeProject || !item || !note || !currentUserCanSeeNote(note) || !currentUserCanWrite()) {
+    const activeGame = requireActiveGame();
+    const item = tables.game_journey_items.find((candidate) => candidate.key === selectedItemKey);
+    const note = item ? tables.game_journey_notes.find((candidate) => candidate.key === item.noteKey) : null;
+    if (!activeGame || !item || !note || !currentUserCanSeeNote(note) || !currentUserCanWrite()) {
       return null;
     }
 
@@ -949,13 +949,13 @@ export function createProjectJourneyMockRepository(options = {}) {
     neighbor.updatedAt = timestampValue;
     resequence(items);
     touchNote(item.noteKey, userKey);
-    addActivity(activeProject.key, item.noteKey, "Reordered journey items", userKey);
+    addActivity(activeGame.key, item.noteKey, "Reordered journey items", userKey);
     persistTables();
     return hydrateItem(item);
   }
 
   function changeSelectedIndent(delta) {
-    const item = tables.project_journey_items.find((candidate) => candidate.key === selectedItemKey);
+    const item = tables.game_journey_items.find((candidate) => candidate.key === selectedItemKey);
     if (!item) {
       return null;
     }
@@ -964,16 +964,16 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function updateSelectedNoteType(typeKey) {
-    const activeProject = requireActiveProject();
-    const note = tables.project_journey_notes.find((item) => item.key === selectedNoteKey && currentUserCanSeeNote(item));
-    const type = tables.project_journey_note_types.find((item) => item.key === typeKey);
-    if (!activeProject || !note || !type || !currentUserCanWrite()) {
+    const activeGame = requireActiveGame();
+    const note = tables.game_journey_notes.find((item) => item.key === selectedNoteKey && currentUserCanSeeNote(item));
+    const type = tables.game_journey_note_types.find((item) => item.key === typeKey);
+    if (!activeGame || !note || !type || !currentUserCanWrite()) {
       return null;
     }
 
     note.typeKey = type.key;
     touchNote(note.key);
-    addActivity(activeProject.key, note.key, `Changed ${note.name} type to ${type.name}`);
+    addActivity(activeGame.key, note.key, `Changed ${note.name} type to ${type.name}`);
     persistTables();
     return getSelectedNote();
   }
@@ -985,7 +985,7 @@ export function createProjectJourneyMockRepository(options = {}) {
         type: null,
         created: false,
         duplicate: false,
-        message: "Log in as a user before adding a Project Journey note type.",
+        message: "Log in as a user before adding a Game Journey note type.",
       };
     }
 
@@ -998,7 +998,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       };
     }
 
-    const existing = tables.project_journey_note_types.find(
+    const existing = tables.game_journey_note_types.find(
       (type) => type.name.toLowerCase() === normalized.toLowerCase(),
     );
     if (existing) {
@@ -1023,7 +1023,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       updatedBy: currentUserKey(),
     };
     nextTypeNumber += 1;
-    tables.project_journey_note_types.push(type);
+    tables.game_journey_note_types.push(type);
     persistTables();
     return {
       type: clone(type),
@@ -1034,34 +1034,34 @@ export function createProjectJourneyMockRepository(options = {}) {
   }
 
   function listRecentActivity(limit = 5) {
-    const activeProject = requireActiveProject();
-    if (!activeProject) {
+    const activeGame = requireActiveGame();
+    if (!activeGame) {
       return [];
     }
 
     return clone(
-      tables.project_journey_activity
-        .filter((activity) => activity.projectKey === activeProject.key)
+      tables.game_journey_activity
+        .filter((activity) => activity.gameKey === activeGame.key)
         .sort((left, right) => right.createdAt.localeCompare(left.createdAt))
         .slice(0, limit),
     );
   }
 
   function getTemplateDiagnostics() {
-    return tables.project_journey_items
-      .filter((item) => item.projectKey === getActiveProject()?.key)
+    return tables.game_journey_items
+      .filter((item) => item.gameKey === getActiveGame()?.key)
       .map(resolveTemplate)
       .map((result) => result.templateDiagnostic)
       .filter(Boolean);
   }
 
   function injectTemplateDiagnostics() {
-    const activeProject = requireActiveProject();
-    if (!activeProject) {
+    const activeGame = requireActiveGame();
+    if (!activeGame) {
       return [];
     }
 
-    const noteKey = PROJECT_JOURNEY_KEYS.notes.designPass;
+    const noteKey = GAME_JOURNEY_KEYS.notes.designPass;
     const existingItems = getItemsForNote(noteKey);
     const fixtures = [
       {
@@ -1071,12 +1071,12 @@ export function createProjectJourneyMockRepository(options = {}) {
       },
       {
         title: "Inactive template diagnostic item",
-        templateKey: PROJECT_JOURNEY_KEYS.templates.inactiveGuidance,
+        templateKey: GAME_JOURNEY_KEYS.templates.inactiveGuidance,
         status: "blocker",
       },
       {
         title: "Invalid template diagnostic item",
-        templateKey: PROJECT_JOURNEY_KEYS.templates.invalidMissing,
+        templateKey: GAME_JOURNEY_KEYS.templates.invalidMissing,
         status: "decide",
       },
     ];
@@ -1085,7 +1085,7 @@ export function createProjectJourneyMockRepository(options = {}) {
       const userKey = systemUserKey();
       const item = {
         key: makeUlid(nextDiagnosticNumber),
-        projectKey: activeProject.key,
+        gameKey: activeGame.key,
         noteKey,
         status: fixture.status,
         title: fixture.title,
@@ -1101,7 +1101,7 @@ export function createProjectJourneyMockRepository(options = {}) {
         updatedAt: timestampValue,
       };
       nextDiagnosticNumber += 1;
-      tables.project_journey_items.push(item);
+      tables.game_journey_items.push(item);
       return hydrateItem(item);
     });
     touchNote(noteKey, systemUserKey());
@@ -1109,20 +1109,20 @@ export function createProjectJourneyMockRepository(options = {}) {
     return created;
   }
 
-  function openProject(projectId) {
-    const workspaceProjectId =
-      projectId === PROJECT_JOURNEY_KEYS.project ? PROJECT_JOURNEY_ROUTE_PROJECT_ALIAS : projectId;
-    return workspaceRepository.openProject(workspaceProjectId);
+  function openGame(gameId) {
+    const workspaceGameId =
+      gameId === GAME_JOURNEY_KEYS.game ? GAME_JOURNEY_ROUTE_GAME_ALIAS : gameId;
+    return gameWorkspaceRepository.openGame(workspaceGameId);
   }
 
   return {
     getTables: () => clone(tables),
     getSessionUser: () => currentSessionUser(),
     getSystemUser: () => getMockDbSystemUser(),
-    getActiveProject,
-    openProject,
-    clearActiveProject: () => workspaceRepository.clearTestData(),
-    listNoteTypes: () => clone(tables.project_journey_note_types),
+    getActiveGame,
+    openGame,
+    clearActiveGame: () => gameWorkspaceRepository.clearTestData(),
+    listNoteTypes: () => clone(tables.game_journey_note_types),
     addNoteType,
     addNote,
     updateSelectedNoteType,

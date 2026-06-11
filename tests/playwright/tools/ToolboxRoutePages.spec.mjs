@@ -5,7 +5,7 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const TOOL_ROUTE_SMOKE_CASES = [
-  { heading: "Project Journey", route: "/tools/project-journey/index.html" },
+  { heading: "Game Journey", route: "/tools/game-journey/index.html" },
   { heading: "Colors", route: "/tools/colors/index.html" },
   { heading: "Assets", route: "/tools/assets/index.html" },
   { heading: "Achievements", route: "/tools/achievements/index.html" },
@@ -146,8 +146,8 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-name-link='Achievements']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Configuration']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Game Design']")).toBeVisible();
-    await expect(page.locator("[data-toolbox-tool-name-link='Project Journey']")).toBeVisible();
-    await expect(page.locator("[data-toolbox-tool-name-link='Project Workspace']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Game Journey']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='Game Workspace']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toHaveCount(0);
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 10/39");
     await page.locator("[data-toolbox-status-filter='planned']").click();
@@ -259,7 +259,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expect(page.locator("[data-toolbox-status-filter='deprecated']")).toHaveAttribute("aria-pressed", "true");
 
-    for (const toolName of ["Assets", "Game Configuration", "Game Design", "Project Journey", "Project Workspace"]) {
+    for (const toolName of ["Assets", "Game Configuration", "Game Design", "Game Journey", "Game Workspace"]) {
       const betaCard = page.locator(`[data-toolbox-tool-card='${toolName}']`);
       await expect(betaCard).toBeVisible();
       await expect(betaCard.locator("[data-toolbox-kicker]")).toHaveText("Beta");
@@ -485,7 +485,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     await expect(adminBuildVoteRow).toHaveAttribute("draggable", "true");
     await page.evaluate(() => {
       const source = document.querySelector("[data-toolbox-votes-tool-id='build-game']");
-      const target = document.querySelector("[data-toolbox-votes-tool-id='project-workspace']");
+      const target = document.querySelector("[data-toolbox-votes-tool-id='game-workspace']");
       if (!source || !target) {
         throw new Error("Toolbox vote drag/drop rows were not available.");
       }
@@ -506,7 +506,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
     });
     await expect(page.locator("[data-toolbox-votes-status]")).toContainText("Rows were renumbered with whole-number order values.");
     await expect(adminBuildVoteRow.locator("td").nth(1)).toHaveText("1");
-    await expect(page.locator("[data-toolbox-votes-tool-id='project-workspace'] td").nth(1)).toHaveText("2");
+    await expect(page.locator("[data-toolbox-votes-tool-id='game-workspace'] td").nth(1)).toHaveText("2");
     await expect(adminBuildVoteRow).toHaveAttribute("aria-selected", "true");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(5)).toHaveText("1");
     await expect(page.locator("[data-toolbox-votes-tool-id='publish'] td").nth(7)).toHaveText("1");

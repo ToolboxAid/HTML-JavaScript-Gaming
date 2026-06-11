@@ -1,37 +1,37 @@
 import {
   GAME_WORKSPACE_MEMBER_ROLES,
-  GAME_WORKSPACE_PROJECT_PURPOSES,
-  GAME_WORKSPACE_PROJECT_STATUSES,
+  GAME_WORKSPACE_GAME_PURPOSES,
+  GAME_WORKSPACE_GAME_STATUSES,
   createGameWorkspaceApiRepository,
 } from "./game-workspace-api-client.js";
 import { getSessionCurrent } from "../../src/engine/api/session-api-client.js";
 
 const repository = createGameWorkspaceApiRepository();
-repository.resetProjectData();
+repository.resetGameData();
 
 const elements = {
-  activeProjectName: document.querySelector("[data-active-project-name]"),
-  activeProjectOwner: document.querySelector("[data-active-project-owner]"),
-  activeProjectPurpose: document.querySelector("[data-active-project-purpose]"),
-  activeProjectStatus: document.querySelector("[data-active-project-status]"),
+  activeGameName: document.querySelector("[data-active-game-name]"),
+  activeGameOwner: document.querySelector("[data-active-game-owner]"),
+  activeGamePurpose: document.querySelector("[data-active-game-purpose]"),
+  activeGameStatus: document.querySelector("[data-active-game-status]"),
   currentFocus: document.querySelector("[data-current-focus]"),
   currentUserRole: document.querySelector("[data-current-user-role]"),
   currentUserRoleInput: document.querySelector("[data-current-user-role-input]"),
-  deleteActiveProject: document.querySelector("[data-project-delete-active]"),
-  form: document.querySelector("[data-project-form]"),
-  membersTable: document.querySelector("[data-project-members-table]"),
-  nameInput: document.querySelector("[data-project-name-input]"),
-  progressChecklist: document.querySelector("[data-project-progress-checklist]"),
-  projectList: document.querySelector("[data-project-list]"),
-  projectProgress: document.querySelector("[data-project-progress]"),
-  projectJourneyLink: document.querySelector("[data-project-journey-link]"),
-  purposeInput: document.querySelector("[data-project-purpose-input]"),
-  projectStatus: document.querySelector("[data-project-status]"),
-  projectStatusInput: document.querySelector("[data-project-status-input]"),
+  deleteOpenGame: document.querySelector("[data-game-delete-active]"),
+  form: document.querySelector("[data-game-form]"),
+  membersTable: document.querySelector("[data-game-members-table]"),
+  nameInput: document.querySelector("[data-game-name-input]"),
+  progressChecklist: document.querySelector("[data-game-progress-checklist]"),
+  gameList: document.querySelector("[data-game-list]"),
+  gameProgress: document.querySelector("[data-game-progress]"),
+  gameJourneyLink: document.querySelector("[data-game-journey-link]"),
+  purposeInput: document.querySelector("[data-game-purpose-input]"),
+  gameStatus: document.querySelector("[data-game-status]"),
+  gameStatusInput: document.querySelector("[data-game-status-input]"),
   publishingProgress: document.querySelector("[data-publishing-progress]"),
   recommendedNextTool: document.querySelectorAll("[data-recommended-next-tool]"),
-  statusLog: document.querySelector("[data-game-workspace-log], [data-project-workspace-log]"),
-  tableCounts: document.querySelector("[data-project-table-counts]"),
+  statusLog: document.querySelector("[data-game-workspace-log]"),
+  tableCounts: document.querySelector("[data-game-table-counts]"),
 };
 
 function setText(element, value) {
@@ -74,87 +74,87 @@ function populateSelect(select, options) {
   });
 }
 
-function currentProjectUserId(activeProject) {
+function currentGameUserId(activeGame) {
   const sessionUserKey = currentSessionUserKey();
-  if (sessionUserKey && (!activeProject || activeProject.members.some((member) => member.userId === sessionUserKey))) {
+  if (sessionUserKey && (!activeGame || activeGame.members.some((member) => member.userId === sessionUserKey))) {
     return sessionUserKey;
   }
-  return activeProject?.ownerUserId || activeProject?.members.find((member) => member.permission === "Owner")?.userId || "";
+  return activeGame?.ownerUserId || activeGame?.members.find((member) => member.permission === "Owner")?.userId || "";
 }
 
-function currentProjectMember(activeProject) {
-  const userId = currentProjectUserId(activeProject);
-  return activeProject?.members.find((member) => member.userId === userId) || null;
+function currentGameMember(activeGame) {
+  const userId = currentGameUserId(activeGame);
+  return activeGame?.members.find((member) => member.userId === userId) || null;
 }
 
-function createProjectButton(project, isActive) {
+function createGameButton(game, isActive) {
   const button = document.createElement("button");
   button.className = isActive ? "btn primary" : "btn";
   button.type = "button";
-  button.dataset.projectOpen = project.id;
+  button.dataset.gameOpen = game.id;
   if (isActive) {
-    button.dataset.projectActive = "true";
+    button.dataset.gameActive = "true";
     button.setAttribute("aria-current", "true");
   }
-  button.textContent = isActive ? `Open ${project.name} (Active)` : `Open ${project.name}`;
+  button.textContent = isActive ? `Open ${game.name} (Active)` : `Open ${game.name}`;
   return button;
 }
 
-function renderProjectList() {
-  if (!elements.projectList) {
+function renderGameList() {
+  if (!elements.gameList) {
     return;
   }
 
-  const activeProject = repository.getActiveProject();
-  const projectUserId = currentProjectUserId(activeProject);
-  const projects = repository.listProjects(projectUserId ? { userId: projectUserId } : {});
+  const activeGame = repository.getActiveGame();
+  const gameUserId = currentGameUserId(activeGame);
+  const games = repository.listGames(gameUserId ? { userId: gameUserId } : {});
 
-  elements.projectList.replaceChildren();
+  elements.gameList.replaceChildren();
 
-  if (projects.length === 0) {
+  if (games.length === 0) {
     const emptyState = document.createElement("p");
     emptyState.className = "status";
-    emptyState.textContent = "No projects. Create or seed a project to continue.";
-    elements.projectList.append(emptyState);
+    emptyState.textContent = "No games. Create or seed a game to continue.";
+    elements.gameList.append(emptyState);
     return;
   }
 
-  projects.forEach((project) => {
+  games.forEach((game) => {
     const row = document.createElement("article");
     row.className = "callout";
-    row.dataset.projectRow = project.id;
+    row.dataset.gameRow = game.id;
 
     const title = document.createElement("h4");
-    title.textContent = project.name;
+    title.textContent = game.name;
 
     const meta = document.createElement("p");
     meta.className = "eyebrow";
-    meta.textContent = `${project.purpose} | ${project.status} | ${project.ownerDisplayName}`;
+    meta.textContent = `${game.purpose} | ${game.status} | ${game.ownerDisplayName}`;
 
-    const isActive = activeProject?.id === project.id;
-    const action = createProjectButton(project, isActive);
+    const isActive = activeGame?.id === game.id;
+    const action = createGameButton(game, isActive);
 
     row.append(title, meta, action);
 
-    elements.projectList.append(row);
+    elements.gameList.append(row);
   });
 }
 
-function renderMembersTable(activeProject) {
+function renderMembersTable(activeGame) {
   if (!elements.membersTable) {
     return;
   }
 
   elements.membersTable.replaceChildren();
 
-  if (!activeProject) {
+  if (!activeGame) {
     const row = document.createElement("tr");
-    row.innerHTML = "<td>No project</td><td>-</td><td>-</td><td>-</td>";
+    row.innerHTML = "<td>No game</td><td>-</td><td>-</td><td>-</td>";
     elements.membersTable.append(row);
     return;
   }
 
-  activeProject.members.forEach((member) => {
+  activeGame.members.forEach((member) => {
     const row = document.createElement("tr");
     const name = document.createElement("td");
     const userId = document.createElement("td");
@@ -179,8 +179,8 @@ function renderTableCounts() {
   const tables = repository.getTables();
   const rows = [
     ["users", tables.users.length],
-    ["projects", tables.projects.length],
-    ["project_members", tables.project_members.length],
+    ["games", tables.games.length],
+    ["game_members", tables.game_members.length],
   ];
 
   elements.tableCounts.replaceChildren();
@@ -213,125 +213,125 @@ function renderChecklist(progress) {
 }
 
 function renderWorkspace() {
-  const activeProject = repository.getActiveProject();
-  const progress = repository.getProjectProgress();
-  const currentMember = currentProjectMember(activeProject);
+  const activeGame = repository.getActiveGame();
+  const progress = repository.getGameProgress();
+  const currentMember = currentGameMember(activeGame);
 
-  setText(elements.activeProjectName, activeProject?.name || "No project open");
-  setText(elements.activeProjectOwner, activeProject?.ownerDisplayName || "No owner");
-  setText(elements.activeProjectPurpose, activeProject?.purpose || "No purpose");
-  setText(elements.activeProjectStatus, activeProject?.status || "No Project");
+  setText(elements.activeGameName, activeGame?.name || "No game open");
+  setText(elements.activeGameOwner, activeGame?.ownerDisplayName || "No owner");
+  setText(elements.activeGamePurpose, activeGame?.purpose || "No purpose");
+  setText(elements.activeGameStatus, activeGame?.status || "No Game");
   setText(elements.currentUserRole, currentMember?.role || "Viewer");
-  setText(elements.projectStatus, progress.projectStatus);
-  setText(elements.projectProgress, progress.projectProgress);
+  setText(elements.gameStatus, progress.gameStatus);
+  setText(elements.gameProgress, progress.gameProgress);
   setText(elements.publishingProgress, progress.publishingProgress);
   setText(elements.currentFocus, progress.currentFocus);
   setText(elements.recommendedNextTool, progress.recommendedNextTool);
-  if (elements.purposeInput && activeProject?.purpose) {
-    elements.purposeInput.value = activeProject.purpose;
+  if (elements.purposeInput && activeGame?.purpose) {
+    elements.purposeInput.value = activeGame.purpose;
   }
-  if (elements.projectStatusInput && activeProject?.status) {
-    elements.projectStatusInput.value = activeProject.status;
+  if (elements.gameStatusInput && activeGame?.status) {
+    elements.gameStatusInput.value = activeGame.status;
   }
   if (elements.currentUserRoleInput) {
     elements.currentUserRoleInput.value = currentMember?.role || "Viewer";
   }
-  if (elements.projectJourneyLink) {
-    if (activeProject) {
-      elements.projectJourneyLink.href = `toolbox/project-journey/index.html?project=${encodeURIComponent(activeProject.id)}`;
-      elements.projectJourneyLink.setAttribute("aria-disabled", "false");
+  if (elements.gameJourneyLink) {
+    if (activeGame) {
+      elements.gameJourneyLink.href = `toolbox/game-journey/index.html?game=${encodeURIComponent(activeGame.id)}`;
+      elements.gameJourneyLink.setAttribute("aria-disabled", "false");
     } else {
-      elements.projectJourneyLink.href = "toolbox/project-journey/index.html?project=none";
-      elements.projectJourneyLink.setAttribute("aria-disabled", "true");
+      elements.gameJourneyLink.href = "toolbox/game-journey/index.html?game=none";
+      elements.gameJourneyLink.setAttribute("aria-disabled", "true");
     }
   }
 
-  renderProjectList();
-  renderMembersTable(activeProject);
+  renderGameList();
+  renderMembersTable(activeGame);
   renderTableCounts();
   renderChecklist(progress);
 }
 
 elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
-  const project = repository.createProject({
+  const game = repository.createGame({
     name: elements.nameInput?.value,
-    ownerUserId: currentProjectUserId(repository.getActiveProject()),
+    ownerUserId: currentGameUserId(repository.getActiveGame()),
     purpose: elements.purposeInput?.value,
-    status: elements.projectStatusInput?.value,
+    status: elements.gameStatusInput?.value,
   });
 
   if (elements.nameInput) {
     elements.nameInput.value = "";
   }
 
-  setStatusLog(`Created and opened ${project.name}.`);
+  setStatusLog(`Created and opened ${game.name}.`);
   renderWorkspace();
 });
 
-elements.projectList?.addEventListener("click", (event) => {
-  const button = event.target.closest("[data-project-open]");
+elements.gameList?.addEventListener("click", (event) => {
+  const button = event.target.closest("[data-game-open]");
 
   if (!button) {
     return;
   }
 
-  const project = repository.openProject(button.dataset.projectOpen);
+  const game = repository.openGame(button.dataset.gameOpen);
 
-  if (project) {
-    setStatusLog(`Opened ${project.name}.`);
+  if (game) {
+    setStatusLog(`Opened ${game.name}.`);
     renderWorkspace();
   }
 });
 
-elements.deleteActiveProject?.addEventListener("click", () => {
-  const activeProject = repository.getActiveProject();
+elements.deleteOpenGame?.addEventListener("click", () => {
+  const activeGame = repository.getActiveGame();
 
-  if (!activeProject) {
-    setStatusLog("No project is open for deletion.");
+  if (!activeGame) {
+    setStatusLog("No game is open for deletion.");
     renderWorkspace();
     return;
   }
 
-  repository.deleteProject(activeProject.id);
-  setStatusLog(`Deleted ${activeProject.name}.`);
+  repository.deleteGame(activeGame.id);
+  setStatusLog(`Deleted ${activeGame.name}.`);
   renderWorkspace();
 });
 
 elements.purposeInput?.addEventListener("change", () => {
-  const activeProject = repository.getActiveProject();
-  if (!activeProject) {
+  const activeGame = repository.getActiveGame();
+  if (!activeGame) {
     return;
   }
 
-  const project = repository.updateProjectPurpose(activeProject.id, elements.purposeInput.value);
-  setStatusLog(`Updated ${project.name} purpose to ${project.purpose}.`);
+  const game = repository.updateGamePurpose(activeGame.id, elements.purposeInput.value);
+  setStatusLog(`Updated ${game.name} purpose to ${game.purpose}.`);
   renderWorkspace();
 });
 
-elements.projectStatusInput?.addEventListener("change", () => {
-  const activeProject = repository.getActiveProject();
-  if (!activeProject) {
+elements.gameStatusInput?.addEventListener("change", () => {
+  const activeGame = repository.getActiveGame();
+  if (!activeGame) {
     return;
   }
 
-  const project = repository.updateProjectStatus(activeProject.id, elements.projectStatusInput.value);
-  setStatusLog(`Updated ${project.name} status to ${project.status}.`);
+  const game = repository.updateGameStatus(activeGame.id, elements.gameStatusInput.value);
+  setStatusLog(`Updated ${game.name} status to ${game.status}.`);
   renderWorkspace();
 });
 
 elements.currentUserRoleInput?.addEventListener("change", () => {
-  const activeProject = repository.getActiveProject();
-  if (!activeProject) {
+  const activeGame = repository.getActiveGame();
+  if (!activeGame) {
     return;
   }
 
-  repository.updateProjectMemberRole(activeProject.id, currentProjectUserId(activeProject), elements.currentUserRoleInput.value);
+  repository.updateGameMemberRole(activeGame.id, currentGameUserId(activeGame), elements.currentUserRoleInput.value);
   setStatusLog(`Updated current user role to ${elements.currentUserRoleInput.value}.`);
   renderWorkspace();
 });
 
-populateSelect(elements.purposeInput, GAME_WORKSPACE_PROJECT_PURPOSES);
-populateSelect(elements.projectStatusInput, GAME_WORKSPACE_PROJECT_STATUSES);
+populateSelect(elements.purposeInput, GAME_WORKSPACE_GAME_PURPOSES);
+populateSelect(elements.gameStatusInput, GAME_WORKSPACE_GAME_STATUSES);
 populateSelect(elements.currentUserRoleInput, GAME_WORKSPACE_MEMBER_ROLES);
 renderWorkspace();

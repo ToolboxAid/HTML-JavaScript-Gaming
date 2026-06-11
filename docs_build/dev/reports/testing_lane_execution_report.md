@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-11T16:59:02.835Z
+Generated: 2026-06-11T18:12:25.530Z
 Dry run: No
 
 ## Summary
@@ -9,7 +9,7 @@ PASS: 1
 WARN: 0
 FAIL: 0
 SKIP: 14
-Total lane elapsed time: 33.18s
+Total lane elapsed time: 43.75s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -105,15 +105,15 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | PASS | 33.18s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-| project-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Project Workspace mock repository, Project Workspace UI, and Toolbox Progress/Build Path project-state bridge | repo-served Project Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock project repository |
-| game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Project Workspace mock project context |
+| workspace-contract | PASS | 43.75s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+| game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
+| game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
 | asset-tool | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | repo-served Assets page; in-memory SQL-shaped Asset Tool mock repository; Game Configuration mock repository handoff; file-name/path-based import preview |
-| build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | repo-served Toolbox page; repo-served Admin Tools Progress page; Project Workspace mock project context; Toolbox role simulation |
-| tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress hydration, Toolbox Group view color model, and Project Build Path separation | repo-served Admin Tools Progress page; repo-served Toolbox Group view; Toolbox registry build sequence; Project Build Path workflow table |
-| tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Project Workspace, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
-| tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | repo-served Project Workspace, Game Design, Game Configuration, and AI Assistant tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata; shared Theme V2 Tool Display Mode script |
+| build-path | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | repo-served Toolbox page; repo-served Admin Tools Progress page; Game Workspace mock game context; Toolbox role simulation |
+| tools-progress | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | repo-served Admin Tools Progress page; repo-served Toolbox Group view; Toolbox registry build sequence; Game Build Path workflow table |
+| tool-navigation | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | repo-served Admin Tools Progress page; repo-served Game Workspace, Game Design, and Game Configuration tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata |
+| tool-display-mode | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | repo-served Game Workspace, Game Design, Game Configuration, and AI Assistant tool pages; repo-served Toolbox Group view with URL-selected accordion; Toolbox registry build sequence and route metadata; shared Theme V2 Tool Display Mode script |
 | tool-images | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | Toolbox registry badge/tool image contract; repo-served Toolbox page; repo-served representative Toolbox tool pages; shared registry image fallback |
 | tool-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Active public toolbox and Tool Template V2 contract | repo-served root toolbox page; Tool Template V2 public page; Theme V2 shared partials and assets |
 | game-runtime | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Deprecated archive/v1-v2/games reference coverage |  |
@@ -125,18 +125,18 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| workspace-contract | 9.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
-| workspace-contract | 8.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
-| workspace-contract | 6.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
-| workspace-contract | 1.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
-| workspace-contract | 1.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
+| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
+| workspace-contract | 9.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
+| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
+| workspace-contract | 6.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
+| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Commands
 
 ### workspace-contract
-- PASS 33.18s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+- PASS 43.75s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
-### project-workspace
+### game-workspace
 - SKIP
 
 ### game-design

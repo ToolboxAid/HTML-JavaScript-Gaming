@@ -1,6 +1,6 @@
 # Test Cleanup Routing Report
 
-Generated: 2026-06-11T16:59:02.803Z
+Generated: 2026-06-11T18:12:25.514Z
 Status: PASS
 
 ## Representative Routing Cases
@@ -33,7 +33,7 @@ Full samples smoke decision: SKIP - Skipped because changed files do not modify 
 | test:lane:tool-images | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-images |
 | test:lane:game-configuration | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-configuration |
 | test:lane:game-design | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-design |
-| test:lane:project-workspace | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane project-workspace |
+| test:lane:game-workspace | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-workspace |
 | test:lane:tool-runtime | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane tool-runtime |
 | test:lane:game-runtime | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane game-runtime |
 | test:lane:integration | PASS | node ./scripts/run-targeted-test-lanes.mjs --lane integration |

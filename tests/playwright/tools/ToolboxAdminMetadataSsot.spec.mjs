@@ -17,7 +17,7 @@ const REQUIRED_RESTORED_TOOLS = [
   "Creator Learning",
 ];
 const EXPECTED_SETUP_COMPACT_ORDER = [
-  "Project Workspace",
+  "Game Workspace",
   "Game Design",
   "Colors",
   "Assets",
@@ -30,10 +30,10 @@ const EXPECTED_SETUP_COMPACT_ORDER = [
   "Debug",
   "Game Testing",
   "Publish",
-  "Project Journey",
+  "Game Journey",
 ];
 const INTENDED_SETUP_PATH_TOOLS = [
-  "Project Workspace",
+  "Game Workspace",
   "Game Design",
   "Colors",
   "Assets",
@@ -47,7 +47,7 @@ const INTENDED_SETUP_PATH_TOOLS = [
   "Debug",
   "Game Testing",
   "Publish",
-  "Project Journey",
+  "Game Journey",
 ];
 const SETUP_TOOL_RECORD_MAP = Object.freeze({
   "Vector Asset Studio": "Assets",
@@ -182,7 +182,7 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
     expect(registrySnapshot.toolboxContract.groupSwatches.Design).toBe("toolbox-group-design");
     expect(registrySnapshot.toolboxContract.releaseChannelSwatches.complete).toBe("swatch-green");
     expect(registrySnapshot.toolboxContract.releaseChannelSwatches.deprecated).toBe("swatch-purple");
-    expect(registrySnapshot.toolboxContract.roleFocusTools.Designer).toEqual(expect.arrayContaining(["Project Workspace", "Colors"]));
+    expect(registrySnapshot.toolboxContract.roleFocusTools.Designer).toEqual(expect.arrayContaining(["Game Workspace", "Colors"]));
     expect(new Set(snapshot.rows.map((row) => row.toolKey || row.toolId)).size).toBe(EXPECTED_TOOL_COUNT);
     expect(mockDbSnapshot.schemas.toolbox_tool_metadata).not.toEqual(expect.arrayContaining(TOOL_PLANNING_FIELDS));
     expect(mockDbSnapshot.schemas.toolbox_tool_planning).toEqual(expect.arrayContaining(TOOL_PLANNING_FIELDS));

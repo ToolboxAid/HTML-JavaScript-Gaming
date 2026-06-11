@@ -122,8 +122,8 @@ test("root tools surface links current tool pages without old_* routes", async (
     });
     await expect(readyGameWorkspaceCard.locator("a.btn")).toHaveAttribute("href", "../toolbox/game-workspace/index.html");
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
-    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Workspace", "Languages", "Objects", "Project Journey", "Saved Data"]);
-    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Wireframe", "Beta", "Beta", "Wireframe"]);
+    expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Journey", "Game Workspace", "Languages", "Objects", "Saved Data"]);
+    await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Beta", "Wireframe"]);
     await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Assistant$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
@@ -201,9 +201,9 @@ test("root tools surface links current tool pages without old_* routes", async (
     await expect(page.locator("[data-build-path-table='workflow']")).toBeVisible();
     await expect(page.locator("[data-build-path-table='workflow'] th")).toHaveText(["Order", "Tool", "Status"]);
     await expect(page.getByText("Build Path Guidance")).toBeVisible();
-    await expect(page.getByText("Active Project: Demo Project")).toBeVisible();
+    await expect(page.getByText("Active Game: Demo Game")).toBeVisible();
     await expect(page.getByText("What should I do next? Game Configuration")).toBeVisible();
-    await expect(page.getByText("Project Completion: Demo Project identity ready")).toBeVisible();
+    await expect(page.getByText("Game Progress: Demo Game identity ready")).toBeVisible();
     await expect(page.getByText("Publishing Progress: Publish blocked until configuration and required assets are ready")).toBeVisible();
     await expect(page.getByText("Current Focus: Complete Game Configuration")).toBeVisible();
     await expect(page.getByText("Work top-to-bottom and left-to-right through the workflow table.")).toBeVisible();
@@ -368,7 +368,7 @@ test("learn wireframe pages load with shared Theme V2 structure", async ({ page 
       headings: ["Desktop Target", "Ideal Width", "Minimum Comfortable Width", "Panel Layout", "Smaller Screens", "Wireframe Status"]
     },
     {
-      path: "/learn/project-workspace/index.html",
+      path: "/learn/game-workspace/index.html",
       headings: ["Overview", "Quick Start", "Common Tasks", "Related Documentation", "Related Videos", "Examples"]
     },
     {
@@ -460,7 +460,7 @@ test("tool template future-state page loads from root Theme V2 paths", async ({ 
 test("representative active tool pages align center cleanup and registry group colors", async ({ page }) => {
   const representativeToolIds = [
     "ai-assistant",
-    "project-workspace",
+    "game-workspace",
     "game-design",
     "colors",
     "audio",

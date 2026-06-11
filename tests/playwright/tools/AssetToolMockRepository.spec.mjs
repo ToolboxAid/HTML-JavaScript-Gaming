@@ -369,7 +369,7 @@ test("Image, video, and audio uploads create project-owned metadata and previews
   }
 });
 
-test("Color assets consume the active Project Workspace palette", async ({ page }) => {
+test("Color assets consume the active Game Workspace palette", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/assets/index.html?palette=seed");
 
   try {
