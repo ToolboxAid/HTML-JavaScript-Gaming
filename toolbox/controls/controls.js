@@ -6,13 +6,14 @@ import {
 } from "../../src/engine/input/NormalizedInputRegistry.js";
 
 const CONTROL_EVENT_OPTIONS = Object.freeze([
-  Object.freeze({ field: "eventD", label: "Down" }),
+  Object.freeze({ field: "eventD", label: "Press" }),
   Object.freeze({ field: "eventH", label: "Hold" }),
-  Object.freeze({ field: "eventU", label: "Up" }),
-  Object.freeze({ field: "eventDC", label: "Double Click" }),
+  Object.freeze({ field: "eventU", label: "Release" }),
+  Object.freeze({ field: "eventDC", label: "Double Press" }),
   Object.freeze({ field: "eventDrag", label: "Drag" }),
   Object.freeze({ field: "eventAxis", label: "Axis" }),
 ]);
+const DEVICE_POLL_INTERVAL_MS = 1200;
 const INPUT_FAMILY_OPTIONS = Object.freeze([
   Object.freeze({ label: "Keyboard", value: "Keyboard" }),
   Object.freeze({ label: "Mouse", value: "Mouse" }),
@@ -93,6 +94,26 @@ const GENERIC_INPUT_FAMILY_ROWS = Object.freeze({
     "aim.y+",
     "action.primary",
     "action.secondary",
+  ]),
+  Joystick: Object.freeze([
+    "move.x-",
+    "move.x+",
+    "move.y-",
+    "move.y+",
+    "aim.x-",
+    "aim.x+",
+    "aim.y-",
+    "aim.y+",
+    "dpad.up",
+    "dpad.down",
+    "dpad.left",
+    "dpad.right",
+    "trigger.left",
+    "trigger.right",
+    "action.primary",
+    "action.secondary",
+    "action.start",
+    "action.select",
   ]),
 });
 const NORMALIZED_USAGE_LABELS = Object.freeze({
@@ -190,10 +211,12 @@ let objectsRepository = createObjectsToolApiRepository();
 let mappings = [];
 let objectOptions = [];
 let editingRow = null;
+let devicePollingTimer = null;
 const inputService = new InputService({ target: window });
 
 const elements = {
   actionSelect: document.querySelector("[data-input-action-select]"),
+  addJoystickFamily: document.querySelector("[data-input-add-joystick-family]"),
   addKeyboardFamily: document.querySelector("[data-input-add-keyboard-family]"),
   addMapping: document.querySelector("[data-input-add-mapping]"),
   addMouseFamily: document.querySelector("[data-input-add-mouse-family]"),
@@ -202,9 +225,10 @@ const elements = {
   defaultActions: document.querySelector("[data-input-default-actions]"),
   deviceCount: document.querySelector("[data-input-device-count]"),
   controlTypeList: document.querySelector("[data-input-control-type-list]"),
-  list: document.querySelector("[data-input-mapping-list]"),
+  lists: [...document.querySelectorAll("[data-input-mapping-list]")],
   mappingCount: document.querySelector("[data-input-mapping-count]"),
   mappingJson: document.querySelector("[data-input-mapping-json]"),
+  objectColumns: [...document.querySelectorAll("[data-input-object-column]")],
   objectSummaryActions: document.querySelector("[data-input-object-summary-actions]"),
   objectSummaryName: document.querySelector("[data-input-object-summary-name]"),
   objectSummaryRole: document.querySelector("[data-input-object-summary-role]"),
@@ -357,7 +381,7 @@ function validateMappingAction(mapping) {
   if (!CONTROL_EVENT_OPTIONS.some((option) => Boolean(mapping[option.field]))) {
     return {
       ok: false,
-      message: "Choose at least one event: Down, Hold, Up, Double Click, Drag, or Axis.",
+      message: "Choose at least one event: Press, Hold, Release, Double Press, Drag, or Axis.",
     };
   }
   return { ok: true, message: "" };
@@ -413,13 +437,38 @@ function controlCell(control) {
   return cell;
 }
 
+function mappingFamilies() {
+  return INPUT_FAMILY_OPTIONS.map((option) => option.value);
+}
+
+function objectColumnVisible() {
+  return objectOptions.length > 1;
+}
+
+function gameControlColumnCount() {
+  return 11 + (objectColumnVisible() ? 1 : 0);
+}
+
+function renderObjectColumns() {
+  const shouldShow = objectColumnVisible();
+  elements.objectColumns.forEach((column) => {
+    column.hidden = !shouldShow;
+  });
+}
+
 function checkboxCell(checked, label) {
   const input = document.createElement("input");
   input.type = "checkbox";
   input.checked = Boolean(checked);
   input.disabled = true;
   input.setAttribute("aria-label", label);
-  return controlCell(input);
+  const cell = controlCell(input);
+  cell.dataset.inputEventChecked = checked ? "true" : "false";
+  cell.title = checked ? `${label} enabled` : `${label} disabled`;
+  if (checked) {
+    cell.className = "status";
+  }
+  return cell;
 }
 
 function editableCheckboxCell({ checked, dataName, label }) {
@@ -428,14 +477,13 @@ function editableCheckboxCell({ checked, dataName, label }) {
   input.checked = Boolean(checked);
   input.dataset[dataName] = "true";
   input.setAttribute("aria-label", label);
-  return controlCell(input);
-}
-
-function labeledControl(labelText, control) {
-  const label = document.createElement("label");
-  label.textContent = labelText;
-  label.append(control);
-  return label;
+  const cell = controlCell(input);
+  cell.dataset.inputEventChecked = checked ? "true" : "false";
+  cell.title = checked ? `${label} enabled` : `${label} disabled`;
+  if (checked) {
+    cell.className = "status";
+  }
+  return cell;
 }
 
 function mappingIdFor(mapping) {
@@ -464,10 +512,11 @@ function normalizeMapping(source = {}) {
   const eventFields = normalizedEventFields(source);
   const objectKey = normalizeText(source.objectKey) || "global";
   const objectName = normalizeText(source.objectName) || objectOptions.find((object) => object.key === objectKey)?.label || "Global";
+  const enabled = source.enabled === undefined ? true : Boolean(source.enabled);
   const mapping = {
     action: normalizeText(source.action) || keyFromText(usageLabel),
     actionLabel: usageLabel,
-    enabled: source.enabled === undefined ? true : Boolean(source.enabled),
+    enabled,
     ...eventFields,
     id: normalizeText(source.id),
     inputFamily: normalizeInputFamily(source.inputFamily),
@@ -475,7 +524,7 @@ function normalizeMapping(source = {}) {
     normalizedInput,
     objectKey,
     objectName,
-    state: normalizeText(source.state) || "Active",
+    state: enabled ? "Active" : "Disabled",
     usageLabel,
   };
   return {
@@ -547,7 +596,7 @@ function defaultInputFamilyForNormalizedInput(normalizedInput) {
     return "Mouse";
   }
   if (normalizedInput.startsWith("trigger.") || normalizedInput.startsWith("dpad.")) {
-    return "Gamepad";
+    return "Joystick";
   }
   return "Keyboard";
 }
@@ -615,7 +664,7 @@ function addFullGameControlSet() {
   });
   saveMappings(nextMappings);
   editingRow = null;
-  renderCurrentState("Added the full normalized game control set. Common rows are enabled; alternate rows are disabled.");
+  renderCurrentState("Added Keyboard, Mouse, and Joystick default game controls. Common rows are enabled; alternate rows are disabled.");
 }
 
 function addGenericInputFamilyRows(inputFamily) {
@@ -806,9 +855,10 @@ function renderMappingRow(mapping) {
     tableCell(mapping.usageLabel || "Unmapped"),
     tableCell(mapping.inputFamily),
     ...CONTROL_EVENT_OPTIONS.map((option) => checkboxCell(mapping[option.field], option.label)),
-    tableCell(mapping.objectName),
-    tableCell(mapping.state),
   );
+  if (objectColumnVisible()) {
+    row.append(tableCell(mapping.objectName));
+  }
   const actions = actionCell([
     actionButton("Edit", "inputEditMapping", mapping.id),
     actionButton("Trash", "inputTrashMapping", mapping.id),
@@ -828,7 +878,6 @@ function renderEditingRow(values = {}) {
   const row = document.createElement("tr");
   row.dataset.inputEditingRow = "true";
   const selectedObjectKey = values.objectKey || elements.objectSelect?.value || "global";
-  const object = objectByKey(selectedObjectKey) || objectOptions[0];
 
   const objectSelect = selectControl({
     ariaLabel: "Mapping Object",
@@ -864,16 +913,6 @@ function renderEditingRow(values = {}) {
   });
   normalizedInputSelect.dataset.inputRowNormalized = "true";
 
-  const stateSelect = selectControl({
-    ariaLabel: "Mapping State",
-    options: [
-      { label: "Active", value: "Active" },
-      { label: "Disabled", value: "Disabled" },
-    ],
-    selectedValue: values.state || "Active",
-  });
-  stateSelect.dataset.inputRowState = "true";
-
   const actionsCell = actionCell([
     actionButton("Save", "inputSaveMapping"),
     actionButton("Cancel", "inputCancelMapping"),
@@ -893,10 +932,11 @@ function renderEditingRow(values = {}) {
       dataName: `inputRow${option.field[0].toUpperCase()}${option.field.slice(1)}`,
       label: option.label,
     })),
-    controlCell(objectSelect),
-    controlCell(stateSelect),
-    actionsCell,
   );
+  if (objectColumnVisible()) {
+    row.append(controlCell(objectSelect));
+  }
+  row.append(actionsCell);
   updateEditingRowValidation(row);
   return row;
 }
@@ -912,27 +952,36 @@ function updateEditingRowValidation(row) {
 }
 
 function renderMappings() {
-  if (!elements.list) {
+  if (!elements.lists.length) {
     return;
   }
-  const rows = [];
+  renderObjectColumns();
+  const rowsByFamily = new Map(mappingFamilies().map((family) => [family, []]));
   if (editingRow) {
-    rows.push(renderEditingRow(editingRow.values));
+    rowsByFamily.get(normalizeInputFamily(editingRow.values.inputFamily))?.push(renderEditingRow(editingRow.values));
   }
   const visibleMappings = editingRow?.id
     ? mappings.filter((mapping) => mapping.id !== editingRow.id)
     : mappings;
-  rows.push(...visibleMappings.map(renderMappingRow));
-  if (!rows.length) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 13;
-    cell.textContent = "Missing Game Control Mapping. Add a normalized input to game action mapping.";
-    row.append(cell);
-    rows.push(row);
-  }
-  elements.list.replaceChildren(...rows);
-  [elements.addMapping, elements.addKeyboardFamily, elements.addMouseFamily].forEach((button) => {
+  visibleMappings.forEach((mapping) => {
+    rowsByFamily.get(normalizeInputFamily(mapping.inputFamily))?.push(renderMappingRow(mapping));
+  });
+  elements.lists.forEach((list) => {
+    const family = list.dataset.inputMappingListFamily || "Keyboard";
+    const rows = rowsByFamily.get(family) || [];
+    if (!rows.length) {
+      const row = document.createElement("tr");
+      const cell = document.createElement("td");
+      cell.colSpan = gameControlColumnCount();
+      cell.textContent = !mappings.length && !editingRow && family === "Keyboard"
+        ? "Missing Game Control Mapping. Add a normalized input to game action mapping."
+        : `No ${family} game controls configured.`;
+      row.append(cell);
+      rows.push(row);
+    }
+    list.replaceChildren(...rows);
+  });
+  [elements.addMapping, elements.addKeyboardFamily, elements.addMouseFamily, elements.addJoystickFamily].forEach((button) => {
     if (button) {
       button.disabled = Boolean(editingRow);
     }
@@ -950,7 +999,7 @@ function renderAll(message = "") {
 }
 
 function editingRowElement() {
-  return elements.list?.querySelector("[data-input-editing-row]") || null;
+  return document.querySelector("[data-input-editing-row]") || null;
 }
 
 function mappingFromEditingRow(row) {
@@ -972,13 +1021,13 @@ function mappingFromEditingRow(row) {
     normalizedInput,
     objectKey: object.key,
     objectName: object.label,
-    state: row.querySelector("[data-input-row-state]")?.value || "Active",
+    state: row.querySelector("[data-input-row-enabled]")?.checked ? "Active" : "Disabled",
     usageLabel,
   });
 }
 
 function saveEditingRow() {
-  const row = elements.list?.querySelector("[data-input-editing-row]");
+  const row = editingRowElement();
   if (!row) {
     return;
   }
@@ -1065,6 +1114,21 @@ function showWorkspaceReturnIfNeeded() {
   elements.returnWorkspace.hidden = !shouldShow;
 }
 
+function startDevicePolling() {
+  if (devicePollingTimer || typeof window.setInterval !== "function") {
+    return;
+  }
+  devicePollingTimer = window.setInterval(() => {
+    renderDiagnostics();
+  }, DEVICE_POLL_INTERVAL_MS);
+  window.addEventListener("pagehide", () => {
+    if (devicePollingTimer) {
+      window.clearInterval(devicePollingTimer);
+      devicePollingTimer = null;
+    }
+  }, { once: true });
+}
+
 function init() {
   inputService.attach();
   showWorkspaceReturnIfNeeded();
@@ -1090,6 +1154,9 @@ function init() {
   elements.addMouseFamily?.addEventListener("click", () => {
     addGenericInputFamilyRows("Mouse");
   });
+  elements.addJoystickFamily?.addEventListener("click", () => {
+    addGenericInputFamilyRows("Joystick");
+  });
   elements.resetMappings?.addEventListener("click", () => {
     if (!window.confirm("This will delete all Mappings, are you sure?")) {
       setText(elements.statusLog, "Reset canceled.");
@@ -1102,14 +1169,17 @@ function init() {
   elements.refreshDevices?.addEventListener("click", () => {
     renderDiagnostics("Device diagnostics refreshed.");
   });
-  elements.list?.addEventListener("click", handleListClick);
-  elements.list?.addEventListener("change", handleListChange);
-  elements.list?.addEventListener("input", handleListChange);
+  elements.lists.forEach((list) => {
+    list.addEventListener("click", handleListClick);
+    list.addEventListener("change", handleListChange);
+    list.addEventListener("input", handleListChange);
+  });
   elements.presetButtons?.forEach((button) => {
     button.addEventListener("click", () => {
       applyGameControlPreset(button.dataset.inputPreset || "");
     });
   });
+  startDevicePolling();
 }
 
 init();

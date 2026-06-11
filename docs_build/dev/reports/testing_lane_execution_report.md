@@ -1,6 +1,6 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-11T18:12:25.530Z
+Generated: 2026-06-11T23:24:42.942Z
 Dry run: No
 
 ## Summary
@@ -9,7 +9,7 @@ PASS: 1
 WARN: 0
 FAIL: 0
 SKIP: 14
-Total lane elapsed time: 43.75s
+Total lane elapsed time: 43.28s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
 Status: PASS
 Scheduled lane order: workspace-contract
 Reused runtime sessions: 0
-Reused lane snapshots: 0
-Reused warm-start lanes: 0
-Reused dependency hydration: 0
-Prevented graph rebuilds: 0
-Prevented redundant initialization: 0
+Reused lane snapshots: 1
+Reused warm-start lanes: 1
+Reused dependency hydration: 1
+Prevented graph rebuilds: 1
+Prevented redundant initialization: 1
 Prevented redundant browser launches: 0
 Prevented redundant lane execution: 14
 
@@ -64,7 +64,7 @@ Status: PASS
 Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
 Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
 Required fixtures: none
-Targeted file/helper reads: 5
+Targeted file/helper reads: 0
 Cached discovery reuse: Yes
 Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
 
@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
 Status: PASS
 Generated manifests: workspace-contract:PASS
 Prevented discovery expansion: Yes
-Prevented redundant scans: 4
-Persistent manifest events: workspace-contract:INVALIDATED
+Prevented redundant scans: 0
+Persistent manifest events: workspace-contract:REUSED
 
 ## Warm-Start Reuse
 
 Status: PASS
-Warm-start events: workspace-contract:INVALIDATED
-Dependency hydration events: workspace-contract:INVALIDATED
-Prevented redundant initialization: 0
-Prevented helper resolution passes: 0
+Warm-start events: workspace-contract:REUSED
+Dependency hydration events: workspace-contract:REUSED
+Prevented redundant initialization: 1
+Prevented helper resolution passes: 4
 Prevented fixture ownership traversal: 0
 
 ## Lane Snapshots
 
 Status: PASS
-Snapshot events: workspace-contract:INVALIDATED
-Reused snapshots: 0
-Invalidated snapshots: 1
-Prevented graph rebuilds: 0
-Prevented redundant dependency traversal: 0
-Prevented fixture/helper graph assembly: 0
+Snapshot events: workspace-contract:REUSED
+Reused snapshots: 1
+Invalidated snapshots: 0
+Prevented graph rebuilds: 1
+Prevented redundant dependency traversal: 1
+Prevented fixture/helper graph assembly: 4
 
 ## Lane Deduplication
 
@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | PASS | 43.75s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+| workspace-contract | PASS | 43.28s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
 | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
 | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
@@ -125,16 +125,16 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
-| workspace-contract | 9.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
-| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
-| workspace-contract | 6.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
+| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
+| workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
+| workspace-contract | 8.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
+| workspace-contract | 7.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
 | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Commands
 
 ### workspace-contract
-- PASS 43.75s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+- PASS 43.27s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### game-workspace
 - SKIP

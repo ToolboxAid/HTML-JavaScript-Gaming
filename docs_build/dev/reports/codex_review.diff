@@ -1,11 +1,178 @@
-﻿diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 5d8c64731..b1f25d559 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,31 +17,8 @@ Exercised tool entry points detected:
- (62%) Theme V2 Shared JS - exercised 2 runtime JS files
+diff --git a/account/user-controls-page.js b/account/user-controls-page.js
+index bdeb0c647..c4cee6101 100644
+--- a/account/user-controls-page.js
++++ b/account/user-controls-page.js
+@@ -8,7 +8,9 @@ import {
+   physicalInputIsAnalog,
+ } from "../src/engine/input/NormalizedInputRegistry.js";
  
- Changed runtime JS files covered:
+-const KEYBOARD_MOUSE_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP", "MouseButton0", "MouseButton2", "MouseWheelUp", "MouseWheelDown", "MouseX", "MouseY"]);
++const DEVICE_POLL_INTERVAL_MS = 1200;
++const KEYBOARD_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP"]);
++const MOUSE_INPUTS = Object.freeze(["MouseButton0", "MouseButton2", "MouseX", "MouseY"]);
+ const SUPPORTED_CONTROL_TYPES = Object.freeze([
+   "Keyboard Key",
+   "Mouse Button",
+@@ -122,8 +124,10 @@ export class AccountUserControlsPage {
+     this.inputService = new InputService({ target: window });
+     this.profiles = [];
+     this.editingProfile = null;
++    this.devicePollingTimer = null;
+     this.elements = {
+       addProfile: root.querySelector("[data-account-user-controls-add-profile]"),
++      defaultList: root.querySelector("[data-account-user-controls-default-list]"),
+       deviceSelect: root.querySelector("[data-account-user-controls-device]"),
+       deviceStatus: root.querySelector("[data-account-user-controls-device-status]"),
+       list: root.querySelector("[data-account-user-controls-list]"),
+@@ -138,6 +142,7 @@ export class AccountUserControlsPage {
+     this.inputService.attach();
+     this.profiles = this.readProfiles();
+     this.renderDeviceSelect();
++    this.renderDefaultFallbacks();
+     this.renderTypes();
+     this.renderProfiles();
+     this.elements.refresh?.addEventListener("click", () => {
+@@ -151,6 +156,7 @@ export class AccountUserControlsPage {
+     this.elements.list?.addEventListener("change", (event) => this.handleListChange(event));
+     this.elements.list?.addEventListener("input", (event) => this.handleListInput(event));
+     this.elements.list?.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
++    this.startDevicePolling();
+   }
+ 
+   setStatus(message) {
+@@ -171,14 +177,23 @@ export class AccountUserControlsPage {
+   }
+ 
+   deviceOptions() {
+-    const keyboardMouse = {
+-      controllerId: "keyboard-mouse",
+-      controllerName: "Keyboard/Mouse",
+-      deviceType: "Keyboard/Mouse",
+-      inputs: [...KEYBOARD_MOUSE_INPUTS],
+-      label: "Keyboard/Mouse",
+-      mappingProfile: "Keyboard/Mouse Profile",
+-      value: "keyboard-mouse",
++    const keyboard = {
++      controllerId: "generic-keyboard",
++      controllerName: "Keyboard",
++      deviceType: "Keyboard",
++      inputs: [...KEYBOARD_INPUTS],
++      label: "Keyboard",
++      mappingProfile: "Keyboard Profile",
++      value: "keyboard",
++    };
++    const mouse = {
++      controllerId: "generic-mouse",
++      controllerName: "Mouse",
++      deviceType: "Mouse",
++      inputs: [...MOUSE_INPUTS],
++      label: "Mouse",
++      mappingProfile: "Mouse Profile",
++      value: "mouse",
+     };
+     const gamepads = this.availableGamepads().map((gamepad) => {
+       const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
+@@ -192,15 +207,15 @@ export class AccountUserControlsPage {
+         value: `gamepad-${gamepad.index}`,
+       };
+     });
+-    return [keyboardMouse, ...gamepads];
++    return [keyboard, mouse, ...gamepads];
+   }
+ 
+   deviceRefreshMessage() {
+     const gamepadCount = this.availableGamepads().length;
+     if (gamepadCount > 0) {
+-      return `PASS: Device list refreshed. Keyboard/Mouse and ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} available.`;
++      return `PASS: Keyboard and Mouse available. ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} detected automatically.`;
+     }
+-    return "PASS: Keyboard/Mouse available. To enumerate a game controller, connect it, press a button, allow browser gamepad access, then refresh devices.";
++    return "PASS: Keyboard and Mouse available. Gamepads auto-detect after browser exposes them.";
+   }
+ 
+   selectedDevice() {
+@@ -301,6 +316,43 @@ export class AccountUserControlsPage {
+     }));
+   }
+ 
++  renderDefaultFallbacks() {
++    if (!this.elements.defaultList) {
++      return;
++    }
++    const systemDefault = this.inputService.getSystemDefaultProfileForDevice("Keyboard/Mouse");
++    const rows = (systemDefault.inputMappings || [])
++      .filter((mapping) => KEYBOARD_INPUTS.includes(mapping.physicalInput) || MOUSE_INPUTS.includes(mapping.physicalInput))
++      .map((mapping) => {
++        const row = document.createElement("tr");
++        row.dataset.accountUserControlsDefaultRow = mapping.physicalInput;
++        const family = MOUSE_INPUTS.includes(mapping.physicalInput) ? "Mouse" : "Keyboard";
++        row.append(
++          tableCell(family),
++          tableCell(mapping.physicalInput),
++          tableCell(mapping.normalizedInput || mapping.positiveNormalizedInput || mapping.negativeNormalizedInput || "Unassigned"),
++          tableCell("Visible fallback"),
++        );
++        return row;
++      });
++    this.elements.defaultList.replaceChildren(...rows);
++  }
++
++  startDevicePolling() {
++    if (this.devicePollingTimer || typeof window.setInterval !== "function") {
++      return;
++    }
++    this.devicePollingTimer = window.setInterval(() => {
++      this.renderDeviceSelect();
++    }, DEVICE_POLL_INTERVAL_MS);
++    window.addEventListener("pagehide", () => {
++      if (this.devicePollingTimer) {
++        window.clearInterval(this.devicePollingTimer);
++        this.devicePollingTimer = null;
++      }
++    }, { once: true });
++  }
++
+   renderProfiles() {
+     if (!this.elements.list) {
+       return;
+diff --git a/account/user-controls.html b/account/user-controls.html
+index e18240f17..b81651930 100644
+--- a/account/user-controls.html
++++ b/account/user-controls.html
+@@ -40,6 +40,25 @@
+                             <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
+                         </div>
+                         <p class="status" role="status" data-account-user-controls-device-status>Refresh devices, choose a physical controller, then create a user control profile.</p>
++                        <details class="vertical-accordion" open>
++                            <summary>Default Keyboard/Mouse Fallbacks</summary>
++                            <div class="accordion-body content-stack">
++                                <p class="status">Keyboard and Mouse defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
++                                <div class="table-wrapper">
++                                    <table class="data-table" aria-label="Default keyboard and mouse fallbacks" data-account-user-controls-defaults>
++                                        <thead>
++                                            <tr>
++                                                <th>Input Family</th>
++                                                <th>Physical Input</th>
++                                                <th>Normalized Control</th>
++                                                <th>Source</th>
++                                            </tr>
++                                        </thead>
++                                        <tbody data-account-user-controls-default-list></tbody>
++                                    </table>
++                                </div>
++                            </div>
++                        </details>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
+                                 <thead>
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 2641ad38f..d82fd42e8 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,56 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+ 
+ Changed runtime JS files considered:
 -(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
@@ -15,257 +182,1771 @@ index 5d8c64731..b1f25d559 100644
 -(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/input/NormalizedInputRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) toolbox/colors/colors.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) toolbox/colors/palette-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) toolbox/game-journey/game-journey-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/game-workspace/game-workspace-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/project-workspace/project-workspace-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/project-workspace/project-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 -(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/tools-page-accordions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 33/54
+-(57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 30/53
+-(68%) toolbox/game-workspace/game-workspace.js - executed lines 281/281; executed functions 19/28
 -(78%) toolbox/game-configuration/game-configuration.js - executed lines 173/173; executed functions 14/18
- (83%) toolbox/controls/controls.js - executed lines 1043/1043; executed functions 89/107
--(100%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 23/23
+-(84%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 91/108
+-(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
+-(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
+-(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
++(87%) toolbox/controls/controls.js - executed lines 1110/1110; executed functions 104/120
+ 
+ Guardrail warnings:
+-(0%) assets/theme-v2/js/account-achievements.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/engine/input/NormalizedInputRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/colors/colors.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/colors/palette-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/game-journey/game-journey-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/game-journey/game-journey.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/project-workspace/project-workspace-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/project-workspace/project-workspace.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/toolRegistry.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none - no changed runtime JS coverage warnings
+diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
+index a18e1f08f..69a827c13 100644
+--- a/docs_build/dev/reports/dependency_gating_report.md
++++ b/docs_build/dev/reports/dependency_gating_report.md
+@@ -1,6 +1,6 @@
+ # Dependency Gating Report
+ 
+-Generated: 2026-06-11T18:11:41.722Z
++Generated: 2026-06-11T23:23:59.602Z
+ Status: PASS
+ 
+ ## Gate Order
+diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+index 24be9ddd0..725948e24 100644
+--- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
++++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+@@ -1,22 +1,22 @@
+ # Dependency Hydration Reuse Report
+ 
+-Generated: 2026-06-11T18:11:41.723Z
++Generated: 2026-06-11T23:23:59.602Z
+ Status: PASS
+ 
+ ## Summary
+ 
+-Reused dependency hydration: 0
+-Invalidated dependency hydration: 1
++Reused dependency hydration: 1
++Invalidated dependency hydration: 0
+ Generated dependency hydration: 0
+-Prevented dependency graph hydration: 0
+-Prevented helper resolution passes: 0
++Prevented dependency graph hydration: 1
++Prevented helper resolution passes: 4
+ Prevented fixture ownership traversal: 0
+ 
+ ## Hydration Decisions
+ 
+ | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 24678cbf69e8345f | Dependency hydration was refreshed after warm-start invalidation. |
++| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 24678cbf69e8345f | Dependency hydration reused from validated warm-start state. |
+ 
+ ## Safeguards
+ 
+diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
+index d36aec1d5..11682fcf0 100644
+--- a/docs_build/dev/reports/execution_graph_reuse_report.md
++++ b/docs_build/dev/reports/execution_graph_reuse_report.md
+@@ -1,22 +1,22 @@
+ # Execution Graph Reuse Report
+ 
+-Generated: 2026-06-11T18:11:41.723Z
++Generated: 2026-06-11T23:23:59.602Z
+ Status: PASS
+ 
+ ## Summary
+ 
+-Reused execution graphs: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant dependency traversal: 0
+-Prevented fixture/helper graph assembly: 0
+-Prevented manifest traversal: 0
+-Prevented targeted scheduling work: 0
++Reused execution graphs: 1
++Prevented graph rebuilds: 1
++Prevented redundant dependency traversal: 1
++Prevented fixture/helper graph assembly: 4
++Prevented manifest traversal: 1
++Prevented targeted scheduling work: 1
+ 
+ ## Execution Graph Decisions
+ 
+ | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | INVALIDATED | 8b9f7987b5ee1aca | Lane snapshot is part of the selected targeted execution graph. |
++| workspace-contract | REUSED | REUSED | 8b9f7987b5ee1aca | Lane snapshot is part of the selected targeted execution graph. |
+ 
+ ## Safeguards
+ 
+diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
+index 6335304d7..9ce1ee557 100644
+--- a/docs_build/dev/reports/failure_fingerprint_report.md
++++ b/docs_build/dev/reports/failure_fingerprint_report.md
+@@ -1,6 +1,6 @@
+ # Failure Fingerprint Report
+ 
+-Generated: 2026-06-11T18:12:25.514Z
++Generated: 2026-06-11T23:24:42.918Z
+ Status: PASS
+ 
+ ## Summary
+diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+index 6fe0746c3..cfc41272c 100644
+--- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
++++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+@@ -1,6 +1,6 @@
+ # Filesystem Scan Reduction Report
+ 
+-Generated: 2026-06-11T18:11:41.712Z
++Generated: 2026-06-11T23:23:59.589Z
+ Status: PASS
+ 
+ ## Scan Enforcement
+diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
+index aebfcf1e7..7867e003c 100644
+--- a/docs_build/dev/reports/incremental_validation_report.md
++++ b/docs_build/dev/reports/incremental_validation_report.md
+@@ -1,24 +1,24 @@
+ # Incremental Validation Report
+ 
+-Generated: 2026-06-11T18:11:41.724Z
++Generated: 2026-06-11T23:23:59.603Z
+ Status: PASS
+ 
+ ## Reuse Summary
+ 
+-Reused manifests: 0
+-Invalidated manifests: 1
++Reused manifests: 1
++Invalidated manifests: 0
+ Generated manifests: 0
+ Skipped manifests: 0
+-Prevented lane regeneration: 0
+-Prevented discovery scans: 0
+-Prevented helper resolution passes: 0
++Prevented lane regeneration: 1
++Prevented discovery scans: 1
++Prevented helper resolution passes: 4
+ Prevented fixture resolution passes: 0
+ 
+ ## Incremental Decisions
+ 
+ | Lane | Decision | Invalidated By | Runtime Savings Observation |
+ | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
++| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
+ 
+ ## Invalidation Rules
+ 
+diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
+index bf0e30bd6..d8b688067 100644
+--- a/docs_build/dev/reports/lane_compilation_report.md
++++ b/docs_build/dev/reports/lane_compilation_report.md
+@@ -1,6 +1,6 @@
+ # Lane Compilation Report
+ 
+-Generated: 2026-06-11T18:11:41.722Z
++Generated: 2026-06-11T23:23:59.601Z
+ Status: PASS
+ 
+ ## Lane Graph
+diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
+index 3b2a57ca7..34c58985a 100644
+--- a/docs_build/dev/reports/lane_deduplication_report.md
++++ b/docs_build/dev/reports/lane_deduplication_report.md
+@@ -1,6 +1,6 @@
+ # Lane Deduplication Report
+ 
+-Generated: 2026-06-11T18:11:41.722Z
++Generated: 2026-06-11T23:23:59.602Z
+ Status: PASS
+ 
+ ## Summary
+diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
+index 5c40c19e9..49b8a84f6 100644
+--- a/docs_build/dev/reports/lane_input_validation_report.md
++++ b/docs_build/dev/reports/lane_input_validation_report.md
+@@ -1,6 +1,6 @@
+ # Lane Input Validation Report
+ 
+-Generated: 2026-06-11T18:11:41.724Z
++Generated: 2026-06-11T23:23:59.603Z
+ Status: PASS
+ 
+ ## Input Files
+diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
+index f72bde632..4fe591f11 100644
+--- a/docs_build/dev/reports/lane_runtime_optimization_report.md
++++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
+@@ -1,16 +1,16 @@
+ # Lane Runtime Optimization Report
+ 
+-Generated: 2026-06-11T18:11:41.722Z
++Generated: 2026-06-11T23:23:59.602Z
+ Status: PASS
+ 
+ ## Runtime Cost Summary
+ 
+ Reused runtime sessions: 0
+-Reused lane snapshots: 0
+-Reused warm-start lanes: 0
+-Reused dependency hydration: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant initialization: 0
++Reused lane snapshots: 1
++Reused warm-start lanes: 1
++Reused dependency hydration: 1
++Prevented graph rebuilds: 1
++Prevented redundant initialization: 1
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+ Baseline Playwright/browser launches: 1
+@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
+ 
+ | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+ 
+ ## Runtime Savings Observations
+ 
+diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
+index 51928d58b..afe685c93 100644
+--- a/docs_build/dev/reports/lane_snapshot_report.md
++++ b/docs_build/dev/reports/lane_snapshot_report.md
+@@ -1,23 +1,23 @@
+ # Lane Snapshot Report
+ 
+-Generated: 2026-06-11T18:11:41.723Z
++Generated: 2026-06-11T23:23:59.602Z
+ Status: PASS
+ Snapshot directory: docs_build/dev/reports/lane_snapshots
+ 
+ ## Summary
+ 
+-Reused lane snapshots: 0
+-Invalidated snapshots: 1
++Reused lane snapshots: 1
++Invalidated snapshots: 0
+ Generated snapshots: 0
+ Skipped snapshots: 0
+-Prevented graph rebuilds: 0
+-Prevented manifest traversal: 0
++Prevented graph rebuilds: 1
++Prevented manifest traversal: 1
+ 
+ ## Snapshot Decisions
+ 
+ | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 0b0229bf83a32394 | 0e4e45b146ae24a2 | 6c558c65ec6914d2 | 6c4fac7630b0b6f3 | c99c4343771f1683 | 8b9f7987b5ee1aca | 64d97bba41be6caf | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
++| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 0b0229bf83a32394 | 0e4e45b146ae24a2 | 6c558c65ec6914d2 | 6c4fac7630b0b6f3 | c99c4343771f1683 | 8b9f7987b5ee1aca | 64d97bba41be6caf | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
+ 
+ ## Snapshot Validation Findings
+ 
+diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
+index 0638f3faa..feb4dd589 100644
+--- a/docs_build/dev/reports/lane_warm_start_report.md
++++ b/docs_build/dev/reports/lane_warm_start_report.md
+@@ -1,23 +1,23 @@
+ # Lane Warm-Start Report
+ 
+-Generated: 2026-06-11T18:11:41.722Z
++Generated: 2026-06-11T23:23:59.602Z
+ Status: PASS
+ Warm-start directory: docs_build/dev/reports/lane_warm_starts
+ 
+ ## Summary
+ 
+-Reused warm-start lanes: 0
+-Invalidated warm-start states: 1
++Reused warm-start lanes: 1
++Invalidated warm-start states: 0
+ Generated warm-start states: 0
+ Skipped warm-start states: 0
+-Prevented redundant initialization: 0
+-Prevented lane graph assembly: 0
++Prevented redundant initialization: 1
++Prevented lane graph assembly: 1
+ 
+ ## Warm-Start Decisions
+ 
+ | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 0b0229bf83a32394 | 85ed9dde3b71d0d9 | 24678cbf69e8345f | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
++| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 0b0229bf83a32394 | 85ed9dde3b71d0d9 | 24678cbf69e8345f | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
+ 
+ ## Fast-Fail Safeguards
+ 
+diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
+index dea55342c..e2b51b76e 100644
+--- a/docs_build/dev/reports/monolith_trigger_removal_report.md
++++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
+@@ -1,6 +1,6 @@
+ # Monolith Trigger Removal Report
+ 
+-Generated: 2026-06-11T18:12:25.515Z
++Generated: 2026-06-11T23:24:42.918Z
+ Status: PASS
+ 
+ ## Removed Broad Execution Triggers
+diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
+index 456a92c49..93c1e9f2e 100644
+--- a/docs_build/dev/reports/persistent_lane_manifest_report.md
++++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
+@@ -1,27 +1,27 @@
+ # Persistent Lane Manifest Report
+ 
+-Generated: 2026-06-11T18:11:41.723Z
++Generated: 2026-06-11T23:23:59.603Z
+ Status: PASS
+ Manifest directory: docs_build/dev/reports/lane_manifests
+ 
+ ## Summary
+ 
+-Reused manifests: 0
+-Invalidated manifests: 1
++Reused manifests: 1
++Invalidated manifests: 0
+ Generated manifests: 0
+-Prevented discovery scans: 0
++Prevented discovery scans: 1
+ 
+ ## Manifest Events
+ 
+ | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | d6960402a61f2e3b | 0b0229bf83a32394 | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
++| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | d6960402a61f2e3b | 0b0229bf83a32394 | Inputs unchanged; persisted lane manifest reused. |
+ 
+ ## Persisted Manifest Files
+ 
+ | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 0e4e45b146ae24a2 | 0b0229bf83a32394 |
++| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 0e4e45b146ae24a2 | 0b0229bf83a32394 |
+ 
+ ## Fast-Fail Enforcement
+ 
+diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+index d0236191f..629568d2a 100644
+--- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
++++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+@@ -1,6 +1,6 @@
+ # Playwright Discovery Ownership Report
+ 
+-Generated: 2026-06-11T18:11:41.708Z
++Generated: 2026-06-11T23:23:59.585Z
+ Status: PASS
+ 
+ ## Discovery-Time Ownership
+diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
+index 666e7a6ad..feff5d3a1 100644
+--- a/docs_build/dev/reports/playwright_discovery_scope_report.md
++++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
+@@ -1,6 +1,6 @@
+ # Playwright Discovery Scope Report
+ 
+-Generated: 2026-06-11T18:11:41.711Z
++Generated: 2026-06-11T23:23:59.587Z
+ Status: PASS
+ Scoped discovery: Yes
+ 
+diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
+index 2f2fa5b98..586b60ee0 100644
+--- a/docs_build/dev/reports/playwright_structure_audit.md
++++ b/docs_build/dev/reports/playwright_structure_audit.md
+@@ -1,6 +1,6 @@
+ # Playwright Structure Audit
+ 
+-Generated: 2026-06-11T18:11:41.693Z
++Generated: 2026-06-11T23:23:59.570Z
+ Status: PASS
+ 
+ ## Lane Directories
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index b1f25d559..f04053383 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,19 +12,18 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+ 
+ Exercised tool entry points detected:
+-(85%) Toolbox Index - exercised 8 runtime JS files
++(87%) Toolbox Index - exercised 8 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+ (62%) Theme V2 Shared JS - exercised 2 runtime JS files
+ 
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(83%) toolbox/controls/controls.js - executed lines 1043/1043; executed functions 89/107
++(87%) toolbox/controls/controls.js - executed lines 1110/1110; executed functions 104/120
  
  Files with executed line/function counts where available:
  (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
-@@ -70,71 +47,10 @@ Files with executed line/function counts where available:
+ (23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
+ (33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
+-(33%) src/engine/input/InputService.js - executed lines 451/451; executed functions 22/66
++(35%) src/engine/input/InputService.js - executed lines 451/451; executed functions 23/66
+ (40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
+ (41%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 14/34
+ (43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
+@@ -35,10 +34,10 @@ Files with executed line/function counts where available:
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+ (78%) toolbox/game-configuration/game-configuration.js - executed lines 173/173; executed functions 14/18
+ (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
+-(81%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 21/26
+ (82%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 23/28
+-(83%) toolbox/controls/controls.js - executed lines 1043/1043; executed functions 89/107
+-(90%) account/user-controls-page.js - executed lines 651/651; executed functions 77/86
++(87%) toolbox/controls/controls.js - executed lines 1110/1110; executed functions 104/120
++(92%) account/user-controls-page.js - executed lines 701/701; executed functions 85/92
++(93%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 25/27
+ (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
+ (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
+ (100%) toolbox/game-configuration/game-configuration-api-client.js - executed lines 11/11; executed functions 2/2
+@@ -47,10 +46,9 @@ Files with executed line/function counts where available:
  (100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
  
  Uncovered or low-coverage changed JS files:
--(0%) assets/theme-v2/js/account-achievements.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/colors/colors.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/colors/palette-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/game-journey/game-journey-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/game-journey/game-journey.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/game-workspace/game-workspace-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/game-workspace/game-workspace.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/toolRegistry.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/tools-page-accordions.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none - no low-coverage changed runtime JS files
  
  Changed JS files considered:
--(0%) assets/theme-v2/js/account-achievements.js - changed JS file not collected as browser runtime coverage
--(0%) scripts/run-targeted-test-lanes.mjs - changed JS file not collected as browser runtime coverage
--(0%) scripts/validate-active-tools-surface.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/GameConfigurationMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/GameDesignMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ToolImageRegistry.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ToolNavigationPrevNext.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/colors/colors.js - changed JS file not collected as browser runtime coverage
--(0%) toolbox/colors/palette-api-client.js - changed JS file not collected as browser runtime coverage
--(0%) toolbox/game-journey/game-journey-api-client.js - changed JS file not collected as browser runtime coverage
--(0%) toolbox/game-journey/game-journey.js - changed JS file not collected as browser runtime coverage
--(0%) toolbox/game-workspace/game-workspace-api-client.js - changed JS file not collected as browser runtime coverage
--(0%) toolbox/game-workspace/game-workspace.js - changed JS file not collected as browser runtime coverage
--(0%) toolbox/toolRegistry.js - changed JS file not collected as browser runtime coverage
--(0%) toolbox/tools-page-accordions.js - changed JS file not collected as browser runtime coverage
--(61%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
--(78%) toolbox/game-configuration/game-configuration.js - changed JS file with browser V8 coverage
- (83%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
--(100%) toolbox/game-design/game-design.js - changed JS file with browser V8 coverage
+-(83%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
++(87%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
++(92%) account/user-controls-page.js - changed JS file with browser V8 coverage
+diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
+index 43572b8e7..2b3b5720c 100644
+--- a/docs_build/dev/reports/retry_suppression_report.md
++++ b/docs_build/dev/reports/retry_suppression_report.md
+@@ -1,6 +1,6 @@
+ # Retry Suppression Report
+ 
+-Generated: 2026-06-11T18:12:25.514Z
++Generated: 2026-06-11T23:24:42.918Z
+ Status: PASS
+ 
+ ## Summary
+diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
+index 18bb709f9..3a086fad8 100644
+--- a/docs_build/dev/reports/slow_path_pruning_report.md
++++ b/docs_build/dev/reports/slow_path_pruning_report.md
+@@ -1,19 +1,19 @@
+ # Slow Path Pruning Report
+ 
+-Generated: 2026-06-11T18:12:25.514Z
++Generated: 2026-06-11T23:24:42.918Z
+ Status: PASS
+ Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
+ 
+ ## Before / After Runtime Observations
+ 
+ PR_26146_038 measured lane elapsed time: 169.71s
+-Current measured lane elapsed time: 43.75s
++Current measured lane elapsed time: 43.28s
+ PR_26146_038 actual browser launches: 4
+ Current actual browser launches: 1
+ Accidental no-argument browser launches prevented: 5
+ Reduced Workspace lane nested launches: 1
+-Reused dependency hydration: 0
+-Reused snapshots: 0
++Reused dependency hydration: 1
++Reused snapshots: 1
+ Validation cache hits: 18
+ 
+ ## Slow Paths Optimized
+@@ -31,10 +31,10 @@ Validation cache hits: 18
+ | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
+ | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
+ | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
+-| current targeted run | workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
+-| current targeted run | workspace-contract | 9.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
+-| current targeted run | workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
+-| current targeted run | workspace-contract | 6.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
++| current targeted run | workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
++| current targeted run | workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
++| current targeted run | workspace-contract | 8.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
++| current targeted run | workspace-contract | 7.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
+ | current targeted run | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
+ 
+ ## Guardrails
+diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
+index 5bf388c73..2ada7ccac 100644
+--- a/docs_build/dev/reports/static_validation_report.md
++++ b/docs_build/dev/reports/static_validation_report.md
+@@ -1,6 +1,6 @@
+ # Static Validation Report
+ 
+-Generated: 2026-06-11T18:11:41.715Z
++Generated: 2026-06-11T23:23:59.597Z
+ Status: PASS
+ Static only: No
+ Dry run: No
+@@ -23,12 +23,12 @@ Reason: No deterministic static validation failure was found.
+ | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
+ | missing fixture detection | PASS | No missing fixture findings. |
+ | targeted file manifests | PASS | workspace-contract:0b0229bf83a32394 |
+-| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
+-| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
+-| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
++| persistent lane manifests | PASS | workspace-contract:REUSED |
++| lane warm-start reuse | PASS | workspace-contract:REUSED |
++| dependency hydration reuse | PASS | workspace-contract:REUSED |
+ | lane input graph expansion | PASS | No inputs escaped manifest scope. |
+ | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
+-| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
++| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+ | invalid lane target detection | PASS | No invalid lane target findings. |
+ | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
+ | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
+diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
+index bab6f6687..8f11883ad 100644
+--- a/docs_build/dev/reports/targeted_file_manifest_report.md
++++ b/docs_build/dev/reports/targeted_file_manifest_report.md
+@@ -1,19 +1,19 @@
+ # Targeted File Manifest Report
+ 
+-Generated: 2026-06-11T18:11:41.723Z
++Generated: 2026-06-11T23:23:59.603Z
+ Status: PASS
+ 
+ ## Manifest-Generated Lane Inputs
+ 
+ | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 0e4e45b146ae24a2 | 0b0229bf83a32394 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
++| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 0e4e45b146ae24a2 | 0b0229bf83a32394 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+ 
+ ## Discovery Expansion Control
+ 
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 4
+-Targeted file/helper reads: 5
++Prevented redundant scans: 0
++Targeted file/helper reads: 0
+ 
+ ## Runtime Savings Observations
+ 
+diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
+index 4036063d1..ebaf30505 100644
+--- a/docs_build/dev/reports/test_cleanup_performance_report.md
++++ b/docs_build/dev/reports/test_cleanup_performance_report.md
+@@ -1,29 +1,29 @@
+ # Test Cleanup Performance Report
+ 
+-Generated: 2026-06-11T18:12:25.514Z
++Generated: 2026-06-11T23:24:42.918Z
+ Status: PASS
+ 
+ ## Cost Summary
+ 
+-Total measured lane elapsed time: 43.75s
++Total measured lane elapsed time: 43.28s
+ Actual browser launch count: 1
+ Scheduled browser launch count: 1
+ Baseline browser launch count: 1
+ Skipped lanes: 14
+-Reused manifests: 0
+-Reused snapshots: 0
++Reused manifests: 1
++Reused snapshots: 1
+ Cached validations reused: 18
+ Prevented broad execution: 2
+ Prevented reruns: 0
+ Prevented redundant browser launches: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant dependency traversal: 0
++Prevented graph rebuilds: 1
++Prevented redundant dependency traversal: 1
+ 
+ ## Lane Elapsed Time
+ 
+ | Lane | Status | Elapsed | Browser Launches | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | PASS | 43.75s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | PASS | 43.28s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+ | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+@@ -43,10 +43,10 @@ Prevented redundant dependency traversal: 0
+ 
+ | Lane | Duration | Test | Command |
+ | --- | --- | --- | --- |
+-| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 9.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 6.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 8.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 7.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+ | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+ 
+ ## Prevented Broad Execution
+diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
+index 92c035415..a87d107e3 100644
+--- a/docs_build/dev/reports/test_cleanup_routing_report.md
++++ b/docs_build/dev/reports/test_cleanup_routing_report.md
+@@ -1,6 +1,6 @@
+ # Test Cleanup Routing Report
+ 
+-Generated: 2026-06-11T18:12:25.514Z
++Generated: 2026-06-11T23:24:42.918Z
+ Status: PASS
+ 
+ ## Representative Routing Cases
+diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
+index d25a5a5e0..cee16d87c 100644
+--- a/docs_build/dev/reports/testing_lane_execution_report.md
++++ b/docs_build/dev/reports/testing_lane_execution_report.md
+@@ -1,6 +1,6 @@
+ # Testing Lane Execution Report
+ 
+-Generated: 2026-06-11T18:12:25.530Z
++Generated: 2026-06-11T23:24:42.942Z
+ Dry run: No
+ 
+ ## Summary
+@@ -9,7 +9,7 @@ PASS: 1
+ WARN: 0
+ FAIL: 0
+ SKIP: 14
+-Total lane elapsed time: 43.75s
++Total lane elapsed time: 43.28s
+ Actual browser launches: 1
+ 
+ ## Full Samples Smoke
+@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
+ Status: PASS
+ Scheduled lane order: workspace-contract
+ Reused runtime sessions: 0
+-Reused lane snapshots: 0
+-Reused warm-start lanes: 0
+-Reused dependency hydration: 0
+-Prevented graph rebuilds: 0
+-Prevented redundant initialization: 0
++Reused lane snapshots: 1
++Reused warm-start lanes: 1
++Reused dependency hydration: 1
++Prevented graph rebuilds: 1
++Prevented redundant initialization: 1
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+ 
+@@ -64,7 +64,7 @@ Status: PASS
+ Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
+ Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
+ Required fixtures: none
+-Targeted file/helper reads: 5
++Targeted file/helper reads: 0
+ Cached discovery reuse: Yes
+ Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
+ 
+@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
+ Status: PASS
+ Generated manifests: workspace-contract:PASS
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 4
+-Persistent manifest events: workspace-contract:INVALIDATED
++Prevented redundant scans: 0
++Persistent manifest events: workspace-contract:REUSED
+ 
+ ## Warm-Start Reuse
+ 
+ Status: PASS
+-Warm-start events: workspace-contract:INVALIDATED
+-Dependency hydration events: workspace-contract:INVALIDATED
+-Prevented redundant initialization: 0
+-Prevented helper resolution passes: 0
++Warm-start events: workspace-contract:REUSED
++Dependency hydration events: workspace-contract:REUSED
++Prevented redundant initialization: 1
++Prevented helper resolution passes: 4
+ Prevented fixture ownership traversal: 0
+ 
+ ## Lane Snapshots
+ 
+ Status: PASS
+-Snapshot events: workspace-contract:INVALIDATED
+-Reused snapshots: 0
+-Invalidated snapshots: 1
+-Prevented graph rebuilds: 0
+-Prevented redundant dependency traversal: 0
+-Prevented fixture/helper graph assembly: 0
++Snapshot events: workspace-contract:REUSED
++Reused snapshots: 1
++Invalidated snapshots: 0
++Prevented graph rebuilds: 1
++Prevented redundant dependency traversal: 1
++Prevented fixture/helper graph assembly: 4
+ 
+ ## Lane Deduplication
+ 
+@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
+ 
+ | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | PASS | 43.75s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| workspace-contract | PASS | 43.28s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+ | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
+ | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
+@@ -125,16 +125,16 @@ Prevented Workspace lane reruns: 0
+ 
+ | Lane | Duration | Test |
+ | --- | --- | --- |
+-| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
+-| workspace-contract | 9.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
+-| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
+-| workspace-contract | 6.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
++| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
++| workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
++| workspace-contract | 8.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
++| workspace-contract | 7.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
+ | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
+ 
+ ## Commands
+ 
+ ### workspace-contract
+-- PASS 43.75s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- PASS 43.27s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+ 
+ ### game-workspace
+ - SKIP
+diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
+index 4f6a1b6dd..4a7889f16 100644
+--- a/docs_build/dev/reports/validation_cache_report.md
++++ b/docs_build/dev/reports/validation_cache_report.md
+@@ -1,6 +1,6 @@
+ # Validation Cache Report
+ 
+-Generated: 2026-06-11T18:11:41.725Z
++Generated: 2026-06-11T23:23:59.604Z
+ Status: PASS
+ 
+ ## Cache Summary
+@@ -15,26 +15,26 @@ Validations computed: 10
+ | lane registration validation | MISS | c5f6923cb3e9b570 | initial computation | lane definitions change; package.json lane scripts change |
+ | runner preflight validation | MISS | a56dddb91b84bd8e | initial computation | lane definitions change; fixture ownership changes; targeted files change |
+ | scoped discovery map | MISS | d1596716e5ff4e22 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| targeted file manifest validation | MISS | 24a00edf7bdccb5e | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane warm-start validation | MISS | 897a504e44656798 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
+-| structural ownership validation | MISS | 0d8ecb42ede3d599 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
++| targeted file manifest validation | MISS | 6ee8a0df3e3c2add | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| lane warm-start validation | MISS | a14becdb6564082c | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
++| structural ownership validation | MISS | 0ed522a47cd20cf9 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+ | lane compilation validation | MISS | ff2d20b40fcb0398 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
+ | lane compilation validation | HIT | ff2d20b40fcb0398 | dependency validation input | unchanged within execution cycle |
+ | dependency validation | MISS | 718132570eea4d98 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
+-| lane snapshot validation | MISS | 27a6ad179f9ca95d | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
++| lane snapshot validation | MISS | 98e1c2b64ebef005 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
+ | zero-browser preflight | MISS | f19bf3518c98576f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
+-| structural ownership validation | HIT | 0d8ecb42ede3d599 | static validation report | unchanged within execution cycle |
+-| structural ownership validation | HIT | 0d8ecb42ede3d599 | zero-browser preflight report | unchanged within execution cycle |
++| structural ownership validation | HIT | 0ed522a47cd20cf9 | static validation report | unchanged within execution cycle |
++| structural ownership validation | HIT | 0ed522a47cd20cf9 | zero-browser preflight report | unchanged within execution cycle |
+ | scoped discovery map | HIT | d1596716e5ff4e22 | structural ownership validation input | unchanged within execution cycle |
+ | scoped discovery map | HIT | d1596716e5ff4e22 | discovery scope reporting | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 24a00edf7bdccb5e | lane input validation report | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 24a00edf7bdccb5e | runtime scheduling blockers | unchanged within execution cycle |
+-| lane warm-start validation | HIT | 897a504e44656798 | warm-start report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | 897a504e44656798 | dependency hydration reuse report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | 897a504e44656798 | runtime scheduling | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 27a6ad179f9ca95d | lane snapshot report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 27a6ad179f9ca95d | execution graph reuse report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 27a6ad179f9ca95d | runtime scheduling | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 6ee8a0df3e3c2add | lane input validation report | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 6ee8a0df3e3c2add | runtime scheduling blockers | unchanged within execution cycle |
++| lane warm-start validation | HIT | a14becdb6564082c | warm-start report | unchanged within execution cycle |
++| lane warm-start validation | HIT | a14becdb6564082c | dependency hydration reuse report | unchanged within execution cycle |
++| lane warm-start validation | HIT | a14becdb6564082c | runtime scheduling | unchanged within execution cycle |
++| lane snapshot validation | HIT | 98e1c2b64ebef005 | lane snapshot report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 98e1c2b64ebef005 | execution graph reuse report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 98e1c2b64ebef005 | runtime scheduling | unchanged within execution cycle |
+ | lane compilation validation | HIT | ff2d20b40fcb0398 | lane compilation report | unchanged within execution cycle |
+ | lane compilation validation | HIT | ff2d20b40fcb0398 | runtime scheduling | unchanged within execution cycle |
+ | dependency validation | HIT | 718132570eea4d98 | dependency report | unchanged within execution cycle |
+diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
+index ca06395a3..7b6cb7b43 100644
+--- a/docs_build/dev/reports/zero_browser_preflight_report.md
++++ b/docs_build/dev/reports/zero_browser_preflight_report.md
+@@ -1,6 +1,6 @@
+ # Zero-Browser Preflight Report
+ 
+-Generated: 2026-06-11T18:11:41.724Z
++Generated: 2026-06-11T23:23:59.604Z
+ Status: PASS
+ 
+ ## Prevented Browser Launches
+@@ -24,10 +24,10 @@ No deterministic setup failures.
+ | unresolved fixtures | PASS | No unresolved fixture findings. |
+ | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
+ | targeted file manifests | PASS | workspace-contract:PASS |
+-| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
+-| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
+-| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+-| lane snapshots | PASS | workspace-contract:INVALIDATED |
++| persistent lane manifests | PASS | workspace-contract:REUSED |
++| lane warm-start reuse | PASS | workspace-contract:REUSED |
++| dependency hydration reuse | PASS | workspace-contract:REUSED |
++| lane snapshots | PASS | workspace-contract:REUSED |
+ | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
+ | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
+ | invalid grep patterns | PASS | No invalid grep patterns. |
+diff --git a/src/dev-runtime/admin/header-nav.local.html b/src/dev-runtime/admin/header-nav.local.html
+index 9528cd395..9bb7a5aab 100644
+--- a/src/dev-runtime/admin/header-nav.local.html
++++ b/src/dev-runtime/admin/header-nav.local.html
+@@ -106,6 +106,7 @@
+           <a data-nav-link data-route="account-preferences" href="account/preferences.html">Preferences</a>
+           <a data-nav-link data-route="account-profile" href="account/profile.html">Profile</a>
+           <a data-nav-link data-route="account-security" href="account/security.html">Security</a>
++          <a data-nav-link data-route="account-user-controls" href="account/user-controls.html">User Controls</a>
+         </div>
+       </div>
+     </nav>
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index bc2e20237..b66d6a176 100644
+index b66d6a176..75824cbff 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -194,16 +194,20 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
+@@ -189,25 +189,33 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
+     await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Controls");
+     await expect(page.locator("[data-controller-profile-table]")).toHaveCount(0);
+     await expect(page.locator("[data-account-user-controls-link]")).toHaveAttribute("href", "/account/user-controls.html");
+-    await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
++    await expect(page.locator("[data-input-mapping-accordion] > summary")).toHaveText("Game Controls");
++    await expect(page.locator("[data-input-family-panel]")).toHaveCount(4);
++    await expect(page.locator("[data-input-family-panel='Keyboard'] summary")).toHaveText("Keyboard Controls");
++    await expect(page.locator("[data-input-family-panel='Mouse'] summary")).toHaveText("Mouse Controls");
++    await expect(page.locator("[data-input-family-panel='Joystick'] summary")).toHaveText("Joystick Controls");
++    await expect(page.locator("[data-input-family-panel='Gamepad'] summary")).toHaveText("Gamepad Controls");
++    const keyboardTable = page.locator("[data-input-mapping-table-family='Keyboard']");
++    await expect(keyboardTable.locator("th:not([hidden])")).toHaveText([
+       "Enabled",
        "Normalized Action Type",
        "Usage Label",
        "Input Family",
--      "D",
--      "H",
--      "U",
--      "DC",
-+      "Down",
-+      "Hold",
-+      "Up",
-+      "Double Click",
+-      "Down",
++      "Press",
+       "Hold",
+-      "Up",
+-      "Double Click",
++      "Release",
++      "Double Press",
        "Drag",
        "Axis",
-       "Object",
-       "State",
+-      "Object",
+-      "State",
        "Actions",
      ]);
-+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^D$/ })).toHaveCount(0);
-+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^H$/ })).toHaveCount(0);
-+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^U$/ })).toHaveCount(0);
-+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^DC$/ })).toHaveCount(0);
+     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^D$/ })).toHaveCount(0);
+     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^H$/ })).toHaveCount(0);
+     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^U$/ })).toHaveCount(0);
+     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^DC$/ })).toHaveCount(0);
++    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^State$/ })).toHaveCount(0);
++    await expect(page.locator("[data-input-mapping-table] th:not([hidden])").filter({ hasText: /^Object$/ })).toHaveCount(0);
++    await expect(page.locator("[data-input-combo-controls]")).toContainText("Keyboard Shift + Mouse Right Click");
      await expect(page.locator("[data-input-action-label]")).toContainText(NORMALIZED_INPUTS);
      await expect(page.locator("[data-input-control-type-list]")).toContainText("Keyboard Key");
      await expect(page.locator("[data-input-control-type-list]")).toContainText("Pointer Drag");
-@@ -232,6 +236,10 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
-     await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
+@@ -228,22 +236,23 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
+     ]);
+ 
+     await page.locator("[data-input-add-mapping]").click();
+-    await expect(page.locator("[data-input-status-log]")).toHaveText("Added the full normalized game control set. Common rows are enabled; alternate rows are disabled.");
++    await expect(page.locator("[data-input-status-log]")).toHaveText("Added Keyboard, Mouse, and Joystick default game controls. Common rows are enabled; alternate rows are disabled.");
+     await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
+     await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
+     await expect(page.locator("[data-input-output-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
+     await expect(page.locator("[data-input-save-status]")).toHaveText("Complete");
+-    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
++    await expect(page.locator("[data-input-family-accordions]")).not.toContainText("Missing Game Control Mapping");
      const primaryActionRow = page.locator("[data-input-mapping-row]").filter({ hasText: "action.primary" }).first();
      await expect(primaryActionRow.locator("td").nth(0).locator("input")).toBeChecked();
-+    await expect(primaryActionRow.locator("input[aria-label='Down']")).toBeChecked();
-+    await expect(primaryActionRow.locator("input[aria-label='Hold']")).not.toBeChecked();
-+    await expect(primaryActionRow.locator("input[aria-label='Up']")).not.toBeChecked();
-+    await expect(primaryActionRow.locator("input[aria-label='Double Click']")).not.toBeChecked();
-     await expect(primaryActionRow.locator("td").nth(11)).toHaveText("Active");
+-    await expect(primaryActionRow.locator("input[aria-label='Down']")).toBeChecked();
++    await expect(primaryActionRow.locator("input[aria-label='Press']")).toBeChecked();
+     await expect(primaryActionRow.locator("input[aria-label='Hold']")).not.toBeChecked();
+-    await expect(primaryActionRow.locator("input[aria-label='Up']")).not.toBeChecked();
+-    await expect(primaryActionRow.locator("input[aria-label='Double Click']")).not.toBeChecked();
+-    await expect(primaryActionRow.locator("td").nth(11)).toHaveText("Active");
++    await expect(primaryActionRow.locator("input[aria-label='Release']")).not.toBeChecked();
++    await expect(primaryActionRow.locator("input[aria-label='Double Press']")).not.toBeChecked();
++    await expect(primaryActionRow.locator("td:has(input[aria-label='Press'])")).toHaveAttribute("data-input-event-checked", "true");
      const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "aim.x+" }).first();
      await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
+-    await expect(aimRightRow.locator("td").nth(11)).toHaveText("Disabled");
++    await expect(page.locator("[data-input-mapping-table-family='Mouse']")).toContainText("aim.x+");
++    await expect(page.locator("[data-input-mapping-table-family='Joystick']")).toContainText("trigger.right");
+     let records = await inputMappingRecords(page);
+     expect(records).toHaveLength(NORMALIZED_INPUTS.length);
+     expect(records.map((record) => record.normalizedInput).sort()).toEqual([...NORMALIZED_INPUTS].sort());
+@@ -258,6 +267,9 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
+       state: "Disabled",
+       usageLabel: "Aim Right",
+     });
++    expect(records.find((record) => record.normalizedInput === "dpad.up")).toMatchObject({
++      inputFamily: "Joystick",
++    });
+ 
+     await page.locator("[data-input-add-keyboard-family]").click();
+     await expect(page.locator("[data-input-status-log]")).toHaveText("Added generic Keyboard game control rows.");
+@@ -284,10 +296,17 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
+     expect(records.filter((record) => record.id.startsWith("generic-mouse-control-"))).toHaveLength(6);
+     expect(records.filter((record) => record.id.startsWith("generic-mouse-control-")).every((record) => record.inputFamily === "Mouse")).toBe(true);
+ 
++    await page.locator("[data-input-add-joystick-family]").click();
++    await expect(page.locator("[data-input-status-log]")).toHaveText("Added generic Joystick game control rows.");
++    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length + 34);
++    records = await inputMappingRecords(page);
++    expect(records.filter((record) => record.id.startsWith("generic-joystick-control-"))).toHaveLength(18);
++    expect(records.filter((record) => record.id.startsWith("generic-joystick-control-")).every((record) => record.inputFamily === "Joystick")).toBe(true);
++
+     await page.locator("[data-input-preset='platformer']").click();
+-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Move Left");
+-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Jump");
+-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Look Up");
++    await expect(page.locator("[data-input-family-accordions]")).toContainText("Move Left");
++    await expect(page.locator("[data-input-family-accordions]")).toContainText("Jump");
++    await expect(page.locator("[data-input-family-accordions]")).toContainText("Look Up");
+     records = await inputMappingRecords(page);
+     expect(records).toHaveLength(7);
+     expect(records.find((record) => record.usageLabel === "Move Left")).toMatchObject({
+@@ -373,9 +392,9 @@ test("Game Controls validates enabled rows and persists separate event fields",
+     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
+ 
+     await page.reload({ waitUntil: "networkidle" });
+-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Start Charge");
+-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Double Tap Dodge");
+-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Drag Aim");
++    await expect(page.locator("[data-input-family-accordions]")).toContainText("Start Charge");
++    await expect(page.locator("[data-input-family-accordions]")).toContainText("Double Tap Dodge");
++    await expect(page.locator("[data-input-family-accordions]")).toContainText("Drag Aim");
+ 
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -392,12 +411,38 @@ test("Account User Controls maps physical input to generic normalized controls",
+     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
+     await page.locator("[data-account-user-controls-save-all]").click();
+     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Create a user control profile before saving.");
++    await expect(page.locator("[data-account-user-controls-default-row]")).toContainText([
++      /Keyboard.*KeyW.*move\.y-/,
++      /Mouse.*MouseButton0.*action\.primary/,
++    ]);
++    expect(await controllerProfileRecords(page)).toHaveLength(0);
++
++    await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
++      "Choose a physical controller",
++      "Keyboard",
++      "Mouse",
++    ]);
++    await page.locator("[data-account-user-controls-device]").selectOption("keyboard");
++    await page.locator("[data-account-user-controls-add-profile]").click();
++    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard: Keyboard");
++    await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "KeyW" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.y-");
++    await page.locator("[data-account-user-controls-save-all]").click();
++    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Keyboard Profile.");
++
++    await page.locator("[data-account-user-controls-device]").selectOption("mouse");
++    await page.locator("[data-account-user-controls-add-profile]").click();
++    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Mouse: Mouse");
++    await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "MouseButton0" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
++    await page.locator("[data-account-user-controls-save-all]").click();
++    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Mouse Profile.");
++    await page.locator("[data-account-user-controls-device]").selectOption("");
++
+     await exposeGamepad(page);
+-    await page.locator("[data-account-user-controls-refresh]").click();
+-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Device list refreshed. Keyboard/Mouse and 1 game controller available.");
++    await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("1 game controller detected automatically", { timeout: 4000 });
+     await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
+       "Choose a physical controller",
+-      "Keyboard/Mouse",
++      "Keyboard",
++      "Mouse",
+       "Gamepad: Arcade Test Pad",
+     ]);
+     await expect(page.locator("[data-account-user-controls-types]")).toContainText("Gamepad Axis");
+@@ -424,26 +469,37 @@ test("Account User Controls maps physical input to generic normalized controls",
+     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Arcade Test Pad Profile.");
+ 
+     const profiles = await controllerProfileRecords(page);
+-    expect(profiles).toHaveLength(1);
+-    expect(profiles[0]).toMatchObject({
++    expect(profiles).toHaveLength(3);
++    expect(profiles.find((profile) => profile.profileName === "Keyboard Profile")).toMatchObject({
++      controllerId: "generic-keyboard",
++      controllerName: "Keyboard",
++      deviceType: "Keyboard",
++    });
++    expect(profiles.find((profile) => profile.profileName === "Mouse Profile")).toMatchObject({
++      controllerId: "generic-mouse",
++      controllerName: "Mouse",
++      deviceType: "Mouse",
++    });
++    const gamepadProfile = profiles.find((profile) => profile.profileName === "Arcade Test Pad Profile");
++    expect(gamepadProfile).toMatchObject({
+       controllerId: "Arcade Test Pad",
+       controllerName: "Arcade Test Pad",
+       deviceType: "Gamepad",
+       profileName: "Arcade Test Pad Profile",
+     });
+-    expect(profiles[0].inputMappings.find((mapping) => mapping.physicalInput === "Axis0")).toMatchObject({
++    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Axis0")).toMatchObject({
+       deadzone: 0.4,
+       invert: true,
+       negativeNormalizedInput: "move.x-",
+       positiveNormalizedInput: "move.x+",
+       sensitivity: 125,
+     });
+-    expect(profiles[0]).not.toHaveProperty("gameAction");
+-    expect(profiles[0]).not.toHaveProperty("objectKey");
+-    expect(JSON.stringify(profiles[0])).not.toContain("eventD");
+-    expect(JSON.stringify(profiles[0])).not.toContain("eventU");
+-    expect(JSON.stringify(profiles[0])).not.toContain("eventDC");
+-    expect(JSON.stringify(profiles[0])).not.toContain("eventDrag");
++    expect(gamepadProfile).not.toHaveProperty("gameAction");
++    expect(gamepadProfile).not.toHaveProperty("objectKey");
++    expect(JSON.stringify(gamepadProfile)).not.toContain("eventD");
++    expect(JSON.stringify(gamepadProfile)).not.toContain("eventU");
++    expect(JSON.stringify(gamepadProfile)).not.toContain("eventDC");
++    expect(JSON.stringify(gamepadProfile)).not.toContain("eventDrag");
+ 
+     await page.reload({ waitUntil: "networkidle" });
+     await expect(page.locator("[data-account-user-controls-list]")).toContainText("Gamepad: Arcade Test Pad");
+@@ -471,6 +527,15 @@ test("Account pages use shared side navigation with active state", async ({ page
+     ]);
+     await expect(page.locator("[data-account-side-nav-link][aria-current='page']")).toHaveText("User Controls");
+     await expect(page.locator("[data-account-side-nav-link]", { hasText: "Profile" })).toHaveAttribute("href", /account\/profile\.html$/);
++    await expect(page.locator(".site-header .nav-item").filter({ has: page.locator("[data-route='account']") }).last().locator(".sub-menu a")).toHaveText([
++      "Account Home",
++      "Achievements",
++      "Logout",
++      "Preferences",
++      "Profile",
++      "Security",
++      "User Controls",
++    ]);
+ 
+     await page.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
+     await expect(page.locator("[data-account-side-nav]")).toBeVisible();
+@@ -495,9 +560,11 @@ test("Controls input implementation is owned by shared engine input services", a
+     });
+     expect(sources.controls).toContain("../../src/engine/input/InputService.js");
+     expect(sources.controls).toContain("../../src/engine/input/NormalizedInputRegistry.js");
++    expect(sources.controls).toContain("DEVICE_POLL_INTERVAL_MS");
+     expect(sources.accountControls).toContain("../src/engine/input/InputService.js");
+     expect(sources.accountControls).toContain("../src/engine/input/NormalizedInputRegistry.js");
+     expect(sources.accountControls).toContain("../src/engine/input/GamepadInputClassifier.js");
++    expect(sources.accountControls).toContain("DEVICE_POLL_INTERVAL_MS");
+     for (const source of [sources.controls, sources.accountControls]) {
+       expect(source).not.toMatch(/addEventListener\(\s*["']keydown/);
+       expect(source).not.toMatch(/addEventListener\(\s*["']keyup/);
 diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
-index 40f766b98..4dd68344f 100644
+index 4dd68344f..c8b09ec99 100644
 --- a/toolbox/controls/controls.js
 +++ b/toolbox/controls/controls.js
-@@ -6,10 +6,10 @@ import {
+@@ -6,13 +6,14 @@ import {
  } from "../../src/engine/input/NormalizedInputRegistry.js";
  
  const CONTROL_EVENT_OPTIONS = Object.freeze([
--  Object.freeze({ field: "eventD", label: "D" }),
--  Object.freeze({ field: "eventH", label: "H" }),
--  Object.freeze({ field: "eventU", label: "U" }),
--  Object.freeze({ field: "eventDC", label: "DC" }),
-+  Object.freeze({ field: "eventD", label: "Down" }),
-+  Object.freeze({ field: "eventH", label: "Hold" }),
-+  Object.freeze({ field: "eventU", label: "Up" }),
-+  Object.freeze({ field: "eventDC", label: "Double Click" }),
+-  Object.freeze({ field: "eventD", label: "Down" }),
++  Object.freeze({ field: "eventD", label: "Press" }),
+   Object.freeze({ field: "eventH", label: "Hold" }),
+-  Object.freeze({ field: "eventU", label: "Up" }),
+-  Object.freeze({ field: "eventDC", label: "Double Click" }),
++  Object.freeze({ field: "eventU", label: "Release" }),
++  Object.freeze({ field: "eventDC", label: "Double Press" }),
    Object.freeze({ field: "eventDrag", label: "Drag" }),
    Object.freeze({ field: "eventAxis", label: "Axis" }),
  ]);
-@@ -357,7 +357,7 @@ function validateMappingAction(mapping) {
++const DEVICE_POLL_INTERVAL_MS = 1200;
+ const INPUT_FAMILY_OPTIONS = Object.freeze([
+   Object.freeze({ label: "Keyboard", value: "Keyboard" }),
+   Object.freeze({ label: "Mouse", value: "Mouse" }),
+@@ -94,6 +95,26 @@ const GENERIC_INPUT_FAMILY_ROWS = Object.freeze({
+     "action.primary",
+     "action.secondary",
+   ]),
++  Joystick: Object.freeze([
++    "move.x-",
++    "move.x+",
++    "move.y-",
++    "move.y+",
++    "aim.x-",
++    "aim.x+",
++    "aim.y-",
++    "aim.y+",
++    "dpad.up",
++    "dpad.down",
++    "dpad.left",
++    "dpad.right",
++    "trigger.left",
++    "trigger.right",
++    "action.primary",
++    "action.secondary",
++    "action.start",
++    "action.select",
++  ]),
+ });
+ const NORMALIZED_USAGE_LABELS = Object.freeze({
+   "action.cancel": "Cancel",
+@@ -190,10 +211,12 @@ let objectsRepository = createObjectsToolApiRepository();
+ let mappings = [];
+ let objectOptions = [];
+ let editingRow = null;
++let devicePollingTimer = null;
+ const inputService = new InputService({ target: window });
+ 
+ const elements = {
+   actionSelect: document.querySelector("[data-input-action-select]"),
++  addJoystickFamily: document.querySelector("[data-input-add-joystick-family]"),
+   addKeyboardFamily: document.querySelector("[data-input-add-keyboard-family]"),
+   addMapping: document.querySelector("[data-input-add-mapping]"),
+   addMouseFamily: document.querySelector("[data-input-add-mouse-family]"),
+@@ -202,9 +225,10 @@ const elements = {
+   defaultActions: document.querySelector("[data-input-default-actions]"),
+   deviceCount: document.querySelector("[data-input-device-count]"),
+   controlTypeList: document.querySelector("[data-input-control-type-list]"),
+-  list: document.querySelector("[data-input-mapping-list]"),
++  lists: [...document.querySelectorAll("[data-input-mapping-list]")],
+   mappingCount: document.querySelector("[data-input-mapping-count]"),
+   mappingJson: document.querySelector("[data-input-mapping-json]"),
++  objectColumns: [...document.querySelectorAll("[data-input-object-column]")],
+   objectSummaryActions: document.querySelector("[data-input-object-summary-actions]"),
+   objectSummaryName: document.querySelector("[data-input-object-summary-name]"),
+   objectSummaryRole: document.querySelector("[data-input-object-summary-role]"),
+@@ -357,7 +381,7 @@ function validateMappingAction(mapping) {
    if (!CONTROL_EVENT_OPTIONS.some((option) => Boolean(mapping[option.field]))) {
      return {
        ok: false,
--      message: "Choose at least one event: D, H, U, DC, Drag, or Axis.",
-+      message: "Choose at least one event: Down, Hold, Up, Double Click, Drag, or Axis.",
+-      message: "Choose at least one event: Down, Hold, Up, Double Click, Drag, or Axis.",
++      message: "Choose at least one event: Press, Hold, Release, Double Press, Drag, or Axis.",
      };
    }
    return { ok: true, message: "" };
+@@ -413,13 +437,38 @@ function controlCell(control) {
+   return cell;
+ }
+ 
++function mappingFamilies() {
++  return INPUT_FAMILY_OPTIONS.map((option) => option.value);
++}
++
++function objectColumnVisible() {
++  return objectOptions.length > 1;
++}
++
++function gameControlColumnCount() {
++  return 11 + (objectColumnVisible() ? 1 : 0);
++}
++
++function renderObjectColumns() {
++  const shouldShow = objectColumnVisible();
++  elements.objectColumns.forEach((column) => {
++    column.hidden = !shouldShow;
++  });
++}
++
+ function checkboxCell(checked, label) {
+   const input = document.createElement("input");
+   input.type = "checkbox";
+   input.checked = Boolean(checked);
+   input.disabled = true;
+   input.setAttribute("aria-label", label);
+-  return controlCell(input);
++  const cell = controlCell(input);
++  cell.dataset.inputEventChecked = checked ? "true" : "false";
++  cell.title = checked ? `${label} enabled` : `${label} disabled`;
++  if (checked) {
++    cell.className = "status";
++  }
++  return cell;
+ }
+ 
+ function editableCheckboxCell({ checked, dataName, label }) {
+@@ -428,14 +477,13 @@ function editableCheckboxCell({ checked, dataName, label }) {
+   input.checked = Boolean(checked);
+   input.dataset[dataName] = "true";
+   input.setAttribute("aria-label", label);
+-  return controlCell(input);
+-}
+-
+-function labeledControl(labelText, control) {
+-  const label = document.createElement("label");
+-  label.textContent = labelText;
+-  label.append(control);
+-  return label;
++  const cell = controlCell(input);
++  cell.dataset.inputEventChecked = checked ? "true" : "false";
++  cell.title = checked ? `${label} enabled` : `${label} disabled`;
++  if (checked) {
++    cell.className = "status";
++  }
++  return cell;
+ }
+ 
+ function mappingIdFor(mapping) {
+@@ -464,10 +512,11 @@ function normalizeMapping(source = {}) {
+   const eventFields = normalizedEventFields(source);
+   const objectKey = normalizeText(source.objectKey) || "global";
+   const objectName = normalizeText(source.objectName) || objectOptions.find((object) => object.key === objectKey)?.label || "Global";
++  const enabled = source.enabled === undefined ? true : Boolean(source.enabled);
+   const mapping = {
+     action: normalizeText(source.action) || keyFromText(usageLabel),
+     actionLabel: usageLabel,
+-    enabled: source.enabled === undefined ? true : Boolean(source.enabled),
++    enabled,
+     ...eventFields,
+     id: normalizeText(source.id),
+     inputFamily: normalizeInputFamily(source.inputFamily),
+@@ -475,7 +524,7 @@ function normalizeMapping(source = {}) {
+     normalizedInput,
+     objectKey,
+     objectName,
+-    state: normalizeText(source.state) || "Active",
++    state: enabled ? "Active" : "Disabled",
+     usageLabel,
+   };
+   return {
+@@ -547,7 +596,7 @@ function defaultInputFamilyForNormalizedInput(normalizedInput) {
+     return "Mouse";
+   }
+   if (normalizedInput.startsWith("trigger.") || normalizedInput.startsWith("dpad.")) {
+-    return "Gamepad";
++    return "Joystick";
+   }
+   return "Keyboard";
+ }
+@@ -615,7 +664,7 @@ function addFullGameControlSet() {
+   });
+   saveMappings(nextMappings);
+   editingRow = null;
+-  renderCurrentState("Added the full normalized game control set. Common rows are enabled; alternate rows are disabled.");
++  renderCurrentState("Added Keyboard, Mouse, and Joystick default game controls. Common rows are enabled; alternate rows are disabled.");
+ }
+ 
+ function addGenericInputFamilyRows(inputFamily) {
+@@ -806,9 +855,10 @@ function renderMappingRow(mapping) {
+     tableCell(mapping.usageLabel || "Unmapped"),
+     tableCell(mapping.inputFamily),
+     ...CONTROL_EVENT_OPTIONS.map((option) => checkboxCell(mapping[option.field], option.label)),
+-    tableCell(mapping.objectName),
+-    tableCell(mapping.state),
+   );
++  if (objectColumnVisible()) {
++    row.append(tableCell(mapping.objectName));
++  }
+   const actions = actionCell([
+     actionButton("Edit", "inputEditMapping", mapping.id),
+     actionButton("Trash", "inputTrashMapping", mapping.id),
+@@ -828,7 +878,6 @@ function renderEditingRow(values = {}) {
+   const row = document.createElement("tr");
+   row.dataset.inputEditingRow = "true";
+   const selectedObjectKey = values.objectKey || elements.objectSelect?.value || "global";
+-  const object = objectByKey(selectedObjectKey) || objectOptions[0];
+ 
+   const objectSelect = selectControl({
+     ariaLabel: "Mapping Object",
+@@ -864,16 +913,6 @@ function renderEditingRow(values = {}) {
+   });
+   normalizedInputSelect.dataset.inputRowNormalized = "true";
+ 
+-  const stateSelect = selectControl({
+-    ariaLabel: "Mapping State",
+-    options: [
+-      { label: "Active", value: "Active" },
+-      { label: "Disabled", value: "Disabled" },
+-    ],
+-    selectedValue: values.state || "Active",
+-  });
+-  stateSelect.dataset.inputRowState = "true";
+-
+   const actionsCell = actionCell([
+     actionButton("Save", "inputSaveMapping"),
+     actionButton("Cancel", "inputCancelMapping"),
+@@ -893,10 +932,11 @@ function renderEditingRow(values = {}) {
+       dataName: `inputRow${option.field[0].toUpperCase()}${option.field.slice(1)}`,
+       label: option.label,
+     })),
+-    controlCell(objectSelect),
+-    controlCell(stateSelect),
+-    actionsCell,
+   );
++  if (objectColumnVisible()) {
++    row.append(controlCell(objectSelect));
++  }
++  row.append(actionsCell);
+   updateEditingRowValidation(row);
+   return row;
+ }
+@@ -912,27 +952,36 @@ function updateEditingRowValidation(row) {
+ }
+ 
+ function renderMappings() {
+-  if (!elements.list) {
++  if (!elements.lists.length) {
+     return;
+   }
+-  const rows = [];
++  renderObjectColumns();
++  const rowsByFamily = new Map(mappingFamilies().map((family) => [family, []]));
+   if (editingRow) {
+-    rows.push(renderEditingRow(editingRow.values));
++    rowsByFamily.get(normalizeInputFamily(editingRow.values.inputFamily))?.push(renderEditingRow(editingRow.values));
+   }
+   const visibleMappings = editingRow?.id
+     ? mappings.filter((mapping) => mapping.id !== editingRow.id)
+     : mappings;
+-  rows.push(...visibleMappings.map(renderMappingRow));
+-  if (!rows.length) {
+-    const row = document.createElement("tr");
+-    const cell = document.createElement("td");
+-    cell.colSpan = 13;
+-    cell.textContent = "Missing Game Control Mapping. Add a normalized input to game action mapping.";
+-    row.append(cell);
+-    rows.push(row);
+-  }
+-  elements.list.replaceChildren(...rows);
+-  [elements.addMapping, elements.addKeyboardFamily, elements.addMouseFamily].forEach((button) => {
++  visibleMappings.forEach((mapping) => {
++    rowsByFamily.get(normalizeInputFamily(mapping.inputFamily))?.push(renderMappingRow(mapping));
++  });
++  elements.lists.forEach((list) => {
++    const family = list.dataset.inputMappingListFamily || "Keyboard";
++    const rows = rowsByFamily.get(family) || [];
++    if (!rows.length) {
++      const row = document.createElement("tr");
++      const cell = document.createElement("td");
++      cell.colSpan = gameControlColumnCount();
++      cell.textContent = !mappings.length && !editingRow && family === "Keyboard"
++        ? "Missing Game Control Mapping. Add a normalized input to game action mapping."
++        : `No ${family} game controls configured.`;
++      row.append(cell);
++      rows.push(row);
++    }
++    list.replaceChildren(...rows);
++  });
++  [elements.addMapping, elements.addKeyboardFamily, elements.addMouseFamily, elements.addJoystickFamily].forEach((button) => {
+     if (button) {
+       button.disabled = Boolean(editingRow);
+     }
+@@ -950,7 +999,7 @@ function renderAll(message = "") {
+ }
+ 
+ function editingRowElement() {
+-  return elements.list?.querySelector("[data-input-editing-row]") || null;
++  return document.querySelector("[data-input-editing-row]") || null;
+ }
+ 
+ function mappingFromEditingRow(row) {
+@@ -972,13 +1021,13 @@ function mappingFromEditingRow(row) {
+     normalizedInput,
+     objectKey: object.key,
+     objectName: object.label,
+-    state: row.querySelector("[data-input-row-state]")?.value || "Active",
++    state: row.querySelector("[data-input-row-enabled]")?.checked ? "Active" : "Disabled",
+     usageLabel,
+   });
+ }
+ 
+ function saveEditingRow() {
+-  const row = elements.list?.querySelector("[data-input-editing-row]");
++  const row = editingRowElement();
+   if (!row) {
+     return;
+   }
+@@ -1065,6 +1114,21 @@ function showWorkspaceReturnIfNeeded() {
+   elements.returnWorkspace.hidden = !shouldShow;
+ }
+ 
++function startDevicePolling() {
++  if (devicePollingTimer || typeof window.setInterval !== "function") {
++    return;
++  }
++  devicePollingTimer = window.setInterval(() => {
++    renderDiagnostics();
++  }, DEVICE_POLL_INTERVAL_MS);
++  window.addEventListener("pagehide", () => {
++    if (devicePollingTimer) {
++      window.clearInterval(devicePollingTimer);
++      devicePollingTimer = null;
++    }
++  }, { once: true });
++}
++
+ function init() {
+   inputService.attach();
+   showWorkspaceReturnIfNeeded();
+@@ -1090,6 +1154,9 @@ function init() {
+   elements.addMouseFamily?.addEventListener("click", () => {
+     addGenericInputFamilyRows("Mouse");
+   });
++  elements.addJoystickFamily?.addEventListener("click", () => {
++    addGenericInputFamilyRows("Joystick");
++  });
+   elements.resetMappings?.addEventListener("click", () => {
+     if (!window.confirm("This will delete all Mappings, are you sure?")) {
+       setText(elements.statusLog, "Reset canceled.");
+@@ -1102,14 +1169,17 @@ function init() {
+   elements.refreshDevices?.addEventListener("click", () => {
+     renderDiagnostics("Device diagnostics refreshed.");
+   });
+-  elements.list?.addEventListener("click", handleListClick);
+-  elements.list?.addEventListener("change", handleListChange);
+-  elements.list?.addEventListener("input", handleListChange);
++  elements.lists.forEach((list) => {
++    list.addEventListener("click", handleListClick);
++    list.addEventListener("change", handleListChange);
++    list.addEventListener("input", handleListChange);
++  });
+   elements.presetButtons?.forEach((button) => {
+     button.addEventListener("click", () => {
+       applyGameControlPreset(button.dataset.inputPreset || "");
+     });
+   });
++  startDevicePolling();
+ }
+ 
+ init();
 diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index 2e89309a8..c77897a48 100644
+index c77897a48..a7205e4c4 100644
 --- a/toolbox/controls/index.html
 +++ b/toolbox/controls/index.html
-@@ -96,10 +96,10 @@
-                                                             <th>Normalized Action Type</th>
-                                                             <th>Usage Label</th>
-                                                             <th>Input Family</th>
--                                                            <th>D</th>
--                                                            <th>H</th>
--                                                            <th>U</th>
--                                                            <th>DC</th>
-+                                                            <th>Down</th>
-+                                                            <th>Hold</th>
-+                                                            <th>Up</th>
-+                                                            <th>Double Click</th>
-                                                             <th>Drag</th>
-                                                             <th>Axis</th>
-                                                             <th>Object</th>
-diff --git a/docs_build/dev/reports/controls-readable-input-columns-report.md b/docs_build/dev/reports/controls-readable-input-columns-report.md
+@@ -81,64 +81,141 @@
+                             <div class="card-body">
+                                 <div class="accordion-stack">
+                                     <details class="vertical-accordion" open data-input-mapping-accordion>
+-                                        <summary>Game Input Mapping</summary>
++                                        <summary>Game Controls</summary>
+                                         <div class="accordion-body content-stack">
+                                             <div>
+-                                                <div class="kicker">Game Input Mapping</div>
++                                                <div class="kicker">Game Controls</div>
+                                                 <h3>Game Controls</h3>
+                                             </div>
+-                                            <p class="status" data-input-state-explanation>State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.</p>
+-                                            <div class="table-wrapper">
+-                                                <table class="data-table" aria-label="Game controls" data-input-mapping-table>
+-                                                    <thead>
+-                                                        <tr>
+-                                                            <th>Enabled</th>
+-                                                            <th>Normalized Action Type</th>
+-                                                            <th>Usage Label</th>
+-                                                            <th>Input Family</th>
+-                                                            <th>Down</th>
+-                                                            <th>Hold</th>
+-                                                            <th>Up</th>
+-                                                            <th>Double Click</th>
+-                                                            <th>Drag</th>
+-                                                            <th>Axis</th>
+-                                                            <th>Object</th>
+-                                                            <th>State</th>
+-                                                            <th>Actions</th>
+-                                                        </tr>
+-                                                    </thead>
+-                                                    <tbody data-input-mapping-list></tbody>
+-                                                    <tfoot>
+-                                                        <tr>
+-                                                            <td colspan="13">
+-                                                                <div class="content-split" data-input-mapping-table-footer>
+-                                                                    <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
+-                                                                        <button class="btn" type="button" data-input-add-mapping>Add Game Control</button>
+-                                                                        <button class="btn btn--compact" type="button" data-input-add-keyboard-family>Add Keyboard Control</button>
+-                                                                        <button class="btn btn--compact" type="button" data-input-add-mouse-family>Add Mouse Control</button>
+-                                                                        <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
+-                                                                    </div>
+-                                                                    <div class="action-group action-group--end" aria-label="Mapping creation selections" data-input-selected-context>
+-                                                                        <label>
+-                                                                            Normalized Action Type
+-                                                                            <select data-input-action-select></select>
+-                                                                        </label>
+-                                                                        <label>
+-                                                                            Object
+-                                                                            <select data-input-object-select></select>
+-                                                                        </label>
+-                                                                    </div>
+-                                                                </div>
+-                                                                <div class="content-stack content-stack--compact" data-input-object-summary>
+-                                                                    <p>Selected Object: <span data-input-object-summary-name>Global</span></p>
+-                                                                    <p>Object Role/Template: <span data-input-object-summary-role>Global</span></p>
+-                                                                    <p>Available Normalized Controls: <span data-input-object-summary-actions>All normalized controls</span></p>
+-                                                                </div>
+-                                                            </td>
+-                                                        </tr>
+-                                                    </tfoot>
+-                                                </table>
++                                            <p class="status" data-input-state-explanation>Enabled controls are available to the game. Disabled controls stay saved but are ignored until re-enabled.</p>
++                                            <div class="accordion-stack" data-input-family-accordions>
++                                                <details class="vertical-accordion" open data-input-family-panel="Keyboard">
++                                                    <summary>Keyboard Controls</summary>
++                                                    <div class="accordion-body table-wrapper">
++                                                        <table class="data-table" aria-label="Keyboard game controls" data-input-mapping-table data-input-mapping-table-family="Keyboard">
++                                                            <thead>
++                                                                <tr>
++                                                                    <th>Enabled</th>
++                                                                    <th>Normalized Action Type</th>
++                                                                    <th>Usage Label</th>
++                                                                    <th>Input Family</th>
++                                                                    <th>Press</th>
++                                                                    <th>Hold</th>
++                                                                    <th>Release</th>
++                                                                    <th>Double Press</th>
++                                                                    <th>Drag</th>
++                                                                    <th>Axis</th>
++                                                                    <th hidden data-input-object-column>Object</th>
++                                                                    <th>Actions</th>
++                                                                </tr>
++                                                            </thead>
++                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Keyboard"></tbody>
++                                                        </table>
++                                                    </div>
++                                                </details>
++                                                <details class="vertical-accordion" open data-input-family-panel="Mouse">
++                                                    <summary>Mouse Controls</summary>
++                                                    <div class="accordion-body table-wrapper">
++                                                        <table class="data-table" aria-label="Mouse game controls" data-input-mapping-table data-input-mapping-table-family="Mouse">
++                                                            <thead>
++                                                                <tr>
++                                                                    <th>Enabled</th>
++                                                                    <th>Normalized Action Type</th>
++                                                                    <th>Usage Label</th>
++                                                                    <th>Input Family</th>
++                                                                    <th>Press</th>
++                                                                    <th>Hold</th>
++                                                                    <th>Release</th>
++                                                                    <th>Double Press</th>
++                                                                    <th>Drag</th>
++                                                                    <th>Axis</th>
++                                                                    <th hidden data-input-object-column>Object</th>
++                                                                    <th>Actions</th>
++                                                                </tr>
++                                                            </thead>
++                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Mouse"></tbody>
++                                                        </table>
++                                                    </div>
++                                                </details>
++                                                <details class="vertical-accordion" open data-input-family-panel="Joystick">
++                                                    <summary>Joystick Controls</summary>
++                                                    <div class="accordion-body table-wrapper">
++                                                        <table class="data-table" aria-label="Joystick game controls" data-input-mapping-table data-input-mapping-table-family="Joystick">
++                                                            <thead>
++                                                                <tr>
++                                                                    <th>Enabled</th>
++                                                                    <th>Normalized Action Type</th>
++                                                                    <th>Usage Label</th>
++                                                                    <th>Input Family</th>
++                                                                    <th>Press</th>
++                                                                    <th>Hold</th>
++                                                                    <th>Release</th>
++                                                                    <th>Double Press</th>
++                                                                    <th>Drag</th>
++                                                                    <th>Axis</th>
++                                                                    <th hidden data-input-object-column>Object</th>
++                                                                    <th>Actions</th>
++                                                                </tr>
++                                                            </thead>
++                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Joystick"></tbody>
++                                                        </table>
++                                                    </div>
++                                                </details>
++                                                <details class="vertical-accordion" open data-input-family-panel="Gamepad">
++                                                    <summary>Gamepad Controls</summary>
++                                                    <div class="accordion-body table-wrapper">
++                                                        <table class="data-table" aria-label="Gamepad game controls" data-input-mapping-table data-input-mapping-table-family="Gamepad">
++                                                            <thead>
++                                                                <tr>
++                                                                    <th>Enabled</th>
++                                                                    <th>Normalized Action Type</th>
++                                                                    <th>Usage Label</th>
++                                                                    <th>Input Family</th>
++                                                                    <th>Press</th>
++                                                                    <th>Hold</th>
++                                                                    <th>Release</th>
++                                                                    <th>Double Press</th>
++                                                                    <th>Drag</th>
++                                                                    <th>Axis</th>
++                                                                    <th hidden data-input-object-column>Object</th>
++                                                                    <th>Actions</th>
++                                                                </tr>
++                                                            </thead>
++                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Gamepad"></tbody>
++                                                        </table>
++                                                    </div>
++                                                </details>
+                                             </div>
++                                            <div class="content-split" data-input-mapping-table-footer>
++                                                <div class="content-cluster" aria-label="Game Controls table actions" data-input-mapping-table-actions>
++                                                    <button class="btn" type="button" data-input-add-mapping>Add Game Control</button>
++                                                    <button class="btn btn--compact" type="button" data-input-add-keyboard-family>Add Keyboard Control</button>
++                                                    <button class="btn btn--compact" type="button" data-input-add-mouse-family>Add Mouse Control</button>
++                                                    <button class="btn btn--compact" type="button" data-input-add-joystick-family>Add Joystick Control</button>
++                                                    <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
++                                                </div>
++                                                <div class="action-group action-group--end" aria-label="Game Controls creation selections" data-input-selected-context>
++                                                    <label>
++                                                        Normalized Action Type
++                                                        <select data-input-action-select></select>
++                                                    </label>
++                                                    <label>
++                                                        Object
++                                                        <select data-input-object-select></select>
++                                                    </label>
++                                                </div>
++                                            </div>
++                                            <div class="content-stack content-stack--compact" data-input-object-summary>
++                                                <p>Selected Object: <span data-input-object-summary-name>Global</span></p>
++                                                <p>Object Role/Template: <span data-input-object-summary-role>Global</span></p>
++                                                <p>Available Normalized Controls: <span data-input-object-summary-actions>All normalized controls</span></p>
++                                            </div>
++                                            <details class="vertical-accordion" data-input-combo-controls>
++                                                <summary>Combo Controls</summary>
++                                                <div class="accordion-body content-stack">
++                                                    <p class="status">Wireframe only: Keyboard Shift + Mouse Right Click can become a future combo control.</p>
++                                                </div>
++                                            </details>
+                                         </div>
+                                     </details>
+                                 </div>
+diff --git a/docs_build/dev/reports/controls-game-and-user-input-foundation-report.md b/docs_build/dev/reports/controls-game-and-user-input-foundation-report.md
 new file mode 100644
+index 000000000..e6db3c2a7
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-readable-input-columns-report.md
-+# PR_26162_039-controls-readable-input-columns
++++ b/docs_build/dev/reports/controls-game-and-user-input-foundation-report.md
+@@ -0,0 +1,103 @@
++# PR_26162_040-controls-game-and-user-input-foundation
 +
 +## Branch Validation
 +- PASS: Current branch is `main`.
 +- Expected branch: `main`.
-+- Evidence: `git status --short --branch` returned `## main...origin/main` before edits.
++- Evidence: `git status --short --branch` returned `## main...origin/main` before edits and again during closeout.
 +
 +## Requirement Checklist
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
 +- PASS: Verified branch `main` before edits.
-+- PASS: Continued from PR_26162_038 Controls state.
-+- PASS: Controls status remains Wireframe. Evidence: `src/dev-runtime/guest-seeds/tool-metadata-inventory.js` keeps `"status": "Wireframe"` for `controls`.
-+- PASS: Game Control Mapping headers now read `Down`, `Hold`, `Up`, `Double Click`, `Drag`, and `Axis`.
-+- PASS: Matching generated Controls labels now use readable text through `CONTROL_EVENT_OPTIONS`.
-+- PASS: Validation copy now says `Down, Hold, Up, Double Click, Drag, or Axis`.
-+- PASS: Internal DB field names such as `eventD`, `eventH`, `eventU`, and `eventDC` were preserved to avoid changing persisted mapping contracts.
-+- PASS: Existing DB-backed game input mappings and player controller profiles were preserved.
-+- PASS: Normalized input architecture and shared `src/engine/input` usage were preserved.
-+- PASS: Add Game Control behavior, seven device rows, common/alternate enabled state, and mapping counts were preserved by targeted Playwright coverage.
-+- PASS: No sample JSON alignment, auth behavior, production account system, or unrelated rewrites were added.
++- PASS: Continued from PR_26162_039.
++- PASS: Controls status remains Wireframe. Evidence: `src/dev-runtime/guest-seeds/tool-metadata-inventory.js` still shows the Controls metadata with `"status": "Wireframe"`.
++- PASS: Controls data remains DB-backed through the shared Controls repository. Evidence: `toolbox/controls/controls.js` and `account/user-controls-page.js` continue to use `createControlsToolApiRepository()`.
++- PASS: User-facing `Game Input Mapping` surface was renamed to `Game Controls`.
++- PASS: `Add Game Control` seeds default Keyboard, Mouse, and Joystick game control rows while preserving normalized game action rows.
++- PASS: Keyboard, Mouse, Joystick, and Gamepad game controls render in separate accordions.
++- PASS: Gamepad device status auto-detects on a timer through `InputService`; no direct Controls or Account page `navigator.getGamepads` polling was added.
++- PASS: Checked Press/Hold/Release/Double Press/Drag/Axis event boxes receive visible Theme V2 status styling and checked-state metadata.
++- PASS: The Object table column is hidden when Global is the only object option. The Object footer selector and summary remain available for future object-backed rows.
++- PASS: The visible State column was removed because it duplicated Enabled. The persisted `state` compatibility field now mirrors Enabled as `Active` or `Disabled`.
++- PASS: Added bottom `Combo Controls` accordion as wireframe-only copy with the example `Keyboard Shift + Mouse Right Click`.
++- PASS: No combo runtime behavior was implemented.
++- PASS: User Controls appears in the Account dropdown and dev-runtime local header mirror; Account dropdown and side navigation remain alphabetically sorted browseable lists.
++- PASS: Account/User Controls owns physical input to normalized input. Game Controls owns normalized input to game action.
++- PASS: Keyboard and Mouse User Controls are visible as default fallbacks and can be saved as generic DB-backed user profiles.
++- PASS: Keyboard and Mouse defaults are not silently saved as user-created profiles; Playwright verifies zero saved profiles before the creator saves one.
++- PASS: Gamepads auto-detect on a timer in Account/User Controls.
++- PASS: Defaults remain visible fallbacks and are not silently saved as user-created profiles.
++- PASS: No sample JSON alignment, auth behavior, production account system, or unrelated runtime rewrites were added.
 +
 +## Search Evidence
-+- PASS: Fixed-string search found no `<th>D</th>`, `<th>H</th>`, `<th>U</th>`, or `<th>DC</th>` in `toolbox/controls`.
-+- PASS: Fixed-string search found no `Choose at least one event: D, H, U, DC` in `toolbox/controls`.
-+- PASS: Fixed-string search found no `label: "D"`, `label: "H"`, `label: "U"`, or `label: "DC"` in `toolbox/controls`.
-+- DOCUMENTED: `eventD`, `eventH`, `eventU`, and `eventDC` remain as internal persisted field names only.
++- PASS: `rg -n "Game Input Mapping|State: Active|Mapping State|<th>State</th>|Double Click" toolbox/controls account/user-controls.html account/user-controls-page.js tests/playwright/tools/InputMappingV2Tool.spec.mjs src/dev-runtime/admin/header-nav.local.html` returned no matches.
++- PASS: `rg --pcre2 -n "<script(?![^>]*\\bsrc=)|<style\\b|\\son[a-z]+=" toolbox/controls/index.html account/user-controls.html src/dev-runtime/admin/header-nav.local.html` returned no matches.
++- PASS: `rg -n "navigator\\.getGamepads|gamepadconnected" toolbox/controls/controls.js account/user-controls-page.js` returned no matches.
++- PASS: `rg -n "State|Object" toolbox/controls/index.html` shows only hidden Object headers plus footer Object selector/summary; no visible State table column remains.
++- PASS: Final Playwright assertions validate `Game Controls`, `Keyboard Controls`, `Mouse Controls`, `Joystick Controls`, `Gamepad Controls`, `Combo Controls`, and `Default Keyboard/Mouse Fallbacks`.
 +
 +## Changed Files
-+- `docs_build/dev/reports/controls-readable-input-columns-report.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `account/user-controls-page.js`
++- `account/user-controls.html`
++- `src/dev-runtime/admin/header-nav.local.html`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
 +- `toolbox/controls/controls.js`
 +- `toolbox/controls/index.html`
++- Required/generated reports under `docs_build/dev/reports/`
 +
-+## Impacted Lane
++## Impacted Lanes
 +- Controls/Input Mapping runtime lane.
++- Account/User Controls navigation and runtime lane.
++- Workspace contract lane because the request explicitly required `npm run test:workspace-v2`.
 +- Playwright impacted: Yes.
 +
 +## Skipped Lanes
-+- Samples lane: SKIPPED because no sample files or sample JSON contracts changed.
-+- Auth/account production lane: SKIPPED because no auth or production account behavior changed.
-+- Engine input lane: SKIPPED because no `src/engine/input` files changed; shared engine-input usage is covered by the targeted Controls Playwright spec.
++- Full samples validation: SKIPPED because no sample JSON, sample runtime, or sample launch behavior changed.
++- Production auth/account lane: SKIPPED because the Account/User Controls work remains mock-adapter-backed and does not change production auth.
++- Engine input lane: SKIPPED because no `src/engine/input` source files changed; targeted Playwright verifies Controls and Account/User Controls consume engine input services instead of local input polling.
 +
 +## Validation Performed
 +- PASS: `node --check toolbox/controls/controls.js`
++- PASS: `node --check account/user-controls-page.js`
++- PASS: `node --check account/user-controls.js`
 +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --reporter=line` - 7 passed.
++- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --reporter=line` - final run 7 passed.
++- PASS: `npm run test:workspace-v2` - 5 passed.
++- NOTE: One intermediate targeted Playwright rerun reported a transient failed request for `assets/theme-v2/js/gamefoundry-partials.js`; the same command was rerun without code changes and passed 7/7.
 +
 +## Playwright Result
-+- PASS: Table headers show readable event labels instead of `D`, `H`, `U`, and `DC`.
-+- PASS: Add Game Control still adds all normalized rows.
-+- PASS: Mapping count still updates.
-+- PASS: Seven device rows still render with hover/aria help.
-+- PASS: Persistence after reload remains covered by the Controls/Input Mapping spec.
++- PASS: Keyboard, Mouse, Joystick, and Gamepad accordions render separately.
++- PASS: Add Game Control adds visible normalized rows and updates mapping counts.
++- PASS: Missing Game Control Mapping disappears once rows exist.
++- PASS: Common rows are enabled and alternate rows are disabled.
++- PASS: Event headers use `Press`, `Hold`, `Release`, `Double Press`, `Drag`, and `Axis`.
++- PASS: Checked event boxes expose visible checked-state styling.
++- PASS: Object column is hidden when only Global is available.
++- PASS: State column is removed from the table.
++- PASS: Combo Controls accordion exists as wireframe-only.
++- PASS: Account/User Controls default Keyboard and Mouse fallbacks are visible and not silently saved.
++- PASS: Generic Keyboard and Mouse user profiles can be saved through the shared DB/mock adapter.
++- PASS: Gamepads auto-detect in Account/User Controls without clicking Refresh Devices.
++- PASS: User Controls appears in Account navigation and sorted Account side navigation remains intact.
++- PASS: Persistence after reload remains covered for game mappings and player controller profiles.
 +
 +## V8 Coverage
-+- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` was produced from the targeted Playwright run.
-+- PASS: `toolbox/controls/controls.js` appears in the coverage report with 83 percent advisory coverage.
++- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` was produced from the final targeted Playwright run.
++- PASS: Changed runtime JS coverage includes `toolbox/controls/controls.js` at 87 percent advisory coverage.
++- PASS: Changed runtime JS coverage includes `account/user-controls-page.js` at 92 percent advisory coverage.
 +
 +## Manual Validation Steps
 +1. Open `/toolbox/controls/index.html`.
-+2. Confirm the Game Controls table headers read `Down`, `Hold`, `Up`, `Double Click`, `Drag`, and `Axis`.
++2. Confirm the center accordion is labeled `Game Controls`.
 +3. Click `Add Game Control`.
-+4. Confirm all normalized rows appear, mapping counts update, and Missing Game Control Mapping disappears.
-+5. Inspect a row and confirm checkbox accessible labels use readable event text.
-+6. Reload the page and confirm saved mappings persist.
-+7. Confirm the Devices list still shows seven rows with hover/aria help.
++4. Confirm Keyboard, Mouse, and Joystick rows appear in their separate accordions and the mapping count updates.
++5. Confirm the Gamepad accordion is present and device diagnostics update after a browser-exposed gamepad appears.
++6. Confirm checked event boxes are visibly highlighted.
++7. Confirm Object is not visible as a table column when only Global exists and State is not visible as a table column.
++8. Open the Combo Controls accordion and confirm it is wireframe-only with `Keyboard Shift + Mouse Right Click`.
++9. Open `/account/user-controls.html`.
++10. Confirm `Default Keyboard/Mouse Fallbacks` are visible before any profile is saved.
++11. Create and save generic Keyboard and Mouse profiles, then reload and confirm they persist.
++12. Confirm User Controls appears in the Account dropdown and side navigation.
 +
 +## Samples Validation Decision
-+- SKIP: Full samples validation was not run because this PR only changes Controls UI labels/tests and does not touch sample JSON or sample runtime behavior.
++- SKIP: Full samples validation was not run because this PR does not change samples, sample JSON, or playable sample runtime behavior.

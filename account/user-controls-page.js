@@ -8,7 +8,9 @@ import {
   physicalInputIsAnalog,
 } from "../src/engine/input/NormalizedInputRegistry.js";
 
-const KEYBOARD_MOUSE_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP", "MouseButton0", "MouseButton2", "MouseWheelUp", "MouseWheelDown", "MouseX", "MouseY"]);
+const DEVICE_POLL_INTERVAL_MS = 1200;
+const KEYBOARD_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP"]);
+const MOUSE_INPUTS = Object.freeze(["MouseButton0", "MouseButton2", "MouseX", "MouseY"]);
 const SUPPORTED_CONTROL_TYPES = Object.freeze([
   "Keyboard Key",
   "Mouse Button",
@@ -122,8 +124,10 @@ export class AccountUserControlsPage {
     this.inputService = new InputService({ target: window });
     this.profiles = [];
     this.editingProfile = null;
+    this.devicePollingTimer = null;
     this.elements = {
       addProfile: root.querySelector("[data-account-user-controls-add-profile]"),
+      defaultList: root.querySelector("[data-account-user-controls-default-list]"),
       deviceSelect: root.querySelector("[data-account-user-controls-device]"),
       deviceStatus: root.querySelector("[data-account-user-controls-device-status]"),
       list: root.querySelector("[data-account-user-controls-list]"),
@@ -138,6 +142,7 @@ export class AccountUserControlsPage {
     this.inputService.attach();
     this.profiles = this.readProfiles();
     this.renderDeviceSelect();
+    this.renderDefaultFallbacks();
     this.renderTypes();
     this.renderProfiles();
     this.elements.refresh?.addEventListener("click", () => {
@@ -151,6 +156,7 @@ export class AccountUserControlsPage {
     this.elements.list?.addEventListener("change", (event) => this.handleListChange(event));
     this.elements.list?.addEventListener("input", (event) => this.handleListInput(event));
     this.elements.list?.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
+    this.startDevicePolling();
   }
 
   setStatus(message) {
@@ -171,14 +177,23 @@ export class AccountUserControlsPage {
   }
 
   deviceOptions() {
-    const keyboardMouse = {
-      controllerId: "keyboard-mouse",
-      controllerName: "Keyboard/Mouse",
-      deviceType: "Keyboard/Mouse",
-      inputs: [...KEYBOARD_MOUSE_INPUTS],
-      label: "Keyboard/Mouse",
-      mappingProfile: "Keyboard/Mouse Profile",
-      value: "keyboard-mouse",
+    const keyboard = {
+      controllerId: "generic-keyboard",
+      controllerName: "Keyboard",
+      deviceType: "Keyboard",
+      inputs: [...KEYBOARD_INPUTS],
+      label: "Keyboard",
+      mappingProfile: "Keyboard Profile",
+      value: "keyboard",
+    };
+    const mouse = {
+      controllerId: "generic-mouse",
+      controllerName: "Mouse",
+      deviceType: "Mouse",
+      inputs: [...MOUSE_INPUTS],
+      label: "Mouse",
+      mappingProfile: "Mouse Profile",
+      value: "mouse",
     };
     const gamepads = this.availableGamepads().map((gamepad) => {
       const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
@@ -192,15 +207,15 @@ export class AccountUserControlsPage {
         value: `gamepad-${gamepad.index}`,
       };
     });
-    return [keyboardMouse, ...gamepads];
+    return [keyboard, mouse, ...gamepads];
   }
 
   deviceRefreshMessage() {
     const gamepadCount = this.availableGamepads().length;
     if (gamepadCount > 0) {
-      return `PASS: Device list refreshed. Keyboard/Mouse and ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} available.`;
+      return `PASS: Keyboard and Mouse available. ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} detected automatically.`;
     }
-    return "PASS: Keyboard/Mouse available. To enumerate a game controller, connect it, press a button, allow browser gamepad access, then refresh devices.";
+    return "PASS: Keyboard and Mouse available. Gamepads auto-detect after browser exposes them.";
   }
 
   selectedDevice() {
@@ -299,6 +314,43 @@ export class AccountUserControlsPage {
       item.textContent = controlType;
       return item;
     }));
+  }
+
+  renderDefaultFallbacks() {
+    if (!this.elements.defaultList) {
+      return;
+    }
+    const systemDefault = this.inputService.getSystemDefaultProfileForDevice("Keyboard/Mouse");
+    const rows = (systemDefault.inputMappings || [])
+      .filter((mapping) => KEYBOARD_INPUTS.includes(mapping.physicalInput) || MOUSE_INPUTS.includes(mapping.physicalInput))
+      .map((mapping) => {
+        const row = document.createElement("tr");
+        row.dataset.accountUserControlsDefaultRow = mapping.physicalInput;
+        const family = MOUSE_INPUTS.includes(mapping.physicalInput) ? "Mouse" : "Keyboard";
+        row.append(
+          tableCell(family),
+          tableCell(mapping.physicalInput),
+          tableCell(mapping.normalizedInput || mapping.positiveNormalizedInput || mapping.negativeNormalizedInput || "Unassigned"),
+          tableCell("Visible fallback"),
+        );
+        return row;
+      });
+    this.elements.defaultList.replaceChildren(...rows);
+  }
+
+  startDevicePolling() {
+    if (this.devicePollingTimer || typeof window.setInterval !== "function") {
+      return;
+    }
+    this.devicePollingTimer = window.setInterval(() => {
+      this.renderDeviceSelect();
+    }, DEVICE_POLL_INTERVAL_MS);
+    window.addEventListener("pagehide", () => {
+      if (this.devicePollingTimer) {
+        window.clearInterval(this.devicePollingTimer);
+        this.devicePollingTimer = null;
+      }
+    }, { once: true });
   }
 
   renderProfiles() {

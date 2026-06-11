@@ -40,6 +40,25 @@
                             <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
                         </div>
                         <p class="status" role="status" data-account-user-controls-device-status>Refresh devices, choose a physical controller, then create a user control profile.</p>
+                        <details class="vertical-accordion" open>
+                            <summary>Default Keyboard/Mouse Fallbacks</summary>
+                            <div class="accordion-body content-stack">
+                                <p class="status">Keyboard and Mouse defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Default keyboard and mouse fallbacks" data-account-user-controls-defaults>
+                                        <thead>
+                                            <tr>
+                                                <th>Input Family</th>
+                                                <th>Physical Input</th>
+                                                <th>Normalized Control</th>
+                                                <th>Source</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-account-user-controls-default-list></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </details>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
                                 <thead>

@@ -189,25 +189,33 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
     await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Controls");
     await expect(page.locator("[data-controller-profile-table]")).toHaveCount(0);
     await expect(page.locator("[data-account-user-controls-link]")).toHaveAttribute("href", "/account/user-controls.html");
-    await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
+    await expect(page.locator("[data-input-mapping-accordion] > summary")).toHaveText("Game Controls");
+    await expect(page.locator("[data-input-family-panel]")).toHaveCount(4);
+    await expect(page.locator("[data-input-family-panel='Keyboard'] summary")).toHaveText("Keyboard Controls");
+    await expect(page.locator("[data-input-family-panel='Mouse'] summary")).toHaveText("Mouse Controls");
+    await expect(page.locator("[data-input-family-panel='Joystick'] summary")).toHaveText("Joystick Controls");
+    await expect(page.locator("[data-input-family-panel='Gamepad'] summary")).toHaveText("Gamepad Controls");
+    const keyboardTable = page.locator("[data-input-mapping-table-family='Keyboard']");
+    await expect(keyboardTable.locator("th:not([hidden])")).toHaveText([
       "Enabled",
       "Normalized Action Type",
       "Usage Label",
       "Input Family",
-      "Down",
+      "Press",
       "Hold",
-      "Up",
-      "Double Click",
+      "Release",
+      "Double Press",
       "Drag",
       "Axis",
-      "Object",
-      "State",
       "Actions",
     ]);
     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^D$/ })).toHaveCount(0);
     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^H$/ })).toHaveCount(0);
     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^U$/ })).toHaveCount(0);
     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^DC$/ })).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^State$/ })).toHaveCount(0);
+    await expect(page.locator("[data-input-mapping-table] th:not([hidden])").filter({ hasText: /^Object$/ })).toHaveCount(0);
+    await expect(page.locator("[data-input-combo-controls]")).toContainText("Keyboard Shift + Mouse Right Click");
     await expect(page.locator("[data-input-action-label]")).toContainText(NORMALIZED_INPUTS);
     await expect(page.locator("[data-input-control-type-list]")).toContainText("Keyboard Key");
     await expect(page.locator("[data-input-control-type-list]")).toContainText("Pointer Drag");
@@ -228,22 +236,23 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
     ]);
 
     await page.locator("[data-input-add-mapping]").click();
-    await expect(page.locator("[data-input-status-log]")).toHaveText("Added the full normalized game control set. Common rows are enabled; alternate rows are disabled.");
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Added Keyboard, Mouse, and Joystick default game controls. Common rows are enabled; alternate rows are disabled.");
     await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
     await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
     await expect(page.locator("[data-input-output-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
     await expect(page.locator("[data-input-save-status]")).toHaveText("Complete");
-    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
+    await expect(page.locator("[data-input-family-accordions]")).not.toContainText("Missing Game Control Mapping");
     const primaryActionRow = page.locator("[data-input-mapping-row]").filter({ hasText: "action.primary" }).first();
     await expect(primaryActionRow.locator("td").nth(0).locator("input")).toBeChecked();
-    await expect(primaryActionRow.locator("input[aria-label='Down']")).toBeChecked();
+    await expect(primaryActionRow.locator("input[aria-label='Press']")).toBeChecked();
     await expect(primaryActionRow.locator("input[aria-label='Hold']")).not.toBeChecked();
-    await expect(primaryActionRow.locator("input[aria-label='Up']")).not.toBeChecked();
-    await expect(primaryActionRow.locator("input[aria-label='Double Click']")).not.toBeChecked();
-    await expect(primaryActionRow.locator("td").nth(11)).toHaveText("Active");
+    await expect(primaryActionRow.locator("input[aria-label='Release']")).not.toBeChecked();
+    await expect(primaryActionRow.locator("input[aria-label='Double Press']")).not.toBeChecked();
+    await expect(primaryActionRow.locator("td:has(input[aria-label='Press'])")).toHaveAttribute("data-input-event-checked", "true");
     const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "aim.x+" }).first();
     await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
-    await expect(aimRightRow.locator("td").nth(11)).toHaveText("Disabled");
+    await expect(page.locator("[data-input-mapping-table-family='Mouse']")).toContainText("aim.x+");
+    await expect(page.locator("[data-input-mapping-table-family='Joystick']")).toContainText("trigger.right");
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(NORMALIZED_INPUTS.length);
     expect(records.map((record) => record.normalizedInput).sort()).toEqual([...NORMALIZED_INPUTS].sort());
@@ -257,6 +266,9 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
       enabled: false,
       state: "Disabled",
       usageLabel: "Aim Right",
+    });
+    expect(records.find((record) => record.normalizedInput === "dpad.up")).toMatchObject({
+      inputFamily: "Joystick",
     });
 
     await page.locator("[data-input-add-keyboard-family]").click();
@@ -284,10 +296,17 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
     expect(records.filter((record) => record.id.startsWith("generic-mouse-control-"))).toHaveLength(6);
     expect(records.filter((record) => record.id.startsWith("generic-mouse-control-")).every((record) => record.inputFamily === "Mouse")).toBe(true);
 
+    await page.locator("[data-input-add-joystick-family]").click();
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Added generic Joystick game control rows.");
+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length + 34);
+    records = await inputMappingRecords(page);
+    expect(records.filter((record) => record.id.startsWith("generic-joystick-control-"))).toHaveLength(18);
+    expect(records.filter((record) => record.id.startsWith("generic-joystick-control-")).every((record) => record.inputFamily === "Joystick")).toBe(true);
+
     await page.locator("[data-input-preset='platformer']").click();
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Move Left");
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Jump");
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Look Up");
+    await expect(page.locator("[data-input-family-accordions]")).toContainText("Move Left");
+    await expect(page.locator("[data-input-family-accordions]")).toContainText("Jump");
+    await expect(page.locator("[data-input-family-accordions]")).toContainText("Look Up");
     records = await inputMappingRecords(page);
     expect(records).toHaveLength(7);
     expect(records.find((record) => record.usageLabel === "Move Left")).toMatchObject({
@@ -373,9 +392,9 @@ test("Game Controls validates enabled rows and persists separate event fields", 
     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
 
     await page.reload({ waitUntil: "networkidle" });
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Start Charge");
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Double Tap Dodge");
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Drag Aim");
+    await expect(page.locator("[data-input-family-accordions]")).toContainText("Start Charge");
+    await expect(page.locator("[data-input-family-accordions]")).toContainText("Double Tap Dodge");
+    await expect(page.locator("[data-input-family-accordions]")).toContainText("Drag Aim");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -392,12 +411,38 @@ test("Account User Controls maps physical input to generic normalized controls",
     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
     await page.locator("[data-account-user-controls-save-all]").click();
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Create a user control profile before saving.");
-    await exposeGamepad(page);
-    await page.locator("[data-account-user-controls-refresh]").click();
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Device list refreshed. Keyboard/Mouse and 1 game controller available.");
+    await expect(page.locator("[data-account-user-controls-default-row]")).toContainText([
+      /Keyboard.*KeyW.*move\.y-/,
+      /Mouse.*MouseButton0.*action\.primary/,
+    ]);
+    expect(await controllerProfileRecords(page)).toHaveLength(0);
+
     await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
       "Choose a physical controller",
-      "Keyboard/Mouse",
+      "Keyboard",
+      "Mouse",
+    ]);
+    await page.locator("[data-account-user-controls-device]").selectOption("keyboard");
+    await page.locator("[data-account-user-controls-add-profile]").click();
+    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard: Keyboard");
+    await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "KeyW" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.y-");
+    await page.locator("[data-account-user-controls-save-all]").click();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Keyboard Profile.");
+
+    await page.locator("[data-account-user-controls-device]").selectOption("mouse");
+    await page.locator("[data-account-user-controls-add-profile]").click();
+    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Mouse: Mouse");
+    await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "MouseButton0" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
+    await page.locator("[data-account-user-controls-save-all]").click();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Mouse Profile.");
+    await page.locator("[data-account-user-controls-device]").selectOption("");
+
+    await exposeGamepad(page);
+    await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("1 game controller detected automatically", { timeout: 4000 });
+    await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
+      "Choose a physical controller",
+      "Keyboard",
+      "Mouse",
       "Gamepad: Arcade Test Pad",
     ]);
     await expect(page.locator("[data-account-user-controls-types]")).toContainText("Gamepad Axis");
@@ -424,26 +469,37 @@ test("Account User Controls maps physical input to generic normalized controls",
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Arcade Test Pad Profile.");
 
     const profiles = await controllerProfileRecords(page);
-    expect(profiles).toHaveLength(1);
-    expect(profiles[0]).toMatchObject({
+    expect(profiles).toHaveLength(3);
+    expect(profiles.find((profile) => profile.profileName === "Keyboard Profile")).toMatchObject({
+      controllerId: "generic-keyboard",
+      controllerName: "Keyboard",
+      deviceType: "Keyboard",
+    });
+    expect(profiles.find((profile) => profile.profileName === "Mouse Profile")).toMatchObject({
+      controllerId: "generic-mouse",
+      controllerName: "Mouse",
+      deviceType: "Mouse",
+    });
+    const gamepadProfile = profiles.find((profile) => profile.profileName === "Arcade Test Pad Profile");
+    expect(gamepadProfile).toMatchObject({
       controllerId: "Arcade Test Pad",
       controllerName: "Arcade Test Pad",
       deviceType: "Gamepad",
       profileName: "Arcade Test Pad Profile",
     });
-    expect(profiles[0].inputMappings.find((mapping) => mapping.physicalInput === "Axis0")).toMatchObject({
+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Axis0")).toMatchObject({
       deadzone: 0.4,
       invert: true,
       negativeNormalizedInput: "move.x-",
       positiveNormalizedInput: "move.x+",
       sensitivity: 125,
     });
-    expect(profiles[0]).not.toHaveProperty("gameAction");
-    expect(profiles[0]).not.toHaveProperty("objectKey");
-    expect(JSON.stringify(profiles[0])).not.toContain("eventD");
-    expect(JSON.stringify(profiles[0])).not.toContain("eventU");
-    expect(JSON.stringify(profiles[0])).not.toContain("eventDC");
-    expect(JSON.stringify(profiles[0])).not.toContain("eventDrag");
+    expect(gamepadProfile).not.toHaveProperty("gameAction");
+    expect(gamepadProfile).not.toHaveProperty("objectKey");
+    expect(JSON.stringify(gamepadProfile)).not.toContain("eventD");
+    expect(JSON.stringify(gamepadProfile)).not.toContain("eventU");
+    expect(JSON.stringify(gamepadProfile)).not.toContain("eventDC");
+    expect(JSON.stringify(gamepadProfile)).not.toContain("eventDrag");
 
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-account-user-controls-list]")).toContainText("Gamepad: Arcade Test Pad");
@@ -471,6 +527,15 @@ test("Account pages use shared side navigation with active state", async ({ page
     ]);
     await expect(page.locator("[data-account-side-nav-link][aria-current='page']")).toHaveText("User Controls");
     await expect(page.locator("[data-account-side-nav-link]", { hasText: "Profile" })).toHaveAttribute("href", /account\/profile\.html$/);
+    await expect(page.locator(".site-header .nav-item").filter({ has: page.locator("[data-route='account']") }).last().locator(".sub-menu a")).toHaveText([
+      "Account Home",
+      "Achievements",
+      "Logout",
+      "Preferences",
+      "Profile",
+      "Security",
+      "User Controls",
+    ]);
 
     await page.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-account-side-nav]")).toBeVisible();
@@ -495,9 +560,11 @@ test("Controls input implementation is owned by shared engine input services", a
     });
     expect(sources.controls).toContain("../../src/engine/input/InputService.js");
     expect(sources.controls).toContain("../../src/engine/input/NormalizedInputRegistry.js");
+    expect(sources.controls).toContain("DEVICE_POLL_INTERVAL_MS");
     expect(sources.accountControls).toContain("../src/engine/input/InputService.js");
     expect(sources.accountControls).toContain("../src/engine/input/NormalizedInputRegistry.js");
     expect(sources.accountControls).toContain("../src/engine/input/GamepadInputClassifier.js");
+    expect(sources.accountControls).toContain("DEVICE_POLL_INTERVAL_MS");
     for (const source of [sources.controls, sources.accountControls]) {
       expect(source).not.toMatch(/addEventListener\(\s*["']keydown/);
       expect(source).not.toMatch(/addEventListener\(\s*["']keyup/);
