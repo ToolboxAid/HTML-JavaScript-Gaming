@@ -5,8 +5,8 @@
     <meta charset="utf-8">
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Controls - GameFoundryStudio</title>
-    <meta name="description" content="Controls toolbox for DB-backed keyboard, mouse, and gamepad input mapping.">
+    <title>Input Mapping V2 Deprecated - GameFoundryStudio</title>
+    <meta name="description" content="Input Mapping V2 has moved into Controls.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -16,164 +16,29 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Toolbox / Controls</div>
-                <h1>Controls</h1>
-                <p class="lede">Map objects and actions to keyboard, mouse, and gamepad inputs.</p>
-                <p><a class="btn btn--compact" href="/toolbox/project-workspace/index.html" hidden data-input-return-workspace>Return to Workspace</a></p>
+                <div class="kicker">Toolbox / Deprecated</div>
+                <h1>Input Mapping V2</h1>
+                <p class="lede">Input Mapping V2 has moved into Controls.</p>
+                <p><a class="btn primary" href="/toolbox/controls/index.html">Open Controls</a></p>
             </div>
         </section>
         <section class="section">
-            <div class="container container--tool-wide">
-                <div class="tool-workspace tool-workspace--wide">
-                    <aside class="tool-column tool-group-platform">
-                        <div class="tool-column-header">
+            <div class="container">
+                <article class="card">
+                    <div class="card-body content-stack">
+                        <div>
+                            <div class="kicker">Authoritative Tool</div>
                             <h2>Controls</h2>
                         </div>
-                        <div class="accordion-stack">
-                            <details class="vertical-accordion" open>
-                                <summary>Actions</summary>
-                                <div class="accordion-body content-stack">
-                                    <table class="data-table" aria-label="Controls action catalog" data-input-action-catalog>
-                                        <thead>
-                                            <tr>
-                                                <th>Action Name</th>
-                                                <th>Description</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-input-default-actions></tbody>
-                                    </table>
-                                </div>
-                            </details>
-                        </div>
-                    </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
-                    <section class="tool-center-panel">
-                        <h2>Input Mapping</h2>
-                        <p>Use the table to assign object actions to captured inputs.</p>
-                        <div class="grid cols-3" aria-label="Input mapping summary">
-                            <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
-                            <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
-                            <article class="mini-stat"><strong data-input-save-status>Not Configured</strong>Status</article>
-                        </div>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Table Input</div>
-                                    <h3>Mappings</h3>
-                                </div>
-                                <p class="status" data-input-state-explanation>State: Active means the mapping is available to the game. Disabled means the mapping is saved but ignored by the game until re-enabled.</p>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Input mappings" data-input-mapping-table>
-                                        <thead>
-                                            <tr>
-                                                <th>Object</th>
-                                                <th>Action</th>
-                                                <th>Input Device</th>
-                                                <th>Mapping Profile</th>
-                                                <th>Input</th>
-                                                <th>State</th>
-                                                <th>Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-input-mapping-list></tbody>
-                                        <tfoot>
-                                            <tr>
-                                                <td colspan="7">
-                                                    <div class="content-split" data-input-mapping-table-footer>
-                                                        <div class="content-cluster" aria-label="Input mapping table actions" data-input-mapping-table-actions>
-                                                            <button class="btn" type="button" data-input-add-mapping>Add Mapping</button>
-                                                            <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
-                                                        </div>
-                                                        <div class="action-group action-group--end" aria-label="Mapping creation selections" data-input-selected-context>
-                                                            <label>
-                                                                Action
-                                                                <select data-input-action-select></select>
-                                                            </label>
-                                                            <label>
-                                                                Object
-                                                                <select data-input-object-select></select>
-                                                            </label>
-                                                        </div>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
-                                </div>
-                                <section class="content-stack" data-controller-profile-planning>
-                                    <div>
-                                        <div class="kicker">Controller Profile</div>
-                                        <h3>Controller Profiles</h3>
-                                    </div>
-                                    <p>Plan how gamepad identities will match saved mapping profiles.</p>
-                                    <div class="content-cluster" aria-label="Controller device selection">
-                                        <label>
-                                            Controller
-                                            <select data-controller-device-select></select>
-                                        </label>
-                                    </div>
-                                    <div class="table-wrapper">
-                                        <table class="data-table" aria-label="Controller profile planning" data-controller-profile-table>
-                                            <thead>
-                                                <tr>
-                                                    <th>Device Type</th>
-                                                    <th>Controller Name</th>
-                                                    <th>Controller ID</th>
-                                                    <th>Mapping Profile</th>
-                                                    <th>Input</th>
-                                                    <th>Action</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody data-controller-profile-list></tbody>
-                                            <tfoot>
-                                                <tr>
-                                                    <td colspan="6">
-                                                        <div class="content-cluster" aria-label="Controller profile table actions">
-                                                            <button class="btn" type="button" data-controller-profile-add>Add Profile</button>
-                                                        </div>
-                                                    </td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
-                                    </div>
-                                    <p>Future game launch will match Controller ID to a saved Mapping Profile before applying inputs.</p>
-                                    <p class="status" role="status" data-controller-profile-status>WARN: Unknown controller. Refresh Devices after connecting a controller; use Add Profile to save the controller identity when known.</p>
-                                </section>
-                            </div>
-                        </article>
-                    </section>
-                    <aside class="tool-column tool-group-platform">
-                        <div class="tool-column-header">
-                            <h2>Inspector</h2>
-                        </div>
-                        <div class="accordion-stack">
-                            <details class="vertical-accordion" open>
-                                <summary>Devices</summary>
-                                <div class="accordion-body content-stack">
-                                    <div class="content-cluster" aria-label="Device diagnostics controls">
-                                        <button class="btn" type="button" data-input-refresh-devices>Refresh Devices</button>
-                                    </div>
-                                    <ul data-input-source-diagnostics></ul>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Status</summary>
-                                <div class="accordion-body content-stack">
-                                    <p>Status: <span data-input-output-status>Not Configured</span></p>
-                                    <p>Mappings: <span data-input-output-count>0</span></p>
-                                    <div class="status" role="status" data-input-status-log>Ready to map controls.</div>
-                                </div>
-                            </details>
-                        </div>
-                    </aside>
-                </div>
+                        <p>Controls is now the user-facing tool for input mappings, controller profiles, device detection, and mapping persistence.</p>
+                        <p class="status" role="status">This deprecated route is kept only to guide older links to Controls. It does not edit mappings or controller profiles.</p>
+                    </div>
+                </article>
             </div>
         </section>
     </main>
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-    <script type="module" src="toolbox/input-mapping-v2/input-mapping-v2.js"></script>
 </body>
 
 </html>

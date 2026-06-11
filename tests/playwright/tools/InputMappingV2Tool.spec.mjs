@@ -41,8 +41,8 @@ const DEFAULT_ACTION_DESCRIPTIONS = [
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
-    lane: "input-mapping-v2",
-    surface: "Controls input mapping rebuild",
+    lane: "controls",
+    surface: "Controls input mapping",
   });
 });
 
@@ -79,7 +79,7 @@ function collectPageFailures(page) {
   return { consoleErrors, failedRequests, pageErrors };
 }
 
-async function openInputMappingPage(page, path = "/toolbox/input-mapping-v2/index.html") {
+async function openControlsPage(page, path = "/toolbox/controls/index.html") {
   const server = await startRepoServer();
   const failures = collectPageFailures(page);
   await workspaceV2CoverageReporter.start(page);
@@ -148,7 +148,7 @@ async function controlsRegistryEntry(page) {
 }
 
 test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace return match UAT", async ({ page }) => {
-  const failures = await openInputMappingPage(page, "/toolbox/input-mapping-v2/index.html?workspace=demo-project");
+  const failures = await openControlsPage(page, "/toolbox/controls/index.html?workspace=demo-project");
 
   try {
     await expect(page.locator(".tool-workspace")).toBeVisible();
@@ -232,7 +232,7 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
     await expect(page.locator("[data-input-status-log]")).toHaveText("Device diagnostics refreshed.");
 
     const registryEntry = await controlsRegistryEntry(page);
-    expect(registryEntry.path).toBe("toolbox/input-mapping-v2/index.html");
+    expect(registryEntry.path).toBe("toolbox/controls/index.html");
     expect(registryEntry.status).toBe("wireframe");
     expect(registryEntry.status).not.toBe("beta");
     expect(registryEntry.releaseChannel).toBe("wireframe");
@@ -246,7 +246,7 @@ test("Controls Input Mapping launch panels, defaults, diagnostics, and workspace
 });
 
 test("Controls Input Mapping supports table-first inline add, cancel, save, and edit", async ({ page }) => {
-  const failures = await openInputMappingPage(page);
+  const failures = await openControlsPage(page);
 
   try {
     const addButton = page.locator("[data-input-mapping-table] tfoot [data-input-add-mapping]");
@@ -357,7 +357,7 @@ test("Controls Input Mapping supports table-first inline add, cancel, save, and 
 });
 
 test("Controls controller profiles persist and mappings reference saved profiles", async ({ page }) => {
-  const failures = await openInputMappingPage(page);
+  const failures = await openControlsPage(page);
 
   try {
     await expect(page.locator("[data-controller-profile-list]")).toContainText("No controller profiles saved yet.");
@@ -488,7 +488,7 @@ test("Controls controller profiles persist and mappings reference saved profiles
 });
 
 test("Controls Input Mapping gates input capture to edit mode and deletes only through Trash", async ({ page }) => {
-  const failures = await openInputMappingPage(page);
+  const failures = await openControlsPage(page);
 
   try {
     await seedHeroObject(page);
@@ -591,22 +591,19 @@ test("Controls Input Mapping gates input capture to edit mode and deletes only t
   }
 });
 
-test("Controls compatibility route uses rebuilt Input Mapping surface", async ({ page }) => {
-  const failures = await openInputMappingPage(page, "/toolbox/controls/index.html");
+test("Input Mapping V2 compatibility route points creators to Controls", async ({ page }) => {
+  const failures = await openControlsPage(page, "/toolbox/input-mapping-v2/index.html");
 
   try {
-    await expect(page.getByRole("heading", { name: "Input Mapping" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Input Mapping V2" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Open Controls" })).toHaveAttribute("href", "/toolbox/controls/index.html");
+    await expect(page.locator("main")).toContainText("Controls is now the user-facing tool for input mappings, controller profiles, device detection, and mapping persistence.");
+    await expect(page.locator("main")).toContainText("This deprecated route is kept only to guide older links to Controls.");
+    await expect(page.locator("[data-input-mapping-table]")).toHaveCount(0);
+    await expect(page.locator("[data-controller-profile-table]")).toHaveCount(0);
     await expect(page.getByText("Mapping JSON", { exact: true })).toHaveCount(0);
     await expect(page.locator("[data-input-mapping-json]")).toHaveCount(0);
     await expect(page.locator("summary").filter({ hasText: "Capture" })).toHaveCount(0);
-    await expect(page.locator("aside").first().locator("summary").filter({ hasText: "Controller Profiles" })).toHaveCount(0);
-    await expect(page.locator(".tool-center-panel [data-controller-profile-planning]")).toBeVisible();
-    await expect(page.locator("[data-controller-profile-table]")).toContainText("Mapping Profile");
-    await expect(page.locator("[data-input-mapping-table]")).toBeVisible();
-    await page.locator("[data-input-add-mapping]").click();
-    await expect(page.locator("[data-input-row-capture-keyboard]")).toBeVisible();
-    await expect(page.locator("[data-input-row-capture-mouse]")).toHaveCount(0);
-    await expect(page.locator("[data-input-row-capture-gamepad]")).toHaveCount(0);
     await expect(page.locator("main")).not.toContainText(/Static wireframe only|Not implemented yet|no database|no runtime behavior/i);
     await expectNoPageFailures(failures);
   } finally {

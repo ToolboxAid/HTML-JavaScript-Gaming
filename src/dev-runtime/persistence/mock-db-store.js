@@ -87,8 +87,8 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
     label: "Objects",
     tableNames: Object.freeze(["object_definition_records"]),
   }),
-  "input-mapping-v2": Object.freeze({
-    label: "Input Mapping",
+  controls: Object.freeze({
+    label: "Controls",
     tableNames: Object.freeze(["input_mapping_records", "input_controller_profile_records"]),
   }),
   "project-journey": Object.freeze({

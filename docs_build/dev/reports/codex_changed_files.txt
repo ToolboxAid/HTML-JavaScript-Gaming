@@ -1,24 +1,42 @@
 # git status --short
-M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/admin/header-nav.local.html
+ M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+ M src/dev-runtime/persistence/mock-db-store.js
+ M src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+ M src/dev-runtime/server/mock-api-router.mjs
+ M tests/playwright/tools/AdminDbViewer.spec.mjs
  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
+ M tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
  M toolbox/controls/index.html
  M toolbox/input-mapping-v2/index.html
- M toolbox/input-mapping-v2/input-mapping-v2.js
-?? docs_build/dev/reports/controls-edit-gated-capture-devices-report.md
+ D toolbox/input-mapping-v2/input-mapping-api-client.js
+ D toolbox/input-mapping-v2/input-mapping-v2.js
+?? docs_build/dev/reports/PR_26161_025-controls-authoritative-ownership-report.md
+?? toolbox/controls/controls-api-client.js
+?? toolbox/controls/controls.js
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/controls-edit-gated-capture-devices-report.md
+docs_build/dev/reports/PR_26161_025-controls-authoritative-ownership-report.md
+toolbox/controls/controls-api-client.js
+toolbox/controls/controls.js
 
-# git diff --stat
-docs_build/dev/reports/codex_changed_files.txt     |  17 +-
- docs_build/dev/reports/codex_review.diff           | 713 +++++++++++++--------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   6 +-
- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 125 +++-
- toolbox/controls/index.html                        |   6 +
- toolbox/input-mapping-v2/index.html                |   6 +
- toolbox/input-mapping-v2/input-mapping-v2.js       | 129 +++-
- 8 files changed, 684 insertions(+), 320 deletions(-)
+# git diff --stat (excluding review artifact files)
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   12 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   25 +-
+ src/dev-runtime/admin/header-nav.local.html        |    2 +-
+ .../guest-seeds/tool-metadata-inventory.js         |   41 +-
+ src/dev-runtime/persistence/mock-db-store.js       |    4 +-
+ .../input-mapping-mock-repository.js               |    2 +-
+ src/dev-runtime/server/mock-api-router.mjs         |   12 +-
+ tests/playwright/tools/AdminDbViewer.spec.mjs      |   12 +
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs |   35 +-
+ .../tools/ToolboxAdminMetadataSsot.spec.mjs        |   47 +-
+ toolbox/controls/index.html                        |    2 +-
+ toolbox/input-mapping-v2/index.html                |  165 +--
+ .../input-mapping-v2/input-mapping-api-client.js   |   15 -
+ toolbox/input-mapping-v2/input-mapping-v2.js       | 1333 --------------------
+ 14 files changed, 156 insertions(+), 1551 deletions(-)

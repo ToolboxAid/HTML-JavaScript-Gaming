@@ -1,5 +1,5 @@
 import { createObjectsToolApiRepository } from "../objects/objects-api-client.js";
-import { createInputMappingToolApiRepository } from "./input-mapping-api-client.js";
+import { createControlsToolApiRepository } from "./controls-api-client.js";
 
 const DEFAULT_ACTIONS = Object.freeze([
   Object.freeze({ description: "Back out of a menu or choice.", id: "cancel", label: "Cancel" }),
@@ -39,7 +39,7 @@ const SOURCE_DIAGNOSTICS = Object.freeze([
   "GamepadInputAdapter",
 ]);
 
-let inputRepository = createInputMappingToolApiRepository();
+let controlsRepository = createControlsToolApiRepository();
 let objectsRepository = createObjectsToolApiRepository();
 let mappings = [];
 let controllerProfiles = [];
@@ -388,37 +388,37 @@ function payloadJson() {
   return {
     actions: payloadActions(),
     engineInputModel: "src/engine/input/InputMap",
-    toolId: "input-mapping-v2",
+    toolId: "controls",
     version: 1,
   };
 }
 
 function readMappings() {
-  let result = inputRepository.listMappings();
+  let result = controlsRepository.listMappings();
   if (Array.isArray(result)) {
     return result.map(normalizeMapping);
   }
-  inputRepository = createInputMappingToolApiRepository();
-  result = inputRepository.listMappings();
+  controlsRepository = createControlsToolApiRepository();
+  result = controlsRepository.listMappings();
   return Array.isArray(result) ? result.map(normalizeMapping) : [];
 }
 
 function readControllerProfiles() {
-  let result = inputRepository.listControllerProfiles();
+  let result = controlsRepository.listControllerProfiles();
   if (Array.isArray(result)) {
     return result.map(normalizeControllerProfile);
   }
-  inputRepository = createInputMappingToolApiRepository();
-  result = inputRepository.listControllerProfiles();
+  controlsRepository = createControlsToolApiRepository();
+  result = controlsRepository.listControllerProfiles();
   return Array.isArray(result) ? result.map(normalizeControllerProfile) : [];
 }
 
 function saveMappings(nextMappings) {
   const normalizedMappings = nextMappings.map(normalizeMapping);
-  let result = inputRepository.replaceMappings(normalizedMappings);
+  let result = controlsRepository.replaceMappings(normalizedMappings);
   if (!Array.isArray(result?.mappings) && result?.error) {
-    inputRepository = createInputMappingToolApiRepository();
-    result = inputRepository.replaceMappings(normalizedMappings);
+    controlsRepository = createControlsToolApiRepository();
+    result = controlsRepository.replaceMappings(normalizedMappings);
   }
   if (Array.isArray(result?.mappings)) {
     mappings = result.mappings.map(normalizeMapping);
@@ -431,10 +431,10 @@ function saveMappings(nextMappings) {
 
 function saveControllerProfiles(nextProfiles) {
   const normalizedProfiles = nextProfiles.map(normalizeControllerProfile);
-  let result = inputRepository.replaceControllerProfiles(normalizedProfiles);
+  let result = controlsRepository.replaceControllerProfiles(normalizedProfiles);
   if (!Array.isArray(result?.profiles) && result?.error) {
-    inputRepository = createInputMappingToolApiRepository();
-    result = inputRepository.replaceControllerProfiles(normalizedProfiles);
+    controlsRepository = createControlsToolApiRepository();
+    result = controlsRepository.replaceControllerProfiles(normalizedProfiles);
   }
   if (Array.isArray(result?.profiles)) {
     controllerProfiles = result.profiles.map(normalizeControllerProfile);
@@ -445,10 +445,10 @@ function saveControllerProfiles(nextProfiles) {
 }
 
 function resetStoredMappings() {
-  let result = inputRepository.resetMappings();
+  let result = controlsRepository.resetMappings();
   if (!Array.isArray(result?.mappings) && result?.error) {
-    inputRepository = createInputMappingToolApiRepository();
-    result = inputRepository.resetMappings();
+    controlsRepository = createControlsToolApiRepository();
+    result = controlsRepository.resetMappings();
   }
   mappings = Array.isArray(result?.mappings) ? result.mappings.map(normalizeMapping) : [];
 }

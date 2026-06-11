@@ -239,6 +239,8 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
       "Workspace",
       "Game Design",
       "Game Configuration",
+      "Objects",
+      "Controls",
       "Project Journey",
       "Palette",
       "Asset",
@@ -399,6 +401,14 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
     await expect(page.locator("[data-admin-db-table='game_configuration_records']")).toBeVisible();
     await expect(page.locator("[data-admin-db-table='game_configuration_records'] thead")).toContainText("summary");
 
+    await page.getByRole("button", { name: "Controls" }).click();
+    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Controls\./);
+    await expect(page.locator("[data-admin-db-table='input_mapping_records']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='input_controller_profile_records']")).toBeVisible();
+    await expect(page.locator("[data-admin-db-table='input_mapping_records'] thead")).toContainText("binding");
+    await expect(page.locator("[data-admin-db-table='input_controller_profile_records'] thead")).toContainText("controllerId");
+    await expect(page.getByRole("button", { name: "Input Mapping" })).toHaveCount(0);
+
     await page.getByRole("button", { name: "Project Journey" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Project Journey\./);
     await expect(page.locator("[data-admin-db-table='project_journey_items']")).toBeVisible();
@@ -518,6 +528,8 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
       "Workspace",
       "Game Design",
       "Game Configuration",
+      "Objects",
+      "Controls",
       "Project Journey",
       "Palette",
       "Asset",

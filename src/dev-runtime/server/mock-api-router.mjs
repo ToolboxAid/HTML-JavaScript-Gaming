@@ -76,7 +76,7 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 const LOCAL_MEM_MODE_ID = "local-mem";
 const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
-const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "objects", "input-mapping-v2", "project-journey", "palette", "asset"];
+const TOOL_ORDER = ["workspace", "game-design", "game-configuration", "objects", "controls", "project-journey", "palette", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
 const TOOLBOX_PLANNING_FIELDS = Object.freeze([
@@ -648,8 +648,8 @@ function objectsTables(repository) {
   return normalizeOwnedTables("objects", repository.getTables());
 }
 
-function inputMappingTables(repository) {
-  return normalizeOwnedTables("input-mapping-v2", repository.getTables());
+function controlsTables(repository) {
+  return normalizeOwnedTables("controls", repository.getTables());
 }
 
 function projectJourneyTables(repository) {
@@ -1459,7 +1459,7 @@ class LocalDevMockDataSource {
     if (toolId === "game-design") return this.gameDesignRepository;
     if (toolId === "game-configuration") return this.gameConfigurationRepository;
     if (toolId === "objects") return this.objectsRepository;
-    if (toolId === "input-mapping-v2") return this.inputMappingRepository;
+    if (toolId === "controls") return this.inputMappingRepository;
     if (toolId === "project-journey") return this.projectJourneyRepository;
     if (toolId === "palette") return this.paletteRepository;
     if (toolId === "colors") return this.paletteRepository;
@@ -1492,7 +1492,7 @@ class LocalDevMockDataSource {
         OBJECTS_TOOL_TABLES: this.objectsRepository.OBJECTS_TOOL_TABLES,
       };
     }
-    if (toolId === "input-mapping-v2") {
+    if (toolId === "controls") {
       return {
         INPUT_MAPPING_TOOL_TABLES: this.inputMappingRepository.INPUT_MAPPING_TOOL_TABLES,
       };
@@ -1636,7 +1636,7 @@ class LocalDevMockDataSource {
       ...gameDesignTables(this.gameDesignRepository),
       ...gameConfigurationTables(this.gameConfigurationRepository),
       ...objectsTables(this.objectsRepository),
-      ...inputMappingTables(this.inputMappingRepository),
+      ...controlsTables(this.inputMappingRepository),
       ...projectJourneyTables(this.projectJourneyRepository),
       ...paletteTables(this.paletteRepository),
       ...assetTables(this.assetRepository),

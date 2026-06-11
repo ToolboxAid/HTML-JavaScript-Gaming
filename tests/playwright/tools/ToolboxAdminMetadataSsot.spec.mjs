@@ -4,7 +4,8 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
-const EXPECTED_TOOL_COUNT = 43;
+const EXPECTED_TOOL_COUNT = 44;
+const EXPECTED_VISIBLE_TOOL_COUNT = 43;
 const REQUIRED_ADMIN_TOOLS = [
   "Environments",
   "Game Migration",
@@ -151,7 +152,7 @@ async function activateBuildPathAllStatusFilters(page) {
   }
 }
 
-test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and planning", async ({ page }) => {
+test("Toolbox and Admin Tool Votes share the same DB-backed metadata and planning", async ({ page }) => {
   const server = await startRepoServer();
   await setServerSession(server, MOCK_DB_KEYS.users.admin);
   const failures = await openTrackedPage(page, server, "/admin/tool-votes.html");
@@ -200,10 +201,22 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     expect(Array.isArray(registryColors.progressChecklist)).toBe(true);
     expect(Array.isArray(registryColors.requires)).toBe(true);
     expect(registrySnapshot.activeTools.find((tool) => tool.id === "objects")).toEqual(expect.objectContaining({
-      capabilityLabel: "Object role types",
+      capabilityLabel: "Object types",
       childCapabilities: ["Static", "Dynamic", "Collectible", "Hazard", "Goal"],
+      releaseChannel: "beta",
+      status: "beta",
+    }));
+    expect(registrySnapshot.activeTools.find((tool) => tool.id === "controls")).toEqual(expect.objectContaining({
+      path: "toolbox/controls/index.html",
       releaseChannel: "wireframe",
       status: "wireframe",
+      visibleInToolsList: true,
+    }));
+    expect(registrySnapshot.activeTools.find((tool) => tool.id === "input-mapping-v2")).toEqual(expect.objectContaining({
+      path: "toolbox/input-mapping-v2/index.html",
+      releaseChannel: "deprecated",
+      status: "deprecated",
+      visibleInToolsList: false,
     }));
 
     for (const row of snapshot.rows) {
@@ -216,14 +229,17 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
     }
 
     const snapshotNames = snapshot.rows.map((row) => row.toolName).sort((left, right) => left.localeCompare(right));
+    const visibleSnapshotRows = snapshot.rows.filter((row) => row.toolName !== "Input Mapping V2");
+    const visibleSnapshotNames = visibleSnapshotRows.map((row) => row.toolName).sort((left, right) => left.localeCompare(right));
     expect(snapshotNames).toEqual(expect.arrayContaining([...REQUIRED_ADMIN_TOOLS, ...REQUIRED_RESTORED_TOOLS]));
     const counts = countByStatus(snapshot.rows);
+    const visibleCounts = countByStatus(visibleSnapshotRows);
     expect(counts).toMatchObject({
-      beta: 5,
+      beta: 6,
       complete: 1,
-      planned: 32,
+      planned: 31,
       wireframe: 4,
-      deprecated: 1,
+      deprecated: 2,
     });
     const orderedSetupRows = snapshot.rows
       .filter((row) => EXPECTED_SETUP_COMPACT_ORDER.includes(row.toolName))
@@ -253,6 +269,11 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
       releaseChannel: "deprecated",
       status: "deprecated",
     }));
+    expect(snapshot.rows.find((row) => row.toolName === "Input Mapping V2")).toEqual(expect.objectContaining({
+      path: "toolbox/input-mapping-v2/index.html",
+      releaseChannel: "deprecated",
+      status: "deprecated",
+    }));
     expect(snapshot.rows.find((row) => row.toolName === "Particles")).toEqual(expect.objectContaining({
       group: "Design",
     }));
@@ -273,20 +294,20 @@ test("Toolbox and Admin Tool Votes share the same 43-tool DB-backed metadata and
 
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
     await activateBuildPathAllStatusFilters(page);
-    await expect(page.locator("[data-build-path-tool]")).toHaveCount(EXPECTED_TOOL_COUNT);
+    await expect(page.locator("[data-build-path-tool]")).toHaveCount(EXPECTED_VISIBLE_TOOL_COUNT);
     await expect(page.locator("[data-toolbox-status-filter]")).toHaveText([
-      `Planned (${counts.planned})`,
-      `Wireframe (${counts.wireframe})`,
-      `Beta (${counts.beta})`,
-      `Complete (${counts.complete})`,
-      `Deprecated (${counts.deprecated})`,
+      `Planned (${visibleCounts.planned})`,
+      `Wireframe (${visibleCounts.wireframe})`,
+      `Beta (${visibleCounts.beta})`,
+      `Complete (${visibleCounts.complete})`,
+      `Deprecated (${visibleCounts.deprecated})`,
     ]);
     await expect(page.locator("[data-toolbox-status-filter='beta']")).toHaveAttribute("title", /Can be used in a real game/);
     await expect(page.locator("[data-build-path-status-help='complete']").first()).toHaveAttribute("title", /Ready for long-term support/);
     const buildPathNames = (await page.locator("[data-build-path-tool]").evaluateAll((rows) => (
       rows.map((row) => row.dataset.buildPathTool || "")
     ))).sort((left, right) => left.localeCompare(right));
-    expect(buildPathNames).toEqual(snapshotNames);
+    expect(buildPathNames).toEqual(visibleSnapshotNames);
 
     await expectNoPageFailures(failures);
   } finally {

@@ -9,7 +9,7 @@ export const INPUT_MAPPING_TOOL_TABLES = Object.freeze([
   "input_controller_profile_records",
 ]);
 
-const INPUT_MAPPING_DB_OWNER = "input-mapping-v2";
+const INPUT_MAPPING_DB_OWNER = "controls";
 const DEFAULT_PROJECT_ID = "demo-project";
 const DEFAULT_INPUT_MAPPING_USER_KEY = MOCK_DB_KEYS.users.user1;
 
