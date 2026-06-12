@@ -72,6 +72,9 @@
   --forgebot-stage-background: radial-gradient(circle at 50% 55%, rgba(255, 122, 0, .25), var(--transparent) 48%), linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025));
   --button-primary-background: linear-gradient(135deg, var(--orange), var(--button-primary-end));
   --button-cyan-background: linear-gradient(135deg, var(--button-cyan-start), var(--button-cyan-end));
+  --checkbox-disabled-background: color-mix(in srgb, var(--white) 72%, var(--steel-gray));
+  --checkbox-disabled-border: color-mix(in srgb, var(--iron-black) 28%, var(--steel-gray));
+  --checkbox-disabled-check: var(--iron-black);
   --text: #f5f7fb;
   --muted: #aeb6c2;
   --orange: var(--molten-orange);

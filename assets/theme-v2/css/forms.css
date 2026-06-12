@@ -106,6 +106,32 @@ input[type="radio"] {
   padding: var(--space-0)
 }
 
+input[type="checkbox"]:disabled {
+  appearance: none;
+  box-sizing: border-box;
+  display: inline-grid;
+  place-content: center;
+  border: var(--border-width-sm) solid var(--checkbox-disabled-border);
+  border-radius: var(--radius-xs);
+  background: var(--checkbox-disabled-background);
+  opacity: 1;
+  cursor: not-allowed
+}
+
+input[type="checkbox"]:disabled::before {
+  content: "";
+  width: calc(var(--icon-size-sm) * .58);
+  height: calc(var(--icon-size-sm) * .58);
+  background: var(--checkbox-disabled-check);
+  clip-path: polygon(14% 44%, 0 58%, 38% 96%, 100% 20%, 86% 8%, 36% 66%);
+  transform: scale(0);
+  transform-origin: center
+}
+
+input[type="checkbox"]:checked:disabled::before {
+  transform: scale(1)
+}
+
 input[type="hidden"] {
   display: none
 }

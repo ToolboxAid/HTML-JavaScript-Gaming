@@ -1,311 +1,219 @@
+diff --git a/assets/theme-v2/css/colors.css b/assets/theme-v2/css/colors.css
+index efeeba3cc..02277c846 100644
+--- a/assets/theme-v2/css/colors.css
++++ b/assets/theme-v2/css/colors.css
+@@ -72,6 +72,9 @@
+   --forgebot-stage-background: radial-gradient(circle at 50% 55%, rgba(255, 122, 0, .25), var(--transparent) 48%), linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025));
+   --button-primary-background: linear-gradient(135deg, var(--orange), var(--button-primary-end));
+   --button-cyan-background: linear-gradient(135deg, var(--button-cyan-start), var(--button-cyan-end));
++  --checkbox-disabled-background: color-mix(in srgb, var(--white) 72%, var(--steel-gray));
++  --checkbox-disabled-border: color-mix(in srgb, var(--iron-black) 28%, var(--steel-gray));
++  --checkbox-disabled-check: var(--iron-black);
+   --text: #f5f7fb;
+   --muted: #aeb6c2;
+   --orange: var(--molten-orange);
+diff --git a/assets/theme-v2/css/forms.css b/assets/theme-v2/css/forms.css
+index 7fba38d0e..4d297c6de 100644
+--- a/assets/theme-v2/css/forms.css
++++ b/assets/theme-v2/css/forms.css
+@@ -106,6 +106,32 @@ input[type="radio"] {
+   padding: var(--space-0)
+ }
+
++input[type="checkbox"]:disabled {
++  appearance: none;
++  box-sizing: border-box;
++  display: inline-grid;
++  place-content: center;
++  border: var(--border-width-sm) solid var(--checkbox-disabled-border);
++  border-radius: var(--radius-xs);
++  background: var(--checkbox-disabled-background);
++  opacity: 1;
++  cursor: not-allowed
++}
++
++input[type="checkbox"]:disabled::before {
++  content: "";
++  width: calc(var(--icon-size-sm) * .58);
++  height: calc(var(--icon-size-sm) * .58);
++  background: var(--checkbox-disabled-check);
++  clip-path: polygon(14% 44%, 0 58%, 38% 96%, 100% 20%, 86% 8%, 36% 66%);
++  transform: scale(0);
++  transform-origin: center
++}
++
++input[type="checkbox"]:checked:disabled::before {
++  transform: scale(1)
++}
++
+ input[type="hidden"] {
+   display: none
+ }
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 30a00f66d..d5f972ec9 100644
+index d5f972ec9..0c09d8262 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,8 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,8 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
+
  Changed runtime JS files considered:
--(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
--(93%) toolbox/controls/controls.js - executed lines 548/548; executed functions 56/60
-+(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage; executed lines 546/546; executed functions 57/60
-+(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff; advisory only
- 
+-(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage; executed lines 546/546; executed functions 57/60
+-(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff; advisory only
++(67%) toolbox/controls/controls.js - executed lines 546/546; executed functions 35/52
+
  Guardrail warnings:
  (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 2204089d7..b3c7a7db4 100644
+index b3c7a7db4..533dcc824 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,13 +12,13 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,34 +12,20 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
+
  Exercised tool entry points detected:
--(88%) Toolbox Index - exercised 3 runtime JS files
-+(89%) Toolbox Index - exercised 3 runtime JS files
+-(89%) Toolbox Index - exercised 3 runtime JS files
++(71%) Toolbox Index - exercised 3 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
- (62%) Theme V2 Shared JS - exercised 2 runtime JS files
- 
+-(62%) Theme V2 Shared JS - exercised 2 runtime JS files
++(58%) Theme V2 Shared JS - exercised 2 runtime JS files
+
  Changed runtime JS files covered:
--(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
--(93%) toolbox/controls/controls.js - executed lines 548/548; executed functions 56/60
-+(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage; executed lines 546/546; executed functions 57/60
-+(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff; advisory only
- 
+-(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage; executed lines 546/546; executed functions 57/60
+-(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff; advisory only
++(67%) toolbox/controls/controls.js - executed lines 546/546; executed functions 35/52
+
  Files with executed line/function counts where available:
- (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
-@@ -37,8 +37,8 @@ Files with executed line/function counts where available:
+-(11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
+-(23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
+-(30%) src/engine/input/InputService.js - executed lines 451/451; executed functions 20/66
+-(33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
+-(40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
+-(41%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 14/34
+-(43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
+-(50%) src/engine/input/InputCaptureService.js - executed lines 163/163; executed functions 7/14
++(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 6/21
+ (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+-(59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
+-(60%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 9/15
+-(61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 33/54
++(57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 30/53
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
++(67%) toolbox/controls/controls.js - executed lines 546/546; executed functions 35/52
  (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
- (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
- (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
--(93%) toolbox/controls/controls.js - executed lines 548/548; executed functions 56/60
- (94%) account/user-controls-page.js - executed lines 961/961; executed functions 111/118
-+(95%) toolbox/controls/controls.js - executed lines 546/546; executed functions 57/60
- (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
+-(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
+-(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
+-(94%) account/user-controls-page.js - executed lines 961/961; executed functions 111/118
+-(95%) toolbox/controls/controls.js - executed lines 546/546; executed functions 57/60
+-(100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
  (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
- 
-@@ -46,8 +46,6 @@ Uncovered or low-coverage changed JS files:
- (100%) none - no low-coverage changed runtime JS files
- 
+
+ Uncovered or low-coverage changed JS files:
+@@ -47,5 +33,4 @@ Uncovered or low-coverage changed JS files:
+
  Changed JS files considered:
--(0%) tests/input/NormalizedInputRegistry.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(89%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage
--(93%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
--(94%) account/user-controls-page.js - changed JS file with browser V8 coverage
-+(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff
-+(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage
+-(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff
+-(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage
++(67%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 1eea2a3a8..dcd03472b 100644
+index dcd03472b..bf513f710 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -24,6 +24,26 @@ const GAME_CONTROL_NORMALIZED_INPUTS = [
-   "action.select",
- ];
- 
-+const GAME_CONTROL_USAGE_LABELS = [
-+  "Move Left",
-+  "Move Right",
-+  "Move Up",
-+  "Move Down",
-+  "Aim Left",
-+  "Aim Right",
-+  "Aim Up",
-+  "Aim Down",
-+  "Primary Action",
-+  "Secondary Action",
-+  "Third Action",
-+  "Fourth Action",
-+  "Confirm",
-+  "Cancel",
-+  "Pause",
-+  "Start",
-+  "Select",
-+];
+@@ -260,6 +260,35 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
+     await expect(primaryRow.locator("input[aria-label='U']")).not.toBeChecked();
+     await expect(primaryRow.locator("input[aria-label='DC']")).not.toBeChecked();
+     await expect(primaryRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
++    await expect(primaryRow.locator("input[aria-label='D']")).toBeDisabled();
++    await expect(primaryRow.locator("input[aria-label='H']")).toBeDisabled();
 +
- test.beforeEach(async ({ page }) => {
-   await installPlaywrightStorageIsolation(page, {
-     lane: "controls",
-@@ -169,6 +189,16 @@ async function editGameControl(page, rowText, {
-   await page.locator("[data-input-save-mapping]").click();
- }
- 
-+async function gameControlRowLabels(page) {
-+  return page.locator("[data-input-mapping-table] tbody tr").evaluateAll((rows) => rows.map((row) => {
-+    const usageInput = row.querySelector("[data-input-row-usage-label]");
-+    if (usageInput) {
-+      return usageInput.value;
-+    }
-+    return row.children[2]?.textContent?.trim() || "";
-+  }));
-+}
-+
- test("Toolbox Controls shows game controls only and keeps presets wireframe safe", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/controls/index.html");
- 
-@@ -258,6 +288,92 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-   }
- });
- 
-+test("Game Controls edits the selected row in place and preserves row order", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/toolbox/controls/index.html");
-+
-+  try {
-+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
-+    expect(await gameControlRowLabels(page)).toEqual(GAME_CONTROL_USAGE_LABELS);
-+
-+    await page.locator("[data-input-mapping-table] tbody tr").first().getByRole("button", { name: "Edit" }).click();
-+    await expect(page.locator("[data-input-mapping-table] tbody tr").first()).toHaveAttribute("data-input-editing-row", "true");
-+    await expect(page.locator("[data-input-row-usage-label]")).toHaveValue("Move Left");
-+    await page.locator("[data-input-row-usage-label]").fill("Move Left Prime");
-+    await page.locator("[data-input-save-mapping]").click();
-+    await expect(page.locator("[data-input-mapping-table] tbody tr").first()).toContainText("Move Left Prime");
-+    expect(await gameControlRowLabels(page)).toEqual([
-+      "Move Left Prime",
-+      ...GAME_CONTROL_USAGE_LABELS.slice(1),
-+    ]);
-+
-+    const aimDownIndex = GAME_CONTROL_USAGE_LABELS.indexOf("Aim Down");
-+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Aim Down" }).first().getByRole("button", { name: "Edit" }).click();
-+    const rowsDuringMiddleEdit = page.locator("[data-input-mapping-table] tbody tr");
-+    await expect(rowsDuringMiddleEdit.nth(aimDownIndex)).toHaveAttribute("data-input-editing-row", "true");
-+    await expect(rowsDuringMiddleEdit.first()).not.toHaveAttribute("data-input-editing-row", "true");
-+    await expect(page.locator("[data-input-row-usage-label]")).toHaveValue("Aim Down");
-+    expect(await gameControlRowLabels(page)).toEqual([
-+      "Move Left Prime",
-+      ...GAME_CONTROL_USAGE_LABELS.slice(1, aimDownIndex),
-+      "Aim Down",
-+      ...GAME_CONTROL_USAGE_LABELS.slice(aimDownIndex + 1),
-+    ]);
-+    await page.locator("[data-input-row-usage-label]").fill("Aim Down Draft");
-+    await page.locator("[data-input-cancel-mapping]").click();
-+    expect(await gameControlRowLabels(page)).toEqual([
-+      "Move Left Prime",
-+      ...GAME_CONTROL_USAGE_LABELS.slice(1),
-+    ]);
-+
-+    const pauseIndex = GAME_CONTROL_USAGE_LABELS.indexOf("Pause");
-+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Pause" }).first().getByRole("button", { name: "Edit" }).click();
-+    await expect(page.locator("[data-input-mapping-table] tbody tr").nth(pauseIndex)).toHaveAttribute("data-input-editing-row", "true");
-+    await page.locator("[data-input-row-usage-label]").fill("Pause Menu");
-+    await page.locator("[data-input-save-mapping]").click();
-+    expect(await gameControlRowLabels(page)).toEqual([
-+      "Move Left Prime",
-+      ...GAME_CONTROL_USAGE_LABELS.slice(1, pauseIndex),
-+      "Pause Menu",
-+      ...GAME_CONTROL_USAGE_LABELS.slice(pauseIndex + 1),
-+    ]);
-+
-+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Secondary Action" }).first().getByRole("button", { name: "Trash" }).click();
-+    const labelsAfterTrash = await gameControlRowLabels(page);
-+    expect(labelsAfterTrash).not.toContain("Secondary Action");
-+    expect(labelsAfterTrash).toEqual([
-+      "Move Left Prime",
-+      "Move Right",
-+      "Move Up",
-+      "Move Down",
-+      "Aim Left",
-+      "Aim Right",
-+      "Aim Up",
-+      "Aim Down",
-+      "Primary Action",
-+      "Third Action",
-+      "Fourth Action",
-+      "Confirm",
-+      "Cancel",
-+      "Pause Menu",
-+      "Start",
-+      "Select",
-+    ]);
-+
-+    let records = await inputMappingRecords(page);
-+    expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length - 1);
-+    expect(records.map((record) => record.usageLabel)).toEqual(labelsAfterTrash);
-+
-+    await page.reload({ waitUntil: "networkidle" });
-+    expect(await gameControlRowLabels(page)).toEqual(labelsAfterTrash);
-+    records = await inputMappingRecords(page);
-+    expect(records.map((record) => record.usageLabel)).toEqual(labelsAfterTrash);
-+
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await closeWithCoverage(page, failures);
-+  }
-+});
-+
- test("Game Controls validates rows and persists device-agnostic event fields", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/controls/index.html");
- 
-diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
-index 2919b6df3..6ef3252ba 100644
---- a/toolbox/controls/controls.js
-+++ b/toolbox/controls/controls.js
-@@ -391,6 +391,7 @@ function renderMappingRow(mapping) {
- function renderEditingRow(values = {}) {
-   const row = document.createElement("tr");
-   row.dataset.inputEditingRow = "true";
-+  row.dataset.inputEditingRowId = values.id || "";
- 
-   const enabledInput = document.createElement("input");
-   enabledInput.type = "checkbox";
-@@ -440,14 +441,11 @@ function renderMappings() {
-   if (!elements.list) {
-     return;
-   }
--  const rows = [];
--  if (editingRow) {
--    rows.push(renderEditingRow(editingRow.values));
--  }
--  const visibleMappings = editingRow?.id
--    ? mappings.filter((mapping) => mapping.id !== editingRow.id)
--    : mappings;
--  rows.push(...visibleMappings.map((mapping) => renderMappingRow(mapping)));
-+  const rows = mappings.map((mapping) => (
-+    editingRow?.id === mapping.id
-+      ? renderEditingRow(editingRow.values)
-+      : renderMappingRow(mapping)
-+  ));
-   if (!rows.length) {
-     const row = document.createElement("tr");
-     const cell = document.createElement("td");
-diff --git a/docs_build/dev/reports/controls-edit-row-in-place-fix-report.md b/docs_build/dev/reports/controls-edit-row-in-place-fix-report.md
++    const checkedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='D']").evaluate((input) => {
++      const checkboxStyle = window.getComputedStyle(input);
++      const checkStyle = window.getComputedStyle(input, "::before");
++      return {
++        backgroundColor: checkboxStyle.backgroundColor,
++        checkBackgroundColor: checkStyle.backgroundColor,
++        checkTransform: checkStyle.transform,
++        opacity: checkboxStyle.opacity,
++      };
++    });
++    const uncheckedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='H']").evaluate((input) => {
++      const checkboxStyle = window.getComputedStyle(input);
++      const checkStyle = window.getComputedStyle(input, "::before");
++      return {
++        backgroundColor: checkboxStyle.backgroundColor,
++        checkTransform: checkStyle.transform,
++        opacity: checkboxStyle.opacity,
++      };
++    });
++    expect(checkedDisabledCheckboxStyle.backgroundColor).toBe(uncheckedDisabledCheckboxStyle.backgroundColor);
++    expect(checkedDisabledCheckboxStyle.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
++    expect(checkedDisabledCheckboxStyle.checkBackgroundColor).toBe("rgb(18, 18, 18)");
++    expect(checkedDisabledCheckboxStyle.checkTransform).not.toBe("matrix(0, 0, 0, 0, 0, 0)");
++    expect(checkedDisabledCheckboxStyle.opacity).toBe("1");
++    expect(uncheckedDisabledCheckboxStyle.checkTransform).toBe("matrix(0, 0, 0, 0, 0, 0)");
++    expect(uncheckedDisabledCheckboxStyle.opacity).toBe("1");
+
+     const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Aim Right" }).first();
+     await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
+diff --git a/docs_build/dev/reports/controls-checkbox-state-styling-report.md b/docs_build/dev/reports/controls-checkbox-state-styling-report.md
 new file mode 100644
-index 000000000..9bb371351
+index 000000000..e1abc7975
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-edit-row-in-place-fix-report.md
-@@ -0,0 +1,75 @@
-+# PR_26162_047 Controls Edit Row In Place Fix
++++ b/docs_build/dev/reports/controls-checkbox-state-styling-report.md
+@@ -0,0 +1,56 @@
++# PR_26162_048-controls-checkbox-state-styling
 +
 +## Branch Validation
-+- PASS: Current branch is `main`.
++- PASS: current branch is `main`.
 +- Expected branch: `main`.
-+- Evidence: `git status --short --branch` reported `## main...origin/main` before edits.
 +
 +## Requirement Checklist
-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
-+- PASS: Verified current git branch is `main` before edits.
-+- PASS: Continued from PR_26162_046.
-+- PASS: Toolbox > Controls edit behavior now replaces the selected row in-place.
-+- PASS: Clicking the first row Edit button edits the first row.
-+- PASS: Clicking a middle/later row Edit button edits that exact row in-place.
-+- PASS: The edit row is no longer rendered at the top of the table.
-+- PASS: Row order is preserved before, during, and after edit.
-+- PASS: Save updates only the selected row.
-+- PASS: Cancel restores only the selected row.
-+- PASS: Trash deletes only the selected row.
-+- PASS: DB-backed persistence is preserved through the shared DB/mock adapter.
-+- PASS: Normalized Game Controls behavior from PR_26162_046 is preserved.
-+- PASS: Added Playwright regression coverage for non-first-row in-place editing.
-+- PASS: No sample JSON alignment, auth behavior, production account system, or unrelated rewrites were added.
-+- PASS: Theme V2 only; no inline CSS, inline JS, script blocks, style blocks, or inline event handlers were introduced.
++- PASS: Current enabled checkbox styling is unchanged. The new CSS is scoped to `input[type="checkbox"]:disabled` only.
++- PASS: Disabled checkboxes use a lighter gray Theme V2 background through `--checkbox-disabled-background`.
++- PASS: Disabled checked checkboxes use a black Theme V2 checkmark through `--checkbox-disabled-check`.
++- PASS: Disabled checkbox visibility/readability is preserved with `opacity: 1`.
++- PASS: Styling is implemented through reusable Theme V2 CSS in `assets/theme-v2/css/colors.css` and `assets/theme-v2/css/forms.css`.
++- PASS: No page-local CSS, inline styles, or tool-specific styling was added.
++- PASS: The pattern applies to the Controls Enabled, D, H, U, and DC columns because those cells render standard disabled checkboxes.
++- PASS: Future Theme V2 disabled Controls checkboxes using the same standard checkbox pattern inherit the styling.
 +
 +## Changed Files
-+- `toolbox/controls/controls.js`
++- `assets/theme-v2/css/colors.css`
++- `assets/theme-v2/css/forms.css`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
-+- `docs_build/dev/reports/controls-edit-row-in-place-fix-report.md`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/controls-checkbox-state-styling-report.md`
 +
 +## Impacted Lanes
-+- Controls tool runtime lane.
-+- Controls Playwright behavior lane.
++- Theme V2 shared forms styling.
++- Toolbox Controls runtime visual validation.
++- Playwright impacted: Yes.
 +
 +## Validation Performed
-+- PASS: `node --check toolbox/controls/controls.js`
 +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
 +- PASS: `git diff --check`
-+- PASS: `rg -n -P "<style|style\\s*=|\\son[a-z]+\\s*=" toolbox/controls/index.html toolbox/controls/controls.js` returned no matches.
-+- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs` passed 7/7.
++- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "Toolbox Controls"`
++- WARN: `npm run check:style-system-guard` reported existing `missing-page:toolbox/localization/index.html`; no issue was reported for this PR's Theme V2 CSS or Controls page.
 +
 +## Playwright Result
-+- PASS: Existing Controls behavior remains green.
-+- PASS: Regression test confirms the first row edits in-place.
-+- PASS: Regression test confirms a middle row (`Aim Down`) edits in-place and not at the top.
-+- PASS: Regression test confirms Cancel restores only the selected row.
-+- PASS: Regression test confirms Save updates only the selected row.
-+- PASS: Regression test confirms Trash deletes only the selected row.
-+- PASS: Regression test confirms row order is preserved after Save, Cancel, Trash, and reload.
-+- PASS: Regression test confirms DB-backed persistence after reload.
++- PASS: Targeted Controls Playwright test passed, including disabled checkbox rendered style checks for lighter background, black checked icon, and full opacity.
 +
 +## V8 Coverage
-+- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` refreshed from targeted Playwright.
-+- PASS: `(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage`.
-+- NOTE: The shared coverage helper also lists `src/engine/input/NormalizedInputRegistry.js` as a reporter HEAD-baseline file. That file is not part of this PR diff and is marked advisory in the coverage reports.
++- Generated: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- Note: This PR changes Theme V2 CSS and Playwright assertions, not runtime JavaScript. The coverage helper still reports advisory browser runtime coverage for the current repository HEAD.
 +
 +## Skipped Lanes
-+- Full samples validation: SKIPPED per request. Safe to skip because this PR changes only Toolbox > Controls table edit rendering and targeted Playwright coverage.
-+- Full repository test suite: SKIPPED. Safe to skip because the affected runtime behavior is covered by the targeted Controls Playwright lane.
-+- Account/User Controls-only lane: covered as part of `InputMappingV2Tool.spec.mjs`; no Account runtime code changed.
-+
-+## Samples Decision
-+- Samples validation was not run, per request.
++- Full samples validation skipped: samples are not in scope and no sample JSON or runtime sample behavior changed.
++- Full workspace suite skipped: this PR only changes reusable disabled checkbox styling and targeted Controls coverage validates the affected surface.
++- Broad visual sweep skipped: requested scope is Controls checkbox state styling, and the implementation is reusable Theme V2 CSS without page-local styling.
 +
 +## Manual Validation Steps
-+1. Open `toolbox/controls/index.html`.
-+2. Click Edit on the first Game Controls row and confirm the first row becomes the edit row.
-+3. Save a new label and confirm only that row changes.
-+4. Click Edit on a middle/later row such as `Aim Down` and confirm the edit row appears in that same table position.
-+5. Change the label, click Cancel, and confirm the original row is restored in place.
-+6. Click Edit on a later row such as `Pause`, save a new label, and confirm only that row changes.
-+7. Click Trash on a different row and confirm only that row is deleted.
-+8. Reload and confirm row order and saved values persist.
++1. Open `/toolbox/controls/index.html`.
++2. Confirm the Game Controls table renders the Enabled, D, H, U, and DC checkbox columns.
++3. Confirm disabled unchecked checkboxes use a light gray fill and remain readable.
++4. Confirm disabled checked checkboxes use the same light gray fill with a black checkmark.
++5. Confirm enabled/editable checkbox behavior still uses the existing checkbox styling.
++
++## Samples Decision
++- SKIP: Full samples validation was not run because this PR does not touch samples, sample JSON, game runtime, or sample launch behavior.

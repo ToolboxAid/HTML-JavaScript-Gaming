@@ -260,6 +260,35 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     await expect(primaryRow.locator("input[aria-label='U']")).not.toBeChecked();
     await expect(primaryRow.locator("input[aria-label='DC']")).not.toBeChecked();
     await expect(primaryRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
+    await expect(primaryRow.locator("input[aria-label='D']")).toBeDisabled();
+    await expect(primaryRow.locator("input[aria-label='H']")).toBeDisabled();
+
+    const checkedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='D']").evaluate((input) => {
+      const checkboxStyle = window.getComputedStyle(input);
+      const checkStyle = window.getComputedStyle(input, "::before");
+      return {
+        backgroundColor: checkboxStyle.backgroundColor,
+        checkBackgroundColor: checkStyle.backgroundColor,
+        checkTransform: checkStyle.transform,
+        opacity: checkboxStyle.opacity,
+      };
+    });
+    const uncheckedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='H']").evaluate((input) => {
+      const checkboxStyle = window.getComputedStyle(input);
+      const checkStyle = window.getComputedStyle(input, "::before");
+      return {
+        backgroundColor: checkboxStyle.backgroundColor,
+        checkTransform: checkStyle.transform,
+        opacity: checkboxStyle.opacity,
+      };
+    });
+    expect(checkedDisabledCheckboxStyle.backgroundColor).toBe(uncheckedDisabledCheckboxStyle.backgroundColor);
+    expect(checkedDisabledCheckboxStyle.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
+    expect(checkedDisabledCheckboxStyle.checkBackgroundColor).toBe("rgb(18, 18, 18)");
+    expect(checkedDisabledCheckboxStyle.checkTransform).not.toBe("matrix(0, 0, 0, 0, 0, 0)");
+    expect(checkedDisabledCheckboxStyle.opacity).toBe("1");
+    expect(uncheckedDisabledCheckboxStyle.checkTransform).toBe("matrix(0, 0, 0, 0, 0, 0)");
+    expect(uncheckedDisabledCheckboxStyle.opacity).toBe("1");
 
     const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Aim Right" }).first();
     await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
