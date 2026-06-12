@@ -14,10 +14,10 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (100%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(64%) Theme V2 Shared JS - exercised 1 runtime JS files
+(61%) Theme V2 Shared JS - exercised 1 runtime JS files
 
 Changed runtime JS files covered:
-(91%) account/user-controls-page.js - changed runtime JS file with browser V8 coverage
+(92%) account/user-controls-page.js - changed runtime JS file with browser V8 coverage
 
 Files with executed line/function counts where available:
 (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
@@ -32,10 +32,10 @@ Files with executed line/function counts where available:
 (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
 (59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
 (60%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 9/15
-(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 36/56
+(61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 34/56
 (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
 (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
-(91%) account/user-controls-page.js - executed lines 1366/1366; executed functions 149/164
+(92%) account/user-controls-page.js - executed lines 1323/1323; executed functions 145/158
 (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
 (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
 
@@ -44,4 +44,4 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
-(91%) account/user-controls-page.js - changed JS file with browser V8 coverage
+(92%) account/user-controls-page.js - changed JS file with browser V8 coverage

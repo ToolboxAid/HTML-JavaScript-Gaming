@@ -86,6 +86,9 @@
                                 <div class="accordion-body content-stack">
                                     <div class="content-cluster" aria-label="Account controller device selection">
                                         <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
+                                        <label class="field-label" for="account-user-controls-device">Controller</label>
+                                        <select id="account-user-controls-device" data-account-user-controls-device></select>
+                                        <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
                                     </div>
                                     <p class="status" role="status" data-account-user-controls-device-status>Game controllers auto-detect after the browser exposes them.</p>
                                     <div class="table-wrapper">
@@ -104,9 +107,6 @@
                                             </thead>
                                             <tbody data-account-user-controls-list data-account-user-controls-list-family="Gamepad"></tbody>
                                         </table>
-                                    </div>
-                                    <div class="content-cluster" aria-label="Game controller user controls">
-                                        <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
                                     </div>
                                 </div>
                             </details>

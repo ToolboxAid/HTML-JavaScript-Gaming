@@ -485,17 +485,6 @@ export class AccountUserControlsPage {
     };
   }
 
-  detectedDeviceSelectionChoice(device) {
-    return {
-      controllerId: device.controllerId,
-      deviceType: "Gamepad",
-      label: device.label,
-      profileId: "",
-      selectionKey: `device:gamepad:${keyFromText(device.controllerId || device.value)}`,
-      selectionType: "device",
-    };
-  }
-
   profileSelectionChoice(profile) {
     return {
       controllerId: profile.controllerId,
@@ -520,9 +509,6 @@ export class AccountUserControlsPage {
     ["Keyboard", "Mouse", "Gamepad"].forEach((family) => addChoice(this.defaultSelectionChoice(family)));
     this.profiles.forEach((profile) => {
       addChoice(this.profileSelectionChoice(profile));
-    });
-    this.deviceOptions().forEach((device) => {
-      addChoice(this.detectedDeviceSelectionChoice(device));
     });
     return choices;
   }
@@ -711,10 +697,6 @@ export class AccountUserControlsPage {
         rows.push(this.renderReadonlyProfileDetailsRow(defaultProfile, family));
       }
     });
-    this.deviceOptions()
-      .forEach((device) => {
-        rowsByFamily.get("Gamepad")?.push(this.renderDetectedDeviceRow(device));
-      });
     if (this.editingProfile) {
       const family = this.profileListFamily(this.editingProfile.values);
       rowsByFamily.get(family)?.push(...this.renderEditingRows(this.editingProfile.values));
@@ -845,22 +827,6 @@ export class AccountUserControlsPage {
     group.append(actionButton("View", "accountUserControlsViewDefault", family));
     actions.append(group);
     row.append(actions);
-    return row;
-  }
-
-  renderDetectedDeviceRow(device) {
-    const row = document.createElement("tr");
-    row.dataset.accountUserControlsDetectedDevice = device.controllerId;
-    row.append(
-      this.selectedDeviceCell(this.detectedDeviceSelectionChoice(device)),
-      tableCell(device.label),
-      tableCell(`${device.inputs.length} Detected Inputs`),
-      tableCell("Create my profile to customize"),
-      tableCell("N/A"),
-      tableCell("N/A"),
-      tableCell("N/A"),
-      tableCell("Detected"),
-    );
     return row;
   }
 
@@ -1114,20 +1080,9 @@ export class AccountUserControlsPage {
   }
 
   addProfileForSelectedDevice() {
-    const selectedDeviceInput = this.root.querySelector(
-      "[data-account-user-controls-list-family='Gamepad'] [data-account-user-controls-selected-device]:checked",
-    );
-    const selectionKey = normalizeText(selectedDeviceInput?.value);
-    const selectedChoice = this.selectedInputDeviceChoices().find((choice) =>
-      choice.selectionType === "device"
-        && choice.deviceType === "Gamepad"
-        && choice.selectionKey === selectionKey,
-    );
-    const device = selectedChoice
-      ? this.deviceOptions().find((candidate) => candidate.controllerId === selectedChoice.controllerId)
-      : null;
+    const device = this.selectedControllerDevice();
     if (!device) {
-      this.setStatus("WARN: Select a detected game controller row before creating a user control profile.");
+      this.setStatus("WARN: Choose a detected game controller before creating a user control profile.");
       return;
     }
     this.createProfile(device, { persistImmediately: false });
