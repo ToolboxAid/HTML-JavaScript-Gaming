@@ -1038,7 +1038,7 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
     });
     expect(sideNavStructure).toEqual(expect.objectContaining({
       ariaLabel: "Account pages",
-      classes: expect.arrayContaining(["side-menu", "tool-column", "tool-group-platform"]),
+      classes: expect.arrayContaining(["side-menu", "tool-column"]),
       dataAttribute: "",
       directAccordionCount: 2,
       headerText: "Account",
@@ -1047,6 +1047,45 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
       stackTagName: "div",
       tagName: "aside",
     }));
+    expect(sideNavStructure.classes).not.toContain("tool-group-platform");
+    const accountColorTreatment = await page.locator(".account-panel").evaluate((panel) => {
+      const aside = panel.querySelector("[data-account-side-nav]");
+      const centerCard = panel.querySelector(":scope > .card");
+      const summary = aside?.querySelector("details.vertical-accordion summary");
+      const toggle = aside?.querySelector("[data-account-side-nav-collapse]");
+      const headerTitle = aside?.querySelector(".tool-column-header h2");
+      const asideStyles = aside ? getComputedStyle(aside) : null;
+      const centerStyles = centerCard ? getComputedStyle(centerCard) : null;
+      const summaryStyles = summary ? getComputedStyle(summary) : null;
+      const toggleStyles = toggle ? getComputedStyle(toggle) : null;
+      const headerTitleStyles = headerTitle ? getComputedStyle(headerTitle) : null;
+      return asideStyles && centerStyles && summaryStyles && toggleStyles && headerTitleStyles
+        ? {
+          asideBackgroundImage: asideStyles.backgroundImage,
+          asideBorderColor: asideStyles.borderTopColor,
+          centerBackgroundImage: centerStyles.backgroundImage,
+          centerBorderColor: centerStyles.borderTopColor,
+          centerTextColor: centerStyles.color,
+          headerTitleColor: headerTitleStyles.color,
+          summaryColor: summaryStyles.color,
+          toggleColor: toggleStyles.color,
+        }
+        : null;
+    });
+    expect(accountColorTreatment).toEqual(expect.objectContaining({
+      asideBackgroundImage: expect.any(String),
+      asideBorderColor: expect.any(String),
+      centerBackgroundImage: expect.any(String),
+      centerBorderColor: expect.any(String),
+      centerTextColor: expect.any(String),
+      headerTitleColor: expect.any(String),
+      summaryColor: expect.any(String),
+      toggleColor: expect.any(String),
+    }));
+    expect(accountColorTreatment.asideBackgroundImage).toBe(accountColorTreatment.centerBackgroundImage);
+    expect(accountColorTreatment.asideBorderColor).toBe(accountColorTreatment.centerBorderColor);
+    expect(accountColorTreatment.summaryColor).toBe(accountColorTreatment.centerTextColor);
+    expect(accountColorTreatment.toggleColor).toBe(accountColorTreatment.headerTitleColor);
     const collapseButton = page.locator("[data-account-side-nav-collapse]");
     await expect(collapseButton).toBeVisible();
     await expect(collapseButton).toHaveClass(/horizontal-accordion-toggle--left/);
