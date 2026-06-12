@@ -1116,7 +1116,7 @@ export class AccountUserControlsPage {
     const selectedDeviceInput = this.root.querySelector(
       "[data-account-user-controls-list-family='Gamepad'] [data-account-user-controls-selected-device]:checked",
     );
-    const selectionKey = normalizeText(selectedDeviceInput?.value || this.selectedInputDevice?.selectionKey);
+    const selectionKey = normalizeText(selectedDeviceInput?.value);
     const selectedChoice = this.selectedInputDeviceChoices().find((choice) =>
       choice.selectionType === "device"
         && choice.deviceType === "Gamepad"

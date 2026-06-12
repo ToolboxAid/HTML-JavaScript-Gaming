@@ -917,8 +917,22 @@ test("User Controls creates one profile from only the selected game controller r
   try {
     await exposeGamepads(page);
     await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("2 game controllers detected automatically", { timeout: 4000 });
-    await expect(page.locator("[data-account-user-controls-detected-device='Arcade Test Pad']")).toBeVisible();
-    await expect(page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']")).toBeVisible();
+    const arcadeDetectedRow = page.locator("[data-account-user-controls-detected-device='Arcade Test Pad']");
+    const studioDetectedRow = page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']");
+    await expect(arcadeDetectedRow).toBeVisible();
+    await expect(studioDetectedRow).toBeVisible();
+    await expect(arcadeDetectedRow).toContainText("Detected");
+    await expect(studioDetectedRow).toContainText("Detected");
+    await expect(arcadeDetectedRow.getByRole("button", { name: "Edit" })).toHaveCount(0);
+    await expect(arcadeDetectedRow.getByRole("button", { name: "Trash" })).toHaveCount(0);
+    await expect(studioDetectedRow.getByRole("button", { name: "Edit" })).toHaveCount(0);
+    await expect(studioDetectedRow.getByRole("button", { name: "Trash" })).toHaveCount(0);
+    await expect(page.locator("[data-account-user-controls-list-family='Gamepad'] [data-account-user-controls-profile-row]")).toHaveCount(0);
+    expect(await controllerProfileRecords(page)).toHaveLength(0);
+
+    await page.locator("[data-account-user-controls-add-profile]").click();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("WARN: Select a detected game controller row before creating a user control profile.");
+    await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
     const studioDeviceChoice = page.locator("[data-account-user-controls-selected-device='device:gamepad:studio-flight-pad']");
@@ -930,6 +944,10 @@ test("User Controls creates one profile from only the selected game controller r
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");
     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad");
+    await expect(page.locator("[data-account-user-controls-editing-row]").getByRole("button", { name: "Save" })).toBeVisible();
+    await expect(page.locator("[data-account-user-controls-editing-row]").getByRole("button", { name: "Cancel" })).toBeVisible();
+    await expect(page.locator("[data-account-user-controls-editing-row]").getByRole("button", { name: "Edit" })).toHaveCount(0);
+    await expect(page.locator("[data-account-user-controls-editing-row]").getByRole("button", { name: "Trash" })).toHaveCount(0);
     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
     await page.locator("[data-account-user-controls-save]").click();
@@ -945,6 +963,9 @@ test("User Controls creates one profile from only the selected game controller r
     expect(profiles.map((profile) => profile.profileName)).not.toContain("Arcade Test Pad Profile");
     await expect(page.locator("[data-account-user-controls-detected-device='Arcade Test Pad']")).toBeVisible();
     await expect(page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']")).toBeVisible();
+    const savedStudioProfileRow = page.locator("[data-account-user-controls-profile-row='studio-flight-pad-studio-flight-pad-profile']");
+    await expect(savedStudioProfileRow.getByRole("button", { name: "Edit" })).toBeVisible();
+    await expect(savedStudioProfileRow.getByRole("button", { name: "Trash" })).toBeVisible();
     await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).not.toContainText("Arcade Test Pad Profile");
 
     await page.locator("[data-account-user-controls-selected-device='device:gamepad:studio-flight-pad']").check();
