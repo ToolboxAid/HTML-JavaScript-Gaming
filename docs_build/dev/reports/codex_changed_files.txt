@@ -4,7 +4,6 @@ docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
 docs_build/dev/reports/playwright_v8_coverage_report.txt
-src/dev-runtime/persistence/mock-db-store.js
-src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+src/engine/input/NormalizedInputRegistry.js
 tests/playwright/tools/InputMappingV2Tool.spec.mjs
-docs_build/dev/reports/user-controls-selected-device-fallback-report.md
+docs_build/dev/reports/user-controls-defaults-and-profile-rules-report.md

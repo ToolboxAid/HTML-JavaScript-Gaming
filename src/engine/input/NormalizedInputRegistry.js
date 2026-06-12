@@ -21,6 +21,8 @@ export const NORMALIZED_INPUT_REGISTRY = Object.freeze([
     Object.freeze({ id: 'action.confirm', label: 'action.confirm', kind: 'action' }),
     Object.freeze({ id: 'action.cancel', label: 'action.cancel', kind: 'action' }),
     Object.freeze({ id: 'action.menu', label: 'action.menu', kind: 'action' }),
+    Object.freeze({ id: 'action.scrollUp', label: 'action.scrollUp', kind: 'action' }),
+    Object.freeze({ id: 'action.scrollDown', label: 'action.scrollDown', kind: 'action' }),
     Object.freeze({ id: 'action.start', label: 'action.start', kind: 'action' }),
     Object.freeze({ id: 'action.select', label: 'action.select', kind: 'action' }),
     Object.freeze({ id: 'action.pause', label: 'action.pause', kind: 'action' }),
@@ -49,24 +51,31 @@ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
     Button3: 'action.quaternary',
     Button8: 'action.select',
     Button9: 'action.start',
+    Backspace: 'action.cancel',
+    ControlLeft: 'action.tertiary',
     'DPad Down': 'move.y+',
     'DPad Left': 'move.x-',
     'DPad Right': 'move.x+',
     'DPad Up': 'move.y-',
     Enter: 'action.confirm',
-    Escape: 'action.cancel',
     KeyA: 'move.x-',
     KeyD: 'move.x+',
     KeyP: 'action.pause',
     KeyS: 'move.y+',
     KeyW: 'move.y-',
     MouseButton0: 'action.primary',
+    MouseButton1: 'action.tertiary',
     MouseButton2: 'action.secondary',
-    MouseX: 'aim.x+',
-    MouseY: 'aim.y+',
+    MouseWheelDown: 'action.scrollDown',
+    MouseWheelUp: 'action.scrollUp',
+    'MouseX-': 'aim.x-',
+    'MouseX+': 'aim.x+',
+    'MouseY-': 'aim.y-',
+    'MouseY+': 'aim.y+',
+    ShiftLeft: 'action.secondary',
     Space: 'action.primary',
-    'Trigger Left': 'action.primary',
-    'Trigger Right': 'action.secondary',
+    'Trigger Left': 'trigger.left',
+    'Trigger Right': 'trigger.right',
 });
 
 const DEFAULT_PHYSICAL_AXIS_DIRECTION_MAP = Object.freeze({
@@ -83,8 +92,12 @@ const SYSTEM_DEFAULT_GAMEPAD_INPUTS = Object.freeze([
     'Button1',
     'Button2',
     'Button3',
+    'Button4',
+    'Button5',
     'Button8',
     'Button9',
+    'Button10',
+    'Button11',
     'DPad Up',
     'DPad Down',
     'DPad Left',
@@ -103,13 +116,20 @@ const SYSTEM_DEFAULT_KEYBOARD_MOUSE_INPUTS = Object.freeze([
     'KeyS',
     'KeyD',
     'Space',
+    'ShiftLeft',
+    'ControlLeft',
     'Enter',
-    'Escape',
+    'Backspace',
     'KeyP',
     'MouseButton0',
     'MouseButton2',
-    'MouseX',
-    'MouseY',
+    'MouseButton1',
+    'MouseWheelUp',
+    'MouseWheelDown',
+    'MouseX-',
+    'MouseX+',
+    'MouseY-',
+    'MouseY+',
 ]);
 
 const DEFAULT_SENSITIVITY = 100;
@@ -248,7 +268,7 @@ export function physicalInputSensitivityDescriptor(physicalInput) {
     const inputName = normalizeInputName(physicalInput);
     const lowerName = inputName.toLowerCase();
     let label = '';
-    if (inputName === 'MouseX' || inputName === 'MouseY') {
+    if (inputName === 'MouseX' || inputName === 'MouseY' || /^Mouse[XY][+-]$/i.test(inputName)) {
         label = 'Mouse movement sensitivity';
     } else if (lowerName.includes('wheel')) {
         label = 'Mouse wheel sensitivity';

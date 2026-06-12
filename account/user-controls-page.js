@@ -11,8 +11,8 @@ import {
 
 const DEVICE_POLL_INTERVAL_MS = 1200;
 const INPUT_CAPTURE_TIMEOUT_MS = 5000;
-const KEYBOARD_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP"]);
-const MOUSE_INPUTS = Object.freeze(["MouseButton0", "MouseButton2", "MouseX", "MouseY"]);
+const KEYBOARD_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "ShiftLeft", "ControlLeft", "Enter", "Backspace", "KeyP"]);
+const MOUSE_INPUTS = Object.freeze(["MouseButton0", "MouseButton2", "MouseButton1", "MouseWheelUp", "MouseWheelDown", "MouseX-", "MouseX+", "MouseY-", "MouseY+"]);
 const KEYBOARD_MOUSE_EXCLUDED_NORMALIZED_PREFIXES = Object.freeze(["dpad.", "trigger."]);
 const SUPPORTED_CONTROL_TYPES = Object.freeze([
   "Keyboard Key",
@@ -99,8 +99,13 @@ function rangeValueLabel(value, unit = "") {
   return `${value}${unit}`;
 }
 
-function physicalInputSupportsTuning(physicalInput) {
-  return physicalInputIsAnalog(physicalInput) || Boolean(physicalInputSensitivityDescriptor(physicalInput));
+function physicalInputSupportsDeadzoneInvert(physicalInput) {
+  const normalizedInput = normalizeText(physicalInput);
+  const lowerName = normalizedInput.toLowerCase();
+  return physicalInputIsAnalog(normalizedInput)
+    || lowerName.includes("trigger")
+    || normalizedInput === "LT"
+    || normalizedInput === "RT";
 }
 
 function createSliderControl({ ariaLabel, dataName, defaultValue, index, max, min, step, unit, value }) {
@@ -315,7 +320,7 @@ export class AccountUserControlsPage {
       this.profiles = result.profiles.map((profile) => this.normalizeProfile(profile));
       return true;
     }
-    this.setStatus(result?.message || "WARN: Account user controls could not reach the shared DB adapter.");
+    this.setStatus(result?.message || "WARN: User Controls could not reach the shared DB adapter.");
     return false;
   }
 
@@ -328,6 +333,43 @@ export class AccountUserControlsPage {
       inputs: device.inputs,
       mappingProfile: device.mappingProfile,
     });
+  }
+
+  uniqueProfileForDevice(device) {
+    const family = this.profileListFamily(device);
+    const baseControllerName = normalizeText(device.controllerName) || family;
+    const baseProfileName = normalizeText(device.mappingProfile) || `${baseControllerName} Profile`;
+    const profileNames = new Set(this.profiles
+      .filter((profile) => this.profileListFamily(profile) === family)
+      .map((profile) => normalizeText(profile.mappingProfile).toLowerCase()));
+    let controllerName = baseControllerName;
+    let mappingProfile = baseProfileName;
+    let suffix = 2;
+    while (profileNames.has(mappingProfile.toLowerCase())) {
+      controllerName = `${baseControllerName} ${suffix}`;
+      mappingProfile = `${baseControllerName} ${suffix} Profile`;
+      suffix += 1;
+    }
+    return this.normalizeProfile({
+      controllerId: device.controllerId,
+      controllerName,
+      deviceType: device.deviceType,
+      inputMappings: normalizeProfileInputMappings(device.inputs),
+      inputs: device.inputs,
+      mappingProfile,
+    });
+  }
+
+  createProfile(device) {
+    const profile = this.uniqueProfileForDevice(device);
+    if (!this.saveProfiles([profile, ...this.profiles])) {
+      this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
+      return;
+    }
+    this.editingProfile = null;
+    this.viewingDefaultFamily = "";
+    this.renderProfiles();
+    this.setStatus(`PASS: Created ${profile.mappingProfile}. Use Edit to change it.`);
   }
 
   renderDeviceSelect() {
@@ -661,8 +703,8 @@ export class AccountUserControlsPage {
       return row;
     }
     row.append(
-      tableCell(physicalInputSupportsTuning(inputMapping.physicalInput) ? String(inputMapping.deadzone) : "N/A"),
-      tableCell(physicalInputSupportsTuning(inputMapping.physicalInput) && inputMapping.invert ? "On" : physicalInputSupportsTuning(inputMapping.physicalInput) ? "Off" : "N/A"),
+      tableCell(physicalInputSupportsDeadzoneInvert(inputMapping.physicalInput) ? String(inputMapping.deadzone) : "N/A"),
+      tableCell(physicalInputSupportsDeadzoneInvert(inputMapping.physicalInput) && inputMapping.invert ? "On" : physicalInputSupportsDeadzoneInvert(inputMapping.physicalInput) ? "Off" : "N/A"),
       tableCell(physicalInputSensitivityDescriptor(inputMapping.physicalInput)
         ? rangeValueLabel(inputMapping.sensitivity ?? physicalInputSensitivityDescriptor(inputMapping.physicalInput).defaultValue, physicalInputSensitivityDescriptor(inputMapping.physicalInput).unit)
         : "N/A"),
@@ -830,13 +872,6 @@ export class AccountUserControlsPage {
       });
       positiveSelect.dataset.accountUserControlsInputPositive = String(index);
       stack.append(labeledControl("Negative", negativeSelect), labeledControl("Positive", positiveSelect));
-    } else if (family === "Keyboard") {
-      const value = normalizeText(inputMapping.normalizedInput) || "Unassigned";
-      const readonlyControl = document.createElement("span");
-      readonlyControl.className = "status";
-      readonlyControl.dataset.accountUserControlsInputNormalizedReadonly = String(index);
-      readonlyControl.textContent = value;
-      stack.append(readonlyControl);
     } else {
       const select = selectControl({
         ariaLabel: `${inputMapping.physicalInput} normalized control`,
@@ -857,7 +892,7 @@ export class AccountUserControlsPage {
     }
 
     const deadzoneCell = document.createElement("td");
-    if (physicalInputSupportsTuning(inputMapping.physicalInput)) {
+    if (physicalInputSupportsDeadzoneInvert(inputMapping.physicalInput)) {
       const deadzone = document.createElement("input");
       deadzone.type = "number";
       deadzone.min = "0";
@@ -871,7 +906,7 @@ export class AccountUserControlsPage {
     }
 
     const invertCell = document.createElement("td");
-    if (physicalInputSupportsTuning(inputMapping.physicalInput)) {
+    if (physicalInputSupportsDeadzoneInvert(inputMapping.physicalInput)) {
       const invert = document.createElement("input");
       invert.type = "checkbox";
       invert.checked = Boolean(inputMapping.invert);
@@ -984,37 +1019,13 @@ export class AccountUserControlsPage {
       this.setStatus("WARN: Choose a physical controller before creating a user control profile.");
       return;
     }
-    const existing = this.profiles.find((profile) => profile.deviceType === device.deviceType && profile.controllerId === device.controllerId);
-    if (existing) {
-      this.editingProfile = { id: existing.id, values: existing };
-      this.viewingDefaultFamily = "";
-      this.renderProfiles();
-      this.setStatus(`Editing existing ${existing.mappingProfile}.`);
-      return;
-    }
-    const profile = this.profileFromDevice(device);
-    this.editingProfile = { id: profile.id, values: profile };
-    this.viewingDefaultFamily = "";
-    this.renderProfiles();
-    this.setStatus(`Review ${profile.mappingProfile} before saving.`);
+    this.createProfile(device);
   }
 
   editFamilyMappings(family) {
     const normalizedFamily = family === "Mouse" ? "Mouse" : "Keyboard";
     const device = this.familyDevice(normalizedFamily);
-    const existing = this.profiles.find((profile) => profile.deviceType === device.deviceType && profile.controllerId === device.controllerId);
-    if (existing) {
-      this.editingProfile = { id: existing.id, values: existing };
-      this.viewingDefaultFamily = "";
-      this.renderProfiles();
-      this.setStatus(`Editing existing ${existing.mappingProfile}.`);
-      return;
-    }
-    const profile = this.profileFromDevice(device);
-    this.editingProfile = { id: profile.id, values: profile };
-    this.viewingDefaultFamily = "";
-    this.renderProfiles();
-    this.setStatus(`Review ${profile.mappingProfile} before saving.`);
+    this.createProfile(device);
   }
 
   profileFromEditingRow() {
@@ -1113,6 +1124,19 @@ export class AccountUserControlsPage {
     };
   }
 
+  duplicateProfileName(profile) {
+    const profileName = normalizeText(profile.mappingProfile).toLowerCase();
+    if (!profileName) {
+      return null;
+    }
+    const family = this.profileListFamily(profile);
+    return this.profiles.find((candidate) =>
+      candidate.id !== profile.id
+        && this.profileListFamily(candidate) === family
+        && normalizeText(candidate.mappingProfile).toLowerCase() === profileName,
+    ) || null;
+  }
+
   renderInputValidation(validation) {
     const invalidIndexes = new Set(validation.invalidIndexes || []);
     this.root.querySelectorAll("[data-account-user-controls-input-validation]").forEach((status) => {
@@ -1207,11 +1231,15 @@ export class AccountUserControlsPage {
       this.setStatus(`FAIL: ${validation.message}`);
       return;
     }
+    if (this.duplicateProfileName(profile)) {
+      this.setStatus(`FAIL: ${profile.mappingProfile} already exists for ${this.profileListFamily(profile)}.`);
+      return;
+    }
     const nextProfiles = this.editingProfile?.id && this.profiles.some((candidate) => candidate.id === this.editingProfile.id)
       ? this.profiles.map((candidate) => (candidate.id === this.editingProfile.id ? profile : candidate))
       : [profile, ...this.profiles];
     if (!this.saveProfiles(nextProfiles)) {
-      this.setStatus("FAIL: Account user controls could not reach the shared DB adapter.");
+      this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
       return;
     }
     this.editingProfile = null;
