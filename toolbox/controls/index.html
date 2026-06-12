@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Controls - GameFoundryStudio</title>
-    <meta name="description" content="Controls toolbox for DB-backed normalized game controls and player controller profiles.">
+    <meta name="description" content="Controls toolbox for DB-backed game-owned normalized controls.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Controls</div>
                 <h1>Controls</h1>
-                <p class="lede">Define game-owned controls with generic normalized controls and creator-facing usage labels.</p>
+                <p class="lede">Define game-owned controls with normalized actions and creator-facing usage labels.</p>
                 <p><a class="btn btn--compact" href="/toolbox/game-workspace/index.html" hidden data-input-return-workspace>Return to Game Workspace</a></p>
             </div>
         </section>
@@ -36,7 +36,7 @@
                                     <table class="data-table" aria-label="Normalized controls catalog" data-input-action-catalog>
                                         <thead>
                                             <tr>
-                                                <th>Normalized Action Type</th>
+                                                <th>Normalized Action</th>
                                                 <th>Description</th>
                                             </tr>
                                         </thead>
@@ -59,22 +59,15 @@
                                     </div>
                                 </div>
                             </details>
-                            <details class="vertical-accordion">
-                                <summary>Supported Control Types</summary>
-                                <div class="accordion-body content-stack">
-                                    <ul data-input-control-type-list></ul>
-                                    <a class="btn btn--compact" href="/account/user-controls.html" data-account-user-controls-link>Open Account User Controls</a>
-                                </div>
-                            </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
                     <section class="tool-center-panel">
                         <h2>Game Controls</h2>
-                        <p>Map fixed normalized action types to game usage labels, objects, and gameplay event fields.</p>
-                        <div class="grid cols-3" aria-label="Input mapping summary">
+                        <p>Map normalized actions to game usage labels and event timing.</p>
+                        <div class="grid cols-3" aria-label="Game controls summary">
                             <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
-                            <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
+                            <article class="mini-stat"><strong data-input-enabled-count>0</strong>Enabled</article>
                             <article class="mini-stat"><strong data-input-save-status>Not Configured</strong>Status</article>
                         </div>
                         <article class="card">
@@ -88,134 +81,23 @@
                                                 <h3>Game Controls</h3>
                                             </div>
                                             <p class="status" data-input-state-explanation>Enabled controls are available to the game. Disabled controls stay saved but are ignored until re-enabled.</p>
-                                            <div class="accordion-stack" data-input-family-accordions>
-                                                <details class="vertical-accordion" open data-input-family-panel="Keyboard">
-                                                    <summary>Keyboard Controls</summary>
-                                                    <div class="accordion-body table-wrapper">
-                                                        <table class="data-table" aria-label="Keyboard game controls" data-input-mapping-table data-input-mapping-table-family="Keyboard">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Enabled</th>
-                                                                    <th>Normalized Action Type</th>
-                                                                    <th>Usage Label</th>
-                                                                    <th>Input Family</th>
-                                                                    <th>Press</th>
-                                                                    <th>Hold</th>
-                                                                    <th>Release</th>
-                                                                    <th>Double Press</th>
-                                                                    <th>Drag</th>
-                                                                    <th>Axis</th>
-                                                                    <th hidden data-input-object-column>Object</th>
-                                                                    <th>Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Keyboard"></tbody>
-                                                        </table>
-                                                    </div>
-                                                </details>
-                                                <details class="vertical-accordion" open data-input-family-panel="Mouse">
-                                                    <summary>Mouse Controls</summary>
-                                                    <div class="accordion-body table-wrapper">
-                                                        <table class="data-table" aria-label="Mouse game controls" data-input-mapping-table data-input-mapping-table-family="Mouse">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Enabled</th>
-                                                                    <th>Normalized Action Type</th>
-                                                                    <th>Usage Label</th>
-                                                                    <th>Input Family</th>
-                                                                    <th>Press</th>
-                                                                    <th>Hold</th>
-                                                                    <th>Release</th>
-                                                                    <th>Double Press</th>
-                                                                    <th>Drag</th>
-                                                                    <th>Axis</th>
-                                                                    <th hidden data-input-object-column>Object</th>
-                                                                    <th>Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Mouse"></tbody>
-                                                        </table>
-                                                    </div>
-                                                </details>
-                                                <details class="vertical-accordion" open data-input-family-panel="Joystick">
-                                                    <summary>Joystick Controls</summary>
-                                                    <div class="accordion-body table-wrapper">
-                                                        <table class="data-table" aria-label="Joystick game controls" data-input-mapping-table data-input-mapping-table-family="Joystick">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Enabled</th>
-                                                                    <th>Normalized Action Type</th>
-                                                                    <th>Usage Label</th>
-                                                                    <th>Input Family</th>
-                                                                    <th>Press</th>
-                                                                    <th>Hold</th>
-                                                                    <th>Release</th>
-                                                                    <th>Double Press</th>
-                                                                    <th>Drag</th>
-                                                                    <th>Axis</th>
-                                                                    <th hidden data-input-object-column>Object</th>
-                                                                    <th>Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Joystick"></tbody>
-                                                        </table>
-                                                    </div>
-                                                </details>
-                                                <details class="vertical-accordion" open data-input-family-panel="Gamepad">
-                                                    <summary>Gamepad Controls</summary>
-                                                    <div class="accordion-body table-wrapper">
-                                                        <table class="data-table" aria-label="Gamepad game controls" data-input-mapping-table data-input-mapping-table-family="Gamepad">
-                                                            <thead>
-                                                                <tr>
-                                                                    <th>Enabled</th>
-                                                                    <th>Normalized Action Type</th>
-                                                                    <th>Usage Label</th>
-                                                                    <th>Input Family</th>
-                                                                    <th>Press</th>
-                                                                    <th>Hold</th>
-                                                                    <th>Release</th>
-                                                                    <th>Double Press</th>
-                                                                    <th>Drag</th>
-                                                                    <th>Axis</th>
-                                                                    <th hidden data-input-object-column>Object</th>
-                                                                    <th>Actions</th>
-                                                                </tr>
-                                                            </thead>
-                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Gamepad"></tbody>
-                                                        </table>
-                                                    </div>
-                                                </details>
+                                            <div class="table-wrapper">
+                                                <table class="data-table" aria-label="Game controls" data-input-mapping-table>
+                                                    <thead>
+                                                        <tr>
+                                                            <th>Enabled</th>
+                                                            <th>Normalized Action</th>
+                                                            <th>Usage Label</th>
+                                                            <th>D</th>
+                                                            <th>H</th>
+                                                            <th>U</th>
+                                                            <th>DC</th>
+                                                            <th>Actions</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody data-input-mapping-list></tbody>
+                                                </table>
                                             </div>
-                                            <div class="content-split" data-input-mapping-table-footer>
-                                                <div class="content-cluster" aria-label="Game Controls table actions" data-input-mapping-table-actions>
-                                                    <button class="btn" type="button" data-input-add-mapping>Add Game Control</button>
-                                                    <button class="btn btn--compact" type="button" data-input-add-keyboard-family>Add Keyboard Control</button>
-                                                    <button class="btn btn--compact" type="button" data-input-add-mouse-family>Add Mouse Control</button>
-                                                    <button class="btn btn--compact" type="button" data-input-add-joystick-family>Add Joystick Control</button>
-                                                    <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
-                                                </div>
-                                                <div class="action-group action-group--end" aria-label="Game Controls creation selections" data-input-selected-context>
-                                                    <label>
-                                                        Normalized Action Type
-                                                        <select data-input-action-select></select>
-                                                    </label>
-                                                    <label>
-                                                        Object
-                                                        <select data-input-object-select></select>
-                                                    </label>
-                                                </div>
-                                            </div>
-                                            <div class="content-stack content-stack--compact" data-input-object-summary>
-                                                <p>Selected Object: <span data-input-object-summary-name>Global</span></p>
-                                                <p>Object Role/Template: <span data-input-object-summary-role>Global</span></p>
-                                                <p>Available Normalized Controls: <span data-input-object-summary-actions>All normalized controls</span></p>
-                                            </div>
-                                            <details class="vertical-accordion" data-input-combo-controls>
-                                                <summary>Combo Controls</summary>
-                                                <div class="accordion-body content-stack">
-                                                    <p class="status">Wireframe only: Keyboard Shift + Mouse Right Click can become a future combo control.</p>
-                                                </div>
-                                            </details>
                                         </div>
                                     </details>
                                 </div>
@@ -227,13 +109,6 @@
                             <h2>Inspector</h2>
                         </div>
                         <div class="accordion-stack">
-                            <details class="vertical-accordion" open>
-                                <summary>Devices</summary>
-                                <div class="accordion-body content-stack">
-                                    <p class="status" data-input-device-guidance>Physical controller setup belongs in Account User Controls. Game Controls stays generic and game-owned.</p>
-                                    <ul data-input-source-diagnostics></ul>
-                                </div>
-                            </details>
                             <details class="vertical-accordion" open>
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">

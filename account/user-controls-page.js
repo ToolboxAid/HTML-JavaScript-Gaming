@@ -127,7 +127,7 @@ export class AccountUserControlsPage {
     this.devicePollingTimer = null;
     this.elements = {
       addProfile: root.querySelector("[data-account-user-controls-add-profile]"),
-      defaultList: root.querySelector("[data-account-user-controls-default-list]"),
+      defaultLists: [...root.querySelectorAll("[data-account-user-controls-default-list]")],
       deviceSelect: root.querySelector("[data-account-user-controls-device]"),
       deviceStatus: root.querySelector("[data-account-user-controls-device-status]"),
       list: root.querySelector("[data-account-user-controls-list]"),
@@ -302,7 +302,7 @@ export class AccountUserControlsPage {
       this.setDeviceStatus(this.deviceRefreshMessage());
       return;
     }
-    this.setDeviceStatus(`${device.label} selected. Create a user control profile to map physical inputs to normalized controls.`);
+    this.setDeviceStatus(`${device.label} selected. Create a user control profile to map physical inputs to normalized controls. ${this.deviceRefreshMessage()}`);
   }
 
   renderTypes() {
@@ -317,25 +317,40 @@ export class AccountUserControlsPage {
   }
 
   renderDefaultFallbacks() {
-    if (!this.elements.defaultList) {
+    if (!this.elements.defaultLists.length) {
       return;
     }
     const systemDefault = this.inputService.getSystemDefaultProfileForDevice("Keyboard/Mouse");
-    const rows = (systemDefault.inputMappings || [])
+    const rowsByFamily = new Map([
+      ["Keyboard", []],
+      ["Mouse", []],
+    ]);
+    (systemDefault.inputMappings || [])
       .filter((mapping) => KEYBOARD_INPUTS.includes(mapping.physicalInput) || MOUSE_INPUTS.includes(mapping.physicalInput))
-      .map((mapping) => {
+      .forEach((mapping) => {
         const row = document.createElement("tr");
         row.dataset.accountUserControlsDefaultRow = mapping.physicalInput;
         const family = MOUSE_INPUTS.includes(mapping.physicalInput) ? "Mouse" : "Keyboard";
         row.append(
-          tableCell(family),
           tableCell(mapping.physicalInput),
           tableCell(mapping.normalizedInput || mapping.positiveNormalizedInput || mapping.negativeNormalizedInput || "Unassigned"),
           tableCell("Visible fallback"),
         );
-        return row;
+        rowsByFamily.get(family)?.push(row);
       });
-    this.elements.defaultList.replaceChildren(...rows);
+    this.elements.defaultLists.forEach((list) => {
+      const family = list.dataset.accountUserControlsDefaultFamily || "Keyboard";
+      const rows = rowsByFamily.get(family) || [];
+      if (!rows.length) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 3;
+        cell.textContent = `No ${family} fallback controls available.`;
+        row.append(cell);
+        rows.push(row);
+      }
+      list.replaceChildren(...rows);
+    });
   }
 
   startDevicePolling() {

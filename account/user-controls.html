@@ -17,7 +17,7 @@
             <div class="container">
                 <div class="kicker">Account</div>
                 <h1>Account User Controls</h1>
-                <p class="lede">Map your physical keyboard, mouse, gamepad, joystick, controller, or touch controls to generic normalized controls.</p>
+                <p class="lede">Map your physical keyboard, mouse, game controller, joystick, or touch controls to generic normalized controls.</p>
             </div>
         </section>
         <section class="section">
@@ -30,63 +30,93 @@
                             <h2>Physical Input Mapping</h2>
                             <p>Account User Controls resolves physical input to normalized controls. Game behavior stays in Game Controls.</p>
                         </div>
-                        <div class="content-cluster" aria-label="Account controller device selection">
-                            <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
-                            <label>
-                                Physical Controller
-                                <select data-account-user-controls-device></select>
-                            </label>
-                            <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
-                            <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
-                        </div>
-                        <p class="status" role="status" data-account-user-controls-device-status>Refresh devices, choose a physical controller, then create a user control profile.</p>
-                        <details class="vertical-accordion" open>
-                            <summary>Default Keyboard/Mouse Fallbacks</summary>
-                            <div class="accordion-body content-stack">
-                                <p class="status">Keyboard and Mouse defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Default keyboard and mouse fallbacks" data-account-user-controls-defaults>
-                                        <thead>
-                                            <tr>
-                                                <th>Input Family</th>
-                                                <th>Physical Input</th>
-                                                <th>Normalized Control</th>
-                                                <th>Source</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-account-user-controls-default-list></tbody>
-                                    </table>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open data-account-user-controls-section="Keyboard">
+                                <summary>Keyboard</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status">Keyboard defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Default keyboard fallback" data-account-user-controls-defaults="Keyboard">
+                                            <thead>
+                                                <tr>
+                                                    <th>Physical Input</th>
+                                                    <th>Normalized Control</th>
+                                                    <th>Source</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Keyboard"></tbody>
+                                        </table>
+                                    </div>
                                 </div>
-                            </div>
-                        </details>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
-                                <thead>
-                                    <tr>
-                                        <th>Physical Controller</th>
-                                        <th>Physical Input</th>
-                                        <th>Normalized Control</th>
-                                        <th>Deadzone</th>
-                                        <th>Invert</th>
-                                        <th>Sensitivity</th>
-                                        <th>Actions</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-account-user-controls-list></tbody>
-                            </table>
+                            </details>
+                            <details class="vertical-accordion" open data-account-user-controls-section="Mouse">
+                                <summary>Mouse</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status">Mouse defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Default mouse fallback" data-account-user-controls-defaults="Mouse">
+                                            <thead>
+                                                <tr>
+                                                    <th>Physical Input</th>
+                                                    <th>Normalized Control</th>
+                                                    <th>Source</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Mouse"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open data-account-user-controls-section="Game Controllers">
+                                <summary>Game Controllers</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="content-cluster" aria-label="Account controller device selection">
+                                        <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
+                                        <label>
+                                            Physical Controller
+                                            <select data-account-user-controls-device></select>
+                                        </label>
+                                        <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
+                                        <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
+                                    </div>
+                                    <p class="status" role="status" data-account-user-controls-device-status>Keyboard and Mouse are available. Game controllers auto-detect after the browser exposes them.</p>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
+                                            <thead>
+                                                <tr>
+                                                    <th>Physical Controller</th>
+                                                    <th>Physical Input</th>
+                                                    <th>Normalized Control</th>
+                                                    <th>Deadzone</th>
+                                                    <th>Invert</th>
+                                                    <th>Sensitivity</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-account-user-controls-list></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" data-account-user-controls-section="Combo Inputs">
+                                <summary>Combo Inputs</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status">Wireframe only: Keyboard Shift + Mouse Right Click can be planned here later.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Supported Control Types</summary>
+                                <div class="accordion-body">
+                                    <ul data-account-user-controls-types></ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status</summary>
+                                <div class="accordion-body">
+                                    <div class="status" role="status" data-account-user-controls-status>Account User Controls ready.</div>
+                                </div>
+                            </details>
                         </div>
-                        <details class="vertical-accordion" open>
-                            <summary>Supported Control Types</summary>
-                            <div class="accordion-body">
-                                <ul data-account-user-controls-types></ul>
-                            </div>
-                        </details>
-                        <details class="vertical-accordion" open>
-                            <summary>Status</summary>
-                            <div class="accordion-body">
-                                <div class="status" role="status" data-account-user-controls-status>Account User Controls ready.</div>
-                            </div>
-                        </details>
                     </div>
                 </div>
             </div>
