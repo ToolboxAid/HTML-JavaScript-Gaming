@@ -44,6 +44,13 @@ const GAME_CONTROL_USAGE_LABELS = [
   "Select",
 ];
 
+const EVENT_CONTROL_LABELS = {
+  eventD: "D = Down",
+  eventDC: "DC = Double Click / Double Press",
+  eventH: "H = Hold",
+  eventU: "U = Up",
+};
+
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "controls",
@@ -236,6 +243,14 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
       "DC",
       "Actions",
     ]);
+    await expect(page.locator("[data-input-mapping-table] th").nth(3)).toHaveAttribute("title", "Down");
+    await expect(page.locator("[data-input-mapping-table] th").nth(3)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventD);
+    await expect(page.locator("[data-input-mapping-table] th").nth(4)).toHaveAttribute("title", "Hold");
+    await expect(page.locator("[data-input-mapping-table] th").nth(4)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventH);
+    await expect(page.locator("[data-input-mapping-table] th").nth(5)).toHaveAttribute("title", "Up");
+    await expect(page.locator("[data-input-mapping-table] th").nth(5)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventU);
+    await expect(page.locator("[data-input-mapping-table] th").nth(6)).toHaveAttribute("title", "Double Click / Double Press");
+    await expect(page.locator("[data-input-mapping-table] th").nth(6)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventDC);
     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /Keyboard|Mouse|Joystick|Gamepad|Combo|Object|State|Family/ })).toHaveCount(0);
     await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.");
     await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
@@ -255,15 +270,15 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
 
     const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
     await expect(primaryRow.locator("td").nth(0).locator("input")).toBeChecked();
-    await expect(primaryRow.locator("input[aria-label='D']")).toBeChecked();
-    await expect(primaryRow.locator("input[aria-label='H']")).not.toBeChecked();
-    await expect(primaryRow.locator("input[aria-label='U']")).not.toBeChecked();
-    await expect(primaryRow.locator("input[aria-label='DC']")).not.toBeChecked();
-    await expect(primaryRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
-    await expect(primaryRow.locator("input[aria-label='D']")).toBeDisabled();
-    await expect(primaryRow.locator("input[aria-label='H']")).toBeDisabled();
+    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`)).toBeChecked();
+    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`)).not.toBeChecked();
+    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventU}"]`)).not.toBeChecked();
+    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventDC}"]`)).not.toBeChecked();
+    await expect(primaryRow.locator(`td:has(input[aria-label="${EVENT_CONTROL_LABELS.eventD}"])`)).toHaveAttribute("data-input-event-checked", "true");
+    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`)).toBeDisabled();
+    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`)).toBeDisabled();
 
-    const checkedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='D']").evaluate((input) => {
+    const checkedDisabledCheckboxStyle = await primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`).evaluate((input) => {
       const checkboxStyle = window.getComputedStyle(input);
       const checkStyle = window.getComputedStyle(input, "::before");
       return {
@@ -273,7 +288,7 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
         opacity: checkboxStyle.opacity,
       };
     });
-    const uncheckedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='H']").evaluate((input) => {
+    const uncheckedDisabledCheckboxStyle = await primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`).evaluate((input) => {
       const checkboxStyle = window.getComputedStyle(input);
       const checkStyle = window.getComputedStyle(input, "::before");
       return {
@@ -290,12 +305,35 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     expect(uncheckedDisabledCheckboxStyle.checkTransform).toBe("matrix(0, 0, 0, 0, 0, 0)");
     expect(uncheckedDisabledCheckboxStyle.opacity).toBe("1");
 
+    const moveLeftRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).first();
+    await expect(moveLeftRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`)).not.toBeChecked();
+    await expect(moveLeftRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`)).toBeChecked();
+    await expect(moveLeftRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventU}"]`)).not.toBeChecked();
+    await expect(moveLeftRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventDC}"]`)).not.toBeChecked();
+
     const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Aim Right" }).first();
     await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
+    await expect(aimRightRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`)).not.toBeChecked();
+    await expect(aimRightRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`)).toBeChecked();
+    await expect(aimRightRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventU}"]`)).not.toBeChecked();
+    await expect(aimRightRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventDC}"]`)).not.toBeChecked();
+
+    const pauseRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Pause" }).first();
+    await expect(pauseRow).toHaveAttribute("data-input-engine-owned", "true");
+    await expect(pauseRow).toContainText("Pause is handled by the engine.");
+    await expect(pauseRow.getByRole("button", { name: "Edit" })).toHaveCount(0);
+    await expect(pauseRow.getByRole("button", { name: "Trash" })).toHaveCount(0);
 
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
     expect(records.map((record) => record.normalizedInput).sort()).toEqual([...GAME_CONTROL_NORMALIZED_INPUTS].sort());
+    expect(records.find((record) => record.usageLabel === "Move Left")).toMatchObject({
+      eventD: false,
+      eventDC: false,
+      eventH: true,
+      eventU: false,
+      normalizedInput: "move.x-",
+    });
     expect(records.find((record) => record.usageLabel === "Primary Action")).toMatchObject({
       enabled: true,
       eventD: true,
@@ -304,8 +342,17 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     });
     expect(records.find((record) => record.usageLabel === "Aim Right")).toMatchObject({
       enabled: false,
+      eventD: false,
+      eventDC: false,
+      eventH: true,
+      eventU: false,
       normalizedInput: "aim.x+",
       state: "Disabled",
+    });
+    expect(records.find((record) => record.normalizedInput === "action.pause")).toMatchObject({
+      enabled: true,
+      normalizedInput: "action.pause",
+      usageLabel: "Pause",
     });
     expect(records.every((record) => !record.inputFamily)).toBe(true);
     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
@@ -354,17 +401,10 @@ test("Game Controls edits the selected row in place and preserves row order", as
       ...GAME_CONTROL_USAGE_LABELS.slice(1),
     ]);
 
-    const pauseIndex = GAME_CONTROL_USAGE_LABELS.indexOf("Pause");
-    await page.locator("[data-input-mapping-row]").filter({ hasText: "Pause" }).first().getByRole("button", { name: "Edit" }).click();
-    await expect(page.locator("[data-input-mapping-table] tbody tr").nth(pauseIndex)).toHaveAttribute("data-input-editing-row", "true");
-    await page.locator("[data-input-row-usage-label]").fill("Pause Menu");
-    await page.locator("[data-input-save-mapping]").click();
-    expect(await gameControlRowLabels(page)).toEqual([
-      "Move Left Prime",
-      ...GAME_CONTROL_USAGE_LABELS.slice(1, pauseIndex),
-      "Pause Menu",
-      ...GAME_CONTROL_USAGE_LABELS.slice(pauseIndex + 1),
-    ]);
+    const pauseRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Pause" }).first();
+    await expect(pauseRow).toContainText("Pause is handled by the engine.");
+    await expect(pauseRow.getByRole("button", { name: "Edit" })).toHaveCount(0);
+    await expect(pauseRow.getByRole("button", { name: "Trash" })).toHaveCount(0);
 
     await page.locator("[data-input-mapping-row]").filter({ hasText: "Secondary Action" }).first().getByRole("button", { name: "Trash" }).click();
     const labelsAfterTrash = await gameControlRowLabels(page);
@@ -383,7 +423,7 @@ test("Game Controls edits the selected row in place and preserves row order", as
       "Fourth Action",
       "Confirm",
       "Cancel",
-      "Pause Menu",
+      "Pause",
       "Start",
       "Select",
     ]);
@@ -436,23 +476,27 @@ test("Game Controls validates rows and persists device-agnostic event fields", a
       event: "eventH",
       usageLabel: "Charge Shot",
     });
-    await editGameControl(page, "Pause", {
-      event: "eventDC",
-      usageLabel: "Double Tap Pause",
-    });
 
     let records = await inputMappingRecords(page);
     expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
     expect(records.find((record) => record.usageLabel === "Charge Shot")).toMatchObject({ eventD: false, eventH: true });
-    expect(records.find((record) => record.usageLabel === "Double Tap Pause")).toMatchObject({ eventDC: true });
+    expect(records.find((record) => record.normalizedInput === "action.pause")).toMatchObject({
+      enabled: true,
+      eventD: true,
+      eventDC: false,
+      eventH: false,
+      eventU: false,
+      usageLabel: "Pause",
+    });
     expect(records.every((record) => !record.inputFamily)).toBe(true);
     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
 
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-input-mapping-list]")).toContainText("Charge Shot");
-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Double Tap Pause");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Pause is handled by the engine.");
     records = await inputMappingRecords(page);
     expect(records.find((record) => record.usageLabel === "Charge Shot")).toMatchObject({ eventH: true });
+    expect(records.find((record) => record.normalizedInput === "action.pause")).toMatchObject({ enabled: true, usageLabel: "Pause" });
 
     await expectNoPageFailures(failures);
   } finally {

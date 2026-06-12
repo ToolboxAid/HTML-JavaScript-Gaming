@@ -1,219 +1,626 @@
-diff --git a/assets/theme-v2/css/colors.css b/assets/theme-v2/css/colors.css
-index efeeba3cc..02277c846 100644
---- a/assets/theme-v2/css/colors.css
-+++ b/assets/theme-v2/css/colors.css
-@@ -72,6 +72,9 @@
-   --forgebot-stage-background: radial-gradient(circle at 50% 55%, rgba(255, 122, 0, .25), var(--transparent) 48%), linear-gradient(145deg, rgba(255, 255, 255, .08), rgba(255, 255, 255, .025));
-   --button-primary-background: linear-gradient(135deg, var(--orange), var(--button-primary-end));
-   --button-cyan-background: linear-gradient(135deg, var(--button-cyan-start), var(--button-cyan-end));
-+  --checkbox-disabled-background: color-mix(in srgb, var(--white) 72%, var(--steel-gray));
-+  --checkbox-disabled-border: color-mix(in srgb, var(--iron-black) 28%, var(--steel-gray));
-+  --checkbox-disabled-check: var(--iron-black);
-   --text: #f5f7fb;
-   --muted: #aeb6c2;
-   --orange: var(--molten-orange);
-diff --git a/assets/theme-v2/css/forms.css b/assets/theme-v2/css/forms.css
-index 7fba38d0e..4d297c6de 100644
---- a/assets/theme-v2/css/forms.css
-+++ b/assets/theme-v2/css/forms.css
-@@ -106,6 +106,32 @@ input[type="radio"] {
-   padding: var(--space-0)
- }
-
-+input[type="checkbox"]:disabled {
-+  appearance: none;
-+  box-sizing: border-box;
-+  display: inline-grid;
-+  place-content: center;
-+  border: var(--border-width-sm) solid var(--checkbox-disabled-border);
-+  border-radius: var(--radius-xs);
-+  background: var(--checkbox-disabled-background);
-+  opacity: 1;
-+  cursor: not-allowed
-+}
-+
-+input[type="checkbox"]:disabled::before {
-+  content: "";
-+  width: calc(var(--icon-size-sm) * .58);
-+  height: calc(var(--icon-size-sm) * .58);
-+  background: var(--checkbox-disabled-check);
-+  clip-path: polygon(14% 44%, 0 58%, 38% 96%, 100% 20%, 86% 8%, 36% 66%);
-+  transform: scale(0);
-+  transform-origin: center
-+}
-+
-+input[type="checkbox"]:checked:disabled::before {
-+  transform: scale(1)
-+}
-+
- input[type="hidden"] {
-   display: none
- }
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index d5f972ec9..0c09d8262 100644
+index 0c09d8262..fb9a61cb4 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,8 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage; executed lines 546/546; executed functions 57/60
--(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff; advisory only
-+(67%) toolbox/controls/controls.js - executed lines 546/546; executed functions 35/52
+-(67%) toolbox/controls/controls.js - executed lines 546/546; executed functions 35/52
++(94%) toolbox/controls/controls.js - executed lines 667/667; executed functions 68/72
 
  Guardrail warnings:
  (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index b3c7a7db4..533dcc824 100644
+index 533dcc824..7df11bb6f 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,34 +12,20 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,20 +12,20 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
  Exercised tool entry points detected:
--(89%) Toolbox Index - exercised 3 runtime JS files
-+(71%) Toolbox Index - exercised 3 runtime JS files
+-(71%) Toolbox Index - exercised 3 runtime JS files
++(89%) Toolbox Index - exercised 3 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(62%) Theme V2 Shared JS - exercised 2 runtime JS files
-+(58%) Theme V2 Shared JS - exercised 2 runtime JS files
+ (58%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
--(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage; executed lines 546/546; executed functions 57/60
--(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff; advisory only
-+(67%) toolbox/controls/controls.js - executed lines 546/546; executed functions 35/52
+-(67%) toolbox/controls/controls.js - executed lines 546/546; executed functions 35/52
++(94%) toolbox/controls/controls.js - executed lines 667/667; executed functions 68/72
 
  Files with executed line/function counts where available:
--(11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
--(23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
--(30%) src/engine/input/InputService.js - executed lines 451/451; executed functions 20/66
--(33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
--(40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
--(41%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 14/34
--(43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
--(50%) src/engine/input/InputCaptureService.js - executed lines 163/163; executed functions 7/14
-+(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 6/21
+ (29%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 6/21
  (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
--(59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
--(60%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 9/15
--(61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 33/54
-+(57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 30/53
+ (57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 30/53
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-+(67%) toolbox/controls/controls.js - executed lines 546/546; executed functions 35/52
+-(67%) toolbox/controls/controls.js - executed lines 546/546; executed functions 35/52
  (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
--(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
--(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
--(94%) account/user-controls-page.js - executed lines 961/961; executed functions 111/118
--(95%) toolbox/controls/controls.js - executed lines 546/546; executed functions 57/60
--(100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
++(94%) toolbox/controls/controls.js - executed lines 667/667; executed functions 68/72
  (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
 
  Uncovered or low-coverage changed JS files:
-@@ -47,5 +33,4 @@ Uncovered or low-coverage changed JS files:
+@@ -33,4 +33,4 @@ Uncovered or low-coverage changed JS files:
 
  Changed JS files considered:
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff
--(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage
-+(67%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
+-(67%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
++(94%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index dcd03472b..bf513f710 100644
+index bf513f710..6c1297bea 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -260,6 +260,35 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-     await expect(primaryRow.locator("input[aria-label='U']")).not.toBeChecked();
-     await expect(primaryRow.locator("input[aria-label='DC']")).not.toBeChecked();
-     await expect(primaryRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
-+    await expect(primaryRow.locator("input[aria-label='D']")).toBeDisabled();
-+    await expect(primaryRow.locator("input[aria-label='H']")).toBeDisabled();
-+
-+    const checkedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='D']").evaluate((input) => {
-+      const checkboxStyle = window.getComputedStyle(input);
-+      const checkStyle = window.getComputedStyle(input, "::before");
-+      return {
-+        backgroundColor: checkboxStyle.backgroundColor,
-+        checkBackgroundColor: checkStyle.backgroundColor,
-+        checkTransform: checkStyle.transform,
-+        opacity: checkboxStyle.opacity,
-+      };
-+    });
-+    const uncheckedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='H']").evaluate((input) => {
-+      const checkboxStyle = window.getComputedStyle(input);
-+      const checkStyle = window.getComputedStyle(input, "::before");
-+      return {
-+        backgroundColor: checkboxStyle.backgroundColor,
-+        checkTransform: checkStyle.transform,
-+        opacity: checkboxStyle.opacity,
-+      };
-+    });
-+    expect(checkedDisabledCheckboxStyle.backgroundColor).toBe(uncheckedDisabledCheckboxStyle.backgroundColor);
-+    expect(checkedDisabledCheckboxStyle.backgroundColor).not.toBe("rgba(0, 0, 0, 0)");
-+    expect(checkedDisabledCheckboxStyle.checkBackgroundColor).toBe("rgb(18, 18, 18)");
-+    expect(checkedDisabledCheckboxStyle.checkTransform).not.toBe("matrix(0, 0, 0, 0, 0, 0)");
-+    expect(checkedDisabledCheckboxStyle.opacity).toBe("1");
-+    expect(uncheckedDisabledCheckboxStyle.checkTransform).toBe("matrix(0, 0, 0, 0, 0, 0)");
-+    expect(uncheckedDisabledCheckboxStyle.opacity).toBe("1");
+@@ -44,6 +44,13 @@ const GAME_CONTROL_USAGE_LABELS = [
+   "Select",
+ ];
 
++const EVENT_CONTROL_LABELS = {
++  eventD: "D = Down",
++  eventDC: "DC = Double Click / Double Press",
++  eventH: "H = Hold",
++  eventU: "U = Up",
++};
++
+ test.beforeEach(async ({ page }) => {
+   await installPlaywrightStorageIsolation(page, {
+     lane: "controls",
+@@ -236,6 +243,14 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
+       "DC",
+       "Actions",
+     ]);
++    await expect(page.locator("[data-input-mapping-table] th").nth(3)).toHaveAttribute("title", "Down");
++    await expect(page.locator("[data-input-mapping-table] th").nth(3)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventD);
++    await expect(page.locator("[data-input-mapping-table] th").nth(4)).toHaveAttribute("title", "Hold");
++    await expect(page.locator("[data-input-mapping-table] th").nth(4)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventH);
++    await expect(page.locator("[data-input-mapping-table] th").nth(5)).toHaveAttribute("title", "Up");
++    await expect(page.locator("[data-input-mapping-table] th").nth(5)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventU);
++    await expect(page.locator("[data-input-mapping-table] th").nth(6)).toHaveAttribute("title", "Double Click / Double Press");
++    await expect(page.locator("[data-input-mapping-table] th").nth(6)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventDC);
+     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /Keyboard|Mouse|Joystick|Gamepad|Combo|Object|State|Family/ })).toHaveCount(0);
+     await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.");
+     await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
+@@ -255,15 +270,15 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
+
+     const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
+     await expect(primaryRow.locator("td").nth(0).locator("input")).toBeChecked();
+-    await expect(primaryRow.locator("input[aria-label='D']")).toBeChecked();
+-    await expect(primaryRow.locator("input[aria-label='H']")).not.toBeChecked();
+-    await expect(primaryRow.locator("input[aria-label='U']")).not.toBeChecked();
+-    await expect(primaryRow.locator("input[aria-label='DC']")).not.toBeChecked();
+-    await expect(primaryRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
+-    await expect(primaryRow.locator("input[aria-label='D']")).toBeDisabled();
+-    await expect(primaryRow.locator("input[aria-label='H']")).toBeDisabled();
+-
+-    const checkedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='D']").evaluate((input) => {
++    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`)).toBeChecked();
++    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`)).not.toBeChecked();
++    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventU}"]`)).not.toBeChecked();
++    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventDC}"]`)).not.toBeChecked();
++    await expect(primaryRow.locator(`td:has(input[aria-label="${EVENT_CONTROL_LABELS.eventD}"])`)).toHaveAttribute("data-input-event-checked", "true");
++    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`)).toBeDisabled();
++    await expect(primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`)).toBeDisabled();
++
++    const checkedDisabledCheckboxStyle = await primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`).evaluate((input) => {
+       const checkboxStyle = window.getComputedStyle(input);
+       const checkStyle = window.getComputedStyle(input, "::before");
+       return {
+@@ -273,7 +288,7 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
+         opacity: checkboxStyle.opacity,
+       };
+     });
+-    const uncheckedDisabledCheckboxStyle = await primaryRow.locator("input[aria-label='H']").evaluate((input) => {
++    const uncheckedDisabledCheckboxStyle = await primaryRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`).evaluate((input) => {
+       const checkboxStyle = window.getComputedStyle(input);
+       const checkStyle = window.getComputedStyle(input, "::before");
+       return {
+@@ -290,12 +305,35 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
+     expect(uncheckedDisabledCheckboxStyle.checkTransform).toBe("matrix(0, 0, 0, 0, 0, 0)");
+     expect(uncheckedDisabledCheckboxStyle.opacity).toBe("1");
+
++    const moveLeftRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Move Left" }).first();
++    await expect(moveLeftRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`)).not.toBeChecked();
++    await expect(moveLeftRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`)).toBeChecked();
++    await expect(moveLeftRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventU}"]`)).not.toBeChecked();
++    await expect(moveLeftRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventDC}"]`)).not.toBeChecked();
++
      const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Aim Right" }).first();
      await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
-diff --git a/docs_build/dev/reports/controls-checkbox-state-styling-report.md b/docs_build/dev/reports/controls-checkbox-state-styling-report.md
++    await expect(aimRightRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventD}"]`)).not.toBeChecked();
++    await expect(aimRightRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventH}"]`)).toBeChecked();
++    await expect(aimRightRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventU}"]`)).not.toBeChecked();
++    await expect(aimRightRow.locator(`input[aria-label="${EVENT_CONTROL_LABELS.eventDC}"]`)).not.toBeChecked();
++
++    const pauseRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Pause" }).first();
++    await expect(pauseRow).toHaveAttribute("data-input-engine-owned", "true");
++    await expect(pauseRow).toContainText("Pause is handled by the engine.");
++    await expect(pauseRow.getByRole("button", { name: "Edit" })).toHaveCount(0);
++    await expect(pauseRow.getByRole("button", { name: "Trash" })).toHaveCount(0);
+
+     let records = await inputMappingRecords(page);
+     expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
+     expect(records.map((record) => record.normalizedInput).sort()).toEqual([...GAME_CONTROL_NORMALIZED_INPUTS].sort());
++    expect(records.find((record) => record.usageLabel === "Move Left")).toMatchObject({
++      eventD: false,
++      eventDC: false,
++      eventH: true,
++      eventU: false,
++      normalizedInput: "move.x-",
++    });
+     expect(records.find((record) => record.usageLabel === "Primary Action")).toMatchObject({
+       enabled: true,
+       eventD: true,
+@@ -304,9 +342,18 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
+     });
+     expect(records.find((record) => record.usageLabel === "Aim Right")).toMatchObject({
+       enabled: false,
++      eventD: false,
++      eventDC: false,
++      eventH: true,
++      eventU: false,
+       normalizedInput: "aim.x+",
+       state: "Disabled",
+     });
++    expect(records.find((record) => record.normalizedInput === "action.pause")).toMatchObject({
++      enabled: true,
++      normalizedInput: "action.pause",
++      usageLabel: "Pause",
++    });
+     expect(records.every((record) => !record.inputFamily)).toBe(true);
+     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
+     expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton|dpad\.|trigger\./);
+@@ -354,17 +401,10 @@ test("Game Controls edits the selected row in place and preserves row order", as
+       ...GAME_CONTROL_USAGE_LABELS.slice(1),
+     ]);
+
+-    const pauseIndex = GAME_CONTROL_USAGE_LABELS.indexOf("Pause");
+-    await page.locator("[data-input-mapping-row]").filter({ hasText: "Pause" }).first().getByRole("button", { name: "Edit" }).click();
+-    await expect(page.locator("[data-input-mapping-table] tbody tr").nth(pauseIndex)).toHaveAttribute("data-input-editing-row", "true");
+-    await page.locator("[data-input-row-usage-label]").fill("Pause Menu");
+-    await page.locator("[data-input-save-mapping]").click();
+-    expect(await gameControlRowLabels(page)).toEqual([
+-      "Move Left Prime",
+-      ...GAME_CONTROL_USAGE_LABELS.slice(1, pauseIndex),
+-      "Pause Menu",
+-      ...GAME_CONTROL_USAGE_LABELS.slice(pauseIndex + 1),
+-    ]);
++    const pauseRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Pause" }).first();
++    await expect(pauseRow).toContainText("Pause is handled by the engine.");
++    await expect(pauseRow.getByRole("button", { name: "Edit" })).toHaveCount(0);
++    await expect(pauseRow.getByRole("button", { name: "Trash" })).toHaveCount(0);
+
+     await page.locator("[data-input-mapping-row]").filter({ hasText: "Secondary Action" }).first().getByRole("button", { name: "Trash" }).click();
+     const labelsAfterTrash = await gameControlRowLabels(page);
+@@ -383,7 +423,7 @@ test("Game Controls edits the selected row in place and preserves row order", as
+       "Fourth Action",
+       "Confirm",
+       "Cancel",
+-      "Pause Menu",
++      "Pause",
+       "Start",
+       "Select",
+     ]);
+@@ -436,23 +476,27 @@ test("Game Controls validates rows and persists device-agnostic event fields", a
+       event: "eventH",
+       usageLabel: "Charge Shot",
+     });
+-    await editGameControl(page, "Pause", {
+-      event: "eventDC",
+-      usageLabel: "Double Tap Pause",
+-    });
+
+     let records = await inputMappingRecords(page);
+     expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
+     expect(records.find((record) => record.usageLabel === "Charge Shot")).toMatchObject({ eventD: false, eventH: true });
+-    expect(records.find((record) => record.usageLabel === "Double Tap Pause")).toMatchObject({ eventDC: true });
++    expect(records.find((record) => record.normalizedInput === "action.pause")).toMatchObject({
++      enabled: true,
++      eventD: true,
++      eventDC: false,
++      eventH: false,
++      eventU: false,
++      usageLabel: "Pause",
++    });
+     expect(records.every((record) => !record.inputFamily)).toBe(true);
+     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
+
+     await page.reload({ waitUntil: "networkidle" });
+     await expect(page.locator("[data-input-mapping-list]")).toContainText("Charge Shot");
+-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Double Tap Pause");
++    await expect(page.locator("[data-input-mapping-list]")).toContainText("Pause is handled by the engine.");
+     records = await inputMappingRecords(page);
+     expect(records.find((record) => record.usageLabel === "Charge Shot")).toMatchObject({ eventH: true });
++    expect(records.find((record) => record.normalizedInput === "action.pause")).toMatchObject({ enabled: true, usageLabel: "Pause" });
+
+     await expectNoPageFailures(failures);
+   } finally {
+diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
+index 6ef3252ba..1bc47bdd8 100644
+--- a/toolbox/controls/controls.js
++++ b/toolbox/controls/controls.js
+@@ -5,10 +5,10 @@ import {
+ } from "../../src/engine/input/NormalizedInputRegistry.js";
+
+ const CONTROL_EVENT_OPTIONS = Object.freeze([
+-  Object.freeze({ field: "eventD", label: "D" }),
+-  Object.freeze({ field: "eventH", label: "H" }),
+-  Object.freeze({ field: "eventU", label: "U" }),
+-  Object.freeze({ field: "eventDC", label: "DC" }),
++  Object.freeze({ description: "Down", field: "eventD", label: "D" }),
++  Object.freeze({ description: "Hold", field: "eventH", label: "H" }),
++  Object.freeze({ description: "Up", field: "eventU", label: "U" }),
++  Object.freeze({ description: "Double Click / Double Press", field: "eventDC", label: "DC" }),
+ ]);
+
+ const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
+@@ -66,6 +66,10 @@ const COMMON_DEFAULT_GAME_CONTROLS = new Set([
+   "move.y+",
+ ]);
+
++const ENGINE_OWNED_NORMALIZED_INPUTS = new Set([
++  "action.pause",
++]);
++
+ let controlsRepository = createControlsToolApiRepository();
+ let mappings = [];
+ let editingRow = null;
+@@ -161,6 +165,10 @@ function normalizeGameControlInput(inputId, fallback = "") {
+   return GAME_CONTROL_NORMALIZED_INPUT_IDS.has(fallback) ? fallback : "";
+ }
+
++function eventControlLabel(option) {
++  return `${option.label} = ${option.description}`;
++}
++
+ function checkboxCell(checked, label) {
+   const input = document.createElement("input");
+   input.type = "checkbox";
+@@ -176,21 +184,72 @@ function checkboxCell(checked, label) {
+   return cell;
+ }
+
+-function editableCheckboxCell({ checked, datasetName, label }) {
++function eventCheckboxCell(checked, option) {
++  const input = document.createElement("input");
++  input.type = "checkbox";
++  input.checked = Boolean(checked);
++  input.disabled = true;
++  input.title = option.description;
++  input.setAttribute("aria-label", eventControlLabel(option));
++  const cell = controlCell(input);
++  cell.dataset.inputEventChecked = checked ? "true" : "false";
++  cell.title = checked ? `${option.description} enabled` : `${option.description} disabled`;
++  if (checked) {
++    cell.className = "status";
++  }
++  return cell;
++}
++
++function editableCheckboxCell({ checked, datasetName, option }) {
+   const input = document.createElement("input");
+   input.type = "checkbox";
+   input.checked = Boolean(checked);
+   input.dataset[datasetName] = "true";
+-  input.setAttribute("aria-label", label);
++  input.title = option.description;
++  input.setAttribute("aria-label", eventControlLabel(option));
+   const cell = controlCell(input);
+   cell.dataset.inputEventChecked = checked ? "true" : "false";
+-  cell.title = checked ? `${label} enabled` : `${label} disabled`;
++  cell.title = checked ? `${option.description} enabled` : `${option.description} disabled`;
+   if (checked) {
+     cell.className = "status";
+   }
+   return cell;
+ }
+
++function defaultEventFieldsForNormalizedInput(normalizedInput) {
++  if (normalizedInput.startsWith("move.") || normalizedInput.startsWith("aim.")) {
++    return {
++      eventD: false,
++      eventDC: false,
++      eventH: true,
++      eventU: false,
++    };
++  }
++  return {
++    eventD: true,
++    eventDC: false,
++    eventH: false,
++    eventU: false,
++  };
++}
++
++function isEngineOwnedMapping(mapping = {}) {
++  return ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizeGameControlInput(mapping.normalizedInput));
++}
++
++function mappingNeedsEngineOwnedRepair(source = {}) {
++  if (normalizeGameControlInput(source.normalizedInput) !== "action.pause") {
++    return false;
++  }
++  const usageLabel = normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
++  return source.enabled === false
++    || usageLabel !== "Pause"
++    || source.eventD !== true
++    || source.eventDC === true
++    || source.eventH === true
++    || source.eventU === true;
++}
++
+ function legacyEventFields(source = {}) {
+   const phase = normalizeText(source.inputEventPhase);
+   const fallbackD = phase === "Release" ? false : true;
+@@ -232,14 +291,20 @@ function mappingIdFor(mapping) {
+ function normalizeMapping(source = {}) {
+   const sourceNormalizedInput = normalizeText(source.normalizedInput);
+   const normalizedInput = normalizeGameControlInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
+-  const usageLabel = normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
+-  const enabled = source.enabled === undefined ? true : Boolean(source.enabled);
++  const engineOwned = ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizedInput);
++  const usageLabel = engineOwned
++    ? NORMALIZED_USAGE_LABELS[normalizedInput]
++    : normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
++  const enabled = engineOwned || source.enabled === undefined ? true : Boolean(source.enabled);
+   const eventFields = normalizedEventFields(source);
++  const resolvedEventFields = engineOwned
++    ? defaultEventFieldsForNormalizedInput(normalizedInput)
++    : eventFields;
+   const mapping = {
+     action: keyFromText(usageLabel),
+     actionLabel: usageLabel,
+     enabled,
+-    ...eventFields,
++    ...resolvedEventFields,
+     id: normalizeText(source.id),
+     inputFamily: "",
+     normalizedInput,
+@@ -254,6 +319,46 @@ function normalizeMapping(source = {}) {
+   };
+ }
+
++function ensureEngineOwnedMappings(nextMappings) {
++  const normalizedMappings = nextMappings.map((mapping) => normalizeMapping(mapping));
++  const pauseIndex = normalizedMappings.findIndex((mapping) => mapping.normalizedInput === "action.pause");
++  if (pauseIndex >= 0) {
++    return normalizedMappings;
++  }
++  const pauseMapping = normalizeMapping({
++    id: "default-game-control-action-pause",
++    normalizedInput: "action.pause",
++    usageLabel: "Pause",
++  });
++  const canonicalIndex = GAME_CONTROL_NORMALIZED_INPUTS.indexOf("action.pause");
++  const insertIndex = normalizedMappings.findIndex((mapping) => (
++    GAME_CONTROL_NORMALIZED_INPUTS.indexOf(mapping.normalizedInput) > canonicalIndex
++  ));
++  if (insertIndex >= 0) {
++    normalizedMappings.splice(insertIndex, 0, pauseMapping);
++  } else {
++    normalizedMappings.push(pauseMapping);
++  }
++  return normalizedMappings;
++}
++
++function persistedMappingFieldsChanged(leftMappings, rightMappings) {
++  if (leftMappings.length !== rightMappings.length) {
++    return true;
++  }
++  return leftMappings.some((mapping, index) => {
++    const other = rightMappings[index];
++    return mapping.id !== other.id
++      || mapping.enabled !== other.enabled
++      || mapping.eventD !== other.eventD
++      || mapping.eventDC !== other.eventDC
++      || mapping.eventH !== other.eventH
++      || mapping.eventU !== other.eventU
++      || mapping.normalizedInput !== other.normalizedInput
++      || mapping.usageLabel !== other.usageLabel;
++  });
++}
++
+ function readMappings() {
+   let result = controlsRepository.listMappings();
+   if (!Array.isArray(result)) {
+@@ -263,17 +368,22 @@ function readMappings() {
+   if (!Array.isArray(result)) {
+     return [];
+   }
++  if (!result.length) {
++    return [];
++  }
++  const engineOwnedRepairNeeded = result.some((mapping) => mappingNeedsEngineOwnedRepair(mapping));
+   const normalizedMappings = result.map((mapping) => normalizeMapping(mapping));
+   const gameControlMappings = normalizedMappings.filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
+-  if (gameControlMappings.length !== normalizedMappings.length) {
+-    const cleanupResult = controlsRepository.replaceMappings(gameControlMappings);
++  const engineSafeMappings = ensureEngineOwnedMappings(gameControlMappings);
++  if (engineOwnedRepairNeeded || gameControlMappings.length !== normalizedMappings.length || persistedMappingFieldsChanged(gameControlMappings, engineSafeMappings)) {
++    const cleanupResult = controlsRepository.replaceMappings(engineSafeMappings);
+     if (Array.isArray(cleanupResult?.mappings)) {
+       return cleanupResult.mappings
+         .map((mapping) => normalizeMapping(mapping))
+         .filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
+     }
+   }
+-  return gameControlMappings;
++  return engineSafeMappings;
+ }
+
+ function createDefaultGameControlMappings() {
+@@ -281,7 +391,7 @@ function createDefaultGameControlMappings() {
+     const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
+     return normalizeMapping({
+       enabled,
+-      eventD: true,
++      ...defaultEventFieldsForNormalizedInput(option.value),
+       id: `default-game-control-${index + 1}-${keyFromText(option.value)}`,
+       normalizedInput: option.value,
+       state: enabled ? "Active" : "Disabled",
+@@ -301,7 +411,7 @@ function ensureDefaultMappings() {
+ }
+
+ function saveMappings(nextMappings) {
+-  const normalizedMappings = nextMappings.map((mapping) => normalizeMapping(mapping));
++  const normalizedMappings = ensureEngineOwnedMappings(nextMappings);
+   let result = controlsRepository.replaceMappings(normalizedMappings);
+   if (!Array.isArray(result?.mappings) && result?.error) {
+     controlsRepository = createControlsToolApiRepository();
+@@ -371,12 +481,22 @@ function renderMappingRow(mapping) {
+     checkboxCell(mapping.enabled, `${mapping.usageLabel || "Game control"} enabled`),
+     tableCell(mapping.normalizedInput),
+     tableCell(mapping.usageLabel || "Unmapped"),
+-    ...CONTROL_EVENT_OPTIONS.map((option) => checkboxCell(mapping[option.field], option.label)),
++    ...CONTROL_EVENT_OPTIONS.map((option) => eventCheckboxCell(mapping[option.field], option)),
+   );
+-  const actions = actionCell([
+-    actionButton("Edit", "inputEditMapping", mapping.id),
+-    actionButton("Trash", "inputTrashMapping", mapping.id),
+-  ]);
++  let actions;
++  if (isEngineOwnedMapping(mapping)) {
++    row.dataset.inputEngineOwned = "true";
++    const lockedMessage = document.createElement("p");
++    lockedMessage.className = "status";
++    lockedMessage.dataset.inputEngineOwnedStatus = mapping.id;
++    lockedMessage.textContent = "Pause is handled by the engine.";
++    actions = actionCell([lockedMessage]);
++  } else {
++    actions = actionCell([
++      actionButton("Edit", "inputEditMapping", mapping.id),
++      actionButton("Trash", "inputTrashMapping", mapping.id),
++    ]);
++  }
+   if (!validation.ok) {
+     const warning = document.createElement("p");
+     warning.className = "status";
+@@ -429,7 +549,7 @@ function renderEditingRow(values = {}) {
+     ...CONTROL_EVENT_OPTIONS.map((option) => editableCheckboxCell({
+       checked: values[option.field],
+       datasetName: `inputRow${option.field[0].toUpperCase()}${option.field.slice(1)}`,
+-      label: option.label,
++      option,
+     })),
+     actionsCell,
+   );
+@@ -519,6 +639,10 @@ function editMapping(mappingId) {
+   if (!mapping) {
+     return;
+   }
++  if (isEngineOwnedMapping(mapping)) {
++    setText(elements.statusLog, "Pause is handled by the engine.");
++    return;
++  }
+   editingRow = {
+     id: mapping.id,
+     values: mapping,
+@@ -528,6 +652,11 @@ function editMapping(mappingId) {
+ }
+
+ function deleteMapping(mappingId) {
++  const mapping = mappings.find((candidate) => candidate.id === mappingId);
++  if (mapping && isEngineOwnedMapping(mapping)) {
++    setText(elements.statusLog, "Pause is handled by the engine.");
++    return;
++  }
+   const nextMappings = mappings.filter((mapping) => mapping.id !== mappingId);
+   if (!saveMappings(nextMappings)) {
+     return;
+diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
+index fafbc006b..947fca340 100644
+--- a/toolbox/controls/index.html
++++ b/toolbox/controls/index.html
+@@ -74,10 +74,10 @@
+                                                             <th>Enabled</th>
+                                                             <th>Normalized Action</th>
+                                                             <th>Usage Label</th>
+-                                                            <th>D</th>
+-                                                            <th>H</th>
+-                                                            <th>U</th>
+-                                                            <th>DC</th>
++                                                            <th title="Down" aria-label="D = Down">D</th>
++                                                            <th title="Hold" aria-label="H = Hold">H</th>
++                                                            <th title="Up" aria-label="U = Up">U</th>
++                                                            <th title="Double Click / Double Press" aria-label="DC = Double Click / Double Press">DC</th>
+                                                             <th>Actions</th>
+                                                         </tr>
+                                                     </thead>
+diff --git a/docs_build/dev/reports/controls-tooltips-defaults-pause-lock-report.md b/docs_build/dev/reports/controls-tooltips-defaults-pause-lock-report.md
 new file mode 100644
-index 000000000..e1abc7975
+index 000000000..2cca438ac
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-checkbox-state-styling-report.md
-@@ -0,0 +1,56 @@
-+# PR_26162_048-controls-checkbox-state-styling
++++ b/docs_build/dev/reports/controls-tooltips-defaults-pause-lock-report.md
+@@ -0,0 +1,75 @@
++# PR_26162_049-controls-tooltips-defaults-pause-lock
 +
 +## Branch Validation
 +- PASS: current branch is `main`.
 +- Expected branch: `main`.
 +
 +## Requirement Checklist
-+- PASS: Current enabled checkbox styling is unchanged. The new CSS is scoped to `input[type="checkbox"]:disabled` only.
-+- PASS: Disabled checkboxes use a lighter gray Theme V2 background through `--checkbox-disabled-background`.
-+- PASS: Disabled checked checkboxes use a black Theme V2 checkmark through `--checkbox-disabled-check`.
-+- PASS: Disabled checkbox visibility/readability is preserved with `opacity: 1`.
-+- PASS: Styling is implemented through reusable Theme V2 CSS in `assets/theme-v2/css/colors.css` and `assets/theme-v2/css/forms.css`.
-+- PASS: No page-local CSS, inline styles, or tool-specific styling was added.
-+- PASS: The pattern applies to the Controls Enabled, D, H, U, and DC columns because those cells render standard disabled checkboxes.
-+- PASS: Future Theme V2 disabled Controls checkboxes using the same standard checkbox pattern inherit the styling.
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
++- PASS: Continued from PR_26162_048 without changing the enabled checkbox styling.
++- PASS: Added hover/ARIA tooltip text for Game Controls columns:
++  - `D = Down`
++  - `H = Hold`
++  - `U = Up`
++  - `DC = Double Click / Double Press`
++- PASS: Movement default rows now use Hold only.
++- PASS: Aim default rows now use Hold only.
++- PASS: Movement and aim defaults leave Down, Up, and Double Click unchecked.
++- PASS: `action.pause` remains visible in Game Controls.
++- PASS: `action.pause` is engine-owned and rendered read-only/locked.
++- PASS: `action.pause` cannot be disabled through the UI because no edit action is exposed and loaded/saved pause rows are normalized to enabled.
++- PASS: `action.pause` cannot be deleted through the UI because no Trash action is exposed and save/read repair restores it if missing.
++- PASS: Game Controls explains `Pause is handled by the engine.`
++- PASS: DB-backed Game Controls and Account User Controls separation is preserved.
++- PASS: No sample JSON alignment, auth behavior, production account system, or unrelated rewrites were added.
 +
 +## Changed Files
-+- `assets/theme-v2/css/colors.css`
-+- `assets/theme-v2/css/forms.css`
++- `toolbox/controls/index.html`
++- `toolbox/controls/controls.js`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/controls-checkbox-state-styling-report.md`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/controls-tooltips-defaults-pause-lock-report.md`
 +
 +## Impacted Lanes
-+- Theme V2 shared forms styling.
-+- Toolbox Controls runtime visual validation.
++- Toolbox Controls runtime lane.
 +- Playwright impacted: Yes.
 +
 +## Validation Performed
++- PASS: `node --check toolbox/controls/controls.js`
 +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
 +- PASS: `git diff --check`
-+- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "Toolbox Controls"`
-+- WARN: `npm run check:style-system-guard` reported existing `missing-page:toolbox/localization/index.html`; no issue was reported for this PR's Theme V2 CSS or Controls page.
++- PASS: `rg -n "<style|style\\s*=|\\son[a-z]+\\s*=" toolbox/controls/index.html toolbox/controls/controls.js` returned no matches.
++- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "Toolbox Controls|Game Controls edits|Game Controls validates|Controls split"`
 +
 +## Playwright Result
-+- PASS: Targeted Controls Playwright test passed, including disabled checkbox rendered style checks for lighter background, black checked icon, and full opacity.
++- PASS: 4 targeted Controls tests passed.
++- Covered behavior:
++  - D/H/U/DC hover and ARIA tooltip metadata.
++  - Movement and aim defaults use Hold only.
++  - Pause remains visible and locked.
++  - Pause has no Edit or Trash action.
++  - Pause remains enabled and canonical after save/reload.
++  - Existing Controls runtime/Account User Controls separation remains intact.
 +
 +## V8 Coverage
 +- Generated: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- Note: This PR changes Theme V2 CSS and Playwright assertions, not runtime JavaScript. The coverage helper still reports advisory browser runtime coverage for the current repository HEAD.
++- Result: `(94%) toolbox/controls/controls.js - executed lines 667/667; executed functions 68/72`
++- Guardrail: no changed runtime JS coverage warnings.
 +
 +## Skipped Lanes
-+- Full samples validation skipped: samples are not in scope and no sample JSON or runtime sample behavior changed.
-+- Full workspace suite skipped: this PR only changes reusable disabled checkbox styling and targeted Controls coverage validates the affected surface.
-+- Broad visual sweep skipped: requested scope is Controls checkbox state styling, and the implementation is reusable Theme V2 CSS without page-local styling.
++- Full samples validation skipped: samples are out of scope and no sample JSON, game runtime, or sample launch behavior changed.
++- Full workspace suite skipped: this PR only changes the Controls tool UI/runtime behavior and targeted Controls Playwright covers the affected behavior.
++- Account/User Controls full behavior lane skipped beyond separation regression: no Account/User Controls files or behavior were changed.
 +
 +## Manual Validation Steps
 +1. Open `/toolbox/controls/index.html`.
-+2. Confirm the Game Controls table renders the Enabled, D, H, U, and DC checkbox columns.
-+3. Confirm disabled unchecked checkboxes use a light gray fill and remain readable.
-+4. Confirm disabled checked checkboxes use the same light gray fill with a black checkmark.
-+5. Confirm enabled/editable checkbox behavior still uses the existing checkbox styling.
++2. Hover the D, H, U, and DC column headers and confirm their tooltip meanings.
++3. Confirm Move and Aim rows show Hold checked and Down, Up, and Double Click unchecked.
++4. Confirm `action.pause` / Pause is visible.
++5. Confirm the Pause row says `Pause is handled by the engine.`
++6. Confirm Pause has no Edit or Trash button.
++7. Reload the page and confirm Pause remains visible, enabled, and locked.
 +
 +## Samples Decision
-+- SKIP: Full samples validation was not run because this PR does not touch samples, sample JSON, game runtime, or sample launch behavior.
++- SKIP: Full samples validation was not run because this PR does not touch samples, sample data, or production runtime behavior.

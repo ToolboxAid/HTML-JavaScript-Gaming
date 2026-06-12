@@ -1,18 +1,18 @@
 # git status --short
-M assets/theme-v2/css/colors.css
- M assets/theme-v2/css/forms.css
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
-?? docs_build/dev/reports/controls-checkbox-state-styling-report.md
+ M toolbox/controls/controls.js
+ M toolbox/controls/index.html
+?? docs_build/dev/reports/controls-tooltips-defaults-pause-lock-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/controls-checkbox-state-styling-report.md
+docs_build/dev/reports/controls-tooltips-defaults-pause-lock-report.md
 
 # git diff --stat
-assets/theme-v2/css/colors.css                     |  3 +++
- assets/theme-v2/css/forms.css                      | 26 +++++++++++++++++++
- .../dev/reports/coverage_changed_js_guardrail.txt  |  3 +--
- .../dev/reports/playwright_v8_coverage_report.txt  | 29 ++++++----------------
- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 29 ++++++++++++++++++++++
- 5 files changed, 66 insertions(+), 24 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  |   2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   8 +-
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs | 100 ++++++++----
+ toolbox/controls/controls.js                       | 171 ++++++++++++++++++---
+ toolbox/controls/index.html                        |   8 +-
+ 5 files changed, 231 insertions(+), 58 deletions(-)

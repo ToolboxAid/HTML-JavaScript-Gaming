@@ -351,7 +351,7 @@ export class AccountUserControlsPage {
         row.append(
           tableCell(mapping.physicalInput),
           tableCell(mapping.normalizedInput || mapping.positiveNormalizedInput || mapping.negativeNormalizedInput || "Unassigned"),
-          tableCell("Default profile in use"),
+          tableCell("Default profile"),
         );
         rowsByFamily.get(family)?.push(row);
       });

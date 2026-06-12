@@ -5,10 +5,10 @@ import {
 } from "../../src/engine/input/NormalizedInputRegistry.js";
 
 const CONTROL_EVENT_OPTIONS = Object.freeze([
-  Object.freeze({ field: "eventD", label: "D" }),
-  Object.freeze({ field: "eventH", label: "H" }),
-  Object.freeze({ field: "eventU", label: "U" }),
-  Object.freeze({ field: "eventDC", label: "DC" }),
+  Object.freeze({ description: "Down", field: "eventD", label: "D" }),
+  Object.freeze({ description: "Hold", field: "eventH", label: "H" }),
+  Object.freeze({ description: "Up", field: "eventU", label: "U" }),
+  Object.freeze({ description: "Double Click / Double Press", field: "eventDC", label: "DC" }),
 ]);
 
 const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
@@ -64,6 +64,10 @@ const COMMON_DEFAULT_GAME_CONTROLS = new Set([
   "move.x+",
   "move.y-",
   "move.y+",
+]);
+
+const ENGINE_OWNED_NORMALIZED_INPUTS = new Set([
+  "action.pause",
 ]);
 
 let controlsRepository = createControlsToolApiRepository();
@@ -161,6 +165,10 @@ function normalizeGameControlInput(inputId, fallback = "") {
   return GAME_CONTROL_NORMALIZED_INPUT_IDS.has(fallback) ? fallback : "";
 }
 
+function eventControlLabel(option) {
+  return `${option.label} = ${option.description}`;
+}
+
 function checkboxCell(checked, label) {
   const input = document.createElement("input");
   input.type = "checkbox";
@@ -176,19 +184,70 @@ function checkboxCell(checked, label) {
   return cell;
 }
 
-function editableCheckboxCell({ checked, datasetName, label }) {
+function eventCheckboxCell(checked, option) {
   const input = document.createElement("input");
   input.type = "checkbox";
   input.checked = Boolean(checked);
-  input.dataset[datasetName] = "true";
-  input.setAttribute("aria-label", label);
+  input.disabled = true;
+  input.title = option.description;
+  input.setAttribute("aria-label", eventControlLabel(option));
   const cell = controlCell(input);
   cell.dataset.inputEventChecked = checked ? "true" : "false";
-  cell.title = checked ? `${label} enabled` : `${label} disabled`;
+  cell.title = checked ? `${option.description} enabled` : `${option.description} disabled`;
   if (checked) {
     cell.className = "status";
   }
   return cell;
+}
+
+function editableCheckboxCell({ checked, datasetName, option }) {
+  const input = document.createElement("input");
+  input.type = "checkbox";
+  input.checked = Boolean(checked);
+  input.dataset[datasetName] = "true";
+  input.title = option.description;
+  input.setAttribute("aria-label", eventControlLabel(option));
+  const cell = controlCell(input);
+  cell.dataset.inputEventChecked = checked ? "true" : "false";
+  cell.title = checked ? `${option.description} enabled` : `${option.description} disabled`;
+  if (checked) {
+    cell.className = "status";
+  }
+  return cell;
+}
+
+function defaultEventFieldsForNormalizedInput(normalizedInput) {
+  if (normalizedInput.startsWith("move.") || normalizedInput.startsWith("aim.")) {
+    return {
+      eventD: false,
+      eventDC: false,
+      eventH: true,
+      eventU: false,
+    };
+  }
+  return {
+    eventD: true,
+    eventDC: false,
+    eventH: false,
+    eventU: false,
+  };
+}
+
+function isEngineOwnedMapping(mapping = {}) {
+  return ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizeGameControlInput(mapping.normalizedInput));
+}
+
+function mappingNeedsEngineOwnedRepair(source = {}) {
+  if (normalizeGameControlInput(source.normalizedInput) !== "action.pause") {
+    return false;
+  }
+  const usageLabel = normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
+  return source.enabled === false
+    || usageLabel !== "Pause"
+    || source.eventD !== true
+    || source.eventDC === true
+    || source.eventH === true
+    || source.eventU === true;
 }
 
 function legacyEventFields(source = {}) {
@@ -232,14 +291,20 @@ function mappingIdFor(mapping) {
 function normalizeMapping(source = {}) {
   const sourceNormalizedInput = normalizeText(source.normalizedInput);
   const normalizedInput = normalizeGameControlInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
-  const usageLabel = normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
-  const enabled = source.enabled === undefined ? true : Boolean(source.enabled);
+  const engineOwned = ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizedInput);
+  const usageLabel = engineOwned
+    ? NORMALIZED_USAGE_LABELS[normalizedInput]
+    : normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
+  const enabled = engineOwned || source.enabled === undefined ? true : Boolean(source.enabled);
   const eventFields = normalizedEventFields(source);
+  const resolvedEventFields = engineOwned
+    ? defaultEventFieldsForNormalizedInput(normalizedInput)
+    : eventFields;
   const mapping = {
     action: keyFromText(usageLabel),
     actionLabel: usageLabel,
     enabled,
-    ...eventFields,
+    ...resolvedEventFields,
     id: normalizeText(source.id),
     inputFamily: "",
     normalizedInput,
@@ -254,6 +319,46 @@ function normalizeMapping(source = {}) {
   };
 }
 
+function ensureEngineOwnedMappings(nextMappings) {
+  const normalizedMappings = nextMappings.map((mapping) => normalizeMapping(mapping));
+  const pauseIndex = normalizedMappings.findIndex((mapping) => mapping.normalizedInput === "action.pause");
+  if (pauseIndex >= 0) {
+    return normalizedMappings;
+  }
+  const pauseMapping = normalizeMapping({
+    id: "default-game-control-action-pause",
+    normalizedInput: "action.pause",
+    usageLabel: "Pause",
+  });
+  const canonicalIndex = GAME_CONTROL_NORMALIZED_INPUTS.indexOf("action.pause");
+  const insertIndex = normalizedMappings.findIndex((mapping) => (
+    GAME_CONTROL_NORMALIZED_INPUTS.indexOf(mapping.normalizedInput) > canonicalIndex
+  ));
+  if (insertIndex >= 0) {
+    normalizedMappings.splice(insertIndex, 0, pauseMapping);
+  } else {
+    normalizedMappings.push(pauseMapping);
+  }
+  return normalizedMappings;
+}
+
+function persistedMappingFieldsChanged(leftMappings, rightMappings) {
+  if (leftMappings.length !== rightMappings.length) {
+    return true;
+  }
+  return leftMappings.some((mapping, index) => {
+    const other = rightMappings[index];
+    return mapping.id !== other.id
+      || mapping.enabled !== other.enabled
+      || mapping.eventD !== other.eventD
+      || mapping.eventDC !== other.eventDC
+      || mapping.eventH !== other.eventH
+      || mapping.eventU !== other.eventU
+      || mapping.normalizedInput !== other.normalizedInput
+      || mapping.usageLabel !== other.usageLabel;
+  });
+}
+
 function readMappings() {
   let result = controlsRepository.listMappings();
   if (!Array.isArray(result)) {
@@ -263,17 +368,22 @@ function readMappings() {
   if (!Array.isArray(result)) {
     return [];
   }
+  if (!result.length) {
+    return [];
+  }
+  const engineOwnedRepairNeeded = result.some((mapping) => mappingNeedsEngineOwnedRepair(mapping));
   const normalizedMappings = result.map((mapping) => normalizeMapping(mapping));
   const gameControlMappings = normalizedMappings.filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
-  if (gameControlMappings.length !== normalizedMappings.length) {
-    const cleanupResult = controlsRepository.replaceMappings(gameControlMappings);
+  const engineSafeMappings = ensureEngineOwnedMappings(gameControlMappings);
+  if (engineOwnedRepairNeeded || gameControlMappings.length !== normalizedMappings.length || persistedMappingFieldsChanged(gameControlMappings, engineSafeMappings)) {
+    const cleanupResult = controlsRepository.replaceMappings(engineSafeMappings);
     if (Array.isArray(cleanupResult?.mappings)) {
       return cleanupResult.mappings
         .map((mapping) => normalizeMapping(mapping))
         .filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
     }
   }
-  return gameControlMappings;
+  return engineSafeMappings;
 }
 
 function createDefaultGameControlMappings() {
@@ -281,7 +391,7 @@ function createDefaultGameControlMappings() {
     const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
     return normalizeMapping({
       enabled,
-      eventD: true,
+      ...defaultEventFieldsForNormalizedInput(option.value),
       id: `default-game-control-${index + 1}-${keyFromText(option.value)}`,
       normalizedInput: option.value,
       state: enabled ? "Active" : "Disabled",
@@ -301,7 +411,7 @@ function ensureDefaultMappings() {
 }
 
 function saveMappings(nextMappings) {
-  const normalizedMappings = nextMappings.map((mapping) => normalizeMapping(mapping));
+  const normalizedMappings = ensureEngineOwnedMappings(nextMappings);
   let result = controlsRepository.replaceMappings(normalizedMappings);
   if (!Array.isArray(result?.mappings) && result?.error) {
     controlsRepository = createControlsToolApiRepository();
@@ -371,12 +481,22 @@ function renderMappingRow(mapping) {
     checkboxCell(mapping.enabled, `${mapping.usageLabel || "Game control"} enabled`),
     tableCell(mapping.normalizedInput),
     tableCell(mapping.usageLabel || "Unmapped"),
-    ...CONTROL_EVENT_OPTIONS.map((option) => checkboxCell(mapping[option.field], option.label)),
+    ...CONTROL_EVENT_OPTIONS.map((option) => eventCheckboxCell(mapping[option.field], option)),
   );
-  const actions = actionCell([
-    actionButton("Edit", "inputEditMapping", mapping.id),
-    actionButton("Trash", "inputTrashMapping", mapping.id),
-  ]);
+  let actions;
+  if (isEngineOwnedMapping(mapping)) {
+    row.dataset.inputEngineOwned = "true";
+    const lockedMessage = document.createElement("p");
+    lockedMessage.className = "status";
+    lockedMessage.dataset.inputEngineOwnedStatus = mapping.id;
+    lockedMessage.textContent = "Pause is handled by the engine.";
+    actions = actionCell([lockedMessage]);
+  } else {
+    actions = actionCell([
+      actionButton("Edit", "inputEditMapping", mapping.id),
+      actionButton("Trash", "inputTrashMapping", mapping.id),
+    ]);
+  }
   if (!validation.ok) {
     const warning = document.createElement("p");
     warning.className = "status";
@@ -429,7 +549,7 @@ function renderEditingRow(values = {}) {
     ...CONTROL_EVENT_OPTIONS.map((option) => editableCheckboxCell({
       checked: values[option.field],
       datasetName: `inputRow${option.field[0].toUpperCase()}${option.field.slice(1)}`,
-      label: option.label,
+      option,
     })),
     actionsCell,
   );
@@ -519,6 +639,10 @@ function editMapping(mappingId) {
   if (!mapping) {
     return;
   }
+  if (isEngineOwnedMapping(mapping)) {
+    setText(elements.statusLog, "Pause is handled by the engine.");
+    return;
+  }
   editingRow = {
     id: mapping.id,
     values: mapping,
@@ -528,6 +652,11 @@ function editMapping(mappingId) {
 }
 
 function deleteMapping(mappingId) {
+  const mapping = mappings.find((candidate) => candidate.id === mappingId);
+  if (mapping && isEngineOwnedMapping(mapping)) {
+    setText(elements.statusLog, "Pause is handled by the engine.");
+    return;
+  }
   const nextMappings = mappings.filter((mapping) => mapping.id !== mappingId);
   if (!saveMappings(nextMappings)) {
     return;
