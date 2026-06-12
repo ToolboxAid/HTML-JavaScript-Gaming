@@ -1,167 +1,295 @@
 diff --git a/account/user-controls-page.js b/account/user-controls-page.js
-index c4cee6101..b24439678 100644
+index b24439678..5e62d0b88 100644
 --- a/account/user-controls-page.js
 +++ b/account/user-controls-page.js
-@@ -127,7 +127,7 @@ export class AccountUserControlsPage {
-     this.devicePollingTimer = null;
-     this.elements = {
-       addProfile: root.querySelector("[data-account-user-controls-add-profile]"),
--      defaultList: root.querySelector("[data-account-user-controls-default-list]"),
-+      defaultLists: [...root.querySelectorAll("[data-account-user-controls-default-list]")],
+@@ -130,7 +130,8 @@ export class AccountUserControlsPage {
+       defaultLists: [...root.querySelectorAll("[data-account-user-controls-default-list]")],
        deviceSelect: root.querySelector("[data-account-user-controls-device]"),
        deviceStatus: root.querySelector("[data-account-user-controls-device-status]"),
-       list: root.querySelector("[data-account-user-controls-list]"),
-@@ -302,7 +302,7 @@ export class AccountUserControlsPage {
-       this.setDeviceStatus(this.deviceRefreshMessage());
-       return;
-     }
--    this.setDeviceStatus(`${device.label} selected. Create a user control profile to map physical inputs to normalized controls.`);
-+    this.setDeviceStatus(`${device.label} selected. Create a user control profile to map physical inputs to normalized controls. ${this.deviceRefreshMessage()}`);
+-      list: root.querySelector("[data-account-user-controls-list]"),
++      familyButtons: [...root.querySelectorAll("[data-account-user-controls-edit-family]")],
++      lists: [...root.querySelectorAll("[data-account-user-controls-list]")],
+       refresh: root.querySelector("[data-account-user-controls-refresh]"),
+       saveAll: root.querySelector("[data-account-user-controls-save-all]"),
+       status: root.querySelector("[data-account-user-controls-status]"),
+@@ -152,10 +153,15 @@ export class AccountUserControlsPage {
+     this.elements.addProfile?.addEventListener("click", () => this.addProfileForSelectedDevice());
+     this.elements.saveAll?.addEventListener("click", () => this.saveCurrentState());
+     this.elements.deviceSelect?.addEventListener("change", () => this.renderDeviceStatus());
+-    this.elements.list?.addEventListener("click", (event) => this.handleListClick(event));
+-    this.elements.list?.addEventListener("change", (event) => this.handleListChange(event));
+-    this.elements.list?.addEventListener("input", (event) => this.handleListInput(event));
+-    this.elements.list?.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
++    this.elements.familyButtons.forEach((button) => {
++      button.addEventListener("click", () => this.editFamilyMappings(button.dataset.accountUserControlsEditFamily || ""));
++    });
++    this.elements.lists.forEach((list) => {
++      list.addEventListener("click", (event) => this.handleListClick(event));
++      list.addEventListener("change", (event) => this.handleListChange(event));
++      list.addEventListener("input", (event) => this.handleListInput(event));
++      list.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
++    });
+     this.startDevicePolling();
    }
  
-   renderTypes() {
-@@ -317,25 +317,40 @@ export class AccountUserControlsPage {
+@@ -177,25 +183,7 @@ export class AccountUserControlsPage {
    }
  
-   renderDefaultFallbacks() {
--    if (!this.elements.defaultList) {
-+    if (!this.elements.defaultLists.length) {
+   deviceOptions() {
+-    const keyboard = {
+-      controllerId: "generic-keyboard",
+-      controllerName: "Keyboard",
+-      deviceType: "Keyboard",
+-      inputs: [...KEYBOARD_INPUTS],
+-      label: "Keyboard",
+-      mappingProfile: "Keyboard Profile",
+-      value: "keyboard",
+-    };
+-    const mouse = {
+-      controllerId: "generic-mouse",
+-      controllerName: "Mouse",
+-      deviceType: "Mouse",
+-      inputs: [...MOUSE_INPUTS],
+-      label: "Mouse",
+-      mappingProfile: "Mouse Profile",
+-      value: "mouse",
+-    };
+-    const gamepads = this.availableGamepads().map((gamepad) => {
++    return this.availableGamepads().map((gamepad) => {
+       const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
+       return {
+         controllerId: gamepad.id || `gamepad-${gamepad.index}`,
+@@ -207,15 +195,37 @@ export class AccountUserControlsPage {
+         value: `gamepad-${gamepad.index}`,
+       };
+     });
+-    return [keyboard, mouse, ...gamepads];
++  }
++
++  familyDevice(family) {
++    if (family === "Mouse") {
++      return {
++        controllerId: "generic-mouse",
++        controllerName: "Mouse",
++        deviceType: "Mouse",
++        inputs: [...MOUSE_INPUTS],
++        label: "Mouse",
++        mappingProfile: "Mouse Profile",
++        value: "mouse",
++      };
++    }
++    return {
++      controllerId: "generic-keyboard",
++      controllerName: "Keyboard",
++      deviceType: "Keyboard",
++      inputs: [...KEYBOARD_INPUTS],
++      label: "Keyboard",
++      mappingProfile: "Keyboard Profile",
++      value: "keyboard",
++    };
+   }
+ 
+   deviceRefreshMessage() {
+     const gamepadCount = this.availableGamepads().length;
+     if (gamepadCount > 0) {
+-      return `PASS: Keyboard and Mouse available. ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} detected automatically.`;
++      return `PASS: ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} detected automatically.`;
+     }
+-    return "PASS: Keyboard and Mouse available. Gamepads auto-detect after browser exposes them.";
++    return "PASS: Game controllers auto-detect after the browser exposes them.";
+   }
+ 
+   selectedDevice() {
+@@ -287,7 +297,7 @@ export class AccountUserControlsPage {
+     }
+     const selectedValue = this.elements.deviceSelect.value;
+     const options = [
+-      { label: "Choose a physical controller", value: "" },
++      { label: "Choose a game controller", value: "" },
+       ...this.deviceOptions().map((device) => ({ label: device.label, value: device.value })),
+     ];
+     this.elements.deviceSelect.classList.add("tool-form-control");
+@@ -368,30 +378,62 @@ export class AccountUserControlsPage {
+     }, { once: true });
+   }
+ 
++  profileListFamily(profile) {
++    const deviceType = normalizeText(profile?.deviceType);
++    if (deviceType === "Keyboard" || deviceType === "Mouse") {
++      return deviceType;
++    }
++    return "Gamepad";
++  }
++
++  emptyProfileMessage(family) {
++    if (family === "Keyboard") {
++      return "No keyboard user control profile saved yet.";
++    }
++    if (family === "Mouse") {
++      return "No mouse user control profile saved yet.";
++    }
++    return "No game controller profiles saved yet.";
++  }
++
+   renderProfiles() {
+-    if (!this.elements.list) {
++    if (!this.elements.lists.length) {
        return;
      }
-     const systemDefault = this.inputService.getSystemDefaultProfileForDevice("Keyboard/Mouse");
--    const rows = (systemDefault.inputMappings || [])
-+    const rowsByFamily = new Map([
-+      ["Keyboard", []],
-+      ["Mouse", []],
-+    ]);
-+    (systemDefault.inputMappings || [])
-       .filter((mapping) => KEYBOARD_INPUTS.includes(mapping.physicalInput) || MOUSE_INPUTS.includes(mapping.physicalInput))
--      .map((mapping) => {
-+      .forEach((mapping) => {
-         const row = document.createElement("tr");
-         row.dataset.accountUserControlsDefaultRow = mapping.physicalInput;
-         const family = MOUSE_INPUTS.includes(mapping.physicalInput) ? "Mouse" : "Keyboard";
-         row.append(
--          tableCell(family),
-           tableCell(mapping.physicalInput),
-           tableCell(mapping.normalizedInput || mapping.positiveNormalizedInput || mapping.negativeNormalizedInput || "Unassigned"),
-           tableCell("Visible fallback"),
-         );
--        return row;
-+        rowsByFamily.get(family)?.push(row);
-       });
--    this.elements.defaultList.replaceChildren(...rows);
-+    this.elements.defaultLists.forEach((list) => {
-+      const family = list.dataset.accountUserControlsDefaultFamily || "Keyboard";
+-    const rows = [];
++    const rowsByFamily = new Map(this.elements.lists.map((list) => [
++      list.dataset.accountUserControlsListFamily || "Gamepad",
++      [],
++    ]));
+     if (this.editingProfile) {
+-      rows.push(...this.renderEditingRows(this.editingProfile.values));
++      const family = this.profileListFamily(this.editingProfile.values);
++      rowsByFamily.get(family)?.push(...this.renderEditingRows(this.editingProfile.values));
+     }
+     const visibleProfiles = this.editingProfile?.id
+       ? this.profiles.filter((profile) => profile.id !== this.editingProfile.id)
+       : this.profiles;
+-    rows.push(...visibleProfiles.map((profile) => this.renderProfileRow(profile)));
+-    if (!rows.length) {
+-      const row = document.createElement("tr");
+-      const cell = document.createElement("td");
+-      cell.colSpan = 7;
+-      cell.textContent = "No account user control profiles saved yet.";
+-      row.append(cell);
+-      rows.push(row);
+-    }
+-    this.elements.list.replaceChildren(...rows);
++    visibleProfiles.forEach((profile) => {
++      const family = this.profileListFamily(profile);
++      rowsByFamily.get(family)?.push(this.renderProfileRow(profile));
++    });
++    this.elements.lists.forEach((list) => {
++      const family = list.dataset.accountUserControlsListFamily || "Gamepad";
 +      const rows = rowsByFamily.get(family) || [];
 +      if (!rows.length) {
 +        const row = document.createElement("tr");
 +        const cell = document.createElement("td");
-+        cell.colSpan = 3;
-+        cell.textContent = `No ${family} fallback controls available.`;
++        cell.colSpan = 7;
++        cell.textContent = this.emptyProfileMessage(family);
 +        row.append(cell);
 +        rows.push(row);
 +      }
 +      list.replaceChildren(...rows);
 +    });
+     if (this.elements.addProfile) {
+       this.elements.addProfile.disabled = Boolean(this.editingProfile);
+     }
++    this.elements.familyButtons.forEach((button) => {
++      button.disabled = Boolean(this.editingProfile);
++    });
    }
  
-   startDevicePolling() {
+   profileInputSummary(profile) {
+@@ -455,8 +497,18 @@ export class AccountUserControlsPage {
+     const wrapper = document.createElement("div");
+     wrapper.className = "content-grid";
+     wrapper.dataset.accountUserControlsInputPair = "true";
+-    const label = document.createElement("strong");
+-    label.textContent = inputMapping.physicalInput;
++    const editablePhysicalInput = profile.deviceType === "Keyboard" || profile.deviceType === "Mouse";
++    const physicalInputControl = editablePhysicalInput
++      ? document.createElement("input")
++      : document.createElement("strong");
++    if (editablePhysicalInput) {
++      physicalInputControl.type = "text";
++      physicalInputControl.value = inputMapping.physicalInput;
++      physicalInputControl.dataset.accountUserControlsPhysicalInput = String(index);
++      physicalInputControl.setAttribute("aria-label", `${profile.deviceType} physical input`);
++    } else {
++      physicalInputControl.textContent = inputMapping.physicalInput;
++    }
+     const stack = document.createElement("div");
+     stack.className = "content-stack content-stack--compact";
+     const normalizedOptions = [
+@@ -522,7 +574,7 @@ export class AccountUserControlsPage {
+     validation.className = "status";
+     validation.dataset.accountUserControlsInputValidation = String(index);
+     stack.append(validation);
+-    wrapper.append(label, stack);
++    wrapper.append(physicalInputControl, stack);
+     return wrapper;
+   }
+ 
+@@ -579,16 +631,34 @@ export class AccountUserControlsPage {
+     this.setStatus(`Review ${profile.mappingProfile} before saving.`);
+   }
+ 
++  editFamilyMappings(family) {
++    const normalizedFamily = family === "Mouse" ? "Mouse" : "Keyboard";
++    const device = this.familyDevice(normalizedFamily);
++    const existing = this.profiles.find((profile) => profile.deviceType === device.deviceType && profile.controllerId === device.controllerId);
++    if (existing) {
++      this.editingProfile = { id: existing.id, values: existing };
++      this.renderProfiles();
++      this.setStatus(`Editing existing ${existing.mappingProfile}.`);
++      return;
++    }
++    const profile = this.profileFromDevice(device);
++    this.editingProfile = { id: profile.id, values: profile };
++    this.renderProfiles();
++    this.setStatus(`Review ${profile.mappingProfile} before saving.`);
++  }
++
+   profileFromEditingRow() {
+     const values = this.editingProfile?.values || {};
+-    const details = this.elements.list?.querySelector("[data-account-user-controls-editing-details]");
++    const details = this.root.querySelector("[data-account-user-controls-editing-details]");
+     const inputMappings = (values.inputMappings || []).map((mapping, index) => {
++      const physicalInputControl = details?.querySelector(`[data-account-user-controls-physical-input="${index}"]`);
+       const normalizedSelect = details?.querySelector(`[data-account-user-controls-input-normalized="${index}"]`);
+       const negativeSelect = details?.querySelector(`[data-account-user-controls-input-negative="${index}"]`);
+       const positiveSelect = details?.querySelector(`[data-account-user-controls-input-positive="${index}"]`);
+       const deadzoneInput = details?.querySelector(`[data-account-user-controls-deadzone="${index}"]`);
+       const invertInput = details?.querySelector(`[data-account-user-controls-invert="${index}"]`);
+       const sensitivityInput = details?.querySelector(`[data-account-user-controls-sensitivity="${index}"]`);
++      const physicalInput = normalizeText(physicalInputControl?.value ?? mapping.physicalInput);
+       const negativeNormalizedInput = normalizeText(negativeSelect?.value ?? mapping.negativeNormalizedInput);
+       const positiveNormalizedInput = normalizeText(positiveSelect?.value ?? mapping.positiveNormalizedInput);
+       return {
+@@ -596,7 +666,7 @@ export class AccountUserControlsPage {
+         invert: Boolean(invertInput?.checked ?? mapping.invert),
+         negativeNormalizedInput,
+         normalizedInput: positiveNormalizedInput || normalizeText(normalizedSelect?.value ?? mapping.normalizedInput) || negativeNormalizedInput,
+-        physicalInput: mapping.physicalInput,
++        physicalInput,
+         positiveNormalizedInput,
+         sensitivity: sensitivityInput ? Number(sensitivityInput.value) : mapping.sensitivity,
+       };
+@@ -605,6 +675,7 @@ export class AccountUserControlsPage {
+       ...values,
+       id: this.editingProfile?.id || "",
+       inputMappings,
++      inputs: inputMappings.map((mapping) => mapping.physicalInput),
+     });
+   }
+ 
+@@ -662,7 +733,7 @@ export class AccountUserControlsPage {
+ 
+   renderInputValidation(validation) {
+     const invalidIndexes = new Set(validation.invalidIndexes || []);
+-    this.elements.list?.querySelectorAll("[data-account-user-controls-input-validation]").forEach((status) => {
++    this.root.querySelectorAll("[data-account-user-controls-input-validation]").forEach((status) => {
+       const index = Number(status.dataset.accountUserControlsInputValidation);
+       status.textContent = invalidIndexes.has(index)
+         ? "Needs normalized control, valid deadzone, and valid sensitivity."
 diff --git a/account/user-controls.html b/account/user-controls.html
-index b81651930..ae3ac3a89 100644
+index ae3ac3a89..e4d13c116 100644
 --- a/account/user-controls.html
 +++ b/account/user-controls.html
-@@ -17,7 +17,7 @@
-             <div class="container">
-                 <div class="kicker">Account</div>
-                 <h1>Account User Controls</h1>
--                <p class="lede">Map your physical keyboard, mouse, gamepad, joystick, controller, or touch controls to generic normalized controls.</p>
-+                <p class="lede">Map your physical keyboard, mouse, game controller, joystick, or touch controls to generic normalized controls.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -30,63 +30,93 @@
-                             <h2>Physical Input Mapping</h2>
-                             <p>Account User Controls resolves physical input to normalized controls. Game behavior stays in Game Controls.</p>
-                         </div>
--                        <div class="content-cluster" aria-label="Account controller device selection">
--                            <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
--                            <label>
--                                Physical Controller
--                                <select data-account-user-controls-device></select>
--                            </label>
--                            <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
--                            <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
--                        </div>
--                        <p class="status" role="status" data-account-user-controls-device-status>Refresh devices, choose a physical controller, then create a user control profile.</p>
--                        <details class="vertical-accordion" open>
--                            <summary>Default Keyboard/Mouse Fallbacks</summary>
--                            <div class="accordion-body content-stack">
--                                <p class="status">Keyboard and Mouse defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
--                                <div class="table-wrapper">
--                                    <table class="data-table" aria-label="Default keyboard and mouse fallbacks" data-account-user-controls-defaults>
--                                        <thead>
--                                            <tr>
--                                                <th>Input Family</th>
--                                                <th>Physical Input</th>
--                                                <th>Normalized Control</th>
--                                                <th>Source</th>
--                                            </tr>
--                                        </thead>
--                                        <tbody data-account-user-controls-default-list></tbody>
--                                    </table>
-+                        <div class="accordion-stack">
-+                            <details class="vertical-accordion" open data-account-user-controls-section="Keyboard">
-+                                <summary>Keyboard</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p class="status">Keyboard defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
-+                                    <div class="table-wrapper">
-+                                        <table class="data-table" aria-label="Default keyboard fallback" data-account-user-controls-defaults="Keyboard">
-+                                            <thead>
-+                                                <tr>
-+                                                    <th>Physical Input</th>
-+                                                    <th>Normalized Control</th>
-+                                                    <th>Source</th>
-+                                                </tr>
-+                                            </thead>
-+                                            <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Keyboard"></tbody>
-+                                        </table>
+@@ -47,6 +47,25 @@
+                                             <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Keyboard"></tbody>
+                                         </table>
+                                     </div>
++                                    <div class="content-cluster" aria-label="Keyboard user controls">
++                                        <button class="btn" type="button" data-account-user-controls-edit-family="Keyboard">Edit Keyboard Mappings</button>
 +                                    </div>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open data-account-user-controls-section="Mouse">
-+                                <summary>Mouse</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p class="status">Mouse defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
 +                                    <div class="table-wrapper">
-+                                        <table class="data-table" aria-label="Default mouse fallback" data-account-user-controls-defaults="Mouse">
-+                                            <thead>
-+                                                <tr>
-+                                                    <th>Physical Input</th>
-+                                                    <th>Normalized Control</th>
-+                                                    <th>Source</th>
-+                                                </tr>
-+                                            </thead>
-+                                            <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Mouse"></tbody>
-+                                        </table>
-+                                    </div>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open data-account-user-controls-section="Game Controllers">
-+                                <summary>Game Controllers</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <div class="content-cluster" aria-label="Account controller device selection">
-+                                        <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
-+                                        <label>
-+                                            Physical Controller
-+                                            <select data-account-user-controls-device></select>
-+                                        </label>
-+                                        <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
-+                                        <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
-+                                    </div>
-+                                    <p class="status" role="status" data-account-user-controls-device-status>Keyboard and Mouse are available. Game controllers auto-detect after the browser exposes them.</p>
-+                                    <div class="table-wrapper">
-+                                        <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
++                                        <table class="data-table" aria-label="Keyboard user control profile" data-account-user-controls-table="Keyboard">
 +                                            <thead>
 +                                                <tr>
 +                                                    <th>Physical Controller</th>
@@ -173,2199 +301,382 @@ index b81651930..ae3ac3a89 100644
 +                                                    <th>Actions</th>
 +                                                </tr>
 +                                            </thead>
-+                                            <tbody data-account-user-controls-list></tbody>
++                                            <tbody data-account-user-controls-list data-account-user-controls-list-family="Keyboard"></tbody>
 +                                        </table>
 +                                    </div>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" data-account-user-controls-section="Combo Inputs">
-+                                <summary>Combo Inputs</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <p class="status">Wireframe only: Keyboard Shift + Mouse Right Click can be planned here later.</p>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Supported Control Types</summary>
-+                                <div class="accordion-body">
-+                                    <ul data-account-user-controls-types></ul>
-+                                </div>
-+                            </details>
-+                            <details class="vertical-accordion" open>
-+                                <summary>Status</summary>
-+                                <div class="accordion-body">
-+                                    <div class="status" role="status" data-account-user-controls-status>Account User Controls ready.</div>
                                  </div>
--                            </div>
--                        </details>
--                        <div class="table-wrapper">
--                            <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
--                                <thead>
--                                    <tr>
--                                        <th>Physical Controller</th>
--                                        <th>Physical Input</th>
--                                        <th>Normalized Control</th>
--                                        <th>Deadzone</th>
--                                        <th>Invert</th>
--                                        <th>Sensitivity</th>
--                                        <th>Actions</th>
--                                    </tr>
--                                </thead>
--                                <tbody data-account-user-controls-list></tbody>
--                            </table>
-+                            </details>
-                         </div>
--                        <details class="vertical-accordion" open>
--                            <summary>Supported Control Types</summary>
--                            <div class="accordion-body">
--                                <ul data-account-user-controls-types></ul>
--                            </div>
--                        </details>
--                        <details class="vertical-accordion" open>
--                            <summary>Status</summary>
--                            <div class="accordion-body">
--                                <div class="status" role="status" data-account-user-controls-status>Account User Controls ready.</div>
--                            </div>
--                        </details>
-                     </div>
-                 </div>
-             </div>
+                             </details>
+                             <details class="vertical-accordion" open data-account-user-controls-section="Mouse">
+@@ -65,6 +84,25 @@
+                                             <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Mouse"></tbody>
+                                         </table>
+                                     </div>
++                                    <div class="content-cluster" aria-label="Mouse user controls">
++                                        <button class="btn" type="button" data-account-user-controls-edit-family="Mouse">Edit Mouse Mappings</button>
++                                    </div>
++                                    <div class="table-wrapper">
++                                        <table class="data-table" aria-label="Mouse user control profile" data-account-user-controls-table="Mouse">
++                                            <thead>
++                                                <tr>
++                                                    <th>Physical Controller</th>
++                                                    <th>Physical Input</th>
++                                                    <th>Normalized Control</th>
++                                                    <th>Deadzone</th>
++                                                    <th>Invert</th>
++                                                    <th>Sensitivity</th>
++                                                    <th>Actions</th>
++                                                </tr>
++                                            </thead>
++                                            <tbody data-account-user-controls-list data-account-user-controls-list-family="Mouse"></tbody>
++                                        </table>
++                                    </div>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open data-account-user-controls-section="Game Controllers">
+@@ -73,13 +111,13 @@
+                                     <div class="content-cluster" aria-label="Account controller device selection">
+                                         <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
+                                         <label>
+-                                            Physical Controller
++                                            Game Controller
+                                             <select data-account-user-controls-device></select>
+                                         </label>
+                                         <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
+                                         <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
+                                     </div>
+-                                    <p class="status" role="status" data-account-user-controls-device-status>Keyboard and Mouse are available. Game controllers auto-detect after the browser exposes them.</p>
++                                    <p class="status" role="status" data-account-user-controls-device-status>Game controllers auto-detect after the browser exposes them.</p>
+                                     <div class="table-wrapper">
+                                         <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
+                                             <thead>
+@@ -93,7 +131,7 @@
+                                                     <th>Actions</th>
+                                                 </tr>
+                                             </thead>
+-                                            <tbody data-account-user-controls-list></tbody>
++                                            <tbody data-account-user-controls-list data-account-user-controls-list-family="Gamepad"></tbody>
+                                         </table>
+                                     </div>
+                                 </div>
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index d82fd42e8..e64acf782 100644
+index e64acf782..caf1809da 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,7 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
+@@ -8,7 +8,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  Changed runtime JS files considered:
--(87%) toolbox/controls/controls.js - executed lines 1110/1110; executed functions 104/120
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(95%) toolbox/controls/controls.js - executed lines 626/626; executed functions 56/59
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(95%) toolbox/controls/controls.js - executed lines 626/626; executed functions 56/59
++(95%) toolbox/controls/controls.js - executed lines 664/664; executed functions 59/62
  
  Guardrail warnings:
--(100%) none - no changed runtime JS coverage warnings
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index f04053383..d73e09a25 100644
+index d73e09a25..d3f036d1b 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,43 +12,43 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
- Exercised tool entry points detected:
--(87%) Toolbox Index - exercised 8 runtime JS files
-+(89%) Toolbox Index - exercised 3 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
- (62%) Theme V2 Shared JS - exercised 2 runtime JS files
- 
+@@ -19,7 +19,7 @@ Exercised tool entry points detected:
  Changed runtime JS files covered:
--(87%) toolbox/controls/controls.js - executed lines 1110/1110; executed functions 104/120
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(95%) toolbox/controls/controls.js - executed lines 626/626; executed functions 56/59
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(95%) toolbox/controls/controls.js - executed lines 626/626; executed functions 56/59
++(95%) toolbox/controls/controls.js - executed lines 664/664; executed functions 59/62
  
  Files with executed line/function counts where available:
  (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
- (23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
-+(29%) src/engine/input/InputService.js - executed lines 451/451; executed functions 19/66
- (33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
--(35%) src/engine/input/InputService.js - executed lines 451/451; executed functions 23/66
- (40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
- (41%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 14/34
- (43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
- (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
-+(53%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 8/15
- (59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
- (61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 33/54
--(63%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 10/16
- (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
--(78%) toolbox/game-configuration/game-configuration.js - executed lines 173/173; executed functions 14/18
-+(75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
+@@ -37,8 +37,8 @@ Files with executed line/function counts where available:
+ (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
  (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
--(82%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 23/28
--(87%) toolbox/controls/controls.js - executed lines 1110/1110; executed functions 104/120
--(92%) account/user-controls-page.js - executed lines 701/701; executed functions 85/92
--(93%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 25/27
-+(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
-+(90%) account/user-controls-page.js - executed lines 716/716; executed functions 84/93
-+(95%) toolbox/controls/controls.js - executed lines 626/626; executed functions 56/59
+ (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
+-(90%) account/user-controls-page.js - executed lines 716/716; executed functions 84/93
+-(95%) toolbox/controls/controls.js - executed lines 626/626; executed functions 56/59
++(92%) account/user-controls-page.js - executed lines 783/783; executed functions 97/105
++(95%) toolbox/controls/controls.js - executed lines 664/664; executed functions 59/62
  (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
  (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
--(100%) toolbox/game-configuration/game-configuration-api-client.js - executed lines 11/11; executed functions 2/2
--(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
--(100%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 23/23
--(100%) toolbox/objects/objects-api-client.js - executed lines 10/10; executed functions 2/2
  
- Uncovered or low-coverage changed JS files:
--(100%) none - no low-coverage changed runtime JS files
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
- 
- Changed JS files considered:
-+(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+@@ -50,5 +50,5 @@ Changed JS files considered:
+ (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(87%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
--(92%) account/user-controls-page.js - changed JS file with browser V8 coverage
-+(90%) account/user-controls-page.js - changed JS file with browser V8 coverage
-+(95%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-index 1723e9145..214fe22d2 100644
---- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-+++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
-@@ -714,14 +714,14 @@ export const TOOL_REGISTRY = Object.freeze([
-     "id": "controls",
-     "name": "Controls",
-     "displayName": "Controls",
--    "shortDescription": "Map keyboard, mouse, gamepad, and touch controls.",
-+    "shortDescription": "Define game controls with normalized actions.",
-     "shortLabel": "Controls",
-     "path": "controls",
-     "folderName": "controls",
-     "entryPoint": "controls/index.html",
-     "badge": "/assets/theme-v2/images/badges/controls.png",
-     "tool": "/assets/theme-v2/images/tools/controls.png",
--    "description": "Map keyboard, mouse, gamepad, and touch controls.",
-+    "description": "Define game controls with normalized actions and event timing.",
-     "category": "Platform",
-     "colorGroup": "tool-group-platform",
-     "active": true,
-@@ -733,10 +733,9 @@ export const TOOL_REGISTRY = Object.freeze([
-     "status": "Wireframe",
-     "releaseChannel": "wireframe",
-     "progressChecklist": [
--      "Plan controller profiles",
--      "Map object actions",
--      "Capture keyboard, mouse, and gamepad inputs",
--      "Persist mappings through shared DB adapter"
-+      "Define normalized game controls",
-+      "Keep physical input profiles in Account User Controls",
-+      "Persist game mappings through shared DB adapter"
-     ],
-     "deferred": false,
-     "hidden": false,
-diff --git a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-index b4a013275..de5f338b8 100644
---- a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-+++ b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-@@ -179,7 +179,7 @@ function mappingFromRecord(record = {}) {
-     enabled: record.enabled === undefined ? true : Boolean(record.enabled),
-     ...events,
-     id: normalizeText(record.id),
--    inputFamily: normalizeText(record.inputFamily) || "Keyboard",
-+    inputFamily: normalizeText(record.inputFamily),
-     normalizedInput: normalizeText(record.normalizedInput),
-     objectKey: normalizeText(record.objectKey),
-     objectName: normalizeText(record.objectName),
-@@ -358,7 +358,7 @@ export function createInputMappingToolMockRepository(options = {}) {
-         gameAction: action || mappingKeyFromText(usageLabel),
-         gameActionLabel: usageLabel,
-         id,
--        inputFamily: normalizeText(mapping.inputFamily) || "Keyboard",
-+        inputFamily: normalizeText(mapping.inputFamily),
-         key: previous?.key,
-         normalizedInput,
-         objectKey,
+-(90%) account/user-controls-page.js - changed JS file with browser V8 coverage
++(92%) account/user-controls-page.js - changed JS file with browser V8 coverage
+ (95%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 75824cbff..9b26c4a1d 100644
+index 9b26c4a1d..a06964579 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -34,7 +34,7 @@ const NORMALIZED_INPUTS = [
- test.beforeEach(async ({ page }) => {
-   await installPlaywrightStorageIsolation(page, {
-     lane: "controls",
--    surface: "Controls control events and account mapping",
-+    surface: "Controls game/account user split",
-   });
- });
- 
-@@ -113,21 +113,25 @@ async function controllerProfileRecords(page) {
-   });
- }
- 
--async function exposeGamepad(page) {
-+async function exposeGamepads(page) {
-   await page.evaluate(() => {
--    window.__arcadeAxes = [0, 0, 0, 0];
--    window.__arcadeButtons = Array.from({ length: 16 }, () => ({ pressed: false, value: 0 }));
--    Object.defineProperty(navigator, "getGamepads", {
--      configurable: true,
--      value: () => [{
--        axes: window.__arcadeAxes,
--        buttons: window.__arcadeButtons,
-+    function makePad(id, index) {
-+      return {
-+        axes: [0, 0, 0, 0],
-+        buttons: Array.from({ length: 16 }, () => ({ pressed: false, value: 0 })),
-         connected: true,
--        id: "Arcade Test Pad",
--        index: 0,
-+        id,
-+        index,
-         mapping: "standard",
-         timestamp: Date.now(),
--      }],
-+      };
-+    }
-+    Object.defineProperty(navigator, "getGamepads", {
-+      configurable: true,
-+      value: () => [
-+        makePad("Arcade Test Pad", 0),
-+        makePad("Studio Flight Pad", 1),
-+      ],
-     });
-   });
- }
-@@ -135,7 +139,6 @@ async function exposeGamepad(page) {
- async function editGameControl(page, rowText, {
-   enabled,
-   event = "eventD",
--  family,
-   normalized,
-   usageLabel,
- } = {}) {
-@@ -144,9 +147,6 @@ async function editGameControl(page, rowText, {
-   if (normalized !== undefined) {
-     await page.locator("[data-input-row-normalized]").selectOption(normalized);
-   }
--  if (family !== undefined) {
--    await page.locator("[data-input-row-family]").selectOption(family);
--  }
-   if (usageLabel !== undefined) {
-     await page.locator("[data-input-row-usage-label]").fill(usageLabel);
-   }
-@@ -160,8 +160,6 @@ async function editGameControl(page, rowText, {
-     "[data-input-row-event-h]",
-     "[data-input-row-event-u]",
-     "[data-input-row-event-d-c]",
--    "[data-input-row-event-drag]",
--    "[data-input-row-event-axis]",
-   ]) {
-     const checkbox = page.locator(locator);
-     if (await checkbox.isChecked()) {
-@@ -169,10 +167,8 @@ async function editGameControl(page, rowText, {
-     }
-   }
-   const eventLocatorByField = {
--    eventAxis: "[data-input-row-event-axis]",
-     eventD: "[data-input-row-event-d]",
-     eventDC: "[data-input-row-event-d-c]",
--    eventDrag: "[data-input-row-event-drag]",
-     eventH: "[data-input-row-event-h]",
-     eventU: "[data-input-row-event-u]",
-   };
-@@ -180,51 +176,31 @@ async function editGameControl(page, rowText, {
-   await page.locator("[data-input-save-mapping]").click();
- }
- 
--test("Game Controls owns generic mappings and presets", async ({ page }) => {
-+test("Toolbox Controls shows game controls only and preserves game mapping presets", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/controls/index.html");
- 
-   try {
-     await expect(page.locator(".tool-workspace")).toBeVisible();
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+@@ -185,7 +185,8 @@ test("Toolbox Controls shows game controls only and preserves game mapping prese
      await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Controls");
--    await expect(page.locator("[data-controller-profile-table]")).toHaveCount(0);
--    await expect(page.locator("[data-account-user-controls-link]")).toHaveAttribute("href", "/account/user-controls.html");
      await expect(page.locator("[data-input-mapping-accordion] > summary")).toHaveText("Game Controls");
--    await expect(page.locator("[data-input-family-panel]")).toHaveCount(4);
--    await expect(page.locator("[data-input-family-panel='Keyboard'] summary")).toHaveText("Keyboard Controls");
--    await expect(page.locator("[data-input-family-panel='Mouse'] summary")).toHaveText("Mouse Controls");
--    await expect(page.locator("[data-input-family-panel='Joystick'] summary")).toHaveText("Joystick Controls");
--    await expect(page.locator("[data-input-family-panel='Gamepad'] summary")).toHaveText("Gamepad Controls");
--    const keyboardTable = page.locator("[data-input-mapping-table-family='Keyboard']");
--    await expect(keyboardTable.locator("th:not([hidden])")).toHaveText([
-+    await expect(page.locator("[data-input-family-panel]")).toHaveCount(0);
-+    await expect(page.locator("[data-input-combo-controls]")).toHaveCount(0);
-+    await expect(page.locator("[data-input-source-diagnostics]")).toHaveCount(0);
-+    await expect(page.locator("[data-input-add-mapping], [data-input-add-keyboard-family], [data-input-add-mouse-family], [data-input-add-joystick-family], [data-input-reset-mappings]")).toHaveCount(0);
-+    await expect(page.locator("[data-input-action-select], [data-input-object-select]")).toHaveCount(0);
-+    await expect(page.locator("[data-input-mapping-table] th")).toHaveText([
-       "Enabled",
--      "Normalized Action Type",
-+      "Normalized Action",
-       "Usage Label",
--      "Input Family",
--      "Press",
--      "Hold",
--      "Release",
--      "Double Press",
--      "Drag",
--      "Axis",
-+      "D",
-+      "H",
-+      "U",
-+      "DC",
-       "Actions",
-     ]);
--    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^D$/ })).toHaveCount(0);
--    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^H$/ })).toHaveCount(0);
--    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^U$/ })).toHaveCount(0);
--    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^DC$/ })).toHaveCount(0);
--    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /^State$/ })).toHaveCount(0);
--    await expect(page.locator("[data-input-mapping-table] th:not([hidden])").filter({ hasText: /^Object$/ })).toHaveCount(0);
--    await expect(page.locator("[data-input-combo-controls]")).toContainText("Keyboard Shift + Mouse Right Click");
-+    await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /Keyboard|Mouse|Joystick|Gamepad|Combo|Object|State|Family/ })).toHaveCount(0);
-     await expect(page.locator("[data-input-action-label]")).toContainText(NORMALIZED_INPUTS);
--    await expect(page.locator("[data-input-control-type-list]")).toContainText("Keyboard Key");
--    await expect(page.locator("[data-input-control-type-list]")).toContainText("Pointer Drag");
--    await expect(page.locator("[data-input-source-diagnostics] li")).toHaveCount(7);
--    await expect(page.locator("[data-input-device-count]")).toHaveText("7");
--    await expect(page.locator("[data-input-source-diagnostics] li[data-input-device-diagnostic='keyboard']")).toHaveAttribute("title", /Keyboard key states/);
--    await expect(page.locator("[data-input-source-diagnostics] li[data-input-device-diagnostic='mouse']")).toHaveAttribute("aria-label", /Mouse buttons/);
--    await expect(page.locator("[data-input-device-guidance]")).toContainText("game-owned");
--    await expect(page.locator("[data-input-action-select] option")).toHaveText(NORMALIZED_INPUTS);
-     await expect(page.locator("[data-input-preset]")).toHaveText([
-       "Platformer",
-       "Shooter",
-@@ -234,96 +210,44 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
+     await expect(page.locator("[data-input-family-panel]")).toHaveCount(0);
+-    await expect(page.locator("[data-input-combo-controls]")).toHaveCount(0);
++    await expect(page.locator("[data-input-combo-controls] > summary")).toHaveText("Combo Controls");
++    await expect(page.locator("[data-input-combo-controls]")).toContainText("Wireframe only: Keyboard Shift + Mouse Right Click can become a future combo control.");
+     await expect(page.locator("[data-input-source-diagnostics]")).toHaveCount(0);
+     await expect(page.locator("[data-input-add-mapping], [data-input-add-keyboard-family], [data-input-add-mouse-family], [data-input-add-joystick-family], [data-input-reset-mappings]")).toHaveCount(0);
+     await expect(page.locator("[data-input-action-select], [data-input-object-select]")).toHaveCount(0);
+@@ -210,45 +211,53 @@ test("Toolbox Controls shows game controls only and preserves game mapping prese
        "Fighting",
        "Party / Arena",
      ]);
-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Missing Game Control Mapping");
+-    await expect(page.locator("[data-input-mapping-list]")).toContainText("Missing Game Control Mapping");
+-
+-    await page.locator("[data-input-preset='platformer']").click();
+-    await expect(page.locator("[data-input-status-log]")).toHaveText("Applied platformer preset. Common rows are enabled; alternate rows are disabled.");
+-    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(7);
+-    await expect(page.locator("[data-input-mapping-count]")).toHaveText("7");
+-    await expect(page.locator("[data-input-enabled-count]")).toHaveText("5");
+-    await expect(page.locator("[data-input-output-count]")).toHaveText("7");
++    await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.");
++    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
++    await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
++    await expect(page.locator("[data-input-enabled-count]")).toHaveText("10");
++    await expect(page.locator("[data-input-output-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
+     await expect(page.locator("[data-input-save-status]")).toHaveText("Complete");
+     await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
  
--    await page.locator("[data-input-add-mapping]").click();
--    await expect(page.locator("[data-input-status-log]")).toHaveText("Added Keyboard, Mouse, and Joystick default game controls. Common rows are enabled; alternate rows are disabled.");
--    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
--    await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
--    await expect(page.locator("[data-input-output-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
+-    const jumpRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Jump" }).first();
+-    await expect(jumpRow.locator("td").nth(0).locator("input")).toBeChecked();
+-    await expect(jumpRow.locator("input[aria-label='D']")).toBeChecked();
+-    await expect(jumpRow.locator("input[aria-label='H']")).not.toBeChecked();
+-    await expect(jumpRow.locator("input[aria-label='U']")).not.toBeChecked();
+-    await expect(jumpRow.locator("input[aria-label='DC']")).not.toBeChecked();
+-    await expect(jumpRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
++    const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
++    await expect(primaryRow.locator("td").nth(0).locator("input")).toBeChecked();
++    await expect(primaryRow.locator("input[aria-label='D']")).toBeChecked();
++    await expect(primaryRow.locator("input[aria-label='H']")).not.toBeChecked();
++    await expect(primaryRow.locator("input[aria-label='U']")).not.toBeChecked();
++    await expect(primaryRow.locator("input[aria-label='DC']")).not.toBeChecked();
++    await expect(primaryRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
+ 
+-    const lookUpRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Look Up" }).first();
+-    await expect(lookUpRow.locator("td").nth(0).locator("input")).not.toBeChecked();
++    const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Aim Right" }).first();
++    await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
+ 
+-    const records = await inputMappingRecords(page);
+-    expect(records).toHaveLength(7);
+-    expect(records.find((record) => record.usageLabel === "Jump")).toMatchObject({
++    let records = await inputMappingRecords(page);
++    expect(records).toHaveLength(NORMALIZED_INPUTS.length);
++    expect(records.find((record) => record.usageLabel === "Primary Action")).toMatchObject({
+       enabled: true,
+       eventD: true,
+       normalizedInput: "action.primary",
+-      usageLabel: "Jump",
++      usageLabel: "Primary Action",
+     });
+-    expect(records.find((record) => record.usageLabel === "Look Up")).toMatchObject({
++    expect(records.find((record) => record.usageLabel === "Aim Right")).toMatchObject({
+       enabled: false,
+-      normalizedInput: "move.y-",
++      normalizedInput: "aim.x+",
+       state: "Disabled",
+     });
+     expect(records.every((record) => !record.inputFamily)).toBe(true);
+     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
+     expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton/);
+ 
 +    await page.locator("[data-input-preset='platformer']").click();
 +    await expect(page.locator("[data-input-status-log]")).toHaveText("Applied platformer preset. Common rows are enabled; alternate rows are disabled.");
 +    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(7);
-+    await expect(page.locator("[data-input-mapping-count]")).toHaveText("7");
-+    await expect(page.locator("[data-input-enabled-count]")).toHaveText("5");
-+    await expect(page.locator("[data-input-output-count]")).toHaveText("7");
-     await expect(page.locator("[data-input-save-status]")).toHaveText("Complete");
--    await expect(page.locator("[data-input-family-accordions]")).not.toContainText("Missing Game Control Mapping");
--    const primaryActionRow = page.locator("[data-input-mapping-row]").filter({ hasText: "action.primary" }).first();
--    await expect(primaryActionRow.locator("td").nth(0).locator("input")).toBeChecked();
--    await expect(primaryActionRow.locator("input[aria-label='Press']")).toBeChecked();
--    await expect(primaryActionRow.locator("input[aria-label='Hold']")).not.toBeChecked();
--    await expect(primaryActionRow.locator("input[aria-label='Release']")).not.toBeChecked();
--    await expect(primaryActionRow.locator("input[aria-label='Double Press']")).not.toBeChecked();
--    await expect(primaryActionRow.locator("td:has(input[aria-label='Press'])")).toHaveAttribute("data-input-event-checked", "true");
--    const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "aim.x+" }).first();
--    await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
--    await expect(page.locator("[data-input-mapping-table-family='Mouse']")).toContainText("aim.x+");
--    await expect(page.locator("[data-input-mapping-table-family='Joystick']")).toContainText("trigger.right");
--    let records = await inputMappingRecords(page);
--    expect(records).toHaveLength(NORMALIZED_INPUTS.length);
--    expect(records.map((record) => record.normalizedInput).sort()).toEqual([...NORMALIZED_INPUTS].sort());
--    expect(records.find((record) => record.normalizedInput === "action.primary")).toMatchObject({
--      enabled: true,
--      objectKey: "global",
--      state: "Active",
--      usageLabel: "Primary Action",
--    });
--    expect(records.find((record) => record.normalizedInput === "aim.x+")).toMatchObject({
--      enabled: false,
--      state: "Disabled",
--      usageLabel: "Aim Right",
--    });
--    expect(records.find((record) => record.normalizedInput === "dpad.up")).toMatchObject({
--      inputFamily: "Joystick",
--    });
-+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
- 
--    await page.locator("[data-input-add-keyboard-family]").click();
--    await expect(page.locator("[data-input-status-log]")).toHaveText("Added generic Keyboard game control rows.");
--    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length + 10);
--    const genericKeyboardPrimary = page.locator("[data-input-mapping-row='generic-keyboard-control-global-5-action-primary']");
--    await expect(genericKeyboardPrimary).toContainText("Keyboard");
--    await genericKeyboardPrimary.getByRole("button", { name: "Edit" }).click();
--    await expect(page.locator("[data-input-row-family]")).toHaveValue("Keyboard");
--    await page.locator("[data-input-row-usage-label]").fill("Keyboard Jump");
--    await page.locator("[data-input-save-mapping]").click();
--    await expect(page.locator("[data-input-mapping-row='generic-keyboard-control-global-5-action-primary']")).toContainText("Keyboard Jump");
--    records = await inputMappingRecords(page);
--    expect(records.filter((record) => record.id.startsWith("generic-keyboard-control-"))).toHaveLength(10);
--    expect(records.find((record) => record.usageLabel === "Keyboard Jump")).toMatchObject({
--      inputFamily: "Keyboard",
--      normalizedInput: "action.primary",
--    });
-+    const jumpRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Jump" }).first();
-+    await expect(jumpRow.locator("td").nth(0).locator("input")).toBeChecked();
-+    await expect(jumpRow.locator("input[aria-label='D']")).toBeChecked();
-+    await expect(jumpRow.locator("input[aria-label='H']")).not.toBeChecked();
-+    await expect(jumpRow.locator("input[aria-label='U']")).not.toBeChecked();
-+    await expect(jumpRow.locator("input[aria-label='DC']")).not.toBeChecked();
-+    await expect(jumpRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
- 
--    await page.locator("[data-input-add-mouse-family]").click();
--    await expect(page.locator("[data-input-status-log]")).toHaveText("Added generic Mouse game control rows.");
--    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length + 16);
--    await expect(page.locator("[data-input-mapping-row='generic-mouse-control-global-2-aim-x']")).toContainText("Mouse");
--    records = await inputMappingRecords(page);
--    expect(records.filter((record) => record.id.startsWith("generic-mouse-control-"))).toHaveLength(6);
--    expect(records.filter((record) => record.id.startsWith("generic-mouse-control-")).every((record) => record.inputFamily === "Mouse")).toBe(true);
-+    const lookUpRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Look Up" }).first();
-+    await expect(lookUpRow.locator("td").nth(0).locator("input")).not.toBeChecked();
- 
--    await page.locator("[data-input-add-joystick-family]").click();
--    await expect(page.locator("[data-input-status-log]")).toHaveText("Added generic Joystick game control rows.");
--    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length + 34);
--    records = await inputMappingRecords(page);
--    expect(records.filter((record) => record.id.startsWith("generic-joystick-control-"))).toHaveLength(18);
--    expect(records.filter((record) => record.id.startsWith("generic-joystick-control-")).every((record) => record.inputFamily === "Joystick")).toBe(true);
--
--    await page.locator("[data-input-preset='platformer']").click();
--    await expect(page.locator("[data-input-family-accordions]")).toContainText("Move Left");
--    await expect(page.locator("[data-input-family-accordions]")).toContainText("Jump");
--    await expect(page.locator("[data-input-family-accordions]")).toContainText("Look Up");
--    records = await inputMappingRecords(page);
-+    const records = await inputMappingRecords(page);
-     expect(records).toHaveLength(7);
--    expect(records.find((record) => record.usageLabel === "Move Left")).toMatchObject({
++    records = await inputMappingRecords(page);
 +    expect(records.find((record) => record.usageLabel === "Jump")).toMatchObject({
-       enabled: true,
-       eventD: true,
--      normalizedInput: "move.x-",
--      usageLabel: "Move Left",
++      enabled: true,
++      eventD: true,
 +      normalizedInput: "action.primary",
 +      usageLabel: "Jump",
-     });
-     expect(records.find((record) => record.usageLabel === "Look Up")).toMatchObject({
-       enabled: false,
--      eventD: true,
-       normalizedInput: "move.y-",
--      usageLabel: "Look Up",
-+      state: "Disabled",
-     });
--    expect(records.every((record) => !Object.hasOwn(record, "inputEventPhase"))).toBe(true);
--    expect(JSON.stringify(records)).not.toContain("DU");
--    expect(JSON.stringify(records)).not.toContain("DHU");
-+    expect(records.every((record) => !record.inputFamily)).toBe(true);
-+    expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
-+    expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton/);
- 
-     await expectNoPageFailures(failures);
-   } finally {
-@@ -331,21 +255,17 @@ test("Game Controls owns generic mappings and presets", async ({ page }) => {
-   }
- });
- 
--test("Game Controls validates enabled rows and persists separate event fields", async ({ page }) => {
-+test("Game Controls validates rows and persists device-agnostic event fields", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/controls/index.html");
- 
-   try {
--    await page.locator("[data-input-add-mapping]").click();
--    const initialRecords = await inputMappingRecords(page);
--    expect(initialRecords).toHaveLength(NORMALIZED_INPUTS.length);
-+    await page.locator("[data-input-preset='shooter']").click();
-+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(8);
- 
--    await page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first().getByRole("button", { name: "Edit" }).click();
-+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Fire" }).first().getByRole("button", { name: "Edit" }).click();
-     await page.locator("[data-input-row-usage-label]").fill("");
-     await page.locator("[data-input-save-mapping]").click();
-     await expect(page.locator("[data-input-row-validation]")).toContainText("Add a Usage Label");
--    expect((await inputMappingRecords(page)).find((record) => record.normalizedInput === "action.primary")).toMatchObject({
--      usageLabel: "Primary Action",
--    });
-     await page.locator("[data-input-row-usage-label]").fill("Custom Fly");
-     await page.locator("[data-input-row-normalized]").evaluate((select) => {
-       const option = document.createElement("option");
-@@ -356,45 +276,30 @@ test("Game Controls validates enabled rows and persists separate event fields",
-       select.dispatchEvent(new Event("change", { bubbles: true }));
-     });
-     await page.locator("[data-input-save-mapping]").click();
--    await expect(page.locator("[data-input-row-validation]")).toContainText("fixed normalized action type");
--    expect((await inputMappingRecords(page)).find((record) => record.normalizedInput === "action.primary")).toMatchObject({
--      normalizedInput: "action.primary",
--      usageLabel: "Primary Action",
--    });
-+    await expect(page.locator("[data-input-row-validation]")).toContainText("normalized action");
-     await page.locator("[data-input-cancel-mapping]").click();
--    await editGameControl(page, "Primary Action", {
--      event: "eventD",
--      family: "Gamepad",
--      usageLabel: "Start Charge",
++    });
 +
-+    await editGameControl(page, "Fire", {
-+      event: "eventH",
-+      usageLabel: "Charge Shot",
-     });
--    await editGameControl(page, "Secondary Action", {
-+    await editGameControl(page, "Pause", {
-       event: "eventDC",
--      family: "Mouse",
--      usageLabel: "Double Tap Dodge",
--    });
--    await editGameControl(page, "Aim Right", {
--      event: "eventDrag",
--      family: "Mouse",
--      usageLabel: "Drag Aim",
--    });
--    await editGameControl(page, "Right Trigger", {
--      event: "eventAxis",
--      family: "Joystick",
--      usageLabel: "Analog Thrust",
-+      usageLabel: "Double Tap Pause",
-     });
- 
-     let records = await inputMappingRecords(page);
--    expect(records).toHaveLength(NORMALIZED_INPUTS.length);
--    expect(records.find((record) => record.usageLabel === "Start Charge")).toMatchObject({ eventD: true, eventU: false });
--    expect(records.find((record) => record.usageLabel === "Double Tap Dodge")).toMatchObject({ eventDC: true });
--    expect(records.find((record) => record.usageLabel === "Drag Aim")).toMatchObject({ eventDrag: true });
--    expect(records.find((record) => record.usageLabel === "Analog Thrust")).toMatchObject({ eventAxis: true, inputFamily: "Joystick" });
-+    expect(records).toHaveLength(8);
-+    expect(records.find((record) => record.usageLabel === "Charge Shot")).toMatchObject({ eventD: false, eventH: true });
-+    expect(records.find((record) => record.usageLabel === "Double Tap Pause")).toMatchObject({ eventDC: true });
-+    expect(records.every((record) => !record.inputFamily)).toBe(true);
-     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
- 
-     await page.reload({ waitUntil: "networkidle" });
--    await expect(page.locator("[data-input-family-accordions]")).toContainText("Start Charge");
--    await expect(page.locator("[data-input-family-accordions]")).toContainText("Double Tap Dodge");
--    await expect(page.locator("[data-input-family-accordions]")).toContainText("Drag Aim");
-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Charge Shot");
-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("Double Tap Pause");
-+    records = await inputMappingRecords(page);
-+    expect(records.find((record) => record.usageLabel === "Charge Shot")).toMatchObject({ eventH: true });
- 
-     await expectNoPageFailures(failures);
-   } finally {
-@@ -402,19 +307,30 @@ test("Game Controls validates enabled rows and persists separate event fields",
-   }
- });
- 
--test("Account User Controls maps physical input to generic normalized controls", async ({ page }) => {
-+test("Account User Controls owns physical input mapping accordions and profiles", async ({ page }) => {
-   const failures = await openRepoPage(page, "/account/user-controls.html", {
-     sessionUserKey: MOCK_DB_KEYS.users.user1,
-   });
- 
-   try {
-     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
-+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-+    await expect(page.locator("[data-account-user-controls-section] > summary")).toHaveText([
-+      "Keyboard",
-+      "Mouse",
-+      "Game Controllers",
-+      "Combo Inputs",
-+    ]);
-+    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Visible fallback");
-+    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("KeyW");
-+    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("move.y-");
-+    await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("MouseButton0");
-+    await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("action.primary");
-+    await expect(page.locator("[data-account-user-controls-section='Combo Inputs']")).toContainText("Wireframe only");
-+    expect(await controllerProfileRecords(page)).toHaveLength(0);
-+
-     await page.locator("[data-account-user-controls-save-all]").click();
-     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Create a user control profile before saving.");
--    await expect(page.locator("[data-account-user-controls-default-row]")).toContainText([
--      /Keyboard.*KeyW.*move\.y-/,
--      /Mouse.*MouseButton0.*action\.primary/,
--    ]);
-     expect(await controllerProfileRecords(page)).toHaveLength(0);
- 
-     await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
-@@ -435,38 +351,30 @@ test("Account User Controls maps physical input to generic normalized controls",
-     await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "MouseButton0" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
-     await page.locator("[data-account-user-controls-save-all]").click();
-     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Mouse Profile.");
--    await page.locator("[data-account-user-controls-device]").selectOption("");
- 
--    await exposeGamepad(page);
--    await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("1 game controller detected automatically", { timeout: 4000 });
-+    await exposeGamepads(page);
-+    await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("2 game controllers detected automatically", { timeout: 4000 });
-     await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
-       "Choose a physical controller",
-       "Keyboard",
-       "Mouse",
-       "Gamepad: Arcade Test Pad",
-+      "Gamepad: Studio Flight Pad",
-     ]);
--    await expect(page.locator("[data-account-user-controls-types]")).toContainText("Gamepad Axis");
--    await page.locator("[data-account-user-controls-device]").selectOption("gamepad-0");
-+    await page.locator("[data-account-user-controls-device]").selectOption("gamepad-1");
-+    await expect(page.locator("[data-account-user-controls-device]")).toHaveValue("gamepad-1");
-     await page.locator("[data-account-user-controls-add-profile]").click();
--    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad: Arcade Test Pad");
-+    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad: Studio Flight Pad");
-     await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Button0" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
-     const axis0 = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Axis0" });
--    await axis0.locator("[data-account-user-controls-input-negative]").selectOption("move.x-");
--    await axis0.locator("[data-account-user-controls-input-positive]").selectOption("move.x+");
-     await axis0.locator("[data-account-user-controls-deadzone]").fill("0.4");
-     await axis0.locator("[data-account-user-controls-invert]").check();
-     const axis0Sensitivity = axis0.locator("[data-account-user-controls-sensitivity]");
-     await expect(axis0Sensitivity).toBeVisible();
--    await expect(axis0Sensitivity).toHaveAttribute("min", "10");
--    await expect(axis0Sensitivity).toHaveAttribute("max", "200");
--    await axis0Sensitivity.fill("150");
--    await expect(axis0.locator("[data-slider-value-for='accountUserControlsSensitivity']")).toHaveText("150%");
--    await axis0Sensitivity.dblclick();
--    await expect(axis0Sensitivity).toHaveValue("100");
--    await expect(axis0.locator("[data-slider-value-for='accountUserControlsSensitivity']")).toHaveText("100%");
-     await axis0Sensitivity.fill("125");
-+    await expect(axis0.locator("[data-slider-value-for='accountUserControlsSensitivity']")).toHaveText("125%");
-     await page.locator("[data-account-user-controls-save-all]").click();
--    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Arcade Test Pad Profile.");
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Studio Flight Pad Profile.");
- 
-     const profiles = await controllerProfileRecords(page);
-     expect(profiles).toHaveLength(3);
-@@ -480,29 +388,28 @@ test("Account User Controls maps physical input to generic normalized controls",
-       controllerName: "Mouse",
-       deviceType: "Mouse",
-     });
--    const gamepadProfile = profiles.find((profile) => profile.profileName === "Arcade Test Pad Profile");
-+    const gamepadProfile = profiles.find((profile) => profile.profileName === "Studio Flight Pad Profile");
-     expect(gamepadProfile).toMatchObject({
--      controllerId: "Arcade Test Pad",
--      controllerName: "Arcade Test Pad",
-+      controllerId: "Studio Flight Pad",
-+      controllerName: "Studio Flight Pad",
-       deviceType: "Gamepad",
--      profileName: "Arcade Test Pad Profile",
-+      profileName: "Studio Flight Pad Profile",
-     });
-     expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Axis0")).toMatchObject({
-       deadzone: 0.4,
-       invert: true,
--      negativeNormalizedInput: "move.x-",
--      positiveNormalizedInput: "move.x+",
-       sensitivity: 125,
-     });
--    expect(gamepadProfile).not.toHaveProperty("gameAction");
--    expect(gamepadProfile).not.toHaveProperty("objectKey");
--    expect(JSON.stringify(gamepadProfile)).not.toContain("eventD");
--    expect(JSON.stringify(gamepadProfile)).not.toContain("eventU");
--    expect(JSON.stringify(gamepadProfile)).not.toContain("eventDC");
--    expect(JSON.stringify(gamepadProfile)).not.toContain("eventDrag");
-+    expect(JSON.stringify(profiles)).not.toContain("gameAction");
-+    expect(JSON.stringify(profiles)).not.toContain("objectKey");
-+    expect(JSON.stringify(profiles)).not.toContain("eventD");
-+    expect(JSON.stringify(profiles)).not.toContain("eventU");
-+    expect(JSON.stringify(profiles)).not.toContain("eventDC");
- 
-     await page.reload({ waitUntil: "networkidle" });
--    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Gamepad: Arcade Test Pad");
-+    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Keyboard: Keyboard");
-+    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Mouse: Mouse");
-+    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Gamepad: Studio Flight Pad");
- 
-     await expectNoPageFailures(failures);
-   } finally {
-@@ -510,7 +417,7 @@ test("Account User Controls maps physical input to generic normalized controls",
-   }
- });
- 
--test("Account pages use shared side navigation with active state", async ({ page }) => {
-+test("Account navigation exposes User Controls in sorted browseable menus", async ({ page }) => {
-   const failures = await openRepoPage(page, "/account/user-controls.html", {
-     sessionUserKey: MOCK_DB_KEYS.users.user1,
-   });
-@@ -526,7 +433,6 @@ test("Account pages use shared side navigation with active state", async ({ page
-       "User Controls",
-     ]);
-     await expect(page.locator("[data-account-side-nav-link][aria-current='page']")).toHaveText("User Controls");
--    await expect(page.locator("[data-account-side-nav-link]", { hasText: "Profile" })).toHaveAttribute("href", /account\/profile\.html$/);
-     await expect(page.locator(".site-header .nav-item").filter({ has: page.locator("[data-route='account']") }).last().locator(".sub-menu a")).toHaveText([
-       "Account Home",
-       "Achievements",
-@@ -537,17 +443,13 @@ test("Account pages use shared side navigation with active state", async ({ page
-       "User Controls",
-     ]);
- 
--    await page.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-account-side-nav]")).toBeVisible();
--    await expect(page.locator("[data-account-side-nav-link][aria-current='page']")).toHaveText("Profile");
--
      await expectNoPageFailures(failures);
    } finally {
      await closeWithCoverage(page, failures);
-   }
- });
+@@ -327,37 +336,41 @@ test("Account User Controls owns physical input mapping accordions and profiles"
+     await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("MouseButton0");
+     await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("action.primary");
+     await expect(page.locator("[data-account-user-controls-section='Combo Inputs']")).toContainText("Wireframe only");
++    await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).toContainText("No keyboard user control profile saved yet.");
++    await expect(page.locator("[data-account-user-controls-list-family='Mouse']")).toContainText("No mouse user control profile saved yet.");
++    await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).toContainText("No game controller profiles saved yet.");
+     expect(await controllerProfileRecords(page)).toHaveLength(0);
  
--test("Controls input implementation is owned by shared engine input services", async ({ page }) => {
-+test("Controls split keeps shared engine input contracts in the account surface", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/controls/index.html");
+     await page.locator("[data-account-user-controls-save-all]").click();
+     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Create a user control profile before saving.");
+     expect(await controllerProfileRecords(page)).toHaveLength(0);
  
-   try {
-@@ -558,9 +460,9 @@ test("Controls input implementation is owned by shared engine input services", a
-       ]);
-       return { accountControls, controls };
+-    await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
+-      "Choose a physical controller",
+-      "Keyboard",
+-      "Mouse",
++    await expect(page.locator("[data-account-user-controls-device] option")).toHaveText([
++      "Choose a game controller",
+     ]);
+-    await page.locator("[data-account-user-controls-device]").selectOption("keyboard");
+-    await page.locator("[data-account-user-controls-add-profile]").click();
++    await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Keyboard Profile");
++    await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Mouse Profile");
++
++    await page.locator("[data-account-user-controls-edit-family='Keyboard']").click();
+     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard: Keyboard");
+-    await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "KeyW" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.y-");
++    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("KeyW");
++    await page.locator("[data-account-user-controls-physical-input='0']").fill("ArrowRight");
++    await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("move.y-");
+     await page.locator("[data-account-user-controls-save-all]").click();
+     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Keyboard Profile.");
+ 
+-    await page.locator("[data-account-user-controls-device]").selectOption("mouse");
+-    await page.locator("[data-account-user-controls-add-profile]").click();
++    await page.locator("[data-account-user-controls-edit-family='Mouse']").click();
+     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Mouse: Mouse");
+-    await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "MouseButton0" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
++    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("MouseButton0");
++    await page.locator("[data-account-user-controls-physical-input='0']").fill("MouseButton1");
++    await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("action.primary");
+     await page.locator("[data-account-user-controls-save-all]").click();
+     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Mouse Profile.");
+ 
+     await exposeGamepads(page);
+     await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("2 game controllers detected automatically", { timeout: 4000 });
+-    await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
+-      "Choose a physical controller",
+-      "Keyboard",
+-      "Mouse",
++    await expect(page.locator("[data-account-user-controls-device] option")).toHaveText([
++      "Choose a game controller",
+       "Gamepad: Arcade Test Pad",
+       "Gamepad: Studio Flight Pad",
+     ]);
+@@ -383,11 +396,19 @@ test("Account User Controls owns physical input mapping accordions and profiles"
+       controllerName: "Keyboard",
+       deviceType: "Keyboard",
      });
--    expect(sources.controls).toContain("../../src/engine/input/InputService.js");
-     expect(sources.controls).toContain("../../src/engine/input/NormalizedInputRegistry.js");
--    expect(sources.controls).toContain("DEVICE_POLL_INTERVAL_MS");
-+    expect(sources.controls).not.toContain("../../src/engine/input/InputService.js");
-+    expect(sources.controls).not.toContain("DEVICE_POLL_INTERVAL_MS");
-     expect(sources.accountControls).toContain("../src/engine/input/InputService.js");
-     expect(sources.accountControls).toContain("../src/engine/input/NormalizedInputRegistry.js");
-     expect(sources.accountControls).toContain("../src/engine/input/GamepadInputClassifier.js");
-@@ -578,38 +480,6 @@ test("Controls input implementation is owned by shared engine input services", a
-   }
- });
++    expect(profiles.find((profile) => profile.profileName === "Keyboard Profile").inputMappings[0]).toMatchObject({
++      normalizedInput: "move.y-",
++      physicalInput: "ArrowRight",
++    });
+     expect(profiles.find((profile) => profile.profileName === "Mouse Profile")).toMatchObject({
+       controllerId: "generic-mouse",
+       controllerName: "Mouse",
+       deviceType: "Mouse",
+     });
++    expect(profiles.find((profile) => profile.profileName === "Mouse Profile").inputMappings[0]).toMatchObject({
++      normalizedInput: "action.primary",
++      physicalInput: "MouseButton1",
++    });
+     const gamepadProfile = profiles.find((profile) => profile.profileName === "Studio Flight Pad Profile");
+     expect(gamepadProfile).toMatchObject({
+       controllerId: "Studio Flight Pad",
+@@ -407,9 +428,12 @@ test("Account User Controls owns physical input mapping accordions and profiles"
+     expect(JSON.stringify(profiles)).not.toContain("eventDC");
  
--test("Player Mode is owned by Game Design and displayed from the Configuration handoff", async ({ page }) => {
--  const failures = await openRepoPage(page, "/toolbox/game-design/index.html?project=player-mode-pr-036");
--
--  try {
--    await expect(page.locator("[data-game-design-player-mode] option")).toHaveText([
--      "Select player mode",
--      "1 Player",
--      "2+ Turn Based",
--      "2+ Concurrent",
--    ]);
--    await page.getByLabel("Game Type").selectOption("Puzzle");
--    await page.getByLabel("Genre").selectOption("Adventure");
--    await page.getByLabel("Play Style").selectOption("Single Player");
--    await page.getByLabel("Player Mode").selectOption("2+ Concurrent");
--    await page.getByLabel("Design Summary").fill("Player mode is configured with play style on Game Design.");
--    await page.getByRole("button", { name: "Save Game Design" }).click();
--    await expect(page.locator("[data-game-design-output-player-mode]")).toHaveText("2+ Concurrent");
--
--    await page.goto(`${failures.server.baseUrl}/toolbox/game-configuration/index.html?project=player-mode-pr-036`, { waitUntil: "networkidle" });
--    await expect(page.locator("[data-game-configuration-player-mode]")).toHaveCount(0);
--    await expect(page.locator("[data-game-configuration-output-player-mode]")).toHaveText("1 Player");
--
--    await page.goto(`${failures.server.baseUrl}/toolbox/controls/index.html`, { waitUntil: "networkidle" });
--    await expect(page.locator("main")).not.toContainText("Player Mode");
--    await expect(page.locator("[data-game-configuration-player-mode]")).toHaveCount(0);
--
--    await expectNoPageFailures(failures);
--  } finally {
--    await closeWithCoverage(page, failures);
--  }
--});
--
- test("Input Mapping V2 compatibility route points creators to Controls", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/input-mapping-v2/index.html");
+     await page.reload({ waitUntil: "networkidle" });
+-    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Keyboard: Keyboard");
+-    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Mouse: Mouse");
+-    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Gamepad: Studio Flight Pad");
++    await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).toContainText("Keyboard: Keyboard");
++    await expect(page.locator("[data-account-user-controls-list-family='Mouse']")).toContainText("Mouse: Mouse");
++    await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).toContainText("Gamepad: Studio Flight Pad");
++    await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit='generic-keyboard-keyboard-profile']").click();
++    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("ArrowRight");
++    await page.locator("[data-account-user-controls-cancel]").click();
  
+     await expectNoPageFailures(failures);
+   } finally {
 diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
-index c8b09ec99..c23bfc196 100644
+index c23bfc196..320e34072 100644
 --- a/toolbox/controls/controls.js
 +++ b/toolbox/controls/controls.js
-@@ -1,41 +1,16 @@
--import { createObjectsToolApiRepository } from "../objects/objects-api-client.js";
- import { createControlsToolApiRepository } from "./controls-api-client.js";
--import InputService from "../../src/engine/input/InputService.js";
- import {
-   normalizeNormalizedInput,
-+  normalizedInputOptions,
- } from "../../src/engine/input/NormalizedInputRegistry.js";
- 
- const CONTROL_EVENT_OPTIONS = Object.freeze([
--  Object.freeze({ field: "eventD", label: "Press" }),
--  Object.freeze({ field: "eventH", label: "Hold" }),
--  Object.freeze({ field: "eventU", label: "Release" }),
--  Object.freeze({ field: "eventDC", label: "Double Press" }),
--  Object.freeze({ field: "eventDrag", label: "Drag" }),
--  Object.freeze({ field: "eventAxis", label: "Axis" }),
--]);
--const DEVICE_POLL_INTERVAL_MS = 1200;
--const INPUT_FAMILY_OPTIONS = Object.freeze([
--  Object.freeze({ label: "Keyboard", value: "Keyboard" }),
--  Object.freeze({ label: "Mouse", value: "Mouse" }),
--  Object.freeze({ label: "Gamepad", value: "Gamepad" }),
--  Object.freeze({ label: "Joystick", value: "Joystick" }),
--]);
--const SUPPORTED_CONTROL_TYPES = Object.freeze([
--  "Keyboard Key",
--  "Mouse Button",
--  "Mouse Axis",
--  "Mouse Wheel",
--  "Gamepad Button",
--  "Gamepad Trigger",
--  "Gamepad Bumper",
--  "Gamepad Stick Button",
--  "Gamepad Axis",
--  "Joystick Button",
--  "Joystick Axis",
--  "Touch Button",
--  "Touch Axis / Pad",
--  "Pointer Drag",
-+  Object.freeze({ field: "eventD", label: "D" }),
-+  Object.freeze({ field: "eventH", label: "H" }),
-+  Object.freeze({ field: "eventU", label: "U" }),
-+  Object.freeze({ field: "eventDC", label: "DC" }),
- ]);
-+
- const NORMALIZED_CONTROL_DESCRIPTIONS = Object.freeze({
-   "action.cancel": "Cancel an action or leave a menu.",
-   "action.confirm": "Confirm a menu choice or prompt.",
-@@ -62,60 +37,7 @@ const NORMALIZED_CONTROL_DESCRIPTIONS = Object.freeze({
-   "trigger.left": "Left trigger.",
-   "trigger.right": "Right trigger.",
- });
--const COMMON_FULL_CONTROL_INPUTS = new Set([
--  "action.cancel",
--  "action.confirm",
--  "action.pause",
--  "action.primary",
--  "action.secondary",
--  "action.start",
--  "move.x-",
--  "move.x+",
--  "move.y-",
--  "move.y+",
--]);
--const GENERIC_INPUT_FAMILY_ROWS = Object.freeze({
--  Keyboard: Object.freeze([
--    "move.x-",
--    "move.x+",
--    "move.y-",
--    "move.y+",
--    "action.primary",
--    "action.secondary",
--    "action.confirm",
--    "action.cancel",
--    "action.pause",
--    "action.start",
--  ]),
--  Mouse: Object.freeze([
--    "aim.x-",
--    "aim.x+",
--    "aim.y-",
--    "aim.y+",
--    "action.primary",
--    "action.secondary",
--  ]),
--  Joystick: Object.freeze([
--    "move.x-",
--    "move.x+",
--    "move.y-",
--    "move.y+",
--    "aim.x-",
--    "aim.x+",
--    "aim.y-",
--    "aim.y+",
--    "dpad.up",
--    "dpad.down",
--    "dpad.left",
--    "dpad.right",
--    "trigger.left",
--    "trigger.right",
--    "action.primary",
--    "action.secondary",
--    "action.start",
--    "action.select",
--  ]),
--});
-+
- const NORMALIZED_USAGE_LABELS = Object.freeze({
-   "action.cancel": "Cancel",
-   "action.confirm": "Confirm",
-@@ -142,6 +64,7 @@ const NORMALIZED_USAGE_LABELS = Object.freeze({
-   "trigger.left": "Left Trigger",
+@@ -65,6 +65,19 @@ const NORMALIZED_USAGE_LABELS = Object.freeze({
    "trigger.right": "Right Trigger",
  });
+ 
++const COMMON_DEFAULT_GAME_CONTROLS = new Set([
++  "action.cancel",
++  "action.confirm",
++  "action.pause",
++  "action.primary",
++  "action.secondary",
++  "action.start",
++  "move.x-",
++  "move.x+",
++  "move.y-",
++  "move.y+",
++]);
 +
  const GAME_CONTROL_PRESETS = Object.freeze({
    fighting: Object.freeze([
      Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
-@@ -164,7 +87,7 @@ const GAME_CONTROL_PRESETS = Object.freeze({
-     Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x+", usageLabel: "Move Right" }),
-     Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.primary", usageLabel: "Serve" }),
-     Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.start", usageLabel: "Pause" }),
--    Object.freeze({ enabled: false, eventAxis: true, normalizedInput: "aim.x+", usageLabel: "Aim Paddle" }),
-+    Object.freeze({ enabled: false, eventD: true, normalizedInput: "aim.x+", usageLabel: "Aim Paddle" }),
-   ]),
-   "party-arena": Object.freeze([
-     Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
-@@ -201,47 +124,28 @@ const GAME_CONTROL_PRESETS = Object.freeze({
-     Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Steer Left" }),
-     Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x+", usageLabel: "Steer Right" }),
-     Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.start", usageLabel: "Pause" }),
--    Object.freeze({ enabled: false, eventAxis: true, normalizedInput: "aim.x+", usageLabel: "Analog Steering" }),
-+    Object.freeze({ enabled: false, eventD: true, normalizedInput: "aim.x+", usageLabel: "Analog Steering" }),
-     Object.freeze({ enabled: false, eventD: true, normalizedInput: "action.primary", usageLabel: "Thrust" }),
-     Object.freeze({ enabled: false, eventD: true, normalizedInput: "action.secondary", usageLabel: "Brake" }),
-   ]),
- });
-+
- let controlsRepository = createControlsToolApiRepository();
--let objectsRepository = createObjectsToolApiRepository();
- let mappings = [];
--let objectOptions = [];
- let editingRow = null;
--let devicePollingTimer = null;
--const inputService = new InputService({ target: window });
- 
- const elements = {
--  actionSelect: document.querySelector("[data-input-action-select]"),
--  addJoystickFamily: document.querySelector("[data-input-add-joystick-family]"),
--  addKeyboardFamily: document.querySelector("[data-input-add-keyboard-family]"),
--  addMapping: document.querySelector("[data-input-add-mapping]"),
--  addMouseFamily: document.querySelector("[data-input-add-mouse-family]"),
--  accountUserControlsLink: document.querySelector("[data-account-user-controls-link]"),
-   customActionStatus: document.querySelector("[data-input-custom-action-status]"),
-   defaultActions: document.querySelector("[data-input-default-actions]"),
--  deviceCount: document.querySelector("[data-input-device-count]"),
--  controlTypeList: document.querySelector("[data-input-control-type-list]"),
--  lists: [...document.querySelectorAll("[data-input-mapping-list]")],
-+  enabledCount: document.querySelector("[data-input-enabled-count]"),
-+  list: document.querySelector("[data-input-mapping-list]"),
-   mappingCount: document.querySelector("[data-input-mapping-count]"),
--  mappingJson: document.querySelector("[data-input-mapping-json]"),
--  objectColumns: [...document.querySelectorAll("[data-input-object-column]")],
--  objectSummaryActions: document.querySelector("[data-input-object-summary-actions]"),
--  objectSummaryName: document.querySelector("[data-input-object-summary-name]"),
--  objectSummaryRole: document.querySelector("[data-input-object-summary-role]"),
--  objectSelect: document.querySelector("[data-input-object-select]"),
-   outputCount: document.querySelector("[data-input-output-count]"),
-   outputStatus: document.querySelector("[data-input-output-status]"),
--  refreshDevices: document.querySelector("[data-input-refresh-devices]"),
--  resetMappings: document.querySelector("[data-input-reset-mappings]"),
-+  presetButtons: document.querySelectorAll("[data-input-preset]"),
-   returnWorkspace: document.querySelector("[data-input-return-workspace]"),
-   saveStatus: document.querySelector("[data-input-save-status]"),
--  sourceDiagnostics: document.querySelector("[data-input-source-diagnostics]"),
-   statusLog: document.querySelector("[data-input-status-log]"),
--  presetButtons: document.querySelectorAll("[data-input-preset]"),
- };
- 
- function normalizeText(value) {
-@@ -255,138 +159,12 @@ function keyFromText(value) {
-     .replace(/^-+|-+$/g, "");
+@@ -323,6 +336,30 @@ function readMappings() {
+   return Array.isArray(result) ? result.map((mapping) => normalizeMapping(mapping)) : [];
  }
  
--function normalizeList(value) {
--  if (Array.isArray(value)) {
--    return value.map(normalizeText).filter(Boolean);
--  }
--  return normalizeText(value)
--    .split(",")
--    .map(normalizeText)
--    .filter(Boolean);
--}
--
--function listLabel(values, fallback = "Not configured") {
--  const normalizedValues = normalizeList(values);
--  return normalizedValues.length ? normalizedValues.join(", ") : fallback;
--}
--
--function normalizeInputFamily(value) {
--  const normalized = normalizeText(value);
--  return INPUT_FAMILY_OPTIONS.some((option) => option.value === normalized) ? normalized : "Keyboard";
--}
--
--function legacyEventFields(source = {}) {
--  const phase = normalizeText(source.inputEventPhase);
--  if (phase === "Release") {
--    return {
--      eventAxis: false,
--      eventD: false,
--      eventDC: false,
--      eventDrag: false,
--      eventH: false,
--      eventU: true,
--    };
--  }
--  if (phase === "Press" || phase === "Down") {
--    return {
--      eventAxis: false,
--      eventD: true,
--      eventDC: false,
--      eventDrag: false,
--      eventH: false,
--      eventU: false,
--    };
--  }
--  return {
--    eventAxis: false,
--    eventD: true,
--    eventDC: false,
--    eventDrag: false,
--    eventH: false,
--    eventU: false,
--  };
--}
--
--function normalizedEventFields(source = {}) {
--  const legacy = legacyEventFields(source);
--  return {
--    eventAxis: source.eventAxis === undefined ? legacy.eventAxis : Boolean(source.eventAxis),
--    eventD: source.eventD === undefined ? legacy.eventD : Boolean(source.eventD),
--    eventDC: source.eventDC === undefined ? legacy.eventDC : Boolean(source.eventDC),
--    eventDrag: source.eventDrag === undefined ? legacy.eventDrag : Boolean(source.eventDrag),
--    eventH: source.eventH === undefined ? legacy.eventH : Boolean(source.eventH),
--    eventU: source.eventU === undefined ? legacy.eventU : Boolean(source.eventU),
--  };
--}
--
- function setText(element, value) {
-   if (element) {
-     element.textContent = value;
-   }
- }
- 
--function normalizedControlCatalog() {
--  return inputService.getNormalizedInputOptions().map((option) => ({
--    description: NORMALIZED_CONTROL_DESCRIPTIONS[option.value] || "Generic normalized control.",
--    id: option.value,
--    label: option.label,
--  }));
--}
--
--function availableGamepads() {
--  inputService.update();
--  return inputService.getGamepads();
--}
--
--function selectedObject() {
--  const objectKey = elements.objectSelect?.value || "global";
--  return objectOptions.find((object) => object.key === objectKey) || objectOptions[0];
--}
--
--function selectedAction() {
--  const normalized = normalizeNormalizedInput(elements.actionSelect?.value, "action.primary");
--  return {
--    id: normalized,
--    label: inputService.getNormalizedInputLabel(normalized),
--  };
--}
--
--function objectByKey(objectKey) {
--  return objectOptions.find((object) => object.key === objectKey) || null;
--}
--
--function validateMappingAction(mapping) {
--  const object = objectByKey(mapping.objectKey);
--  if (!object && mapping.objectKey !== "global") {
--    return {
--      ok: false,
--      message: `${mapping.objectName || "This mapping"} needs an object that still exists. Edit this row and choose an existing object.`,
--    };
--  }
--  if (!mapping.enabled) {
--    return { ok: true, message: "" };
--  }
--  if (!normalizeNormalizedInput(mapping.normalizedInput)) {
--    return {
--      ok: false,
--      message: "Choose a fixed normalized action type from the registry.",
--    };
--  }
--  if (!normalizeText(mapping.usageLabel)) {
--    return {
--      ok: false,
--      message: "Add a Usage Label or disable this alternate row.",
--    };
--  }
--  if (!CONTROL_EVENT_OPTIONS.some((option) => Boolean(mapping[option.field]))) {
--    return {
--      ok: false,
--      message: "Choose at least one event: Press, Hold, Release, Double Press, Drag, or Axis.",
--    };
--  }
--  return { ok: true, message: "" };
--}
--
- function optionElement(value, text) {
-   const option = document.createElement("option");
-   option.value = value;
-@@ -400,9 +178,15 @@ function tableCell(text) {
-   return cell;
- }
- 
--function actionButton(text, dataName, value = "", className = "btn btn--compact") {
-+function controlCell(control) {
-+  const cell = document.createElement("td");
-+  cell.append(control);
-+  return cell;
-+}
-+
-+function actionButton(text, dataName, value = "") {
-   const button = document.createElement("button");
--  button.className = className;
-+  button.className = "btn btn--compact";
-   button.type = "button";
-   button.textContent = text;
-   button.dataset[dataName] = value;
-@@ -422,40 +206,13 @@ function selectControl({ ariaLabel, options, selectedValue }) {
-   const select = document.createElement("select");
-   select.className = "tool-form-control";
-   select.setAttribute("aria-label", ariaLabel);
--  options.forEach((option) => {
--    select.append(optionElement(option.value, option.label));
--  });
-+  select.append(...options.map((option) => optionElement(option.value, option.label)));
-   select.value = options.some((option) => option.value === selectedValue)
-     ? selectedValue
-     : options[0]?.value || "";
-   return select;
- }
- 
--function controlCell(control) {
--  const cell = document.createElement("td");
--  cell.append(control);
--  return cell;
--}
--
--function mappingFamilies() {
--  return INPUT_FAMILY_OPTIONS.map((option) => option.value);
--}
--
--function objectColumnVisible() {
--  return objectOptions.length > 1;
--}
--
--function gameControlColumnCount() {
--  return 11 + (objectColumnVisible() ? 1 : 0);
--}
--
--function renderObjectColumns() {
--  const shouldShow = objectColumnVisible();
--  elements.objectColumns.forEach((column) => {
--    column.hidden = !shouldShow;
--  });
--}
--
- function checkboxCell(checked, label) {
-   const input = document.createElement("input");
-   input.type = "checkbox";
-@@ -471,11 +228,11 @@ function checkboxCell(checked, label) {
-   return cell;
- }
- 
--function editableCheckboxCell({ checked, dataName, label }) {
-+function editableCheckboxCell({ checked, datasetName, label }) {
-   const input = document.createElement("input");
-   input.type = "checkbox";
-   input.checked = Boolean(checked);
--  input.dataset[dataName] = "true";
-+  input.dataset[datasetName] = "true";
-   input.setAttribute("aria-label", label);
-   const cell = controlCell(input);
-   cell.dataset.inputEventChecked = checked ? "true" : "false";
-@@ -486,44 +243,68 @@ function editableCheckboxCell({ checked, dataName, label }) {
-   return cell;
- }
- 
-+function normalizedControlCatalog() {
-+  return normalizedInputOptions().map((option) => ({
-+    description: NORMALIZED_CONTROL_DESCRIPTIONS[option.value] || "Generic normalized control.",
-+    id: option.value,
-+    label: option.label,
-+  }));
-+}
-+
-+function legacyEventFields(source = {}) {
-+  const phase = normalizeText(source.inputEventPhase);
-+  const fallbackD = phase === "Release" ? false : true;
-+  return {
-+    eventD: fallbackD,
-+    eventDC: false,
-+    eventH: phase === "Down",
-+    eventU: phase === "Release",
-+  };
-+}
-+
-+function normalizedEventFields(source = {}) {
-+  const legacy = legacyEventFields(source);
-+  const eventFields = {
-+    eventD: source.eventD === undefined ? legacy.eventD : Boolean(source.eventD),
-+    eventDC: source.eventDC === undefined ? legacy.eventDC : Boolean(source.eventDC),
-+    eventH: source.eventH === undefined ? legacy.eventH : Boolean(source.eventH),
-+    eventU: source.eventU === undefined ? legacy.eventU : Boolean(source.eventU),
-+  };
-+  if (!Object.values(eventFields).some(Boolean) && (source.eventAxis || source.eventDrag)) {
-+    eventFields.eventD = true;
-+  }
-+  return {
-+    ...eventFields,
-+    eventAxis: false,
-+    eventDrag: false,
-+  };
-+}
-+
- function mappingIdFor(mapping) {
--  const base = [
--    "game-controls",
--    mapping.objectKey || "global",
--    mapping.usageLabel || mapping.actionLabel || mapping.action,
--    mapping.inputFamily,
--    mapping.normalizedInput,
--    CONTROL_EVENT_OPTIONS
--      .filter((option) => Boolean(mapping[option.field]))
--      .map((option) => option.label)
--      .join("-"),
--  ].join("-");
--  return keyFromText(base) || `mapping-${Date.now()}`;
-+  const eventKey = CONTROL_EVENT_OPTIONS
-+    .filter((option) => Boolean(mapping[option.field]))
-+    .map((option) => option.label)
-+    .join("-");
-+  return keyFromText(["game-control", mapping.usageLabel, mapping.normalizedInput, eventKey].join("-"))
-+    || `game-control-${Date.now()}`;
- }
- 
- function normalizeMapping(source = {}) {
--  const binding = normalizeText(source.binding || source.input);
-   const sourceNormalizedInput = normalizeText(source.normalizedInput);
--  const normalizedInput = normalizeNormalizedInput(
--    sourceNormalizedInput,
--    sourceNormalizedInput ? "" : inputService.getDefaultNormalizedInputForPhysicalInput(binding) || "action.primary",
--  );
-+  const normalizedInput = normalizeNormalizedInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
-   const usageLabel = normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
--  const eventFields = normalizedEventFields(source);
--  const objectKey = normalizeText(source.objectKey) || "global";
--  const objectName = normalizeText(source.objectName) || objectOptions.find((object) => object.key === objectKey)?.label || "Global";
-   const enabled = source.enabled === undefined ? true : Boolean(source.enabled);
-+  const eventFields = normalizedEventFields(source);
-   const mapping = {
--    action: normalizeText(source.action) || keyFromText(usageLabel),
-+    action: keyFromText(usageLabel),
-     actionLabel: usageLabel,
-     enabled,
-     ...eventFields,
-     id: normalizeText(source.id),
--    inputFamily: normalizeInputFamily(source.inputFamily),
--    label: inputService.getNormalizedInputLabel(normalizedInput),
-+    inputFamily: "",
-     normalizedInput,
--    objectKey,
--    objectName,
-+    objectKey: "global",
-+    objectName: "Global",
-     state: enabled ? "Active" : "Disabled",
-     usageLabel,
-   };
-@@ -533,199 +314,73 @@ function normalizeMapping(source = {}) {
-   };
- }
- 
--function payloadActions() {
--  return mappings
--    .filter((mapping) => mapping.enabled && mapping.state === "Active")
--    .map((mapping) => ({
--      engine: "src/engine/input/NormalizedInputRegistry",
--      events: Object.fromEntries(CONTROL_EVENT_OPTIONS.map((option) => [option.label, Boolean(mapping[option.field])])),
--      inputFamily: mapping.inputFamily,
--      normalizedInput: mapping.normalizedInput,
--      objectKey: mapping.objectKey,
--      source: "normalized",
--      usageLabel: mapping.usageLabel,
--    }));
--}
--
--function payloadJson() {
--  return {
--    actions: payloadActions(),
--    engineInputModel: "src/engine/input/InputMap",
--    toolId: "controls",
--    version: 1,
--  };
--}
--
- function readMappings() {
-   let result = controlsRepository.listMappings();
--  if (Array.isArray(result)) {
--    return result.map(normalizeMapping);
-+  if (!Array.isArray(result)) {
-+    controlsRepository = createControlsToolApiRepository();
-+    result = controlsRepository.listMappings();
-   }
--  controlsRepository = createControlsToolApiRepository();
--  result = controlsRepository.listMappings();
--  return Array.isArray(result) ? result.map(normalizeMapping) : [];
-+  return Array.isArray(result) ? result.map((mapping) => normalizeMapping(mapping)) : [];
- }
- 
- function saveMappings(nextMappings) {
--  const normalizedMappings = nextMappings.map(normalizeMapping);
-+  const normalizedMappings = nextMappings.map((mapping) => normalizeMapping(mapping));
-   let result = controlsRepository.replaceMappings(normalizedMappings);
-   if (!Array.isArray(result?.mappings) && result?.error) {
-     controlsRepository = createControlsToolApiRepository();
-     result = controlsRepository.replaceMappings(normalizedMappings);
-   }
-   if (Array.isArray(result?.mappings)) {
--    mappings = result.mappings.map(normalizeMapping);
-+    mappings = result.mappings.map((mapping) => normalizeMapping(mapping));
-     return true;
-   }
--  mappings = normalizedMappings;
--  setText(elements.statusLog, result?.message || "WARN: Mapping save could not reach the shared DB adapter.");
-+  setText(elements.statusLog, result?.message || "WARN: Controls could not reach the shared DB adapter.");
-   return false;
- }
- 
--function resetStoredMappings() {
--  let result = controlsRepository.resetMappings();
--  if (!Array.isArray(result?.mappings) && result?.error) {
--    controlsRepository = createControlsToolApiRepository();
--    result = controlsRepository.resetMappings();
-+function validateMappingAction(mapping) {
-+  if (!mapping.enabled) {
-+    return { ok: true, message: "" };
-   }
--  mappings = Array.isArray(result?.mappings) ? result.mappings.map(normalizeMapping) : [];
--}
--
--function defaultInputFamilyForNormalizedInput(normalizedInput) {
--  if (normalizedInput.startsWith("aim.")) {
--    return "Mouse";
-+  if (!normalizeNormalizedInput(mapping.normalizedInput)) {
-+    return {
-+      ok: false,
-+      message: "Choose a normalized action from the registry.",
-+    };
-   }
--  if (normalizedInput.startsWith("trigger.") || normalizedInput.startsWith("dpad.")) {
--    return "Joystick";
-+  if (!normalizeText(mapping.usageLabel)) {
-+    return {
-+      ok: false,
-+      message: "Add a Usage Label or disable this alternate row.",
-+    };
-   }
--  return "Keyboard";
--}
--
--function defaultEventFieldsForNormalizedInput(normalizedInput) {
--  const isContinuous = normalizedInput.startsWith("aim.") || normalizedInput.startsWith("trigger.");
--  return {
--    eventAxis: isContinuous,
--    eventD: !isContinuous,
--    eventDC: false,
--    eventDrag: false,
--    eventH: false,
--    eventU: false,
--  };
--}
--
--function createFullGameControlSet(object = selectedObject()) {
--  return normalizedControlCatalog().map((control, index) => {
--    const normalizedInput = control.id;
--    const enabled = COMMON_FULL_CONTROL_INPUTS.has(normalizedInput);
--    return normalizeMapping({
--      ...defaultEventFieldsForNormalizedInput(normalizedInput),
--      enabled,
--      id: `full-game-control-${keyFromText(object.key)}-${index + 1}-${keyFromText(normalizedInput)}`,
--      inputFamily: defaultInputFamilyForNormalizedInput(normalizedInput),
--      normalizedInput,
--      objectKey: object.key,
--      objectName: object.label,
--      state: enabled ? "Active" : "Disabled",
--      usageLabel: NORMALIZED_USAGE_LABELS[normalizedInput] || control.label,
--    });
--  });
--}
--
--function createGenericInputFamilyRows(inputFamily, object = selectedObject()) {
--  const family = normalizeInputFamily(inputFamily);
--  const normalizedInputs = GENERIC_INPUT_FAMILY_ROWS[family] || [];
--  return normalizedInputs.map((normalizedInput, index) => normalizeMapping({
--    ...defaultEventFieldsForNormalizedInput(normalizedInput),
--    enabled: true,
--    id: `generic-${keyFromText(family)}-control-${keyFromText(object.key)}-${index + 1}-${keyFromText(normalizedInput)}`,
--    inputFamily: family,
--    normalizedInput,
--    objectKey: object.key,
--    objectName: object.label,
--    state: "Active",
--    usageLabel: NORMALIZED_USAGE_LABELS[normalizedInput] || inputService.getNormalizedInputLabel(normalizedInput),
--  }));
--}
--
--function renderCurrentState(message = "") {
--  renderActionsAndObjects();
--  renderDefaults();
--  renderDiagnostics(message);
--  renderMappings();
--}
--
--function addFullGameControlSet() {
--  const existingIds = new Set(mappings.map((mapping) => mapping.id));
--  const nextMappings = [...mappings];
--  createFullGameControlSet().forEach((mapping) => {
--    if (!existingIds.has(mapping.id)) {
--      nextMappings.push(mapping);
--    }
--  });
--  saveMappings(nextMappings);
--  editingRow = null;
--  renderCurrentState("Added Keyboard, Mouse, and Joystick default game controls. Common rows are enabled; alternate rows are disabled.");
--}
--
--function addGenericInputFamilyRows(inputFamily) {
--  const existingIds = new Set(mappings.map((mapping) => mapping.id));
--  const nextMappings = [...mappings];
--  createGenericInputFamilyRows(inputFamily).forEach((mapping) => {
--    if (!existingIds.has(mapping.id)) {
--      nextMappings.push(mapping);
--    }
--  });
--  saveMappings(nextMappings);
--  editingRow = null;
--  renderCurrentState(`Added generic ${inputFamily} game control rows.`);
--}
--
--function applyGameControlPreset(presetKey) {
--  const preset = GAME_CONTROL_PRESETS[presetKey];
--  if (!preset) {
--    setText(elements.statusLog, "WARN: Choose a known game control preset.");
--    return;
-+  if (!CONTROL_EVENT_OPTIONS.some((option) => Boolean(mapping[option.field]))) {
-+    return {
-+      ok: false,
-+      message: "Choose at least one event: D, H, U, or DC.",
-+    };
-   }
--  const nextMappings = preset.map((row, index) => normalizeMapping({
--    ...row,
--    id: `${presetKey}-${index + 1}`,
--    inputFamily: row.inputFamily || "Keyboard",
--    objectKey: "global",
--    objectName: "Global",
--    state: "Active",
--  }));
--  saveMappings(nextMappings);
--  editingRow = null;
--  renderCurrentState(`Applied ${presetKey.replace(/-/g, " ")} preset. Common rows are enabled; alternate rows are disabled.`);
-+  return { ok: true, message: "" };
- }
- 
--function readObjectOptions() {
--  let result = objectsRepository.listObjects();
--  if (!Array.isArray(result)) {
--    objectsRepository = createObjectsToolApiRepository();
--    result = objectsRepository.listObjects();
-+function statusLabel() {
-+  if (!mappings.length) {
-+    return "Missing Game Control Mapping";
-+  }
-+  if (mappings.some((mapping) => !validateMappingAction(mapping).ok)) {
-+    return "Pending Setup";
-   }
--  const objects = Array.isArray(result) ? result : [];
--  return [
--    { capabilities: [], key: "global", label: "Global", role: "Global" },
--    ...objects.map((object) => ({
--      capabilities: normalizeList(object.traits || object.capabilities),
--      key: normalizeText(object.id) || keyFromText(object.name),
--      label: normalizeText(object.name),
--      role: normalizeText(object.role || object.type) || "Custom",
--    })).filter((object) => object.key && object.label),
--  ];
-+  return "Complete";
- }
- 
--function renderSelect(select, options, selectedValue) {
--  if (!select) {
--    return;
--  }
--  select.classList.add("tool-form-control");
--  select.replaceChildren(...options.map((option) => optionElement(option.value, option.label)));
--  select.value = options.some((option) => option.value === selectedValue)
--    ? selectedValue
--    : options[0]?.value || "";
-+function renderOutput() {
-+  const status = statusLabel();
-+  const enabledCount = mappings.filter((mapping) => mapping.enabled).length;
-+  setText(elements.mappingCount, String(mappings.length));
-+  setText(elements.enabledCount, String(enabledCount));
-+  setText(elements.outputCount, String(mappings.length));
-+  setText(elements.outputStatus, status);
-+  setText(elements.saveStatus, status);
- }
- 
- function renderDefaults() {
-@@ -749,97 +404,7 @@ function renderDefaults() {
-     row.append(labelCell, descriptionCell);
-     return row;
-   }));
--  if (elements.controlTypeList) {
--    elements.controlTypeList.replaceChildren(...SUPPORTED_CONTROL_TYPES.map((controlType) => {
--      const item = document.createElement("li");
--      item.textContent = controlType;
--      return item;
--    }));
--  }
--  setText(elements.customActionStatus, "Normalized control types loaded. Custom normalized action types are not accepted.");
--}
--
--function renderActionsAndObjects() {
--  const previousAction = elements.actionSelect?.value || "action.primary";
--  const previousObject = elements.objectSelect?.value || "global";
--  renderSelect(
--    elements.objectSelect,
--    objectOptions.map((object) => ({ label: object.label, value: object.key })),
--    previousObject,
--  );
--  const object = selectedObject();
--  renderSelect(
--    elements.actionSelect,
--    normalizedControlCatalog().map((control) => ({ label: control.label, value: control.id })),
--    previousAction,
--  );
--  renderObjectSummary(object);
--}
--
--function renderObjectSummary(object = selectedObject()) {
--  const availableActions = normalizedControlCatalog().map((action) => action.label).join(", ");
--  setText(elements.objectSummaryName, object?.label || "Global");
--  setText(elements.objectSummaryRole, object?.role || "Global");
--  setText(elements.objectSummaryActions, availableActions || "No normalized controls available");
--}
--
--function renderDiagnostics(message = "") {
--  const pads = availableGamepads();
--  const gamepadWarning = pads.length ? "" : gamepadSummary();
--  const diagnostics = inputService.getInputDeviceCapabilities({
--    gamepadCount: pads.length,
--    gamepadWarning,
--    webXrAvailable: typeof navigator !== "undefined" && Boolean(navigator.xr),
--  });
--  if (elements.sourceDiagnostics) {
--    elements.sourceDiagnostics.replaceChildren(...diagnostics.map((diagnostic) => {
--      const item = document.createElement("li");
--      const detail = diagnostic.emptyState || diagnostic.detail || "No additional setup guidance.";
--      const status = diagnostic.available === false ? "WARN" : "Ready";
--      item.dataset.inputDeviceDiagnostic = diagnostic.id;
--      item.dataset.inputDeviceStatus = diagnostic.available === false ? "warn" : "ready";
--      item.title = detail;
--      item.setAttribute("aria-label", `${diagnostic.label}: ${status}. ${detail}`);
--      item.textContent = `${diagnostic.label}: ${status}. ${detail}`;
--      return item;
--    }));
--  }
--  setText(elements.deviceCount, String(diagnostics.length));
--  if (message) {
--    setText(elements.statusLog, message);
--  }
--}
--
--function gamepadSummary() {
--  const pads = availableGamepads();
--  if (!pads.length) {
--    return "WARN: No live gamepad value. Click inside this page, connect a gamepad, and press a button.";
--  }
--  return `${pads.length} live gamepad value${pads.length === 1 ? "" : "s"} available. Configure physical mappings in Account User Controls.`;
--}
--
--function statusLabel() {
--  if (!mappings.length) {
--    return "Missing Game Control Mapping";
--  }
--  if (mappings.some((mapping) => !validateMappingAction(mapping).ok)) {
--    return "Pending Setup";
--  }
--  if (mappings.some((mapping) => mapping.enabled && mapping.state !== "Active")) {
--    return "Pending Setup";
--  }
--  return "Complete";
--}
--
--function renderOutput() {
--  const status = statusLabel();
--  setText(elements.mappingCount, String(mappings.length));
--  setText(elements.outputCount, String(mappings.length));
--  setText(elements.outputStatus, status);
--  setText(elements.saveStatus, status);
--  if (elements.mappingJson) {
--    elements.mappingJson.textContent = JSON.stringify(payloadJson(), null, 2);
--  }
-+  setText(elements.customActionStatus, "Normalized controls loaded. Physical inputs are configured in Account User Controls.");
- }
- 
- function renderMappingRow(mapping) {
-@@ -853,12 +418,8 @@ function renderMappingRow(mapping) {
-     checkboxCell(mapping.enabled, `${mapping.usageLabel || "Game control"} enabled`),
-     tableCell(mapping.normalizedInput),
-     tableCell(mapping.usageLabel || "Unmapped"),
--    tableCell(mapping.inputFamily),
-     ...CONTROL_EVENT_OPTIONS.map((option) => checkboxCell(mapping[option.field], option.label)),
-   );
--  if (objectColumnVisible()) {
--    row.append(tableCell(mapping.objectName));
--  }
-   const actions = actionCell([
-     actionButton("Edit", "inputEditMapping", mapping.id),
-     actionButton("Trash", "inputTrashMapping", mapping.id),
-@@ -877,14 +438,6 @@ function renderMappingRow(mapping) {
- function renderEditingRow(values = {}) {
-   const row = document.createElement("tr");
-   row.dataset.inputEditingRow = "true";
--  const selectedObjectKey = values.objectKey || elements.objectSelect?.value || "global";
--
--  const objectSelect = selectControl({
--    ariaLabel: "Mapping Object",
--    options: objectOptions.map((object) => ({ label: object.label, value: object.key })),
--    selectedValue: selectedObjectKey,
--  });
--  objectSelect.dataset.inputRowObject = "true";
- 
-   const enabledInput = document.createElement("input");
-   enabledInput.type = "checkbox";
-@@ -892,6 +445,13 @@ function renderEditingRow(values = {}) {
-   enabledInput.dataset.inputRowEnabled = "true";
-   enabledInput.setAttribute("aria-label", "Game control enabled");
- 
-+  const normalizedInputSelect = selectControl({
-+    ariaLabel: "Normalized Action",
-+    options: normalizedInputOptions(),
-+    selectedValue: values.normalizedInput || "action.primary",
++function createDefaultGameControlMappings() {
++  return normalizedInputOptions().map((option, index) => {
++    const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
++    return normalizeMapping({
++      enabled,
++      eventD: true,
++      id: `default-game-control-${index + 1}-${keyFromText(option.value)}`,
++      normalizedInput: option.value,
++      state: enabled ? "Active" : "Disabled",
++      usageLabel: NORMALIZED_USAGE_LABELS[option.value] || option.label,
++    });
 +  });
-+  normalizedInputSelect.dataset.inputRowNormalized = "true";
-+
-   const usageInput = document.createElement("input");
-   usageInput.type = "text";
-   usageInput.value = values.usageLabel || values.actionLabel || "";
-@@ -899,20 +459,6 @@ function renderEditingRow(values = {}) {
-   usageInput.dataset.inputRowUsageLabel = "true";
-   usageInput.setAttribute("aria-label", "Usage Label");
- 
--  const inputFamilySelect = selectControl({
--    ariaLabel: "Mapping Input Family",
--    options: INPUT_FAMILY_OPTIONS,
--    selectedValue: values.inputFamily || "Keyboard",
--  });
--  inputFamilySelect.dataset.inputRowFamily = "true";
--
--  const normalizedInputSelect = selectControl({
--    ariaLabel: "Normalized Action Type",
--    options: inputService.getNormalizedInputOptions(),
--    selectedValue: values.normalizedInput || elements.actionSelect?.value || "action.primary",
--  });
--  normalizedInputSelect.dataset.inputRowNormalized = "true";
--
-   const actionsCell = actionCell([
-     actionButton("Save", "inputSaveMapping"),
-     actionButton("Cancel", "inputCancelMapping"),
-@@ -926,76 +472,48 @@ function renderEditingRow(values = {}) {
-     controlCell(enabledInput),
-     controlCell(normalizedInputSelect),
-     controlCell(usageInput),
--    controlCell(inputFamilySelect),
-     ...CONTROL_EVENT_OPTIONS.map((option) => editableCheckboxCell({
-       checked: values[option.field],
--      dataName: `inputRow${option.field[0].toUpperCase()}${option.field.slice(1)}`,
-+      datasetName: `inputRow${option.field[0].toUpperCase()}${option.field.slice(1)}`,
-       label: option.label,
-     })),
-+    actionsCell,
-   );
--  if (objectColumnVisible()) {
--    row.append(controlCell(objectSelect));
--  }
--  row.append(actionsCell);
-   updateEditingRowValidation(row);
-   return row;
- }
- 
--function updateEditingRowValidation(row) {
--  const validation = row.querySelector("[data-input-row-validation]");
--  if (!validation) {
--    return;
--  }
--  const mapping = mappingFromEditingRow(row);
--  const result = validateMappingAction(mapping);
--  validation.textContent = result.ok ? "" : `Needs update: ${result.message}`;
--}
--
- function renderMappings() {
--  if (!elements.lists.length) {
-+  if (!elements.list) {
-     return;
-   }
--  renderObjectColumns();
--  const rowsByFamily = new Map(mappingFamilies().map((family) => [family, []]));
-+  const rows = [];
-   if (editingRow) {
--    rowsByFamily.get(normalizeInputFamily(editingRow.values.inputFamily))?.push(renderEditingRow(editingRow.values));
-+    rows.push(renderEditingRow(editingRow.values));
-   }
-   const visibleMappings = editingRow?.id
-     ? mappings.filter((mapping) => mapping.id !== editingRow.id)
-     : mappings;
--  visibleMappings.forEach((mapping) => {
--    rowsByFamily.get(normalizeInputFamily(mapping.inputFamily))?.push(renderMappingRow(mapping));
--  });
--  elements.lists.forEach((list) => {
--    const family = list.dataset.inputMappingListFamily || "Keyboard";
--    const rows = rowsByFamily.get(family) || [];
--    if (!rows.length) {
--      const row = document.createElement("tr");
--      const cell = document.createElement("td");
--      cell.colSpan = gameControlColumnCount();
--      cell.textContent = !mappings.length && !editingRow && family === "Keyboard"
--        ? "Missing Game Control Mapping. Add a normalized input to game action mapping."
--        : `No ${family} game controls configured.`;
--      row.append(cell);
--      rows.push(row);
--    }
--    list.replaceChildren(...rows);
--  });
--  [elements.addMapping, elements.addKeyboardFamily, elements.addMouseFamily, elements.addJoystickFamily].forEach((button) => {
--    if (button) {
--      button.disabled = Boolean(editingRow);
--    }
--  });
-+  rows.push(...visibleMappings.map((mapping) => renderMappingRow(mapping)));
-+  if (!rows.length) {
-+    const row = document.createElement("tr");
-+    const cell = document.createElement("td");
-+    cell.colSpan = 8;
-+    cell.textContent = "Missing Game Control Mapping. Apply a preset to define game controls.";
-+    row.append(cell);
-+    rows.push(row);
-+  }
-+  elements.list.replaceChildren(...rows);
-   renderOutput();
- }
- 
- function renderAll(message = "") {
--  objectOptions = readObjectOptions();
-   mappings = readMappings();
--  renderActionsAndObjects();
-   renderDefaults();
--  renderDiagnostics(message);
-   renderMappings();
-+  if (message) {
-+    setText(elements.statusLog, message);
-+  }
- }
- 
- function editingRowElement() {
-@@ -1003,8 +521,6 @@ function editingRowElement() {
- }
- 
- function mappingFromEditingRow(row) {
--  const objectKey = row.querySelector("[data-input-row-object]")?.value || "global";
--  const object = objectOptions.find((candidate) => candidate.key === objectKey) || objectOptions[0];
-   const normalizedInput = normalizeText(row.querySelector("[data-input-row-normalized]")?.value);
-   const usageLabel = normalizeText(row.querySelector("[data-input-row-usage-label]")?.value);
-   const eventFields = Object.fromEntries(CONTROL_EVENT_OPTIONS.map((option) => [
-@@ -1017,38 +533,43 @@ function mappingFromEditingRow(row) {
-     enabled: Boolean(row.querySelector("[data-input-row-enabled]")?.checked),
-     ...eventFields,
-     id: editingRow?.id || "",
--    inputFamily: row.querySelector("[data-input-row-family]")?.value || "Keyboard",
-     normalizedInput,
--    objectKey: object.key,
--    objectName: object.label,
-     state: row.querySelector("[data-input-row-enabled]")?.checked ? "Active" : "Disabled",
-     usageLabel,
-   });
- }
- 
-+function updateEditingRowValidation(row) {
-+  const validation = row.querySelector("[data-input-row-validation]");
-+  if (!validation) {
-+    return;
-+  }
-+  const mapping = mappingFromEditingRow(row);
-+  const result = validateMappingAction(mapping);
-+  validation.textContent = result.ok ? "" : `Needs update: ${result.message}`;
 +}
 +
- function saveEditingRow() {
-   const row = editingRowElement();
-   if (!row) {
-     return;
-   }
-   const mapping = mappingFromEditingRow(row);
--  if (!mapping.normalizedInput) {
--    updateEditingRowValidation(row);
--    setText(elements.statusLog, "WARN: Choose a Normalized Input before saving the game control.");
--    return;
--  }
-   const validation = validateMappingAction(mapping);
-   if (!validation.ok) {
-     updateEditingRowValidation(row);
-     setText(elements.statusLog, `WARN: ${validation.message}`);
-     return;
-   }
--  mappings = editingRow?.id
-+  const nextMappings = editingRow?.id
-     ? mappings.map((candidate) => (candidate.id === editingRow.id ? mapping : candidate))
-     : [mapping, ...mappings];
--  saveMappings(mappings);
-+  if (!saveMappings(nextMappings)) {
-+    return;
++function ensureDefaultMappings() {
++  if (mappings.length) {
++    return "";
 +  }
-   editingRow = null;
--  renderAll(`Saved ${mapping.actionLabel} mapping.`);
-+  renderMappings();
-+  setText(elements.statusLog, `Saved ${mapping.usageLabel} game control.`);
- }
- 
- function editMapping(mappingId) {
-@@ -1061,14 +582,17 @@ function editMapping(mappingId) {
-     values: mapping,
-   };
-   renderMappings();
--  setText(elements.statusLog, `Editing ${mapping.actionLabel} mapping.`);
-+  setText(elements.statusLog, `Editing ${mapping.usageLabel} game control.`);
- }
- 
--function deleteMapping(mappingId, message = "Deleted mapping.") {
--  mappings = mappings.filter((mapping) => mapping.id !== mappingId);
--  saveMappings(mappings);
-+function deleteMapping(mappingId) {
-+  const nextMappings = mappings.filter((mapping) => mapping.id !== mappingId);
-+  if (!saveMappings(nextMappings)) {
-+    return;
++  if (saveMappings(createDefaultGameControlMappings())) {
++    return "Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.";
 +  }
-   editingRow = null;
--  renderAll(message);
-+  renderMappings();
-+  setText(elements.statusLog, "Deleted game control.");
- }
- 
- function handleListClick(event) {
-@@ -1081,7 +605,7 @@ function handleListClick(event) {
-   } else if (target.dataset.inputCancelMapping !== undefined) {
-     editingRow = null;
-     renderMappings();
--    setText(elements.statusLog, "Canceled mapping edit.");
-+    setText(elements.statusLog, "Canceled game control edit.");
-   } else if (target.dataset.inputEditMapping !== undefined) {
-     editMapping(target.dataset.inputEditMapping || "");
-   } else if (target.dataset.inputTrashMapping !== undefined) {
-@@ -1091,7 +615,7 @@ function handleListClick(event) {
- 
- function handleListChange(event) {
-   const target = event.target instanceof Element ? event.target : null;
--  if (!target?.matches("[data-input-row-enabled], [data-input-row-normalized], [data-input-row-object], [data-input-row-family], [data-input-row-usage-label], [data-input-row-event-d], [data-input-row-event-h], [data-input-row-event-u], [data-input-row-event-d-c], [data-input-row-event-drag], [data-input-row-event-axis]")) {
-+  if (!target?.matches("[data-input-row-enabled], [data-input-row-normalized], [data-input-row-usage-label], [data-input-row-event-d], [data-input-row-event-h], [data-input-row-event-u], [data-input-row-event-d-c]")) {
-     return;
-   }
-   const row = target.closest("[data-input-editing-row]");
-@@ -1101,6 +625,25 @@ function handleListChange(event) {
-   updateEditingRowValidation(row);
- }
- 
-+function applyGameControlPreset(presetKey) {
-+  const preset = GAME_CONTROL_PRESETS[presetKey];
-+  if (!preset) {
-+    setText(elements.statusLog, "WARN: Choose a known game control preset.");
-+    return;
-+  }
-+  const nextMappings = preset.map((row, index) => normalizeMapping({
-+    ...row,
-+    id: `${presetKey}-${index + 1}`,
-+    state: row.enabled === false ? "Disabled" : "Active",
-+  }));
-+  if (!saveMappings(nextMappings)) {
-+    return;
-+  }
-+  editingRow = null;
-+  renderMappings();
-+  setText(elements.statusLog, `Applied ${presetKey.replace(/-/g, " ")} preset. Common rows are enabled; alternate rows are disabled.`);
++  return "";
 +}
 +
- function showWorkspaceReturnIfNeeded() {
-   if (!elements.returnWorkspace) {
-     return;
-@@ -1114,72 +657,19 @@ function showWorkspaceReturnIfNeeded() {
-   elements.returnWorkspace.hidden = !shouldShow;
- }
- 
--function startDevicePolling() {
--  if (devicePollingTimer || typeof window.setInterval !== "function") {
--    return;
--  }
--  devicePollingTimer = window.setInterval(() => {
--    renderDiagnostics();
--  }, DEVICE_POLL_INTERVAL_MS);
--  window.addEventListener("pagehide", () => {
--    if (devicePollingTimer) {
--      window.clearInterval(devicePollingTimer);
--      devicePollingTimer = null;
--    }
--  }, { once: true });
--}
--
+ function saveMappings(nextMappings) {
+   const normalizedMappings = nextMappings.map((mapping) => normalizeMapping(mapping));
+   let result = controlsRepository.replaceMappings(normalizedMappings);
+@@ -660,8 +697,12 @@ function showWorkspaceReturnIfNeeded() {
  function init() {
--  inputService.attach();
    showWorkspaceReturnIfNeeded();
--  objectOptions = readObjectOptions();
    mappings = readMappings();
--  renderActionsAndObjects();
++  const defaultMessage = ensureDefaultMappings();
    renderDefaults();
--  renderDiagnostics();
    renderMappings();
--  elements.actionSelect?.addEventListener("change", () => {
--    setText(elements.statusLog, `Selected ${selectedAction().label} normalized action type for new mappings.`);
--  });
--  elements.objectSelect?.addEventListener("change", () => {
--    const object = selectedObject();
--    renderSelect(elements.actionSelect, normalizedControlCatalog().map((control) => ({ label: control.label, value: control.id })), elements.actionSelect?.value || "");
--    renderObjectSummary(object);
--    setText(elements.statusLog, `Selected ${object.label} for new mappings.`);
--  });
--  elements.addMapping?.addEventListener("click", addFullGameControlSet);
--  elements.addKeyboardFamily?.addEventListener("click", () => {
--    addGenericInputFamilyRows("Keyboard");
--  });
--  elements.addMouseFamily?.addEventListener("click", () => {
--    addGenericInputFamilyRows("Mouse");
--  });
--  elements.addJoystickFamily?.addEventListener("click", () => {
--    addGenericInputFamilyRows("Joystick");
--  });
--  elements.resetMappings?.addEventListener("click", () => {
--    if (!window.confirm("This will delete all Mappings, are you sure?")) {
--      setText(elements.statusLog, "Reset canceled.");
--      return;
--    }
--    resetStoredMappings();
--    editingRow = null;
--    renderAll("Reset input mappings.");
--  });
--  elements.refreshDevices?.addEventListener("click", () => {
--    renderDiagnostics("Device diagnostics refreshed.");
--  });
--  elements.lists.forEach((list) => {
--    list.addEventListener("click", handleListClick);
--    list.addEventListener("change", handleListChange);
--    list.addEventListener("input", handleListChange);
--  });
-+  elements.list?.addEventListener("click", handleListClick);
-+  elements.list?.addEventListener("change", handleListChange);
-+  elements.list?.addEventListener("input", handleListChange);
-   elements.presetButtons?.forEach((button) => {
-     button.addEventListener("click", () => {
-       applyGameControlPreset(button.dataset.inputPreset || "");
-     });
-   });
--  startDevicePolling();
- }
- 
- init();
++  if (defaultMessage) {
++    setText(elements.statusLog, defaultMessage);
++  }
+   elements.list?.addEventListener("click", handleListClick);
+   elements.list?.addEventListener("change", handleListChange);
+   elements.list?.addEventListener("input", handleListChange);
 diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index a7205e4c4..bb7a6c959 100644
+index bb7a6c959..b8c77a12e 100644
 --- a/toolbox/controls/index.html
 +++ b/toolbox/controls/index.html
-@@ -6,7 +6,7 @@
-     <base href="/">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Controls - GameFoundryStudio</title>
--    <meta name="description" content="Controls toolbox for DB-backed normalized game controls and player controller profiles.">
-+    <meta name="description" content="Controls toolbox for DB-backed game-owned normalized controls.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
- </head>
-@@ -18,7 +18,7 @@
-             <div class="container">
-                 <div class="kicker">Toolbox / Controls</div>
-                 <h1>Controls</h1>
--                <p class="lede">Define game-owned controls with generic normalized controls and creator-facing usage labels.</p>
-+                <p class="lede">Define game-owned controls with normalized actions and creator-facing usage labels.</p>
-                 <p><a class="btn btn--compact" href="/toolbox/game-workspace/index.html" hidden data-input-return-workspace>Return to Game Workspace</a></p>
-             </div>
-         </section>
-@@ -36,7 +36,7 @@
-                                     <table class="data-table" aria-label="Normalized controls catalog" data-input-action-catalog>
-                                         <thead>
-                                             <tr>
--                                                <th>Normalized Action Type</th>
-+                                                <th>Normalized Action</th>
-                                                 <th>Description</th>
-                                             </tr>
-                                         </thead>
-@@ -59,22 +59,15 @@
-                                     </div>
-                                 </div>
-                             </details>
--                            <details class="vertical-accordion">
--                                <summary>Supported Control Types</summary>
--                                <div class="accordion-body content-stack">
--                                    <ul data-input-control-type-list></ul>
--                                    <a class="btn btn--compact" href="/account/user-controls.html" data-account-user-controls-link>Open Account User Controls</a>
--                                </div>
--                            </details>
-                         </div>
-                     </aside>
-                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="controls" data-tool-icon-src="assets/theme-v2/images/badges/controls.png" data-tool-character-src="assets/theme-v2/images/tools/controls.png"></div>
-                     <section class="tool-center-panel">
-                         <h2>Game Controls</h2>
--                        <p>Map fixed normalized action types to game usage labels, objects, and gameplay event fields.</p>
--                        <div class="grid cols-3" aria-label="Input mapping summary">
-+                        <p>Map normalized actions to game usage labels and event timing.</p>
-+                        <div class="grid cols-3" aria-label="Game controls summary">
-                             <article class="mini-stat"><strong data-input-mapping-count>0</strong>Mappings</article>
--                            <article class="mini-stat"><strong data-input-device-count>0</strong>Devices</article>
-+                            <article class="mini-stat"><strong data-input-enabled-count>0</strong>Enabled</article>
-                             <article class="mini-stat"><strong data-input-save-status>Not Configured</strong>Status</article>
-                         </div>
-                         <article class="card">
-@@ -88,134 +81,23 @@
-                                                 <h3>Game Controls</h3>
+@@ -100,6 +100,12 @@
                                              </div>
-                                             <p class="status" data-input-state-explanation>Enabled controls are available to the game. Disabled controls stay saved but are ignored until re-enabled.</p>
--                                            <div class="accordion-stack" data-input-family-accordions>
--                                                <details class="vertical-accordion" open data-input-family-panel="Keyboard">
--                                                    <summary>Keyboard Controls</summary>
--                                                    <div class="accordion-body table-wrapper">
--                                                        <table class="data-table" aria-label="Keyboard game controls" data-input-mapping-table data-input-mapping-table-family="Keyboard">
--                                                            <thead>
--                                                                <tr>
--                                                                    <th>Enabled</th>
--                                                                    <th>Normalized Action Type</th>
--                                                                    <th>Usage Label</th>
--                                                                    <th>Input Family</th>
--                                                                    <th>Press</th>
--                                                                    <th>Hold</th>
--                                                                    <th>Release</th>
--                                                                    <th>Double Press</th>
--                                                                    <th>Drag</th>
--                                                                    <th>Axis</th>
--                                                                    <th hidden data-input-object-column>Object</th>
--                                                                    <th>Actions</th>
--                                                                </tr>
--                                                            </thead>
--                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Keyboard"></tbody>
--                                                        </table>
--                                                    </div>
--                                                </details>
--                                                <details class="vertical-accordion" open data-input-family-panel="Mouse">
--                                                    <summary>Mouse Controls</summary>
--                                                    <div class="accordion-body table-wrapper">
--                                                        <table class="data-table" aria-label="Mouse game controls" data-input-mapping-table data-input-mapping-table-family="Mouse">
--                                                            <thead>
--                                                                <tr>
--                                                                    <th>Enabled</th>
--                                                                    <th>Normalized Action Type</th>
--                                                                    <th>Usage Label</th>
--                                                                    <th>Input Family</th>
--                                                                    <th>Press</th>
--                                                                    <th>Hold</th>
--                                                                    <th>Release</th>
--                                                                    <th>Double Press</th>
--                                                                    <th>Drag</th>
--                                                                    <th>Axis</th>
--                                                                    <th hidden data-input-object-column>Object</th>
--                                                                    <th>Actions</th>
--                                                                </tr>
--                                                            </thead>
--                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Mouse"></tbody>
--                                                        </table>
--                                                    </div>
--                                                </details>
--                                                <details class="vertical-accordion" open data-input-family-panel="Joystick">
--                                                    <summary>Joystick Controls</summary>
--                                                    <div class="accordion-body table-wrapper">
--                                                        <table class="data-table" aria-label="Joystick game controls" data-input-mapping-table data-input-mapping-table-family="Joystick">
--                                                            <thead>
--                                                                <tr>
--                                                                    <th>Enabled</th>
--                                                                    <th>Normalized Action Type</th>
--                                                                    <th>Usage Label</th>
--                                                                    <th>Input Family</th>
--                                                                    <th>Press</th>
--                                                                    <th>Hold</th>
--                                                                    <th>Release</th>
--                                                                    <th>Double Press</th>
--                                                                    <th>Drag</th>
--                                                                    <th>Axis</th>
--                                                                    <th hidden data-input-object-column>Object</th>
--                                                                    <th>Actions</th>
--                                                                </tr>
--                                                            </thead>
--                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Joystick"></tbody>
--                                                        </table>
--                                                    </div>
--                                                </details>
--                                                <details class="vertical-accordion" open data-input-family-panel="Gamepad">
--                                                    <summary>Gamepad Controls</summary>
--                                                    <div class="accordion-body table-wrapper">
--                                                        <table class="data-table" aria-label="Gamepad game controls" data-input-mapping-table data-input-mapping-table-family="Gamepad">
--                                                            <thead>
--                                                                <tr>
--                                                                    <th>Enabled</th>
--                                                                    <th>Normalized Action Type</th>
--                                                                    <th>Usage Label</th>
--                                                                    <th>Input Family</th>
--                                                                    <th>Press</th>
--                                                                    <th>Hold</th>
--                                                                    <th>Release</th>
--                                                                    <th>Double Press</th>
--                                                                    <th>Drag</th>
--                                                                    <th>Axis</th>
--                                                                    <th hidden data-input-object-column>Object</th>
--                                                                    <th>Actions</th>
--                                                                </tr>
--                                                            </thead>
--                                                            <tbody data-input-mapping-list data-input-mapping-list-family="Gamepad"></tbody>
--                                                        </table>
--                                                    </div>
--                                                </details>
--                                            </div>
--                                            <div class="content-split" data-input-mapping-table-footer>
--                                                <div class="content-cluster" aria-label="Game Controls table actions" data-input-mapping-table-actions>
--                                                    <button class="btn" type="button" data-input-add-mapping>Add Game Control</button>
--                                                    <button class="btn btn--compact" type="button" data-input-add-keyboard-family>Add Keyboard Control</button>
--                                                    <button class="btn btn--compact" type="button" data-input-add-mouse-family>Add Mouse Control</button>
--                                                    <button class="btn btn--compact" type="button" data-input-add-joystick-family>Add Joystick Control</button>
--                                                    <button class="btn" type="button" data-input-reset-mappings>Reset Mappings</button>
--                                                </div>
--                                                <div class="action-group action-group--end" aria-label="Game Controls creation selections" data-input-selected-context>
--                                                    <label>
--                                                        Normalized Action Type
--                                                        <select data-input-action-select></select>
--                                                    </label>
--                                                    <label>
--                                                        Object
--                                                        <select data-input-object-select></select>
--                                                    </label>
--                                                </div>
--                                            </div>
--                                            <div class="content-stack content-stack--compact" data-input-object-summary>
--                                                <p>Selected Object: <span data-input-object-summary-name>Global</span></p>
--                                                <p>Object Role/Template: <span data-input-object-summary-role>Global</span></p>
--                                                <p>Available Normalized Controls: <span data-input-object-summary-actions>All normalized controls</span></p>
-+                                            <div class="table-wrapper">
-+                                                <table class="data-table" aria-label="Game controls" data-input-mapping-table>
-+                                                    <thead>
-+                                                        <tr>
-+                                                            <th>Enabled</th>
-+                                                            <th>Normalized Action</th>
-+                                                            <th>Usage Label</th>
-+                                                            <th>D</th>
-+                                                            <th>H</th>
-+                                                            <th>U</th>
-+                                                            <th>DC</th>
-+                                                            <th>Actions</th>
-+                                                        </tr>
-+                                                    </thead>
-+                                                    <tbody data-input-mapping-list></tbody>
-+                                                </table>
-                                             </div>
--                                            <details class="vertical-accordion" data-input-combo-controls>
--                                                <summary>Combo Controls</summary>
--                                                <div class="accordion-body content-stack">
--                                                    <p class="status">Wireframe only: Keyboard Shift + Mouse Right Click can become a future combo control.</p>
--                                                </div>
--                                            </details>
                                          </div>
                                      </details>
++                                    <details class="vertical-accordion" data-input-combo-controls>
++                                        <summary>Combo Controls</summary>
++                                        <div class="accordion-body content-stack">
++                                            <p class="status">Wireframe only: Keyboard Shift + Mouse Right Click can become a future combo control.</p>
++                                        </div>
++                                    </details>
                                  </div>
-@@ -227,13 +109,6 @@
-                             <h2>Inspector</h2>
-                         </div>
-                         <div class="accordion-stack">
--                            <details class="vertical-accordion" open>
--                                <summary>Devices</summary>
--                                <div class="accordion-body content-stack">
--                                    <p class="status" data-input-device-guidance>Physical controller setup belongs in Account User Controls. Game Controls stays generic and game-owned.</p>
--                                    <ul data-input-source-diagnostics></ul>
--                                </div>
--                            </details>
-                             <details class="vertical-accordion" open>
-                                 <summary>Status</summary>
-                                 <div class="accordion-body content-stack">
-diff --git a/docs_build/dev/reports/controls-game-account-user-split-report.md b/docs_build/dev/reports/controls-game-account-user-split-report.md
+                             </div>
+                         </article>
+diff --git a/docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md b/docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md
 new file mode 100644
-index 000000000..546a4460e
+index 000000000..f664cdb9b
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-game-account-user-split-report.md
-@@ -0,0 +1,120 @@
-+# PR_26162_041 Controls Game Account User Split Report
++++ b/docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md
+@@ -0,0 +1,107 @@
++# PR_26162_042 Controls Combo Framework And User Control Editing Report
 +
 +## Branch Validation
 +- PASS: Current branch is `main`.
@@ -2375,52 +686,45 @@ index 000000000..546a4460e
 +## Requirement Checklist
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
 +- PASS: Verified current branch is `main` before edits.
-+- PASS: Toolbox > Controls remains the game creator tool.
-+- PASS: Toolbox > Controls now shows Game Controls only.
-+- PASS: Game Controls table owns `Enabled`, `Normalized Action`, `Usage Label`, `D`, `H`, `U`, `DC`, and `Actions`.
-+- PASS: Removed device-specific Keyboard, Mouse, Joystick, Gamepad, and Combo accordions from Toolbox > Controls.
-+- PASS: Removed device-specific setup from Toolbox > Controls.
-+- PASS: Removed Add Game Control, Add Keyboard Control, Add Mouse Control, Add Joystick Control, Reset Mappings, Normalized Action Type footer controls, and Object Global footer controls from Toolbox > Controls.
-+- PASS: Account > User Controls remains the player/user input surface and is present in Account dropdown and left menu.
-+- PASS: Account dropdown and Account left menu are alphabetically sorted for browseable entries.
-+- PASS: Account > User Controls owns Physical Input -> Normalized Action mapping.
-+- PASS: Account > User Controls includes Keyboard, Mouse, Game Controllers, and Combo Inputs accordions.
-+- PASS: Keyboard defaults are prepopulated as visible fallback rows.
-+- PASS: Mouse defaults are prepopulated as visible fallback rows.
-+- PASS: Game controllers auto-detect on a timer through shared input services.
-+- PASS: Multiple detected controllers can be selected for configuration.
-+- PASS: Combo Inputs is wireframe-only.
-+- PASS: Defaults remain visible fallback profiles and are not silently saved as user-created profiles.
-+- PASS: DB-backed separation remains: `game_input_mappings` is game-owned, `player_controller_profiles` is user/player-owned.
-+- PASS: `game_input_mappings` no longer defaults/stores Keyboard, Mouse, Gamepad, Joystick, controller id/name, or physical input data from Toolbox Controls.
-+- PASS: `player_controller_profiles` does not store game action/object action/event fields.
-+- PASS: Normalized action contract is preserved between both surfaces.
-+- PASS: Shared `src/engine/input` usage is preserved; Account User Controls continues to use `InputService`, `GamepadInputClassifier`, and `NormalizedInputRegistry`; Toolbox Controls uses `NormalizedInputRegistry` only.
-+- PASS: Controls status remains Wireframe.
-+- PASS: Theme V2 restrictions preserved; no inline CSS, inline JS, script/style blocks, or inline event handlers were added.
++- PASS: Continued from PR_26162_041 scope.
++- PASS: Controls status remains Wireframe. Evidence: Controls metadata still shows `"status": "Wireframe"` and `"releaseChannel": "wireframe"`.
++- PASS: Toolbox > Controls is prepopulated with default Game Controls rows on first load.
++- PASS: Combo Controls accordion appears in Toolbox > Controls.
++- PASS: Combo Controls is wireframe-only and uses the requested text: `Wireframe only: Keyboard Shift + Mouse Right Click can become a future combo control.`
++- PASS: No combo runtime behavior was added.
++- PASS: Account > User Controls > Game Controllers dropdown excludes Keyboard and Mouse.
++- PASS: Account > User Controls Keyboard mappings are editable.
++- PASS: Account > User Controls Mouse mappings are editable.
++- PASS: Users can change defaults such as `KeyW` to `ArrowRight`; targeted Playwright validates persistence after reload.
++- PASS: DB-backed separation remains enforced: `game_input_mappings` is game/project-owned, `player_controller_profiles` is user/player-owned.
++- PASS: `game_input_mappings` does not store physical key/mouse/controller data.
++- PASS: `player_controller_profiles` does not store game/object actions.
++- PASS: Normalized action contract is preserved.
++- PASS: Theme V2 rules preserved; no inline CSS, inline JS, script/style blocks, or inline event handlers were added.
++- PASS: Shared `src/engine/input` usage is preserved for Account User Controls.
 +
 +## Search Evidence
-+- PASS: Removed Toolbox Controls device setup and footer controls:
-+  - `rg -n "data-input-family-panel|data-input-combo-controls|data-input-add-mapping|data-input-add-keyboard-family|data-input-add-mouse-family|data-input-add-joystick-family|data-input-reset-mappings|data-input-action-select|data-input-object-select|Input Family|Add Game Control|Add Keyboard Control|Add Mouse Control|Add Joystick Control|Reset Mappings|Normalized Action Type|Object Global" toolbox/controls/index.html toolbox/controls/controls.js tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+  - Results are only negative Playwright assertions in `tests/playwright/tools/InputMappingV2Tool.spec.mjs`.
-+- PASS: Device terminology remains in Account User Controls only:
-+  - `rg -n "Keyboard|Mouse|Joystick|Gamepad|Combo Inputs|Game Controllers" toolbox/controls/index.html toolbox/controls/controls.js account/user-controls.html account/user-controls-page.js`
-+  - Results are limited to `account/user-controls.html` and `account/user-controls-page.js`.
-+- PASS: No active Toolbox Controls local physical/device input ownership:
-+  - `rg -n "InputService|DEVICE_POLL_INTERVAL_MS|navigator\\.getGamepads|gamepadconnected" toolbox/controls/controls.js`
-+  - No matches.
-+- PASS: Mock repository no longer defaults game mappings to Keyboard:
-+  - `rg -n "inputFamily:\\s*normalizeText\\(mapping\\.inputFamily\\) \\|\\||inputFamily:\\s*normalizeText\\(record\\.inputFamily\\) \\|\\|" src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
-+  - No matches.
++- PASS: Toolbox Controls has no device-specific setup or local input polling:
++  - `rg -n "data-input-add-mapping|data-input-family-panel|data-input-source-diagnostics|InputService|DEVICE_POLL_INTERVAL_MS|navigator\\.getGamepads|gamepadconnected" toolbox/controls/index.html toolbox/controls/controls.js`
++  - No active Toolbox matches.
++- PASS: Combo framework exists as wireframe-only:
++  - `rg -n "data-input-combo-controls|Wireframe only: Keyboard Shift \\+ Mouse Right Click can become a future combo control" toolbox/controls/index.html`
++- PASS: Default Game Controls prepopulation exists:
++  - `rg -n "default-game-control|Loaded default Game Controls" toolbox/controls/controls.js`
++- PASS: Keyboard/Mouse editing controls exist under Account User Controls:
++  - `rg -n "data-account-user-controls-edit-family|data-account-user-controls-physical-input" account/user-controls.html account/user-controls-page.js`
++- PASS: Game Controllers dropdown excludes Keyboard and Mouse:
++  - Targeted Playwright asserts the dropdown options are `Choose a game controller`, `Gamepad: Arcade Test Pad`, and `Gamepad: Studio Flight Pad`.
++- PASS: DB ownership separation is covered:
++  - Targeted Playwright asserts `game_input_mappings` rows do not include `controllerId`, `controllerName`, or `physicalInput`.
++  - Targeted Playwright asserts `player_controller_profiles` JSON does not contain `gameAction`, `objectKey`, or event fields.
 +
 +## Changed Files
 +- `account/user-controls-page.js`
 +- `account/user-controls.html`
 +- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/controls-game-account-user-split-report.md`
-+- `src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
-+- `src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
++- `docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
 +- `toolbox/controls/controls.js`
 +- `toolbox/controls/index.html`
@@ -2428,60 +732,54 @@ index 000000000..546a4460e
 +## Impacted Lanes
 +- Controls tool runtime lane.
 +- Account/User Controls runtime lane.
-+- Shared DB/mock adapter Controls tables lane.
-+- Account navigation lane.
++- Controls shared DB/mock adapter behavior through browser API coverage.
 +- Targeted Playwright/V8 coverage lane.
 +
 +## Validation Performed
 +- PASS: `node --check toolbox/controls/controls.js`
 +- PASS: `node --check account/user-controls-page.js`
 +- PASS: `node --check account/user-controls.js`
-+- PASS: `node --check src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
-+- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
 +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
 +- PASS: `rg -n --pcre2 "<script(?![^>]*\\bsrc=)|<style\\b|\\son[a-z]+\\s*=" toolbox/controls/index.html account/user-controls.html` returned no matches.
 +- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --reporter=line`
 +  - Final result: 6 passed.
 +
 +## Playwright Result
-+- PASS: Toolbox > Controls shows Game Controls only.
-+- PASS: Game Controls table uses `D`, `H`, `U`, `DC` columns.
-+- PASS: Device-specific accordions and footer controls are absent from Toolbox > Controls.
-+- PASS: Account > User Controls exposes Keyboard, Mouse, Game Controllers, and Combo Inputs accordions.
-+- PASS: Keyboard and Mouse defaults are visible fallbacks and are not saved until profiles are explicitly created.
-+- PASS: Game controller auto-detect updates without manual refresh.
-+- PASS: Multiple detected controllers can be selected and saved.
-+- PASS: DB ownership separation is validated from mock DB snapshots.
-+- PASS: Persistence after reload is validated for game controls and user controller profiles.
-+- PASS: Account dropdown and left menu expose User Controls in sorted browseable menus.
++- PASS: Toolbox > Controls is prepopulated with default Game Controls rows.
++- PASS: Combo Controls accordion appears in Toolbox > Controls as wireframe-only.
++- PASS: Game Controllers dropdown excludes Keyboard and Mouse.
++- PASS: Keyboard mappings are editable and persist after reload.
++- PASS: Mouse mappings are editable and persist after reload.
++- PASS: DB ownership separation remains enforced.
++- PASS: Device-specific physical input remains in Account User Controls.
++- PASS: Game mappings remain normalized action -> usage/event timing only.
 +
 +## V8 Coverage
 +- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` regenerated from the final Playwright run.
 +- Covered changed browser runtime files:
 +  - `toolbox/controls/controls.js`: 95% function coverage.
-+  - `account/user-controls-page.js`: 90% function coverage.
++  - `account/user-controls-page.js`: 92% function coverage.
 +  - `account/user-controls.js`: 100% function coverage.
-+- WARN advisory only: `src/dev-runtime/guest-seeds/tool-metadata-inventory.js` and `src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js` are server/dev-runtime JS and are not collected by browser V8 coverage. Their behavior is covered by syntax checks and Playwright DB snapshot assertions.
++- WARN advisory only: the coverage helper reports server/dev-runtime entries from its comparison window that Chromium V8 does not collect. The browser behavior for this PR is covered by the targeted Playwright lane.
 +
 +## Skipped Lanes
-+- Full samples validation: SKIPPED as requested; no sample JSON, sample runtime, or sample alignment behavior changed.
++- Full samples validation: SKIPPED as requested; no sample JSON, sample loader, or sample runtime behavior changed.
 +- Production auth/account system validation: SKIPPED; Account User Controls continues to use the existing session and shared DB/mock adapter path only.
-+- Production game runtime validation: SKIPPED; this PR changes creator/account tooling surfaces and does not add production input runtime behavior.
-+- Full workspace suite / `npm run test:workspace-v2`: SKIPPED because PR_26162_041 requested targeted Controls and Account/User Controls Playwright validation, which covers the changed surfaces directly.
++- Production game runtime validation: SKIPPED; combo controls were added as wireframe-only and no runtime combo behavior was implemented.
++- Full workspace suite: SKIPPED because the requested validation lanes were targeted Controls and Account/User Controls Playwright checks.
 +
 +## Manual Validation Steps
 +1. Open `/toolbox/controls/index.html`.
-+2. Confirm the center surface is Game Controls only and the table headers are `Enabled`, `Normalized Action`, `Usage Label`, `D`, `H`, `U`, `DC`, `Actions`.
-+3. Confirm no Keyboard, Mouse, Joystick, Gamepad, or Combo accordions appear in Toolbox > Controls.
-+4. Apply a preset and confirm mappings appear, counts update, and saved rows reload.
++2. Confirm Game Controls table is populated without clicking a preset.
++3. Confirm Combo Controls accordion appears and contains the requested wireframe-only text.
++4. Confirm no combo runtime controls or device-specific setup appears in Toolbox > Controls.
 +5. Open `/account/user-controls.html`.
-+6. Confirm Keyboard, Mouse, Game Controllers, and Combo Inputs accordions appear.
-+7. Confirm keyboard/mouse default rows are visible fallback rows.
-+8. Connect or expose multiple game controllers, wait for auto-detect, and select the controller to configure.
-+9. Save a User Control profile and reload to confirm persistence.
++6. Confirm Game Controllers dropdown does not list Keyboard or Mouse.
++7. Click Edit Keyboard Mappings, change `KeyW` to `ArrowRight`, save, reload, and confirm the saved profile keeps `ArrowRight`.
++8. Click Edit Mouse Mappings, change `MouseButton0` to another mouse input, save, reload, and confirm persistence.
 +
 +## Samples Decision
-+- Samples validation was skipped intentionally and safely because the PR does not change sample data, sample loaders, sample JSON alignment, or production game runtime behavior.
++- Samples validation was skipped intentionally and safely because this PR does not change samples, sample JSON, sample routing, or production game runtime behavior.
 +
 +## Completion
-+- PASS: 100% of requested PR_26162_041 requirements are implemented, validated, and marked PASS.
++- PASS: 100% of requested PR_26162_042 requirements are implemented, validated, and marked PASS.

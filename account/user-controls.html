@@ -47,6 +47,25 @@
                                             <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Keyboard"></tbody>
                                         </table>
                                     </div>
+                                    <div class="content-cluster" aria-label="Keyboard user controls">
+                                        <button class="btn" type="button" data-account-user-controls-edit-family="Keyboard">Edit Keyboard Mappings</button>
+                                    </div>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Keyboard user control profile" data-account-user-controls-table="Keyboard">
+                                            <thead>
+                                                <tr>
+                                                    <th>Physical Controller</th>
+                                                    <th>Physical Input</th>
+                                                    <th>Normalized Control</th>
+                                                    <th>Deadzone</th>
+                                                    <th>Invert</th>
+                                                    <th>Sensitivity</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-account-user-controls-list data-account-user-controls-list-family="Keyboard"></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open data-account-user-controls-section="Mouse">
@@ -65,6 +84,25 @@
                                             <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Mouse"></tbody>
                                         </table>
                                     </div>
+                                    <div class="content-cluster" aria-label="Mouse user controls">
+                                        <button class="btn" type="button" data-account-user-controls-edit-family="Mouse">Edit Mouse Mappings</button>
+                                    </div>
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Mouse user control profile" data-account-user-controls-table="Mouse">
+                                            <thead>
+                                                <tr>
+                                                    <th>Physical Controller</th>
+                                                    <th>Physical Input</th>
+                                                    <th>Normalized Control</th>
+                                                    <th>Deadzone</th>
+                                                    <th>Invert</th>
+                                                    <th>Sensitivity</th>
+                                                    <th>Actions</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody data-account-user-controls-list data-account-user-controls-list-family="Mouse"></tbody>
+                                        </table>
+                                    </div>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open data-account-user-controls-section="Game Controllers">
@@ -73,13 +111,13 @@
                                     <div class="content-cluster" aria-label="Account controller device selection">
                                         <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
                                         <label>
-                                            Physical Controller
+                                            Game Controller
                                             <select data-account-user-controls-device></select>
                                         </label>
                                         <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
                                         <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
                                     </div>
-                                    <p class="status" role="status" data-account-user-controls-device-status>Keyboard and Mouse are available. Game controllers auto-detect after the browser exposes them.</p>
+                                    <p class="status" role="status" data-account-user-controls-device-status>Game controllers auto-detect after the browser exposes them.</p>
                                     <div class="table-wrapper">
                                         <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
                                             <thead>
@@ -93,7 +131,7 @@
                                                     <th>Actions</th>
                                                 </tr>
                                             </thead>
-                                            <tbody data-account-user-controls-list></tbody>
+                                            <tbody data-account-user-controls-list data-account-user-controls-list-family="Gamepad"></tbody>
                                         </table>
                                     </div>
                                 </div>

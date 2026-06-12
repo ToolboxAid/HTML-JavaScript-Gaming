@@ -65,6 +65,19 @@ const NORMALIZED_USAGE_LABELS = Object.freeze({
   "trigger.right": "Right Trigger",
 });
 
+const COMMON_DEFAULT_GAME_CONTROLS = new Set([
+  "action.cancel",
+  "action.confirm",
+  "action.pause",
+  "action.primary",
+  "action.secondary",
+  "action.start",
+  "move.x-",
+  "move.x+",
+  "move.y-",
+  "move.y+",
+]);
+
 const GAME_CONTROL_PRESETS = Object.freeze({
   fighting: Object.freeze([
     Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
@@ -321,6 +334,30 @@ function readMappings() {
     result = controlsRepository.listMappings();
   }
   return Array.isArray(result) ? result.map((mapping) => normalizeMapping(mapping)) : [];
+}
+
+function createDefaultGameControlMappings() {
+  return normalizedInputOptions().map((option, index) => {
+    const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
+    return normalizeMapping({
+      enabled,
+      eventD: true,
+      id: `default-game-control-${index + 1}-${keyFromText(option.value)}`,
+      normalizedInput: option.value,
+      state: enabled ? "Active" : "Disabled",
+      usageLabel: NORMALIZED_USAGE_LABELS[option.value] || option.label,
+    });
+  });
+}
+
+function ensureDefaultMappings() {
+  if (mappings.length) {
+    return "";
+  }
+  if (saveMappings(createDefaultGameControlMappings())) {
+    return "Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.";
+  }
+  return "";
 }
 
 function saveMappings(nextMappings) {
@@ -660,8 +697,12 @@ function showWorkspaceReturnIfNeeded() {
 function init() {
   showWorkspaceReturnIfNeeded();
   mappings = readMappings();
+  const defaultMessage = ensureDefaultMappings();
   renderDefaults();
   renderMappings();
+  if (defaultMessage) {
+    setText(elements.statusLog, defaultMessage);
+  }
   elements.list?.addEventListener("click", handleListClick);
   elements.list?.addEventListener("change", handleListChange);
   elements.list?.addEventListener("input", handleListChange);

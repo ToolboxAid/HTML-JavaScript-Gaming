@@ -130,7 +130,8 @@ export class AccountUserControlsPage {
       defaultLists: [...root.querySelectorAll("[data-account-user-controls-default-list]")],
       deviceSelect: root.querySelector("[data-account-user-controls-device]"),
       deviceStatus: root.querySelector("[data-account-user-controls-device-status]"),
-      list: root.querySelector("[data-account-user-controls-list]"),
+      familyButtons: [...root.querySelectorAll("[data-account-user-controls-edit-family]")],
+      lists: [...root.querySelectorAll("[data-account-user-controls-list]")],
       refresh: root.querySelector("[data-account-user-controls-refresh]"),
       saveAll: root.querySelector("[data-account-user-controls-save-all]"),
       status: root.querySelector("[data-account-user-controls-status]"),
@@ -152,10 +153,15 @@ export class AccountUserControlsPage {
     this.elements.addProfile?.addEventListener("click", () => this.addProfileForSelectedDevice());
     this.elements.saveAll?.addEventListener("click", () => this.saveCurrentState());
     this.elements.deviceSelect?.addEventListener("change", () => this.renderDeviceStatus());
-    this.elements.list?.addEventListener("click", (event) => this.handleListClick(event));
-    this.elements.list?.addEventListener("change", (event) => this.handleListChange(event));
-    this.elements.list?.addEventListener("input", (event) => this.handleListInput(event));
-    this.elements.list?.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
+    this.elements.familyButtons.forEach((button) => {
+      button.addEventListener("click", () => this.editFamilyMappings(button.dataset.accountUserControlsEditFamily || ""));
+    });
+    this.elements.lists.forEach((list) => {
+      list.addEventListener("click", (event) => this.handleListClick(event));
+      list.addEventListener("change", (event) => this.handleListChange(event));
+      list.addEventListener("input", (event) => this.handleListInput(event));
+      list.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
+    });
     this.startDevicePolling();
   }
 
@@ -177,25 +183,7 @@ export class AccountUserControlsPage {
   }
 
   deviceOptions() {
-    const keyboard = {
-      controllerId: "generic-keyboard",
-      controllerName: "Keyboard",
-      deviceType: "Keyboard",
-      inputs: [...KEYBOARD_INPUTS],
-      label: "Keyboard",
-      mappingProfile: "Keyboard Profile",
-      value: "keyboard",
-    };
-    const mouse = {
-      controllerId: "generic-mouse",
-      controllerName: "Mouse",
-      deviceType: "Mouse",
-      inputs: [...MOUSE_INPUTS],
-      label: "Mouse",
-      mappingProfile: "Mouse Profile",
-      value: "mouse",
-    };
-    const gamepads = this.availableGamepads().map((gamepad) => {
+    return this.availableGamepads().map((gamepad) => {
       const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
       return {
         controllerId: gamepad.id || `gamepad-${gamepad.index}`,
@@ -207,15 +195,37 @@ export class AccountUserControlsPage {
         value: `gamepad-${gamepad.index}`,
       };
     });
-    return [keyboard, mouse, ...gamepads];
+  }
+
+  familyDevice(family) {
+    if (family === "Mouse") {
+      return {
+        controllerId: "generic-mouse",
+        controllerName: "Mouse",
+        deviceType: "Mouse",
+        inputs: [...MOUSE_INPUTS],
+        label: "Mouse",
+        mappingProfile: "Mouse Profile",
+        value: "mouse",
+      };
+    }
+    return {
+      controllerId: "generic-keyboard",
+      controllerName: "Keyboard",
+      deviceType: "Keyboard",
+      inputs: [...KEYBOARD_INPUTS],
+      label: "Keyboard",
+      mappingProfile: "Keyboard Profile",
+      value: "keyboard",
+    };
   }
 
   deviceRefreshMessage() {
     const gamepadCount = this.availableGamepads().length;
     if (gamepadCount > 0) {
-      return `PASS: Keyboard and Mouse available. ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} detected automatically.`;
+      return `PASS: ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} detected automatically.`;
     }
-    return "PASS: Keyboard and Mouse available. Gamepads auto-detect after browser exposes them.";
+    return "PASS: Game controllers auto-detect after the browser exposes them.";
   }
 
   selectedDevice() {
@@ -287,7 +297,7 @@ export class AccountUserControlsPage {
     }
     const selectedValue = this.elements.deviceSelect.value;
     const options = [
-      { label: "Choose a physical controller", value: "" },
+      { label: "Choose a game controller", value: "" },
       ...this.deviceOptions().map((device) => ({ label: device.label, value: device.value })),
     ];
     this.elements.deviceSelect.classList.add("tool-form-control");
@@ -368,30 +378,62 @@ export class AccountUserControlsPage {
     }, { once: true });
   }
 
+  profileListFamily(profile) {
+    const deviceType = normalizeText(profile?.deviceType);
+    if (deviceType === "Keyboard" || deviceType === "Mouse") {
+      return deviceType;
+    }
+    return "Gamepad";
+  }
+
+  emptyProfileMessage(family) {
+    if (family === "Keyboard") {
+      return "No keyboard user control profile saved yet.";
+    }
+    if (family === "Mouse") {
+      return "No mouse user control profile saved yet.";
+    }
+    return "No game controller profiles saved yet.";
+  }
+
   renderProfiles() {
-    if (!this.elements.list) {
+    if (!this.elements.lists.length) {
       return;
     }
-    const rows = [];
+    const rowsByFamily = new Map(this.elements.lists.map((list) => [
+      list.dataset.accountUserControlsListFamily || "Gamepad",
+      [],
+    ]));
     if (this.editingProfile) {
-      rows.push(...this.renderEditingRows(this.editingProfile.values));
+      const family = this.profileListFamily(this.editingProfile.values);
+      rowsByFamily.get(family)?.push(...this.renderEditingRows(this.editingProfile.values));
     }
     const visibleProfiles = this.editingProfile?.id
       ? this.profiles.filter((profile) => profile.id !== this.editingProfile.id)
       : this.profiles;
-    rows.push(...visibleProfiles.map((profile) => this.renderProfileRow(profile)));
-    if (!rows.length) {
-      const row = document.createElement("tr");
-      const cell = document.createElement("td");
-      cell.colSpan = 7;
-      cell.textContent = "No account user control profiles saved yet.";
-      row.append(cell);
-      rows.push(row);
-    }
-    this.elements.list.replaceChildren(...rows);
+    visibleProfiles.forEach((profile) => {
+      const family = this.profileListFamily(profile);
+      rowsByFamily.get(family)?.push(this.renderProfileRow(profile));
+    });
+    this.elements.lists.forEach((list) => {
+      const family = list.dataset.accountUserControlsListFamily || "Gamepad";
+      const rows = rowsByFamily.get(family) || [];
+      if (!rows.length) {
+        const row = document.createElement("tr");
+        const cell = document.createElement("td");
+        cell.colSpan = 7;
+        cell.textContent = this.emptyProfileMessage(family);
+        row.append(cell);
+        rows.push(row);
+      }
+      list.replaceChildren(...rows);
+    });
     if (this.elements.addProfile) {
       this.elements.addProfile.disabled = Boolean(this.editingProfile);
     }
+    this.elements.familyButtons.forEach((button) => {
+      button.disabled = Boolean(this.editingProfile);
+    });
   }
 
   profileInputSummary(profile) {
@@ -455,8 +497,18 @@ export class AccountUserControlsPage {
     const wrapper = document.createElement("div");
     wrapper.className = "content-grid";
     wrapper.dataset.accountUserControlsInputPair = "true";
-    const label = document.createElement("strong");
-    label.textContent = inputMapping.physicalInput;
+    const editablePhysicalInput = profile.deviceType === "Keyboard" || profile.deviceType === "Mouse";
+    const physicalInputControl = editablePhysicalInput
+      ? document.createElement("input")
+      : document.createElement("strong");
+    if (editablePhysicalInput) {
+      physicalInputControl.type = "text";
+      physicalInputControl.value = inputMapping.physicalInput;
+      physicalInputControl.dataset.accountUserControlsPhysicalInput = String(index);
+      physicalInputControl.setAttribute("aria-label", `${profile.deviceType} physical input`);
+    } else {
+      physicalInputControl.textContent = inputMapping.physicalInput;
+    }
     const stack = document.createElement("div");
     stack.className = "content-stack content-stack--compact";
     const normalizedOptions = [
@@ -522,7 +574,7 @@ export class AccountUserControlsPage {
     validation.className = "status";
     validation.dataset.accountUserControlsInputValidation = String(index);
     stack.append(validation);
-    wrapper.append(label, stack);
+    wrapper.append(physicalInputControl, stack);
     return wrapper;
   }
 
@@ -579,16 +631,34 @@ export class AccountUserControlsPage {
     this.setStatus(`Review ${profile.mappingProfile} before saving.`);
   }
 
+  editFamilyMappings(family) {
+    const normalizedFamily = family === "Mouse" ? "Mouse" : "Keyboard";
+    const device = this.familyDevice(normalizedFamily);
+    const existing = this.profiles.find((profile) => profile.deviceType === device.deviceType && profile.controllerId === device.controllerId);
+    if (existing) {
+      this.editingProfile = { id: existing.id, values: existing };
+      this.renderProfiles();
+      this.setStatus(`Editing existing ${existing.mappingProfile}.`);
+      return;
+    }
+    const profile = this.profileFromDevice(device);
+    this.editingProfile = { id: profile.id, values: profile };
+    this.renderProfiles();
+    this.setStatus(`Review ${profile.mappingProfile} before saving.`);
+  }
+
   profileFromEditingRow() {
     const values = this.editingProfile?.values || {};
-    const details = this.elements.list?.querySelector("[data-account-user-controls-editing-details]");
+    const details = this.root.querySelector("[data-account-user-controls-editing-details]");
     const inputMappings = (values.inputMappings || []).map((mapping, index) => {
+      const physicalInputControl = details?.querySelector(`[data-account-user-controls-physical-input="${index}"]`);
       const normalizedSelect = details?.querySelector(`[data-account-user-controls-input-normalized="${index}"]`);
       const negativeSelect = details?.querySelector(`[data-account-user-controls-input-negative="${index}"]`);
       const positiveSelect = details?.querySelector(`[data-account-user-controls-input-positive="${index}"]`);
       const deadzoneInput = details?.querySelector(`[data-account-user-controls-deadzone="${index}"]`);
       const invertInput = details?.querySelector(`[data-account-user-controls-invert="${index}"]`);
       const sensitivityInput = details?.querySelector(`[data-account-user-controls-sensitivity="${index}"]`);
+      const physicalInput = normalizeText(physicalInputControl?.value ?? mapping.physicalInput);
       const negativeNormalizedInput = normalizeText(negativeSelect?.value ?? mapping.negativeNormalizedInput);
       const positiveNormalizedInput = normalizeText(positiveSelect?.value ?? mapping.positiveNormalizedInput);
       return {
@@ -596,7 +666,7 @@ export class AccountUserControlsPage {
         invert: Boolean(invertInput?.checked ?? mapping.invert),
         negativeNormalizedInput,
         normalizedInput: positiveNormalizedInput || normalizeText(normalizedSelect?.value ?? mapping.normalizedInput) || negativeNormalizedInput,
-        physicalInput: mapping.physicalInput,
+        physicalInput,
         positiveNormalizedInput,
         sensitivity: sensitivityInput ? Number(sensitivityInput.value) : mapping.sensitivity,
       };
@@ -605,6 +675,7 @@ export class AccountUserControlsPage {
       ...values,
       id: this.editingProfile?.id || "",
       inputMappings,
+      inputs: inputMappings.map((mapping) => mapping.physicalInput),
     });
   }
 
@@ -662,7 +733,7 @@ export class AccountUserControlsPage {
 
   renderInputValidation(validation) {
     const invalidIndexes = new Set(validation.invalidIndexes || []);
-    this.elements.list?.querySelectorAll("[data-account-user-controls-input-validation]").forEach((status) => {
+    this.root.querySelectorAll("[data-account-user-controls-input-validation]").forEach((status) => {
       const index = Number(status.dataset.accountUserControlsInputValidation);
       status.textContent = invalidIndexes.has(index)
         ? "Needs normalized control, valid deadzone, and valid sensitivity."

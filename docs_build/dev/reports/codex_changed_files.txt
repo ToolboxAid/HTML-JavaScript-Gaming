@@ -3,24 +3,20 @@ M account/user-controls-page.js
  M account/user-controls.html
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
- M src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
  M toolbox/controls/controls.js
  M toolbox/controls/index.html
-?? docs_build/dev/reports/controls-game-account-user-split-report.md
+?? docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/controls-game-account-user-split-report.md
+docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md
 
 # git diff --stat
-account/user-controls-page.js                      |  31 +-
- account/user-controls.html                         | 142 ++--
- .../dev/reports/coverage_changed_js_guardrail.txt  |   7 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  32 +-
- .../guest-seeds/tool-metadata-inventory.js         |  11 +-
- .../input-mapping-mock-repository.js               |   4 +-
- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 356 +++------
- toolbox/controls/controls.js                       | 888 +++++----------------
- toolbox/controls/index.html                        | 169 +---
- 9 files changed, 461 insertions(+), 1179 deletions(-)
+account/user-controls-page.js                      | 165 +++++++++++++++------
+ account/user-controls.html                         |  44 +++++-
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   8 +-
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs | 106 ++++++++-----
+ toolbox/controls/controls.js                       |  41 +++++
+ toolbox/controls/index.html                        |   6 +
+ 7 files changed, 276 insertions(+), 96 deletions(-)
