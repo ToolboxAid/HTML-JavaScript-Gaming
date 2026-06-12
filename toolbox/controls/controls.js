@@ -391,6 +391,7 @@ function renderMappingRow(mapping) {
 function renderEditingRow(values = {}) {
   const row = document.createElement("tr");
   row.dataset.inputEditingRow = "true";
+  row.dataset.inputEditingRowId = values.id || "";
 
   const enabledInput = document.createElement("input");
   enabledInput.type = "checkbox";
@@ -440,14 +441,11 @@ function renderMappings() {
   if (!elements.list) {
     return;
   }
-  const rows = [];
-  if (editingRow) {
-    rows.push(renderEditingRow(editingRow.values));
-  }
-  const visibleMappings = editingRow?.id
-    ? mappings.filter((mapping) => mapping.id !== editingRow.id)
-    : mappings;
-  rows.push(...visibleMappings.map((mapping) => renderMappingRow(mapping)));
+  const rows = mappings.map((mapping) => (
+    editingRow?.id === mapping.id
+      ? renderEditingRow(editingRow.values)
+      : renderMappingRow(mapping)
+  ));
   if (!rows.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");

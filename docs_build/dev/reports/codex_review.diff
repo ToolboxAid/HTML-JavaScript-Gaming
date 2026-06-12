@@ -1,481 +1,311 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 2ce6e7cdd..30a00f66d 100644
+index 30a00f66d..d5f972ec9 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,9 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,8 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
  Changed runtime JS files considered:
--(94%) account/user-controls-page.js - current PR changed runtime JS file with browser V8 coverage; executed lines 961/961; executed functions 111/118
--(0%) toolbox/controls/controls.js - WARNING: reporter HEAD-baseline file was not collected by Playwright V8 coverage; not part of the current PR diff; advisory only
-+(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
-+(93%) toolbox/controls/controls.js - executed lines 548/548; executed functions 56/60
+-(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
+-(93%) toolbox/controls/controls.js - executed lines 548/548; executed functions 56/60
++(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage; executed lines 546/546; executed functions 57/60
++(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff; advisory only
  
  Guardrail warnings:
--(100%) none for current PR changed runtime JS files
--(0%) toolbox/controls/controls.js - WARNING: reporter HEAD-baseline file missing from coverage; not part of the current PR diff; advisory only
-+(100%) none - no changed runtime JS coverage warnings
+ (100%) none - no changed runtime JS coverage warnings
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 64cfa14be..2204089d7 100644
+index 2204089d7..b3c7a7db4 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
 @@ -12,13 +12,13 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
  
  Exercised tool entry points detected:
--(100%) Toolbox Index - exercised 1 runtime JS files
-+(88%) Toolbox Index - exercised 3 runtime JS files
+-(88%) Toolbox Index - exercised 3 runtime JS files
++(89%) Toolbox Index - exercised 3 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(61%) Theme V2 Shared JS - exercised 1 runtime JS files
-+(62%) Theme V2 Shared JS - exercised 2 runtime JS files
+ (62%) Theme V2 Shared JS - exercised 2 runtime JS files
  
  Changed runtime JS files covered:
--(94%) account/user-controls-page.js - current PR changed runtime JS file with browser V8 coverage; executed lines 961/961; executed functions 111/118
--(0%) toolbox/controls/controls.js - WARNING: reporter HEAD-baseline file was not collected by Playwright V8 coverage; not part of the current PR diff; advisory only
-+(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
-+(93%) toolbox/controls/controls.js - executed lines 548/548; executed functions 56/60
+-(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
+-(93%) toolbox/controls/controls.js - executed lines 548/548; executed functions 56/60
++(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage; executed lines 546/546; executed functions 57/60
++(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff; advisory only
  
  Files with executed line/function counts where available:
  (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
-@@ -33,17 +33,21 @@ Files with executed line/function counts where available:
- (59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
- (60%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 9/15
- (61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 33/54
-+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-+(75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
+@@ -37,8 +37,8 @@ Files with executed line/function counts where available:
+ (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
  (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
  (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
-+(93%) toolbox/controls/controls.js - executed lines 548/548; executed functions 56/60
+-(93%) toolbox/controls/controls.js - executed lines 548/548; executed functions 56/60
  (94%) account/user-controls-page.js - executed lines 961/961; executed functions 111/118
++(95%) toolbox/controls/controls.js - executed lines 546/546; executed functions 57/60
  (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
  (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
  
- Uncovered or low-coverage changed JS files:
--(100%) none for current PR changed runtime JS files
--(0%) toolbox/controls/controls.js - WARNING: reporter HEAD-baseline file missing from coverage; not part of the current PR diff; advisory only
-+(100%) none - no low-coverage changed runtime JS files
+@@ -46,8 +46,6 @@ Uncovered or low-coverage changed JS files:
+ (100%) none - no low-coverage changed runtime JS files
  
  Changed JS files considered:
-+(0%) tests/input/NormalizedInputRegistry.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/input/NormalizedInputRegistry.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/controls/controls.js - changed JS file not collected as browser runtime coverage
-+(89%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage
-+(93%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
- (94%) account/user-controls-page.js - changed JS file with browser V8 coverage
-diff --git a/src/engine/input/NormalizedInputRegistry.js b/src/engine/input/NormalizedInputRegistry.js
-index 2984381ec..4f64cea9c 100644
---- a/src/engine/input/NormalizedInputRegistry.js
-+++ b/src/engine/input/NormalizedInputRegistry.js
-@@ -49,10 +49,10 @@ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
-     Button3: 'action.quaternary',
-     Button8: 'action.select',
-     Button9: 'action.start',
--    'DPad Down': 'dpad.down',
--    'DPad Left': 'dpad.left',
--    'DPad Right': 'dpad.right',
--    'DPad Up': 'dpad.up',
-+    'DPad Down': 'move.y+',
-+    'DPad Left': 'move.x-',
-+    'DPad Right': 'move.x+',
-+    'DPad Up': 'move.y-',
-     Enter: 'action.confirm',
-     Escape: 'action.cancel',
-     KeyA: 'move.x-',
-@@ -65,8 +65,8 @@ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
-     MouseX: 'aim.x+',
-     MouseY: 'aim.y+',
-     Space: 'action.primary',
--    'Trigger Left': 'trigger.left',
--    'Trigger Right': 'trigger.right',
-+    'Trigger Left': 'action.primary',
-+    'Trigger Right': 'action.secondary',
- });
- 
- const DEFAULT_PHYSICAL_AXIS_DIRECTION_MAP = Object.freeze({
-diff --git a/tests/input/NormalizedInputRegistry.test.mjs b/tests/input/NormalizedInputRegistry.test.mjs
-index d1806abb0..9ceaa7d18 100644
---- a/tests/input/NormalizedInputRegistry.test.mjs
-+++ b/tests/input/NormalizedInputRegistry.test.mjs
-@@ -50,8 +50,12 @@ function testRegistryContainsPlayableNormalizedInputs() {
- function testPhysicalDefaultsRouteThroughNormalizedInputs() {
-   assert.equal(defaultNormalizedInputForPhysicalInput('Button0'), 'action.primary');
-   assert.equal(defaultNormalizedInputForPhysicalInput('Button1'), 'action.secondary');
--  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Up'), 'dpad.up');
--  assert.equal(defaultNormalizedInputForPhysicalInput('Trigger Right'), 'trigger.right');
-+  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Up'), 'move.y-');
-+  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Down'), 'move.y+');
-+  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Left'), 'move.x-');
-+  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Right'), 'move.x+');
-+  assert.equal(defaultNormalizedInputForPhysicalInput('Trigger Left'), 'action.primary');
-+  assert.equal(defaultNormalizedInputForPhysicalInput('Trigger Right'), 'action.secondary');
-   assert.equal(defaultNormalizedInputForPhysicalInput('Axis0'), 'move.x+');
-   assert.equal(defaultNormalizedInputForPhysicalInput('Axis3'), 'aim.y+');
-   assert.equal(defaultNormalizedInputForPhysicalInput('KeyW'), 'move.y-');
+-(89%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage
+-(93%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
+-(94%) account/user-controls-page.js - changed JS file with browser V8 coverage
++(89%) src/engine/input/NormalizedInputRegistry.js - reporter HEAD-baseline file with browser V8 coverage; not part of the current PR diff
++(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index f3b3fc7da..1eea2a3a8 100644
+index 1eea2a3a8..dcd03472b 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -4,7 +4,7 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
- import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
- import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
- 
--const NORMALIZED_INPUTS = [
-+const GAME_CONTROL_NORMALIZED_INPUTS = [
-   "move.x-",
-   "move.x+",
-   "move.y-",
-@@ -19,16 +19,9 @@ const NORMALIZED_INPUTS = [
-   "action.quaternary",
-   "action.confirm",
-   "action.cancel",
--  "action.menu",
-+  "action.pause",
-   "action.start",
+@@ -24,6 +24,26 @@ const GAME_CONTROL_NORMALIZED_INPUTS = [
    "action.select",
--  "action.pause",
--  "dpad.up",
--  "dpad.down",
--  "dpad.left",
--  "dpad.right",
--  "trigger.left",
--  "trigger.right",
  ];
  
++const GAME_CONTROL_USAGE_LABELS = [
++  "Move Left",
++  "Move Right",
++  "Move Up",
++  "Move Down",
++  "Aim Left",
++  "Aim Right",
++  "Aim Up",
++  "Aim Down",
++  "Primary Action",
++  "Secondary Action",
++  "Third Action",
++  "Fourth Action",
++  "Confirm",
++  "Cancel",
++  "Pause",
++  "Start",
++  "Select",
++];
++
  test.beforeEach(async ({ page }) => {
-@@ -215,12 +208,20 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-     ]);
-     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /Keyboard|Mouse|Joystick|Gamepad|Combo|Object|State|Family/ })).toHaveCount(0);
-     await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.");
--    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
--    await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
-+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
-+    await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(GAME_CONTROL_NORMALIZED_INPUTS.length));
-     await expect(page.locator("[data-input-enabled-count]")).toHaveText("10");
--    await expect(page.locator("[data-input-output-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
-+    await expect(page.locator("[data-input-output-count]")).toHaveText(String(GAME_CONTROL_NORMALIZED_INPUTS.length));
-     await expect(page.locator("[data-input-save-status]")).toHaveText("Complete");
-     await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
-+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("dpad.");
-+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("trigger.");
-+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("D-Pad");
-+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Trigger");
-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.x-");
-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.x+");
-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y-");
-+    await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y+");
+   await installPlaywrightStorageIsolation(page, {
+     lane: "controls",
+@@ -169,6 +189,16 @@ async function editGameControl(page, rowText, {
+   await page.locator("[data-input-save-mapping]").click();
+ }
  
-     const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
-     await expect(primaryRow.locator("td").nth(0).locator("input")).toBeChecked();
-@@ -234,7 +235,8 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-     await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
- 
-     let records = await inputMappingRecords(page);
--    expect(records).toHaveLength(NORMALIZED_INPUTS.length);
-+    expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
-+    expect(records.map((record) => record.normalizedInput).sort()).toEqual([...GAME_CONTROL_NORMALIZED_INPUTS].sort());
-     expect(records.find((record) => record.usageLabel === "Primary Action")).toMatchObject({
-       enabled: true,
-       eventD: true,
-@@ -248,7 +250,7 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-     });
-     expect(records.every((record) => !record.inputFamily)).toBe(true);
-     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
--    expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton/);
-+    expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton|dpad\.|trigger\./);
- 
-     await expectNoPageFailures(failures);
-   } finally {
-@@ -261,9 +263,14 @@ test("Game Controls validates rows and persists device-agnostic event fields", a
- 
-   try {
-     await expect(page.locator("[data-input-preset]")).toHaveCount(0);
--    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
-+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
- 
-     await page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first().getByRole("button", { name: "Edit" }).click();
-+    const gameControlOptions = await page.locator("[data-input-row-normalized] option").evaluateAll((options) => options.map((option) => option.value));
-+    expect(gameControlOptions).toEqual(GAME_CONTROL_NORMALIZED_INPUTS);
-+    expect(gameControlOptions).not.toContain("dpad.up");
-+    expect(gameControlOptions).not.toContain("trigger.left");
-+    expect(gameControlOptions).not.toContain("action.menu");
-     await page.locator("[data-input-row-usage-label]").fill("");
-     await page.locator("[data-input-save-mapping]").click();
-     await expect(page.locator("[data-input-row-validation]")).toContainText("Add a Usage Label");
-@@ -290,7 +297,7 @@ test("Game Controls validates rows and persists device-agnostic event fields", a
-     });
- 
-     let records = await inputMappingRecords(page);
--    expect(records).toHaveLength(NORMALIZED_INPUTS.length);
-+    expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
-     expect(records.find((record) => record.usageLabel === "Charge Shot")).toMatchObject({ eventD: false, eventH: true });
-     expect(records.find((record) => record.usageLabel === "Double Tap Pause")).toMatchObject({ eventDC: true });
-     expect(records.every((record) => !record.inputFamily)).toBe(true);
-@@ -426,9 +433,16 @@ test("Account User Controls owns physical input mapping accordions and profiles"
-     await expect(button0.locator("[data-account-user-controls-deadzone]")).toHaveCount(0);
-     await expect(button0.locator("[data-account-user-controls-sensitivity]")).toHaveCount(0);
-     const dpadUp = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "DPad Up" });
-+    await expect(dpadUp.locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.y-");
-     await expect(dpadUp).toContainText("N/A");
-     await expect(dpadUp.locator("[data-account-user-controls-deadzone]")).toHaveCount(0);
-     await expect(dpadUp.locator("[data-account-user-controls-sensitivity]")).toHaveCount(0);
-+    const dpadDown = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "DPad Down" });
-+    await expect(dpadDown.locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.y+");
-+    const dpadLeft = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "DPad Left" });
-+    await expect(dpadLeft.locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.x-");
-+    const dpadRight = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "DPad Right" });
-+    await expect(dpadRight.locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.x+");
-     await expect(page.locator("body")).not.toContainText("Not applicable");
-     const axis0 = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Axis0" });
-     await expect(axis0.locator("[data-account-user-controls-input-negative]")).toHaveValue("move.x-");
-@@ -440,9 +454,12 @@ test("Account User Controls owns physical input mapping accordions and profiles"
-     await axis0Sensitivity.fill("125");
-     await expect(axis0.locator("[data-slider-value-for='accountUserControlsSensitivity']")).toHaveText("125%");
-     const triggerLeft = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Trigger Left" });
-+    await expect(triggerLeft.locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
-     await expect(triggerLeft.locator("[data-account-user-controls-deadzone]")).toBeVisible();
-     await expect(triggerLeft.locator("[data-account-user-controls-invert]")).toBeVisible();
-     await expect(triggerLeft.locator("[data-account-user-controls-sensitivity]")).toBeVisible();
-+    const triggerRight = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Trigger Right" });
-+    await expect(triggerRight.locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.secondary");
-     const gamepadNormalizedOptions = await triggerLeft.locator("[data-account-user-controls-input-normalized] option").evaluateAll((options) => options.map((option) => option.value));
-     expect(gamepadNormalizedOptions).toContain("dpad.up");
-     expect(gamepadNormalizedOptions).toContain("trigger.left");
-@@ -481,6 +498,12 @@ test("Account User Controls owns physical input mapping accordions and profiles"
-       invert: true,
-       sensitivity: 125,
-     });
-+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "DPad Up")).toMatchObject({ normalizedInput: "move.y-" });
-+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "DPad Down")).toMatchObject({ normalizedInput: "move.y+" });
-+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "DPad Left")).toMatchObject({ normalizedInput: "move.x-" });
-+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "DPad Right")).toMatchObject({ normalizedInput: "move.x+" });
-+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Trigger Left")).toMatchObject({ normalizedInput: "action.primary" });
-+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Trigger Right")).toMatchObject({ normalizedInput: "action.secondary" });
-     expect(JSON.stringify(profiles)).not.toContain("gameAction");
-     expect(JSON.stringify(profiles)).not.toContain("objectKey");
-     expect(JSON.stringify(profiles)).not.toContain("eventD");
-diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
-index a0e9e4a0d..2919b6df3 100644
---- a/toolbox/controls/controls.js
-+++ b/toolbox/controls/controls.js
-@@ -11,10 +11,31 @@ const CONTROL_EVENT_OPTIONS = Object.freeze([
-   Object.freeze({ field: "eventDC", label: "DC" }),
- ]);
- 
-+const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
-+  "move.x-",
-+  "move.x+",
-+  "move.y-",
-+  "move.y+",
-+  "aim.x-",
-+  "aim.x+",
-+  "aim.y-",
-+  "aim.y+",
-+  "action.primary",
-+  "action.secondary",
-+  "action.tertiary",
-+  "action.quaternary",
-+  "action.confirm",
-+  "action.cancel",
-+  "action.pause",
-+  "action.start",
-+  "action.select",
-+]);
++async function gameControlRowLabels(page) {
++  return page.locator("[data-input-mapping-table] tbody tr").evaluateAll((rows) => rows.map((row) => {
++    const usageInput = row.querySelector("[data-input-row-usage-label]");
++    if (usageInput) {
++      return usageInput.value;
++    }
++    return row.children[2]?.textContent?.trim() || "";
++  }));
++}
 +
-+const GAME_CONTROL_NORMALIZED_INPUT_IDS = new Set(GAME_CONTROL_NORMALIZED_INPUTS);
-+
- const NORMALIZED_USAGE_LABELS = Object.freeze({
-   "action.cancel": "Cancel",
-   "action.confirm": "Confirm",
--  "action.menu": "Menu",
-   "action.pause": "Pause",
-   "action.primary": "Primary Action",
-   "action.quaternary": "Fourth Action",
-@@ -26,16 +47,10 @@ const NORMALIZED_USAGE_LABELS = Object.freeze({
-   "aim.x+": "Aim Right",
-   "aim.y-": "Aim Up",
-   "aim.y+": "Aim Down",
--  "dpad.down": "D-Pad Down",
--  "dpad.left": "D-Pad Left",
--  "dpad.right": "D-Pad Right",
--  "dpad.up": "D-Pad Up",
-   "move.x-": "Move Left",
-   "move.x+": "Move Right",
-   "move.y-": "Move Up",
-   "move.y+": "Move Down",
--  "trigger.left": "Left Trigger",
--  "trigger.right": "Right Trigger",
+ test("Toolbox Controls shows game controls only and keeps presets wireframe safe", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/controls/index.html");
+ 
+@@ -258,6 +288,92 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
+   }
  });
  
- const COMMON_DEFAULT_GAME_CONTROLS = new Set([
-@@ -131,6 +146,21 @@ function selectControl({ ariaLabel, options, selectedValue }) {
-   return select;
- }
- 
-+function gameControlNormalizedOptions() {
-+  const optionByValue = new Map(normalizedInputOptions().map((option) => [option.value, option]));
-+  return GAME_CONTROL_NORMALIZED_INPUTS
-+    .map((inputId) => optionByValue.get(inputId))
-+    .filter(Boolean);
-+}
++test("Game Controls edits the selected row in place and preserves row order", async ({ page }) => {
++  const failures = await openRepoPage(page, "/toolbox/controls/index.html");
 +
-+function normalizeGameControlInput(inputId, fallback = "") {
-+  const normalizedInput = normalizeNormalizedInput(inputId);
-+  if (GAME_CONTROL_NORMALIZED_INPUT_IDS.has(normalizedInput)) {
-+    return normalizedInput;
-+  }
-+  return GAME_CONTROL_NORMALIZED_INPUT_IDS.has(fallback) ? fallback : "";
-+}
++  try {
++    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
++    expect(await gameControlRowLabels(page)).toEqual(GAME_CONTROL_USAGE_LABELS);
 +
- function checkboxCell(checked, label) {
-   const input = document.createElement("input");
-   input.type = "checkbox";
-@@ -201,7 +231,7 @@ function mappingIdFor(mapping) {
- 
- function normalizeMapping(source = {}) {
-   const sourceNormalizedInput = normalizeText(source.normalizedInput);
--  const normalizedInput = normalizeNormalizedInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
-+  const normalizedInput = normalizeGameControlInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
-   const usageLabel = normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
-   const enabled = source.enabled === undefined ? true : Boolean(source.enabled);
-   const eventFields = normalizedEventFields(source);
-@@ -230,11 +260,24 @@ function readMappings() {
-     controlsRepository = createControlsToolApiRepository();
-     result = controlsRepository.listMappings();
-   }
--  return Array.isArray(result) ? result.map((mapping) => normalizeMapping(mapping)) : [];
-+  if (!Array.isArray(result)) {
-+    return [];
++    await page.locator("[data-input-mapping-table] tbody tr").first().getByRole("button", { name: "Edit" }).click();
++    await expect(page.locator("[data-input-mapping-table] tbody tr").first()).toHaveAttribute("data-input-editing-row", "true");
++    await expect(page.locator("[data-input-row-usage-label]")).toHaveValue("Move Left");
++    await page.locator("[data-input-row-usage-label]").fill("Move Left Prime");
++    await page.locator("[data-input-save-mapping]").click();
++    await expect(page.locator("[data-input-mapping-table] tbody tr").first()).toContainText("Move Left Prime");
++    expect(await gameControlRowLabels(page)).toEqual([
++      "Move Left Prime",
++      ...GAME_CONTROL_USAGE_LABELS.slice(1),
++    ]);
++
++    const aimDownIndex = GAME_CONTROL_USAGE_LABELS.indexOf("Aim Down");
++    await page.locator("[data-input-mapping-row]").filter({ hasText: "Aim Down" }).first().getByRole("button", { name: "Edit" }).click();
++    const rowsDuringMiddleEdit = page.locator("[data-input-mapping-table] tbody tr");
++    await expect(rowsDuringMiddleEdit.nth(aimDownIndex)).toHaveAttribute("data-input-editing-row", "true");
++    await expect(rowsDuringMiddleEdit.first()).not.toHaveAttribute("data-input-editing-row", "true");
++    await expect(page.locator("[data-input-row-usage-label]")).toHaveValue("Aim Down");
++    expect(await gameControlRowLabels(page)).toEqual([
++      "Move Left Prime",
++      ...GAME_CONTROL_USAGE_LABELS.slice(1, aimDownIndex),
++      "Aim Down",
++      ...GAME_CONTROL_USAGE_LABELS.slice(aimDownIndex + 1),
++    ]);
++    await page.locator("[data-input-row-usage-label]").fill("Aim Down Draft");
++    await page.locator("[data-input-cancel-mapping]").click();
++    expect(await gameControlRowLabels(page)).toEqual([
++      "Move Left Prime",
++      ...GAME_CONTROL_USAGE_LABELS.slice(1),
++    ]);
++
++    const pauseIndex = GAME_CONTROL_USAGE_LABELS.indexOf("Pause");
++    await page.locator("[data-input-mapping-row]").filter({ hasText: "Pause" }).first().getByRole("button", { name: "Edit" }).click();
++    await expect(page.locator("[data-input-mapping-table] tbody tr").nth(pauseIndex)).toHaveAttribute("data-input-editing-row", "true");
++    await page.locator("[data-input-row-usage-label]").fill("Pause Menu");
++    await page.locator("[data-input-save-mapping]").click();
++    expect(await gameControlRowLabels(page)).toEqual([
++      "Move Left Prime",
++      ...GAME_CONTROL_USAGE_LABELS.slice(1, pauseIndex),
++      "Pause Menu",
++      ...GAME_CONTROL_USAGE_LABELS.slice(pauseIndex + 1),
++    ]);
++
++    await page.locator("[data-input-mapping-row]").filter({ hasText: "Secondary Action" }).first().getByRole("button", { name: "Trash" }).click();
++    const labelsAfterTrash = await gameControlRowLabels(page);
++    expect(labelsAfterTrash).not.toContain("Secondary Action");
++    expect(labelsAfterTrash).toEqual([
++      "Move Left Prime",
++      "Move Right",
++      "Move Up",
++      "Move Down",
++      "Aim Left",
++      "Aim Right",
++      "Aim Up",
++      "Aim Down",
++      "Primary Action",
++      "Third Action",
++      "Fourth Action",
++      "Confirm",
++      "Cancel",
++      "Pause Menu",
++      "Start",
++      "Select",
++    ]);
++
++    let records = await inputMappingRecords(page);
++    expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length - 1);
++    expect(records.map((record) => record.usageLabel)).toEqual(labelsAfterTrash);
++
++    await page.reload({ waitUntil: "networkidle" });
++    expect(await gameControlRowLabels(page)).toEqual(labelsAfterTrash);
++    records = await inputMappingRecords(page);
++    expect(records.map((record) => record.usageLabel)).toEqual(labelsAfterTrash);
++
++    await expectNoPageFailures(failures);
++  } finally {
++    await closeWithCoverage(page, failures);
 +  }
-+  const normalizedMappings = result.map((mapping) => normalizeMapping(mapping));
-+  const gameControlMappings = normalizedMappings.filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
-+  if (gameControlMappings.length !== normalizedMappings.length) {
-+    const cleanupResult = controlsRepository.replaceMappings(gameControlMappings);
-+    if (Array.isArray(cleanupResult?.mappings)) {
-+      return cleanupResult.mappings
-+        .map((mapping) => normalizeMapping(mapping))
-+        .filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
-+    }
-+  }
-+  return gameControlMappings;
- }
++});
++
+ test("Game Controls validates rows and persists device-agnostic event fields", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/controls/index.html");
  
- function createDefaultGameControlMappings() {
--  return normalizedInputOptions().map((option, index) => {
-+  return gameControlNormalizedOptions().map((option, index) => {
-     const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
-     return normalizeMapping({
-       enabled,
-@@ -276,10 +319,10 @@ function validateMappingAction(mapping) {
-   if (!mapping.enabled) {
-     return { ok: true, message: "" };
-   }
--  if (!normalizeNormalizedInput(mapping.normalizedInput)) {
-+  if (!normalizeGameControlInput(mapping.normalizedInput)) {
-     return {
-       ok: false,
--      message: "Choose a normalized action from the registry.",
-+      message: "Choose a game-level normalized action.",
-     };
-   }
-   if (!normalizeText(mapping.usageLabel)) {
-@@ -357,7 +400,7 @@ function renderEditingRow(values = {}) {
+diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
+index 2919b6df3..6ef3252ba 100644
+--- a/toolbox/controls/controls.js
++++ b/toolbox/controls/controls.js
+@@ -391,6 +391,7 @@ function renderMappingRow(mapping) {
+ function renderEditingRow(values = {}) {
+   const row = document.createElement("tr");
+   row.dataset.inputEditingRow = "true";
++  row.dataset.inputEditingRowId = values.id || "";
  
-   const normalizedInputSelect = selectControl({
-     ariaLabel: "Normalized Action",
--    options: normalizedInputOptions(),
-+    options: gameControlNormalizedOptions(),
-     selectedValue: values.normalizedInput || "action.primary",
-   });
-   normalizedInputSelect.dataset.inputRowNormalized = "true";
-diff --git a/docs_build/dev/reports/controls-remove-physical-controller-actions-report.md b/docs_build/dev/reports/controls-remove-physical-controller-actions-report.md
+   const enabledInput = document.createElement("input");
+   enabledInput.type = "checkbox";
+@@ -440,14 +441,11 @@ function renderMappings() {
+   if (!elements.list) {
+     return;
+   }
+-  const rows = [];
+-  if (editingRow) {
+-    rows.push(renderEditingRow(editingRow.values));
+-  }
+-  const visibleMappings = editingRow?.id
+-    ? mappings.filter((mapping) => mapping.id !== editingRow.id)
+-    : mappings;
+-  rows.push(...visibleMappings.map((mapping) => renderMappingRow(mapping)));
++  const rows = mappings.map((mapping) => (
++    editingRow?.id === mapping.id
++      ? renderEditingRow(editingRow.values)
++      : renderMappingRow(mapping)
++  ));
+   if (!rows.length) {
+     const row = document.createElement("tr");
+     const cell = document.createElement("td");
+diff --git a/docs_build/dev/reports/controls-edit-row-in-place-fix-report.md b/docs_build/dev/reports/controls-edit-row-in-place-fix-report.md
 new file mode 100644
-index 000000000..65636f5b2
+index 000000000..9bb371351
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-remove-physical-controller-actions-report.md
-@@ -0,0 +1,86 @@
-+# PR_26162_046 Controls Remove Physical Controller Actions
++++ b/docs_build/dev/reports/controls-edit-row-in-place-fix-report.md
+@@ -0,0 +1,75 @@
++# PR_26162_047 Controls Edit Row In Place Fix
 +
 +## Branch Validation
 +- PASS: Current branch is `main`.
 +- Expected branch: `main`.
-+- Evidence: `git status --short --branch` reported `## main...origin/main`.
++- Evidence: `git status --short --branch` reported `## main...origin/main` before edits.
 +
 +## Requirement Checklist
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
-+- PASS: Verified branch is `main` before edits.
-+- PASS: Continued from PR_26162_045.
-+- PASS: Controls status remains Wireframe; tool metadata/status was not changed.
-+- PASS: Controls data remains DB-backed through the shared DB/mock adapter only.
-+- PASS: Toolbox > Controls no longer creates or edits game controls for `dpad.up`, `dpad.down`, `dpad.left`, `dpad.right`, `trigger.left`, or `trigger.right`.
-+- PASS: Toolbox > Controls does not define physical controller inputs; `game_input_mappings` remains free of controller id/name and physical input fields.
-+- PASS: Toolbox > Controls keeps only the requested game-level normalized controls:
-+  `move.x-`, `move.x+`, `move.y-`, `move.y+`, `aim.x-`, `aim.x+`, `aim.y-`, `aim.y+`, `action.primary`, `action.secondary`, `action.tertiary`, `action.quaternary`, `action.confirm`, `action.cancel`, `action.pause`, `action.start`, `action.select`.
-+- PASS: Account > User Controls keeps physical DPad and trigger rows available.
-+- PASS: Account > User Controls default mappings support `DPad Up -> move.y-`, `DPad Down -> move.y+`, `DPad Left -> move.x-`, `DPad Right -> move.x+`, `Left Trigger -> action.primary`, and `Right Trigger -> action.secondary`.
-+- PASS: Editable controller mappings, deadzone, invert, sensitivity, and controller naming are preserved.
-+- PASS: Combo Controls wireframe remains in Toolbox > Controls.
-+- PASS: Aim remains normalized axis controls in Game Controls and was not moved into Combo Controls.
++- PASS: Verified current git branch is `main` before edits.
++- PASS: Continued from PR_26162_046.
++- PASS: Toolbox > Controls edit behavior now replaces the selected row in-place.
++- PASS: Clicking the first row Edit button edits the first row.
++- PASS: Clicking a middle/later row Edit button edits that exact row in-place.
++- PASS: The edit row is no longer rendered at the top of the table.
++- PASS: Row order is preserved before, during, and after edit.
++- PASS: Save updates only the selected row.
++- PASS: Cancel restores only the selected row.
++- PASS: Trash deletes only the selected row.
++- PASS: DB-backed persistence is preserved through the shared DB/mock adapter.
++- PASS: Normalized Game Controls behavior from PR_26162_046 is preserved.
++- PASS: Added Playwright regression coverage for non-first-row in-place editing.
 +- PASS: No sample JSON alignment, auth behavior, production account system, or unrelated rewrites were added.
++- PASS: Theme V2 only; no inline CSS, inline JS, script blocks, style blocks, or inline event handlers were introduced.
 +
 +## Changed Files
 +- `toolbox/controls/controls.js`
-+- `src/engine/input/NormalizedInputRegistry.js`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `tests/input/NormalizedInputRegistry.test.mjs`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
-+- `docs_build/dev/reports/controls-remove-physical-controller-actions-report.md`
++- `docs_build/dev/reports/controls-edit-row-in-place-fix-report.md`
 +
 +## Impacted Lanes
 +- Controls tool runtime lane.
-+- Account/User Controls runtime lane.
-+- Engine input normalization/default mapping lane.
++- Controls Playwright behavior lane.
 +
 +## Validation Performed
 +- PASS: `node --check toolbox/controls/controls.js`
-+- PASS: `node --check account/user-controls-page.js`
-+- PASS: `node --check src/engine/input/NormalizedInputRegistry.js`
 +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- PASS: `node --check tests/input/NormalizedInputRegistry.test.mjs`
-+- PASS: `node tests/input/NormalizedInputRegistry.test.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs` passed 6/6.
 +- PASS: `git diff --check`
-+- PASS: `rg -n -P "<style|style\\s*=|\\son[a-z]+\\s*=" toolbox/controls/index.html toolbox/controls/controls.js account/user-controls.html account/user-controls-page.js` returned no matches.
++- PASS: `rg -n -P "<style|style\\s*=|\\son[a-z]+\\s*=" toolbox/controls/index.html toolbox/controls/controls.js` returned no matches.
++- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs` passed 7/7.
 +
 +## Playwright Result
-+- PASS: Toolbox > Controls renders 17 game-level normalized rows.
-+- PASS: Toolbox > Controls table/list excludes `dpad.*`, `trigger.*`, `D-Pad`, `Trigger`, and `action.menu`.
-+- PASS: Toolbox > Controls edit dropdown excludes `dpad.*`, `trigger.*`, and `action.menu`.
-+- PASS: Toolbox > Controls still includes `aim.x-`, `aim.x+`, `aim.y-`, and `aim.y+`.
-+- PASS: Combo Controls wireframe remains visible.
-+- PASS: Account > User Controls keeps physical DPad and trigger rows.
-+- PASS: Account > User Controls maps DPad and trigger defaults into movement/action normalized controls.
-+- PASS: Profiles and mappings persist after reload.
++- PASS: Existing Controls behavior remains green.
++- PASS: Regression test confirms the first row edits in-place.
++- PASS: Regression test confirms a middle row (`Aim Down`) edits in-place and not at the top.
++- PASS: Regression test confirms Cancel restores only the selected row.
++- PASS: Regression test confirms Save updates only the selected row.
++- PASS: Regression test confirms Trash deletes only the selected row.
++- PASS: Regression test confirms row order is preserved after Save, Cancel, Trash, and reload.
++- PASS: Regression test confirms DB-backed persistence after reload.
 +
 +## V8 Coverage
-+- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` refreshed from the targeted Playwright run.
-+- PASS: `(93%) toolbox/controls/controls.js - changed JS file with browser V8 coverage`.
-+- PASS: `(89%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage`.
-+- PASS: `coverage_changed_js_guardrail.txt` reports no changed runtime JS coverage warnings.
++- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` refreshed from targeted Playwright.
++- PASS: `(95%) toolbox/controls/controls.js - current PR changed runtime JS file with browser V8 coverage`.
++- NOTE: The shared coverage helper also lists `src/engine/input/NormalizedInputRegistry.js` as a reporter HEAD-baseline file. That file is not part of this PR diff and is marked advisory in the coverage reports.
 +
 +## Skipped Lanes
-+- Full samples validation: SKIPPED per request. Safe to skip because this PR only changes Controls/User Controls input mapping behavior and a targeted shared input default contract; no sample JSON or sample runtime files changed.
-+- Full repository test suite: SKIPPED. Safe to skip because targeted Controls/User Controls Playwright plus the targeted engine input registry test covered the changed behavior.
-+- Workspace V2 broad lane: SKIPPED. Safe to skip because this PR did not change navigation, workspace launch contracts, or workspace persistence.
++- Full samples validation: SKIPPED per request. Safe to skip because this PR changes only Toolbox > Controls table edit rendering and targeted Playwright coverage.
++- Full repository test suite: SKIPPED. Safe to skip because the affected runtime behavior is covered by the targeted Controls Playwright lane.
++- Account/User Controls-only lane: covered as part of `InputMappingV2Tool.spec.mjs`; no Account runtime code changed.
 +
 +## Samples Decision
 +- Samples validation was not run, per request.
 +
 +## Manual Validation Steps
 +1. Open `toolbox/controls/index.html`.
-+2. Confirm Game Controls shows only the 17 game-level normalized rows and no DPad/trigger/action.menu rows.
-+3. Edit a Game Controls row and confirm the Normalized Action dropdown excludes dpad/trigger/action.menu while keeping aim axes.
-+4. Confirm Combo Controls still shows the wireframe text.
-+5. Open `account/user-controls.html`.
-+6. Create a game controller profile from a detected controller.
-+7. Confirm DPad Up/Down/Left/Right rows are present and default to move directions.
-+8. Confirm Trigger Left/Right rows are present and default to primary/secondary actions.
-+9. Save, reload, and confirm mappings persist.
-+
-+## Notes
-+- The global normalized registry still retains physical-controller-specific normalized identifiers for Account/User Controls compatibility, but Toolbox > Controls filters them out and cleans stale game-control records from the shared mock DB when encountered.
++2. Click Edit on the first Game Controls row and confirm the first row becomes the edit row.
++3. Save a new label and confirm only that row changes.
++4. Click Edit on a middle/later row such as `Aim Down` and confirm the edit row appears in that same table position.
++5. Change the label, click Cancel, and confirm the original row is restored in place.
++6. Click Edit on a later row such as `Pause`, save a new label, and confirm only that row changes.
++7. Click Trash on a different row and confirm only that row is deleted.
++8. Reload and confirm row order and saved values persist.

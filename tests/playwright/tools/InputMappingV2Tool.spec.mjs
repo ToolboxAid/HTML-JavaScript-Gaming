@@ -24,6 +24,26 @@ const GAME_CONTROL_NORMALIZED_INPUTS = [
   "action.select",
 ];
 
+const GAME_CONTROL_USAGE_LABELS = [
+  "Move Left",
+  "Move Right",
+  "Move Up",
+  "Move Down",
+  "Aim Left",
+  "Aim Right",
+  "Aim Up",
+  "Aim Down",
+  "Primary Action",
+  "Secondary Action",
+  "Third Action",
+  "Fourth Action",
+  "Confirm",
+  "Cancel",
+  "Pause",
+  "Start",
+  "Select",
+];
+
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "controls",
@@ -169,6 +189,16 @@ async function editGameControl(page, rowText, {
   await page.locator("[data-input-save-mapping]").click();
 }
 
+async function gameControlRowLabels(page) {
+  return page.locator("[data-input-mapping-table] tbody tr").evaluateAll((rows) => rows.map((row) => {
+    const usageInput = row.querySelector("[data-input-row-usage-label]");
+    if (usageInput) {
+      return usageInput.value;
+    }
+    return row.children[2]?.textContent?.trim() || "";
+  }));
+}
+
 test("Toolbox Controls shows game controls only and keeps presets wireframe safe", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/controls/index.html");
 
@@ -251,6 +281,92 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     expect(records.every((record) => !record.inputFamily)).toBe(true);
     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
     expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton|dpad\.|trigger\./);
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+});
+
+test("Game Controls edits the selected row in place and preserves row order", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/controls/index.html");
+
+  try {
+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
+    expect(await gameControlRowLabels(page)).toEqual(GAME_CONTROL_USAGE_LABELS);
+
+    await page.locator("[data-input-mapping-table] tbody tr").first().getByRole("button", { name: "Edit" }).click();
+    await expect(page.locator("[data-input-mapping-table] tbody tr").first()).toHaveAttribute("data-input-editing-row", "true");
+    await expect(page.locator("[data-input-row-usage-label]")).toHaveValue("Move Left");
+    await page.locator("[data-input-row-usage-label]").fill("Move Left Prime");
+    await page.locator("[data-input-save-mapping]").click();
+    await expect(page.locator("[data-input-mapping-table] tbody tr").first()).toContainText("Move Left Prime");
+    expect(await gameControlRowLabels(page)).toEqual([
+      "Move Left Prime",
+      ...GAME_CONTROL_USAGE_LABELS.slice(1),
+    ]);
+
+    const aimDownIndex = GAME_CONTROL_USAGE_LABELS.indexOf("Aim Down");
+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Aim Down" }).first().getByRole("button", { name: "Edit" }).click();
+    const rowsDuringMiddleEdit = page.locator("[data-input-mapping-table] tbody tr");
+    await expect(rowsDuringMiddleEdit.nth(aimDownIndex)).toHaveAttribute("data-input-editing-row", "true");
+    await expect(rowsDuringMiddleEdit.first()).not.toHaveAttribute("data-input-editing-row", "true");
+    await expect(page.locator("[data-input-row-usage-label]")).toHaveValue("Aim Down");
+    expect(await gameControlRowLabels(page)).toEqual([
+      "Move Left Prime",
+      ...GAME_CONTROL_USAGE_LABELS.slice(1, aimDownIndex),
+      "Aim Down",
+      ...GAME_CONTROL_USAGE_LABELS.slice(aimDownIndex + 1),
+    ]);
+    await page.locator("[data-input-row-usage-label]").fill("Aim Down Draft");
+    await page.locator("[data-input-cancel-mapping]").click();
+    expect(await gameControlRowLabels(page)).toEqual([
+      "Move Left Prime",
+      ...GAME_CONTROL_USAGE_LABELS.slice(1),
+    ]);
+
+    const pauseIndex = GAME_CONTROL_USAGE_LABELS.indexOf("Pause");
+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Pause" }).first().getByRole("button", { name: "Edit" }).click();
+    await expect(page.locator("[data-input-mapping-table] tbody tr").nth(pauseIndex)).toHaveAttribute("data-input-editing-row", "true");
+    await page.locator("[data-input-row-usage-label]").fill("Pause Menu");
+    await page.locator("[data-input-save-mapping]").click();
+    expect(await gameControlRowLabels(page)).toEqual([
+      "Move Left Prime",
+      ...GAME_CONTROL_USAGE_LABELS.slice(1, pauseIndex),
+      "Pause Menu",
+      ...GAME_CONTROL_USAGE_LABELS.slice(pauseIndex + 1),
+    ]);
+
+    await page.locator("[data-input-mapping-row]").filter({ hasText: "Secondary Action" }).first().getByRole("button", { name: "Trash" }).click();
+    const labelsAfterTrash = await gameControlRowLabels(page);
+    expect(labelsAfterTrash).not.toContain("Secondary Action");
+    expect(labelsAfterTrash).toEqual([
+      "Move Left Prime",
+      "Move Right",
+      "Move Up",
+      "Move Down",
+      "Aim Left",
+      "Aim Right",
+      "Aim Up",
+      "Aim Down",
+      "Primary Action",
+      "Third Action",
+      "Fourth Action",
+      "Confirm",
+      "Cancel",
+      "Pause Menu",
+      "Start",
+      "Select",
+    ]);
+
+    let records = await inputMappingRecords(page);
+    expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length - 1);
+    expect(records.map((record) => record.usageLabel)).toEqual(labelsAfterTrash);
+
+    await page.reload({ waitUntil: "networkidle" });
+    expect(await gameControlRowLabels(page)).toEqual(labelsAfterTrash);
+    records = await inputMappingRecords(page);
+    expect(records.map((record) => record.usageLabel)).toEqual(labelsAfterTrash);
 
     await expectNoPageFailures(failures);
   } finally {
