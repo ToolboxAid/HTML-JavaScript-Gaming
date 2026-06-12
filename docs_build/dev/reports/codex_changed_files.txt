@@ -1,7 +1,6 @@
-assets/theme-v2/css/layout.css
-assets/theme-v2/js/gamefoundry-partials.js
+account/user-controls-page.js
 tests/playwright/tools/InputMappingV2Tool.spec.mjs
 docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md
+docs_build/dev/reports/PR_26163_058-user-control-profile-selected-device-only.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

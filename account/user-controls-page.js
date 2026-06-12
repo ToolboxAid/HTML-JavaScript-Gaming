@@ -644,6 +644,9 @@ export class AccountUserControlsPage {
     }
     this.devicePollingTimer = window.setInterval(() => {
       this.renderDeviceSelect();
+      if (!this.editingProfile) {
+        this.renderProfiles();
+      }
     }, DEVICE_POLL_INTERVAL_MS);
     window.addEventListener("pagehide", () => {
       if (this.devicePollingTimer) {
@@ -1118,9 +1121,20 @@ export class AccountUserControlsPage {
   }
 
   addProfileForSelectedDevice() {
-    const device = this.selectedControllerDevice();
+    const selectedDeviceInput = this.root.querySelector(
+      "[data-account-user-controls-list-family='Gamepad'] [data-account-user-controls-selected-device]:checked",
+    );
+    const selectionKey = normalizeText(selectedDeviceInput?.value || this.selectedInputDevice?.selectionKey);
+    const selectedChoice = this.selectedInputDeviceChoices().find((choice) =>
+      choice.selectionType === "device"
+        && choice.deviceType === "Gamepad"
+        && choice.selectionKey === selectionKey,
+    );
+    const device = selectedChoice
+      ? this.deviceOptions().find((candidate) => candidate.controllerId === selectedChoice.controllerId)
+      : null;
     if (!device) {
-      this.setStatus("WARN: Choose a physical controller before creating a user control profile.");
+      this.setStatus("WARN: Select a detected game controller row before creating a user control profile.");
       return;
     }
     this.createProfile(device);

@@ -766,8 +766,10 @@ test("User Controls owns physical input mapping accordions and profiles", async 
       "Arcade Test Pad",
       "Studio Flight Pad",
     ]);
-    await page.locator("[data-account-user-controls-device]").selectOption("gamepad-1");
-    await expect(page.locator("[data-account-user-controls-device]")).toHaveValue("gamepad-1");
+    const studioDeviceChoice = page.locator("[data-account-user-controls-selected-device='device:gamepad:studio-flight-pad']");
+    await studioDeviceChoice.check();
+    await expect(studioDeviceChoice).toBeChecked();
+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Studio Flight Pad.");
     await page.locator("[data-account-user-controls-add-profile]").click();
     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");
@@ -900,6 +902,46 @@ test("User Controls owns physical input mapping accordions and profiles", async 
     await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit='generic-keyboard-keyboard-profile']").click();
     await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("ArrowRight");
     await page.locator("[data-account-user-controls-cancel]").click();
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+});
+
+test("User Controls creates one profile from only the selected game controller row", async ({ page }) => {
+  const failures = await openRepoPage(page, "/account/user-controls.html", {
+    sessionUserKey: MOCK_DB_KEYS.users.user1,
+  });
+
+  try {
+    await exposeGamepads(page);
+    await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("2 game controllers detected automatically", { timeout: 4000 });
+    await expect(page.locator("[data-account-user-controls-detected-device='Arcade Test Pad']")).toBeVisible();
+    await expect(page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']")).toBeVisible();
+
+    const studioDeviceChoice = page.locator("[data-account-user-controls-selected-device='device:gamepad:studio-flight-pad']");
+    await studioDeviceChoice.check();
+    await expect(studioDeviceChoice).toBeChecked();
+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Studio Flight Pad.");
+
+    await page.locator("[data-account-user-controls-add-profile]").click();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");
+    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
+    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad");
+
+    const profiles = await controllerProfileRecords(page);
+    expect(profiles).toHaveLength(1);
+    expect(profiles[0]).toMatchObject({
+      controllerId: "Studio Flight Pad",
+      controllerName: "Studio Flight Pad",
+      deviceType: "Gamepad",
+      profileName: "Studio Flight Pad Profile",
+    });
+    expect(profiles.map((profile) => profile.profileName)).not.toContain("Arcade Test Pad Profile");
+    await expect(page.locator("[data-account-user-controls-detected-device='Arcade Test Pad']")).toBeVisible();
+    await expect(page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']")).toHaveCount(0);
+    await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).not.toContainText("Arcade Test Pad Profile");
 
     await expectNoPageFailures(failures);
   } finally {
