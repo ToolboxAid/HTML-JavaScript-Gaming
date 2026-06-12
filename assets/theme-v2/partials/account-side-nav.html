@@ -1,8 +1,21 @@
 <aside class="side-menu" aria-label="Account pages" data-account-side-nav>
-    <a data-account-side-nav-link data-route="account" href="/account/index.html">Account Home</a>
-    <a data-account-side-nav-link data-route="account-achievements" href="/account/achievements.html">Achievements</a>
-    <a data-account-side-nav-link data-route="account-preferences" href="/account/preferences.html">Preferences</a>
-    <a data-account-side-nav-link data-route="account-profile" href="/account/profile.html">Profile</a>
-    <a data-account-side-nav-link data-route="account-security" href="/account/security.html">Security</a>
-    <a data-account-side-nav-link data-route="account-user-controls" href="/account/user-controls.html">User Controls</a>
+    <div class="accordion-stack accordion-stack--left-right" data-account-side-nav-accordion-layout="left-right">
+        <details class="vertical-accordion" open data-account-side-nav-accordion="left">
+            <summary>Account Pages</summary>
+            <div class="accordion-body content-stack content-stack--compact">
+                <a data-account-side-nav-link data-route="account" href="/account/index.html">Account Home</a>
+                <a data-account-side-nav-link data-route="account-achievements" href="/account/achievements.html">Achievements</a>
+                <a data-account-side-nav-link data-route="account-preferences" href="/account/preferences.html">Preferences</a>
+                <a data-account-side-nav-link data-route="account-profile" href="/account/profile.html">Profile</a>
+                <a data-account-side-nav-link data-route="account-security" href="/account/security.html">Security</a>
+                <a data-account-side-nav-link data-route="account-user-controls" href="/account/user-controls.html">User Controls</a>
+            </div>
+        </details>
+        <details class="vertical-accordion" data-account-side-nav-accordion="right">
+            <summary>Account Guidance</summary>
+            <div class="accordion-body content-stack content-stack--compact">
+                <p class="status">Manage profile, security, preferences, achievements, and controls from Account pages.</p>
+            </div>
+        </details>
+    </div>
 </aside>

@@ -361,15 +361,24 @@ export class AccountUserControlsPage {
   }
 
   createProfile(device) {
+    const knownProfiles = new Map();
+    this.readProfiles().forEach((profile) => {
+      knownProfiles.set(profile.id, profile);
+    });
+    this.profiles.forEach((profile) => {
+      knownProfiles.set(profile.id, profile);
+    });
+    this.profiles = [...knownProfiles.values()];
     const profile = this.uniqueProfileForDevice(device);
     if (!this.saveProfiles([profile, ...this.profiles])) {
       this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
       return;
     }
-    this.editingProfile = null;
+    const createdProfile = this.profiles.find((candidate) => candidate.id === profile.id) || profile;
+    this.editingProfile = { id: createdProfile.id, values: createdProfile };
     this.viewingDefaultFamily = "";
     this.renderProfiles();
-    this.setStatus(`PASS: Created ${profile.mappingProfile}. Use Edit to change it.`);
+    this.setStatus(`PASS: Created ${createdProfile.mappingProfile}. Editing the new profile.`);
   }
 
   renderDeviceSelect() {
@@ -418,41 +427,69 @@ export class AccountUserControlsPage {
   }
 
   selectedInputDeviceChoices() {
-    const fixedDevices = [
-      {
-        controllerId: "generic-keyboard",
-        deviceType: "Keyboard",
-        label: "Keyboard",
+    const choices = [];
+    const seenKeys = new Set();
+    const profilesByFamily = new Map([
+      ["Keyboard", []],
+      ["Mouse", []],
+      ["Gamepad", []],
+    ]);
+    this.profiles.forEach((profile) => {
+      profilesByFamily.get(this.profileListFamily(profile))?.push(profile);
+    });
+    const addChoice = (choice) => {
+      if (seenKeys.has(choice.selectionKey)) {
+        return;
+      }
+      seenKeys.add(choice.selectionKey);
+      choices.push(choice);
+    };
+    const addProfileChoice = (profile) => {
+      addChoice({
+        controllerId: profile.controllerId,
+        deviceType: this.profileListFamily(profile),
+        label: `${profile.controllerName} (${profile.mappingProfile})`,
+        profileId: profile.id,
+        selectionKey: `profile:${profile.id}`,
+        selectionType: "profile",
+      });
+    };
+    ["Keyboard", "Mouse"].forEach((family) => {
+      const profiles = profilesByFamily.get(family) || [];
+      if (profiles.length) {
+        profiles.forEach(addProfileChoice);
+        return;
+      }
+      const device = this.familyDevice(family);
+      addChoice({
+        controllerId: device.controllerId,
+        deviceType: family,
+        label: device.label,
         profileId: "",
-        selectionKey: "device:keyboard",
+        selectionKey: `device:${device.value}`,
         selectionType: "device",
-      },
-      {
-        controllerId: "generic-mouse",
-        deviceType: "Mouse",
-        label: "Mouse",
+      });
+    });
+    const gamepadProfiles = profilesByFamily.get("Gamepad") || [];
+    const profiledGamepadIds = new Set();
+    gamepadProfiles.forEach((profile) => {
+      profiledGamepadIds.add(profile.controllerId);
+      addProfileChoice(profile);
+    });
+    this.deviceOptions().forEach((device) => {
+      if (profiledGamepadIds.has(device.controllerId)) {
+        return;
+      }
+      addChoice({
+        controllerId: device.controllerId,
+        deviceType: "Gamepad",
+        label: device.label,
         profileId: "",
-        selectionKey: "device:mouse",
+        selectionKey: `device:gamepad:${keyFromText(device.controllerId || device.value)}`,
         selectionType: "device",
-      },
-    ];
-    const detectedGamepads = this.deviceOptions().map((device) => ({
-      controllerId: device.controllerId,
-      deviceType: "Gamepad",
-      label: device.label,
-      profileId: "",
-      selectionKey: `device:gamepad:${keyFromText(device.controllerId || device.value)}`,
-      selectionType: "device",
-    }));
-    const playerProfiles = this.profiles.map((profile) => ({
-      controllerId: profile.controllerId,
-      deviceType: this.profileListFamily(profile),
-      label: `${profile.controllerName} (${profile.mappingProfile})`,
-      profileId: profile.id,
-      selectionKey: `profile:${profile.id}`,
-      selectionType: "profile",
-    }));
-    return [...fixedDevices, ...detectedGamepads, ...playerProfiles];
+      });
+    });
+    return choices;
   }
 
   selectedInputDeviceConnected(selection) {

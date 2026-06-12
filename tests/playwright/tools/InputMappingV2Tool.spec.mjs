@@ -221,6 +221,8 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Controls");
+    await expect(page.locator("[data-controls-side-accordion='left']")).toBeVisible();
+    await expect(page.locator("[data-controls-side-accordion='right']")).toBeVisible();
     await expect(page.locator("[data-input-mapping-accordion] > summary")).toHaveText("Game Controls");
     await expect(page.locator("summary").filter({ hasText: "Normalized Controls" })).toHaveCount(0);
     await expect(page.locator("[data-input-action-catalog], [data-input-default-actions], [data-input-action-label]")).toHaveCount(0);
@@ -522,6 +524,9 @@ test("User Controls owns physical input mapping accordions and profiles", async 
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "User Controls" })).toBeVisible();
     await expect(page.locator(".card-body")).not.toContainText("Account User Controls");
+    await expect(page.locator(".account-panel--fill")).toBeVisible();
+    await expect(page.locator(".card--fill")).toBeVisible();
+    await expect(page.locator(".card-body--fill")).toBeVisible();
     await expect(page.locator("[data-account-user-controls-section] > summary")).toHaveText([
       "Keyboard",
       "Mouse",
@@ -630,27 +635,11 @@ test("User Controls owns physical input mapping accordions and profiles", async 
     expect(keyboardSectionOrder).toBe(true);
 
     await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
-    await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Keyboard Profile. Use Edit to change it.");
-    expect(await controllerProfileRecords(page)).toHaveLength(1);
-    await expect(page.locator("[data-account-user-controls-profile-row='generic-keyboard-keyboard-profile']")).toContainText("Keyboard");
-    await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
-    await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Keyboard 2 Profile. Use Edit to change it.");
-    expect(await controllerProfileRecords(page)).toHaveLength(2);
-    await page.locator("[data-account-user-controls-edit='generic-keyboard-keyboard-2-profile']").click();
-    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard 2");
-    await page.locator("[data-account-user-controls-controller-name]").fill("Keyboard");
-    await page.locator("[data-account-user-controls-save]").click();
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Keyboard Profile already exists for Keyboard.");
-    await page.locator("[data-account-user-controls-cancel]").click();
-    await page.locator("[data-account-user-controls-trash='generic-keyboard-keyboard-2-profile']").click();
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("Deleted user control profile.");
-    expect(await controllerProfileRecords(page)).toHaveLength(1);
-
-    await page.locator("[data-account-user-controls-edit='generic-keyboard-keyboard-profile']").click();
     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard");
     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard");
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Keyboard Profile. Editing the new profile.");
+    expect(await controllerProfileRecords(page)).toHaveLength(1);
+    await expect(page.locator("[data-account-user-controls-profile-row='generic-keyboard-keyboard-profile']")).toHaveCount(0);
     await expect(page.locator("[data-account-user-controls-table='Keyboard'] > thead th")).toHaveText([
       "Physical Controller",
       "Physical Input",
@@ -681,13 +670,28 @@ test("User Controls owns physical input mapping accordions and profiles", async 
     await expect(page.locator("[data-account-user-controls-physical-input='1']")).toHaveValue("KeyA");
     await page.locator("[data-account-user-controls-save]").click();
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Keyboard Profile.");
+    await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
+    await expect(page.locator("[data-account-user-controls-profile-row='generic-keyboard-keyboard-profile']")).toContainText("Keyboard");
+    await expect(page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']")).toBeEnabled();
+    expect((await controllerProfileRecords(page)).map((profile) => profile.profileName)).toContain("Keyboard Profile");
+
+    await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
+    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard");
+    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard 2");
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Keyboard 2 Profile. Editing the new profile.");
+    expect(await controllerProfileRecords(page)).toHaveLength(2);
+    await page.locator("[data-account-user-controls-controller-name]").fill("Keyboard");
+    await page.locator("[data-account-user-controls-save]").click();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Keyboard Profile already exists for Keyboard.");
+    await page.locator("[data-account-user-controls-cancel]").click();
+    await page.locator("[data-account-user-controls-trash='generic-keyboard-keyboard-2-profile']").click();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("Deleted user control profile.");
+    expect(await controllerProfileRecords(page)).toHaveLength(1);
 
     await page.locator("[data-account-user-controls-section='Mouse'] [data-account-user-controls-edit-family='Mouse']").click();
-    await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Mouse Profile. Use Edit to change it.");
-    expect(await controllerProfileRecords(page)).toHaveLength(2);
-    await page.locator("[data-account-user-controls-edit='generic-mouse-mouse-profile']").click();
     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Mouse");
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Mouse Profile. Editing the new profile.");
+    expect(await controllerProfileRecords(page)).toHaveLength(2);
     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Mouse");
     await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("MouseButton0");
     const mouseNormalizedOptions = await page.locator("[data-account-user-controls-section='Mouse'] [data-account-user-controls-input-normalized='0'] option").evaluateAll((options) => options.map((option) => option.value));
@@ -717,11 +721,9 @@ test("User Controls owns physical input mapping accordions and profiles", async 
     await page.locator("[data-account-user-controls-device]").selectOption("gamepad-1");
     await expect(page.locator("[data-account-user-controls-device]")).toHaveValue("gamepad-1");
     await page.locator("[data-account-user-controls-add-profile]").click();
-    await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Use Edit to change it.");
-    expect(await controllerProfileRecords(page)).toHaveLength(3);
-    await page.locator("[data-account-user-controls-edit='studio-flight-pad-studio-flight-pad-profile']").click();
     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");
+    expect(await controllerProfileRecords(page)).toHaveLength(3);
     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad");
     await page.locator("[data-account-user-controls-controller-name]").fill("Custom Arcade Pad");
     await expect(page.locator("[data-account-user-controls-generated-input-table] th")).toHaveText([
@@ -777,12 +779,14 @@ test("User Controls owns physical input mapping accordions and profiles", async 
       labels.map((label) => label.textContent.trim()),
     );
     expect(selectedDeviceLabels).toEqual(expect.arrayContaining([
-      "Keyboard",
-      "Mouse",
       "Keyboard (Keyboard Profile)",
       "Mouse (Mouse Profile)",
+      "Arcade Test Pad",
       "Custom Arcade Pad (Custom Arcade Pad Profile)",
     ]));
+    expect(selectedDeviceLabels).not.toContain("Keyboard");
+    expect(selectedDeviceLabels).not.toContain("Mouse");
+    expect(selectedDeviceLabels).not.toContain("Studio Flight Pad");
 
     const profiles = await controllerProfileRecords(page);
     expect(profiles).toHaveLength(3);
@@ -859,6 +863,25 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
 
   try {
     await expect(page.locator("[data-account-side-nav]")).toBeVisible();
+    await expect(page.locator("[data-account-side-nav-accordion-layout='left-right']")).toBeVisible();
+    await expect(page.locator("[data-account-side-nav-accordion='left']")).toHaveAttribute("open", "");
+    await expect(page.locator("[data-account-side-nav-accordion='right']")).not.toHaveAttribute("open", "");
+    const sideNavAccordionMetrics = await page.locator("[data-account-side-nav-accordion-layout='left-right']").evaluate((layout) => {
+      const left = layout.querySelector("[data-account-side-nav-accordion='left']")?.getBoundingClientRect();
+      const right = layout.querySelector("[data-account-side-nav-accordion='right']")?.getBoundingClientRect();
+      return left && right
+        ? {
+          leftX: left.x,
+          rightX: right.x,
+          topDelta: Math.abs(left.y - right.y),
+        }
+        : null;
+    });
+    expect(sideNavAccordionMetrics).toEqual(expect.objectContaining({
+      topDelta: expect.any(Number),
+    }));
+    expect(sideNavAccordionMetrics.rightX).toBeGreaterThan(sideNavAccordionMetrics.leftX);
+    expect(sideNavAccordionMetrics.topDelta).toBeLessThanOrEqual(1);
     await expect(page.locator("[data-account-side-nav-link]")).toHaveText([
       "Account Home",
       "Achievements",
@@ -868,6 +891,16 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
       "User Controls",
     ]);
     await expect(page.locator("[data-account-side-nav-link][aria-current='page']")).toHaveText("User Controls");
+    await page.locator("[data-account-side-nav-accordion='left'] > summary").click();
+    await expect(page.locator("[data-account-side-nav-accordion='left']")).not.toHaveAttribute("open", "");
+    await expect(page.locator("[data-account-side-nav-link]").first()).toBeHidden();
+    await page.locator("[data-account-side-nav-accordion='left'] > summary").click();
+    await expect(page.locator("[data-account-side-nav-accordion='left']")).toHaveAttribute("open", "");
+    await expect(page.locator("[data-account-side-nav-link]").first()).toBeVisible();
+    await page.locator("[data-account-side-nav-accordion='right'] > summary").click();
+    await expect(page.locator("[data-account-side-nav-accordion='right']")).toHaveAttribute("open", "");
+    await page.locator("[data-account-side-nav-accordion='right'] > summary").click();
+    await expect(page.locator("[data-account-side-nav-accordion='right']")).not.toHaveAttribute("open", "");
     await expect(page.locator(".site-header .nav-item").filter({ has: page.locator("[data-route='account']") }).last().locator(".sub-menu a")).toHaveText([
       "Account Home",
       "Achievements",

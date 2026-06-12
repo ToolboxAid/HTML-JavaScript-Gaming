@@ -58,12 +58,14 @@ test("account achievements page switches Build Play Share views", async ({ page 
     await expect(page.locator(".side-menu").getByRole("link", { name: "Achievements" })).toBeVisible();
     await expect(page.locator("header.site-header a[data-route='account-achievements']")).toHaveAttribute("href", "../account/achievements.html");
     await expect(page.locator("footer.footer").getByRole("link", { name: "Achievements" })).toBeVisible();
+    await expect(page.locator("[data-account-side-nav-accordion='left']")).toHaveAttribute("open", "");
     await expect(page.locator(".side-menu a")).toHaveText([
       "Account Home",
       "Achievements",
       "Preferences",
       "Profile",
       "Security",
+      "User Controls",
     ]);
     await expect(page.locator("header.site-header .nav-item").filter({ has: page.locator("> a[data-route='account']") }).locator(".sub-menu a")).toHaveText([
       "Account Home",
@@ -72,6 +74,7 @@ test("account achievements page switches Build Play Share views", async ({ page 
       "Preferences",
       "Profile",
       "Security",
+      "User Controls",
     ]);
     await expect(page.locator("footer.footer .footer__group").filter({ has: page.locator("#footer-account") }).locator(".footer__links a")).toHaveText([
       "Account Home",
@@ -79,6 +82,7 @@ test("account achievements page switches Build Play Share views", async ({ page 
       "Preferences",
       "Profile",
       "Security",
+      "User Controls",
     ]);
 
     await expect(page.locator("[data-achievements-panel='build']")).toBeVisible();

@@ -376,6 +376,15 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
   gap: var(--space-18)
 }
 
+.account-panel--fill {
+  align-items: stretch;
+  min-height: 100%
+}
+
+.account-panel--fill>.card {
+  width: 100%
+}
+
 .admin-page-stack {
   display: grid;
   gap: var(--space-18);
