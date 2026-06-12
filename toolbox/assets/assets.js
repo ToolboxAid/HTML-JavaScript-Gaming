@@ -50,15 +50,19 @@ const elements = {
   pickerMode: document.querySelector("[data-asset-tool-picker-mode]"),
   preview: document.querySelector("[data-asset-tool-preview]"),
   previewTitle: document.querySelector("[data-asset-tool-preview-title]"),
+  cancelEdit: document.querySelector("[data-asset-tool-cancel-edit]"),
   reset: document.querySelector("[data-asset-tool-reset]"),
   roleDiagnostics: document.querySelector("[data-asset-tool-role-diagnostics]"),
   roleLibrary: document.querySelector("[data-asset-tool-role-library]"),
   seed: document.querySelector("[data-asset-tool-seed]"),
+  submit: document.querySelector("[data-asset-tool-submit]"),
   tableCounts: document.querySelector("[data-asset-tool-table-counts]"),
   usage: document.querySelector("[data-asset-tool-usage]"),
   validationList: document.querySelector("[data-asset-tool-validation-list]"),
   validationOverlay: document.querySelector("[data-asset-tool-validation-overlay]")
 };
+
+let editingAsset = null;
 
 function setText(target, value) {
   if (target && typeof target.forEach === "function" && !target.nodeType) {
@@ -121,6 +125,15 @@ function createCell(text) {
   return cell;
 }
 
+function createActionButton(label, datasetName, assetId) {
+  const button = document.createElement("button");
+  button.className = "btn";
+  button.type = "button";
+  button.dataset[datasetName] = assetId;
+  button.textContent = label;
+  return button;
+}
+
 function createListItem(text) {
   const item = document.createElement("li");
   item.textContent = text;
@@ -159,13 +172,13 @@ function readAssetForm() {
   const role = selectedRoleDefinition();
   return {
     assetRole: elements.assetRole?.value,
-    fileName: role.inputMode === "file" ? file?.name || "" : "",
-    mimeType: role.inputMode === "file" ? file?.type || "" : "",
+    fileName: role.inputMode === "file" ? editingAsset?.originalName || file?.name || "" : "",
+    mimeType: role.inputMode === "file" ? editingAsset?.mimeType || file?.type || "" : "",
     name: elements.name?.value,
-    paletteColor: elements.paletteColor?.value || "",
+    paletteColor: elements.paletteColor?.value || editingAsset?.paletteSwatch?.key || "",
     path: elements.path?.value,
     pickerMode: role.inputMode,
-    size: role.inputMode === "file" ? file?.size || 0 : 0,
+    size: role.inputMode === "file" ? editingAsset?.size || file?.size || 0 : 0,
     usage: elements.usage?.value
   };
 }
@@ -274,25 +287,30 @@ function updateFileAccept() {
   const role = selectedRoleDefinition();
   const fileMode = role.inputMode === "file";
   const paletteMode = role.inputMode === "palette";
+  const editing = Boolean(editingAsset);
 
-  setText(elements.pickerMode, role.inputMode);
-  setHidden(elements.fileRow, !fileMode);
+  setText(elements.pickerMode, editing ? "edit" : role.inputMode);
+  setHidden(elements.fileRow, !fileMode || editing);
   setHidden(elements.fileNameRow, !fileMode);
-  setHidden(elements.paletteRow, !paletteMode);
-  setHidden(elements.paletteDetailRow, !paletteMode);
+  setHidden(elements.paletteRow, !paletteMode || editing);
+  setHidden(elements.paletteDetailRow, !paletteMode || editing);
 
   elements.file.accept = fileMode ? role.extensions.join(",") : "";
-  elements.file.disabled = !fileMode;
-  if (!fileMode) {
+  elements.file.disabled = !fileMode || editing;
+  if (!fileMode || editing) {
     elements.file.value = "";
   }
-  if (paletteMode) {
+  if (paletteMode && !editing) {
     updatePalettePicker();
     updatePaletteSelectionDetails();
   }
 }
 
 function updateImportDiagnostic() {
+  if (editingAsset) {
+    setText(elements.importDiagnostic, "Editing asset metadata. Save to update your asset library.");
+    return;
+  }
   const role = selectedRoleDefinition();
   setText(elements.importDiagnostic, pickerDiagnosticForRole(role, repository.getPaletteSnapshot()));
 }
@@ -306,8 +324,8 @@ function updateStoragePathPreview() {
   const file = currentFile();
   elements.path.value = repository.previewStoragePath({
     assetRole: elements.assetRole?.value,
-    fileName: role.inputMode === "file" ? file?.name || "" : "",
-    paletteColor: role.inputMode === "palette" ? elements.paletteColor?.value || "" : "",
+    fileName: role.inputMode === "file" ? editingAsset?.originalName || file?.name || "" : "",
+    paletteColor: role.inputMode === "palette" ? editingAsset?.paletteSwatch?.key || elements.paletteColor?.value || "" : "",
     usage: elements.usage?.value
   });
 }
@@ -385,8 +403,8 @@ function renderLibrary(snapshot) {
   if (snapshot.assets.length === 0) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 6;
-    cell.textContent = "No project assets uploaded yet.";
+    cell.colSpan = 7;
+    cell.textContent = "No user assets added yet.";
     row.append(cell);
     elements.library.append(row);
     return;
@@ -397,13 +415,20 @@ function renderLibrary(snapshot) {
     row.dataset.assetToolRow = asset.id;
 
     const nameCell = document.createElement("td");
-    const select = document.createElement("button");
-    select.className = snapshot.selectedAsset?.id === asset.id ? "btn primary" : "btn";
-    select.type = "button";
-    select.dataset.assetToolSelect = asset.id;
-    select.setAttribute("aria-pressed", String(snapshot.selectedAsset?.id === asset.id));
-    select.textContent = asset.name;
-    nameCell.append(select);
+    nameCell.textContent = asset.name;
+    if (snapshot.selectedAsset?.id === asset.id) {
+      row.dataset.assetToolSelectedRow = "true";
+    }
+
+    const actionsCell = document.createElement("td");
+    const actions = document.createElement("div");
+    actions.className = "action-group action-group--tight";
+    actions.append(
+      createActionButton("View", "assetToolView", asset.id),
+      createActionButton("Edit", "assetToolEdit", asset.id),
+      createActionButton("Delete", "assetToolDelete", asset.id)
+    );
+    actionsCell.append(actions);
 
     row.append(
       nameCell,
@@ -411,7 +436,8 @@ function renderLibrary(snapshot) {
       createCell(asset.usage),
       createCell(asset.storedPath),
       createMetadataCell(asset),
-      createCell(asset.status)
+      createCell(asset.status),
+      actionsCell
     );
     elements.library.append(row);
   });
@@ -482,15 +508,18 @@ function renderOutput(snapshot) {
   setText(elements.libraryStatus, snapshot.progressHandoff.libraryStatus);
   setText(elements.nextStep, snapshot.progressHandoff.nextStep);
   setText(elements.outputValidation, snapshot.validation.status);
-  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Upload at least one project asset."));
+  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Add at least one user asset."));
   setText(
     elements.outputSummary,
-    assetCount === 1 ? "1 project asset ready." : `${assetCount} project assets ready.`
+    assetCount === 1 ? "1 user asset ready." : `${assetCount} user assets ready.`
   );
 }
 
 function render() {
   const snapshot = repository.getSnapshot();
+  if (editingAsset && !snapshot.assets.some((asset) => asset.id === editingAsset.id)) {
+    editingAsset = null;
+  }
   renderHandoff(snapshot);
   renderValidation(snapshot);
   renderRoleLibrary(snapshot);
@@ -504,9 +533,14 @@ function render() {
   updateStoragePathPreview();
   updateSelectedFileName();
   updateImportDiagnostic();
+  setFormMode();
 }
 
 function updateSelectedFileName() {
+  if (editingAsset) {
+    setText(elements.fileName, editingAsset.originalName ? `Existing file: ${editingAsset.originalName}` : "Existing asset source.");
+    return;
+  }
   setText(elements.fileName, currentFile()?.name || "No file selected.");
 }
 
@@ -523,6 +557,68 @@ function validateCurrentForm() {
     }
   });
   setText(elements.outputValidation, validation.status);
+}
+
+function populateFormFromAsset(asset) {
+  if (!asset) {
+    return;
+  }
+  if (elements.assetRole) {
+    elements.assetRole.value = asset.assetRole;
+  }
+  updateUsageOptions();
+  if (elements.usage) {
+    elements.usage.value = asset.usage;
+  }
+  if (elements.name) {
+    elements.name.value = asset.name;
+  }
+  if (elements.paletteColor && asset.paletteSwatch?.key) {
+    elements.paletteColor.value = asset.paletteSwatch.key;
+  }
+  updateFileAccept();
+  updateSelectedFileName();
+  updateStoragePathPreview();
+  updateImportDiagnostic();
+}
+
+function setFormMode() {
+  const editing = Boolean(editingAsset);
+  if (elements.submit) {
+    elements.submit.textContent = editing ? "Save Asset" : "Add Asset";
+  }
+  if (elements.cancelEdit) {
+    elements.cancelEdit.hidden = !editing;
+  }
+  if (elements.assetRole) {
+    elements.assetRole.disabled = editing;
+  }
+}
+
+function clearEditMode() {
+  editingAsset = null;
+  setFormMode();
+  updateFileAccept();
+  updateSelectedFileName();
+  updateStoragePathPreview();
+  updateImportDiagnostic();
+}
+
+function enterEditMode(assetId) {
+  const snapshot = repository.selectAsset(assetId);
+  const asset = snapshot.assets.find((candidate) => candidate.id === assetId);
+  if (!asset) {
+    setText(elements.log, "Asset edit blocked: choose an asset owned by the current user.");
+    render();
+    return;
+  }
+  editingAsset = asset;
+  populateFormFromAsset(asset);
+  setFormMode();
+  setText(elements.log, `Editing ${asset.name}.`);
+  render();
+  populateFormFromAsset(asset);
+  setFormMode();
 }
 
 appendRoleOptions(elements.assetRole, visibleRoleDefinitions());
@@ -568,29 +664,60 @@ elements.form?.addEventListener("input", validateCurrentForm);
 
 elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
-  const result = repository.importAsset(readAssetForm());
+  const result = editingAsset
+    ? repository.updateAsset(editingAsset.id, readAssetForm())
+    : repository.importAsset(readAssetForm());
   setText(elements.log, result.message);
+  if (result.updated || result.imported) {
+    editingAsset = null;
+  }
   render();
 });
 
 elements.library?.addEventListener("click", (event) => {
-  const select = event.target.closest("[data-asset-tool-select]");
-  if (!select) {
+  const view = event.target.closest("[data-asset-tool-view]");
+  const edit = event.target.closest("[data-asset-tool-edit]");
+  const deleteButton = event.target.closest("[data-asset-tool-delete]");
+  if (!view && !edit && !deleteButton) {
     return;
   }
 
-  repository.selectAsset(select.dataset.assetToolSelect);
+  if (view) {
+    const snapshot = repository.selectAsset(view.dataset.assetToolView);
+    setText(elements.log, snapshot.selectedAsset ? `Viewing ${snapshot.selectedAsset.name}.` : "Asset view blocked: choose an asset owned by the current user.");
+    editingAsset = null;
+    render();
+    return;
+  }
+
+  if (edit) {
+    enterEditMode(edit.dataset.assetToolEdit);
+    return;
+  }
+
+  const result = repository.deleteAsset(deleteButton.dataset.assetToolDelete);
+  if (editingAsset?.id === deleteButton.dataset.assetToolDelete) {
+    editingAsset = null;
+  }
+  setText(elements.log, result.message);
   render();
+});
+
+elements.cancelEdit?.addEventListener("click", () => {
+  clearEditMode();
+  setText(elements.log, "Asset edit canceled.");
 });
 
 elements.seed?.addEventListener("click", () => {
   repository.seedDemoAssets();
-  setText(elements.log, "Demo project assets seeded.");
+  editingAsset = null;
+  setText(elements.log, "Demo user assets seeded.");
   render();
 });
 
 elements.reset?.addEventListener("click", () => {
   const result = repository.resetAssetLibrary();
+  editingAsset = null;
   setText(elements.log, result.message);
   render();
 });

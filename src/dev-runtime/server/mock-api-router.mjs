@@ -936,6 +936,7 @@ class LocalDevMockDataSource {
       configurationRepository: this.gameConfigurationRepository,
       paletteRepository: this.paletteRepository,
       ...this.sharedOptions,
+      sessionUserKey: () => this.sessionUserKey,
     });
     this.objectsRepository = createObjectsToolMockRepository({
       gameWorkspaceRepository: this.gameWorkspaceRepository,

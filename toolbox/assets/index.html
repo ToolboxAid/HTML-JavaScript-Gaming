@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Assets - GameFoundryStudio</title>
-    <meta name="description" content="Assets Toolbox runtime for project-owned asset library records, imports, previews, and validation.">
+    <meta name="description" content="Assets Toolbox runtime for user-owned asset library records, imports, previews, and validation.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Assets</div>
                 <h1>Assets</h1>
-                <p class="lede">Manage project-owned asset uploads after Game Configuration is ready.</p>
+                <p class="lede">Manage user-owned asset records after Game Configuration is ready.</p>
             </div>
         </section>
         <section class="section">
@@ -84,12 +84,15 @@
                                                         <td colspan="2" data-asset-tool-import-diagnostic>File upload ready.</td>
                                                     </tr>
                                                     <tr>
-                                                        <td colspan="2" data-asset-tool-upload-help-cell><p id="assetToolFileHelp">File-based roles use project-owned upload storage. Color requires Palette Tool selection.</p></td>
+                                                        <td colspan="2" data-asset-tool-upload-help-cell><p id="assetToolFileHelp">File-based roles use user-owned asset records with generated storage paths. Color requires Palette Tool selection.</p></td>
                                                     </tr>
                                                 </tbody>
                                             </table>
                                         </div>
-                                        <button class="btn" type="submit">Upload Asset</button>
+                                        <div class="action-group">
+                                            <button class="btn" type="submit" data-asset-tool-submit>Add Asset</button>
+                                            <button class="btn" type="button" data-asset-tool-cancel-edit hidden>Cancel</button>
+                                        </div>
                                     </form>
                                 </div>
                             </details>
@@ -104,8 +107,8 @@
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="assets" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Project Assets</h2>
-                        <p>Assets stores project-owned upload metadata in a SQL-shaped mock repository. Real database storage, cloud upload, binary file persistence, and export packaging are not implemented yet.</p>
+                        <h2>User Assets</h2>
+                        <p>Assets stores user-owned asset metadata through the shared DB/mock adapter. Real binary file persistence, cloud upload, and export packaging are not implemented yet.</p>
                         <div class="grid cols-3" aria-label="Asset readiness summary">
                             <article class="mini-stat"><strong data-asset-tool-library-status>Needs Input</strong>Library Status</article>
                             <article class="mini-stat"><strong data-asset-tool-count>0</strong>Assets</article>
@@ -124,7 +127,7 @@
                         <article class="card">
                             <div class="card-body content-stack">
                                 <div>
-                                    <div class="kicker">Project Assets</div>
+                                    <div class="kicker">User Assets</div>
                                     <h3>Library Records</h3>
                                 </div>
                                 <div class="table-wrapper">
@@ -137,10 +140,11 @@
                                                 <th scope="col">Stored Path</th>
                                                 <th scope="col">Metadata</th>
                                                 <th scope="col">Status</th>
+                                                <th scope="col">Actions</th>
                                             </tr>
                                         </thead>
                                         <tbody data-asset-tool-library>
-                                            <tr><td colspan="6">No project assets uploaded yet.</td></tr>
+                                            <tr><td colspan="7">No user assets added yet.</td></tr>
                                         </tbody>
                                     </table>
                                 </div>
@@ -188,9 +192,9 @@
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
                                 <div class="accordion-body content-stack" data-asset-tool-output>
-                                    <p>Library Summary: <span data-asset-tool-output-summary>No project assets uploaded yet.</span></p>
+                                    <p>Library Summary: <span data-asset-tool-output-summary>No user assets added yet.</span></p>
                                     <p>Validation Status: <span data-asset-tool-output-validation>Needs Input</span></p>
-                                    <p>Missing Items: <span data-asset-tool-output-missing>Upload at least one project asset.</span></p>
+                                    <p>Missing Items: <span data-asset-tool-output-missing>Add at least one user asset.</span></p>
                                     <p>Next Step: <span data-asset-tool-output-next-step>Assets</span></p>
                                 </div>
                             </details>

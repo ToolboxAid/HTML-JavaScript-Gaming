@@ -1,569 +1,1451 @@
-﻿diff --git a/account/user-controls-page.js b/account/user-controls-page.js
-index a3069fddf..8872874c5 100644
---- a/account/user-controls-page.js
-+++ b/account/user-controls-page.js
-@@ -139,7 +139,7 @@ export class AccountUserControlsPage {
-     this.captureService = new InputCaptureService({ inputService: this.inputService });
-     this.profiles = [];
-     this.editingProfile = null;
--    this.selectedInputDevice = null;
-+    this.selectedInputDevices = new Map();
-     this.sessionUserKey = "";
-     this.viewingDefaultFamily = "";
-     this.devicePollingTimer = null;
-@@ -162,7 +162,7 @@ export class AccountUserControlsPage {
-     this.inputService.attach();
-     this.sessionUserKey = this.currentSessionUserKey();
-     this.profiles = this.readProfiles();
--    this.selectedInputDevice = this.readSelectedInputDevice();
-+    this.selectedInputDevices = this.readSelectedInputDevices();
-     this.renderDeviceSelect();
-     this.renderDefaultFallbacks();
-     this.renderTypes();
-@@ -215,7 +215,7 @@ export class AccountUserControlsPage {
-     this.repository = createControlsToolApiRepository();
-     this.sessionUserKey = this.currentSessionUserKey();
-     this.profiles = this.readProfiles();
--    this.selectedInputDevice = this.readSelectedInputDevice();
-+    this.selectedInputDevices = this.readSelectedInputDevices();
-     this.editingProfile = null;
-     this.viewingDefaultFamily = "";
-     this.renderDeviceSelect();
-@@ -317,16 +317,46 @@ export class AccountUserControlsPage {
-     return Array.isArray(result) ? result.map((profile) => this.normalizeProfile(profile)) : [];
-   }
-
--  readSelectedInputDevice() {
-+  selectionFamily(selection = {}) {
-+    const deviceType = normalizeText(selection.deviceType);
-+    if (deviceType === "Keyboard" || deviceType === "Mouse") {
-+      return deviceType;
-+    }
-+    return "Gamepad";
-+  }
-+
-+  selectedInputDeviceForFamily(family) {
-+    return this.selectedInputDevices.get(this.selectionFamily({ deviceType: family })) || null;
-+  }
-+
-+  selectedInputDeviceMapFromList(selections = []) {
-+    const selectedInputDevices = new Map();
-+    (Array.isArray(selections) ? selections : []).forEach((selection) => {
-+      if (selection?.selectionKey) {
-+        selectedInputDevices.set(this.selectionFamily(selection), selection);
-+      }
-+    });
-+    return selectedInputDevices;
-+  }
-+
-+  readSelectedInputDevices() {
-     if (!this.currentSessionUserKey()) {
--      return null;
-+      return new Map();
-+    }
-+    let result = this.repository.listSelectedInputDevices();
-+    if (result?.error) {
-+      this.repository = createControlsToolApiRepository();
-+      result = this.repository.listSelectedInputDevices();
-     }
--    let result = this.repository.getSelectedInputDevice();
-+    if (Array.isArray(result)) {
-+      return this.selectedInputDeviceMapFromList(result);
-+    }
-+    result = this.repository.getSelectedInputDevice();
-     if (result?.error) {
-       this.repository = createControlsToolApiRepository();
-       result = this.repository.getSelectedInputDevice();
-     }
--    return result && !result.error ? result : null;
-+    return result && !result.error ? this.selectedInputDeviceMapFromList([result]) : new Map();
-   }
-
-   saveSelectedInputDevice(selection) {
-@@ -339,8 +369,13 @@ export class AccountUserControlsPage {
-       this.repository = createControlsToolApiRepository();
-       result = this.repository.saveSelectedInputDevice(selection);
-     }
-+    if (Array.isArray(result?.selectedInputDevices)) {
-+      this.selectedInputDevices = this.selectedInputDeviceMapFromList(result.selectedInputDevices);
-+      this.renderSelectedInputDevices();
-+      return true;
-+    }
-     if (result?.selectedInputDevice) {
--      this.selectedInputDevice = result.selectedInputDevice;
-+      this.selectedInputDevices.set(this.selectionFamily(result.selectedInputDevice), result.selectedInputDevice);
-       this.renderSelectedInputDevices();
-       return true;
-     }
-@@ -552,14 +587,21 @@ export class AccountUserControlsPage {
-     if (!this.elements.selectedDeviceStatus) {
-       return;
-     }
--    if (!this.selectedInputDevice?.selectionKey) {
-+    const selections = ["Keyboard", "Mouse", "Gamepad"]
-+      .map((family) => this.selectedInputDeviceForFamily(family))
-+      .filter(Boolean);
-+    if (!selections.length) {
-       this.elements.selectedDeviceStatus.textContent = "Default Profile";
-       return;
-     }
--    const connected = this.selectedInputDeviceConnected(this.selectedInputDevice);
--    this.elements.selectedDeviceStatus.textContent = connected
--      ? `Selected Device: ${this.selectedInputDevice.label || this.selectedInputDevice.deviceType}.`
--      : "Selected device not connected. Using Default Profile.";
-+    const labels = selections.map((selection) => (
-+      this.selectedInputDeviceConnected(selection)
-+        ? selection.label || selection.deviceType
-+        : `${selection.deviceType} selected device not connected. Using Default Profile`
-+    ));
-+    this.elements.selectedDeviceStatus.textContent = labels.length === 1
-+      ? `Selected Device: ${labels[0]}.`
-+      : `Selected Devices: ${labels.join("; ")}.`;
-   }
-
-   renderSelectedInputDevices() {
-@@ -742,11 +784,12 @@ export class AccountUserControlsPage {
-   selectedDeviceCell(choice) {
-     const cell = document.createElement("td");
-     const input = document.createElement("input");
-+    const family = this.selectionFamily(choice);
-     input.type = "radio";
--    input.name = "account-user-controls-selected-device";
-+    input.name = `account-user-controls-selected-device-${family.toLowerCase()}`;
-     input.value = choice.selectionKey;
-     input.dataset.accountUserControlsSelectedDevice = choice.selectionKey;
--    input.checked = this.selectedInputDevice?.selectionKey === choice.selectionKey;
-+    input.checked = this.selectedInputDeviceForFamily(family)?.selectionKey === choice.selectionKey;
-     input.setAttribute("aria-label", `Select ${choice.label}`);
-     cell.append(input);
-     return cell;
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index acf41c3b5..05367b1a7 100644
+﻿diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 05367b1a7..deef1f8fc 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,7 +17,7 @@ Exercised tool entry points detected:
- (61%) Theme V2 Shared JS - exercised 1 runtime JS files
+@@ -12,37 +12,29 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(100%) Toolbox Index - exercised 1 runtime JS files
++(90%) Toolbox Index - exercised 3 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(61%) Theme V2 Shared JS - exercised 1 runtime JS files
++(57%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
--(92%) account/user-controls-page.js - changed runtime JS file with browser V8 coverage
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(96%) toolbox/assets/assets.js - executed lines 636/636; executed functions 66/69
 
  Files with executed line/function counts where available:
- (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
-@@ -35,13 +35,14 @@ Files with executed line/function counts where available:
- (61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 34/56
- (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
- (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
--(92%) account/user-controls-page.js - executed lines 1332/1332; executed functions 146/159
-+(92%) account/user-controls-page.js - executed lines 1372/1372; executed functions 152/165
- (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
- (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
+-(11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
+-(23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
+-(30%) src/engine/input/InputService.js - executed lines 451/451; executed functions 20/66
+-(33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
+-(38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
+-(40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
+-(41%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 14/34
+-(43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
+-(50%) src/engine/input/InputCaptureService.js - executed lines 163/163; executed functions 7/14
+-(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+-(59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
+-(60%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 9/15
+-(61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 34/56
+-(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
+-(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
+-(92%) account/user-controls-page.js - executed lines 1372/1372; executed functions 152/165
+-(100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
+-(100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
++(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 30/54
++(58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
++(75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
++(96%) toolbox/assets/assets.js - executed lines 636/636; executed functions 66/69
++(100%) toolbox/assets/assets-api-client.js - executed lines 17/17; executed functions 3/3
 
  Uncovered or low-coverage changed JS files:
--(100%) none - no low-coverage changed runtime JS files
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
  Changed JS files considered:
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
- (92%) account/user-controls-page.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-index bbb57a07e..51d1a0067 100644
---- a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-+++ b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-@@ -189,6 +189,7 @@ function selectedInputDeviceFromRecord(record = {}) {
-     profileId: normalizeText(record.profileId),
-     selectionKey,
-     selectionType,
-+    updatedAt: normalizeText(record.updatedAt),
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
+-(92%) account/user-controls-page.js - changed JS file with browser V8 coverage
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
++(96%) toolbox/assets/assets.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+index bf1795ccb..54c7d0759 100644
+--- a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+@@ -20,6 +20,7 @@ export const ASSET_TOOL_TABLES = Object.freeze([
+
+ const ASSET_DB_OWNER = "asset";
+ const ASSET_SYSTEM_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
++const DEFAULT_ASSET_USER_KEY = MOCK_DB_KEYS.users.user1;
+
+ export const ASSET_PICKER_MODES = Object.freeze([
+   "file",
+@@ -167,7 +168,7 @@ const REQUIRED_UPLOAD_FIELDS = Object.freeze([
+   {
+     field: "fileName",
+     label: "Upload File",
+-    action: "Choose a project asset file to upload."
++    action: "Choose a user asset file to add."
+   }
+ ]);
+
+@@ -458,7 +459,7 @@ function tableCounts(tables) {
+   }));
+ }
+
+-function createStorageObject({ assetRole, fileName, mimeType, name, project, size, usage }) {
++function createStorageObject({ assetRole, fileName, mimeType, name, ownerUserKey, project, size, usage }) {
+   const role = roleDefinitionForId(assetRole);
+   const projectId = project?.id || "";
+   const originalName = normalizeText(fileName);
+@@ -476,7 +477,7 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
+     assetId: `${projectId}-asset-${assetRole}-${slugify(name || originalName)}`,
+     checksum,
+     createdAt: timestamp,
+-    createdBy: ASSET_SYSTEM_USER_KEY,
++    createdBy: ownerUserKey,
+     id: `${projectId}-storage-${assetRole}-${slugify(usage)}-${slugify(originalName)}`,
+     mimeType,
+     originalName,
+@@ -487,11 +488,11 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
+     status: "Stored",
+     storedPath,
+     updatedAt: timestamp,
+-    updatedBy: ASSET_SYSTEM_USER_KEY
++    updatedBy: ownerUserKey
    };
  }
 
-@@ -271,10 +272,20 @@ export function createInputMappingToolMockRepository(options = {}) {
+-function createEditableSpriteAssetRecord({ assetKey, project }) {
++function createEditableSpriteAssetRecord({ assetKey, ownerUserKey, project }) {
+   const assetRole = "image";
+   const fileName = `${assetKey}.png`;
+   const mimeType = "image/png";
+@@ -511,7 +512,7 @@ function createEditableSpriteAssetRecord({ assetKey, project }) {
+     assetId: assetKey,
+     checksum,
+     createdAt: timestamp,
+-    createdBy: ASSET_SYSTEM_USER_KEY,
++    createdBy: ownerUserKey,
+     id: `${projectId}-storage-image-sprite-${assetKey}`,
+     mimeType,
+     originalName: fileName,
+@@ -522,21 +523,21 @@ function createEditableSpriteAssetRecord({ assetKey, project }) {
+     status: "Stored",
+     storedPath,
+     updatedAt: timestamp,
+-    updatedBy: ASSET_SYSTEM_USER_KEY
++    updatedBy: ownerUserKey
+   };
+   const asset = {
+     assetRole,
+     assetRoleLabel: role.label,
+     checksum,
+     createdAt: timestamp,
+-    createdBy: ASSET_SYSTEM_USER_KEY,
++    createdBy: ownerUserKey,
+     fileName,
+     id: assetKey,
+     mimeType,
+     name: assetKey,
+     originalName: fileName,
+     ownerProjectId: projectId,
+-    ownerUserId: project.ownerUserId,
++    ownerUserId: ownerUserKey,
+     paletteSwatch: null,
+     path: storedPath,
+     previewKind: previewKindForRole(role),
+@@ -548,7 +549,7 @@ function createEditableSpriteAssetRecord({ assetKey, project }) {
+     storageObjectId: storageObject.id,
+     type: role.label,
+     updatedAt: timestamp,
+-    updatedBy: ASSET_SYSTEM_USER_KEY,
++    updatedBy: ownerUserKey,
+     usage: "sprite"
+   };
 
-   function getSelectedInputDevice() {
-     const targetPlayerId = activeUserKey();
--    const record = [...(tables.player_input_device_selections || [])]
--      .filter((candidate) => normalizeText(candidate.playerId) === targetPlayerId)
-+    const record = listSelectedInputDevices()
-       .sort((left, right) => normalizeText(right.updatedAt).localeCompare(normalizeText(left.updatedAt)))[0];
--    return record ? selectedInputDeviceFromRecord(record) : null;
-+    return record || null;
+@@ -561,7 +562,7 @@ export function createAssetToolMockRepository(options = {}) {
+   const loadedMockDbTables = loadMockDbTables(ASSET_DB_OWNER, createEmptyTables(), options);
+   const databaseCleared = Boolean(loadedMockDbTables.cleared);
+   const persistenceEnabled = mockDbPersistenceEnabled(options);
+-  let hasPersistedTables = Boolean(loadedMockDbTables.persisted && persistenceEnabled);
++  let hasPersistedTables = Boolean(loadedMockDbTables.persisted);
+   let tables = loadedMockDbTables.tables;
+   if (!databaseCleared) {
+     tables.asset_role_definitions = roleDefinitionRows();
+@@ -570,11 +571,31 @@ export function createAssetToolMockRepository(options = {}) {
+
+   function persistTables() {
+     saveMockDbTables(ASSET_DB_OWNER, tables, options);
+-    if (persistenceEnabled) {
++    if (persistenceEnabled || options.memoryDbTables) {
+       hasPersistedTables = true;
+     }
+   }
+
++  function activeUserKey() {
++    const sessionUserKey = typeof options.sessionUserKey === "function"
++      ? options.sessionUserKey()
++      : options.sessionUserKey;
++    return normalizeText(sessionUserKey) || DEFAULT_ASSET_USER_KEY;
 +  }
 +
-+  function listSelectedInputDevices() {
-+    const targetPlayerId = activeUserKey();
-+    return [...(tables.player_input_device_selections || [])]
-+      .filter((candidate) => normalizeText(candidate.playerId) === targetPlayerId)
-+      .sort((left, right) => (
-+        normalizeText(left.deviceType).localeCompare(normalizeText(right.deviceType))
-+          || normalizeText(left.label).localeCompare(normalizeText(right.label))
-+      ))
-+      .map(selectedInputDeviceFromRecord);
-   }
++  function ownedAssetFilter(projectId = "") {
++    const ownerUserId = activeUserKey();
++    return (asset) => asset.projectId === projectId && asset.ownerUserId === ownerUserId;
++  }
++
++  function ownedAssetsForProject(projectId = "") {
++    return tables.asset_library_items.filter(ownedAssetFilter(projectId));
++  }
++
++  function findOwnedAsset(assetId, projectId = "") {
++    return ownedAssetsForProject(projectId).find((asset) => asset.id === assetId) || null;
++  }
++
+   function getConfigurationHandoff() {
+     const snapshot = configurationRepository.getSnapshot();
+     const activeProject = snapshot.handoff.activeProject
+@@ -673,14 +694,14 @@ export function createAssetToolMockRepository(options = {}) {
+       findings.push({
+         field: "activeProject",
+         label: "Active Project",
+-        action: "Open a project and complete a valid Game Configuration before uploading project assets."
++        action: "Open a game and complete a valid Game Configuration before adding user assets."
+       });
+     }
+     if (activeProject && !activeProject.id) {
+       findings.push({
+         field: "projectId",
+         label: "Project ID",
+-        action: "Open a project with a ULID projectId before uploading project assets."
++        action: "Open a game with a valid projectId before adding user assets."
+       });
+     }
 
-   function listCustomActions(gameId = "") {
-@@ -355,14 +366,18 @@ export function createInputMappingToolMockRepository(options = {}) {
-     const timestamp = new Date().toISOString();
-     const userKey = activeUserKey();
-     const selectionKey = normalizeText(selection.selectionKey || selection.id);
-+    const deviceType = normalizeText(selection.deviceType) || "Gamepad";
-     const previous = (tables.player_input_device_selections || [])
--      .find((record) => normalizeText(record.playerId) === targetPlayerId);
--    const id = normalizeText(previous?.id) || "selected-input-device";
-+      .find((record) =>
-+        normalizeText(record.playerId) === targetPlayerId
-+          && normalizeText(record.deviceType) === deviceType,
-+      );
-+    const id = normalizeText(previous?.id) || `selected-input-device-${mappingKeyFromText(deviceType)}`;
-     const nextRow = {
-       controllerId: normalizeText(selection.controllerId),
-       createdAt: previous?.createdAt || timestamp,
-       createdBy: previous?.createdBy || userKey,
--      deviceType: normalizeText(selection.deviceType),
-+      deviceType,
-       id,
-       key: previous?.key,
-       label: normalizeText(selection.label),
-@@ -375,14 +390,18 @@ export function createInputMappingToolMockRepository(options = {}) {
+@@ -767,7 +788,7 @@ export function createAssetToolMockRepository(options = {}) {
+         findings.push({
+           field: "storedPath",
+           label: "Project Storage Path",
+-          action: `Uploaded project assets must store under ${expectedPrefix}.`
++          action: `User assets must store under ${expectedPrefix}.`
+         });
+       }
+     }
+@@ -804,11 +825,13 @@ export function createAssetToolMockRepository(options = {}) {
+     }
+
+     const role = roleDefinitionForId(validation.asset.assetRole);
++    const ownerUserKey = activeUserKey();
+     const storageObject = createStorageObject({
+       assetRole: validation.asset.assetRole,
+       fileName: validation.asset.fileName,
+       mimeType: validation.asset.mimeType,
+       name: validation.asset.name,
++      ownerUserKey,
+       project,
+       size: validation.asset.size,
+       usage: validation.asset.usage
+@@ -819,14 +842,14 @@ export function createAssetToolMockRepository(options = {}) {
+       assetRoleLabel: role.label,
+       checksum: storageObject.checksum,
+       createdAt: timestamp,
+-      createdBy: ASSET_SYSTEM_USER_KEY,
++      createdBy: ownerUserKey,
+       fileName: validation.asset.fileName,
+       id: storageObject.assetId,
+       mimeType: validation.asset.mimeType,
+       name: validation.asset.name,
+       originalName: storageObject.originalName,
+       ownerProjectId: projectId,
+-      ownerUserId: project.ownerUserId,
++      ownerUserId: ownerUserKey,
+       paletteSwatch: clonePaletteSwatch(validation.asset.paletteSwatch),
+       path: storageObject.storedPath,
+       previewKind: previewKindForRole(role),
+@@ -838,7 +861,7 @@ export function createAssetToolMockRepository(options = {}) {
+       storageObjectId: storageObject.id,
+       type: role.label,
+       updatedAt: timestamp,
+-      updatedBy: ASSET_SYSTEM_USER_KEY,
++      updatedBy: ownerUserKey,
+       usage: validation.asset.usage
      };
-     tables.player_input_device_selections = [
-       ...(tables.player_input_device_selections || []).filter(
--        (record) => normalizeText(record.playerId) !== targetPlayerId,
-+        (record) => !(
-+          normalizeText(record.playerId) === targetPlayerId
-+            && normalizeText(record.deviceType) === deviceType
-+        ),
-       ),
-       nextRow,
-     ];
-     persistTables();
+
+@@ -849,7 +872,7 @@ export function createAssetToolMockRepository(options = {}) {
+     tables.asset_import_events.push({
+       assetId: asset.id,
+       createdAt: timestamp,
+-      createdBy: ASSET_SYSTEM_USER_KEY,
++      createdBy: ownerUserKey,
+       fileName: asset.fileName,
+       id: `${asset.id}-import-${tables.asset_import_events.length + 1}`,
+       mimeType: asset.mimeType,
+@@ -858,7 +881,7 @@ export function createAssetToolMockRepository(options = {}) {
+       storedPath: asset.storedPath,
+       type: asset.type,
+       updatedAt: timestamp,
+-      updatedBy: ASSET_SYSTEM_USER_KEY
++      updatedBy: ownerUserKey
+     });
+     if (role.inputMode === "palette" && asset.paletteSwatch) {
+       paletteRepository.recordSwatchUsage({
+@@ -874,7 +897,7 @@ export function createAssetToolMockRepository(options = {}) {
      return {
-       saved: true,
--      selectedInputDevice: getSelectedInputDevice(),
-+      selectedInputDevice: selectedInputDeviceFromRecord(nextRow),
-+      selectedInputDevices: listSelectedInputDevices(),
-       snapshot: getSnapshot(),
+       asset,
+       imported: true,
+-      message: `Uploaded ${asset.name} to project asset storage.`,
++      message: `Added ${asset.name} to your asset library.`,
+       snapshot: getSnapshot()
      };
    }
-@@ -509,6 +528,7 @@ export function createInputMappingToolMockRepository(options = {}) {
-       customActions: listCustomActions(),
-       mappings: listMappings(),
-       selectedInputDevice: getSelectedInputDevice(),
-+      selectedInputDevices: listSelectedInputDevices(),
-       tableCounts: tableCounts(normalizedTables),
-       tables: normalizedTables,
-     };
-@@ -519,6 +539,7 @@ export function createInputMappingToolMockRepository(options = {}) {
-     getSnapshot,
-     getTables,
-     getSelectedInputDevice,
-+    listSelectedInputDevices,
-     listControllerProfiles,
-     listCustomActions,
-     listMappings,
-diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index e6842ee4e..2eda1fafa 100644
---- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-+++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -603,22 +603,53 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     expect(supportedControlTypeLayout.columnIndexes.every((indexes) => indexes.length > 0)).toBe(true);
-     expect(supportedControlTypeLayout.paddingLeft).toBeGreaterThan(0);
-     await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Default Profile");
-+    const keyboardDefaultRadio = page.locator("[data-account-user-controls-selected-device='default:keyboard']");
-+    const mouseDefaultRadio = page.locator("[data-account-user-controls-selected-device='default:mouse']");
-+    const gamepadDefaultRadio = page.locator("[data-account-user-controls-selected-device='default:gamepad']");
-+    await expect(page.locator("[data-account-user-controls-default-profile='Keyboard'] td").first().locator("[data-account-user-controls-selected-device='default:keyboard']")).toBeVisible();
-     await expect(page.locator("[data-account-user-controls-default-profile='Mouse'] td").first().locator("[data-account-user-controls-selected-device='default:mouse']")).toBeVisible();
--    await page.locator("[data-account-user-controls-selected-device='default:mouse']").check();
--    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse Default Profile.");
--    await expect.poll(async () => (await selectedInputDeviceRecords(page)).length).toBe(1);
--    expect(await selectedInputDeviceRecords(page)).toEqual([
-+    await expect(page.locator("[data-account-user-controls-default-profile='Gamepad'] td").first().locator("[data-account-user-controls-selected-device='default:gamepad']")).toBeVisible();
-+    await expect(keyboardDefaultRadio).toHaveAttribute("name", "account-user-controls-selected-device-keyboard");
-+    await expect(mouseDefaultRadio).toHaveAttribute("name", "account-user-controls-selected-device-mouse");
-+    await expect(gamepadDefaultRadio).toHaveAttribute("name", "account-user-controls-selected-device-gamepad");
-+    await keyboardDefaultRadio.check();
-+    await expect(keyboardDefaultRadio).toBeChecked();
-+    await expect(mouseDefaultRadio).not.toBeChecked();
-+    await mouseDefaultRadio.check();
-+    await expect(keyboardDefaultRadio).toBeChecked();
-+    await expect(mouseDefaultRadio).toBeChecked();
-+    await gamepadDefaultRadio.check();
-+    await expect(keyboardDefaultRadio).toBeChecked();
-+    await expect(mouseDefaultRadio).toBeChecked();
-+    await expect(gamepadDefaultRadio).toBeChecked();
-+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Devices: Keyboard Default Profile; Mouse Default Profile; Gamepad Default Profile.");
-+    await expect.poll(async () => (await selectedInputDeviceRecords(page)).length).toBe(3);
-+    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
-+      expect.objectContaining({
-+        deviceType: "Keyboard",
-+        label: "Keyboard Default Profile",
-+        selectionKey: "default:keyboard",
-+        selectionType: "default",
-+      }),
-       expect.objectContaining({
-         deviceType: "Mouse",
-         label: "Mouse Default Profile",
-         selectionKey: "default:mouse",
-         selectionType: "default",
-       }),
--    ]);
-+      expect.objectContaining({
-+        deviceType: "Gamepad",
-+        label: "Gamepad Default Profile",
-+        selectionKey: "default:gamepad",
-+        selectionType: "default",
-+      }),
-+    ]));
-     expect(await controllerProfileRecords(page)).toHaveLength(0);
-     await page.reload({ waitUntil: "networkidle" });
-+    await expect(page.locator("[data-account-user-controls-selected-device='default:keyboard']")).toBeChecked();
-     await expect(page.locator("[data-account-user-controls-selected-device='default:mouse']")).toBeChecked();
--    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse Default Profile.");
-+    await expect(page.locator("[data-account-user-controls-selected-device='default:gamepad']")).toBeChecked();
-+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Devices: Keyboard Default Profile; Mouse Default Profile; Gamepad Default Profile.");
-     expect(await controllerProfileRecords(page)).toHaveLength(0);
+@@ -886,6 +909,7 @@ export function createAssetToolMockRepository(options = {}) {
+     const handoff = getConfigurationHandoff();
+     const project = handoff.activeProject || null;
+     const projectId = project?.id || "";
++    const ownerUserKey = activeUserKey();
+     const diagnostics = [];
+     const findings = [];
 
-     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Default Profile");
-@@ -777,6 +808,31 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     await expect(page.locator("[data-account-user-controls-profile-row='generic-keyboard-keyboard-profile']")).toContainText("Keyboard");
-     await expect(page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']")).toBeEnabled();
-     expect((await controllerProfileRecords(page)).map((profile) => profile.profileName)).toContain("Keyboard Profile");
-+    const keyboardProfileRadio = page.locator("[data-account-user-controls-selected-device='profile:generic-keyboard-keyboard-profile']");
-+    await expect(keyboardProfileRadio).toHaveAttribute("name", "account-user-controls-selected-device-keyboard");
-+    await keyboardProfileRadio.check();
-+    await expect(keyboardProfileRadio).toBeChecked();
-+    await expect(page.locator("[data-account-user-controls-selected-device='default:mouse']")).toBeChecked();
-+    await expect(page.locator("[data-account-user-controls-selected-device='default:gamepad']")).toBeChecked();
-+    await expect.poll(async () => (await selectedInputDeviceRecords(page)).length).toBe(3);
-+    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
-+      expect.objectContaining({
-+        deviceType: "Keyboard",
-+        profileId: "generic-keyboard-keyboard-profile",
-+        selectionKey: "profile:generic-keyboard-keyboard-profile",
-+        selectionType: "profile",
-+      }),
-+      expect.objectContaining({
-+        deviceType: "Mouse",
-+        selectionKey: "default:mouse",
-+        selectionType: "default",
-+      }),
-+      expect.objectContaining({
-+        deviceType: "Gamepad",
-+        selectionKey: "default:gamepad",
-+        selectionType: "default",
-+      }),
-+    ]));
+@@ -898,7 +922,7 @@ export function createAssetToolMockRepository(options = {}) {
+     }
+     if (!projectId) {
+       findings.push({
+-        action: "Open an active project so sprite assets can be created under project asset storage.",
++        action: "Open an active game so sprite assets can be created in your asset library.",
+         field: "activeProject",
+         label: "Active Project"
+       });
+@@ -927,7 +951,7 @@ export function createAssetToolMockRepository(options = {}) {
+     }
 
-     await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard");
-@@ -819,6 +875,29 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("action.primary");
-     await page.locator("[data-account-user-controls-save]").click();
-     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Mouse Profile.");
-+    const mouseProfileRadio = page.locator("[data-account-user-controls-selected-device='profile:generic-mouse-mouse-profile']");
-+    await expect(mouseProfileRadio).toHaveAttribute("name", "account-user-controls-selected-device-mouse");
-+    await mouseProfileRadio.check();
-+    await expect(keyboardProfileRadio).toBeChecked();
-+    await expect(mouseProfileRadio).toBeChecked();
-+    await expect(page.locator("[data-account-user-controls-selected-device='default:gamepad']")).toBeChecked();
-+    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
-+      expect.objectContaining({
-+        deviceType: "Keyboard",
-+        profileId: "generic-keyboard-keyboard-profile",
-+        selectionType: "profile",
-+      }),
-+      expect.objectContaining({
-+        deviceType: "Mouse",
-+        profileId: "generic-mouse-mouse-profile",
-+        selectionType: "profile",
-+      }),
-+      expect.objectContaining({
-+        deviceType: "Gamepad",
-+        selectionKey: "default:gamepad",
-+        selectionType: "default",
-+      }),
-+    ]));
+     const existingAsset = tables.asset_library_items.find(
+-      (asset) => asset.projectId === projectId && asset.id === spriteAssetKey
++      (asset) => asset.projectId === projectId && asset.ownerUserId === ownerUserKey && asset.id === spriteAssetKey
+     );
+     if (existingAsset) {
+       selectedAssetId = existingAsset.id;
+@@ -944,7 +968,7 @@ export function createAssetToolMockRepository(options = {}) {
+       };
+     }
 
-     await exposeGamepads(page);
-     await page.locator("[data-account-user-controls-refresh]").click();
-@@ -829,6 +908,7 @@ test("User Controls owns physical input mapping accordions and profiles", async
-       "Studio Flight Pad",
-     ]);
-     await expect(page.locator("[data-account-user-controls-detected-device]")).toHaveCount(0);
-+    await expect(page.locator("[data-account-user-controls-detected-device] [data-account-user-controls-selected-device]")).toHaveCount(0);
-     await expect(page.locator("[data-account-user-controls-selected-device='device:gamepad:studio-flight-pad']")).toHaveCount(0);
-     await controllerDropdown.selectOption("gamepad-1");
-     await expect(controllerDropdown).toHaveValue("gamepad-1");
-@@ -950,12 +1030,54 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     expect(JSON.stringify(profiles)).not.toContain("eventD");
-     expect(JSON.stringify(profiles)).not.toContain("eventU");
-     expect(JSON.stringify(profiles)).not.toContain("eventDC");
--    await page.locator(`[data-account-user-controls-selected-device='profile:${gamepadProfile.id}']`).check();
--    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Custom Arcade Pad (Custom Arcade Pad Profile).");
-+    const gamepadProfileRadio = page.locator(`[data-account-user-controls-selected-device='profile:${gamepadProfile.id}']`);
-+    await expect(gamepadProfileRadio).toHaveAttribute("name", "account-user-controls-selected-device-gamepad");
-+    await gamepadProfileRadio.check();
-+    await expect(keyboardProfileRadio).toBeChecked();
-+    await expect(mouseProfileRadio).toBeChecked();
-+    await expect(gamepadProfileRadio).toBeChecked();
-+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Devices: Keyboard (Keyboard Profile); Mouse (Mouse Profile); Custom Arcade Pad (Custom Arcade Pad Profile).");
-+    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
-+      expect.objectContaining({
-+        deviceType: "Keyboard",
-+        profileId: "generic-keyboard-keyboard-profile",
-+        selectionType: "profile",
-+      }),
-+      expect.objectContaining({
-+        deviceType: "Mouse",
-+        profileId: "generic-mouse-mouse-profile",
-+        selectionType: "profile",
-+      }),
-+      expect.objectContaining({
-+        deviceType: "Gamepad",
-+        profileId: gamepadProfile.id,
-+        selectionType: "profile",
-+      }),
-+    ]));
+-    const record = createEditableSpriteAssetRecord({ assetKey: spriteAssetKey, project });
++    const record = createEditableSpriteAssetRecord({ assetKey: spriteAssetKey, ownerUserKey, project });
+     tables.asset_library_items = tables.asset_library_items.filter((asset) => asset.id !== record.asset.id);
+     tables.asset_storage_objects = tables.asset_storage_objects.filter((storageObject) => storageObject.id !== record.storageObject.id);
+     tables.asset_library_items.push(record.asset);
+@@ -952,7 +976,7 @@ export function createAssetToolMockRepository(options = {}) {
+     tables.asset_import_events.push({
+       assetId: record.asset.id,
+       createdAt: record.asset.createdAt,
+-      createdBy: ASSET_SYSTEM_USER_KEY,
++      createdBy: ownerUserKey,
+       fileName: record.asset.fileName,
+       id: `${record.asset.id}-import-${tables.asset_import_events.length + 1}`,
+       mimeType: record.asset.mimeType,
+@@ -961,7 +985,7 @@ export function createAssetToolMockRepository(options = {}) {
+       storedPath: record.asset.storedPath,
+       type: record.asset.type,
+       updatedAt: record.asset.updatedAt,
+-      updatedBy: ASSET_SYSTEM_USER_KEY
++      updatedBy: ownerUserKey
+     });
+     selectedAssetId = record.asset.id;
+     replaceValidationRows(projectId, []);
+@@ -981,22 +1005,136 @@ export function createAssetToolMockRepository(options = {}) {
+   function listAssets(projectId = "") {
+     const handoff = getConfigurationHandoff();
+     const targetProjectId = projectId || handoff.activeProject?.id || "";
+-    return tables.asset_library_items
+-      .filter((asset) => asset.projectId === targetProjectId)
++    return ownedAssetsForProject(targetProjectId)
+       .sort((left, right) => left.name.localeCompare(right.name));
+   }
 
-     await page.reload({ waitUntil: "networkidle" });
--    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected device not connected. Using Default Profile.");
-+    await expect(page.locator("[data-account-user-controls-selected-device='profile:generic-keyboard-keyboard-profile']")).toBeChecked();
-+    await expect(page.locator("[data-account-user-controls-selected-device='profile:generic-mouse-mouse-profile']")).toBeChecked();
-+    await expect(page.locator(`[data-account-user-controls-selected-device='profile:${gamepadProfile.id}']`)).toBeChecked();
-+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Devices: Keyboard (Keyboard Profile); Mouse (Mouse Profile); Gamepad selected device not connected. Using Default Profile.");
-     expect(await controllerProfileRecords(page)).toHaveLength(3);
-+    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
-+      expect.objectContaining({
-+        deviceType: "Keyboard",
-+        profileId: "generic-keyboard-keyboard-profile",
-+        selectionType: "profile",
-+      }),
-+      expect.objectContaining({
-+        deviceType: "Mouse",
-+        profileId: "generic-mouse-mouse-profile",
-+        selectionType: "profile",
-+      }),
-+      expect.objectContaining({
-+        deviceType: "Gamepad",
-+        profileId: gamepadProfile.id,
-+        selectionType: "profile",
-+      }),
-+    ]));
-     expect((await controllerProfileRecords(page)).map((profile) => profile.profileName)).not.toContain("Default Profile");
-     await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).toContainText("Keyboard");
-     await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).not.toContainText("Keyboard:");
-@@ -989,6 +1111,7 @@ test("User Controls creates one profile from only the selected controller dropdo
-       "Studio Flight Pad",
-     ]);
-     await expect(page.locator("[data-account-user-controls-detected-device]")).toHaveCount(0);
-+    await expect(page.locator("[data-account-user-controls-detected-device] [data-account-user-controls-selected-device]")).toHaveCount(0);
-     await expect(page.locator("[data-account-user-controls-list-family='Gamepad'] [data-account-user-controls-profile-row]")).toHaveCount(0);
-     expect(await controllerProfileRecords(page)).toHaveLength(0);
+   function getSelectedAsset() {
+-    return tables.asset_library_items.find((asset) => asset.id === selectedAssetId) || null;
++    const handoff = getConfigurationHandoff();
++    return findOwnedAsset(selectedAssetId, handoff.activeProject?.id || "");
+   }
 
-@@ -1025,6 +1148,7 @@ test("User Controls creates one profile from only the selected controller dropdo
-     expect(firstProfiles.map((profile) => profile.profileName)).not.toContain("Arcade Test Pad Profile");
-     const firstProfileId = firstProfiles[0].id;
-     await expect(page.locator("[data-account-user-controls-detected-device]")).toHaveCount(0);
-+    await expect(page.locator("[data-account-user-controls-detected-device] [data-account-user-controls-selected-device]")).toHaveCount(0);
-     const savedFirstProfileRow = page.locator(`[data-account-user-controls-profile-row='${firstProfileId}']`);
-     await expect(savedFirstProfileRow).toContainText("1.1");
-     await expect(savedFirstProfileRow.getByRole("button", { name: "Edit" })).toBeVisible();
-diff --git a/docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md b/docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md
+   function selectAsset(assetId) {
+-    if (tables.asset_library_items.some((asset) => asset.id === assetId)) {
++    const handoff = getConfigurationHandoff();
++    if (findOwnedAsset(assetId, handoff.activeProject?.id || "")) {
+       selectedAssetId = assetId;
+     }
+     return getSnapshot();
+   }
+
++  function blockedOwnerMessage(action) {
++    return `Asset ${action} blocked: choose an asset owned by the current user.`;
++  }
++
++  function updateAsset(assetId, input = {}) {
++    const handoff = getConfigurationHandoff();
++    const projectId = handoff.activeProject?.id || "";
++    const asset = findOwnedAsset(assetId, projectId);
++    if (!asset) {
++      return {
++        asset: null,
++        message: blockedOwnerMessage("update"),
++        snapshot: getSnapshot(),
++        updated: false
++      };
++    }
++
++    const role = roleDefinitionForId(asset.assetRole);
++    const nextName = normalizeText(input.name) || asset.name;
++    const nextUsage = role ? normalizeUsage(input.usage || input.role || asset.usage, asset.assetRole) : "";
++    const findings = [];
++    if (!role) {
++      findings.push({
++        action: "Choose an approved asset role before saving changes.",
++        field: "assetRole",
++        label: "Asset Role"
++      });
++    }
++    if (!nextName) {
++      findings.push({
++        action: "Name the asset before saving changes.",
++        field: "name",
++        label: "Asset Name"
++      });
++    }
++    if (!nextUsage) {
++      findings.push({
++        action: role ? `Choose one of these usages: ${role.usageRoles.join(", ")}.` : "Choose an approved usage for this asset role.",
++        field: "usage",
++        label: "Usage"
++      });
++    }
++
++    replaceValidationRows(projectId, findings);
++    if (findings.length) {
++      return {
++        asset,
++        message: findings.length === 1
++          ? "Asset update blocked by 1 missing item."
++          : `Asset update blocked by ${findings.length} missing items.`,
++        snapshot: getSnapshot(),
++        updated: false
++      };
++    }
++
++    const timestamp = new Date().toISOString();
++    const fileName = role.inputMode === "palette"
++      ? colorAssetFileName(asset.paletteSwatch)
++      : asset.originalName || asset.fileName;
++    const storedPath = storagePathForProjectAsset(projectId, asset.assetRole, nextUsage, fileName);
++    asset.name = nextName;
++    asset.usage = nextUsage;
++    asset.storedPath = storedPath || asset.storedPath;
++    asset.path = asset.storedPath;
++    asset.updatedAt = timestamp;
++    asset.updatedBy = activeUserKey();
++
++    const storageObject = tables.asset_storage_objects.find((row) => row.id === asset.storageObjectId);
++    if (storageObject) {
++      storageObject.storedPath = asset.storedPath;
++      storageObject.updatedAt = timestamp;
++      storageObject.updatedBy = asset.updatedBy;
++    }
++
++    selectedAssetId = asset.id;
++    replaceValidationRows(projectId, []);
++    persistTables();
++    return {
++      asset,
++      message: `Updated ${asset.name} in your asset library.`,
++      snapshot: getSnapshot(),
++      updated: true
++    };
++  }
++
++  function deleteAsset(assetId) {
++    const handoff = getConfigurationHandoff();
++    const projectId = handoff.activeProject?.id || "";
++    const asset = findOwnedAsset(assetId, projectId);
++    if (!asset) {
++      return {
++        deleted: false,
++        message: blockedOwnerMessage("delete"),
++        snapshot: getSnapshot()
++      };
++    }
++
++    tables.asset_library_items = tables.asset_library_items.filter((row) => row.id !== asset.id);
++    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.id !== asset.storageObjectId && row.assetId !== asset.id);
++    tables.asset_import_events = tables.asset_import_events.filter((row) => row.assetId !== asset.id);
++    tables.asset_validation_items = tables.asset_validation_items.filter((row) => row.projectId !== projectId);
++    if (selectedAssetId === asset.id) {
++      selectedAssetId = ownedAssetsForProject(projectId)[0]?.id || "";
++    }
++    persistTables();
++    return {
++      assetId: asset.id,
++      deleted: true,
++      message: `Deleted ${asset.name} from your asset library.`,
++      snapshot: getSnapshot()
++    };
++  }
++
+   function seedDemoAssets() {
+     importAsset({
+       assetRole: "image",
+@@ -1015,7 +1153,7 @@ export function createAssetToolMockRepository(options = {}) {
+     if (!projectId) {
+       replaceValidationRows("", [
+         {
+-          action: "Open a project with a ULID projectId before resetting project asset storage.",
++          action: "Open a game with a valid projectId before resetting your asset library.",
+           field: "activeProject",
+           label: "Active Project"
+         }
+@@ -1031,15 +1169,18 @@ export function createAssetToolMockRepository(options = {}) {
+     }
+
+     const projectFolder = projectFolderForProjectId(projectId);
++    const ownedAssets = ownedAssetsForProject(projectId);
++    const ownedAssetIds = new Set(ownedAssets.map((asset) => asset.id));
++    const ownedStorageObjectIds = new Set(ownedAssets.map((asset) => asset.storageObjectId));
+     const storageObjects = tables.asset_storage_objects.filter(
+-      (row) => row.projectId === projectId && row.storedPath.startsWith(projectFolder)
++      (row) => ownedStorageObjectIds.has(row.id) && row.projectId === projectId && row.storedPath.startsWith(projectFolder)
+     );
+     const deletedFiles = storageObjects.length;
+     const deletedFolders = localFolderCount(storageObjects);
+
+-    tables.asset_library_items = tables.asset_library_items.filter((row) => row.projectId !== projectId);
+-    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.projectId !== projectId);
+-    tables.asset_import_events = tables.asset_import_events.filter((row) => row.projectId !== projectId);
++    tables.asset_library_items = tables.asset_library_items.filter((row) => !ownedAssetIds.has(row.id));
++    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => !ownedStorageObjectIds.has(row.id));
++    tables.asset_import_events = tables.asset_import_events.filter((row) => !ownedAssetIds.has(row.assetId));
+     tables.asset_validation_items = tables.asset_validation_items.filter((row) => row.projectId !== projectId);
+     selectedAssetId = "";
+     persistTables();
+@@ -1077,7 +1218,8 @@ export function createAssetToolMockRepository(options = {}) {
+     configurationRepository.makeValidGameDesign("demo-game");
+     configurationRepository.updateConfiguration("demo-game", READY_CONFIGURATION_INPUT);
+     if (hasPersistedTables) {
+-      selectedAssetId = tables.asset_library_items[0]?.id || "";
++      const projectId = getConfigurationHandoff().activeProject?.id || "";
++      selectedAssetId = ownedAssetsForProject(projectId)[0]?.id || "";
+       return getSnapshot();
+     }
+     clearAssetLibrary();
+@@ -1131,10 +1273,10 @@ export function createAssetToolMockRepository(options = {}) {
+
+     if (assets.length === 0) {
+       return {
+-        currentFocus: "Upload Project Assets",
++        currentFocus: "Add User Assets",
+         libraryStatus: "Needs Input",
+         nextStep: "Assets",
+-        projectProgress: `${handoff.activeProject.name} needs project asset records`,
++        projectProgress: `${handoff.activeProject.name} needs user asset records`,
+         publishingProgress: "Build Game blocked until required assets are ready"
+       };
+     }
+@@ -1190,6 +1332,7 @@ export function createAssetToolMockRepository(options = {}) {
+     ASSET_TYPES,
+     ASSET_USAGE_BY_ROLE,
+     clearAssetLibrary,
++    deleteAsset,
+     ensureSpriteAssetForObject,
+     getConfigurationHandoff,
+     getPaletteSnapshot,
+@@ -1208,6 +1351,7 @@ export function createAssetToolMockRepository(options = {}) {
+     seedDemoAssets,
+     seedActiveProjectPalette,
+     selectAsset,
++    updateAsset,
+     validateAssetInput
+   };
+ }
+diff --git a/src/dev-runtime/server/mock-api-router.mjs b/src/dev-runtime/server/mock-api-router.mjs
+index 403e13f72..4926d1c1a 100644
+--- a/src/dev-runtime/server/mock-api-router.mjs
++++ b/src/dev-runtime/server/mock-api-router.mjs
+@@ -936,6 +936,7 @@ class LocalDevMockDataSource {
+       configurationRepository: this.gameConfigurationRepository,
+       paletteRepository: this.paletteRepository,
+       ...this.sharedOptions,
++      sessionUserKey: () => this.sessionUserKey,
+     });
+     this.objectsRepository = createObjectsToolMockRepository({
+       gameWorkspaceRepository: this.gameWorkspaceRepository,
+diff --git a/tests/playwright/tools/AssetToolMockRepository.spec.mjs b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
+index ff092cafb..1254a2a4d 100644
+--- a/tests/playwright/tools/AssetToolMockRepository.spec.mjs
++++ b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
+@@ -5,6 +5,7 @@ import {
+   ASSET_USAGE_BY_ROLE,
+   createAssetToolMockRepository
+ } from "../../../src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js";
++import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
+ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+@@ -16,7 +17,7 @@ const ulidPattern = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+ test.beforeEach(async ({ page }) => {
+   await installPlaywrightStorageIsolation(page, {
+     lane: "asset-tool",
+-    surface: "Asset Tool role library, project-owned upload storage, and import preview"
++    surface: "Asset Tool role library, user-owned records, and import preview"
+   });
+ });
+
+@@ -28,7 +29,15 @@ test.afterAll(async () => {
+   await workspaceV2CoverageReporter.writeReport();
+ });
+
+-async function openRepoPage(page, pathName) {
++async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
++  await fetch(`${server.baseUrl}/api/session/user`, {
++    body: JSON.stringify({ userKey }),
++    headers: { "Content-Type": "application/json" },
++    method: "POST"
++  });
++}
++
++async function openRepoPage(page, pathName, options = {}) {
+   const server = await startRepoServer();
+   const failedRequests = [];
+   const pageErrors = [];
+@@ -51,6 +60,12 @@ async function openRepoPage(page, pathName) {
+     failedRequests.push(`FAILED ${request.url()}`);
+   });
+
++  await fetch(`${server.baseUrl}/api/session/mode`, {
++    body: JSON.stringify({ modeId: "local-mem" }),
++    headers: { "Content-Type": "application/json" },
++    method: "POST"
++  });
++  await setServerSession(server, options.sessionUserKey || MOCK_DB_KEYS.users.user1);
+   await workspaceV2CoverageReporter.start(page);
+   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
+   return { consoleErrors, failedRequests, pageErrors, server };
+@@ -71,7 +86,7 @@ async function uploadAsset(page, { assetRole, fileName, mimeType, name, usage })
+   });
+   await page.getByLabel("Name").fill(name);
+   await page.getByLabel("Usage").selectOption(usage);
+-  await page.getByRole("button", { name: "Upload Asset" }).click();
++  await page.locator("[data-asset-tool-submit]").click();
+ }
+
+ test("Asset Tool repository exposes SQL-shaped role, storage, and metadata ownership", async () => {
+@@ -112,6 +127,8 @@ test("Asset Tool repository exposes SQL-shaped role, storage, and metadata owner
+     "Hero Sprite"
+   ]);
+   expect(result.asset.storedPath).toBe(`projects/${DEMO_ASSET_PROJECT_ID}/image/sprite/hero.png`);
++  expect(result.asset.ownerUserId).toBe(MOCK_DB_KEYS.users.user1);
++  expect(result.message).toBe("Added Hero Sprite to your asset library.");
+   expect(repository.previewStoragePath({
+     assetRole: "image",
+     fileName: "hero.png",
+@@ -148,20 +165,33 @@ test("Assets page lists all asset roles and starts from active project context",
+   try {
+     await expect(page.getByRole("heading", { name: "Assets" }).first()).toBeVisible();
+     await expect(page.locator(".tool-workspace")).toBeVisible();
++    await expect(page.locator(".tool-column")).toHaveCount(2);
++    await expect(page.locator(".tool-center-panel")).toBeVisible();
++    await expect(page.locator(".accordion-stack")).toHaveCount(2);
++    const importAccordion = page.locator("details.vertical-accordion", { hasText: "Import Asset" }).first();
++    await expect(importAccordion).toHaveAttribute("open", "");
++    await importAccordion.locator("summary").click();
++    await expect(importAccordion).not.toHaveAttribute("open", "");
++    await importAccordion.locator("summary").click();
++    await expect(importAccordion).toHaveAttribute("open", "");
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+-    await expect(page.locator("[data-asset-tool-handoff-context]")).toHaveText("Demo Project - Game Project - Game Configuration ready");
++    const runtimeReferences = await page.locator("script[src], link[href]").evaluateAll((nodes) =>
++      nodes.map((node) => node.getAttribute("src") || node.getAttribute("href") || ""),
++    );
++    expect(runtimeReferences.join("\n")).not.toContain("archive/v1-v2");
++    await expect(page.locator("[data-asset-tool-handoff-context]")).toHaveText("Demo Game - Game - Game Configuration ready");
+     await expect(page.locator("[data-asset-tool-handoff-overlay]")).toBeHidden();
+     await expect(page.locator("[data-asset-tool-form]")).toBeVisible();
+-    await expect(page.locator("[data-asset-tool-library-status]")).toHaveText("Ready");
+-    await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
+-    await expect(page.locator("[data-asset-tool-library]")).toContainText("Demo Player Sprite");
++    await expect(page.locator("[data-asset-tool-library-status]")).toHaveText("Needs Input");
++    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
++    await expect(page.locator("[data-asset-tool-library]")).toContainText("No user assets added yet.");
+     const libraryRecordsHeading = await page.getByRole("heading", { name: "Library Records" }).boundingBox();
+     const assetRolesHeading = await page.getByRole("heading", { name: "Asset Roles" }).boundingBox();
+     expect(libraryRecordsHeading?.y || 0).toBeLessThan(assetRolesHeading?.y || 0);
+     await expect(page.locator("label[for='assetToolAssetRole']")).toContainText("AssetRole");
+     await expect(page.getByRole("heading", { name: "Asset Roles" })).toBeVisible();
+     await expect(page.locator("[data-asset-tool-path-format]")).toHaveText("Storage Path format: projects/<projectId>/<assetRole>/<usage>/<filename>.");
+-    await expect(page.locator("[data-asset-tool-library]")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/sprite/player.png`);
++    await expect(page.locator("[data-asset-tool-library]")).not.toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/sprite/player.png`);
+     await expect(page.locator("[data-asset-tool-picker-mode]")).toHaveText("file");
+     await expect(page.locator("[data-asset-tool-role-library]")).toContainText("Audio");
+     await expect(page.locator("[data-asset-tool-role-library]")).toContainText("Color");
+@@ -175,18 +205,16 @@ test("Assets page lists all asset roles and starts from active project context",
+     await expect(page.locator("[data-asset-tool-role-library]")).toContainText("Planned");
+     await expect(page.locator("[data-asset-tool-asset-role] option[value='shader']")).toHaveCount(0);
+     await expect(page.locator("[data-asset-tool-role-diagnostics]")).toContainText("Role metadata ready.");
+-    await expect(page.locator("[data-asset-tool-preview-title]")).toHaveText("Demo Player Sprite Preview");
+-    await expect(page.locator("[data-asset-tool-preview]")).toHaveText(`Image preview: projects/${DEMO_ASSET_PROJECT_ID}/image/sprite/player.png from player.png.`);
++    await expect(page.locator("[data-asset-tool-preview-title]")).toHaveText("Selected Asset Preview");
++    await expect(page.locator("[data-asset-tool-preview]")).toHaveText("Choose or upload an asset to preview its project storage metadata.");
+     await expect(page.locator("[data-asset-tool-output] pre, [data-asset-tool-output] code")).toHaveCount(0);
+     await expect(page.locator("[data-asset-tool-output]")).not.toContainText("{");
+     await expect(page.locator("body")).not.toContainText(/import json|export json/i);
+-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("player.png image/png");
+-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("2048 bytes");
+-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("mock-sha256-");
++    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("No selected asset metadata.");
+     await expect(page.locator("[data-asset-tool-library]")).not.toContainText(";");
+-    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toHaveCount(0);
+-    await expect(page.locator("[data-asset-tool-library] button.primary")).toHaveCount(1);
+-    await expect(page.locator("[data-asset-tool-library] button.primary")).toHaveText("Demo Player Sprite");
++    await expect(page.locator("[data-asset-tool-library] [data-asset-tool-view]")).toHaveCount(0);
++    await expect(page.locator("[data-asset-tool-library] [data-asset-tool-edit]")).toHaveCount(0);
++    await expect(page.locator("[data-asset-tool-library] [data-asset-tool-delete]")).toHaveCount(0);
+     await expect(page.locator("[data-asset-tool-table-counts]")).toContainText("asset_role_definitions");
+     await expect(page.locator("[data-asset-tool-table-counts]")).toContainText("asset_storage_objects");
+
+@@ -248,7 +276,7 @@ test("Asset Role changes update picker mode, usage options, and import form layo
+     expect(storageLabelHtml).toContain("<br>");
+
+     await expect(page.locator("[data-asset-tool-upload-help-cell]")).toHaveAttribute("colspan", "2");
+-    await expect(page.locator("[data-asset-tool-upload-help-cell]")).toContainText("File-based roles use project-owned upload storage.");
++    await expect(page.locator("[data-asset-tool-upload-help-cell]")).toContainText("File-based roles use user-owned asset records");
+     await expect(page.locator("[data-asset-tool-file-name]")).toHaveText("No file selected.");
+     await expect(page.locator("[data-asset-tool-path]")).toHaveAttribute("readonly", "");
+     await expect(page.locator("[data-asset-tool-path-format]")).toHaveAttribute("colspan", "2");
+@@ -287,7 +315,7 @@ test("Asset Role changes update picker mode, usage options, and import form layo
+   }
+ });
+
+-test("Image, video, and audio uploads create project-owned metadata and previews", async ({ page }) => {
++test("Image, video, and audio uploads create user-owned metadata and previews", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/assets/index.html");
+
+   try {
+@@ -299,16 +327,17 @@ test("Image, video, and audio uploads create project-owned metadata and previews
+       usage: "sprite"
+     });
+
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Hero Sprite to project asset storage.");
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added Hero Sprite to your asset library.");
+     await expect(page.locator("[data-asset-tool-preview-title]")).toHaveText("Hero Sprite Preview");
+     await expect(page.locator("[data-asset-tool-preview]")).toHaveText(`Image preview: projects/${DEMO_ASSET_PROJECT_ID}/image/sprite/hero.png from hero.png.`);
+     await expect(page.locator("[data-asset-tool-file-name]")).toHaveText("hero.png");
+     await expect(page.locator("[data-asset-tool-path]")).toHaveValue(`projects/${DEMO_ASSET_PROJECT_ID}/image/sprite/hero.png`);
+     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("hero.png image/png");
+     await expect(page.locator("[data-asset-tool-metadata]")).toContainText(`Owner project: ${DEMO_ASSET_PROJECT_ID}`);
+-    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toHaveCount(0);
+-    await expect(page.locator("[data-asset-tool-library] button.primary")).toHaveCount(1);
+-    await expect(page.locator("[data-asset-tool-library] button.primary")).toHaveText("Hero Sprite");
++    await expect(page.locator("[data-asset-tool-library] [data-asset-tool-row][data-asset-tool-selected-row='true']")).toContainText("Hero Sprite");
++    await expect(page.locator("[data-asset-tool-library] [data-asset-tool-view]")).toHaveCount(1);
++    await expect(page.locator("[data-asset-tool-library] [data-asset-tool-edit]")).toHaveCount(1);
++    await expect(page.locator("[data-asset-tool-library] [data-asset-tool-delete]")).toHaveCount(1);
+     await expect(page.locator("[data-asset-tool-library]")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/sprite/hero.png`);
+     await expect(page.locator("[data-asset-tool-library] td").nth(4)).not.toContainText(";");
+
+@@ -320,7 +349,7 @@ test("Image, video, and audio uploads create project-owned metadata and previews
+       usage: "cutscene"
+     });
+
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Intro Cutscene to project asset storage.");
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added Intro Cutscene to your asset library.");
+     await expect(page.locator("[data-asset-tool-preview]")).toHaveText(`Video preview: projects/${DEMO_ASSET_PROJECT_ID}/video/cutscene/intro.mp4 from intro.mp4.`);
+     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("intro.mp4 video/mp4");
+
+@@ -332,31 +361,27 @@ test("Image, video, and audio uploads create project-owned metadata and previews
+       usage: "music"
+     });
+
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Theme Music to project asset storage.");
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added Theme Music to your asset library.");
+     await expect(page.locator("[data-asset-tool-preview]")).toHaveText(`Audio preview: projects/${DEMO_ASSET_PROJECT_ID}/audio/music/theme.mp3 from theme.mp3.`);
+
+-    await expect(page.locator("[data-asset-tool-output-summary]")).toHaveText("4 project assets ready.");
++    await expect(page.locator("[data-asset-tool-output-summary]")).toHaveText("3 user assets ready.");
+     await expect(page.locator("[data-asset-tool-output-validation]")).toHaveText("Ready");
+     await expect(page.locator("[data-asset-tool-output-missing]")).toHaveText("None");
+     await expect(page.locator("[data-asset-tool-output-next-step]")).toHaveText("Build Game");
+     await expect(page.locator("[data-asset-tool-library]")).not.toContainText("assets/theme-v2");
+     await expect(page.locator("[data-asset-tool-library]")).not.toContainText("assets/images/hero.png");
+     await expect(page.locator("[data-asset-tool-library]")).not.toContainText("assets/projects");
+-    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toHaveCount(0);
+-    await expect(page.locator("[data-asset-tool-library] button.primary")).toHaveCount(1);
+-    await expect(page.locator("[data-asset-tool-library] button.primary")).toHaveText("Theme Music");
+-
+-    await page.getByRole("button", { name: "Hero Sprite" }).click();
+-    await expect(page.locator("[data-asset-tool-library] tr.is-selected")).toHaveCount(0);
+-    await expect(page.locator("[data-asset-tool-library] button.primary")).toHaveCount(1);
+-    await expect(page.locator("[data-asset-tool-library] button.primary")).toHaveText("Hero Sprite");
++    await expect(page.locator("[data-asset-tool-library] [data-asset-tool-row][data-asset-tool-selected-row='true']")).toContainText("Theme Music");
++
++    await page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Sprite" }).locator("[data-asset-tool-view]").click();
++    await expect(page.locator("[data-asset-tool-library] [data-asset-tool-row][data-asset-tool-selected-row='true']")).toContainText("Hero Sprite");
+     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("hero.png image/png");
+     await expect(page.locator("[data-asset-tool-metadata]")).not.toContainText(";");
+
+     await page.getByRole("button", { name: "Reset Asset Library" }).click();
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText(`Reset Asset Library deleted 4 files and 6 folders under projects/${DEMO_ASSET_PROJECT_ID}/.`);
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText(`Reset Asset Library deleted 3 files and 6 folders under projects/${DEMO_ASSET_PROJECT_ID}/.`);
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+-    await expect(page.locator("[data-asset-tool-library]")).toContainText("No project assets uploaded yet.");
++    await expect(page.locator("[data-asset-tool-library]")).toContainText("No user assets added yet.");
+     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("No selected asset metadata.");
+     await expect(page.locator("[data-asset-tool-table-counts]")).toContainText("asset_library_items");
+     await expect(page.locator("[data-asset-tool-table-counts]")).toContainText("0");
+@@ -369,6 +394,69 @@ test("Image, video, and audio uploads create project-owned metadata and previews
+   }
+ });
+
++test("Assets add, view, edit, and delete behavior is scoped to the owning user", async ({ page }) => {
++  const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
++    sessionUserKey: MOCK_DB_KEYS.users.user1
++  });
++
++  try {
++    await uploadAsset(page, {
++      assetRole: "image",
++      fileName: "hero.png",
++      mimeType: "image/png",
++      name: "Hero Sprite",
++      usage: "sprite"
++    });
++
++    const userOneHeroRow = page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Sprite" });
++    await expect(userOneHeroRow).toBeVisible();
++    await userOneHeroRow.locator("[data-asset-tool-view]").click();
++    await expect(page.locator("[data-asset-tool-preview-title]")).toHaveText("Hero Sprite Preview");
++    await userOneHeroRow.locator("[data-asset-tool-edit]").click();
++    await expect(page.locator("[data-asset-tool-submit]")).toHaveText("Save Asset");
++    await expect(page.locator("[data-asset-tool-cancel-edit]")).toBeVisible();
++    await expect(page.locator("[data-asset-tool-picker-mode]")).toHaveText("edit");
++    await expect(page.locator("[data-asset-tool-file-row]")).toBeHidden();
++    await page.getByLabel("Name").fill("Hero Sprite XL");
++    await page.locator("[data-asset-tool-submit]").click();
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated Hero Sprite XL in your asset library.");
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Sprite XL" })).toBeVisible();
++
++    await setServerSession(failures.server, MOCK_DB_KEYS.users.user2);
++    await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
++    await expect(page.locator("[data-asset-tool-library]")).not.toContainText("Hero Sprite XL");
++    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
++    await uploadAsset(page, {
++      assetRole: "image",
++      fileName: "user-two.png",
++      mimeType: "image/png",
++      name: "User Two Sprite",
++      usage: "sprite"
++    });
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "User Two Sprite" })).toBeVisible();
++    await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
++
++    await setServerSession(failures.server, MOCK_DB_KEYS.users.user1);
++    await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
++    await expect(page.locator("[data-asset-tool-library]")).toContainText("Hero Sprite XL");
++    await expect(page.locator("[data-asset-tool-library]")).not.toContainText("User Two Sprite");
++    await page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Sprite XL" }).locator("[data-asset-tool-delete]").click();
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Deleted Hero Sprite XL from your asset library.");
++    await expect(page.locator("[data-asset-tool-library]")).not.toContainText("Hero Sprite XL");
++    await expect(page.locator("[data-asset-tool-library]")).toContainText("No user assets added yet.");
++
++    await setServerSession(failures.server, MOCK_DB_KEYS.users.user2);
++    await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
++    await expect(page.locator("[data-asset-tool-library]")).toContainText("User Two Sprite");
++    await expect(page.locator("[data-asset-tool-library]")).not.toContainText("Hero Sprite XL");
++
++    expectNoPageFailures(failures);
++  } finally {
++    await workspaceV2CoverageReporter.stop(page);
++    await failures.server.close();
++  }
++});
++
+ test("Color assets consume the active Game Workspace palette", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/assets/index.html?palette=seed");
+
+@@ -387,8 +475,8 @@ test("Color assets consume the active Game Workspace palette", async ({ page })
+     await expect(page.getByLabel("Name")).toHaveValue("Hero Blue");
+     await expect(page.locator("[data-asset-tool-path]")).toHaveValue(`projects/${DEMO_ASSET_PROJECT_ID}/color/hud/hero-blue-hero-blue.color`);
+
+-    await page.getByRole("button", { name: "Upload Asset" }).click();
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploaded Hero Blue to project asset storage.");
++    await page.locator("[data-asset-tool-submit]").click();
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added Hero Blue to your asset library.");
+     await expect(page.locator("[data-asset-tool-library]")).toContainText("Hero Blue");
+     await expect(page.locator("[data-asset-tool-library]")).toContainText("Color");
+     await expect(page.locator("[data-asset-tool-library]")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/color/hud/hero-blue-hero-blue.color`);
+@@ -420,13 +508,13 @@ test("Asset upload failures are visible and project context is required", async
+       name: "notes.txt"
+     });
+     await page.getByLabel("Name").fill("Broken Image");
+-    await page.getByRole("button", { name: "Upload Asset" }).click();
++    await page.locator("[data-asset-tool-submit]").click();
+
+     await expect(page.locator("[data-asset-tool-log]")).toContainText("Asset upload blocked by");
+     await expect(page.locator("[data-asset-tool-validation-overlay]")).toBeVisible();
+     await expect(page.locator("[data-asset-tool-validation-list]")).toContainText("File Extension");
+     await expect(page.locator("[data-asset-tool-validation-list]")).toContainText("MIME Type");
+-    await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
++    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+     await expect(page.locator("[data-asset-tool-output-validation]")).toHaveText("Needs Input");
+
+     await page.locator("[data-asset-tool-asset-role]").selectOption("color");
+@@ -436,7 +524,7 @@ test("Asset upload failures are visible and project context is required", async
+     await expect(page.locator("[data-asset-tool-palette-color]")).toBeDisabled();
+     await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText("Palette Tool required / no swatches available.");
+     await page.getByLabel("Name").fill("Palette Color");
+-    await page.getByRole("button", { name: "Upload Asset" }).click();
++    await page.locator("[data-asset-tool-submit]").click();
+
+     await expect(page.locator("[data-asset-tool-validation-list]")).toContainText("Palette Tool required / no swatches available.");
+
+@@ -444,14 +532,14 @@ test("Asset upload failures are visible and project context is required", async
+     await expect(page.locator("[data-asset-tool-picker-mode]")).toHaveText("managed-tool");
+     await expect(page.locator("[data-asset-tool-file-row]")).toBeHidden();
+     await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText("Data/Table Tool required.");
+-    await page.getByRole("button", { name: "Upload Asset" }).click();
++    await page.locator("[data-asset-tool-submit]").click();
+     await expect(page.locator("[data-asset-tool-validation-list]")).toContainText("Data/Table Tool required.");
+
+     await page.locator("[data-asset-tool-asset-role]").selectOption("localization");
+     await expect(page.locator("[data-asset-tool-picker-mode]")).toHaveText("managed-tool");
+     await expect(page.locator("[data-asset-tool-file-row]")).toBeHidden();
+     await expect(page.locator("[data-asset-tool-import-diagnostic]")).toHaveText("Localization Tool required.");
+-    await page.getByRole("button", { name: "Upload Asset" }).click();
++    await page.locator("[data-asset-tool-submit]").click();
+     await expect(page.locator("[data-asset-tool-validation-list]")).toContainText("Localization Tool required.");
+
+     expectNoPageFailures(failures);
+diff --git a/toolbox/assets/assets.js b/toolbox/assets/assets.js
+index 5393a4c81..6247b6c66 100644
+--- a/toolbox/assets/assets.js
++++ b/toolbox/assets/assets.js
+@@ -50,16 +50,20 @@ const elements = {
+   pickerMode: document.querySelector("[data-asset-tool-picker-mode]"),
+   preview: document.querySelector("[data-asset-tool-preview]"),
+   previewTitle: document.querySelector("[data-asset-tool-preview-title]"),
++  cancelEdit: document.querySelector("[data-asset-tool-cancel-edit]"),
+   reset: document.querySelector("[data-asset-tool-reset]"),
+   roleDiagnostics: document.querySelector("[data-asset-tool-role-diagnostics]"),
+   roleLibrary: document.querySelector("[data-asset-tool-role-library]"),
+   seed: document.querySelector("[data-asset-tool-seed]"),
++  submit: document.querySelector("[data-asset-tool-submit]"),
+   tableCounts: document.querySelector("[data-asset-tool-table-counts]"),
+   usage: document.querySelector("[data-asset-tool-usage]"),
+   validationList: document.querySelector("[data-asset-tool-validation-list]"),
+   validationOverlay: document.querySelector("[data-asset-tool-validation-overlay]")
+ };
+
++let editingAsset = null;
++
+ function setText(target, value) {
+   if (target && typeof target.forEach === "function" && !target.nodeType) {
+     target.forEach((item) => setText(item, value));
+@@ -121,6 +125,15 @@ function createCell(text) {
+   return cell;
+ }
+
++function createActionButton(label, datasetName, assetId) {
++  const button = document.createElement("button");
++  button.className = "btn";
++  button.type = "button";
++  button.dataset[datasetName] = assetId;
++  button.textContent = label;
++  return button;
++}
++
+ function createListItem(text) {
+   const item = document.createElement("li");
+   item.textContent = text;
+@@ -159,13 +172,13 @@ function readAssetForm() {
+   const role = selectedRoleDefinition();
+   return {
+     assetRole: elements.assetRole?.value,
+-    fileName: role.inputMode === "file" ? file?.name || "" : "",
+-    mimeType: role.inputMode === "file" ? file?.type || "" : "",
++    fileName: role.inputMode === "file" ? editingAsset?.originalName || file?.name || "" : "",
++    mimeType: role.inputMode === "file" ? editingAsset?.mimeType || file?.type || "" : "",
+     name: elements.name?.value,
+-    paletteColor: elements.paletteColor?.value || "",
++    paletteColor: elements.paletteColor?.value || editingAsset?.paletteSwatch?.key || "",
+     path: elements.path?.value,
+     pickerMode: role.inputMode,
+-    size: role.inputMode === "file" ? file?.size || 0 : 0,
++    size: role.inputMode === "file" ? editingAsset?.size || file?.size || 0 : 0,
+     usage: elements.usage?.value
+   };
+ }
+@@ -274,25 +287,30 @@ function updateFileAccept() {
+   const role = selectedRoleDefinition();
+   const fileMode = role.inputMode === "file";
+   const paletteMode = role.inputMode === "palette";
++  const editing = Boolean(editingAsset);
+
+-  setText(elements.pickerMode, role.inputMode);
+-  setHidden(elements.fileRow, !fileMode);
++  setText(elements.pickerMode, editing ? "edit" : role.inputMode);
++  setHidden(elements.fileRow, !fileMode || editing);
+   setHidden(elements.fileNameRow, !fileMode);
+-  setHidden(elements.paletteRow, !paletteMode);
+-  setHidden(elements.paletteDetailRow, !paletteMode);
++  setHidden(elements.paletteRow, !paletteMode || editing);
++  setHidden(elements.paletteDetailRow, !paletteMode || editing);
+
+   elements.file.accept = fileMode ? role.extensions.join(",") : "";
+-  elements.file.disabled = !fileMode;
+-  if (!fileMode) {
++  elements.file.disabled = !fileMode || editing;
++  if (!fileMode || editing) {
+     elements.file.value = "";
+   }
+-  if (paletteMode) {
++  if (paletteMode && !editing) {
+     updatePalettePicker();
+     updatePaletteSelectionDetails();
+   }
+ }
+
+ function updateImportDiagnostic() {
++  if (editingAsset) {
++    setText(elements.importDiagnostic, "Editing asset metadata. Save to update your asset library.");
++    return;
++  }
+   const role = selectedRoleDefinition();
+   setText(elements.importDiagnostic, pickerDiagnosticForRole(role, repository.getPaletteSnapshot()));
+ }
+@@ -306,8 +324,8 @@ function updateStoragePathPreview() {
+   const file = currentFile();
+   elements.path.value = repository.previewStoragePath({
+     assetRole: elements.assetRole?.value,
+-    fileName: role.inputMode === "file" ? file?.name || "" : "",
+-    paletteColor: role.inputMode === "palette" ? elements.paletteColor?.value || "" : "",
++    fileName: role.inputMode === "file" ? editingAsset?.originalName || file?.name || "" : "",
++    paletteColor: role.inputMode === "palette" ? editingAsset?.paletteSwatch?.key || elements.paletteColor?.value || "" : "",
+     usage: elements.usage?.value
+   });
+ }
+@@ -385,8 +403,8 @@ function renderLibrary(snapshot) {
+   if (snapshot.assets.length === 0) {
+     const row = document.createElement("tr");
+     const cell = document.createElement("td");
+-    cell.colSpan = 6;
+-    cell.textContent = "No project assets uploaded yet.";
++    cell.colSpan = 7;
++    cell.textContent = "No user assets added yet.";
+     row.append(cell);
+     elements.library.append(row);
+     return;
+@@ -397,13 +415,20 @@ function renderLibrary(snapshot) {
+     row.dataset.assetToolRow = asset.id;
+
+     const nameCell = document.createElement("td");
+-    const select = document.createElement("button");
+-    select.className = snapshot.selectedAsset?.id === asset.id ? "btn primary" : "btn";
+-    select.type = "button";
+-    select.dataset.assetToolSelect = asset.id;
+-    select.setAttribute("aria-pressed", String(snapshot.selectedAsset?.id === asset.id));
+-    select.textContent = asset.name;
+-    nameCell.append(select);
++    nameCell.textContent = asset.name;
++    if (snapshot.selectedAsset?.id === asset.id) {
++      row.dataset.assetToolSelectedRow = "true";
++    }
++
++    const actionsCell = document.createElement("td");
++    const actions = document.createElement("div");
++    actions.className = "action-group action-group--tight";
++    actions.append(
++      createActionButton("View", "assetToolView", asset.id),
++      createActionButton("Edit", "assetToolEdit", asset.id),
++      createActionButton("Delete", "assetToolDelete", asset.id)
++    );
++    actionsCell.append(actions);
+
+     row.append(
+       nameCell,
+@@ -411,7 +436,8 @@ function renderLibrary(snapshot) {
+       createCell(asset.usage),
+       createCell(asset.storedPath),
+       createMetadataCell(asset),
+-      createCell(asset.status)
++      createCell(asset.status),
++      actionsCell
+     );
+     elements.library.append(row);
+   });
+@@ -482,15 +508,18 @@ function renderOutput(snapshot) {
+   setText(elements.libraryStatus, snapshot.progressHandoff.libraryStatus);
+   setText(elements.nextStep, snapshot.progressHandoff.nextStep);
+   setText(elements.outputValidation, snapshot.validation.status);
+-  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Upload at least one project asset."));
++  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Add at least one user asset."));
+   setText(
+     elements.outputSummary,
+-    assetCount === 1 ? "1 project asset ready." : `${assetCount} project assets ready.`
++    assetCount === 1 ? "1 user asset ready." : `${assetCount} user assets ready.`
+   );
+ }
+
+ function render() {
+   const snapshot = repository.getSnapshot();
++  if (editingAsset && !snapshot.assets.some((asset) => asset.id === editingAsset.id)) {
++    editingAsset = null;
++  }
+   renderHandoff(snapshot);
+   renderValidation(snapshot);
+   renderRoleLibrary(snapshot);
+@@ -504,9 +533,14 @@ function render() {
+   updateStoragePathPreview();
+   updateSelectedFileName();
+   updateImportDiagnostic();
++  setFormMode();
+ }
+
+ function updateSelectedFileName() {
++  if (editingAsset) {
++    setText(elements.fileName, editingAsset.originalName ? `Existing file: ${editingAsset.originalName}` : "Existing asset source.");
++    return;
++  }
+   setText(elements.fileName, currentFile()?.name || "No file selected.");
+ }
+
+@@ -525,6 +559,68 @@ function validateCurrentForm() {
+   setText(elements.outputValidation, validation.status);
+ }
+
++function populateFormFromAsset(asset) {
++  if (!asset) {
++    return;
++  }
++  if (elements.assetRole) {
++    elements.assetRole.value = asset.assetRole;
++  }
++  updateUsageOptions();
++  if (elements.usage) {
++    elements.usage.value = asset.usage;
++  }
++  if (elements.name) {
++    elements.name.value = asset.name;
++  }
++  if (elements.paletteColor && asset.paletteSwatch?.key) {
++    elements.paletteColor.value = asset.paletteSwatch.key;
++  }
++  updateFileAccept();
++  updateSelectedFileName();
++  updateStoragePathPreview();
++  updateImportDiagnostic();
++}
++
++function setFormMode() {
++  const editing = Boolean(editingAsset);
++  if (elements.submit) {
++    elements.submit.textContent = editing ? "Save Asset" : "Add Asset";
++  }
++  if (elements.cancelEdit) {
++    elements.cancelEdit.hidden = !editing;
++  }
++  if (elements.assetRole) {
++    elements.assetRole.disabled = editing;
++  }
++}
++
++function clearEditMode() {
++  editingAsset = null;
++  setFormMode();
++  updateFileAccept();
++  updateSelectedFileName();
++  updateStoragePathPreview();
++  updateImportDiagnostic();
++}
++
++function enterEditMode(assetId) {
++  const snapshot = repository.selectAsset(assetId);
++  const asset = snapshot.assets.find((candidate) => candidate.id === assetId);
++  if (!asset) {
++    setText(elements.log, "Asset edit blocked: choose an asset owned by the current user.");
++    render();
++    return;
++  }
++  editingAsset = asset;
++  populateFormFromAsset(asset);
++  setFormMode();
++  setText(elements.log, `Editing ${asset.name}.`);
++  render();
++  populateFormFromAsset(asset);
++  setFormMode();
++}
++
+ appendRoleOptions(elements.assetRole, visibleRoleDefinitions());
+ updateUsageOptions();
+ updateFileAccept();
+@@ -568,29 +664,60 @@ elements.form?.addEventListener("input", validateCurrentForm);
+
+ elements.form?.addEventListener("submit", (event) => {
+   event.preventDefault();
+-  const result = repository.importAsset(readAssetForm());
++  const result = editingAsset
++    ? repository.updateAsset(editingAsset.id, readAssetForm())
++    : repository.importAsset(readAssetForm());
+   setText(elements.log, result.message);
++  if (result.updated || result.imported) {
++    editingAsset = null;
++  }
+   render();
+ });
+
+ elements.library?.addEventListener("click", (event) => {
+-  const select = event.target.closest("[data-asset-tool-select]");
+-  if (!select) {
++  const view = event.target.closest("[data-asset-tool-view]");
++  const edit = event.target.closest("[data-asset-tool-edit]");
++  const deleteButton = event.target.closest("[data-asset-tool-delete]");
++  if (!view && !edit && !deleteButton) {
+     return;
+   }
+
+-  repository.selectAsset(select.dataset.assetToolSelect);
++  if (view) {
++    const snapshot = repository.selectAsset(view.dataset.assetToolView);
++    setText(elements.log, snapshot.selectedAsset ? `Viewing ${snapshot.selectedAsset.name}.` : "Asset view blocked: choose an asset owned by the current user.");
++    editingAsset = null;
++    render();
++    return;
++  }
++
++  if (edit) {
++    enterEditMode(edit.dataset.assetToolEdit);
++    return;
++  }
++
++  const result = repository.deleteAsset(deleteButton.dataset.assetToolDelete);
++  if (editingAsset?.id === deleteButton.dataset.assetToolDelete) {
++    editingAsset = null;
++  }
++  setText(elements.log, result.message);
+   render();
+ });
+
++elements.cancelEdit?.addEventListener("click", () => {
++  clearEditMode();
++  setText(elements.log, "Asset edit canceled.");
++});
++
+ elements.seed?.addEventListener("click", () => {
+   repository.seedDemoAssets();
+-  setText(elements.log, "Demo project assets seeded.");
++  editingAsset = null;
++  setText(elements.log, "Demo user assets seeded.");
+   render();
+ });
+
+ elements.reset?.addEventListener("click", () => {
+   const result = repository.resetAssetLibrary();
++  editingAsset = null;
+   setText(elements.log, result.message);
+   render();
+ });
+diff --git a/toolbox/assets/index.html b/toolbox/assets/index.html
+index d9b3ede42..7fa42eb75 100644
+--- a/toolbox/assets/index.html
++++ b/toolbox/assets/index.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Assets - GameFoundryStudio</title>
+-    <meta name="description" content="Assets Toolbox runtime for project-owned asset library records, imports, previews, and validation.">
++    <meta name="description" content="Assets Toolbox runtime for user-owned asset library records, imports, previews, and validation.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,7 +18,7 @@
+             <div class="container">
+                 <div class="kicker">Toolbox / Assets</div>
+                 <h1>Assets</h1>
+-                <p class="lede">Manage project-owned asset uploads after Game Configuration is ready.</p>
++                <p class="lede">Manage user-owned asset records after Game Configuration is ready.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -84,12 +84,15 @@
+                                                         <td colspan="2" data-asset-tool-import-diagnostic>File upload ready.</td>
+                                                     </tr>
+                                                     <tr>
+-                                                        <td colspan="2" data-asset-tool-upload-help-cell><p id="assetToolFileHelp">File-based roles use project-owned upload storage. Color requires Palette Tool selection.</p></td>
++                                                        <td colspan="2" data-asset-tool-upload-help-cell><p id="assetToolFileHelp">File-based roles use user-owned asset records with generated storage paths. Color requires Palette Tool selection.</p></td>
+                                                     </tr>
+                                                 </tbody>
+                                             </table>
+                                         </div>
+-                                        <button class="btn" type="submit">Upload Asset</button>
++                                        <div class="action-group">
++                                            <button class="btn" type="submit" data-asset-tool-submit>Add Asset</button>
++                                            <button class="btn" type="button" data-asset-tool-cancel-edit hidden>Cancel</button>
++                                        </div>
+                                     </form>
+                                 </div>
+                             </details>
+@@ -104,8 +107,8 @@
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="assets" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+                     <section class="tool-center-panel">
+-                        <h2>Project Assets</h2>
+-                        <p>Assets stores project-owned upload metadata in a SQL-shaped mock repository. Real database storage, cloud upload, binary file persistence, and export packaging are not implemented yet.</p>
++                        <h2>User Assets</h2>
++                        <p>Assets stores user-owned asset metadata through the shared DB/mock adapter. Real binary file persistence, cloud upload, and export packaging are not implemented yet.</p>
+                         <div class="grid cols-3" aria-label="Asset readiness summary">
+                             <article class="mini-stat"><strong data-asset-tool-library-status>Needs Input</strong>Library Status</article>
+                             <article class="mini-stat"><strong data-asset-tool-count>0</strong>Assets</article>
+@@ -124,7 +127,7 @@
+                         <article class="card">
+                             <div class="card-body content-stack">
+                                 <div>
+-                                    <div class="kicker">Project Assets</div>
++                                    <div class="kicker">User Assets</div>
+                                     <h3>Library Records</h3>
+                                 </div>
+                                 <div class="table-wrapper">
+@@ -137,10 +140,11 @@
+                                                 <th scope="col">Stored Path</th>
+                                                 <th scope="col">Metadata</th>
+                                                 <th scope="col">Status</th>
++                                                <th scope="col">Actions</th>
+                                             </tr>
+                                         </thead>
+                                         <tbody data-asset-tool-library>
+-                                            <tr><td colspan="6">No project assets uploaded yet.</td></tr>
++                                            <tr><td colspan="7">No user assets added yet.</td></tr>
+                                         </tbody>
+                                     </table>
+                                 </div>
+@@ -188,9 +192,9 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Output</summary>
+                                 <div class="accordion-body content-stack" data-asset-tool-output>
+-                                    <p>Library Summary: <span data-asset-tool-output-summary>No project assets uploaded yet.</span></p>
++                                    <p>Library Summary: <span data-asset-tool-output-summary>No user assets added yet.</span></p>
+                                     <p>Validation Status: <span data-asset-tool-output-validation>Needs Input</span></p>
+-                                    <p>Missing Items: <span data-asset-tool-output-missing>Upload at least one project asset.</span></p>
++                                    <p>Missing Items: <span data-asset-tool-output-missing>Add at least one user asset.</span></p>
+                                     <p>Next Step: <span data-asset-tool-output-next-step>Assets</span></p>
+                                 </div>
+                             </details>
+diff --git a/docs_build/dev/reports/PR_26163_068-assets-tool-rebuild-from-v1-reference.md b/docs_build/dev/reports/PR_26163_068-assets-tool-rebuild-from-v1-reference.md
 new file mode 100644
-index 000000000..499d8a4b2
+index 000000000..98a0efa05
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md
-@@ -0,0 +1,77 @@
-+# PR_26163_067-user-controls-profile-radio-groups
++++ b/docs_build/dev/reports/PR_26163_068-assets-tool-rebuild-from-v1-reference.md
+@@ -0,0 +1,104 @@
++# PR_26163_068-assets-tool-rebuild-from-v1-reference
 +
 +## Branch Validation
 +- PASS: Current branch is `main`.
 +- Expected branch: `main`.
 +
 +## Summary
-+- Updated Account > User Controls selected profile radios so Keyboard, Mouse, and Gamepad selections each use an independent radio group.
-+- Persisted active profile selection by device type through the shared mock DB adapter.
-+- Kept detected controller rows profile-free; controller detection continues to feed the dropdown workflow only.
++- Rebuilt the active `toolbox/assets` workflow around current Theme V2 shell patterns and the shared DB/mock adapter.
++- Used `archive/v1-v2/tools/old_asset-manager-v2` only as workflow reference for list/detail/update/status concepts.
++- Added row-level View, Edit, and Delete actions for user-owned asset records.
++- Enforced active-user ownership in the Assets mock repository for list/view/edit/delete/reset operations.
++- Preserved external JavaScript, external Theme V2 CSS, and no inline script/style/event handlers.
 +
 +## Requirement Checklist
-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
-+- PASS: Verified current branch is `main` before changes.
-+- PASS: Keyboard profiles use radio group `account-user-controls-selected-device-keyboard`.
-+- PASS: Mouse profiles use radio group `account-user-controls-selected-device-mouse`.
-+- PASS: Gamepad profiles use radio group `account-user-controls-selected-device-gamepad`.
-+- PASS: Selecting a Gamepad profile does not deselect the active Keyboard profile.
-+- PASS: Selecting a Mouse profile does not deselect the active Gamepad profile.
-+- PASS: One active profile is persisted per device type for Keyboard, Mouse, and Gamepad.
-+- PASS: Default profiles participate in their device-type groups.
-+- PASS: User-created profiles participate in their device-type groups.
-+- PASS: Detection rows remain profile-free and contain no radios.
-+- PASS: Active profile selection persists by device type for the current user.
-+- PASS: Scope stayed limited to Account/User Controls profile selection behavior, mock DB selection persistence, targeted tests, and required reports.
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first.
++- PASS: Created `PR_26163_068-assets-tool-rebuild-from-v1-reference` report and artifacts.
++- PASS: Rebuilt `toolbox/assets` using the old asset manager only as workflow/UX reference.
++- PASS: Did not copy V1/legacy CSS, inline scripts, inline styles, or old architecture.
++- PASS: Omitted legacy asset-manager runtime dependencies from the active tool.
++- PASS: Preserved external JavaScript only.
++- PASS: Preserved external Theme V2 CSS only.
++- PASS: Preserved no HTML `<script>` or `<style>` blocks.
++- PASS: Preserved no inline event handlers.
++- PASS: Preserved no `toolbox/shared` dependency.
++- PASS: Did not introduce new classes, so no one-class-per-file split was required.
++- PASS: App/root behavior remains in the current external Assets runtime module and coordinates current controls without new tool-local CSS.
++- PASS: Uses existing Theme V2 shell, left/center/right columns, accordion stack, cards, tables, buttons, status, and action-group patterns.
++- PASS: Asset data flow remains aligned to the current API/service-backed DB/mock adapter.
++- PASS: User-owned asset records can be added/viewed/edited/deleted only by the owning active user.
++- PASS: Scope stayed limited to `toolbox/assets`, required dev-runtime/API adapter touchpoint, targeted tests, and reports.
++- PASS: Did not modify `start_of_day` folders.
++
++## Search Evidence
++- PASS: `rg -n "<style| on[a-z]+=" toolbox/assets/index.html toolbox/assets/assets.js toolbox/assets/assets-api-client.js src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js src/dev-runtime/server/mock-api-router.mjs tests/playwright/tools/AssetToolMockRepository.spec.mjs` returned no matches.
++- PASS: `rg -n "archive/v1-v2|old_asset-manager-v2|assetManagerV2|asset-manager-v2__|toolbox/shared|src/engine/theme/main.css|hubCommon.css|accordionV2.css|styles/assetManager.css" toolbox/assets src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js src/dev-runtime/server/mock-api-router.mjs` returned no matches.
 +
 +## Changed Files
-+- `account/user-controls-page.js`
-+- `src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
-+- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++- `toolbox/assets/index.html`
++- `toolbox/assets/assets.js`
++- `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
++- `src/dev-runtime/server/mock-api-router.mjs`
++- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md`
++- `docs_build/dev/reports/PR_26163_068-assets-tool-rebuild-from-v1-reference.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +
 +## Impacted Lane
-+- Account/User Controls profile selection.
-+- Shared mock DB adapter persistence for selected input device/profile records.
-+- Targeted Account/User Controls Playwright coverage.
++- Assets tool runtime lane.
++- Shared dev-runtime API repository construction for Assets session-user ownership.
++- Targeted Assets Playwright behavior lane.
 +
 +## Validation Performed
-+- PASS: `node --check account/user-controls-page.js`
-+- PASS: `node --check src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
-+- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- PASS: `rg -n '<style| on[a-z]+=' account/user-controls.html account/user-controls-page.js src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js tests/playwright/tools/InputMappingV2Tool.spec.mjs` returned no matches.
-+- PASS: `git diff --check -- account/user-controls-page.js src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "User Controls owns physical input mapping accordions and profiles|User Controls creates one profile from only the selected controller dropdown device" --reporter=line`
-+  - Result: 2 passed.
++- PASS: `node --check toolbox/assets/assets.js`
++- PASS: `node --check toolbox/assets/assets-api-client.js`
++- PASS: `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
++- PASS: `node --check src/dev-runtime/server/mock-api-router.mjs`
++- PASS: `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++- PASS: HTML restriction search returned no matches.
++- PASS: Legacy/archive dependency search returned no active matches.
++- PASS: `git diff --check -- toolbox/assets/index.html toolbox/assets/assets.js toolbox/assets/assets-api-client.js src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js src/dev-runtime/server/mock-api-router.mjs tests/playwright/tools/AssetToolMockRepository.spec.mjs docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- PASS: `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --reporter=line`
++  - Result: 7 passed.
 +- PASS: `npm run test:workspace-v2`
-+  - Result: 5 passed in the workspace-contract lane.
++  - Result: 5 passed in the `workspace-contract` lane.
++  - Note: command name is legacy; this PR changes the Assets tool and does not introduce user-facing Workspace V2 wording.
 +
 +## Playwright Result
-+- PASS: Targeted Account/User Controls Playwright checks passed.
-+- PASS: Required `npm run test:workspace-v2` passed.
++- PASS: Assets tool launches.
++- PASS: Left/center/right shell renders.
++- PASS: Theme V2 accordions expand/collapse.
++- PASS: Asset list renders from the current DB/mock adapter data source.
++- PASS: Add/view/edit/delete behavior is owner-scoped.
++- PASS: Invalid/missing asset data fails visibly with actionable status.
++- PASS: No archive/V1 runtime dependency is used.
 +
 +## V8 Coverage
-+- PASS: `account/user-controls-page.js` collected browser V8 coverage at 92%.
-+- WARN: `src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js` is exercised through the local dev-runtime/server path, but Chromium browser V8 coverage does not collect that server-side module.
++- PASS: `toolbox/assets/assets.js` collected browser V8 coverage at 96%.
++- WARN: `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js` is server/dev-runtime code and is not collected by Chromium browser V8 coverage.
++- WARN: `src/dev-runtime/server/mock-api-router.mjs` is server/dev-runtime code and is not collected by Chromium browser V8 coverage.
 +- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
 +
 +## Manual Validation Steps
-+1. Open `account/user-controls.html` as a signed-in user.
-+2. Select Keyboard Default Profile, Mouse Default Profile, and Gamepad Default Profile; confirm all three stay selected and the status lists all selected devices.
-+3. Create and save Keyboard, Mouse, and Gamepad user profiles.
-+4. Select one user-created profile in each device type; confirm selecting one device type does not clear the other device type selections.
-+5. Refresh detected controllers; confirm detected controllers appear in the controller dropdown and no detected row radios are rendered.
-+6. Reload the page; confirm active Keyboard, Mouse, and Gamepad selections persist for the current user.
++1. Open `toolbox/assets/index.html` as User 1.
++2. Confirm the Assets tool renders left setup, center library, and right inspector/status columns.
++3. Toggle the Import Asset accordion closed and open.
++4. Add an Image asset and confirm it appears in the Library Records table.
++5. Click View and confirm preview/metadata update.
++6. Click Edit, rename the asset, Save, and confirm the row updates.
++7. Switch to User 2 and confirm User 1's asset is not visible.
++8. Add a User 2 asset, switch back to User 1, and confirm User 2's asset is not visible.
++9. Delete User 1's asset and confirm only User 1's library is affected.
++10. Attempt an invalid image upload and confirm the actionable validation panel appears.
 +
 +## Skipped Lanes
-+- SKIP: Full samples smoke test. Safe to skip because this PR only changes Account/User Controls profile selection and mock DB persistence, and the user explicitly requested no full samples smoke test.
-+- SKIP: Unrelated Toolbox/Game Controls lanes. Safe to skip because no Toolbox/Game Controls runtime behavior changed.
++- SKIP: Full samples smoke test. Safe to skip because samples are explicitly out of scope and this PR only changes Assets tool UI/runtime plus required dev-runtime adapter ownership.
++- SKIP: Full repo Playwright suite. Safe to skip because targeted Assets Playwright plus the required workspace-contract command cover the affected tool and launch surface.
++- SKIP: Engine runtime validation. Safe to skip because no engine runtime behavior changed.
 +
 +## Samples Validation
 +- SKIP: Full samples smoke test was not run by request.
 +
 +## Packaging
-+- PASS: Repo-structured delta ZIP produced under `tmp/PR_26163_067-user-controls-profile-radio-groups_delta.zip`.
++- PASS: Repo-structured delta ZIP produced under `tmp/PR_26163_068-assets-tool-rebuild-from-v1-reference_delta.zip`.
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
 new file mode 100644
-index 000000000..99b86e752
+index 000000000..2529f0d9b
 --- /dev/null
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -0,0 +1,8 @@
-+account/user-controls-page.js
-+src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-+tests/playwright/tools/InputMappingV2Tool.spec.mjs
+@@ -0,0 +1,10 @@
++toolbox/assets/index.html
++toolbox/assets/assets.js
++src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
++src/dev-runtime/server/mock-api-router.mjs
++tests/playwright/tools/AssetToolMockRepository.spec.mjs
 +docs_build/dev/reports/playwright_v8_coverage_report.txt
-+docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md
++docs_build/dev/reports/PR_26163_068-assets-tool-rebuild-from-v1-reference.md
 +docs_build/dev/reports/codex_review.diff
 +docs_build/dev/reports/codex_changed_files.txt
-+tmp/PR_26163_067-user-controls-profile-radio-groups_delta.zip
++tmp/PR_26163_068-assets-tool-rebuild-from-v1-reference_delta.zip

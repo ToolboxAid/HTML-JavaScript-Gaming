@@ -1,8 +1,10 @@
-account/user-controls-page.js
-src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-tests/playwright/tools/InputMappingV2Tool.spec.mjs
+toolbox/assets/index.html
+toolbox/assets/assets.js
+src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+src/dev-runtime/server/mock-api-router.mjs
+tests/playwright/tools/AssetToolMockRepository.spec.mjs
 docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md
+docs_build/dev/reports/PR_26163_068-assets-tool-rebuild-from-v1-reference.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
-tmp/PR_26163_067-user-controls-profile-radio-groups_delta.zip
+tmp/PR_26163_068-assets-tool-rebuild-from-v1-reference_delta.zip

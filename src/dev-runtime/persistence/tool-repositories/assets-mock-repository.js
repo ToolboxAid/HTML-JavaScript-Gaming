@@ -20,6 +20,7 @@ export const ASSET_TOOL_TABLES = Object.freeze([
 
 const ASSET_DB_OWNER = "asset";
 const ASSET_SYSTEM_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
+const DEFAULT_ASSET_USER_KEY = MOCK_DB_KEYS.users.user1;
 
 export const ASSET_PICKER_MODES = Object.freeze([
   "file",
@@ -167,7 +168,7 @@ const REQUIRED_UPLOAD_FIELDS = Object.freeze([
   {
     field: "fileName",
     label: "Upload File",
-    action: "Choose a project asset file to upload."
+    action: "Choose a user asset file to add."
   }
 ]);
 
@@ -458,7 +459,7 @@ function tableCounts(tables) {
   }));
 }
 
-function createStorageObject({ assetRole, fileName, mimeType, name, project, size, usage }) {
+function createStorageObject({ assetRole, fileName, mimeType, name, ownerUserKey, project, size, usage }) {
   const role = roleDefinitionForId(assetRole);
   const projectId = project?.id || "";
   const originalName = normalizeText(fileName);
@@ -476,7 +477,7 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
     assetId: `${projectId}-asset-${assetRole}-${slugify(name || originalName)}`,
     checksum,
     createdAt: timestamp,
-    createdBy: ASSET_SYSTEM_USER_KEY,
+    createdBy: ownerUserKey,
     id: `${projectId}-storage-${assetRole}-${slugify(usage)}-${slugify(originalName)}`,
     mimeType,
     originalName,
@@ -487,11 +488,11 @@ function createStorageObject({ assetRole, fileName, mimeType, name, project, siz
     status: "Stored",
     storedPath,
     updatedAt: timestamp,
-    updatedBy: ASSET_SYSTEM_USER_KEY
+    updatedBy: ownerUserKey
   };
 }
 
-function createEditableSpriteAssetRecord({ assetKey, project }) {
+function createEditableSpriteAssetRecord({ assetKey, ownerUserKey, project }) {
   const assetRole = "image";
   const fileName = `${assetKey}.png`;
   const mimeType = "image/png";
@@ -511,7 +512,7 @@ function createEditableSpriteAssetRecord({ assetKey, project }) {
     assetId: assetKey,
     checksum,
     createdAt: timestamp,
-    createdBy: ASSET_SYSTEM_USER_KEY,
+    createdBy: ownerUserKey,
     id: `${projectId}-storage-image-sprite-${assetKey}`,
     mimeType,
     originalName: fileName,
@@ -522,21 +523,21 @@ function createEditableSpriteAssetRecord({ assetKey, project }) {
     status: "Stored",
     storedPath,
     updatedAt: timestamp,
-    updatedBy: ASSET_SYSTEM_USER_KEY
+    updatedBy: ownerUserKey
   };
   const asset = {
     assetRole,
     assetRoleLabel: role.label,
     checksum,
     createdAt: timestamp,
-    createdBy: ASSET_SYSTEM_USER_KEY,
+    createdBy: ownerUserKey,
     fileName,
     id: assetKey,
     mimeType,
     name: assetKey,
     originalName: fileName,
     ownerProjectId: projectId,
-    ownerUserId: project.ownerUserId,
+    ownerUserId: ownerUserKey,
     paletteSwatch: null,
     path: storedPath,
     previewKind: previewKindForRole(role),
@@ -548,7 +549,7 @@ function createEditableSpriteAssetRecord({ assetKey, project }) {
     storageObjectId: storageObject.id,
     type: role.label,
     updatedAt: timestamp,
-    updatedBy: ASSET_SYSTEM_USER_KEY,
+    updatedBy: ownerUserKey,
     usage: "sprite"
   };
 
@@ -561,7 +562,7 @@ export function createAssetToolMockRepository(options = {}) {
   const loadedMockDbTables = loadMockDbTables(ASSET_DB_OWNER, createEmptyTables(), options);
   const databaseCleared = Boolean(loadedMockDbTables.cleared);
   const persistenceEnabled = mockDbPersistenceEnabled(options);
-  let hasPersistedTables = Boolean(loadedMockDbTables.persisted && persistenceEnabled);
+  let hasPersistedTables = Boolean(loadedMockDbTables.persisted);
   let tables = loadedMockDbTables.tables;
   if (!databaseCleared) {
     tables.asset_role_definitions = roleDefinitionRows();
@@ -570,9 +571,29 @@ export function createAssetToolMockRepository(options = {}) {
 
   function persistTables() {
     saveMockDbTables(ASSET_DB_OWNER, tables, options);
-    if (persistenceEnabled) {
+    if (persistenceEnabled || options.memoryDbTables) {
       hasPersistedTables = true;
     }
+  }
+
+  function activeUserKey() {
+    const sessionUserKey = typeof options.sessionUserKey === "function"
+      ? options.sessionUserKey()
+      : options.sessionUserKey;
+    return normalizeText(sessionUserKey) || DEFAULT_ASSET_USER_KEY;
+  }
+
+  function ownedAssetFilter(projectId = "") {
+    const ownerUserId = activeUserKey();
+    return (asset) => asset.projectId === projectId && asset.ownerUserId === ownerUserId;
+  }
+
+  function ownedAssetsForProject(projectId = "") {
+    return tables.asset_library_items.filter(ownedAssetFilter(projectId));
+  }
+
+  function findOwnedAsset(assetId, projectId = "") {
+    return ownedAssetsForProject(projectId).find((asset) => asset.id === assetId) || null;
   }
 
   function getConfigurationHandoff() {
@@ -673,14 +694,14 @@ export function createAssetToolMockRepository(options = {}) {
       findings.push({
         field: "activeProject",
         label: "Active Project",
-        action: "Open a project and complete a valid Game Configuration before uploading project assets."
+        action: "Open a game and complete a valid Game Configuration before adding user assets."
       });
     }
     if (activeProject && !activeProject.id) {
       findings.push({
         field: "projectId",
         label: "Project ID",
-        action: "Open a project with a ULID projectId before uploading project assets."
+        action: "Open a game with a valid projectId before adding user assets."
       });
     }
 
@@ -767,7 +788,7 @@ export function createAssetToolMockRepository(options = {}) {
         findings.push({
           field: "storedPath",
           label: "Project Storage Path",
-          action: `Uploaded project assets must store under ${expectedPrefix}.`
+          action: `User assets must store under ${expectedPrefix}.`
         });
       }
     }
@@ -804,11 +825,13 @@ export function createAssetToolMockRepository(options = {}) {
     }
 
     const role = roleDefinitionForId(validation.asset.assetRole);
+    const ownerUserKey = activeUserKey();
     const storageObject = createStorageObject({
       assetRole: validation.asset.assetRole,
       fileName: validation.asset.fileName,
       mimeType: validation.asset.mimeType,
       name: validation.asset.name,
+      ownerUserKey,
       project,
       size: validation.asset.size,
       usage: validation.asset.usage
@@ -819,14 +842,14 @@ export function createAssetToolMockRepository(options = {}) {
       assetRoleLabel: role.label,
       checksum: storageObject.checksum,
       createdAt: timestamp,
-      createdBy: ASSET_SYSTEM_USER_KEY,
+      createdBy: ownerUserKey,
       fileName: validation.asset.fileName,
       id: storageObject.assetId,
       mimeType: validation.asset.mimeType,
       name: validation.asset.name,
       originalName: storageObject.originalName,
       ownerProjectId: projectId,
-      ownerUserId: project.ownerUserId,
+      ownerUserId: ownerUserKey,
       paletteSwatch: clonePaletteSwatch(validation.asset.paletteSwatch),
       path: storageObject.storedPath,
       previewKind: previewKindForRole(role),
@@ -838,7 +861,7 @@ export function createAssetToolMockRepository(options = {}) {
       storageObjectId: storageObject.id,
       type: role.label,
       updatedAt: timestamp,
-      updatedBy: ASSET_SYSTEM_USER_KEY,
+      updatedBy: ownerUserKey,
       usage: validation.asset.usage
     };
 
@@ -849,7 +872,7 @@ export function createAssetToolMockRepository(options = {}) {
     tables.asset_import_events.push({
       assetId: asset.id,
       createdAt: timestamp,
-      createdBy: ASSET_SYSTEM_USER_KEY,
+      createdBy: ownerUserKey,
       fileName: asset.fileName,
       id: `${asset.id}-import-${tables.asset_import_events.length + 1}`,
       mimeType: asset.mimeType,
@@ -858,7 +881,7 @@ export function createAssetToolMockRepository(options = {}) {
       storedPath: asset.storedPath,
       type: asset.type,
       updatedAt: timestamp,
-      updatedBy: ASSET_SYSTEM_USER_KEY
+      updatedBy: ownerUserKey
     });
     if (role.inputMode === "palette" && asset.paletteSwatch) {
       paletteRepository.recordSwatchUsage({
@@ -874,7 +897,7 @@ export function createAssetToolMockRepository(options = {}) {
     return {
       asset,
       imported: true,
-      message: `Uploaded ${asset.name} to project asset storage.`,
+      message: `Added ${asset.name} to your asset library.`,
       snapshot: getSnapshot()
     };
   }
@@ -886,6 +909,7 @@ export function createAssetToolMockRepository(options = {}) {
     const handoff = getConfigurationHandoff();
     const project = handoff.activeProject || null;
     const projectId = project?.id || "";
+    const ownerUserKey = activeUserKey();
     const diagnostics = [];
     const findings = [];
 
@@ -898,7 +922,7 @@ export function createAssetToolMockRepository(options = {}) {
     }
     if (!projectId) {
       findings.push({
-        action: "Open an active project so sprite assets can be created under project asset storage.",
+        action: "Open an active game so sprite assets can be created in your asset library.",
         field: "activeProject",
         label: "Active Project"
       });
@@ -927,7 +951,7 @@ export function createAssetToolMockRepository(options = {}) {
     }
 
     const existingAsset = tables.asset_library_items.find(
-      (asset) => asset.projectId === projectId && asset.id === spriteAssetKey
+      (asset) => asset.projectId === projectId && asset.ownerUserId === ownerUserKey && asset.id === spriteAssetKey
     );
     if (existingAsset) {
       selectedAssetId = existingAsset.id;
@@ -944,7 +968,7 @@ export function createAssetToolMockRepository(options = {}) {
       };
     }
 
-    const record = createEditableSpriteAssetRecord({ assetKey: spriteAssetKey, project });
+    const record = createEditableSpriteAssetRecord({ assetKey: spriteAssetKey, ownerUserKey, project });
     tables.asset_library_items = tables.asset_library_items.filter((asset) => asset.id !== record.asset.id);
     tables.asset_storage_objects = tables.asset_storage_objects.filter((storageObject) => storageObject.id !== record.storageObject.id);
     tables.asset_library_items.push(record.asset);
@@ -952,7 +976,7 @@ export function createAssetToolMockRepository(options = {}) {
     tables.asset_import_events.push({
       assetId: record.asset.id,
       createdAt: record.asset.createdAt,
-      createdBy: ASSET_SYSTEM_USER_KEY,
+      createdBy: ownerUserKey,
       fileName: record.asset.fileName,
       id: `${record.asset.id}-import-${tables.asset_import_events.length + 1}`,
       mimeType: record.asset.mimeType,
@@ -961,7 +985,7 @@ export function createAssetToolMockRepository(options = {}) {
       storedPath: record.asset.storedPath,
       type: record.asset.type,
       updatedAt: record.asset.updatedAt,
-      updatedBy: ASSET_SYSTEM_USER_KEY
+      updatedBy: ownerUserKey
     });
     selectedAssetId = record.asset.id;
     replaceValidationRows(projectId, []);
@@ -981,20 +1005,134 @@ export function createAssetToolMockRepository(options = {}) {
   function listAssets(projectId = "") {
     const handoff = getConfigurationHandoff();
     const targetProjectId = projectId || handoff.activeProject?.id || "";
-    return tables.asset_library_items
-      .filter((asset) => asset.projectId === targetProjectId)
+    return ownedAssetsForProject(targetProjectId)
       .sort((left, right) => left.name.localeCompare(right.name));
   }
 
   function getSelectedAsset() {
-    return tables.asset_library_items.find((asset) => asset.id === selectedAssetId) || null;
+    const handoff = getConfigurationHandoff();
+    return findOwnedAsset(selectedAssetId, handoff.activeProject?.id || "");
   }
 
   function selectAsset(assetId) {
-    if (tables.asset_library_items.some((asset) => asset.id === assetId)) {
+    const handoff = getConfigurationHandoff();
+    if (findOwnedAsset(assetId, handoff.activeProject?.id || "")) {
       selectedAssetId = assetId;
     }
     return getSnapshot();
+  }
+
+  function blockedOwnerMessage(action) {
+    return `Asset ${action} blocked: choose an asset owned by the current user.`;
+  }
+
+  function updateAsset(assetId, input = {}) {
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    const asset = findOwnedAsset(assetId, projectId);
+    if (!asset) {
+      return {
+        asset: null,
+        message: blockedOwnerMessage("update"),
+        snapshot: getSnapshot(),
+        updated: false
+      };
+    }
+
+    const role = roleDefinitionForId(asset.assetRole);
+    const nextName = normalizeText(input.name) || asset.name;
+    const nextUsage = role ? normalizeUsage(input.usage || input.role || asset.usage, asset.assetRole) : "";
+    const findings = [];
+    if (!role) {
+      findings.push({
+        action: "Choose an approved asset role before saving changes.",
+        field: "assetRole",
+        label: "Asset Role"
+      });
+    }
+    if (!nextName) {
+      findings.push({
+        action: "Name the asset before saving changes.",
+        field: "name",
+        label: "Asset Name"
+      });
+    }
+    if (!nextUsage) {
+      findings.push({
+        action: role ? `Choose one of these usages: ${role.usageRoles.join(", ")}.` : "Choose an approved usage for this asset role.",
+        field: "usage",
+        label: "Usage"
+      });
+    }
+
+    replaceValidationRows(projectId, findings);
+    if (findings.length) {
+      return {
+        asset,
+        message: findings.length === 1
+          ? "Asset update blocked by 1 missing item."
+          : `Asset update blocked by ${findings.length} missing items.`,
+        snapshot: getSnapshot(),
+        updated: false
+      };
+    }
+
+    const timestamp = new Date().toISOString();
+    const fileName = role.inputMode === "palette"
+      ? colorAssetFileName(asset.paletteSwatch)
+      : asset.originalName || asset.fileName;
+    const storedPath = storagePathForProjectAsset(projectId, asset.assetRole, nextUsage, fileName);
+    asset.name = nextName;
+    asset.usage = nextUsage;
+    asset.storedPath = storedPath || asset.storedPath;
+    asset.path = asset.storedPath;
+    asset.updatedAt = timestamp;
+    asset.updatedBy = activeUserKey();
+
+    const storageObject = tables.asset_storage_objects.find((row) => row.id === asset.storageObjectId);
+    if (storageObject) {
+      storageObject.storedPath = asset.storedPath;
+      storageObject.updatedAt = timestamp;
+      storageObject.updatedBy = asset.updatedBy;
+    }
+
+    selectedAssetId = asset.id;
+    replaceValidationRows(projectId, []);
+    persistTables();
+    return {
+      asset,
+      message: `Updated ${asset.name} in your asset library.`,
+      snapshot: getSnapshot(),
+      updated: true
+    };
+  }
+
+  function deleteAsset(assetId) {
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    const asset = findOwnedAsset(assetId, projectId);
+    if (!asset) {
+      return {
+        deleted: false,
+        message: blockedOwnerMessage("delete"),
+        snapshot: getSnapshot()
+      };
+    }
+
+    tables.asset_library_items = tables.asset_library_items.filter((row) => row.id !== asset.id);
+    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.id !== asset.storageObjectId && row.assetId !== asset.id);
+    tables.asset_import_events = tables.asset_import_events.filter((row) => row.assetId !== asset.id);
+    tables.asset_validation_items = tables.asset_validation_items.filter((row) => row.projectId !== projectId);
+    if (selectedAssetId === asset.id) {
+      selectedAssetId = ownedAssetsForProject(projectId)[0]?.id || "";
+    }
+    persistTables();
+    return {
+      assetId: asset.id,
+      deleted: true,
+      message: `Deleted ${asset.name} from your asset library.`,
+      snapshot: getSnapshot()
+    };
   }
 
   function seedDemoAssets() {
@@ -1015,7 +1153,7 @@ export function createAssetToolMockRepository(options = {}) {
     if (!projectId) {
       replaceValidationRows("", [
         {
-          action: "Open a project with a ULID projectId before resetting project asset storage.",
+          action: "Open a game with a valid projectId before resetting your asset library.",
           field: "activeProject",
           label: "Active Project"
         }
@@ -1031,15 +1169,18 @@ export function createAssetToolMockRepository(options = {}) {
     }
 
     const projectFolder = projectFolderForProjectId(projectId);
+    const ownedAssets = ownedAssetsForProject(projectId);
+    const ownedAssetIds = new Set(ownedAssets.map((asset) => asset.id));
+    const ownedStorageObjectIds = new Set(ownedAssets.map((asset) => asset.storageObjectId));
     const storageObjects = tables.asset_storage_objects.filter(
-      (row) => row.projectId === projectId && row.storedPath.startsWith(projectFolder)
+      (row) => ownedStorageObjectIds.has(row.id) && row.projectId === projectId && row.storedPath.startsWith(projectFolder)
     );
     const deletedFiles = storageObjects.length;
     const deletedFolders = localFolderCount(storageObjects);
 
-    tables.asset_library_items = tables.asset_library_items.filter((row) => row.projectId !== projectId);
-    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.projectId !== projectId);
-    tables.asset_import_events = tables.asset_import_events.filter((row) => row.projectId !== projectId);
+    tables.asset_library_items = tables.asset_library_items.filter((row) => !ownedAssetIds.has(row.id));
+    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => !ownedStorageObjectIds.has(row.id));
+    tables.asset_import_events = tables.asset_import_events.filter((row) => !ownedAssetIds.has(row.assetId));
     tables.asset_validation_items = tables.asset_validation_items.filter((row) => row.projectId !== projectId);
     selectedAssetId = "";
     persistTables();
@@ -1077,7 +1218,8 @@ export function createAssetToolMockRepository(options = {}) {
     configurationRepository.makeValidGameDesign("demo-game");
     configurationRepository.updateConfiguration("demo-game", READY_CONFIGURATION_INPUT);
     if (hasPersistedTables) {
-      selectedAssetId = tables.asset_library_items[0]?.id || "";
+      const projectId = getConfigurationHandoff().activeProject?.id || "";
+      selectedAssetId = ownedAssetsForProject(projectId)[0]?.id || "";
       return getSnapshot();
     }
     clearAssetLibrary();
@@ -1131,10 +1273,10 @@ export function createAssetToolMockRepository(options = {}) {
 
     if (assets.length === 0) {
       return {
-        currentFocus: "Upload Project Assets",
+        currentFocus: "Add User Assets",
         libraryStatus: "Needs Input",
         nextStep: "Assets",
-        projectProgress: `${handoff.activeProject.name} needs project asset records`,
+        projectProgress: `${handoff.activeProject.name} needs user asset records`,
         publishingProgress: "Build Game blocked until required assets are ready"
       };
     }
@@ -1190,6 +1332,7 @@ export function createAssetToolMockRepository(options = {}) {
     ASSET_TYPES,
     ASSET_USAGE_BY_ROLE,
     clearAssetLibrary,
+    deleteAsset,
     ensureSpriteAssetForObject,
     getConfigurationHandoff,
     getPaletteSnapshot,
@@ -1208,6 +1351,7 @@ export function createAssetToolMockRepository(options = {}) {
     seedDemoAssets,
     seedActiveProjectPalette,
     selectAsset,
+    updateAsset,
     validateAssetInput
   };
 }
