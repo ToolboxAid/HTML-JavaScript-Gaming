@@ -132,6 +132,8 @@ export class AccountUserControlsPage {
     this.captureService = new InputCaptureService({ inputService: this.inputService });
     this.profiles = [];
     this.editingProfile = null;
+    this.selectedInputDevice = null;
+    this.viewingDefaultFamily = "";
     this.devicePollingTimer = null;
     this.inputCapture = null;
     this.elements = {
@@ -142,6 +144,8 @@ export class AccountUserControlsPage {
       familyButtons: [...root.querySelectorAll("[data-account-user-controls-edit-family]")],
       lists: [...root.querySelectorAll("[data-account-user-controls-list]")],
       refresh: root.querySelector("[data-account-user-controls-refresh]"),
+      selectedDeviceOptions: root.querySelector("[data-account-user-controls-selected-device-options]"),
+      selectedDeviceStatus: root.querySelector("[data-account-user-controls-selected-device-status]"),
       status: root.querySelector("[data-account-user-controls-status]"),
       types: root.querySelector("[data-account-user-controls-types]"),
     };
@@ -150,16 +154,20 @@ export class AccountUserControlsPage {
   init() {
     this.inputService.attach();
     this.profiles = this.readProfiles();
+    this.selectedInputDevice = this.readSelectedInputDevice();
     this.renderDeviceSelect();
     this.renderDefaultFallbacks();
     this.renderTypes();
     this.renderProfiles();
+    this.renderSelectedInputDevices();
     this.elements.refresh?.addEventListener("click", () => {
       this.renderDeviceSelect();
+      this.renderSelectedInputDevices();
       this.setStatus(this.deviceRefreshMessage());
     });
     this.elements.addProfile?.addEventListener("click", () => this.addProfileForSelectedDevice());
     this.elements.deviceSelect?.addEventListener("change", () => this.renderDeviceStatus());
+    this.elements.selectedDeviceOptions?.addEventListener("change", (event) => this.handleSelectedInputDeviceChange(event));
     this.elements.familyButtons.forEach((button) => {
       button.addEventListener("click", () => this.editFamilyMappings(button.dataset.accountUserControlsEditFamily || ""));
     });
@@ -235,7 +243,7 @@ export class AccountUserControlsPage {
     return "PASS: Game controllers auto-detect after the browser exposes them.";
   }
 
-  selectedDevice() {
+  selectedControllerDevice() {
     const selectedValue = this.elements.deviceSelect?.value || "";
     return this.deviceOptions().find((device) => device.value === selectedValue) || null;
   }
@@ -270,6 +278,30 @@ export class AccountUserControlsPage {
     this.repository = createControlsToolApiRepository();
     result = this.repository.listControllerProfiles();
     return Array.isArray(result) ? result.map((profile) => this.normalizeProfile(profile)) : [];
+  }
+
+  readSelectedInputDevice() {
+    let result = this.repository.getSelectedInputDevice();
+    if (result?.error) {
+      this.repository = createControlsToolApiRepository();
+      result = this.repository.getSelectedInputDevice();
+    }
+    return result && !result.error ? result : null;
+  }
+
+  saveSelectedInputDevice(selection) {
+    let result = this.repository.saveSelectedInputDevice(selection);
+    if (result?.error) {
+      this.repository = createControlsToolApiRepository();
+      result = this.repository.saveSelectedInputDevice(selection);
+    }
+    if (result?.selectedInputDevice) {
+      this.selectedInputDevice = result.selectedInputDevice;
+      this.renderSelectedInputDevices();
+      return true;
+    }
+    this.setStatus(result?.message || "WARN: Selected Device could not reach the shared DB adapter.");
+    return false;
   }
 
   saveProfiles(nextProfiles) {
@@ -314,12 +346,145 @@ export class AccountUserControlsPage {
   }
 
   renderDeviceStatus() {
-    const device = this.selectedDevice();
+    const device = this.selectedControllerDevice();
     if (!device) {
       this.setDeviceStatus(this.deviceRefreshMessage());
       return;
     }
     this.setDeviceStatus(`${device.label} selected. Create a user control profile to map physical inputs to normalized controls. ${this.deviceRefreshMessage()}`);
+  }
+
+  defaultProfileForFamily(family) {
+    const normalizedFamily = family === "Mouse" ? "Mouse" : family === "Gamepad" ? "Gamepad" : "Keyboard";
+    const systemDefault = this.inputService.getSystemDefaultProfileForDevice(
+      normalizedFamily === "Gamepad" ? "Gamepad" : "Keyboard/Mouse",
+    );
+    const inputs = normalizedFamily === "Gamepad"
+      ? null
+      : normalizedFamily === "Mouse" ? MOUSE_INPUTS : KEYBOARD_INPUTS;
+    const inputMappings = (systemDefault.inputMappings || [])
+      .filter((mapping) => !inputs || inputs.includes(mapping.physicalInput));
+    return this.normalizeProfile({
+      controllerId: `system-default-${normalizedFamily.toLowerCase()}`,
+      controllerName: "Default Profile",
+      deviceType: normalizedFamily,
+      id: `default-${normalizedFamily.toLowerCase()}`,
+      inputMappings,
+      inputs: inputMappings.map((mapping) => mapping.physicalInput),
+      mappingProfile: "Default Profile",
+    });
+  }
+
+  selectedInputDeviceChoices() {
+    const fixedDevices = [
+      {
+        controllerId: "generic-keyboard",
+        deviceType: "Keyboard",
+        label: "Keyboard",
+        profileId: "",
+        selectionKey: "device:keyboard",
+        selectionType: "device",
+      },
+      {
+        controllerId: "generic-mouse",
+        deviceType: "Mouse",
+        label: "Mouse",
+        profileId: "",
+        selectionKey: "device:mouse",
+        selectionType: "device",
+      },
+    ];
+    const detectedGamepads = this.deviceOptions().map((device) => ({
+      controllerId: device.controllerId,
+      deviceType: "Gamepad",
+      label: device.label,
+      profileId: "",
+      selectionKey: `device:gamepad:${keyFromText(device.controllerId || device.value)}`,
+      selectionType: "device",
+    }));
+    const playerProfiles = this.profiles.map((profile) => ({
+      controllerId: profile.controllerId,
+      deviceType: this.profileListFamily(profile),
+      label: `${profile.controllerName} (${profile.mappingProfile})`,
+      profileId: profile.id,
+      selectionKey: `profile:${profile.id}`,
+      selectionType: "profile",
+    }));
+    return [...fixedDevices, ...detectedGamepads, ...playerProfiles];
+  }
+
+  selectedInputDeviceConnected(selection) {
+    if (!selection) {
+      return false;
+    }
+    if (selection.selectionType === "profile") {
+      const profile = this.profiles.find((candidate) => candidate.id === selection.profileId);
+      if (!profile) {
+        return false;
+      }
+      if (profile.deviceType === "Keyboard" || profile.deviceType === "Mouse") {
+        return true;
+      }
+      return this.deviceOptions().some((device) => device.controllerId === profile.controllerId);
+    }
+    if (selection.deviceType === "Keyboard" || selection.deviceType === "Mouse") {
+      return true;
+    }
+    if (selection.deviceType === "Gamepad") {
+      return this.deviceOptions().some((device) => device.controllerId === selection.controllerId);
+    }
+    return false;
+  }
+
+  renderSelectedInputDeviceStatus() {
+    if (!this.elements.selectedDeviceStatus) {
+      return;
+    }
+    if (!this.selectedInputDevice?.selectionKey) {
+      this.elements.selectedDeviceStatus.textContent = "Default Profile";
+      return;
+    }
+    const connected = this.selectedInputDeviceConnected(this.selectedInputDevice);
+    this.elements.selectedDeviceStatus.textContent = connected
+      ? `Selected Device: ${this.selectedInputDevice.label || this.selectedInputDevice.deviceType}.`
+      : "Selected device not connected. Using Default Profile.";
+  }
+
+  renderSelectedInputDevices() {
+    if (!this.elements.selectedDeviceOptions) {
+      this.renderSelectedInputDeviceStatus();
+      return;
+    }
+    const choices = this.selectedInputDeviceChoices();
+    const controls = choices.map((choice) => {
+      const label = document.createElement("label");
+      const input = document.createElement("input");
+      input.type = "radio";
+      input.name = "account-user-controls-selected-device";
+      input.value = choice.selectionKey;
+      input.dataset.accountUserControlsSelectedDevice = choice.selectionKey;
+      input.checked = this.selectedInputDevice?.selectionKey === choice.selectionKey;
+      label.append(input, document.createTextNode(` ${choice.label}`));
+      return label;
+    });
+    this.elements.selectedDeviceOptions.replaceChildren(...controls);
+    this.renderSelectedInputDeviceStatus();
+  }
+
+  handleSelectedInputDeviceChange(event) {
+    const target = event.target instanceof HTMLInputElement
+      ? event.target.closest("[data-account-user-controls-selected-device]")
+      : null;
+    if (!(target instanceof HTMLInputElement) || !target.checked) {
+      return;
+    }
+    const choice = this.selectedInputDeviceChoices().find((candidate) => candidate.selectionKey === target.value);
+    if (!choice) {
+      return;
+    }
+    if (this.saveSelectedInputDevice(choice)) {
+      this.setStatus(`PASS: Selected Device saved as ${choice.label}.`);
+    }
   }
 
   renderTypes() {
@@ -436,6 +601,13 @@ export class AccountUserControlsPage {
       list.dataset.accountUserControlsListFamily || "Gamepad",
       [],
     ]));
+    rowsByFamily.forEach((rows, family) => {
+      const defaultProfile = this.defaultProfileForFamily(family);
+      rows.push(this.renderDefaultProfileRow(defaultProfile, family));
+      if (this.viewingDefaultFamily === family) {
+        rows.push(this.renderReadonlyProfileDetailsRow(defaultProfile, family));
+      }
+    });
     if (this.editingProfile) {
       const family = this.profileListFamily(this.editingProfile.values);
       rowsByFamily.get(family)?.push(...this.renderEditingRows(this.editingProfile.values));
@@ -466,6 +638,92 @@ export class AccountUserControlsPage {
     this.elements.familyButtons.forEach((button) => {
       button.disabled = Boolean(this.editingProfile);
     });
+    this.renderSelectedInputDevices();
+  }
+
+  readonlyNormalizedSummary(mapping) {
+    if (physicalInputIsAnalog(mapping.physicalInput)) {
+      const negative = normalizeText(mapping.negativeNormalizedInput) || "Unassigned";
+      const positive = normalizeText(mapping.positiveNormalizedInput) || "Unassigned";
+      return `Negative ${negative}; Positive ${positive}`;
+    }
+    return normalizeText(mapping.normalizedInput) || "Unassigned";
+  }
+
+  renderReadonlyInputRow(profile, inputMapping) {
+    const row = document.createElement("tr");
+    row.dataset.accountUserControlsDefaultInput = inputMapping.physicalInput;
+    row.append(
+      tableCell(inputMapping.physicalInput),
+      tableCell(this.readonlyNormalizedSummary(inputMapping)),
+    );
+    if (this.profileListFamily(profile) === "Keyboard") {
+      return row;
+    }
+    row.append(
+      tableCell(physicalInputSupportsTuning(inputMapping.physicalInput) ? String(inputMapping.deadzone) : "N/A"),
+      tableCell(physicalInputSupportsTuning(inputMapping.physicalInput) && inputMapping.invert ? "On" : physicalInputSupportsTuning(inputMapping.physicalInput) ? "Off" : "N/A"),
+      tableCell(physicalInputSensitivityDescriptor(inputMapping.physicalInput)
+        ? rangeValueLabel(inputMapping.sensitivity ?? physicalInputSensitivityDescriptor(inputMapping.physicalInput).defaultValue, physicalInputSensitivityDescriptor(inputMapping.physicalInput).unit)
+        : "N/A"),
+    );
+    return row;
+  }
+
+  renderReadonlyProfileDetailsRow(profile, family) {
+    const detailsRow = document.createElement("tr");
+    detailsRow.dataset.accountUserControlsDefaultDetails = family;
+    const detailsCell = document.createElement("td");
+    detailsCell.colSpan = this.tableColumnCountForFamily(family);
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-wrapper";
+    const table = document.createElement("table");
+    table.className = "data-table";
+    table.dataset.accountUserControlsDefaultInputTable = family;
+    table.setAttribute("aria-label", `${family} Default Profile inputs`);
+    const head = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    this.generatedInputHeadings(profile).forEach((heading) => {
+      const cell = document.createElement("th");
+      cell.textContent = heading;
+      headRow.append(cell);
+    });
+    head.append(headRow);
+    const body = document.createElement("tbody");
+    body.append(...profile.inputMappings.map((inputMapping) => this.renderReadonlyInputRow(profile, inputMapping)));
+    table.append(head, body);
+    wrapper.append(table);
+    detailsCell.append(wrapper);
+    detailsRow.append(detailsCell);
+    return detailsRow;
+  }
+
+  renderDefaultProfileRow(profile, family) {
+    const row = document.createElement("tr");
+    row.dataset.accountUserControlsDefaultProfile = family;
+    if (family === "Keyboard") {
+      row.append(
+        tableCell("Default Profile"),
+        tableCell(`${profile.inputMappings.length} Physical Inputs`),
+        tableCell(this.profileInputSummary(profile)),
+      );
+    } else {
+      row.append(
+        tableCell("Default Profile"),
+        tableCell(`${profile.inputMappings.length} Physical Inputs`),
+        tableCell(this.profileInputSummary(profile)),
+        tableCell(this.profileAnalogSummary(profile)),
+        tableCell(profile.inputMappings.some((mapping) => mapping.invert) ? "Invert configured" : "No invert"),
+        tableCell(this.profileSensitivitySummary(profile)),
+      );
+    }
+    const actions = document.createElement("td");
+    const group = document.createElement("div");
+    group.className = "action-group action-group--tight";
+    group.append(actionButton("View", "accountUserControlsViewDefault", family));
+    actions.append(group);
+    row.append(actions);
+    return row;
   }
 
   profileInputSummary(profile) {
@@ -721,7 +979,7 @@ export class AccountUserControlsPage {
   }
 
   addProfileForSelectedDevice() {
-    const device = this.selectedDevice();
+    const device = this.selectedControllerDevice();
     if (!device) {
       this.setStatus("WARN: Choose a physical controller before creating a user control profile.");
       return;
@@ -729,12 +987,14 @@ export class AccountUserControlsPage {
     const existing = this.profiles.find((profile) => profile.deviceType === device.deviceType && profile.controllerId === device.controllerId);
     if (existing) {
       this.editingProfile = { id: existing.id, values: existing };
+      this.viewingDefaultFamily = "";
       this.renderProfiles();
       this.setStatus(`Editing existing ${existing.mappingProfile}.`);
       return;
     }
     const profile = this.profileFromDevice(device);
     this.editingProfile = { id: profile.id, values: profile };
+    this.viewingDefaultFamily = "";
     this.renderProfiles();
     this.setStatus(`Review ${profile.mappingProfile} before saving.`);
   }
@@ -745,12 +1005,14 @@ export class AccountUserControlsPage {
     const existing = this.profiles.find((profile) => profile.deviceType === device.deviceType && profile.controllerId === device.controllerId);
     if (existing) {
       this.editingProfile = { id: existing.id, values: existing };
+      this.viewingDefaultFamily = "";
       this.renderProfiles();
       this.setStatus(`Editing existing ${existing.mappingProfile}.`);
       return;
     }
     const profile = this.profileFromDevice(device);
     this.editingProfile = { id: profile.id, values: profile };
+    this.viewingDefaultFamily = "";
     this.renderProfiles();
     this.setStatus(`Review ${profile.mappingProfile} before saving.`);
   }
@@ -981,6 +1243,7 @@ export class AccountUserControlsPage {
       const profile = this.profiles.find((candidate) => candidate.id === target.dataset.accountUserControlsEdit);
       if (profile) {
         this.editingProfile = { id: profile.id, values: profile };
+        this.viewingDefaultFamily = "";
         this.renderProfiles();
         this.setStatus(`Editing ${profile.mappingProfile}.`);
       }
@@ -992,6 +1255,11 @@ export class AccountUserControlsPage {
       this.editingProfile = null;
       this.renderProfiles();
       this.setStatus("Deleted user control profile.");
+    } else if (target.dataset.accountUserControlsViewDefault !== undefined) {
+      const family = target.dataset.accountUserControlsViewDefault || "";
+      this.viewingDefaultFamily = this.viewingDefaultFamily === family ? "" : family;
+      this.renderProfiles();
+      this.setStatus(`${family} Default Profile is read-only.`);
     }
   }
 

@@ -89,7 +89,7 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
   }),
   controls: Object.freeze({
     label: "Controls",
-    tableNames: Object.freeze(["game_input_mappings", "player_controller_profiles", "input_custom_action_records"]),
+    tableNames: Object.freeze(["game_input_mappings", "player_controller_profiles", "player_input_device_selections", "input_custom_action_records"]),
   }),
   "game-journey": Object.freeze({
     label: "Game Journey",
@@ -138,6 +138,7 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   object_definition_records: Object.freeze(["key", "id", "gameId", "name", "type", "state", "modelType", "renderType", "renderAssetKey", "renderPreviewPath", "capabilities", "behavior", "interaction", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_input_mappings: Object.freeze(["key", "id", "gameId", "objectKey", "objectName", "gameAction", "gameActionLabel", "usageLabel", "normalizedInput", "inputFamily", "eventD", "eventH", "eventU", "eventDC", "eventDrag", "eventAxis", "enabled", "state", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   player_controller_profiles: Object.freeze(["key", "id", "playerId", "deviceType", "controllerName", "controllerId", "profileName", "inputs", "inputMappings", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  player_input_device_selections: Object.freeze(["key", "id", "playerId", "selectionKey", "selectionType", "deviceType", "controllerId", "profileId", "label", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   input_custom_action_records: Object.freeze(["key", "id", "gameId", "label", "recordOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_journey_note_types: Object.freeze(["key", "typeSlug", "name", "seeded", "userExtensible", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_journey_notes: Object.freeze(["key", "slug", "gameKey", "ownerKey", "name", "typeKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),

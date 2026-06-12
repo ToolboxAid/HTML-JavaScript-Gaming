@@ -133,6 +133,14 @@ async function controllerProfileRecords(page) {
   });
 }
 
+async function selectedInputDeviceRecords(page) {
+  return page.evaluate(async () => {
+    const response = await fetch("/api/mock-db/snapshot");
+    const payload = await response.json();
+    return payload.data.tables.player_input_device_selections || [];
+  });
+}
+
 async function exposeGamepads(page) {
   await page.evaluate(() => {
     function makePad(id, index) {
@@ -518,22 +526,53 @@ test("Account User Controls owns physical input mapping accordions and profiles"
       "Game Controllers",
       "Combo Inputs",
     ]);
-    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Default profile in use");
+    await expect(page.locator("[data-account-user-controls-selected-device-options] label")).toHaveText([
+      "Keyboard",
+      "Mouse",
+    ]);
+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Default Profile");
+    await page.locator("[data-account-user-controls-selected-device='device:mouse']").check();
+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse.");
+    await expect.poll(async () => (await selectedInputDeviceRecords(page)).length).toBe(1);
+    expect(await selectedInputDeviceRecords(page)).toEqual([
+      expect.objectContaining({
+        deviceType: "Mouse",
+        label: "Mouse",
+        selectionKey: "device:mouse",
+        selectionType: "device",
+      }),
+    ]);
+    expect(await controllerProfileRecords(page)).toHaveLength(0);
+    await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-account-user-controls-selected-device='device:mouse']")).toBeChecked();
+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse.");
+    expect(await controllerProfileRecords(page)).toHaveLength(0);
+
+    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Default Profile");
     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Create my profile");
     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).not.toContainText("Visible fallback");
     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).not.toContainText("Keyboard:");
+    await expect(page.locator("[data-account-user-controls-default-profile='Keyboard']")).toContainText("Default Profile");
+    await expect(page.locator("[data-account-user-controls-default-profile='Keyboard'] button")).toHaveText(["View"]);
+    await expect(page.locator("[data-account-user-controls-default-profile='Keyboard']")).not.toContainText("Edit");
+    await expect(page.locator("[data-account-user-controls-default-profile='Keyboard']")).not.toContainText("Trash");
+    await page.locator("[data-account-user-controls-view-default='Keyboard']").click();
     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("KeyW");
     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("move.y-");
-    await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("Default profile in use");
+    await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("Default Profile");
     await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("Create my profile");
     await expect(page.locator("[data-account-user-controls-section='Mouse']")).not.toContainText("Visible fallback");
     await expect(page.locator("[data-account-user-controls-section='Mouse']")).not.toContainText("Mouse:");
+    await expect(page.locator("[data-account-user-controls-default-profile='Mouse']")).toContainText("Default Profile");
+    await expect(page.locator("[data-account-user-controls-default-profile='Mouse'] button")).toHaveText(["View"]);
+    await page.locator("[data-account-user-controls-view-default='Mouse']").click();
     await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("MouseButton0");
     await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("action.primary");
     await expect(page.locator("[data-account-user-controls-section='Combo Inputs']")).toContainText("Wireframe only");
-    await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).toContainText("No keyboard user control profile saved yet.");
-    await expect(page.locator("[data-account-user-controls-list-family='Mouse']")).toContainText("No mouse user control profile saved yet.");
-    await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).toContainText("No game controller profiles saved yet.");
+    await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).not.toContainText("No keyboard user control profile saved yet.");
+    await expect(page.locator("[data-account-user-controls-list-family='Mouse']")).not.toContainText("No mouse user control profile saved yet.");
+    await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).not.toContainText("No game controller profiles saved yet.");
+    await expect(page.locator("[data-account-user-controls-default-profile='Gamepad'] button")).toHaveText(["View"]);
     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
     await expect(page.locator("[data-account-user-controls-save-all]")).toHaveCount(0);
@@ -654,6 +693,16 @@ test("Account User Controls owns physical input mapping accordions and profiles"
     expect(gamepadNormalizedOptions).toContain("trigger.left");
     await page.locator("[data-account-user-controls-save]").click();
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Custom Arcade Pad Profile.");
+    const selectedDeviceLabels = await page.locator("[data-account-user-controls-selected-device-options] label").evaluateAll((labels) =>
+      labels.map((label) => label.textContent.trim()),
+    );
+    expect(selectedDeviceLabels).toEqual(expect.arrayContaining([
+      "Keyboard",
+      "Mouse",
+      "Keyboard (Keyboard Profile)",
+      "Mouse (Mouse Profile)",
+      "Custom Arcade Pad (Custom Arcade Pad Profile)",
+    ]));
 
     const profiles = await controllerProfileRecords(page);
     expect(profiles).toHaveLength(3);
@@ -698,8 +747,13 @@ test("Account User Controls owns physical input mapping accordions and profiles"
     expect(JSON.stringify(profiles)).not.toContain("eventD");
     expect(JSON.stringify(profiles)).not.toContain("eventU");
     expect(JSON.stringify(profiles)).not.toContain("eventDC");
+    await page.locator(`[data-account-user-controls-selected-device='profile:${gamepadProfile.id}']`).check();
+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Custom Arcade Pad (Custom Arcade Pad Profile).");
 
     await page.reload({ waitUntil: "networkidle" });
+    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected device not connected. Using Default Profile.");
+    expect(await controllerProfileRecords(page)).toHaveLength(3);
+    expect((await controllerProfileRecords(page)).map((profile) => profile.profileName)).not.toContain("Default Profile");
     await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).toContainText("Keyboard");
     await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).not.toContainText("Keyboard:");
     await expect(page.locator("[data-account-user-controls-list-family='Mouse']")).toContainText("Mouse");
