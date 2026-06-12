@@ -353,9 +353,30 @@ test("Account User Controls owns physical input mapping accordions and profiles"
     await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard");
     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard");
+    await expect(page.locator("[data-account-user-controls-table='Keyboard'] > thead th")).toHaveText([
+      "Physical Controller",
+      "Physical Input",
+      "Normalized Control",
+      "Actions",
+    ]);
+    await expect(page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-generated-input-table] th")).toHaveText([
+      "Physical Input",
+      "Normalized Control",
+    ]);
+    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).not.toContainText("Deadzone");
+    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).not.toContainText("Sensitivity");
     await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("KeyW");
-    await page.locator("[data-account-user-controls-physical-input='0']").fill("ArrowRight");
-    await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("move.y-");
+    await expect(page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-input-normalized]")).toHaveCount(0);
+    await expect(page.locator("[data-account-user-controls-input-normalized-readonly='0']")).toHaveText("move.y-");
+    await page.locator("[data-account-user-controls-physical-input='0']").click();
+    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("");
+    await page.waitForTimeout(20);
+    await page.keyboard.press("ArrowRight");
+    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("ArrowRight");
+    await page.locator("[data-account-user-controls-physical-input='1']").click();
+    await expect(page.locator("[data-account-user-controls-physical-input='1']")).toHaveValue("");
+    await page.waitForTimeout(5200);
+    await expect(page.locator("[data-account-user-controls-physical-input='1']")).toHaveValue("KeyA");
     await page.locator("[data-account-user-controls-save]").click();
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Keyboard Profile.");
 
@@ -363,7 +384,18 @@ test("Account User Controls owns physical input mapping accordions and profiles"
     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Mouse");
     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Mouse");
     await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("MouseButton0");
-    await page.locator("[data-account-user-controls-physical-input='0']").fill("MouseButton1");
+    const mouseNormalizedOptions = await page.locator("[data-account-user-controls-section='Mouse'] [data-account-user-controls-input-normalized='0'] option").evaluateAll((options) => options.map((option) => option.value));
+    expect(mouseNormalizedOptions).not.toContain("dpad.up");
+    expect(mouseNormalizedOptions).not.toContain("trigger.left");
+    await page.locator("[data-account-user-controls-physical-input='0']").click();
+    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("");
+    await page.waitForTimeout(20);
+    await page.locator("[data-account-user-controls-status]").dispatchEvent("mousedown", { button: 1, bubbles: true });
+    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("MouseButton1");
+    await page.locator("[data-account-user-controls-physical-input='1']").click();
+    await expect(page.locator("[data-account-user-controls-physical-input='1']")).toHaveValue("");
+    await page.waitForTimeout(5200);
+    await expect(page.locator("[data-account-user-controls-physical-input='1']")).toHaveValue("MouseButton2");
     await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("action.primary");
     await page.locator("[data-account-user-controls-save]").click();
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Mouse Profile.");
@@ -411,6 +443,9 @@ test("Account User Controls owns physical input mapping accordions and profiles"
     await expect(triggerLeft.locator("[data-account-user-controls-deadzone]")).toBeVisible();
     await expect(triggerLeft.locator("[data-account-user-controls-invert]")).toBeVisible();
     await expect(triggerLeft.locator("[data-account-user-controls-sensitivity]")).toBeVisible();
+    const gamepadNormalizedOptions = await triggerLeft.locator("[data-account-user-controls-input-normalized] option").evaluateAll((options) => options.map((option) => option.value));
+    expect(gamepadNormalizedOptions).toContain("dpad.up");
+    expect(gamepadNormalizedOptions).toContain("trigger.left");
     await page.locator("[data-account-user-controls-save]").click();
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Custom Arcade Pad Profile.");
 

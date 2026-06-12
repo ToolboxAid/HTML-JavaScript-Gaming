@@ -3,11 +3,12 @@ Changed Runtime JS Coverage Guardrail
 Status: advisory only.
 Thresholds: none enforced.
 Missing changed runtime JS files are WARN, not FAIL.
-Source: Playwright/Chromium built-in V8 coverage from the active Playwright run, normalized to PR_26162_044 changed runtime JavaScript files.
+Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(93%) account/user-controls-page.js - executed lines 820/820; executed functions 98/105
-(96%) toolbox/controls/controls.js - executed lines 509/509; executed functions 51/53
+(94%) account/user-controls-page.js - current PR changed runtime JS file with browser V8 coverage; executed lines 961/961; executed functions 111/118
+(0%) toolbox/controls/controls.js - WARNING: reporter HEAD-baseline file was not collected by Playwright V8 coverage; not part of the current PR diff; advisory only
 
 Guardrail warnings:
-(100%) none - no changed runtime JS coverage warnings
+(100%) none for current PR changed runtime JS files
+(0%) toolbox/controls/controls.js - WARNING: reporter HEAD-baseline file missing from coverage; not part of the current PR diff; advisory only

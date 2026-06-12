@@ -1,5 +1,6 @@
 import { createControlsToolApiRepository } from "../toolbox/controls/controls-api-client.js";
 import InputService from "../src/engine/input/InputService.js";
+import InputCaptureService from "../src/engine/input/InputCaptureService.js";
 import { gamepadProfileInputNames } from "../src/engine/input/GamepadInputClassifier.js";
 import {
   normalizeProfileInputMappings,
@@ -9,8 +10,10 @@ import {
 } from "../src/engine/input/NormalizedInputRegistry.js";
 
 const DEVICE_POLL_INTERVAL_MS = 1200;
+const INPUT_CAPTURE_TIMEOUT_MS = 5000;
 const KEYBOARD_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "Enter", "Escape", "KeyP"]);
 const MOUSE_INPUTS = Object.freeze(["MouseButton0", "MouseButton2", "MouseX", "MouseY"]);
+const KEYBOARD_MOUSE_EXCLUDED_NORMALIZED_PREFIXES = Object.freeze(["dpad.", "trigger."]);
 const SUPPORTED_CONTROL_TYPES = Object.freeze([
   "Keyboard Key",
   "Mouse Button",
@@ -126,9 +129,11 @@ export class AccountUserControlsPage {
     this.root = root;
     this.repository = createControlsToolApiRepository();
     this.inputService = new InputService({ target: window });
+    this.captureService = new InputCaptureService({ inputService: this.inputService });
     this.profiles = [];
     this.editingProfile = null;
     this.devicePollingTimer = null;
+    this.inputCapture = null;
     this.elements = {
       addProfile: root.querySelector("[data-account-user-controls-add-profile]"),
       defaultLists: [...root.querySelectorAll("[data-account-user-controls-default-list]")],
@@ -398,6 +403,31 @@ export class AccountUserControlsPage {
     return "No game controller profiles saved yet.";
   }
 
+  tableColumnCountForFamily(family) {
+    return family === "Keyboard" ? 4 : 7;
+  }
+
+  normalizedOptionsForProfile(profile) {
+    const allOptions = this.inputService.getNormalizedInputOptions();
+    const normalizedFamily = this.profileListFamily(profile);
+    const filteredOptions = normalizedFamily === "Keyboard" || normalizedFamily === "Mouse"
+      ? allOptions.filter((option) =>
+        !KEYBOARD_MOUSE_EXCLUDED_NORMALIZED_PREFIXES.some((prefix) => option.value.startsWith(prefix)),
+      )
+      : allOptions;
+    return [
+      { label: "Unassigned", value: "" },
+      ...filteredOptions,
+    ];
+  }
+
+  generatedInputHeadings(profile) {
+    if (this.profileListFamily(profile) === "Keyboard") {
+      return ["Physical Input", "Normalized Control"];
+    }
+    return ["Physical Input", "Normalized Control", "Deadzone", "Invert", "Sensitivity"];
+  }
+
   renderProfiles() {
     if (!this.elements.lists.length) {
       return;
@@ -423,7 +453,7 @@ export class AccountUserControlsPage {
       if (!rows.length) {
         const row = document.createElement("tr");
         const cell = document.createElement("td");
-        cell.colSpan = 7;
+        cell.colSpan = this.tableColumnCountForFamily(family);
         cell.textContent = this.emptyProfileMessage(family);
         row.append(cell);
         rows.push(row);
@@ -475,14 +505,23 @@ export class AccountUserControlsPage {
   renderProfileRow(profile) {
     const row = document.createElement("tr");
     row.dataset.accountUserControlsProfileRow = profile.id;
-    row.append(
-      tableCell(profile.controllerName),
-      tableCell(`${profile.inputMappings.length} Physical Inputs`),
-      tableCell(this.profileInputSummary(profile)),
-      tableCell(this.profileAnalogSummary(profile)),
-      tableCell(profile.inputMappings.some((mapping) => mapping.invert) ? "Invert configured" : "No invert"),
-      tableCell(this.profileSensitivitySummary(profile)),
-    );
+    const family = this.profileListFamily(profile);
+    if (family === "Keyboard") {
+      row.append(
+        tableCell(profile.controllerName),
+        tableCell(`${profile.inputMappings.length} Physical Inputs`),
+        tableCell(this.profileInputSummary(profile)),
+      );
+    } else {
+      row.append(
+        tableCell(profile.controllerName),
+        tableCell(`${profile.inputMappings.length} Physical Inputs`),
+        tableCell(this.profileInputSummary(profile)),
+        tableCell(this.profileAnalogSummary(profile)),
+        tableCell(profile.inputMappings.some((mapping) => mapping.invert) ? "Invert configured" : "No invert"),
+        tableCell(this.profileSensitivitySummary(profile)),
+      );
+    }
     const actions = document.createElement("td");
     const group = document.createElement("div");
     group.className = "action-group action-group--tight";
@@ -498,7 +537,8 @@ export class AccountUserControlsPage {
   inputControl(profile, inputMapping, index) {
     const row = document.createElement("tr");
     row.dataset.accountUserControlsInputPair = "true";
-    const editablePhysicalInput = profile.deviceType === "Keyboard" || profile.deviceType === "Mouse";
+    const family = this.profileListFamily(profile);
+    const editablePhysicalInput = family === "Keyboard" || family === "Mouse";
     const physicalInputControl = editablePhysicalInput
       ? document.createElement("input")
       : document.createElement("strong");
@@ -506,18 +546,18 @@ export class AccountUserControlsPage {
     if (editablePhysicalInput) {
       physicalInputControl.type = "text";
       physicalInputControl.value = inputMapping.physicalInput;
+      physicalInputControl.readOnly = true;
       physicalInputControl.dataset.accountUserControlsPhysicalInput = String(index);
-      physicalInputControl.setAttribute("aria-label", `${profile.deviceType} physical input`);
+      physicalInputControl.dataset.accountUserControlsCaptureDevice = family;
+      physicalInputControl.title = `Click to capture the next ${family.toLowerCase()} input.`;
+      physicalInputControl.setAttribute("aria-label", `${family} physical input`);
     } else {
       physicalInputControl.textContent = inputMapping.physicalInput;
     }
     physicalInputCell.append(physicalInputControl);
     const stack = document.createElement("div");
     stack.className = "content-stack content-stack--compact";
-    const normalizedOptions = [
-      { label: "Unassigned", value: "" },
-      ...this.inputService.getNormalizedInputOptions(),
-    ];
+    const normalizedOptions = this.normalizedOptionsForProfile(profile);
     if (physicalInputIsAnalog(inputMapping.physicalInput)) {
       const negativeSelect = selectControl({
         ariaLabel: `${inputMapping.physicalInput} negative normalized control`,
@@ -532,6 +572,13 @@ export class AccountUserControlsPage {
       });
       positiveSelect.dataset.accountUserControlsInputPositive = String(index);
       stack.append(labeledControl("Negative", negativeSelect), labeledControl("Positive", positiveSelect));
+    } else if (family === "Keyboard") {
+      const value = normalizeText(inputMapping.normalizedInput) || "Unassigned";
+      const readonlyControl = document.createElement("span");
+      readonlyControl.className = "status";
+      readonlyControl.dataset.accountUserControlsInputNormalizedReadonly = String(index);
+      readonlyControl.textContent = value;
+      stack.append(readonlyControl);
     } else {
       const select = selectControl({
         ariaLabel: `${inputMapping.physicalInput} normalized control`,
@@ -545,6 +592,11 @@ export class AccountUserControlsPage {
     validation.className = "status";
     validation.dataset.accountUserControlsInputValidation = String(index);
     stack.append(validation);
+
+    if (family === "Keyboard") {
+      row.append(physicalInputCell, controlCell(stack));
+      return row;
+    }
 
     const deadzoneCell = document.createElement("td");
     if (physicalInputSupportsTuning(inputMapping.physicalInput)) {
@@ -598,6 +650,7 @@ export class AccountUserControlsPage {
 
   renderEditingRows(values = {}) {
     const profile = this.normalizeProfile(values);
+    const family = this.profileListFamily(profile);
     const row = document.createElement("tr");
     row.dataset.accountUserControlsEditingRow = "true";
     const controllerName = document.createElement("input");
@@ -621,20 +674,29 @@ export class AccountUserControlsPage {
       actionButton("Cancel", "accountUserControlsCancel"),
     );
     actions.append(group);
-    row.append(
-      controllerCell,
-      tableCell(`${profile.inputMappings.length} Physical Inputs`),
-      tableCell(this.profileInputSummary(profile)),
-      tableCell(this.profileAnalogSummary(profile)),
-      tableCell(profile.inputMappings.some((mapping) => mapping.invert) ? "Invert configured" : "No invert"),
-      tableCell(this.profileSensitivitySummary(profile)),
-      actions,
-    );
+    if (family === "Keyboard") {
+      row.append(
+        controllerCell,
+        tableCell(`${profile.inputMappings.length} Physical Inputs`),
+        tableCell(this.profileInputSummary(profile)),
+        actions,
+      );
+    } else {
+      row.append(
+        controllerCell,
+        tableCell(`${profile.inputMappings.length} Physical Inputs`),
+        tableCell(this.profileInputSummary(profile)),
+        tableCell(this.profileAnalogSummary(profile)),
+        tableCell(profile.inputMappings.some((mapping) => mapping.invert) ? "Invert configured" : "No invert"),
+        tableCell(this.profileSensitivitySummary(profile)),
+        actions,
+      );
+    }
 
     const detailsRow = document.createElement("tr");
     detailsRow.dataset.accountUserControlsEditingDetails = "true";
     const detailsCell = document.createElement("td");
-    detailsCell.colSpan = 7;
+    detailsCell.colSpan = this.tableColumnCountForFamily(family);
     const wrapper = document.createElement("div");
     wrapper.className = "table-wrapper";
     const table = document.createElement("table");
@@ -643,7 +705,7 @@ export class AccountUserControlsPage {
     table.setAttribute("aria-label", `${profile.controllerName} generated controller inputs`);
     const head = document.createElement("thead");
     const headRow = document.createElement("tr");
-    ["Physical Input", "Normalized Control", "Deadzone", "Invert", "Sensitivity"].forEach((heading) => {
+    this.generatedInputHeadings(profile).forEach((heading) => {
       const cell = document.createElement("th");
       cell.textContent = heading;
       headRow.append(cell);
@@ -799,7 +861,83 @@ export class AccountUserControlsPage {
     });
   }
 
+  clearInputCapture({ restore = false } = {}) {
+    if (!this.inputCapture) {
+      return;
+    }
+    const { listeners, previousValue, target, timer } = this.inputCapture;
+    if (timer) {
+      window.clearTimeout(timer);
+    }
+    listeners.forEach(({ handler, type }) => {
+      window.removeEventListener(type, handler, true);
+    });
+    if (restore && target?.isConnected) {
+      target.value = previousValue;
+    }
+    this.inputCapture = null;
+  }
+
+  capturedInputBinding(deviceType, event) {
+    if (deviceType === "Keyboard") {
+      return this.captureService.captureKeyboard(event)?.binding || "";
+    }
+    if (event.type === "wheel") {
+      return this.captureService.captureWheel(event)?.binding || "";
+    }
+    return this.captureService.captureMouse(event)?.binding || "";
+  }
+
+  beginPhysicalInputCapture(target) {
+    const deviceType = target.dataset.accountUserControlsCaptureDevice || "";
+    if (deviceType !== "Keyboard" && deviceType !== "Mouse") {
+      return;
+    }
+    const previousValue = target.value;
+    this.clearInputCapture({ restore: true });
+    target.value = "";
+    target.focus();
+    const captureLabel = deviceType === "Keyboard" ? "keyboard key" : "mouse input";
+    this.setStatus(`Waiting for ${captureLabel}. Previous value returns after 5 seconds with no input.`);
+    const listeners = [];
+    const finishCapture = (event) => {
+      event.preventDefault();
+      event.stopPropagation();
+      const binding = this.capturedInputBinding(deviceType, event);
+      if (!binding) {
+        return;
+      }
+      this.clearInputCapture();
+      if (target.isConnected) {
+        target.value = binding;
+        target.focus();
+      }
+      this.setStatus(`Captured ${binding}. Save the profile to keep it.`);
+    };
+    const timeout = window.setTimeout(() => {
+      this.clearInputCapture({ restore: true });
+      this.setStatus(`No ${captureLabel} captured. Restored ${previousValue}.`);
+    }, INPUT_CAPTURE_TIMEOUT_MS);
+    this.inputCapture = {
+      listeners,
+      previousValue,
+      target,
+      timer: timeout,
+    };
+    window.setTimeout(() => {
+      if (!this.inputCapture || this.inputCapture.target !== target) {
+        return;
+      }
+      const types = deviceType === "Keyboard" ? ["keydown"] : ["mousedown", "wheel"];
+      types.forEach((type) => {
+        window.addEventListener(type, finishCapture, true);
+        listeners.push({ handler: finishCapture, type });
+      });
+    }, 0);
+  }
+
   saveEditingProfile() {
+    this.clearInputCapture();
     const profile = this.profileFromEditingRow();
     const validation = this.validateProfile(profile);
     this.renderInputValidation(validation);
@@ -820,6 +958,13 @@ export class AccountUserControlsPage {
   }
 
   handleListClick(event) {
+    const physicalInputTarget = event.target instanceof Element
+      ? event.target.closest("[data-account-user-controls-physical-input]")
+      : null;
+    if (physicalInputTarget instanceof HTMLInputElement) {
+      this.beginPhysicalInputCapture(physicalInputTarget);
+      return;
+    }
     const target = event.target instanceof Element ? event.target.closest("button") : null;
     if (!target) {
       return;
@@ -827,10 +972,12 @@ export class AccountUserControlsPage {
     if (target.dataset.accountUserControlsSave !== undefined) {
       this.saveEditingProfile();
     } else if (target.dataset.accountUserControlsCancel !== undefined) {
+      this.clearInputCapture({ restore: true });
       this.editingProfile = null;
       this.renderProfiles();
       this.setStatus("Canceled user control profile edit.");
     } else if (target.dataset.accountUserControlsEdit !== undefined) {
+      this.clearInputCapture({ restore: true });
       const profile = this.profiles.find((candidate) => candidate.id === target.dataset.accountUserControlsEdit);
       if (profile) {
         this.editingProfile = { id: profile.id, values: profile };
@@ -838,6 +985,7 @@ export class AccountUserControlsPage {
         this.setStatus(`Editing ${profile.mappingProfile}.`);
       }
     } else if (target.dataset.accountUserControlsTrash !== undefined) {
+      this.clearInputCapture({ restore: true });
       const profileId = target.dataset.accountUserControlsTrash || "";
       this.profiles = this.profiles.filter((profile) => profile.id !== profileId);
       this.saveProfiles(this.profiles);
