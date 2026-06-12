@@ -49,10 +49,10 @@ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
     Button3: 'action.quaternary',
     Button8: 'action.select',
     Button9: 'action.start',
-    'DPad Down': 'dpad.down',
-    'DPad Left': 'dpad.left',
-    'DPad Right': 'dpad.right',
-    'DPad Up': 'dpad.up',
+    'DPad Down': 'move.y+',
+    'DPad Left': 'move.x-',
+    'DPad Right': 'move.x+',
+    'DPad Up': 'move.y-',
     Enter: 'action.confirm',
     Escape: 'action.cancel',
     KeyA: 'move.x-',
@@ -65,8 +65,8 @@ const DEFAULT_PHYSICAL_INPUT_MAP = Object.freeze({
     MouseX: 'aim.x+',
     MouseY: 'aim.y+',
     Space: 'action.primary',
-    'Trigger Left': 'trigger.left',
-    'Trigger Right': 'trigger.right',
+    'Trigger Left': 'action.primary',
+    'Trigger Right': 'action.secondary',
 });
 
 const DEFAULT_PHYSICAL_AXIS_DIRECTION_MAP = Object.freeze({

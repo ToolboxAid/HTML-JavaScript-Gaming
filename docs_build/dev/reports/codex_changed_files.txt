@@ -1,18 +1,20 @@
 # git status --short
-M account/user-controls-page.js
- M account/user-controls.html
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/engine/input/NormalizedInputRegistry.js
+ M tests/input/NormalizedInputRegistry.test.mjs
  M tests/playwright/tools/InputMappingV2Tool.spec.mjs
-?? docs_build/dev/reports/user-controls-input-capture-cleanup-report.md
+ M toolbox/controls/controls.js
+?? docs_build/dev/reports/controls-remove-physical-controller-actions-report.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/user-controls-input-capture-cleanup-report.md
+docs_build/dev/reports/controls-remove-physical-controller-actions-report.md
 
 # git diff --stat
-account/user-controls-page.js                      | 200 ++++++++++++++++++---
- account/user-controls.html                         |   3 -
- .../dev/reports/coverage_changed_js_guardrail.txt  |   9 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  27 ++-
- tests/playwright/tools/InputMappingV2Tool.spec.mjs |  41 ++++-
- 5 files changed, 230 insertions(+), 50 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  |  7 +--
+ .../dev/reports/playwright_v8_coverage_report.txt  | 18 +++---
+ src/engine/input/NormalizedInputRegistry.js        | 12 ++--
+ tests/input/NormalizedInputRegistry.test.mjs       |  8 ++-
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs | 55 ++++++++++++-----
+ toolbox/controls/controls.js                       | 69 ++++++++++++++++++----
+ 6 files changed, 121 insertions(+), 48 deletions(-)

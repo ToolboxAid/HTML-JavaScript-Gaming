@@ -4,7 +4,7 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
-const NORMALIZED_INPUTS = [
+const GAME_CONTROL_NORMALIZED_INPUTS = [
   "move.x-",
   "move.x+",
   "move.y-",
@@ -19,16 +19,9 @@ const NORMALIZED_INPUTS = [
   "action.quaternary",
   "action.confirm",
   "action.cancel",
-  "action.menu",
+  "action.pause",
   "action.start",
   "action.select",
-  "action.pause",
-  "dpad.up",
-  "dpad.down",
-  "dpad.left",
-  "dpad.right",
-  "trigger.left",
-  "trigger.right",
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -215,12 +208,20 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     ]);
     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /Keyboard|Mouse|Joystick|Gamepad|Combo|Object|State|Family/ })).toHaveCount(0);
     await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.");
-    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
-    await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
+    await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(GAME_CONTROL_NORMALIZED_INPUTS.length));
     await expect(page.locator("[data-input-enabled-count]")).toHaveText("10");
-    await expect(page.locator("[data-input-output-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
+    await expect(page.locator("[data-input-output-count]")).toHaveText(String(GAME_CONTROL_NORMALIZED_INPUTS.length));
     await expect(page.locator("[data-input-save-status]")).toHaveText("Complete");
     await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("dpad.");
+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("trigger.");
+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("D-Pad");
+    await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Trigger");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.x-");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.x+");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y-");
+    await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y+");
 
     const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
     await expect(primaryRow.locator("td").nth(0).locator("input")).toBeChecked();
@@ -234,7 +235,8 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
 
     let records = await inputMappingRecords(page);
-    expect(records).toHaveLength(NORMALIZED_INPUTS.length);
+    expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
+    expect(records.map((record) => record.normalizedInput).sort()).toEqual([...GAME_CONTROL_NORMALIZED_INPUTS].sort());
     expect(records.find((record) => record.usageLabel === "Primary Action")).toMatchObject({
       enabled: true,
       eventD: true,
@@ -248,7 +250,7 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     });
     expect(records.every((record) => !record.inputFamily)).toBe(true);
     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
-    expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton/);
+    expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton|dpad\.|trigger\./);
 
     await expectNoPageFailures(failures);
   } finally {
@@ -261,9 +263,14 @@ test("Game Controls validates rows and persists device-agnostic event fields", a
 
   try {
     await expect(page.locator("[data-input-preset]")).toHaveCount(0);
-    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
 
     await page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first().getByRole("button", { name: "Edit" }).click();
+    const gameControlOptions = await page.locator("[data-input-row-normalized] option").evaluateAll((options) => options.map((option) => option.value));
+    expect(gameControlOptions).toEqual(GAME_CONTROL_NORMALIZED_INPUTS);
+    expect(gameControlOptions).not.toContain("dpad.up");
+    expect(gameControlOptions).not.toContain("trigger.left");
+    expect(gameControlOptions).not.toContain("action.menu");
     await page.locator("[data-input-row-usage-label]").fill("");
     await page.locator("[data-input-save-mapping]").click();
     await expect(page.locator("[data-input-row-validation]")).toContainText("Add a Usage Label");
@@ -290,7 +297,7 @@ test("Game Controls validates rows and persists device-agnostic event fields", a
     });
 
     let records = await inputMappingRecords(page);
-    expect(records).toHaveLength(NORMALIZED_INPUTS.length);
+    expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
     expect(records.find((record) => record.usageLabel === "Charge Shot")).toMatchObject({ eventD: false, eventH: true });
     expect(records.find((record) => record.usageLabel === "Double Tap Pause")).toMatchObject({ eventDC: true });
     expect(records.every((record) => !record.inputFamily)).toBe(true);
@@ -426,9 +433,16 @@ test("Account User Controls owns physical input mapping accordions and profiles"
     await expect(button0.locator("[data-account-user-controls-deadzone]")).toHaveCount(0);
     await expect(button0.locator("[data-account-user-controls-sensitivity]")).toHaveCount(0);
     const dpadUp = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "DPad Up" });
+    await expect(dpadUp.locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.y-");
     await expect(dpadUp).toContainText("N/A");
     await expect(dpadUp.locator("[data-account-user-controls-deadzone]")).toHaveCount(0);
     await expect(dpadUp.locator("[data-account-user-controls-sensitivity]")).toHaveCount(0);
+    const dpadDown = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "DPad Down" });
+    await expect(dpadDown.locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.y+");
+    const dpadLeft = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "DPad Left" });
+    await expect(dpadLeft.locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.x-");
+    const dpadRight = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "DPad Right" });
+    await expect(dpadRight.locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.x+");
     await expect(page.locator("body")).not.toContainText("Not applicable");
     const axis0 = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Axis0" });
     await expect(axis0.locator("[data-account-user-controls-input-negative]")).toHaveValue("move.x-");
@@ -440,9 +454,12 @@ test("Account User Controls owns physical input mapping accordions and profiles"
     await axis0Sensitivity.fill("125");
     await expect(axis0.locator("[data-slider-value-for='accountUserControlsSensitivity']")).toHaveText("125%");
     const triggerLeft = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Trigger Left" });
+    await expect(triggerLeft.locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
     await expect(triggerLeft.locator("[data-account-user-controls-deadzone]")).toBeVisible();
     await expect(triggerLeft.locator("[data-account-user-controls-invert]")).toBeVisible();
     await expect(triggerLeft.locator("[data-account-user-controls-sensitivity]")).toBeVisible();
+    const triggerRight = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Trigger Right" });
+    await expect(triggerRight.locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.secondary");
     const gamepadNormalizedOptions = await triggerLeft.locator("[data-account-user-controls-input-normalized] option").evaluateAll((options) => options.map((option) => option.value));
     expect(gamepadNormalizedOptions).toContain("dpad.up");
     expect(gamepadNormalizedOptions).toContain("trigger.left");
@@ -481,6 +498,12 @@ test("Account User Controls owns physical input mapping accordions and profiles"
       invert: true,
       sensitivity: 125,
     });
+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "DPad Up")).toMatchObject({ normalizedInput: "move.y-" });
+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "DPad Down")).toMatchObject({ normalizedInput: "move.y+" });
+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "DPad Left")).toMatchObject({ normalizedInput: "move.x-" });
+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "DPad Right")).toMatchObject({ normalizedInput: "move.x+" });
+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Trigger Left")).toMatchObject({ normalizedInput: "action.primary" });
+    expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Trigger Right")).toMatchObject({ normalizedInput: "action.secondary" });
     expect(JSON.stringify(profiles)).not.toContain("gameAction");
     expect(JSON.stringify(profiles)).not.toContain("objectKey");
     expect(JSON.stringify(profiles)).not.toContain("eventD");

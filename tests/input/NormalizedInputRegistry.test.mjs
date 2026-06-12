@@ -50,8 +50,12 @@ function testRegistryContainsPlayableNormalizedInputs() {
 function testPhysicalDefaultsRouteThroughNormalizedInputs() {
   assert.equal(defaultNormalizedInputForPhysicalInput('Button0'), 'action.primary');
   assert.equal(defaultNormalizedInputForPhysicalInput('Button1'), 'action.secondary');
-  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Up'), 'dpad.up');
-  assert.equal(defaultNormalizedInputForPhysicalInput('Trigger Right'), 'trigger.right');
+  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Up'), 'move.y-');
+  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Down'), 'move.y+');
+  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Left'), 'move.x-');
+  assert.equal(defaultNormalizedInputForPhysicalInput('DPad Right'), 'move.x+');
+  assert.equal(defaultNormalizedInputForPhysicalInput('Trigger Left'), 'action.primary');
+  assert.equal(defaultNormalizedInputForPhysicalInput('Trigger Right'), 'action.secondary');
   assert.equal(defaultNormalizedInputForPhysicalInput('Axis0'), 'move.x+');
   assert.equal(defaultNormalizedInputForPhysicalInput('Axis3'), 'aim.y+');
   assert.equal(defaultNormalizedInputForPhysicalInput('KeyW'), 'move.y-');

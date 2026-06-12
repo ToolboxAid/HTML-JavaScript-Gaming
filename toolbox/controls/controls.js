@@ -11,10 +11,31 @@ const CONTROL_EVENT_OPTIONS = Object.freeze([
   Object.freeze({ field: "eventDC", label: "DC" }),
 ]);
 
+const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
+  "move.x-",
+  "move.x+",
+  "move.y-",
+  "move.y+",
+  "aim.x-",
+  "aim.x+",
+  "aim.y-",
+  "aim.y+",
+  "action.primary",
+  "action.secondary",
+  "action.tertiary",
+  "action.quaternary",
+  "action.confirm",
+  "action.cancel",
+  "action.pause",
+  "action.start",
+  "action.select",
+]);
+
+const GAME_CONTROL_NORMALIZED_INPUT_IDS = new Set(GAME_CONTROL_NORMALIZED_INPUTS);
+
 const NORMALIZED_USAGE_LABELS = Object.freeze({
   "action.cancel": "Cancel",
   "action.confirm": "Confirm",
-  "action.menu": "Menu",
   "action.pause": "Pause",
   "action.primary": "Primary Action",
   "action.quaternary": "Fourth Action",
@@ -26,16 +47,10 @@ const NORMALIZED_USAGE_LABELS = Object.freeze({
   "aim.x+": "Aim Right",
   "aim.y-": "Aim Up",
   "aim.y+": "Aim Down",
-  "dpad.down": "D-Pad Down",
-  "dpad.left": "D-Pad Left",
-  "dpad.right": "D-Pad Right",
-  "dpad.up": "D-Pad Up",
   "move.x-": "Move Left",
   "move.x+": "Move Right",
   "move.y-": "Move Up",
   "move.y+": "Move Down",
-  "trigger.left": "Left Trigger",
-  "trigger.right": "Right Trigger",
 });
 
 const COMMON_DEFAULT_GAME_CONTROLS = new Set([
@@ -131,6 +146,21 @@ function selectControl({ ariaLabel, options, selectedValue }) {
   return select;
 }
 
+function gameControlNormalizedOptions() {
+  const optionByValue = new Map(normalizedInputOptions().map((option) => [option.value, option]));
+  return GAME_CONTROL_NORMALIZED_INPUTS
+    .map((inputId) => optionByValue.get(inputId))
+    .filter(Boolean);
+}
+
+function normalizeGameControlInput(inputId, fallback = "") {
+  const normalizedInput = normalizeNormalizedInput(inputId);
+  if (GAME_CONTROL_NORMALIZED_INPUT_IDS.has(normalizedInput)) {
+    return normalizedInput;
+  }
+  return GAME_CONTROL_NORMALIZED_INPUT_IDS.has(fallback) ? fallback : "";
+}
+
 function checkboxCell(checked, label) {
   const input = document.createElement("input");
   input.type = "checkbox";
@@ -201,7 +231,7 @@ function mappingIdFor(mapping) {
 
 function normalizeMapping(source = {}) {
   const sourceNormalizedInput = normalizeText(source.normalizedInput);
-  const normalizedInput = normalizeNormalizedInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
+  const normalizedInput = normalizeGameControlInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
   const usageLabel = normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
   const enabled = source.enabled === undefined ? true : Boolean(source.enabled);
   const eventFields = normalizedEventFields(source);
@@ -230,11 +260,24 @@ function readMappings() {
     controlsRepository = createControlsToolApiRepository();
     result = controlsRepository.listMappings();
   }
-  return Array.isArray(result) ? result.map((mapping) => normalizeMapping(mapping)) : [];
+  if (!Array.isArray(result)) {
+    return [];
+  }
+  const normalizedMappings = result.map((mapping) => normalizeMapping(mapping));
+  const gameControlMappings = normalizedMappings.filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
+  if (gameControlMappings.length !== normalizedMappings.length) {
+    const cleanupResult = controlsRepository.replaceMappings(gameControlMappings);
+    if (Array.isArray(cleanupResult?.mappings)) {
+      return cleanupResult.mappings
+        .map((mapping) => normalizeMapping(mapping))
+        .filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
+    }
+  }
+  return gameControlMappings;
 }
 
 function createDefaultGameControlMappings() {
-  return normalizedInputOptions().map((option, index) => {
+  return gameControlNormalizedOptions().map((option, index) => {
     const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
     return normalizeMapping({
       enabled,
@@ -276,10 +319,10 @@ function validateMappingAction(mapping) {
   if (!mapping.enabled) {
     return { ok: true, message: "" };
   }
-  if (!normalizeNormalizedInput(mapping.normalizedInput)) {
+  if (!normalizeGameControlInput(mapping.normalizedInput)) {
     return {
       ok: false,
-      message: "Choose a normalized action from the registry.",
+      message: "Choose a game-level normalized action.",
     };
   }
   if (!normalizeText(mapping.usageLabel)) {
@@ -357,7 +400,7 @@ function renderEditingRow(values = {}) {
 
   const normalizedInputSelect = selectControl({
     ariaLabel: "Normalized Action",
-    options: normalizedInputOptions(),
+    options: gameControlNormalizedOptions(),
     selectedValue: values.normalizedInput || "action.primary",
   });
   normalizedInputSelect.dataset.inputRowNormalized = "true";
