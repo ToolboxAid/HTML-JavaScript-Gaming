@@ -11,33 +11,6 @@ const CONTROL_EVENT_OPTIONS = Object.freeze([
   Object.freeze({ field: "eventDC", label: "DC" }),
 ]);
 
-const NORMALIZED_CONTROL_DESCRIPTIONS = Object.freeze({
-  "action.cancel": "Cancel an action or leave a menu.",
-  "action.confirm": "Confirm a menu choice or prompt.",
-  "action.menu": "Open or close a game menu.",
-  "action.pause": "Pause gameplay.",
-  "action.primary": "Primary game action.",
-  "action.quaternary": "Fourth game action.",
-  "action.secondary": "Secondary game action.",
-  "action.select": "Select a menu item.",
-  "action.start": "Start or resume the game.",
-  "action.tertiary": "Third game action.",
-  "aim.x-": "Aim left.",
-  "aim.x+": "Aim right.",
-  "aim.y-": "Aim up.",
-  "aim.y+": "Aim down.",
-  "dpad.down": "Directional pad down.",
-  "dpad.left": "Directional pad left.",
-  "dpad.right": "Directional pad right.",
-  "dpad.up": "Directional pad up.",
-  "move.x-": "Move left.",
-  "move.x+": "Move right.",
-  "move.y-": "Move up.",
-  "move.y+": "Move down.",
-  "trigger.left": "Left trigger.",
-  "trigger.right": "Right trigger.",
-});
-
 const NORMALIZED_USAGE_LABELS = Object.freeze({
   "action.cancel": "Cancel",
   "action.confirm": "Confirm",
@@ -78,84 +51,16 @@ const COMMON_DEFAULT_GAME_CONTROLS = new Set([
   "move.y+",
 ]);
 
-const GAME_CONTROL_PRESETS = Object.freeze({
-  fighting: Object.freeze([
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x+", usageLabel: "Move Right" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.primary", usageLabel: "Light Attack" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.secondary", usageLabel: "Heavy Attack" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "action.tertiary", usageLabel: "Block" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "trigger.right", usageLabel: "Special" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.start", usageLabel: "Pause" }),
-  ]),
-  menu: Object.freeze([
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.y-", usageLabel: "Menu Up" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.y+", usageLabel: "Menu Down" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.confirm", usageLabel: "Confirm" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.cancel", usageLabel: "Cancel" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "action.menu", usageLabel: "Menu" }),
-  ]),
-  "paddle-ball": Object.freeze([
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x+", usageLabel: "Move Right" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.primary", usageLabel: "Serve" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.start", usageLabel: "Pause" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "aim.x+", usageLabel: "Aim Paddle" }),
-  ]),
-  "party-arena": Object.freeze([
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x+", usageLabel: "Move Right" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.y-", usageLabel: "Move Up" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.y+", usageLabel: "Move Down" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.primary", usageLabel: "Jump" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.secondary", usageLabel: "Attack" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "trigger.right", usageLabel: "Special" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.start", usageLabel: "Pause" }),
-  ]),
-  platformer: Object.freeze([
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x+", usageLabel: "Move Right" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.primary", usageLabel: "Jump" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.secondary", usageLabel: "Attack" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.start", usageLabel: "Pause" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "move.y-", usageLabel: "Look Up" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "move.y+", usageLabel: "Crouch" }),
-  ]),
-  shooter: Object.freeze([
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x+", usageLabel: "Move Right" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.y-", usageLabel: "Move Up" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.y+", usageLabel: "Move Down" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.primary", usageLabel: "Fire" }),
-    Object.freeze({ enabled: false, eventH: true, normalizedInput: "action.primary", usageLabel: "Charge Shot" }),
-    Object.freeze({ enabled: false, eventU: true, normalizedInput: "action.primary", usageLabel: "Release Shot" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.start", usageLabel: "Pause" }),
-  ]),
-  vehicle: Object.freeze([
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "trigger.right", usageLabel: "Thrust" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "trigger.left", usageLabel: "Brake" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Steer Left" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x+", usageLabel: "Steer Right" }),
-    Object.freeze({ enabled: true, eventD: true, normalizedInput: "action.start", usageLabel: "Pause" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "aim.x+", usageLabel: "Analog Steering" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "action.primary", usageLabel: "Thrust" }),
-    Object.freeze({ enabled: false, eventD: true, normalizedInput: "action.secondary", usageLabel: "Brake" }),
-  ]),
-});
-
 let controlsRepository = createControlsToolApiRepository();
 let mappings = [];
 let editingRow = null;
 
 const elements = {
-  customActionStatus: document.querySelector("[data-input-custom-action-status]"),
-  defaultActions: document.querySelector("[data-input-default-actions]"),
   enabledCount: document.querySelector("[data-input-enabled-count]"),
   list: document.querySelector("[data-input-mapping-list]"),
   mappingCount: document.querySelector("[data-input-mapping-count]"),
   outputCount: document.querySelector("[data-input-output-count]"),
   outputStatus: document.querySelector("[data-input-output-status]"),
-  presetButtons: document.querySelectorAll("[data-input-preset]"),
   returnWorkspace: document.querySelector("[data-input-return-workspace]"),
   saveStatus: document.querySelector("[data-input-save-status]"),
   statusLog: document.querySelector("[data-input-status-log]"),
@@ -254,14 +159,6 @@ function editableCheckboxCell({ checked, datasetName, label }) {
     cell.className = "status";
   }
   return cell;
-}
-
-function normalizedControlCatalog() {
-  return normalizedInputOptions().map((option) => ({
-    description: NORMALIZED_CONTROL_DESCRIPTIONS[option.value] || "Generic normalized control.",
-    id: option.value,
-    label: option.label,
-  }));
 }
 
 function legacyEventFields(source = {}) {
@@ -420,30 +317,6 @@ function renderOutput() {
   setText(elements.saveStatus, status);
 }
 
-function renderDefaults() {
-  if (!elements.defaultActions) {
-    return;
-  }
-  elements.defaultActions.replaceChildren(...normalizedControlCatalog().map((action) => {
-    const row = document.createElement("tr");
-    row.dataset.inputActionCatalogRow = action.id;
-    const labelCell = document.createElement("td");
-    const label = document.createElement("strong");
-    label.dataset.inputActionLabel = action.id;
-    label.textContent = action.label;
-    labelCell.append(label);
-    const descriptionCell = document.createElement("td");
-    const description = document.createElement("span");
-    description.className = "status";
-    description.dataset.inputActionDescription = action.id;
-    description.textContent = action.description;
-    descriptionCell.append(description);
-    row.append(labelCell, descriptionCell);
-    return row;
-  }));
-  setText(elements.customActionStatus, "Normalized controls loaded. Physical inputs are configured in Account User Controls.");
-}
-
 function renderMappingRow(mapping) {
   const row = document.createElement("tr");
   row.dataset.inputMappingRow = mapping.id;
@@ -536,21 +409,12 @@ function renderMappings() {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
     cell.colSpan = 8;
-    cell.textContent = "Missing Game Control Mapping. Apply a preset to define game controls.";
+    cell.textContent = "Missing Game Control Mapping. Default Game Controls load when the shared DB is available.";
     row.append(cell);
     rows.push(row);
   }
   elements.list.replaceChildren(...rows);
   renderOutput();
-}
-
-function renderAll(message = "") {
-  mappings = readMappings();
-  renderDefaults();
-  renderMappings();
-  if (message) {
-    setText(elements.statusLog, message);
-  }
 }
 
 function editingRowElement() {
@@ -662,25 +526,6 @@ function handleListChange(event) {
   updateEditingRowValidation(row);
 }
 
-function applyGameControlPreset(presetKey) {
-  const preset = GAME_CONTROL_PRESETS[presetKey];
-  if (!preset) {
-    setText(elements.statusLog, "WARN: Choose a known game control preset.");
-    return;
-  }
-  const nextMappings = preset.map((row, index) => normalizeMapping({
-    ...row,
-    id: `${presetKey}-${index + 1}`,
-    state: row.enabled === false ? "Disabled" : "Active",
-  }));
-  if (!saveMappings(nextMappings)) {
-    return;
-  }
-  editingRow = null;
-  renderMappings();
-  setText(elements.statusLog, `Applied ${presetKey.replace(/-/g, " ")} preset. Common rows are enabled; alternate rows are disabled.`);
-}
-
 function showWorkspaceReturnIfNeeded() {
   if (!elements.returnWorkspace) {
     return;
@@ -698,7 +543,6 @@ function init() {
   showWorkspaceReturnIfNeeded();
   mappings = readMappings();
   const defaultMessage = ensureDefaultMappings();
-  renderDefaults();
   renderMappings();
   if (defaultMessage) {
     setText(elements.statusLog, defaultMessage);
@@ -706,11 +550,6 @@ function init() {
   elements.list?.addEventListener("click", handleListClick);
   elements.list?.addEventListener("change", handleListChange);
   elements.list?.addEventListener("input", handleListChange);
-  elements.presetButtons?.forEach((button) => {
-    button.addEventListener("click", () => {
-      applyGameControlPreset(button.dataset.inputPreset || "");
-    });
-  });
 }
 
 init();

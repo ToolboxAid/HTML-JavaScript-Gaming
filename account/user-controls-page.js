@@ -192,7 +192,7 @@ export class AccountUserControlsPage {
         controllerName,
         deviceType: "Gamepad",
         inputs: gamepadProfileInputNames(gamepad),
-        label: `Gamepad: ${controllerName}`,
+        label: controllerName,
         mappingProfile: `${controllerName} Profile`,
         value: `gamepad-${gamepad.index}`,
       };
@@ -476,7 +476,7 @@ export class AccountUserControlsPage {
     const row = document.createElement("tr");
     row.dataset.accountUserControlsProfileRow = profile.id;
     row.append(
-      tableCell(`${profile.deviceType}: ${profile.controllerName}`),
+      tableCell(profile.controllerName),
       tableCell(`${profile.inputMappings.length} Physical Inputs`),
       tableCell(this.profileInputSummary(profile)),
       tableCell(this.profileAnalogSummary(profile)),
@@ -557,7 +557,7 @@ export class AccountUserControlsPage {
       deadzone.dataset.accountUserControlsDeadzone = String(index);
       deadzoneCell.append(deadzone);
     } else {
-      deadzoneCell.textContent = "Not applicable";
+      deadzoneCell.textContent = "N/A";
     }
 
     const invertCell = document.createElement("td");
@@ -568,7 +568,7 @@ export class AccountUserControlsPage {
       invert.dataset.accountUserControlsInvert = String(index);
       invertCell.append(invert);
     } else {
-      invertCell.textContent = "Not applicable";
+      invertCell.textContent = "N/A";
     }
 
     const sensitivityCell = document.createElement("td");
@@ -589,7 +589,7 @@ export class AccountUserControlsPage {
         value,
       }));
     } else {
-      sensitivityCell.textContent = "Not applicable";
+      sensitivityCell.textContent = "N/A";
     }
 
     row.append(physicalInputCell, controlCell(stack), deadzoneCell, invertCell, sensitivityCell);
