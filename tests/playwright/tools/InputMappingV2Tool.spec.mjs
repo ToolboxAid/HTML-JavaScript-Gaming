@@ -544,6 +544,7 @@ test("User Controls owns physical input mapping accordions and profiles", async 
   });
 
   try {
+    await page.setViewportSize({ width: 1440, height: 1100 });
     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "User Controls" })).toBeVisible();
@@ -562,21 +563,45 @@ test("User Controls owns physical input mapping accordions and profiles", async 
     expect(supportedControlTypes).toEqual([...supportedControlTypes].sort((left, right) => left.localeCompare(right)));
     const supportedControlTypeLayout = await page.locator("[data-account-user-controls-types]").evaluate((list) => {
       const style = getComputedStyle(list);
-      const leftPositions = Array.from(list.querySelectorAll("li"))
-        .map((item) => Math.round(item.getBoundingClientRect().left));
+      const items = Array.from(list.querySelectorAll("li")).map((item, index) => {
+        const rect = item.getBoundingClientRect();
+        return {
+          index,
+          left: Math.round(rect.left),
+          top: Math.round(rect.top),
+        };
+      });
+      const leftPositions = [...new Set(items.map((item) => item.left))].sort((left, right) => left - right);
+      const columnIndexes = leftPositions.map((left) => items
+        .filter((item) => item.left === left)
+        .sort((leftItem, rightItem) => leftItem.top - rightItem.top)
+        .map((item) => item.index));
       return {
+        columnIndexes,
         columnCount: style.columnCount,
         listStylePosition: style.listStylePosition,
         paddingLeft: Number.parseFloat(style.paddingLeft),
-        uniqueColumns: new Set(leftPositions).size,
+        topSortedByColumn: columnIndexes.every((indexes) =>
+          indexes.every((itemIndex, index) => index === 0 || indexes[index - 1] < itemIndex),
+        ),
+        topToBottomThenLeftToRight: columnIndexes.every((indexes, index) => {
+          if (index === 0) {
+            return true;
+          }
+          return Math.max(...columnIndexes[index - 1]) < Math.min(...indexes);
+        }),
+        uniqueColumns: leftPositions.length,
       };
     });
     expect(supportedControlTypeLayout).toMatchObject({
-      columnCount: "2",
+      columnCount: "3",
       listStylePosition: "outside",
+      topSortedByColumn: true,
+      topToBottomThenLeftToRight: true,
+      uniqueColumns: 3,
     });
+    expect(supportedControlTypeLayout.columnIndexes.every((indexes) => indexes.length > 0)).toBe(true);
     expect(supportedControlTypeLayout.paddingLeft).toBeGreaterThan(0);
-    expect(supportedControlTypeLayout.uniqueColumns).toBeGreaterThan(1);
     await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Default Profile");
     await expect(page.locator("[data-account-user-controls-default-profile='Mouse'] td").first().locator("[data-account-user-controls-selected-device='default:mouse']")).toBeVisible();
     await page.locator("[data-account-user-controls-selected-device='default:mouse']").check();
@@ -662,8 +687,44 @@ test("User Controls owns physical input mapping accordions and profiles", async 
     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
     const controllerDropdown = page.locator("[data-account-user-controls-device]");
+    const controllerToolbar = page.locator("[aria-label='Account controller device selection']");
+    const expectControllerToolbarSingleLine = async () => {
+      const toolbarLayout = await controllerToolbar.evaluate((toolbar) => {
+        const refresh = toolbar.querySelector("[data-account-user-controls-refresh]");
+        const label = toolbar.querySelector("label[for='account-user-controls-device']");
+        const select = toolbar.querySelector("[data-account-user-controls-device]");
+        const create = toolbar.querySelector("[data-account-user-controls-add-profile]");
+        const controls = [refresh, label, select, create].filter(Boolean);
+        const rects = controls.map((control) => control.getBoundingClientRect());
+        const centers = rects.map((rect) => Math.round(rect.top + (rect.height / 2)));
+        const selectRect = select.getBoundingClientRect();
+        const refreshRect = refresh.getBoundingClientRect();
+        const createRect = create.getBoundingClientRect();
+        return {
+          createVisible: createRect.width > 0 && createRect.height > 0,
+          flexWrap: getComputedStyle(toolbar).flexWrap,
+          maxCenterDelta: Math.max(...centers) - Math.min(...centers),
+          refreshVisible: refreshRect.width > 0 && refreshRect.height > 0,
+          selectFlexGrow: getComputedStyle(select).flexGrow,
+          selectWidth: Math.round(selectRect.width),
+          widerThanCreate: selectRect.width > createRect.width,
+          widerThanRefresh: selectRect.width > refreshRect.width,
+        };
+      });
+      expect(toolbarLayout).toMatchObject({
+        createVisible: true,
+        flexWrap: "nowrap",
+        refreshVisible: true,
+        selectFlexGrow: "1",
+        widerThanCreate: true,
+        widerThanRefresh: true,
+      });
+      expect(toolbarLayout.maxCenterDelta).toBeLessThanOrEqual(2);
+      expect(toolbarLayout.selectWidth).toBeGreaterThan(0);
+    };
     await expect(controllerDropdown).toHaveCount(1);
     await expect(controllerDropdown.locator("option")).toHaveText(["Choose a game controller"]);
+    await expectControllerToolbarSingleLine();
     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Gamepad:");
     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Keyboard Profile");
     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Mouse Profile");
@@ -772,6 +833,7 @@ test("User Controls owns physical input mapping accordions and profiles", async 
     await controllerDropdown.selectOption("gamepad-1");
     await expect(controllerDropdown).toHaveValue("gamepad-1");
     await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("Studio Flight Pad selected.");
+    await expectControllerToolbarSingleLine();
     await page.locator("[data-account-user-controls-add-profile]").click();
     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");

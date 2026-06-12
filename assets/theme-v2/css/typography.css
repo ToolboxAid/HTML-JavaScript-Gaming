@@ -116,6 +116,10 @@ li {
   padding-left: var(--space-18)
 }
 
+.list--multi-column-3 {
+  columns: 3
+}
+
 .list--multi-column li {
   break-inside: avoid;
   padding-left: var(--space-4)

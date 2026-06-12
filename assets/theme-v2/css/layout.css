@@ -95,6 +95,21 @@ div {
   align-items: center
 }
 
+.content-cluster--nowrap {
+  flex-wrap: nowrap
+}
+
+.content-cluster--nowrap > .btn,
+.content-cluster--nowrap > .field-label {
+  flex: 0 0 auto;
+  white-space: nowrap
+}
+
+.content-cluster__grow {
+  flex: 1 1 auto;
+  min-width: var(--space-0)
+}
+
 .content-grid {
   display: grid;
   grid-template-columns: var(--grid-cols-2);

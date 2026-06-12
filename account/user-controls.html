@@ -84,10 +84,10 @@
                             <details class="vertical-accordion" open data-account-user-controls-section="Game Controllers">
                                 <summary>Game Controllers</summary>
                                 <div class="accordion-body content-stack">
-                                    <div class="content-cluster" aria-label="Account controller device selection">
+                                    <div class="content-cluster content-cluster--nowrap" aria-label="Account controller device selection">
                                         <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
                                         <label class="field-label" for="account-user-controls-device">Controller</label>
-                                        <select id="account-user-controls-device" data-account-user-controls-device></select>
+                                        <select class="content-cluster__grow" id="account-user-controls-device" data-account-user-controls-device></select>
                                         <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
                                     </div>
                                     <p class="status" role="status" data-account-user-controls-device-status>Game controllers auto-detect after the browser exposes them.</p>
@@ -119,7 +119,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Supported Control Types</summary>
                                 <div class="accordion-body">
-                                    <ul class="list--multi-column" data-account-user-controls-types></ul>
+                                    <ul class="list--multi-column list--multi-column-3" data-account-user-controls-types></ul>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
