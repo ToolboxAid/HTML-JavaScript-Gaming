@@ -1,785 +1,632 @@
 diff --git a/account/user-controls-page.js b/account/user-controls-page.js
-index b24439678..5e62d0b88 100644
+index 5e62d0b88..8886344e1 100644
 --- a/account/user-controls-page.js
 +++ b/account/user-controls-page.js
-@@ -130,7 +130,8 @@ export class AccountUserControlsPage {
-       defaultLists: [...root.querySelectorAll("[data-account-user-controls-default-list]")],
-       deviceSelect: root.querySelector("[data-account-user-controls-device]"),
-       deviceStatus: root.querySelector("[data-account-user-controls-device-status]"),
--      list: root.querySelector("[data-account-user-controls-list]"),
-+      familyButtons: [...root.querySelectorAll("[data-account-user-controls-edit-family]")],
-+      lists: [...root.querySelectorAll("[data-account-user-controls-list]")],
+@@ -96,6 +96,10 @@ function rangeValueLabel(value, unit = "") {
+   return `${value}${unit}`;
+ }
+
++function physicalInputSupportsTuning(physicalInput) {
++  return physicalInputIsAnalog(physicalInput) || Boolean(physicalInputSensitivityDescriptor(physicalInput));
++}
++
+ function createSliderControl({ ariaLabel, dataName, defaultValue, index, max, min, step, unit, value }) {
+   const input = document.createElement("input");
+   input.type = "range";
+@@ -133,7 +137,6 @@ export class AccountUserControlsPage {
+       familyButtons: [...root.querySelectorAll("[data-account-user-controls-edit-family]")],
+       lists: [...root.querySelectorAll("[data-account-user-controls-list]")],
        refresh: root.querySelector("[data-account-user-controls-refresh]"),
-       saveAll: root.querySelector("[data-account-user-controls-save-all]"),
+-      saveAll: root.querySelector("[data-account-user-controls-save-all]"),
        status: root.querySelector("[data-account-user-controls-status]"),
-@@ -152,10 +153,15 @@ export class AccountUserControlsPage {
-     this.elements.addProfile?.addEventListener("click", () => this.addProfileForSelectedDevice());
-     this.elements.saveAll?.addEventListener("click", () => this.saveCurrentState());
-     this.elements.deviceSelect?.addEventListener("change", () => this.renderDeviceStatus());
--    this.elements.list?.addEventListener("click", (event) => this.handleListClick(event));
--    this.elements.list?.addEventListener("change", (event) => this.handleListChange(event));
--    this.elements.list?.addEventListener("input", (event) => this.handleListInput(event));
--    this.elements.list?.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
-+    this.elements.familyButtons.forEach((button) => {
-+      button.addEventListener("click", () => this.editFamilyMappings(button.dataset.accountUserControlsEditFamily || ""));
-+    });
-+    this.elements.lists.forEach((list) => {
-+      list.addEventListener("click", (event) => this.handleListClick(event));
-+      list.addEventListener("change", (event) => this.handleListChange(event));
-+      list.addEventListener("input", (event) => this.handleListInput(event));
-+      list.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
-+    });
-     this.startDevicePolling();
-   }
- 
-@@ -177,25 +183,7 @@ export class AccountUserControlsPage {
-   }
- 
-   deviceOptions() {
--    const keyboard = {
--      controllerId: "generic-keyboard",
--      controllerName: "Keyboard",
--      deviceType: "Keyboard",
--      inputs: [...KEYBOARD_INPUTS],
--      label: "Keyboard",
--      mappingProfile: "Keyboard Profile",
--      value: "keyboard",
--    };
--    const mouse = {
--      controllerId: "generic-mouse",
--      controllerName: "Mouse",
--      deviceType: "Mouse",
--      inputs: [...MOUSE_INPUTS],
--      label: "Mouse",
--      mappingProfile: "Mouse Profile",
--      value: "mouse",
--    };
--    const gamepads = this.availableGamepads().map((gamepad) => {
-+    return this.availableGamepads().map((gamepad) => {
-       const controllerName = gamepad.id || `Gamepad ${gamepad.index}`;
-       return {
-         controllerId: gamepad.id || `gamepad-${gamepad.index}`,
-@@ -207,15 +195,37 @@ export class AccountUserControlsPage {
-         value: `gamepad-${gamepad.index}`,
-       };
+       types: root.querySelector("[data-account-user-controls-types]"),
+     };
+@@ -151,7 +154,6 @@ export class AccountUserControlsPage {
+       this.setStatus(this.deviceRefreshMessage());
      });
--    return [keyboard, mouse, ...gamepads];
-+  }
-+
-+  familyDevice(family) {
-+    if (family === "Mouse") {
-+      return {
-+        controllerId: "generic-mouse",
-+        controllerName: "Mouse",
-+        deviceType: "Mouse",
-+        inputs: [...MOUSE_INPUTS],
-+        label: "Mouse",
-+        mappingProfile: "Mouse Profile",
-+        value: "mouse",
-+      };
-+    }
-+    return {
-+      controllerId: "generic-keyboard",
-+      controllerName: "Keyboard",
-+      deviceType: "Keyboard",
-+      inputs: [...KEYBOARD_INPUTS],
-+      label: "Keyboard",
-+      mappingProfile: "Keyboard Profile",
-+      value: "keyboard",
-+    };
+     this.elements.addProfile?.addEventListener("click", () => this.addProfileForSelectedDevice());
+-    this.elements.saveAll?.addEventListener("click", () => this.saveCurrentState());
+     this.elements.deviceSelect?.addEventListener("change", () => this.renderDeviceStatus());
+     this.elements.familyButtons.forEach((button) => {
+       button.addEventListener("click", () => this.editFamilyMappings(button.dataset.accountUserControlsEditFamily || ""));
+@@ -344,7 +346,7 @@ export class AccountUserControlsPage {
+         row.append(
+           tableCell(mapping.physicalInput),
+           tableCell(mapping.normalizedInput || mapping.positiveNormalizedInput || mapping.negativeNormalizedInput || "Unassigned"),
+-          tableCell("Visible fallback"),
++          tableCell("Default profile in use"),
+         );
+         rowsByFamily.get(family)?.push(row);
+       });
+@@ -494,13 +496,13 @@ export class AccountUserControlsPage {
    }
- 
-   deviceRefreshMessage() {
-     const gamepadCount = this.availableGamepads().length;
-     if (gamepadCount > 0) {
--      return `PASS: Keyboard and Mouse available. ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} detected automatically.`;
-+      return `PASS: ${gamepadCount} game controller${gamepadCount === 1 ? "" : "s"} detected automatically.`;
+
+   inputControl(profile, inputMapping, index) {
+-    const wrapper = document.createElement("div");
+-    wrapper.className = "content-grid";
+-    wrapper.dataset.accountUserControlsInputPair = "true";
++    const row = document.createElement("tr");
++    row.dataset.accountUserControlsInputPair = "true";
+     const editablePhysicalInput = profile.deviceType === "Keyboard" || profile.deviceType === "Mouse";
+     const physicalInputControl = editablePhysicalInput
+       ? document.createElement("input")
+       : document.createElement("strong");
++    const physicalInputCell = document.createElement("td");
+     if (editablePhysicalInput) {
+       physicalInputControl.type = "text";
+       physicalInputControl.value = inputMapping.physicalInput;
+@@ -509,6 +511,7 @@ export class AccountUserControlsPage {
+     } else {
+       physicalInputControl.textContent = inputMapping.physicalInput;
      }
--    return "PASS: Keyboard and Mouse available. Gamepads auto-detect after browser exposes them.";
-+    return "PASS: Game controllers auto-detect after the browser exposes them.";
-   }
- 
-   selectedDevice() {
-@@ -287,7 +297,7 @@ export class AccountUserControlsPage {
-     }
-     const selectedValue = this.elements.deviceSelect.value;
-     const options = [
--      { label: "Choose a physical controller", value: "" },
-+      { label: "Choose a game controller", value: "" },
-       ...this.deviceOptions().map((device) => ({ label: device.label, value: device.value })),
-     ];
-     this.elements.deviceSelect.classList.add("tool-form-control");
-@@ -368,30 +378,62 @@ export class AccountUserControlsPage {
-     }, { once: true });
-   }
- 
-+  profileListFamily(profile) {
-+    const deviceType = normalizeText(profile?.deviceType);
-+    if (deviceType === "Keyboard" || deviceType === "Mouse") {
-+      return deviceType;
-+    }
-+    return "Gamepad";
-+  }
-+
-+  emptyProfileMessage(family) {
-+    if (family === "Keyboard") {
-+      return "No keyboard user control profile saved yet.";
-+    }
-+    if (family === "Mouse") {
-+      return "No mouse user control profile saved yet.";
-+    }
-+    return "No game controller profiles saved yet.";
-+  }
-+
-   renderProfiles() {
--    if (!this.elements.list) {
-+    if (!this.elements.lists.length) {
-       return;
-     }
--    const rows = [];
-+    const rowsByFamily = new Map(this.elements.lists.map((list) => [
-+      list.dataset.accountUserControlsListFamily || "Gamepad",
-+      [],
-+    ]));
-     if (this.editingProfile) {
--      rows.push(...this.renderEditingRows(this.editingProfile.values));
-+      const family = this.profileListFamily(this.editingProfile.values);
-+      rowsByFamily.get(family)?.push(...this.renderEditingRows(this.editingProfile.values));
-     }
-     const visibleProfiles = this.editingProfile?.id
-       ? this.profiles.filter((profile) => profile.id !== this.editingProfile.id)
-       : this.profiles;
--    rows.push(...visibleProfiles.map((profile) => this.renderProfileRow(profile)));
--    if (!rows.length) {
--      const row = document.createElement("tr");
--      const cell = document.createElement("td");
--      cell.colSpan = 7;
--      cell.textContent = "No account user control profiles saved yet.";
--      row.append(cell);
--      rows.push(row);
--    }
--    this.elements.list.replaceChildren(...rows);
-+    visibleProfiles.forEach((profile) => {
-+      const family = this.profileListFamily(profile);
-+      rowsByFamily.get(family)?.push(this.renderProfileRow(profile));
-+    });
-+    this.elements.lists.forEach((list) => {
-+      const family = list.dataset.accountUserControlsListFamily || "Gamepad";
-+      const rows = rowsByFamily.get(family) || [];
-+      if (!rows.length) {
-+        const row = document.createElement("tr");
-+        const cell = document.createElement("td");
-+        cell.colSpan = 7;
-+        cell.textContent = this.emptyProfileMessage(family);
-+        row.append(cell);
-+        rows.push(row);
-+      }
-+      list.replaceChildren(...rows);
-+    });
-     if (this.elements.addProfile) {
-       this.elements.addProfile.disabled = Boolean(this.editingProfile);
-     }
-+    this.elements.familyButtons.forEach((button) => {
-+      button.disabled = Boolean(this.editingProfile);
-+    });
-   }
- 
-   profileInputSummary(profile) {
-@@ -455,8 +497,18 @@ export class AccountUserControlsPage {
-     const wrapper = document.createElement("div");
-     wrapper.className = "content-grid";
-     wrapper.dataset.accountUserControlsInputPair = "true";
--    const label = document.createElement("strong");
--    label.textContent = inputMapping.physicalInput;
-+    const editablePhysicalInput = profile.deviceType === "Keyboard" || profile.deviceType === "Mouse";
-+    const physicalInputControl = editablePhysicalInput
-+      ? document.createElement("input")
-+      : document.createElement("strong");
-+    if (editablePhysicalInput) {
-+      physicalInputControl.type = "text";
-+      physicalInputControl.value = inputMapping.physicalInput;
-+      physicalInputControl.dataset.accountUserControlsPhysicalInput = String(index);
-+      physicalInputControl.setAttribute("aria-label", `${profile.deviceType} physical input`);
-+    } else {
-+      physicalInputControl.textContent = inputMapping.physicalInput;
-+    }
++    physicalInputCell.append(physicalInputControl);
      const stack = document.createElement("div");
      stack.className = "content-stack content-stack--compact";
      const normalizedOptions = [
-@@ -522,7 +574,7 @@ export class AccountUserControlsPage {
-     validation.className = "status";
-     validation.dataset.accountUserControlsInputValidation = String(index);
-     stack.append(validation);
--    wrapper.append(label, stack);
-+    wrapper.append(physicalInputControl, stack);
-     return wrapper;
-   }
- 
-@@ -579,16 +631,34 @@ export class AccountUserControlsPage {
-     this.setStatus(`Review ${profile.mappingProfile} before saving.`);
-   }
- 
-+  editFamilyMappings(family) {
-+    const normalizedFamily = family === "Mouse" ? "Mouse" : "Keyboard";
-+    const device = this.familyDevice(normalizedFamily);
-+    const existing = this.profiles.find((profile) => profile.deviceType === device.deviceType && profile.controllerId === device.controllerId);
-+    if (existing) {
-+      this.editingProfile = { id: existing.id, values: existing };
-+      this.renderProfiles();
-+      this.setStatus(`Editing existing ${existing.mappingProfile}.`);
-+      return;
-+    }
-+    const profile = this.profileFromDevice(device);
-+    this.editingProfile = { id: profile.id, values: profile };
-+    this.renderProfiles();
-+    this.setStatus(`Review ${profile.mappingProfile} before saving.`);
-+  }
+@@ -538,7 +541,13 @@ export class AccountUserControlsPage {
+       select.dataset.accountUserControlsInputNormalized = String(index);
+       stack.append(select);
+     }
+-    if (physicalInputIsAnalog(inputMapping.physicalInput) || normalizedInputIsAnalog(inputMapping.normalizedInput)) {
++    const validation = document.createElement("p");
++    validation.className = "status";
++    validation.dataset.accountUserControlsInputValidation = String(index);
++    stack.append(validation);
 +
++    const deadzoneCell = document.createElement("td");
++    if (physicalInputSupportsTuning(inputMapping.physicalInput)) {
+       const deadzone = document.createElement("input");
+       deadzone.type = "number";
+       deadzone.min = "0";
+@@ -546,18 +555,29 @@ export class AccountUserControlsPage {
+       deadzone.step = "0.05";
+       deadzone.value = String(inputMapping.deadzone);
+       deadzone.dataset.accountUserControlsDeadzone = String(index);
++      deadzoneCell.append(deadzone);
++    } else {
++      deadzoneCell.textContent = "Not applicable";
++    }
++
++    const invertCell = document.createElement("td");
++    if (physicalInputSupportsTuning(inputMapping.physicalInput)) {
+       const invert = document.createElement("input");
+       invert.type = "checkbox";
+       invert.checked = Boolean(inputMapping.invert);
+       invert.dataset.accountUserControlsInvert = String(index);
+-      stack.append(labeledControl("Deadzone", deadzone), labeledControl("Invert", invert));
++      invertCell.append(invert);
++    } else {
++      invertCell.textContent = "Not applicable";
+     }
++
++    const sensitivityCell = document.createElement("td");
+     const sensitivity = physicalInputSensitivityDescriptor(inputMapping.physicalInput);
+     if (sensitivity) {
+       const value = Number.isFinite(Number(inputMapping.sensitivity))
+         ? Number(inputMapping.sensitivity)
+         : sensitivity.defaultValue;
+-      const slider = createSliderControl({
++      sensitivityCell.append(createSliderControl({
+         ariaLabel: sensitivity.label,
+         dataName: "accountUserControlsSensitivity",
+         defaultValue: sensitivity.defaultValue,
+@@ -567,21 +587,32 @@ export class AccountUserControlsPage {
+         step: sensitivity.step,
+         unit: sensitivity.unit,
+         value,
+-      });
+-      stack.append(labeledControl(sensitivity.label, slider));
++      }));
++    } else {
++      sensitivityCell.textContent = "Not applicable";
+     }
+-    const validation = document.createElement("p");
+-    validation.className = "status";
+-    validation.dataset.accountUserControlsInputValidation = String(index);
+-    stack.append(validation);
+-    wrapper.append(physicalInputControl, stack);
+-    return wrapper;
++
++    row.append(physicalInputCell, controlCell(stack), deadzoneCell, invertCell, sensitivityCell);
++    return row;
+   }
+
+   renderEditingRows(values = {}) {
+     const profile = this.normalizeProfile(values);
+     const row = document.createElement("tr");
+     row.dataset.accountUserControlsEditingRow = "true";
++    const controllerName = document.createElement("input");
++    controllerName.type = "text";
++    controllerName.value = profile.controllerName;
++    controllerName.dataset.accountUserControlsControllerName = "true";
++    controllerName.setAttribute("aria-label", "Physical Controller name");
++    const controllerCell = document.createElement("td");
++    const controllerStack = document.createElement("div");
++    controllerStack.className = "content-stack content-stack--compact";
++    const deviceType = document.createElement("span");
++    deviceType.className = "status";
++    deviceType.textContent = profile.deviceType;
++    controllerStack.append(deviceType, labeledControl("Physical Controller", controllerName));
++    controllerCell.append(controllerStack);
+     const actions = document.createElement("td");
+     const group = document.createElement("div");
+     group.className = "action-group action-group--tight";
+@@ -591,7 +622,7 @@ export class AccountUserControlsPage {
+     );
+     actions.append(group);
+     row.append(
+-      tableCell(`${profile.deviceType}: ${profile.controllerName}`),
++      controllerCell,
+       tableCell(`${profile.inputMappings.length} Physical Inputs`),
+       tableCell(this.profileInputSummary(profile)),
+       tableCell(this.profileAnalogSummary(profile)),
+@@ -604,10 +635,25 @@ export class AccountUserControlsPage {
+     detailsRow.dataset.accountUserControlsEditingDetails = "true";
+     const detailsCell = document.createElement("td");
+     detailsCell.colSpan = 7;
+-    const grid = document.createElement("div");
+-    grid.className = "content-grid content-grid--three";
+-    grid.append(...profile.inputMappings.map((inputMapping, index) => this.inputControl(profile, inputMapping, index)));
+-    detailsCell.append(grid);
++    const wrapper = document.createElement("div");
++    wrapper.className = "table-wrapper";
++    const table = document.createElement("table");
++    table.className = "data-table";
++    table.dataset.accountUserControlsGeneratedInputTable = "true";
++    table.setAttribute("aria-label", `${profile.controllerName} generated controller inputs`);
++    const head = document.createElement("thead");
++    const headRow = document.createElement("tr");
++    ["Physical Input", "Normalized Control", "Deadzone", "Invert", "Sensitivity"].forEach((heading) => {
++      const cell = document.createElement("th");
++      cell.textContent = heading;
++      headRow.append(cell);
++    });
++    head.append(headRow);
++    const body = document.createElement("tbody");
++    body.append(...profile.inputMappings.map((inputMapping, index) => this.inputControl(profile, inputMapping, index)));
++    table.append(head, body);
++    wrapper.append(table);
++    detailsCell.append(wrapper);
+     detailsRow.append(detailsCell);
+     return [row, detailsRow];
+   }
+@@ -650,6 +696,16 @@ export class AccountUserControlsPage {
    profileFromEditingRow() {
      const values = this.editingProfile?.values || {};
--    const details = this.elements.list?.querySelector("[data-account-user-controls-editing-details]");
-+    const details = this.root.querySelector("[data-account-user-controls-editing-details]");
+     const details = this.root.querySelector("[data-account-user-controls-editing-details]");
++    const controllerNameInput = this.root.querySelector("[data-account-user-controls-controller-name]");
++    const previousControllerName = normalizeText(values.controllerName);
++    const controllerName = normalizeText(controllerNameInput?.value ?? previousControllerName)
++      || previousControllerName
++      || normalizeText(values.deviceType)
++      || "Game Controller";
++    const previousProfileName = normalizeText(values.mappingProfile || values.profileName);
++    const mappingProfile = previousProfileName === `${previousControllerName} Profile`
++      ? `${controllerName} Profile`
++      : previousProfileName || `${controllerName} Profile`;
      const inputMappings = (values.inputMappings || []).map((mapping, index) => {
-+      const physicalInputControl = details?.querySelector(`[data-account-user-controls-physical-input="${index}"]`);
+       const physicalInputControl = details?.querySelector(`[data-account-user-controls-physical-input="${index}"]`);
        const normalizedSelect = details?.querySelector(`[data-account-user-controls-input-normalized="${index}"]`);
-       const negativeSelect = details?.querySelector(`[data-account-user-controls-input-negative="${index}"]`);
-       const positiveSelect = details?.querySelector(`[data-account-user-controls-input-positive="${index}"]`);
-       const deadzoneInput = details?.querySelector(`[data-account-user-controls-deadzone="${index}"]`);
-       const invertInput = details?.querySelector(`[data-account-user-controls-invert="${index}"]`);
-       const sensitivityInput = details?.querySelector(`[data-account-user-controls-sensitivity="${index}"]`);
-+      const physicalInput = normalizeText(physicalInputControl?.value ?? mapping.physicalInput);
-       const negativeNormalizedInput = normalizeText(negativeSelect?.value ?? mapping.negativeNormalizedInput);
-       const positiveNormalizedInput = normalizeText(positiveSelect?.value ?? mapping.positiveNormalizedInput);
-       return {
-@@ -596,7 +666,7 @@ export class AccountUserControlsPage {
-         invert: Boolean(invertInput?.checked ?? mapping.invert),
-         negativeNormalizedInput,
-         normalizedInput: positiveNormalizedInput || normalizeText(normalizedSelect?.value ?? mapping.normalizedInput) || negativeNormalizedInput,
--        physicalInput: mapping.physicalInput,
-+        physicalInput,
-         positiveNormalizedInput,
-         sensitivity: sensitivityInput ? Number(sensitivityInput.value) : mapping.sensitivity,
-       };
-@@ -605,6 +675,7 @@ export class AccountUserControlsPage {
+@@ -673,9 +729,11 @@ export class AccountUserControlsPage {
+     });
+     return this.normalizeProfile({
        ...values,
++      controllerName,
        id: this.editingProfile?.id || "",
        inputMappings,
-+      inputs: inputMappings.map((mapping) => mapping.physicalInput),
+       inputs: inputMappings.map((mapping) => mapping.physicalInput),
++      mappingProfile,
      });
    }
- 
-@@ -662,7 +733,7 @@ export class AccountUserControlsPage {
- 
-   renderInputValidation(validation) {
-     const invalidIndexes = new Set(validation.invalidIndexes || []);
--    this.elements.list?.querySelectorAll("[data-account-user-controls-input-validation]").forEach((status) => {
-+    this.root.querySelectorAll("[data-account-user-controls-input-validation]").forEach((status) => {
-       const index = Number(status.dataset.accountUserControlsInputValidation);
-       status.textContent = invalidIndexes.has(index)
-         ? "Needs normalized control, valid deadzone, and valid sensitivity."
+
+@@ -761,23 +819,6 @@ export class AccountUserControlsPage {
+     this.setStatus(`PASS: Saved ${profile.mappingProfile}.`);
+   }
+
+-  saveCurrentState() {
+-    if (this.editingProfile) {
+-      this.saveEditingProfile();
+-      return;
+-    }
+-    if (!this.profiles.length) {
+-      this.setStatus("FAIL: Create a user control profile before saving.");
+-      return;
+-    }
+-    if (!this.saveProfiles(this.profiles)) {
+-      this.setStatus("FAIL: Account user controls could not reach the shared DB adapter.");
+-      return;
+-    }
+-    this.renderProfiles();
+-    this.setStatus("PASS: Saved account user controls.");
+-  }
+-
+   handleListClick(event) {
+     const target = event.target instanceof Element ? event.target.closest("button") : null;
+     if (!target) {
 diff --git a/account/user-controls.html b/account/user-controls.html
-index ae3ac3a89..e4d13c116 100644
+index e4d13c116..ed20e68f9 100644
 --- a/account/user-controls.html
 +++ b/account/user-controls.html
-@@ -47,6 +47,25 @@
-                                             <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Keyboard"></tbody>
+@@ -34,7 +34,7 @@
+                             <details class="vertical-accordion" open data-account-user-controls-section="Keyboard">
+                                 <summary>Keyboard</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p class="status">Keyboard defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
++                                    <p class="status">Default profile in use. Create my profile to save your own keyboard mappings.</p>
+                                     <div class="table-wrapper">
+                                         <table class="data-table" aria-label="Default keyboard fallback" data-account-user-controls-defaults="Keyboard">
+                                             <thead>
+@@ -48,7 +48,7 @@
                                          </table>
                                      </div>
-+                                    <div class="content-cluster" aria-label="Keyboard user controls">
-+                                        <button class="btn" type="button" data-account-user-controls-edit-family="Keyboard">Edit Keyboard Mappings</button>
-+                                    </div>
-+                                    <div class="table-wrapper">
-+                                        <table class="data-table" aria-label="Keyboard user control profile" data-account-user-controls-table="Keyboard">
-+                                            <thead>
-+                                                <tr>
-+                                                    <th>Physical Controller</th>
-+                                                    <th>Physical Input</th>
-+                                                    <th>Normalized Control</th>
-+                                                    <th>Deadzone</th>
-+                                                    <th>Invert</th>
-+                                                    <th>Sensitivity</th>
-+                                                    <th>Actions</th>
-+                                                </tr>
-+                                            </thead>
-+                                            <tbody data-account-user-controls-list data-account-user-controls-list-family="Keyboard"></tbody>
-+                                        </table>
-+                                    </div>
-                                 </div>
-                             </details>
+                                     <div class="content-cluster" aria-label="Keyboard user controls">
+-                                        <button class="btn" type="button" data-account-user-controls-edit-family="Keyboard">Edit Keyboard Mappings</button>
++                                        <button class="btn" type="button" data-account-user-controls-edit-family="Keyboard">Create my profile</button>
+                                     </div>
+                                     <div class="table-wrapper">
+                                         <table class="data-table" aria-label="Keyboard user control profile" data-account-user-controls-table="Keyboard">
+@@ -71,7 +71,7 @@
                              <details class="vertical-accordion" open data-account-user-controls-section="Mouse">
-@@ -65,6 +84,25 @@
-                                             <tbody data-account-user-controls-default-list data-account-user-controls-default-family="Mouse"></tbody>
+                                 <summary>Mouse</summary>
+                                 <div class="accordion-body content-stack">
+-                                    <p class="status">Mouse defaults are visible fallbacks. They are not saved as user-created profiles until you create and save a profile.</p>
++                                    <p class="status">Default profile in use. Create my profile to save your own mouse mappings.</p>
+                                     <div class="table-wrapper">
+                                         <table class="data-table" aria-label="Default mouse fallback" data-account-user-controls-defaults="Mouse">
+                                             <thead>
+@@ -85,7 +85,7 @@
                                          </table>
                                      </div>
-+                                    <div class="content-cluster" aria-label="Mouse user controls">
-+                                        <button class="btn" type="button" data-account-user-controls-edit-family="Mouse">Edit Mouse Mappings</button>
-+                                    </div>
-+                                    <div class="table-wrapper">
-+                                        <table class="data-table" aria-label="Mouse user control profile" data-account-user-controls-table="Mouse">
-+                                            <thead>
-+                                                <tr>
-+                                                    <th>Physical Controller</th>
-+                                                    <th>Physical Input</th>
-+                                                    <th>Normalized Control</th>
-+                                                    <th>Deadzone</th>
-+                                                    <th>Invert</th>
-+                                                    <th>Sensitivity</th>
-+                                                    <th>Actions</th>
-+                                                </tr>
-+                                            </thead>
-+                                            <tbody data-account-user-controls-list data-account-user-controls-list-family="Mouse"></tbody>
-+                                        </table>
-+                                    </div>
-                                 </div>
-                             </details>
-                             <details class="vertical-accordion" open data-account-user-controls-section="Game Controllers">
-@@ -73,13 +111,13 @@
-                                     <div class="content-cluster" aria-label="Account controller device selection">
-                                         <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
-                                         <label>
--                                            Physical Controller
-+                                            Game Controller
+                                     <div class="content-cluster" aria-label="Mouse user controls">
+-                                        <button class="btn" type="button" data-account-user-controls-edit-family="Mouse">Edit Mouse Mappings</button>
++                                        <button class="btn" type="button" data-account-user-controls-edit-family="Mouse">Create my profile</button>
+                                     </div>
+                                     <div class="table-wrapper">
+                                         <table class="data-table" aria-label="Mouse user control profile" data-account-user-controls-table="Mouse">
+@@ -115,7 +115,6 @@
                                              <select data-account-user-controls-device></select>
                                          </label>
                                          <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
-                                         <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
+-                                        <button class="btn primary" type="button" data-account-user-controls-save-all>Save</button>
                                      </div>
--                                    <p class="status" role="status" data-account-user-controls-device-status>Keyboard and Mouse are available. Game controllers auto-detect after the browser exposes them.</p>
-+                                    <p class="status" role="status" data-account-user-controls-device-status>Game controllers auto-detect after the browser exposes them.</p>
+                                     <p class="status" role="status" data-account-user-controls-device-status>Game controllers auto-detect after the browser exposes them.</p>
                                      <div class="table-wrapper">
-                                         <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
-                                             <thead>
-@@ -93,7 +131,7 @@
-                                                     <th>Actions</th>
-                                                 </tr>
-                                             </thead>
--                                            <tbody data-account-user-controls-list></tbody>
-+                                            <tbody data-account-user-controls-list data-account-user-controls-list-family="Gamepad"></tbody>
-                                         </table>
-                                     </div>
-                                 </div>
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index e64acf782..caf1809da 100644
+index caf1809da..7a7e79309 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -8,7 +8,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -6,10 +6,8 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
  Changed runtime JS files considered:
- (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(95%) toolbox/controls/controls.js - executed lines 626/626; executed functions 56/59
-+(95%) toolbox/controls/controls.js - executed lines 664/664; executed functions 59/62
- 
+ (95%) toolbox/controls/controls.js - executed lines 664/664; executed functions 59/62
+
  Guardrail warnings:
- (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index d73e09a25..d3f036d1b 100644
+index d3f036d1b..7a55e9090 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -19,7 +19,7 @@ Exercised tool entry points detected:
+@@ -17,7 +17,6 @@ Exercised tool entry points detected:
+ (62%) Theme V2 Shared JS - exercised 2 runtime JS files
+
  Changed runtime JS files covered:
- (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(95%) toolbox/controls/controls.js - executed lines 626/626; executed functions 56/59
-+(95%) toolbox/controls/controls.js - executed lines 664/664; executed functions 59/62
- 
- Files with executed line/function counts where available:
- (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
-@@ -37,8 +37,8 @@ Files with executed line/function counts where available:
+ (95%) toolbox/controls/controls.js - executed lines 664/664; executed functions 59/62
+
+@@ -37,18 +36,16 @@ Files with executed line/function counts where available:
  (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
  (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
  (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 321/321; executed functions 24/27
--(90%) account/user-controls-page.js - executed lines 716/716; executed functions 84/93
--(95%) toolbox/controls/controls.js - executed lines 626/626; executed functions 56/59
-+(92%) account/user-controls-page.js - executed lines 783/783; executed functions 97/105
-+(95%) toolbox/controls/controls.js - executed lines 664/664; executed functions 59/62
+-(92%) account/user-controls-page.js - executed lines 783/783; executed functions 97/105
++(93%) account/user-controls-page.js - executed lines 820/820; executed functions 98/105
+ (95%) toolbox/controls/controls.js - executed lines 664/664; executed functions 59/62
  (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
  (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
- 
-@@ -50,5 +50,5 @@ Changed JS files considered:
- (0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+
+ Changed JS files considered:
+-(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
--(90%) account/user-controls-page.js - changed JS file with browser V8 coverage
-+(92%) account/user-controls-page.js - changed JS file with browser V8 coverage
+-(92%) account/user-controls-page.js - changed JS file with browser V8 coverage
++(93%) account/user-controls-page.js - changed JS file with browser V8 coverage
  (95%) toolbox/controls/controls.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+index de5f338b8..4e5c5961e 100644
+--- a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+@@ -118,16 +118,30 @@ function normalizedEventFields(source = {}) {
+   };
+ }
+
+-function normalizeProfileInputMappings(value) {
+-  return (Array.isArray(value) ? value : []).map((mapping) => ({
++function normalizeProfileInputMappings(inputs = [], mappings = null) {
++  const sourceMappings = Array.isArray(mappings) ? mappings : inputs;
++  const normalizedMappings = (Array.isArray(sourceMappings) ? sourceMappings : []).map((mapping) => ({
+     deadzone: Number.isFinite(Number(mapping?.deadzone)) ? Number(mapping.deadzone) : 0.2,
+     invert: Boolean(mapping?.invert),
+     negativeNormalizedInput: normalizeText(mapping?.negativeNormalizedInput),
+     normalizedInput: normalizeText(mapping?.normalizedInput),
+-    physicalInput: normalizeText(mapping?.physicalInput || mapping?.input),
++    physicalInput: typeof mapping === "string" ? normalizeText(mapping) : normalizeText(mapping?.physicalInput || mapping?.input),
+     positiveNormalizedInput: normalizeText(mapping?.positiveNormalizedInput),
+     sensitivity: Number.isFinite(Number(mapping?.sensitivity)) ? Number(mapping.sensitivity) : undefined,
+   })).filter((mapping) => mapping.physicalInput);
++  const mappingByInput = new Map(normalizedMappings.map((mapping) => [mapping.physicalInput, mapping]));
++  const inputNames = normalizeList(inputs).filter((input) => input !== "[object Object]");
++  const orderedInputNames = inputNames.length ? inputNames : normalizedMappings.map((mapping) => mapping.physicalInput);
++  return orderedInputNames.map((physicalInput) => ({
++    deadzone: 0.2,
++    invert: false,
++    negativeNormalizedInput: "",
++    normalizedInput: "",
++    physicalInput,
++    positiveNormalizedInput: "",
++    sensitivity: undefined,
++    ...(mappingByInput.get(physicalInput) || {}),
++  })).filter((mapping) => mapping.physicalInput);
+ }
+
+ function sortedMappingRows(tables) {
+@@ -153,7 +167,7 @@ function controllerProfileFromRecord(record = {}) {
+     controllerName: normalizeText(record.controllerName),
+     deviceType: normalizeText(record.deviceType),
+     id: normalizeText(record.id),
+-    inputMappings: normalizeProfileInputMappings(record.inputMappings),
++    inputMappings: normalizeProfileInputMappings(record.inputs, record.inputMappings),
+     inputs: normalizeList(record.inputs),
+     mappingProfile: profileName,
+     profileName,
+@@ -262,7 +276,7 @@ export function createInputMappingToolMockRepository(options = {}) {
+         createdBy: previous?.createdBy || userKey,
+         deviceType: normalizeText(profile.deviceType) || "Gamepad",
+         id,
+-        inputMappings: normalizeProfileInputMappings(profile.inputMappings),
++        inputMappings: normalizeProfileInputMappings(profile.inputs, profile.inputMappings),
+         inputs: normalizeList(profile.inputs),
+         key: previous?.key,
+         playerId: targetPlayerId,
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 9b26c4a1d..a06964579 100644
+index a06964579..4c78dae05 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -185,7 +185,8 @@ test("Toolbox Controls shows game controls only and preserves game mapping prese
-     await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Controls");
-     await expect(page.locator("[data-input-mapping-accordion] > summary")).toHaveText("Game Controls");
-     await expect(page.locator("[data-input-family-panel]")).toHaveCount(0);
--    await expect(page.locator("[data-input-combo-controls]")).toHaveCount(0);
-+    await expect(page.locator("[data-input-combo-controls] > summary")).toHaveText("Combo Controls");
-+    await expect(page.locator("[data-input-combo-controls]")).toContainText("Wireframe only: Keyboard Shift + Mouse Right Click can become a future combo control.");
-     await expect(page.locator("[data-input-source-diagnostics]")).toHaveCount(0);
-     await expect(page.locator("[data-input-add-mapping], [data-input-add-keyboard-family], [data-input-add-mouse-family], [data-input-add-joystick-family], [data-input-reset-mappings]")).toHaveCount(0);
-     await expect(page.locator("[data-input-action-select], [data-input-object-select]")).toHaveCount(0);
-@@ -210,45 +211,53 @@ test("Toolbox Controls shows game controls only and preserves game mapping prese
-       "Fighting",
-       "Party / Arena",
+@@ -330,9 +330,14 @@ test("Account User Controls owns physical input mapping accordions and profiles"
+       "Game Controllers",
+       "Combo Inputs",
      ]);
--    await expect(page.locator("[data-input-mapping-list]")).toContainText("Missing Game Control Mapping");
--
--    await page.locator("[data-input-preset='platformer']").click();
--    await expect(page.locator("[data-input-status-log]")).toHaveText("Applied platformer preset. Common rows are enabled; alternate rows are disabled.");
--    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(7);
--    await expect(page.locator("[data-input-mapping-count]")).toHaveText("7");
--    await expect(page.locator("[data-input-enabled-count]")).toHaveText("5");
--    await expect(page.locator("[data-input-output-count]")).toHaveText("7");
-+    await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.");
-+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(NORMALIZED_INPUTS.length);
-+    await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
-+    await expect(page.locator("[data-input-enabled-count]")).toHaveText("10");
-+    await expect(page.locator("[data-input-output-count]")).toHaveText(String(NORMALIZED_INPUTS.length));
-     await expect(page.locator("[data-input-save-status]")).toHaveText("Complete");
-     await expect(page.locator("[data-input-mapping-list]")).not.toContainText("Missing Game Control Mapping");
- 
--    const jumpRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Jump" }).first();
--    await expect(jumpRow.locator("td").nth(0).locator("input")).toBeChecked();
--    await expect(jumpRow.locator("input[aria-label='D']")).toBeChecked();
--    await expect(jumpRow.locator("input[aria-label='H']")).not.toBeChecked();
--    await expect(jumpRow.locator("input[aria-label='U']")).not.toBeChecked();
--    await expect(jumpRow.locator("input[aria-label='DC']")).not.toBeChecked();
--    await expect(jumpRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
-+    const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
-+    await expect(primaryRow.locator("td").nth(0).locator("input")).toBeChecked();
-+    await expect(primaryRow.locator("input[aria-label='D']")).toBeChecked();
-+    await expect(primaryRow.locator("input[aria-label='H']")).not.toBeChecked();
-+    await expect(primaryRow.locator("input[aria-label='U']")).not.toBeChecked();
-+    await expect(primaryRow.locator("input[aria-label='DC']")).not.toBeChecked();
-+    await expect(primaryRow.locator("td:has(input[aria-label='D'])")).toHaveAttribute("data-input-event-checked", "true");
- 
--    const lookUpRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Look Up" }).first();
--    await expect(lookUpRow.locator("td").nth(0).locator("input")).not.toBeChecked();
-+    const aimRightRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Aim Right" }).first();
-+    await expect(aimRightRow.locator("td").nth(0).locator("input")).not.toBeChecked();
- 
--    const records = await inputMappingRecords(page);
--    expect(records).toHaveLength(7);
--    expect(records.find((record) => record.usageLabel === "Jump")).toMatchObject({
-+    let records = await inputMappingRecords(page);
-+    expect(records).toHaveLength(NORMALIZED_INPUTS.length);
-+    expect(records.find((record) => record.usageLabel === "Primary Action")).toMatchObject({
-       enabled: true,
-       eventD: true,
-       normalizedInput: "action.primary",
--      usageLabel: "Jump",
-+      usageLabel: "Primary Action",
-     });
--    expect(records.find((record) => record.usageLabel === "Look Up")).toMatchObject({
-+    expect(records.find((record) => record.usageLabel === "Aim Right")).toMatchObject({
-       enabled: false,
--      normalizedInput: "move.y-",
-+      normalizedInput: "aim.x+",
-       state: "Disabled",
-     });
-     expect(records.every((record) => !record.inputFamily)).toBe(true);
-     expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
-     expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton/);
- 
-+    await page.locator("[data-input-preset='platformer']").click();
-+    await expect(page.locator("[data-input-status-log]")).toHaveText("Applied platformer preset. Common rows are enabled; alternate rows are disabled.");
-+    await expect(page.locator("[data-input-mapping-row]")).toHaveCount(7);
-+    records = await inputMappingRecords(page);
-+    expect(records.find((record) => record.usageLabel === "Jump")).toMatchObject({
-+      enabled: true,
-+      eventD: true,
-+      normalizedInput: "action.primary",
-+      usageLabel: "Jump",
-+    });
-+
-     await expectNoPageFailures(failures);
-   } finally {
-     await closeWithCoverage(page, failures);
-@@ -327,37 +336,41 @@ test("Account User Controls owns physical input mapping accordions and profiles"
+-    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Visible fallback");
++    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Default profile in use");
++    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Create my profile");
++    await expect(page.locator("[data-account-user-controls-section='Keyboard']")).not.toContainText("Visible fallback");
+     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("KeyW");
+     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("move.y-");
++    await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("Default profile in use");
++    await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("Create my profile");
++    await expect(page.locator("[data-account-user-controls-section='Mouse']")).not.toContainText("Visible fallback");
      await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("MouseButton0");
      await expect(page.locator("[data-account-user-controls-section='Mouse']")).toContainText("action.primary");
      await expect(page.locator("[data-account-user-controls-section='Combo Inputs']")).toContainText("Wireframe only");
-+    await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).toContainText("No keyboard user control profile saved yet.");
-+    await expect(page.locator("[data-account-user-controls-list-family='Mouse']")).toContainText("No mouse user control profile saved yet.");
-+    await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).toContainText("No game controller profiles saved yet.");
+@@ -341,8 +346,7 @@ test("Account User Controls owns physical input mapping accordions and profiles"
+     await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).toContainText("No game controller profiles saved yet.");
      expect(await controllerProfileRecords(page)).toHaveLength(0);
- 
-     await page.locator("[data-account-user-controls-save-all]").click();
-     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Create a user control profile before saving.");
+
+-    await page.locator("[data-account-user-controls-save-all]").click();
+-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Create a user control profile before saving.");
++    await expect(page.locator("[data-account-user-controls-save-all]")).toHaveCount(0);
      expect(await controllerProfileRecords(page)).toHaveLength(0);
- 
--    await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
--      "Choose a physical controller",
--      "Keyboard",
--      "Mouse",
-+    await expect(page.locator("[data-account-user-controls-device] option")).toHaveText([
-+      "Choose a game controller",
-     ]);
--    await page.locator("[data-account-user-controls-device]").selectOption("keyboard");
--    await page.locator("[data-account-user-controls-add-profile]").click();
-+    await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Keyboard Profile");
-+    await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Mouse Profile");
-+
-+    await page.locator("[data-account-user-controls-edit-family='Keyboard']").click();
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard: Keyboard");
--    await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "KeyW" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("move.y-");
-+    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("KeyW");
-+    await page.locator("[data-account-user-controls-physical-input='0']").fill("ArrowRight");
-+    await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("move.y-");
-     await page.locator("[data-account-user-controls-save-all]").click();
+
+     await expect(page.locator("[data-account-user-controls-device] option")).toHaveText([
+@@ -351,20 +355,22 @@ test("Account User Controls owns physical input mapping accordions and profiles"
+     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Keyboard Profile");
+     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Mouse Profile");
+
+-    await page.locator("[data-account-user-controls-edit-family='Keyboard']").click();
+-    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard: Keyboard");
++    await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
++    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard");
++    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard");
+     await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("KeyW");
+     await page.locator("[data-account-user-controls-physical-input='0']").fill("ArrowRight");
+     await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("move.y-");
+-    await page.locator("[data-account-user-controls-save-all]").click();
++    await page.locator("[data-account-user-controls-save]").click();
      await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Keyboard Profile.");
- 
--    await page.locator("[data-account-user-controls-device]").selectOption("mouse");
--    await page.locator("[data-account-user-controls-add-profile]").click();
-+    await page.locator("[data-account-user-controls-edit-family='Mouse']").click();
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Mouse: Mouse");
--    await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "MouseButton0" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
-+    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("MouseButton0");
-+    await page.locator("[data-account-user-controls-physical-input='0']").fill("MouseButton1");
-+    await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("action.primary");
-     await page.locator("[data-account-user-controls-save-all]").click();
+
+-    await page.locator("[data-account-user-controls-edit-family='Mouse']").click();
+-    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Mouse: Mouse");
++    await page.locator("[data-account-user-controls-section='Mouse'] [data-account-user-controls-edit-family='Mouse']").click();
++    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Mouse");
++    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Mouse");
+     await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("MouseButton0");
+     await page.locator("[data-account-user-controls-physical-input='0']").fill("MouseButton1");
+     await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("action.primary");
+-    await page.locator("[data-account-user-controls-save-all]").click();
++    await page.locator("[data-account-user-controls-save]").click();
      await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Mouse Profile.");
- 
+
      await exposeGamepads(page);
-     await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("2 game controllers detected automatically", { timeout: 4000 });
--    await expect(page.locator("[data-account-user-controls-device] option")).toContainText([
--      "Choose a physical controller",
--      "Keyboard",
--      "Mouse",
-+    await expect(page.locator("[data-account-user-controls-device] option")).toHaveText([
-+      "Choose a game controller",
-       "Gamepad: Arcade Test Pad",
-       "Gamepad: Studio Flight Pad",
-     ]);
-@@ -383,11 +396,19 @@ test("Account User Controls owns physical input mapping accordions and profiles"
-       controllerName: "Keyboard",
-       deviceType: "Keyboard",
+@@ -377,17 +383,38 @@ test("Account User Controls owns physical input mapping accordions and profiles"
+     await page.locator("[data-account-user-controls-device]").selectOption("gamepad-1");
+     await expect(page.locator("[data-account-user-controls-device]")).toHaveValue("gamepad-1");
+     await page.locator("[data-account-user-controls-add-profile]").click();
+-    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad: Studio Flight Pad");
+-    await expect(page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Button0" }).locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
++    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
++    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad");
++    await page.locator("[data-account-user-controls-controller-name]").fill("Custom Arcade Pad");
++    await expect(page.locator("[data-account-user-controls-generated-input-table] th")).toHaveText([
++      "Physical Input",
++      "Normalized Control",
++      "Deadzone",
++      "Invert",
++      "Sensitivity",
++    ]);
++    const button0 = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Button0" });
++    await expect(button0.locator("[data-account-user-controls-input-normalized]")).toHaveValue("action.primary");
++    await expect(button0.locator("[data-account-user-controls-deadzone]")).toHaveCount(0);
++    await expect(button0.locator("[data-account-user-controls-sensitivity]")).toHaveCount(0);
++    const dpadUp = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "DPad Up" });
++    await expect(dpadUp.locator("[data-account-user-controls-deadzone]")).toHaveCount(0);
++    await expect(dpadUp.locator("[data-account-user-controls-sensitivity]")).toHaveCount(0);
+     const axis0 = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Axis0" });
++    await expect(axis0.locator("[data-account-user-controls-input-negative]")).toHaveValue("move.x-");
++    await expect(axis0.locator("[data-account-user-controls-input-positive]")).toHaveValue("move.x+");
+     await axis0.locator("[data-account-user-controls-deadzone]").fill("0.4");
+     await axis0.locator("[data-account-user-controls-invert]").check();
+     const axis0Sensitivity = axis0.locator("[data-account-user-controls-sensitivity]");
+     await expect(axis0Sensitivity).toBeVisible();
+     await axis0Sensitivity.fill("125");
+     await expect(axis0.locator("[data-slider-value-for='accountUserControlsSensitivity']")).toHaveText("125%");
+-    await page.locator("[data-account-user-controls-save-all]").click();
+-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Studio Flight Pad Profile.");
++    const triggerLeft = page.locator("[data-account-user-controls-input-pair]").filter({ hasText: "Trigger Left" });
++    await expect(triggerLeft.locator("[data-account-user-controls-deadzone]")).toBeVisible();
++    await expect(triggerLeft.locator("[data-account-user-controls-invert]")).toBeVisible();
++    await expect(triggerLeft.locator("[data-account-user-controls-sensitivity]")).toBeVisible();
++    await page.locator("[data-account-user-controls-save]").click();
++    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Custom Arcade Pad Profile.");
+
+     const profiles = await controllerProfileRecords(page);
+     expect(profiles).toHaveLength(3);
+@@ -409,12 +436,12 @@ test("Account User Controls owns physical input mapping accordions and profiles"
+       normalizedInput: "action.primary",
+       physicalInput: "MouseButton1",
      });
-+    expect(profiles.find((profile) => profile.profileName === "Keyboard Profile").inputMappings[0]).toMatchObject({
-+      normalizedInput: "move.y-",
-+      physicalInput: "ArrowRight",
-+    });
-     expect(profiles.find((profile) => profile.profileName === "Mouse Profile")).toMatchObject({
-       controllerId: "generic-mouse",
-       controllerName: "Mouse",
-       deviceType: "Mouse",
-     });
-+    expect(profiles.find((profile) => profile.profileName === "Mouse Profile").inputMappings[0]).toMatchObject({
-+      normalizedInput: "action.primary",
-+      physicalInput: "MouseButton1",
-+    });
-     const gamepadProfile = profiles.find((profile) => profile.profileName === "Studio Flight Pad Profile");
+-    const gamepadProfile = profiles.find((profile) => profile.profileName === "Studio Flight Pad Profile");
++    const gamepadProfile = profiles.find((profile) => profile.profileName === "Custom Arcade Pad Profile");
      expect(gamepadProfile).toMatchObject({
        controllerId: "Studio Flight Pad",
-@@ -407,9 +428,12 @@ test("Account User Controls owns physical input mapping accordions and profiles"
-     expect(JSON.stringify(profiles)).not.toContain("eventDC");
- 
+-      controllerName: "Studio Flight Pad",
++      controllerName: "Custom Arcade Pad",
+       deviceType: "Gamepad",
+-      profileName: "Studio Flight Pad Profile",
++      profileName: "Custom Arcade Pad Profile",
+     });
+     expect(gamepadProfile.inputMappings.find((mapping) => mapping.physicalInput === "Axis0")).toMatchObject({
+       deadzone: 0.4,
+@@ -430,7 +457,7 @@ test("Account User Controls owns physical input mapping accordions and profiles"
      await page.reload({ waitUntil: "networkidle" });
--    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Keyboard: Keyboard");
--    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Mouse: Mouse");
--    await expect(page.locator("[data-account-user-controls-list]")).toContainText("Gamepad: Studio Flight Pad");
-+    await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).toContainText("Keyboard: Keyboard");
-+    await expect(page.locator("[data-account-user-controls-list-family='Mouse']")).toContainText("Mouse: Mouse");
-+    await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).toContainText("Gamepad: Studio Flight Pad");
-+    await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit='generic-keyboard-keyboard-profile']").click();
-+    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("ArrowRight");
-+    await page.locator("[data-account-user-controls-cancel]").click();
- 
-     await expectNoPageFailures(failures);
-   } finally {
-diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
-index c23bfc196..320e34072 100644
---- a/toolbox/controls/controls.js
-+++ b/toolbox/controls/controls.js
-@@ -65,6 +65,19 @@ const NORMALIZED_USAGE_LABELS = Object.freeze({
-   "trigger.right": "Right Trigger",
- });
- 
-+const COMMON_DEFAULT_GAME_CONTROLS = new Set([
-+  "action.cancel",
-+  "action.confirm",
-+  "action.pause",
-+  "action.primary",
-+  "action.secondary",
-+  "action.start",
-+  "move.x-",
-+  "move.x+",
-+  "move.y-",
-+  "move.y+",
-+]);
-+
- const GAME_CONTROL_PRESETS = Object.freeze({
-   fighting: Object.freeze([
-     Object.freeze({ enabled: true, eventD: true, normalizedInput: "move.x-", usageLabel: "Move Left" }),
-@@ -323,6 +336,30 @@ function readMappings() {
-   return Array.isArray(result) ? result.map((mapping) => normalizeMapping(mapping)) : [];
- }
- 
-+function createDefaultGameControlMappings() {
-+  return normalizedInputOptions().map((option, index) => {
-+    const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
-+    return normalizeMapping({
-+      enabled,
-+      eventD: true,
-+      id: `default-game-control-${index + 1}-${keyFromText(option.value)}`,
-+      normalizedInput: option.value,
-+      state: enabled ? "Active" : "Disabled",
-+      usageLabel: NORMALIZED_USAGE_LABELS[option.value] || option.label,
-+    });
-+  });
-+}
-+
-+function ensureDefaultMappings() {
-+  if (mappings.length) {
-+    return "";
-+  }
-+  if (saveMappings(createDefaultGameControlMappings())) {
-+    return "Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.";
-+  }
-+  return "";
-+}
-+
- function saveMappings(nextMappings) {
-   const normalizedMappings = nextMappings.map((mapping) => normalizeMapping(mapping));
-   let result = controlsRepository.replaceMappings(normalizedMappings);
-@@ -660,8 +697,12 @@ function showWorkspaceReturnIfNeeded() {
- function init() {
-   showWorkspaceReturnIfNeeded();
-   mappings = readMappings();
-+  const defaultMessage = ensureDefaultMappings();
-   renderDefaults();
-   renderMappings();
-+  if (defaultMessage) {
-+    setText(elements.statusLog, defaultMessage);
-+  }
-   elements.list?.addEventListener("click", handleListClick);
-   elements.list?.addEventListener("change", handleListChange);
-   elements.list?.addEventListener("input", handleListChange);
-diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index bb7a6c959..b8c77a12e 100644
---- a/toolbox/controls/index.html
-+++ b/toolbox/controls/index.html
-@@ -100,6 +100,12 @@
-                                             </div>
-                                         </div>
-                                     </details>
-+                                    <details class="vertical-accordion" data-input-combo-controls>
-+                                        <summary>Combo Controls</summary>
-+                                        <div class="accordion-body content-stack">
-+                                            <p class="status">Wireframe only: Keyboard Shift + Mouse Right Click can become a future combo control.</p>
-+                                        </div>
-+                                    </details>
-                                 </div>
-                             </div>
-                         </article>
-diff --git a/docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md b/docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md
+     await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).toContainText("Keyboard: Keyboard");
+     await expect(page.locator("[data-account-user-controls-list-family='Mouse']")).toContainText("Mouse: Mouse");
+-    await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).toContainText("Gamepad: Studio Flight Pad");
++    await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).toContainText("Gamepad: Custom Arcade Pad");
+     await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit='generic-keyboard-keyboard-profile']").click();
+     await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("ArrowRight");
+     await page.locator("[data-account-user-controls-cancel]").click();
+diff --git a/docs_build/dev/reports/user-controls-gamepad-table-and-defaults-report.md b/docs_build/dev/reports/user-controls-gamepad-table-and-defaults-report.md
 new file mode 100644
-index 000000000..f664cdb9b
+index 000000000..9f0dab946
 --- /dev/null
-+++ b/docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md
-@@ -0,0 +1,107 @@
-+# PR_26162_042 Controls Combo Framework And User Control Editing Report
++++ b/docs_build/dev/reports/user-controls-gamepad-table-and-defaults-report.md
+@@ -0,0 +1,102 @@
++# PR_26162_043-user-controls-gamepad-table-and-defaults
 +
 +## Branch Validation
-+- PASS: Current branch is `main`.
-+- Expected branch: `main`.
-+- Evidence: `git status --short --branch` returned `## main...origin/main`.
++- Current branch: `main`
++- Expected branch: `main`
++- Local branches found: `main`
++- Branch validation: PASS
 +
 +## Requirement Checklist
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
-+- PASS: Verified current branch is `main` before edits.
-+- PASS: Continued from PR_26162_041 scope.
-+- PASS: Controls status remains Wireframe. Evidence: Controls metadata still shows `"status": "Wireframe"` and `"releaseChannel": "wireframe"`.
-+- PASS: Toolbox > Controls is prepopulated with default Game Controls rows on first load.
-+- PASS: Combo Controls accordion appears in Toolbox > Controls.
-+- PASS: Combo Controls is wireframe-only and uses the requested text: `Wireframe only: Keyboard Shift + Mouse Right Click can become a future combo control.`
++- PASS: Verified current git branch is `main` before edits.
++- PASS: Continued from the PR_26162_042 Controls/User Controls split.
++- PASS: Controls status remains Wireframe; no status metadata was changed.
++- PASS: Toolbox > Controls remains prepopulated with default Game Controls rows.
++- PASS: Combo Controls remains wireframe-only in Toolbox > Controls.
 +- PASS: No combo runtime behavior was added.
-+- PASS: Account > User Controls > Game Controllers dropdown excludes Keyboard and Mouse.
-+- PASS: Account > User Controls Keyboard mappings are editable.
-+- PASS: Account > User Controls Mouse mappings are editable.
-+- PASS: Users can change defaults such as `KeyW` to `ArrowRight`; targeted Playwright validates persistence after reload.
-+- PASS: DB-backed separation remains enforced: `game_input_mappings` is game/project-owned, `player_controller_profiles` is user/player-owned.
-+- PASS: `game_input_mappings` does not store physical key/mouse/controller data.
-+- PASS: `player_controller_profiles` does not store game/object actions.
-+- PASS: Normalized action contract is preserved.
-+- PASS: Theme V2 rules preserved; no inline CSS, inline JS, script/style blocks, or inline event handlers were added.
-+- PASS: Shared `src/engine/input` usage is preserved for Account User Controls.
-+
-+## Search Evidence
-+- PASS: Toolbox Controls has no device-specific setup or local input polling:
-+  - `rg -n "data-input-add-mapping|data-input-family-panel|data-input-source-diagnostics|InputService|DEVICE_POLL_INTERVAL_MS|navigator\\.getGamepads|gamepadconnected" toolbox/controls/index.html toolbox/controls/controls.js`
-+  - No active Toolbox matches.
-+- PASS: Combo framework exists as wireframe-only:
-+  - `rg -n "data-input-combo-controls|Wireframe only: Keyboard Shift \\+ Mouse Right Click can become a future combo control" toolbox/controls/index.html`
-+- PASS: Default Game Controls prepopulation exists:
-+  - `rg -n "default-game-control|Loaded default Game Controls" toolbox/controls/controls.js`
-+- PASS: Keyboard/Mouse editing controls exist under Account User Controls:
-+  - `rg -n "data-account-user-controls-edit-family|data-account-user-controls-physical-input" account/user-controls.html account/user-controls-page.js`
-+- PASS: Game Controllers dropdown excludes Keyboard and Mouse:
-+  - Targeted Playwright asserts the dropdown options are `Choose a game controller`, `Gamepad: Arcade Test Pad`, and `Gamepad: Studio Flight Pad`.
-+- PASS: DB ownership separation is covered:
-+  - Targeted Playwright asserts `game_input_mappings` rows do not include `controllerId`, `controllerName`, or `physicalInput`.
-+  - Targeted Playwright asserts `player_controller_profiles` JSON does not contain `gameAction`, `objectKey`, or event fields.
++- PASS: Account > User Controls > Game Controllers excludes Keyboard and Mouse; Playwright validates only detected game controllers appear in the dropdown.
++- PASS: Removed the duplicate Save button to the right of Create User Control Profile.
++- PASS: Physical Controller name is prefilled from detected device data and editable before saving.
++- PASS: Game Controllers profile details render through the requested table columns.
++- PASS: Generated controller inputs appear under the controller row with editable Normalized Control dropdowns.
++- PASS: Axis rows expose Negative and Positive normalized control dropdowns.
++- PASS: Axis and trigger rows expose applicable Deadzone, Invert, and Sensitivity controls.
++- PASS: Button and d-pad rows do not expose deadzone or sensitivity input fields.
++- PASS: Mouse mappings are editable and persist after reload.
++- PASS: Fallback wording now uses `Default profile in use` and `Create my profile`.
++- PASS: Defaults remain visible fallbacks and are not silently saved as user-created profiles.
++- PASS: DB-backed separation is preserved: `game_input_mappings` stays game/project owned and `player_controller_profiles` stays user/player owned.
++- PASS: Normalized action contract and shared `src/engine/input` usage are preserved.
++- PASS: Theme V2 HTML restrictions are preserved; no inline styles, inline scripts, or inline event handlers were added.
 +
 +## Changed Files
-+- `account/user-controls-page.js`
 +- `account/user-controls.html`
-+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/controls-combo-framework-and-user-control-editing-report.md`
++- `account/user-controls-page.js`
++- `src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `toolbox/controls/controls.js`
-+- `toolbox/controls/index.html`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/user-controls-gamepad-table-and-defaults-report.md`
 +
 +## Impacted Lanes
-+- Controls tool runtime lane.
-+- Account/User Controls runtime lane.
-+- Controls shared DB/mock adapter behavior through browser API coverage.
-+- Targeted Playwright/V8 coverage lane.
++- Runtime/tool lane: Toolbox > Controls and Account > User Controls.
++- Dev-runtime mock DB lane: controller profile persistence through `player_controller_profiles`.
++- Playwright impacted: Yes.
 +
 +## Validation Performed
-+- PASS: `node --check toolbox/controls/controls.js`
 +- PASS: `node --check account/user-controls-page.js`
 +- PASS: `node --check account/user-controls.js`
++- PASS: `node --check toolbox/controls/controls.js`
++- PASS: `node --check src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
 +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- PASS: `rg -n --pcre2 "<script(?![^>]*\\bsrc=)|<style\\b|\\son[a-z]+\\s*=" toolbox/controls/index.html account/user-controls.html` returned no matches.
 +- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --reporter=line`
-+  - Final result: 6 passed.
++  - Result: 6 passed.
++  - Covers targeted Toolbox Controls Playwright and Account/User Controls Playwright behavior.
 +
-+## Playwright Result
-+- PASS: Toolbox > Controls is prepopulated with default Game Controls rows.
-+- PASS: Combo Controls accordion appears in Toolbox > Controls as wireframe-only.
++## Playwright Evidence
 +- PASS: Game Controllers dropdown excludes Keyboard and Mouse.
-+- PASS: Keyboard mappings are editable and persist after reload.
-+- PASS: Mouse mappings are editable and persist after reload.
-+- PASS: DB ownership separation remains enforced.
-+- PASS: Device-specific physical input remains in Account User Controls.
-+- PASS: Game mappings remain normalized action -> usage/event timing only.
++- PASS: Create User Control Profile no longer has a duplicate Save button beside it.
++- PASS: Physical Controller name is prefilled from `Studio Flight Pad` and can be edited to `Custom Arcade Pad`.
++- PASS: Generated controller inputs render in a table with Physical Input, Normalized Control, Deadzone, Invert, and Sensitivity columns.
++- PASS: Button0 and DPad Up rows do not expose deadzone/sensitivity inputs.
++- PASS: Axis0 exposes Negative/Positive normalized controls, deadzone, invert, and sensitivity.
++- PASS: Trigger Left exposes applicable deadzone, invert, and sensitivity controls.
++- PASS: Mouse mapping can change from `MouseButton0` to `MouseButton1` and persists after reload.
++- PASS: Saved profiles persist through `player_controller_profiles`.
++- PASS: Toolbox > Controls remains prepopulated and Combo Controls remains wireframe-only.
++
++## Search Evidence
++- PASS: `rg "Visible fallback|data-account-user-controls-save-all|Edit Keyboard Mappings|Edit Mouse Mappings" account -n` returned no active Account UI matches.
++- PASS: `rg "<script(?![^>]*src=)|<style|\s(onclick|onchange|oninput|onsubmit)=" account/user-controls.html toolbox/controls/index.html -n --pcre2` returned no matches.
++- NOTE: The removed phrases appear only in Playwright negative assertions that prove absence from active UI.
 +
 +## V8 Coverage
-+- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` regenerated from the final Playwright run.
-+- Covered changed browser runtime files:
-+  - `toolbox/controls/controls.js`: 95% function coverage.
-+  - `account/user-controls-page.js`: 92% function coverage.
-+  - `account/user-controls.js`: 100% function coverage.
-+- WARN advisory only: the coverage helper reports server/dev-runtime entries from its comparison window that Chromium V8 does not collect. The browser behavior for this PR is covered by the targeted Playwright lane.
-+
-+## Skipped Lanes
-+- Full samples validation: SKIPPED as requested; no sample JSON, sample loader, or sample runtime behavior changed.
-+- Production auth/account system validation: SKIPPED; Account User Controls continues to use the existing session and shared DB/mock adapter path only.
-+- Production game runtime validation: SKIPPED; combo controls were added as wireframe-only and no runtime combo behavior was implemented.
-+- Full workspace suite: SKIPPED because the requested validation lanes were targeted Controls and Account/User Controls Playwright checks.
++- Coverage report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- PASS: `(93%) account/user-controls-page.js - changed JS file with browser V8 coverage`
++- PASS: `(95%) toolbox/controls/controls.js - changed JS file with browser V8 coverage`
++- WARN: `(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage`
++- WARN is advisory only per project coverage rules because dev-runtime repository code is exercised through API/server path rather than browser V8 collection.
 +
 +## Manual Validation Steps
-+1. Open `/toolbox/controls/index.html`.
-+2. Confirm Game Controls table is populated without clicking a preset.
-+3. Confirm Combo Controls accordion appears and contains the requested wireframe-only text.
-+4. Confirm no combo runtime controls or device-specific setup appears in Toolbox > Controls.
-+5. Open `/account/user-controls.html`.
-+6. Confirm Game Controllers dropdown does not list Keyboard or Mouse.
-+7. Click Edit Keyboard Mappings, change `KeyW` to `ArrowRight`, save, reload, and confirm the saved profile keeps `ArrowRight`.
-+8. Click Edit Mouse Mappings, change `MouseButton0` to another mouse input, save, reload, and confirm persistence.
++1. Open `/account/user-controls.html` as a signed-in mock user.
++2. Confirm Keyboard and Mouse sections say `Default profile in use` and expose `Create my profile`.
++3. Confirm Game Controllers dropdown lists detected game controllers only.
++4. Select a detected game controller and click `Create User Control Profile`.
++5. Confirm Physical Controller name is prefilled, editable, and saved.
++6. Confirm generated controller inputs appear under the profile row as table rows.
++7. Confirm Axis rows expose Negative/Positive controls plus deadzone, invert, and sensitivity.
++8. Confirm Button/d-pad rows do not expose deadzone or sensitivity inputs.
++9. Save, reload, and confirm Keyboard, Mouse, and Game Controller profiles persist.
++10. Open `/toolbox/controls/index.html` and confirm default Game Controls rows and Combo Controls wireframe remain visible.
++
++## Skipped Lanes
++- SKIP: Full samples validation. Safe to skip because no sample JSON, sample runtime, or playable sample behavior changed.
++- SKIP: Full repository test suite. Safe to skip because the PR touched scoped Controls/User Controls UI, targeted Playwright coverage, and the directly affected mock repository only.
++- SKIP: `npm run test:workspace-v2`. Safe to skip because this PR did not change Workspace contract behavior; targeted Controls/User Controls Playwright covered the impacted surfaces.
 +
 +## Samples Decision
-+- Samples validation was skipped intentionally and safely because this PR does not change samples, sample JSON, sample routing, or production game runtime behavior.
++- Full samples validation: SKIP.
++- Reason: Samples were explicitly out of scope and no sample files were changed.
 +
-+## Completion
-+- PASS: 100% of requested PR_26162_042 requirements are implemented, validated, and marked PASS.
++## Notes
++- The shared mock DB repository was corrected so `player_controller_profiles` preserves ordered `inputs` and corresponding `inputMappings` through raw mock DB snapshots and reloads.

@@ -96,6 +96,10 @@ function rangeValueLabel(value, unit = "") {
   return `${value}${unit}`;
 }
 
+function physicalInputSupportsTuning(physicalInput) {
+  return physicalInputIsAnalog(physicalInput) || Boolean(physicalInputSensitivityDescriptor(physicalInput));
+}
+
 function createSliderControl({ ariaLabel, dataName, defaultValue, index, max, min, step, unit, value }) {
   const input = document.createElement("input");
   input.type = "range";
@@ -133,7 +137,6 @@ export class AccountUserControlsPage {
       familyButtons: [...root.querySelectorAll("[data-account-user-controls-edit-family]")],
       lists: [...root.querySelectorAll("[data-account-user-controls-list]")],
       refresh: root.querySelector("[data-account-user-controls-refresh]"),
-      saveAll: root.querySelector("[data-account-user-controls-save-all]"),
       status: root.querySelector("[data-account-user-controls-status]"),
       types: root.querySelector("[data-account-user-controls-types]"),
     };
@@ -151,7 +154,6 @@ export class AccountUserControlsPage {
       this.setStatus(this.deviceRefreshMessage());
     });
     this.elements.addProfile?.addEventListener("click", () => this.addProfileForSelectedDevice());
-    this.elements.saveAll?.addEventListener("click", () => this.saveCurrentState());
     this.elements.deviceSelect?.addEventListener("change", () => this.renderDeviceStatus());
     this.elements.familyButtons.forEach((button) => {
       button.addEventListener("click", () => this.editFamilyMappings(button.dataset.accountUserControlsEditFamily || ""));
@@ -344,7 +346,7 @@ export class AccountUserControlsPage {
         row.append(
           tableCell(mapping.physicalInput),
           tableCell(mapping.normalizedInput || mapping.positiveNormalizedInput || mapping.negativeNormalizedInput || "Unassigned"),
-          tableCell("Visible fallback"),
+          tableCell("Default profile in use"),
         );
         rowsByFamily.get(family)?.push(row);
       });
@@ -494,13 +496,13 @@ export class AccountUserControlsPage {
   }
 
   inputControl(profile, inputMapping, index) {
-    const wrapper = document.createElement("div");
-    wrapper.className = "content-grid";
-    wrapper.dataset.accountUserControlsInputPair = "true";
+    const row = document.createElement("tr");
+    row.dataset.accountUserControlsInputPair = "true";
     const editablePhysicalInput = profile.deviceType === "Keyboard" || profile.deviceType === "Mouse";
     const physicalInputControl = editablePhysicalInput
       ? document.createElement("input")
       : document.createElement("strong");
+    const physicalInputCell = document.createElement("td");
     if (editablePhysicalInput) {
       physicalInputControl.type = "text";
       physicalInputControl.value = inputMapping.physicalInput;
@@ -509,6 +511,7 @@ export class AccountUserControlsPage {
     } else {
       physicalInputControl.textContent = inputMapping.physicalInput;
     }
+    physicalInputCell.append(physicalInputControl);
     const stack = document.createElement("div");
     stack.className = "content-stack content-stack--compact";
     const normalizedOptions = [
@@ -538,7 +541,13 @@ export class AccountUserControlsPage {
       select.dataset.accountUserControlsInputNormalized = String(index);
       stack.append(select);
     }
-    if (physicalInputIsAnalog(inputMapping.physicalInput) || normalizedInputIsAnalog(inputMapping.normalizedInput)) {
+    const validation = document.createElement("p");
+    validation.className = "status";
+    validation.dataset.accountUserControlsInputValidation = String(index);
+    stack.append(validation);
+
+    const deadzoneCell = document.createElement("td");
+    if (physicalInputSupportsTuning(inputMapping.physicalInput)) {
       const deadzone = document.createElement("input");
       deadzone.type = "number";
       deadzone.min = "0";
@@ -546,18 +555,29 @@ export class AccountUserControlsPage {
       deadzone.step = "0.05";
       deadzone.value = String(inputMapping.deadzone);
       deadzone.dataset.accountUserControlsDeadzone = String(index);
+      deadzoneCell.append(deadzone);
+    } else {
+      deadzoneCell.textContent = "Not applicable";
+    }
+
+    const invertCell = document.createElement("td");
+    if (physicalInputSupportsTuning(inputMapping.physicalInput)) {
       const invert = document.createElement("input");
       invert.type = "checkbox";
       invert.checked = Boolean(inputMapping.invert);
       invert.dataset.accountUserControlsInvert = String(index);
-      stack.append(labeledControl("Deadzone", deadzone), labeledControl("Invert", invert));
+      invertCell.append(invert);
+    } else {
+      invertCell.textContent = "Not applicable";
     }
+
+    const sensitivityCell = document.createElement("td");
     const sensitivity = physicalInputSensitivityDescriptor(inputMapping.physicalInput);
     if (sensitivity) {
       const value = Number.isFinite(Number(inputMapping.sensitivity))
         ? Number(inputMapping.sensitivity)
         : sensitivity.defaultValue;
-      const slider = createSliderControl({
+      sensitivityCell.append(createSliderControl({
         ariaLabel: sensitivity.label,
         dataName: "accountUserControlsSensitivity",
         defaultValue: sensitivity.defaultValue,
@@ -567,21 +587,32 @@ export class AccountUserControlsPage {
         step: sensitivity.step,
         unit: sensitivity.unit,
         value,
-      });
-      stack.append(labeledControl(sensitivity.label, slider));
+      }));
+    } else {
+      sensitivityCell.textContent = "Not applicable";
     }
-    const validation = document.createElement("p");
-    validation.className = "status";
-    validation.dataset.accountUserControlsInputValidation = String(index);
-    stack.append(validation);
-    wrapper.append(physicalInputControl, stack);
-    return wrapper;
+
+    row.append(physicalInputCell, controlCell(stack), deadzoneCell, invertCell, sensitivityCell);
+    return row;
   }
 
   renderEditingRows(values = {}) {
     const profile = this.normalizeProfile(values);
     const row = document.createElement("tr");
     row.dataset.accountUserControlsEditingRow = "true";
+    const controllerName = document.createElement("input");
+    controllerName.type = "text";
+    controllerName.value = profile.controllerName;
+    controllerName.dataset.accountUserControlsControllerName = "true";
+    controllerName.setAttribute("aria-label", "Physical Controller name");
+    const controllerCell = document.createElement("td");
+    const controllerStack = document.createElement("div");
+    controllerStack.className = "content-stack content-stack--compact";
+    const deviceType = document.createElement("span");
+    deviceType.className = "status";
+    deviceType.textContent = profile.deviceType;
+    controllerStack.append(deviceType, labeledControl("Physical Controller", controllerName));
+    controllerCell.append(controllerStack);
     const actions = document.createElement("td");
     const group = document.createElement("div");
     group.className = "action-group action-group--tight";
@@ -591,7 +622,7 @@ export class AccountUserControlsPage {
     );
     actions.append(group);
     row.append(
-      tableCell(`${profile.deviceType}: ${profile.controllerName}`),
+      controllerCell,
       tableCell(`${profile.inputMappings.length} Physical Inputs`),
       tableCell(this.profileInputSummary(profile)),
       tableCell(this.profileAnalogSummary(profile)),
@@ -604,10 +635,25 @@ export class AccountUserControlsPage {
     detailsRow.dataset.accountUserControlsEditingDetails = "true";
     const detailsCell = document.createElement("td");
     detailsCell.colSpan = 7;
-    const grid = document.createElement("div");
-    grid.className = "content-grid content-grid--three";
-    grid.append(...profile.inputMappings.map((inputMapping, index) => this.inputControl(profile, inputMapping, index)));
-    detailsCell.append(grid);
+    const wrapper = document.createElement("div");
+    wrapper.className = "table-wrapper";
+    const table = document.createElement("table");
+    table.className = "data-table";
+    table.dataset.accountUserControlsGeneratedInputTable = "true";
+    table.setAttribute("aria-label", `${profile.controllerName} generated controller inputs`);
+    const head = document.createElement("thead");
+    const headRow = document.createElement("tr");
+    ["Physical Input", "Normalized Control", "Deadzone", "Invert", "Sensitivity"].forEach((heading) => {
+      const cell = document.createElement("th");
+      cell.textContent = heading;
+      headRow.append(cell);
+    });
+    head.append(headRow);
+    const body = document.createElement("tbody");
+    body.append(...profile.inputMappings.map((inputMapping, index) => this.inputControl(profile, inputMapping, index)));
+    table.append(head, body);
+    wrapper.append(table);
+    detailsCell.append(wrapper);
     detailsRow.append(detailsCell);
     return [row, detailsRow];
   }
@@ -650,6 +696,16 @@ export class AccountUserControlsPage {
   profileFromEditingRow() {
     const values = this.editingProfile?.values || {};
     const details = this.root.querySelector("[data-account-user-controls-editing-details]");
+    const controllerNameInput = this.root.querySelector("[data-account-user-controls-controller-name]");
+    const previousControllerName = normalizeText(values.controllerName);
+    const controllerName = normalizeText(controllerNameInput?.value ?? previousControllerName)
+      || previousControllerName
+      || normalizeText(values.deviceType)
+      || "Game Controller";
+    const previousProfileName = normalizeText(values.mappingProfile || values.profileName);
+    const mappingProfile = previousProfileName === `${previousControllerName} Profile`
+      ? `${controllerName} Profile`
+      : previousProfileName || `${controllerName} Profile`;
     const inputMappings = (values.inputMappings || []).map((mapping, index) => {
       const physicalInputControl = details?.querySelector(`[data-account-user-controls-physical-input="${index}"]`);
       const normalizedSelect = details?.querySelector(`[data-account-user-controls-input-normalized="${index}"]`);
@@ -673,9 +729,11 @@ export class AccountUserControlsPage {
     });
     return this.normalizeProfile({
       ...values,
+      controllerName,
       id: this.editingProfile?.id || "",
       inputMappings,
       inputs: inputMappings.map((mapping) => mapping.physicalInput),
+      mappingProfile,
     });
   }
 
@@ -759,23 +817,6 @@ export class AccountUserControlsPage {
     this.editingProfile = null;
     this.renderProfiles();
     this.setStatus(`PASS: Saved ${profile.mappingProfile}.`);
-  }
-
-  saveCurrentState() {
-    if (this.editingProfile) {
-      this.saveEditingProfile();
-      return;
-    }
-    if (!this.profiles.length) {
-      this.setStatus("FAIL: Create a user control profile before saving.");
-      return;
-    }
-    if (!this.saveProfiles(this.profiles)) {
-      this.setStatus("FAIL: Account user controls could not reach the shared DB adapter.");
-      return;
-    }
-    this.renderProfiles();
-    this.setStatus("PASS: Saved account user controls.");
   }
 
   handleListClick(event) {

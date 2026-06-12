@@ -118,15 +118,29 @@ function normalizedEventFields(source = {}) {
   };
 }
 
-function normalizeProfileInputMappings(value) {
-  return (Array.isArray(value) ? value : []).map((mapping) => ({
+function normalizeProfileInputMappings(inputs = [], mappings = null) {
+  const sourceMappings = Array.isArray(mappings) ? mappings : inputs;
+  const normalizedMappings = (Array.isArray(sourceMappings) ? sourceMappings : []).map((mapping) => ({
     deadzone: Number.isFinite(Number(mapping?.deadzone)) ? Number(mapping.deadzone) : 0.2,
     invert: Boolean(mapping?.invert),
     negativeNormalizedInput: normalizeText(mapping?.negativeNormalizedInput),
     normalizedInput: normalizeText(mapping?.normalizedInput),
-    physicalInput: normalizeText(mapping?.physicalInput || mapping?.input),
+    physicalInput: typeof mapping === "string" ? normalizeText(mapping) : normalizeText(mapping?.physicalInput || mapping?.input),
     positiveNormalizedInput: normalizeText(mapping?.positiveNormalizedInput),
     sensitivity: Number.isFinite(Number(mapping?.sensitivity)) ? Number(mapping.sensitivity) : undefined,
+  })).filter((mapping) => mapping.physicalInput);
+  const mappingByInput = new Map(normalizedMappings.map((mapping) => [mapping.physicalInput, mapping]));
+  const inputNames = normalizeList(inputs).filter((input) => input !== "[object Object]");
+  const orderedInputNames = inputNames.length ? inputNames : normalizedMappings.map((mapping) => mapping.physicalInput);
+  return orderedInputNames.map((physicalInput) => ({
+    deadzone: 0.2,
+    invert: false,
+    negativeNormalizedInput: "",
+    normalizedInput: "",
+    physicalInput,
+    positiveNormalizedInput: "",
+    sensitivity: undefined,
+    ...(mappingByInput.get(physicalInput) || {}),
   })).filter((mapping) => mapping.physicalInput);
 }
 
@@ -153,7 +167,7 @@ function controllerProfileFromRecord(record = {}) {
     controllerName: normalizeText(record.controllerName),
     deviceType: normalizeText(record.deviceType),
     id: normalizeText(record.id),
-    inputMappings: normalizeProfileInputMappings(record.inputMappings),
+    inputMappings: normalizeProfileInputMappings(record.inputs, record.inputMappings),
     inputs: normalizeList(record.inputs),
     mappingProfile: profileName,
     profileName,
@@ -262,7 +276,7 @@ export function createInputMappingToolMockRepository(options = {}) {
         createdBy: previous?.createdBy || userKey,
         deviceType: normalizeText(profile.deviceType) || "Gamepad",
         id,
-        inputMappings: normalizeProfileInputMappings(profile.inputMappings),
+        inputMappings: normalizeProfileInputMappings(profile.inputs, profile.inputMappings),
         inputs: normalizeList(profile.inputs),
         key: previous?.key,
         playerId: targetPlayerId,
