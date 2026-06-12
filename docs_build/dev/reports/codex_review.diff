@@ -1,179 +1,141 @@
 diff --git a/account/user-controls-page.js b/account/user-controls-page.js
-index cca46c2a2..b2762a9d0 100644
+index 2322336ae..cfbbaa2b8 100644
 --- a/account/user-controls-page.js
 +++ b/account/user-controls-page.js
-@@ -403,7 +403,7 @@ export class AccountUserControlsPage {
-     });
-   }
+@@ -429,6 +429,7 @@ export class AccountUserControlsPage {
 
--  createProfile(device) {
-+  createProfile(device, { persistImmediately = true } = {}) {
-     const knownProfiles = new Map();
-     this.readProfiles().forEach((profile) => {
-       knownProfiles.set(profile.id, profile);
-@@ -413,11 +413,14 @@ export class AccountUserControlsPage {
-     });
-     this.profiles = [...knownProfiles.values()];
-     const profile = this.uniqueProfileForDevice(device);
--    if (!this.saveProfiles([profile, ...this.profiles])) {
--      this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
--      return;
-+    let createdProfile = profile;
-+    if (persistImmediately) {
-+      if (!this.saveProfiles([profile, ...this.profiles])) {
-+        this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
-+        return;
-+      }
-+      createdProfile = this.profiles.find((candidate) => candidate.id === profile.id) || profile;
-     }
--    const createdProfile = this.profiles.find((candidate) => candidate.id === profile.id) || profile;
-     this.editingProfile = { id: createdProfile.id, values: createdProfile };
-     this.viewingDefaultFamily = "";
-     this.renderProfiles();
-@@ -514,17 +517,10 @@ export class AccountUserControlsPage {
-       choices.push(choice);
-     };
-     ["Keyboard", "Mouse", "Gamepad"].forEach((family) => addChoice(this.defaultSelectionChoice(family)));
--    const profiledGamepadIds = new Set();
-     this.profiles.forEach((profile) => {
--      if (this.profileListFamily(profile) === "Gamepad") {
--        profiledGamepadIds.add(profile.controllerId);
--      }
-       addChoice(this.profileSelectionChoice(profile));
-     });
-     this.deviceOptions().forEach((device) => {
--      if (profiledGamepadIds.has(device.controllerId)) {
--        return;
--      }
-       addChoice(this.detectedDeviceSelectionChoice(device));
-     });
-     return choices;
-@@ -714,11 +710,7 @@ export class AccountUserControlsPage {
-         rows.push(this.renderReadonlyProfileDetailsRow(defaultProfile, family));
-       }
-     });
--    const profiledGamepadIds = new Set(this.profiles
--      .filter((profile) => this.profileListFamily(profile) === "Gamepad")
--      .map((profile) => profile.controllerId));
-     this.deviceOptions()
--      .filter((device) => !profiledGamepadIds.has(device.controllerId))
-       .forEach((device) => {
-         rowsByFamily.get("Gamepad")?.push(this.renderDetectedDeviceRow(device));
-       });
-@@ -1137,7 +1129,7 @@ export class AccountUserControlsPage {
-       this.setStatus("WARN: Select a detected game controller row before creating a user control profile.");
+   renderDeviceSelect() {
+     if (!this.elements.deviceSelect) {
++      this.renderDeviceStatus();
        return;
      }
--    this.createProfile(device);
-+    this.createProfile(device, { persistImmediately: false });
-   }
-
-   editFamilyMappings(family) {
+     const selectedValue = this.elements.deviceSelect.value;
+diff --git a/account/user-controls.html b/account/user-controls.html
+index ebcbcb4fa..92dfea0fb 100644
+--- a/account/user-controls.html
++++ b/account/user-controls.html
+@@ -86,10 +86,6 @@
+                                 <div class="accordion-body content-stack">
+                                     <div class="content-cluster" aria-label="Account controller device selection">
+                                         <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
+-                                        <label>
+-                                            Game Controller
+-                                            <select data-account-user-controls-device></select>
+-                                        </label>
+                                     </div>
+                                     <p class="status" role="status" data-account-user-controls-device-status>Game controllers auto-detect after the browser exposes them.</p>
+                                     <div class="table-wrapper">
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index ef67af1ea..c1da4a9ff 100644
+index c1da4a9ff..009c8b6bb 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,6 @@
+@@ -1,6 +1,7 @@
++account/user-controls.html
  account/user-controls-page.js
  tests/playwright/tools/InputMappingV2Tool.spec.mjs
  docs_build/dev/reports/playwright_v8_coverage_report.txt
--docs_build/dev/reports/PR_26163_058-user-control-profile-selected-device-only.md
-+docs_build/dev/reports/PR_26163_059-user-control-profile-generation-flow.md
+-docs_build/dev/reports/PR_26163_059-user-control-profile-generation-flow.md
++docs_build/dev/reports/PR_26163_060-user-control-gamepad-generation-repair.md
  docs_build/dev/reports/codex_review.diff
  docs_build/dev/reports/codex_changed_files.txt
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 5bc6320da..67b87208e 100644
+index b9b916533..40a33969e 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -35,7 +35,7 @@ Files with executed line/function counts where available:
- (64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 36/56
- (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
- (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
--(93%) account/user-controls-page.js - executed lines 1373/1373; executed functions 155/167
-+(93%) account/user-controls-page.js - executed lines 1365/1365; executed functions 152/164
- (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
- (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
+@@ -12,34 +12,36 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
+ Exercised tool entry points detected:
+-(71%) Toolbox Index - exercised 10 runtime JS files
++(100%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(74%) Theme V2 Shared JS - exercised 2 runtime JS files
++(64%) Theme V2 Shared JS - exercised 1 runtime JS files
+
+ Changed runtime JS files covered:
+-(100%) none changed - no changed runtime JS files
++(91%) account/user-controls-page.js - changed runtime JS file with browser V8 coverage
+
+ Files with executed line/function counts where available:
+-(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
+-(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
++(23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
++(30%) src/engine/input/InputService.js - executed lines 451/451; executed functions 20/66
++(33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
+ (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
+-(56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
+-(58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
+-(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+-(66%) toolbox/controls/controls.js - executed lines 667/667; executed functions 41/62
+-(68%) toolbox/game-workspace/game-workspace.js - executed lines 281/281; executed functions 19/28
+-(76%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 44/58
+-(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
+-(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
+-(91%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 103/113
+-(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
++(40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
++(41%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 14/34
++(43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
++(50%) src/engine/input/InputCaptureService.js - executed lines 163/163; executed functions 7/14
++(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
++(59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
++(60%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 9/15
++(64%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 36/56
++(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
++(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
++(91%) account/user-controls-page.js - executed lines 1366/1366; executed functions 149/164
++(100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
+ (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
+-(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
+-(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
+
+ Uncovered or low-coverage changed JS files:
+-(100%) none changed - no changed runtime JS files
++(100%) none - no low-coverage changed runtime JS files
+
+ Changed JS files considered:
+-(0%) account/user-controls-page.js - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
++(91%) account/user-controls-page.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 8449eab6f..51f4c5d80 100644
+index 3d58673eb..6c58933c9 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -773,7 +773,7 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     await page.locator("[data-account-user-controls-add-profile]").click();
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
-     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");
--    expect(await controllerProfileRecords(page)).toHaveLength(3);
-+    expect(await controllerProfileRecords(page)).toHaveLength(2);
-     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad");
-     await page.locator("[data-account-user-controls-controller-name]").fill("Custom Arcade Pad");
-     await expect(page.locator("[data-account-user-controls-generated-input-table] th")).toHaveText([
-@@ -835,11 +835,11 @@ test("User Controls owns physical input mapping accordions and profiles", async
-       "Keyboard (Keyboard Profile)",
-       "Mouse (Mouse Profile)",
-       "Arcade Test Pad",
-+      "Studio Flight Pad",
-       "Custom Arcade Pad (Custom Arcade Pad Profile)",
-     ]));
-     expect(selectedDeviceLabels).not.toContain("Keyboard");
-     expect(selectedDeviceLabels).not.toContain("Mouse");
--    expect(selectedDeviceLabels).not.toContain("Studio Flight Pad");
+@@ -661,9 +661,7 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     await expect(page.locator("[data-account-user-controls-save-all]")).toHaveCount(0);
+     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
-     const profiles = await controllerProfileRecords(page);
-     expect(profiles).toHaveLength(3);
-@@ -919,6 +919,7 @@ test("User Controls creates one profile from only the selected game controller r
+-    await expect(page.locator("[data-account-user-controls-device] option")).toHaveText([
+-      "Choose a game controller",
+-    ]);
++    await expect(page.locator("[data-account-user-controls-device]")).toHaveCount(0);
+     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Gamepad:");
+     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Keyboard Profile");
+     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Mouse Profile");
+@@ -761,11 +759,9 @@ test("User Controls owns physical input mapping accordions and profiles", async
+
+     await exposeGamepads(page);
      await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("2 game controllers detected automatically", { timeout: 4000 });
-     await expect(page.locator("[data-account-user-controls-detected-device='Arcade Test Pad']")).toBeVisible();
-     await expect(page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']")).toBeVisible();
-+    expect(await controllerProfileRecords(page)).toHaveLength(0);
-
+-    await expect(page.locator("[data-account-user-controls-device] option")).toHaveText([
+-      "Choose a game controller",
+-      "Arcade Test Pad",
+-      "Studio Flight Pad",
+-    ]);
++    await expect(page.locator("[data-account-user-controls-device]")).toHaveCount(0);
++    await expect(page.locator("[data-account-user-controls-detected-device='Arcade Test Pad']")).toBeVisible();
++    await expect(page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']")).toBeVisible();
      const studioDeviceChoice = page.locator("[data-account-user-controls-selected-device='device:gamepad:studio-flight-pad']");
      await studioDeviceChoice.check();
-@@ -929,7 +930,10 @@ test("User Controls creates one profile from only the selected game controller r
-     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
-     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad");
-+    expect(await controllerProfileRecords(page)).toHaveLength(0);
+     await expect(studioDeviceChoice).toBeChecked();
 
-+    await page.locator("[data-account-user-controls-save]").click();
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Studio Flight Pad Profile.");
-     const profiles = await controllerProfileRecords(page);
-     expect(profiles).toHaveLength(1);
-     expect(profiles[0]).toMatchObject({
-@@ -940,9 +944,25 @@ test("User Controls creates one profile from only the selected game controller r
-     });
-     expect(profiles.map((profile) => profile.profileName)).not.toContain("Arcade Test Pad Profile");
-     await expect(page.locator("[data-account-user-controls-detected-device='Arcade Test Pad']")).toBeVisible();
--    await expect(page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']")).toHaveCount(0);
-+    await expect(page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']")).toBeVisible();
-     await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).not.toContainText("Arcade Test Pad Profile");
-
-+    await page.locator("[data-account-user-controls-selected-device='device:gamepad:studio-flight-pad']").check();
-+    await page.locator("[data-account-user-controls-add-profile]").click();
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad 2 Profile. Editing the new profile.");
-+    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad 2");
-+    expect(await controllerProfileRecords(page)).toHaveLength(1);
-+    await page.locator("[data-account-user-controls-save]").click();
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Studio Flight Pad 2 Profile.");
-+    const repeatedProfiles = await controllerProfileRecords(page);
-+    expect(repeatedProfiles).toHaveLength(2);
-+    expect(repeatedProfiles.filter((profile) => profile.controllerId === "Studio Flight Pad")).toHaveLength(2);
-+    expect(repeatedProfiles.map((profile) => profile.profileName).sort()).toEqual([
-+      "Studio Flight Pad 2 Profile",
-+      "Studio Flight Pad Profile",
-+    ]);
-+    expect(repeatedProfiles.map((profile) => profile.profileName)).not.toContain("Arcade Test Pad Profile");
-+
-     await expectNoPageFailures(failures);
-   } finally {
-     await closeWithCoverage(page, failures);
-
-diff --git a/docs_build/dev/reports/PR_26163_059-user-control-profile-generation-flow.md b/docs_build/dev/reports/PR_26163_059-user-control-profile-generation-flow.md
+diff --git a/docs_build/dev/reports/PR_26163_060-user-control-gamepad-generation-repair.md b/docs_build/dev/reports/PR_26163_060-user-control-gamepad-generation-repair.md
 new file mode 100644
-index 000000000..2eab7db47
+index 000000000..3697fc781
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26163_059-user-control-profile-generation-flow.md
-@@ -0,0 +1,98 @@
-+# PR_26163_059-user-control-profile-generation-flow
++++ b/docs_build/dev/reports/PR_26163_060-user-control-gamepad-generation-repair.md
+@@ -0,0 +1,104 @@
++# PR_26163_060-user-control-gamepad-generation-repair
 +
 +## Branch Validation
 +
@@ -184,34 +146,39 @@ index 000000000..2eab7db47
 +## Requirement Checklist
 +
 +- PASS - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before implementation.
-+- PASS - Created PR scope `PR_26163_059-user-control-profile-generation-flow`.
-+- PASS - Fixed `account/user-controls.html` Game Controller profile flow through the external `account/user-controls-page.js` runtime.
-+- PASS - Connected controller detection renders detected device rows only and does not create user profiles.
-+- PASS - User must select exactly one detected controller row before `Create User Control Profile` can generate a profile.
-+- PASS - `Create User Control Profile` creates exactly one new profile for only the selected controller.
-+- PASS - Newly generated game controller profile opens in edit mode.
-+- PASS - Save persists that one profile for the current user.
-+- PASS - A second profile for the same controller requires a second explicit select controller -> create profile -> edit -> save flow.
-+- PASS - No behavior remains in the touched flow that auto-adds all connected gamepads as profiles.
-+- PASS - No behavior remains in the touched flow that creates detached profiles for unselected controllers.
-+- PASS - Scope stayed limited to account User Controls gamepad detection/profile generation behavior, targeted tests, runtime coverage, and reports.
++- PASS - Created PR scope `PR_26163_060-user-control-gamepad-generation-repair`.
++- PASS - Repaired `account/user-controls.html` gamepad profile generation without using `toolbox/controls` as an implementation source.
++- PASS - Audited Account User Controls code paths for detected gamepads, detached rows, profile creation, Edit/Trash buttons, selected device state, and Save behavior.
++- PASS - Connected controllers auto-detect as selectable detected-device rows only.
++- PASS - Detected-only rows are not saved profiles.
++- PASS - Detected-only rows do not show as detached profiles.
++- PASS - User must select exactly one detected controller row before profile creation.
++- PASS - `Create User Control Profile` creates exactly one new unsaved profile for the selected controller.
++- PASS - Newly generated profile opens in edit mode immediately.
++- PASS - Edit/Delete buttons appear only for real saved profile rows.
++- PASS - Save persists exactly one edited profile for the current user.
++- PASS - Clicking `Create User Control Profile` with no selected controller shows a visible actionable warning.
++- PASS - The touched flow does not create detected gamepads as in-memory profile rows during detection/render.
++- PASS - Scope stayed limited to account User Controls gamepad profile behavior, targeted tests, runtime coverage, and reports.
 +
 +## Changed Files
 +
++- `account/user-controls.html`
 +- `account/user-controls-page.js`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/PR_26163_059-user-control-profile-generation-flow.md`
++- `docs_build/dev/reports/PR_26163_060-user-control-gamepad-generation-repair.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+## Implementation Notes
++## Audit Notes
 +
-+- Game controller profile generation now stages the selected detected controller as an unsaved edit row.
-+- Keyboard and Mouse profile creation keep their existing immediate DB-backed behavior; the changed persistence boundary is scoped to Game Controller generation.
-+- Detected game controller rows remain visible after a profile is saved, allowing another explicit generation flow for the same physical controller.
-+- Profile Save remains the DB persistence action for generated game controller profiles.
-+- Auto-detection refreshes visible detected rows while no profile is being edited, but detection itself does not write `player_controller_profiles`.
++- `renderDetectedDeviceRow()` renders detected gamepads as rows with `data-account-user-controls-detected-device`, summary text, and a `Detected` action/status cell.
++- `renderProfileRow()` is the only path that renders saved profile rows with `data-account-user-controls-profile-row` plus Edit and Trash buttons.
++- `addProfileForSelectedDevice()` now requires the currently checked detected gamepad row and does not fall back to previously saved selected-device state.
++- `createProfile(device, { persistImmediately: false })` stages the selected gamepad profile in edit mode; `saveEditingProfile()` is the persistence boundary.
++- The account page no longer renders the game controller dropdown; connected controllers are selected from detected-device rows only.
++- No `toolbox/controls` files were used or modified for account profile generation.
 +
 +## Impacted Lane
 +
@@ -221,48 +188,49 @@ index 000000000..2eab7db47
 +
 +## Skipped Lanes
 +
-+- Full samples smoke: SKIP. This PR is limited to Account/User Controls profile generation and does not touch samples, sample JSON, game runtime launch, or sample smoke behavior.
++- Full samples smoke: SKIP. This PR is limited to Account/User Controls gamepad profile generation and does not touch samples, sample JSON, game runtime launch, or sample smoke behavior.
 +- Engine lane: SKIP. No `src/engine/input` files or engine contracts changed.
-+- Toolbox Controls lane: SKIP. Toolbox Controls source was not changed.
++- Toolbox Controls lane: SKIP. Toolbox Controls is game-owned controls and was intentionally not used or changed for account user profiles.
 +
 +## Validation Performed
 +
 +- PASS - Branch check: `git branch --show-current` returned `main`.
 +- PASS - Syntax check: `node --check account/user-controls-page.js`.
 +- PASS - Syntax check: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`.
-+- PASS - Static patch check: `git diff --check -- account/user-controls-page.js tests/playwright/tools/InputMappingV2Tool.spec.mjs`.
++- PASS - Static patch check: `git diff --check -- account/user-controls.html account/user-controls-page.js tests/playwright/tools/InputMappingV2Tool.spec.mjs`.
++- PASS - HTML restriction check: `rg -n "<style| on[a-z]+=|<script>" account/user-controls.html` returned no matches.
 +- PASS - Targeted regression: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "selected game controller row" --reporter=line` passed 1 test.
 +- PASS - Targeted Account/User Controls slice: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "User Controls owns|selected game controller row|scopes profiles" --reporter=line` passed 3 tests.
 +- PASS - Required workspace validation: `npm run test:workspace-v2` passed 5 tests.
 +
 +## Playwright Result
 +
-+- PASS - Connected controller detection renders detected device rows.
-+- PASS - Controller detection creates zero `player_controller_profiles` records.
-+- PASS - Selecting one controller then creating a profile opens exactly one edit row.
-+- PASS - Generated profile does not persist before Save.
-+- PASS - Save persists only the selected controller profile.
-+- PASS - Repeating the same selected-controller flow creates a second profile only after a second explicit create/save sequence.
-+- PASS - Unselected controllers do not create profiles and remain detected rows.
-+- PASS - Existing User Controls profile defaults, editing, persistence, and ownership coverage still passes.
++- PASS - Connected gamepads render as detected selectable rows.
++- PASS - Detection creates zero saved profile rows.
++- PASS - Detected rows are not labeled or stored as detached profiles.
++- PASS - `Create User Control Profile` with no selected gamepad shows an actionable warning and creates zero profiles.
++- PASS - Selecting one detected gamepad then clicking `Create User Control Profile` creates exactly one editable unsaved profile.
++- PASS - Generated profile has Save/Cancel edit flow and does not create profiles for other detected gamepads.
++- PASS - Save persists only that one profile for the current user.
++- PASS - Edit/Trash buttons appear on the saved real profile row and not on detected-only rows or the unsaved editing row.
 +
 +## Coverage
 +
 +- PASS - `docs_build/dev/reports/playwright_v8_coverage_report.txt` was produced after the targeted Account/User Controls Playwright run.
-+- PASS - Changed runtime JavaScript coverage includes `(93%) account/user-controls-page.js - changed runtime JS file with browser V8 coverage`.
++- PASS - Changed runtime JavaScript coverage includes `(91%) account/user-controls-page.js - changed runtime JS file with browser V8 coverage`.
 +
 +## Manual Validation Steps
 +
 +1. Open `/account/user-controls.html`.
 +2. Connect or expose at least two game controllers.
-+3. Confirm detected controllers render as selectable rows and no saved user profiles appear from detection alone.
-+4. Select one detected controller row.
-+5. Click `Create User Control Profile`.
-+6. Confirm one generated profile opens in edit mode and no DB-backed profile appears until Save.
-+7. Click Save and confirm exactly one profile persists for the selected controller.
-+8. Confirm the unselected controller did not create a profile.
-+9. Select the same detected controller again, create a profile again, and save.
-+10. Confirm a second profile appears only after that second explicit flow.
++3. Confirm connected controllers appear as detected-device table rows and no controller dropdown appears.
++4. Confirm detected rows show `Detected` and do not show Edit or Trash.
++5. Click `Create User Control Profile` with no detected controller row selected.
++6. Confirm the warning appears and no profile is created.
++7. Select exactly one detected controller row and click `Create User Control Profile`.
++8. Confirm a single unsaved profile opens in edit mode with Save/Cancel.
++9. Save the profile and confirm only that profile persists for the current user.
++10. Confirm unselected detected controllers remain detected rows and are not saved profiles.
 +
 +## Samples Validation Decision
 +

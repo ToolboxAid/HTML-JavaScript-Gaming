@@ -661,9 +661,7 @@ test("User Controls owns physical input mapping accordions and profiles", async 
     await expect(page.locator("[data-account-user-controls-save-all]")).toHaveCount(0);
     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
-    await expect(page.locator("[data-account-user-controls-device] option")).toHaveText([
-      "Choose a game controller",
-    ]);
+    await expect(page.locator("[data-account-user-controls-device]")).toHaveCount(0);
     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Gamepad:");
     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Keyboard Profile");
     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Mouse Profile");
@@ -761,11 +759,9 @@ test("User Controls owns physical input mapping accordions and profiles", async 
 
     await exposeGamepads(page);
     await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("2 game controllers detected automatically", { timeout: 4000 });
-    await expect(page.locator("[data-account-user-controls-device] option")).toHaveText([
-      "Choose a game controller",
-      "Arcade Test Pad",
-      "Studio Flight Pad",
-    ]);
+    await expect(page.locator("[data-account-user-controls-device]")).toHaveCount(0);
+    await expect(page.locator("[data-account-user-controls-detected-device='Arcade Test Pad']")).toBeVisible();
+    await expect(page.locator("[data-account-user-controls-detected-device='Studio Flight Pad']")).toBeVisible();
     const studioDeviceChoice = page.locator("[data-account-user-controls-selected-device='device:gamepad:studio-flight-pad']");
     await studioDeviceChoice.check();
     await expect(studioDeviceChoice).toBeChecked();

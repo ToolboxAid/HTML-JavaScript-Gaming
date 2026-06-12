@@ -1,6 +1,7 @@
+account/user-controls.html
 account/user-controls-page.js
 tests/playwright/tools/InputMappingV2Tool.spec.mjs
 docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26163_059-user-control-profile-generation-flow.md
+docs_build/dev/reports/PR_26163_060-user-control-gamepad-generation-repair.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

@@ -429,6 +429,7 @@ export class AccountUserControlsPage {
 
   renderDeviceSelect() {
     if (!this.elements.deviceSelect) {
+      this.renderDeviceStatus();
       return;
     }
     const selectedValue = this.elements.deviceSelect.value;
