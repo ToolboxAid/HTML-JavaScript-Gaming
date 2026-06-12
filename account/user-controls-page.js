@@ -403,7 +403,7 @@ export class AccountUserControlsPage {
     });
   }
 
-  createProfile(device) {
+  createProfile(device, { persistImmediately = true } = {}) {
     const knownProfiles = new Map();
     this.readProfiles().forEach((profile) => {
       knownProfiles.set(profile.id, profile);
@@ -413,11 +413,14 @@ export class AccountUserControlsPage {
     });
     this.profiles = [...knownProfiles.values()];
     const profile = this.uniqueProfileForDevice(device);
-    if (!this.saveProfiles([profile, ...this.profiles])) {
-      this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
-      return;
+    let createdProfile = profile;
+    if (persistImmediately) {
+      if (!this.saveProfiles([profile, ...this.profiles])) {
+        this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
+        return;
+      }
+      createdProfile = this.profiles.find((candidate) => candidate.id === profile.id) || profile;
     }
-    const createdProfile = this.profiles.find((candidate) => candidate.id === profile.id) || profile;
     this.editingProfile = { id: createdProfile.id, values: createdProfile };
     this.viewingDefaultFamily = "";
     this.renderProfiles();
@@ -514,17 +517,10 @@ export class AccountUserControlsPage {
       choices.push(choice);
     };
     ["Keyboard", "Mouse", "Gamepad"].forEach((family) => addChoice(this.defaultSelectionChoice(family)));
-    const profiledGamepadIds = new Set();
     this.profiles.forEach((profile) => {
-      if (this.profileListFamily(profile) === "Gamepad") {
-        profiledGamepadIds.add(profile.controllerId);
-      }
       addChoice(this.profileSelectionChoice(profile));
     });
     this.deviceOptions().forEach((device) => {
-      if (profiledGamepadIds.has(device.controllerId)) {
-        return;
-      }
       addChoice(this.detectedDeviceSelectionChoice(device));
     });
     return choices;
@@ -714,11 +710,7 @@ export class AccountUserControlsPage {
         rows.push(this.renderReadonlyProfileDetailsRow(defaultProfile, family));
       }
     });
-    const profiledGamepadIds = new Set(this.profiles
-      .filter((profile) => this.profileListFamily(profile) === "Gamepad")
-      .map((profile) => profile.controllerId));
     this.deviceOptions()
-      .filter((device) => !profiledGamepadIds.has(device.controllerId))
       .forEach((device) => {
         rowsByFamily.get("Gamepad")?.push(this.renderDetectedDeviceRow(device));
       });
@@ -1137,7 +1129,7 @@ export class AccountUserControlsPage {
       this.setStatus("WARN: Select a detected game controller row before creating a user control profile.");
       return;
     }
-    this.createProfile(device);
+    this.createProfile(device, { persistImmediately: false });
   }
 
   editFamilyMappings(family) {
