@@ -35,7 +35,7 @@ Files with executed line/function counts where available:
 (61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 34/56
 (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
 (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
-(92%) account/user-controls-page.js - executed lines 1323/1323; executed functions 145/158
+(92%) account/user-controls-page.js - executed lines 1332/1332; executed functions 146/159
 (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
 (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
 

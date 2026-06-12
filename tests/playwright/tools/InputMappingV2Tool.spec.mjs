@@ -949,35 +949,49 @@ test("User Controls creates one profile from only the selected controller dropdo
     await expect(page.locator("[data-account-user-controls-editing-row]").getByRole("button", { name: "Trash" })).toHaveCount(0);
     expect(await controllerProfileRecords(page)).toHaveLength(0);
 
+    await page.locator("[data-account-user-controls-controller-name]").fill("1.1");
     await page.locator("[data-account-user-controls-save]").click();
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Studio Flight Pad Profile.");
-    const profiles = await controllerProfileRecords(page);
-    expect(profiles).toHaveLength(1);
-    expect(profiles[0]).toMatchObject({
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved 1.1 Profile.");
+    const firstProfiles = await controllerProfileRecords(page);
+    expect(firstProfiles).toHaveLength(1);
+    expect(firstProfiles[0]).toMatchObject({
       controllerId: "Studio Flight Pad",
-      controllerName: "Studio Flight Pad",
+      controllerName: "1.1",
       deviceType: "Gamepad",
-      profileName: "Studio Flight Pad Profile",
+      profileName: "1.1 Profile",
     });
-    expect(profiles.map((profile) => profile.profileName)).not.toContain("Arcade Test Pad Profile");
+    expect(firstProfiles.map((profile) => profile.profileName)).not.toContain("Arcade Test Pad Profile");
+    const firstProfileId = firstProfiles[0].id;
     await expect(page.locator("[data-account-user-controls-detected-device]")).toHaveCount(0);
-    const savedStudioProfileRow = page.locator("[data-account-user-controls-profile-row='studio-flight-pad-studio-flight-pad-profile']");
-    await expect(savedStudioProfileRow.getByRole("button", { name: "Edit" })).toBeVisible();
-    await expect(savedStudioProfileRow.getByRole("button", { name: "Trash" })).toBeVisible();
+    const savedFirstProfileRow = page.locator(`[data-account-user-controls-profile-row='${firstProfileId}']`);
+    await expect(savedFirstProfileRow).toContainText("1.1");
+    await expect(savedFirstProfileRow.getByRole("button", { name: "Edit" })).toBeVisible();
+    await expect(savedFirstProfileRow.getByRole("button", { name: "Trash" })).toBeVisible();
     await expect(page.locator("[data-account-user-controls-list-family='Gamepad']")).not.toContainText("Arcade Test Pad Profile");
 
     await controllerDropdown.selectOption("gamepad-1");
     await page.locator("[data-account-user-controls-add-profile]").click();
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad 2 Profile. Editing the new profile.");
-    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad 2");
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");
+    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad");
+    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
     expect(await controllerProfileRecords(page)).toHaveLength(1);
+    expect((await controllerProfileRecords(page))[0]).toMatchObject({
+      controllerName: "1.1",
+      id: firstProfileId,
+      profileName: "1.1 Profile",
+    });
     await page.locator("[data-account-user-controls-save]").click();
-    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Studio Flight Pad 2 Profile.");
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Studio Flight Pad Profile.");
     const repeatedProfiles = await controllerProfileRecords(page);
     expect(repeatedProfiles).toHaveLength(2);
+    expect(new Set(repeatedProfiles.map((profile) => profile.id)).size).toBe(2);
     expect(repeatedProfiles.filter((profile) => profile.controllerId === "Studio Flight Pad")).toHaveLength(2);
+    expect(repeatedProfiles.find((profile) => profile.id === firstProfileId)).toMatchObject({
+      controllerName: "1.1",
+      profileName: "1.1 Profile",
+    });
     expect(repeatedProfiles.map((profile) => profile.profileName).sort()).toEqual([
-      "Studio Flight Pad 2 Profile",
+      "1.1 Profile",
       "Studio Flight Pad Profile",
     ]);
     expect(repeatedProfiles.map((profile) => profile.profileName)).not.toContain("Arcade Test Pad Profile");

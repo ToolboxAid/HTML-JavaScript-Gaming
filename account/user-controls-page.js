@@ -382,6 +382,7 @@ export class AccountUserControlsPage {
     const family = this.profileListFamily(device);
     const baseControllerName = normalizeText(device.controllerName) || family;
     const baseProfileName = normalizeText(device.mappingProfile) || `${baseControllerName} Profile`;
+    const profileIds = new Set(this.profiles.map((profile) => normalizeText(profile.id)));
     const profileNames = new Set(this.profiles
       .filter((profile) => this.profileListFamily(profile) === family)
       .map((profile) => normalizeText(profile.mappingProfile).toLowerCase()));
@@ -393,10 +394,18 @@ export class AccountUserControlsPage {
       mappingProfile = `${baseControllerName} ${suffix} Profile`;
       suffix += 1;
     }
+    const baseProfileId = this.profileIdFor({ controllerId: device.controllerId, mappingProfile });
+    let profileId = baseProfileId;
+    let idSuffix = 2;
+    while (profileIds.has(profileId)) {
+      profileId = `${baseProfileId}-${idSuffix}`;
+      idSuffix += 1;
+    }
     return this.normalizeProfile({
       controllerId: device.controllerId,
       controllerName,
       deviceType: device.deviceType,
+      id: profileId,
       inputMappings: normalizeProfileInputMappings(device.inputs),
       inputs: device.inputs,
       mappingProfile,
@@ -415,7 +424,7 @@ export class AccountUserControlsPage {
     const profile = this.uniqueProfileForDevice(device);
     let createdProfile = profile;
     if (persistImmediately) {
-      if (!this.saveProfiles([profile, ...this.profiles])) {
+      if (!this.saveProfiles([...this.profiles, profile])) {
         this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
         return;
       }
@@ -1311,7 +1320,7 @@ export class AccountUserControlsPage {
     }
     const nextProfiles = this.editingProfile?.id && this.profiles.some((candidate) => candidate.id === this.editingProfile.id)
       ? this.profiles.map((candidate) => (candidate.id === this.editingProfile.id ? profile : candidate))
-      : [profile, ...this.profiles];
+      : [...this.profiles, profile];
     if (!this.saveProfiles(nextProfiles)) {
       this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
       return;
