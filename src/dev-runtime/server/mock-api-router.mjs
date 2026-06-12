@@ -944,6 +944,7 @@ class LocalDevMockDataSource {
     this.inputMappingRepository = createInputMappingToolMockRepository({
       gameWorkspaceRepository: this.gameWorkspaceRepository,
       ...this.sharedOptions,
+      sessionUserKey: () => this.sessionUserKey,
     });
     this.assetReadyInitialized = false;
     this.sharedOptions.gameWorkspaceRepository = this.gameWorkspaceRepository;

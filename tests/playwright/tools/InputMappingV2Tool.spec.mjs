@@ -141,6 +141,30 @@ async function selectedInputDeviceRecords(page) {
   });
 }
 
+async function setSessionUserInPage(page, userKey) {
+  await page.evaluate(async (nextUserKey) => {
+    const response = await fetch("/api/session/user", {
+      body: JSON.stringify({ userKey: nextUserKey }),
+      headers: { "content-type": "application/json" },
+      method: "POST",
+    });
+    const payload = await response.json();
+    window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
+      detail: payload.data,
+    }));
+  }, userKey);
+}
+
+async function logoutSessionInPage(page) {
+  await page.evaluate(async () => {
+    const response = await fetch("/api/session/logout", { method: "POST" });
+    const payload = await response.json();
+    window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
+      detail: payload.data,
+    }));
+  });
+}
+
 async function exposeGamepads(page) {
   await page.evaluate(() => {
     function makePad(id, index) {
@@ -883,6 +907,87 @@ test("User Controls owns physical input mapping accordions and profiles", async 
   }
 });
 
+test("User Controls scopes profiles to the active owning user", async ({ page }) => {
+  const failures = await openRepoPage(page, "/account/user-controls.html", {
+    sessionUserKey: MOCK_DB_KEYS.users.user1,
+  });
+
+  try {
+    const keyboardProfiles = page.locator("[data-account-user-controls-list-family='Keyboard'] [data-account-user-controls-profile-row]");
+    await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Keyboard Profile. Editing the new profile.");
+    await page.locator("[data-account-user-controls-save]").click();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Keyboard Profile.");
+    await expect(keyboardProfiles).toHaveCount(1);
+    await expect(keyboardProfiles.first()).toContainText("Keyboard");
+    let profileRows = await controllerProfileRecords(page);
+    expect(profileRows).toEqual([
+      expect.objectContaining({
+        playerId: MOCK_DB_KEYS.users.user1,
+        profileName: "Keyboard Profile",
+      }),
+    ]);
+
+    await logoutSessionInPage(page);
+    await expect(page.locator("[data-session-access-blocked]")).toBeVisible();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveCount(0);
+    await expect(keyboardProfiles).toHaveCount(0);
+    profileRows = await controllerProfileRecords(page);
+    expect(profileRows).toEqual([
+      expect.objectContaining({
+        playerId: MOCK_DB_KEYS.users.user1,
+        profileName: "Keyboard Profile",
+      }),
+    ]);
+
+    await setSessionUserInPage(page, MOCK_DB_KEYS.users.user2);
+    await page.goto(`${failures.server.baseUrl}/account/user-controls.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
+    await expect(keyboardProfiles).toHaveCount(0);
+    await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).not.toContainText("Keyboard Profile");
+
+    await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
+    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard");
+    await page.locator("[data-account-user-controls-controller-name]").fill("User 2 Keyboard");
+    await page.locator("[data-account-user-controls-save]").click();
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved User 2 Keyboard Profile.");
+    await expect(keyboardProfiles).toHaveCount(1);
+    await expect(keyboardProfiles.first()).toContainText("User 2 Keyboard");
+    profileRows = await controllerProfileRecords(page);
+    expect(profileRows).toEqual(expect.arrayContaining([
+      expect.objectContaining({
+        playerId: MOCK_DB_KEYS.users.user1,
+        profileName: "Keyboard Profile",
+      }),
+      expect.objectContaining({
+        playerId: MOCK_DB_KEYS.users.user2,
+        profileName: "User 2 Keyboard Profile",
+      }),
+    ]));
+
+    await setSessionUserInPage(page, MOCK_DB_KEYS.users.user1);
+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("User Controls loaded for the selected user.");
+    await expect(keyboardProfiles).toHaveCount(1);
+    await expect(keyboardProfiles.first()).toContainText("Keyboard");
+    await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).not.toContainText("User 2 Keyboard");
+    await keyboardProfiles.first().getByRole("button", { name: "Edit" }).click();
+    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard");
+    await page.locator("[data-account-user-controls-cancel]").click();
+
+    await setSessionUserInPage(page, MOCK_DB_KEYS.users.user2);
+    await expect(keyboardProfiles).toHaveCount(1);
+    await expect(keyboardProfiles.first()).toContainText("User 2 Keyboard");
+    await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).not.toContainText("Keyboard Profile");
+    await keyboardProfiles.first().getByRole("button", { name: "Edit" }).click();
+    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("User 2 Keyboard");
+    await page.locator("[data-account-user-controls-cancel]").click();
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+});
+
 test("Account navigation exposes User Controls in sorted browseable menus", async ({ page }) => {
   const failures = await openRepoPage(page, "/account/user-controls.html", {
     sessionUserKey: MOCK_DB_KEYS.users.user1,
@@ -890,25 +995,27 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
 
   try {
     await expect(page.locator("[data-account-side-nav]")).toBeVisible();
-    await expect(page.locator("[data-account-side-nav-accordion-layout='left-right']")).toBeVisible();
-    await expect(page.locator("[data-account-side-nav-accordion='left']")).toHaveAttribute("open", "");
-    await expect(page.locator("[data-account-side-nav-accordion='right']")).not.toHaveAttribute("open", "");
-    const sideNavAccordionMetrics = await page.locator("[data-account-side-nav-accordion-layout='left-right']").evaluate((layout) => {
-      const left = layout.querySelector("[data-account-side-nav-accordion='left']")?.getBoundingClientRect();
-      const right = layout.querySelector("[data-account-side-nav-accordion='right']")?.getBoundingClientRect();
-      return left && right
+    await expect(page.locator("[data-account-side-nav-accordion-layout='stacked']")).toBeVisible();
+    await expect(page.locator("[data-account-side-nav-accordion='pages']")).toHaveAttribute("open", "");
+    await expect(page.locator("[data-account-side-nav-accordion='guidance']")).not.toHaveAttribute("open", "");
+    const sideNavAccordionMetrics = await page.locator("[data-account-side-nav-accordion-layout='stacked']").evaluate((layout) => {
+      const pages = layout.querySelector("[data-account-side-nav-accordion='pages']")?.getBoundingClientRect();
+      const guidance = layout.querySelector("[data-account-side-nav-accordion='guidance']")?.getBoundingClientRect();
+      return pages && guidance
         ? {
-          leftX: left.x,
-          rightX: right.x,
-          topDelta: Math.abs(left.y - right.y),
+          guidanceY: guidance.y,
+          pagesBottom: pages.bottom,
+          xDelta: Math.abs(pages.x - guidance.x),
         }
         : null;
     });
     expect(sideNavAccordionMetrics).toEqual(expect.objectContaining({
-      topDelta: expect.any(Number),
+      guidanceY: expect.any(Number),
+      pagesBottom: expect.any(Number),
+      xDelta: expect.any(Number),
     }));
-    expect(sideNavAccordionMetrics.rightX).toBeGreaterThan(sideNavAccordionMetrics.leftX);
-    expect(sideNavAccordionMetrics.topDelta).toBeLessThanOrEqual(1);
+    expect(sideNavAccordionMetrics.xDelta).toBeLessThanOrEqual(1);
+    expect(sideNavAccordionMetrics.guidanceY).toBeGreaterThanOrEqual(sideNavAccordionMetrics.pagesBottom);
     await expect(page.locator("[data-account-side-nav-link]")).toHaveText([
       "Account Home",
       "Achievements",
@@ -918,16 +1025,16 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
       "User Controls",
     ]);
     await expect(page.locator("[data-account-side-nav-link][aria-current='page']")).toHaveText("User Controls");
-    await page.locator("[data-account-side-nav-accordion='left'] > summary").click();
-    await expect(page.locator("[data-account-side-nav-accordion='left']")).not.toHaveAttribute("open", "");
+    await page.locator("[data-account-side-nav-accordion='pages'] > summary").click();
+    await expect(page.locator("[data-account-side-nav-accordion='pages']")).not.toHaveAttribute("open", "");
     await expect(page.locator("[data-account-side-nav-link]").first()).toBeHidden();
-    await page.locator("[data-account-side-nav-accordion='left'] > summary").click();
-    await expect(page.locator("[data-account-side-nav-accordion='left']")).toHaveAttribute("open", "");
+    await page.locator("[data-account-side-nav-accordion='pages'] > summary").click();
+    await expect(page.locator("[data-account-side-nav-accordion='pages']")).toHaveAttribute("open", "");
     await expect(page.locator("[data-account-side-nav-link]").first()).toBeVisible();
-    await page.locator("[data-account-side-nav-accordion='right'] > summary").click();
-    await expect(page.locator("[data-account-side-nav-accordion='right']")).toHaveAttribute("open", "");
-    await page.locator("[data-account-side-nav-accordion='right'] > summary").click();
-    await expect(page.locator("[data-account-side-nav-accordion='right']")).not.toHaveAttribute("open", "");
+    await page.locator("[data-account-side-nav-accordion='guidance'] > summary").click();
+    await expect(page.locator("[data-account-side-nav-accordion='guidance']")).toHaveAttribute("open", "");
+    await page.locator("[data-account-side-nav-accordion='guidance'] > summary").click();
+    await expect(page.locator("[data-account-side-nav-accordion='guidance']")).not.toHaveAttribute("open", "");
     await expect(page.locator(".site-header .nav-item").filter({ has: page.locator("[data-route='account']") }).last().locator(".sub-menu a")).toHaveText([
       "Account Home",
       "Achievements",

@@ -1,8 +1,9 @@
-account/user-controls.html
 account/user-controls-page.js
-assets/theme-v2/css/typography.css
+assets/theme-v2/partials/account-side-nav.html
+src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+src/dev-runtime/server/mock-api-router.mjs
 tests/playwright/tools/InputMappingV2Tool.spec.mjs
 docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26163_052-user-controls-device-selection-and-capture-fix.md
+docs_build/dev/reports/PR_26163_053-account-controls-user-scope-and-aside-stack.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

@@ -1,4 +1,5 @@
 import { createControlsToolApiRepository } from "../toolbox/controls/controls-api-client.js";
+import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
 import InputService from "../src/engine/input/InputService.js";
 import InputCaptureService from "../src/engine/input/InputCaptureService.js";
 import { gamepadProfileInputNames } from "../src/engine/input/GamepadInputClassifier.js";
@@ -139,6 +140,7 @@ export class AccountUserControlsPage {
     this.profiles = [];
     this.editingProfile = null;
     this.selectedInputDevice = null;
+    this.sessionUserKey = "";
     this.viewingDefaultFamily = "";
     this.devicePollingTimer = null;
     this.inputCapture = null;
@@ -158,6 +160,7 @@ export class AccountUserControlsPage {
 
   init() {
     this.inputService.attach();
+    this.sessionUserKey = this.currentSessionUserKey();
     this.profiles = this.readProfiles();
     this.selectedInputDevice = this.readSelectedInputDevice();
     this.renderDeviceSelect();
@@ -182,6 +185,8 @@ export class AccountUserControlsPage {
       list.addEventListener("input", (event) => this.handleListInput(event));
       list.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
     });
+    window.addEventListener("gamefoundry:mock-db-session-user-changed", () => this.refreshForSessionUser());
+    window.addEventListener("gamefoundry:mock-db-session-mode-changed", () => this.refreshForSessionUser());
     this.startDevicePolling();
   }
 
@@ -195,6 +200,30 @@ export class AccountUserControlsPage {
     if (this.elements.deviceStatus) {
       this.elements.deviceStatus.textContent = message;
     }
+  }
+
+  currentSessionUserKey() {
+    try {
+      return normalizeText(getSessionCurrent()?.userKey);
+    } catch {
+      return "";
+    }
+  }
+
+  refreshForSessionUser() {
+    this.clearInputCapture({ restore: true });
+    this.repository = createControlsToolApiRepository();
+    this.sessionUserKey = this.currentSessionUserKey();
+    this.profiles = this.readProfiles();
+    this.selectedInputDevice = this.readSelectedInputDevice();
+    this.editingProfile = null;
+    this.viewingDefaultFamily = "";
+    this.renderDeviceSelect();
+    this.renderProfiles();
+    this.renderSelectedInputDevices();
+    this.setStatus(this.sessionUserKey
+      ? "User Controls loaded for the selected user."
+      : "Signed out. User Controls profile data cleared.");
   }
 
   availableGamepads() {
@@ -276,6 +305,9 @@ export class AccountUserControlsPage {
   }
 
   readProfiles() {
+    if (!this.currentSessionUserKey()) {
+      return [];
+    }
     let result = this.repository.listControllerProfiles();
     if (Array.isArray(result)) {
       return result.map((profile) => this.normalizeProfile(profile));
@@ -286,6 +318,9 @@ export class AccountUserControlsPage {
   }
 
   readSelectedInputDevice() {
+    if (!this.currentSessionUserKey()) {
+      return null;
+    }
     let result = this.repository.getSelectedInputDevice();
     if (result?.error) {
       this.repository = createControlsToolApiRepository();
@@ -295,6 +330,10 @@ export class AccountUserControlsPage {
   }
 
   saveSelectedInputDevice(selection) {
+    if (!this.currentSessionUserKey()) {
+      this.setStatus("WARN: Log in to save User Controls.");
+      return false;
+    }
     let result = this.repository.saveSelectedInputDevice(selection);
     if (result?.error) {
       this.repository = createControlsToolApiRepository();
@@ -310,6 +349,10 @@ export class AccountUserControlsPage {
   }
 
   saveProfiles(nextProfiles) {
+    if (!this.currentSessionUserKey()) {
+      this.setStatus("WARN: Log in to save User Controls.");
+      return false;
+    }
     const normalizedProfiles = nextProfiles.map((profile) => this.normalizeProfile(profile));
     let result = this.repository.replaceControllerProfiles(normalizedProfiles);
     if (!Array.isArray(result?.profiles) && result?.error) {

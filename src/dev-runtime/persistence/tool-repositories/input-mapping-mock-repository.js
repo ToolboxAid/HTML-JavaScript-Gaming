@@ -13,7 +13,7 @@ export const INPUT_MAPPING_TOOL_TABLES = Object.freeze([
 
 const INPUT_MAPPING_DB_OWNER = "controls";
 const DEFAULT_GAME_ID = "demo-game";
-const DEFAULT_INPUT_MAPPING_USER_KEY = MOCK_DB_KEYS.users.user1;
+const DEFAULT_INPUT_MAPPING_AUDIT_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
 
 function cloneRows(rows = []) {
   return rows.map((row) => ({ ...row }));
@@ -235,7 +235,14 @@ export function createInputMappingToolMockRepository(options = {}) {
   }
 
   function activeUserKey() {
-    return normalizeText(options.sessionUserKey) || DEFAULT_INPUT_MAPPING_USER_KEY;
+    const sessionUserKey = typeof options.sessionUserKey === "function"
+      ? options.sessionUserKey()
+      : options.sessionUserKey;
+    return normalizeText(sessionUserKey);
+  }
+
+  function auditUserKey() {
+    return activeUserKey() || DEFAULT_INPUT_MAPPING_AUDIT_USER_KEY;
   }
 
   function persistTables() {
@@ -283,6 +290,14 @@ export function createInputMappingToolMockRepository(options = {}) {
 
   function replaceControllerProfiles(profiles = []) {
     const targetPlayerId = activeUserKey();
+    if (!targetPlayerId) {
+      return {
+        error: true,
+        message: "Login required to save User Controls profiles.",
+        profiles: [],
+        saved: false,
+      };
+    }
     const existingRows = new Map(
       (tables.player_controller_profiles || [])
         .filter((record) => normalizeText(record.playerId) === targetPlayerId)
@@ -329,6 +344,14 @@ export function createInputMappingToolMockRepository(options = {}) {
 
   function saveSelectedInputDevice(selection = {}) {
     const targetPlayerId = activeUserKey();
+    if (!targetPlayerId) {
+      return {
+        error: true,
+        message: "Login required to save Selected Device.",
+        saved: false,
+        selectedInputDevice: null,
+      };
+    }
     const timestamp = new Date().toISOString();
     const userKey = activeUserKey();
     const selectionKey = normalizeText(selection.selectionKey || selection.id);
@@ -372,7 +395,7 @@ export function createInputMappingToolMockRepository(options = {}) {
         .map((record) => [normalizeText(record.id), record]),
     );
     const timestamp = new Date().toISOString();
-    const userKey = activeUserKey();
+    const userKey = auditUserKey();
     const nextRows = (Array.isArray(actions) ? actions : []).map((action, index) => {
       const label = normalizeText(action.label || action.actionLabel || action.action);
       const id = normalizeText(action.id) || mappingKeyFromText(label || `custom-action-${index + 1}`);
@@ -412,7 +435,7 @@ export function createInputMappingToolMockRepository(options = {}) {
         .map((record) => [normalizeText(record.id), record]),
     );
     const timestamp = new Date().toISOString();
-    const userKey = activeUserKey();
+    const userKey = auditUserKey();
     const nextRows = (Array.isArray(mappings) ? mappings : []).map((mapping, index) => {
       const action = normalizeText(mapping.action);
       const normalizedInput = normalizeText(mapping.normalizedInput);
