@@ -1,1513 +1,691 @@
 diff --git a/account/user-controls-page.js b/account/user-controls-page.js
-index b0f61cc52..b7d397afa 100644
+index b7d397afa..8dc94cd34 100644
 --- a/account/user-controls-page.js
 +++ b/account/user-controls-page.js
-@@ -361,15 +361,24 @@ export class AccountUserControlsPage {
+@@ -11,24 +11,25 @@ import {
+
+ const DEVICE_POLL_INTERVAL_MS = 1200;
+ const INPUT_CAPTURE_TIMEOUT_MS = 5000;
++const INPUT_CAPTURE_CLICK_SUPPRESSION_MS = 250;
+ const KEYBOARD_INPUTS = Object.freeze(["KeyW", "KeyA", "KeyS", "KeyD", "Space", "ShiftLeft", "ControlLeft", "Enter", "Backspace", "KeyP"]);
+ const MOUSE_INPUTS = Object.freeze(["MouseButton0", "MouseButton2", "MouseButton1", "MouseWheelUp", "MouseWheelDown", "MouseX-", "MouseX+", "MouseY-", "MouseY+"]);
+ const KEYBOARD_MOUSE_EXCLUDED_NORMALIZED_PREFIXES = Object.freeze(["dpad.", "trigger."]);
+ const SUPPORTED_CONTROL_TYPES = Object.freeze([
+-  "Keyboard Key",
+-  "Mouse Button",
+-  "Mouse Axis",
+-  "Mouse Wheel",
+-  "Gamepad Button",
+-  "Gamepad Trigger",
++  "Gamepad Axis",
+   "Gamepad Bumper",
++  "Gamepad Button",
+   "Gamepad Stick Button",
+-  "Gamepad Axis",
+-  "Joystick Button",
++  "Gamepad Trigger",
+   "Joystick Axis",
+-  "Touch Button",
+-  "Touch Axis / Pad",
++  "Joystick Button",
++  "Keyboard Key",
++  "Mouse Axis",
++  "Mouse Button",
++  "Mouse Wheel",
+   "Pointer Drag",
++  "Touch Axis / Pad",
++  "Touch Button",
+ ]);
+
+ function normalizeText(value) {
+@@ -149,7 +150,6 @@ export class AccountUserControlsPage {
+       familyButtons: [...root.querySelectorAll("[data-account-user-controls-edit-family]")],
+       lists: [...root.querySelectorAll("[data-account-user-controls-list]")],
+       refresh: root.querySelector("[data-account-user-controls-refresh]"),
+-      selectedDeviceOptions: root.querySelector("[data-account-user-controls-selected-device-options]"),
+       selectedDeviceStatus: root.querySelector("[data-account-user-controls-selected-device-status]"),
+       status: root.querySelector("[data-account-user-controls-status]"),
+       types: root.querySelector("[data-account-user-controls-types]"),
+@@ -168,11 +168,11 @@ export class AccountUserControlsPage {
+     this.elements.refresh?.addEventListener("click", () => {
+       this.renderDeviceSelect();
+       this.renderSelectedInputDevices();
++      this.renderProfiles();
+       this.setStatus(this.deviceRefreshMessage());
+     });
+     this.elements.addProfile?.addEventListener("click", () => this.addProfileForSelectedDevice());
+     this.elements.deviceSelect?.addEventListener("change", () => this.renderDeviceStatus());
+-    this.elements.selectedDeviceOptions?.addEventListener("change", (event) => this.handleSelectedInputDeviceChange(event));
+     this.elements.familyButtons.forEach((button) => {
+       button.addEventListener("click", () => this.editFamilyMappings(button.dataset.accountUserControlsEditFamily || ""));
+     });
+@@ -426,17 +426,43 @@ export class AccountUserControlsPage {
+     });
    }
- 
-   createProfile(device) {
-+    const knownProfiles = new Map();
-+    this.readProfiles().forEach((profile) => {
-+      knownProfiles.set(profile.id, profile);
-+    });
+
++  defaultSelectionChoice(family) {
++    const profile = this.defaultProfileForFamily(family);
++    return {
++      controllerId: profile.controllerId,
++      deviceType: family,
++      label: `${family} Default Profile`,
++      profileId: "",
++      selectionKey: `default:${family.toLowerCase()}`,
++      selectionType: "default",
++    };
++  }
++
++  detectedDeviceSelectionChoice(device) {
++    return {
++      controllerId: device.controllerId,
++      deviceType: "Gamepad",
++      label: device.label,
++      profileId: "",
++      selectionKey: `device:gamepad:${keyFromText(device.controllerId || device.value)}`,
++      selectionType: "device",
++    };
++  }
++
++  profileSelectionChoice(profile) {
++    return {
++      controllerId: profile.controllerId,
++      deviceType: this.profileListFamily(profile),
++      label: `${profile.controllerName} (${profile.mappingProfile})`,
++      profileId: profile.id,
++      selectionKey: `profile:${profile.id}`,
++      selectionType: "profile",
++    };
++  }
++
+   selectedInputDeviceChoices() {
+     const choices = [];
+     const seenKeys = new Set();
+-    const profilesByFamily = new Map([
+-      ["Keyboard", []],
+-      ["Mouse", []],
+-      ["Gamepad", []],
+-    ]);
+-    this.profiles.forEach((profile) => {
+-      profilesByFamily.get(this.profileListFamily(profile))?.push(profile);
+-    });
+     const addChoice = (choice) => {
+       if (seenKeys.has(choice.selectionKey)) {
+         return;
+@@ -444,50 +470,19 @@ export class AccountUserControlsPage {
+       seenKeys.add(choice.selectionKey);
+       choices.push(choice);
+     };
+-    const addProfileChoice = (profile) => {
+-      addChoice({
+-        controllerId: profile.controllerId,
+-        deviceType: this.profileListFamily(profile),
+-        label: `${profile.controllerName} (${profile.mappingProfile})`,
+-        profileId: profile.id,
+-        selectionKey: `profile:${profile.id}`,
+-        selectionType: "profile",
+-      });
+-    };
+-    ["Keyboard", "Mouse"].forEach((family) => {
+-      const profiles = profilesByFamily.get(family) || [];
+-      if (profiles.length) {
+-        profiles.forEach(addProfileChoice);
+-        return;
+-      }
+-      const device = this.familyDevice(family);
+-      addChoice({
+-        controllerId: device.controllerId,
+-        deviceType: family,
+-        label: device.label,
+-        profileId: "",
+-        selectionKey: `device:${device.value}`,
+-        selectionType: "device",
+-      });
+-    });
+-    const gamepadProfiles = profilesByFamily.get("Gamepad") || [];
++    ["Keyboard", "Mouse", "Gamepad"].forEach((family) => addChoice(this.defaultSelectionChoice(family)));
+     const profiledGamepadIds = new Set();
+-    gamepadProfiles.forEach((profile) => {
+-      profiledGamepadIds.add(profile.controllerId);
+-      addProfileChoice(profile);
 +    this.profiles.forEach((profile) => {
-+      knownProfiles.set(profile.id, profile);
-+    });
-+    this.profiles = [...knownProfiles.values()];
-     const profile = this.uniqueProfileForDevice(device);
-     if (!this.saveProfiles([profile, ...this.profiles])) {
-       this.setStatus("FAIL: User Controls could not reach the shared DB adapter.");
++      if (this.profileListFamily(profile) === "Gamepad") {
++        profiledGamepadIds.add(profile.controllerId);
++      }
++      addChoice(this.profileSelectionChoice(profile));
+     });
+     this.deviceOptions().forEach((device) => {
+       if (profiledGamepadIds.has(device.controllerId)) {
+         return;
+       }
+-      addChoice({
+-        controllerId: device.controllerId,
+-        deviceType: "Gamepad",
+-        label: device.label,
+-        profileId: "",
+-        selectionKey: `device:gamepad:${keyFromText(device.controllerId || device.value)}`,
+-        selectionType: "device",
+-      });
++      addChoice(this.detectedDeviceSelectionChoice(device));
+     });
+     return choices;
+   }
+@@ -506,6 +501,9 @@ export class AccountUserControlsPage {
+       }
+       return this.deviceOptions().some((device) => device.controllerId === profile.controllerId);
+     }
++    if (selection.selectionType === "default") {
++      return true;
++    }
+     if (selection.deviceType === "Keyboard" || selection.deviceType === "Mouse") {
+       return true;
+     }
+@@ -530,23 +528,6 @@ export class AccountUserControlsPage {
+   }
+
+   renderSelectedInputDevices() {
+-    if (!this.elements.selectedDeviceOptions) {
+-      this.renderSelectedInputDeviceStatus();
+-      return;
+-    }
+-    const choices = this.selectedInputDeviceChoices();
+-    const controls = choices.map((choice) => {
+-      const label = document.createElement("label");
+-      const input = document.createElement("input");
+-      input.type = "radio";
+-      input.name = "account-user-controls-selected-device";
+-      input.value = choice.selectionKey;
+-      input.dataset.accountUserControlsSelectedDevice = choice.selectionKey;
+-      input.checked = this.selectedInputDevice?.selectionKey === choice.selectionKey;
+-      label.append(input, document.createTextNode(` ${choice.label}`));
+-      return label;
+-    });
+-    this.elements.selectedDeviceOptions.replaceChildren(...controls);
+     this.renderSelectedInputDeviceStatus();
+   }
+
+@@ -648,7 +629,7 @@ export class AccountUserControlsPage {
+   }
+
+   tableColumnCountForFamily(family) {
+-    return family === "Keyboard" ? 4 : 7;
++    return family === "Keyboard" ? 5 : 8;
+   }
+
+   normalizedOptionsForProfile(profile) {
+@@ -687,6 +668,14 @@ export class AccountUserControlsPage {
+         rows.push(this.renderReadonlyProfileDetailsRow(defaultProfile, family));
+       }
+     });
++    const profiledGamepadIds = new Set(this.profiles
++      .filter((profile) => this.profileListFamily(profile) === "Gamepad")
++      .map((profile) => profile.controllerId));
++    this.deviceOptions()
++      .filter((device) => !profiledGamepadIds.has(device.controllerId))
++      .forEach((device) => {
++        rowsByFamily.get("Gamepad")?.push(this.renderDetectedDeviceRow(device));
++      });
+     if (this.editingProfile) {
+       const family = this.profileListFamily(this.editingProfile.values);
+       rowsByFamily.get(family)?.push(...this.renderEditingRows(this.editingProfile.values));
+@@ -720,6 +709,19 @@ export class AccountUserControlsPage {
+     this.renderSelectedInputDevices();
+   }
+
++  selectedDeviceCell(choice) {
++    const cell = document.createElement("td");
++    const input = document.createElement("input");
++    input.type = "radio";
++    input.name = "account-user-controls-selected-device";
++    input.value = choice.selectionKey;
++    input.dataset.accountUserControlsSelectedDevice = choice.selectionKey;
++    input.checked = this.selectedInputDevice?.selectionKey === choice.selectionKey;
++    input.setAttribute("aria-label", `Select ${choice.label}`);
++    cell.append(input);
++    return cell;
++  }
++
+   readonlyNormalizedSummary(mapping) {
+     if (physicalInputIsAnalog(mapping.physicalInput)) {
+       const negative = normalizeText(mapping.negativeNormalizedInput) || "Unassigned";
+@@ -782,12 +784,14 @@ export class AccountUserControlsPage {
+     row.dataset.accountUserControlsDefaultProfile = family;
+     if (family === "Keyboard") {
+       row.append(
++        this.selectedDeviceCell(this.defaultSelectionChoice(family)),
+         tableCell("Default Profile"),
+         tableCell(`${profile.inputMappings.length} Physical Inputs`),
+         tableCell(this.profileInputSummary(profile)),
+       );
+     } else {
+       row.append(
++        this.selectedDeviceCell(this.defaultSelectionChoice(family)),
+         tableCell("Default Profile"),
+         tableCell(`${profile.inputMappings.length} Physical Inputs`),
+         tableCell(this.profileInputSummary(profile)),
+@@ -805,6 +809,22 @@ export class AccountUserControlsPage {
+     return row;
+   }
+
++  renderDetectedDeviceRow(device) {
++    const row = document.createElement("tr");
++    row.dataset.accountUserControlsDetectedDevice = device.controllerId;
++    row.append(
++      this.selectedDeviceCell(this.detectedDeviceSelectionChoice(device)),
++      tableCell(device.label),
++      tableCell(`${device.inputs.length} Detected Inputs`),
++      tableCell("Create my profile to customize"),
++      tableCell("N/A"),
++      tableCell("N/A"),
++      tableCell("N/A"),
++      tableCell("Detected"),
++    );
++    return row;
++  }
++
+   profileInputSummary(profile) {
+     const assigned = profile.inputMappings.reduce((count, mapping) => {
+       if (!physicalInputIsAnalog(mapping.physicalInput)) {
+@@ -845,12 +865,14 @@ export class AccountUserControlsPage {
+     const family = this.profileListFamily(profile);
+     if (family === "Keyboard") {
+       row.append(
++        this.selectedDeviceCell(this.profileSelectionChoice(profile)),
+         tableCell(profile.controllerName),
+         tableCell(`${profile.inputMappings.length} Physical Inputs`),
+         tableCell(this.profileInputSummary(profile)),
+       );
+     } else {
+       row.append(
++        this.selectedDeviceCell(this.profileSelectionChoice(profile)),
+         tableCell(profile.controllerName),
+         tableCell(`${profile.inputMappings.length} Physical Inputs`),
+         tableCell(this.profileInputSummary(profile)),
+@@ -1006,6 +1028,7 @@ export class AccountUserControlsPage {
+     actions.append(group);
+     if (family === "Keyboard") {
+       row.append(
++        tableCell("Editing"),
+         controllerCell,
+         tableCell(`${profile.inputMappings.length} Physical Inputs`),
+         tableCell(this.profileInputSummary(profile)),
+@@ -1013,6 +1036,7 @@ export class AccountUserControlsPage {
+       );
+     } else {
+       row.append(
++        tableCell("Editing"),
+         controllerCell,
+         tableCell(`${profile.inputMappings.length} Physical Inputs`),
+         tableCell(this.profileInputSummary(profile)),
+@@ -1234,6 +1258,14 @@ export class AccountUserControlsPage {
+       if (target.isConnected) {
+         target.value = binding;
+         target.focus();
++        if (deviceType === "Mouse" && event.type === "mousedown") {
++          target.dataset.accountUserControlsSuppressCaptureClick = "true";
++          window.setTimeout(() => {
++            if (target.isConnected) {
++              delete target.dataset.accountUserControlsSuppressCaptureClick;
++            }
++          }, INPUT_CAPTURE_CLICK_SUPPRESSION_MS);
++        }
+       }
+       this.setStatus(`Captured ${binding}. Save the profile to keep it.`);
+     };
+@@ -1289,6 +1321,11 @@ export class AccountUserControlsPage {
+       ? event.target.closest("[data-account-user-controls-physical-input]")
+       : null;
+     if (physicalInputTarget instanceof HTMLInputElement) {
++      if (physicalInputTarget.dataset.accountUserControlsSuppressCaptureClick === "true") {
++        event.preventDefault();
++        event.stopPropagation();
++        return;
++      }
+       this.beginPhysicalInputCapture(physicalInputTarget);
        return;
      }
--    this.editingProfile = null;
-+    const createdProfile = this.profiles.find((candidate) => candidate.id === profile.id) || profile;
-+    this.editingProfile = { id: createdProfile.id, values: createdProfile };
-     this.viewingDefaultFamily = "";
-     this.renderProfiles();
--    this.setStatus(`PASS: Created ${profile.mappingProfile}. Use Edit to change it.`);
-+    this.setStatus(`PASS: Created ${createdProfile.mappingProfile}. Editing the new profile.`);
+@@ -1328,7 +1365,14 @@ export class AccountUserControlsPage {
+     }
    }
- 
-   renderDeviceSelect() {
-@@ -418,41 +427,69 @@ export class AccountUserControlsPage {
+
+-  handleListChange() {
++  handleListChange(event) {
++    const selectedDeviceTarget = event.target instanceof Element
++      ? event.target.closest("[data-account-user-controls-selected-device]")
++      : null;
++    if (selectedDeviceTarget instanceof HTMLInputElement) {
++      this.handleSelectedInputDeviceChange(event);
++      return;
++    }
+     this.setStatus("Unsaved user control profile changes.");
    }
- 
-   selectedInputDeviceChoices() {
--    const fixedDevices = [
--      {
--        controllerId: "generic-keyboard",
--        deviceType: "Keyboard",
--        label: "Keyboard",
-+    const choices = [];
-+    const seenKeys = new Set();
-+    const profilesByFamily = new Map([
-+      ["Keyboard", []],
-+      ["Mouse", []],
-+      ["Gamepad", []],
-+    ]);
-+    this.profiles.forEach((profile) => {
-+      profilesByFamily.get(this.profileListFamily(profile))?.push(profile);
-+    });
-+    const addChoice = (choice) => {
-+      if (seenKeys.has(choice.selectionKey)) {
-+        return;
-+      }
-+      seenKeys.add(choice.selectionKey);
-+      choices.push(choice);
-+    };
-+    const addProfileChoice = (profile) => {
-+      addChoice({
-+        controllerId: profile.controllerId,
-+        deviceType: this.profileListFamily(profile),
-+        label: `${profile.controllerName} (${profile.mappingProfile})`,
-+        profileId: profile.id,
-+        selectionKey: `profile:${profile.id}`,
-+        selectionType: "profile",
-+      });
-+    };
-+    ["Keyboard", "Mouse"].forEach((family) => {
-+      const profiles = profilesByFamily.get(family) || [];
-+      if (profiles.length) {
-+        profiles.forEach(addProfileChoice);
-+        return;
-+      }
-+      const device = this.familyDevice(family);
-+      addChoice({
-+        controllerId: device.controllerId,
-+        deviceType: family,
-+        label: device.label,
-         profileId: "",
--        selectionKey: "device:keyboard",
-+        selectionKey: `device:${device.value}`,
-         selectionType: "device",
--      },
--      {
--        controllerId: "generic-mouse",
--        deviceType: "Mouse",
--        label: "Mouse",
-+      });
-+    });
-+    const gamepadProfiles = profilesByFamily.get("Gamepad") || [];
-+    const profiledGamepadIds = new Set();
-+    gamepadProfiles.forEach((profile) => {
-+      profiledGamepadIds.add(profile.controllerId);
-+      addProfileChoice(profile);
-+    });
-+    this.deviceOptions().forEach((device) => {
-+      if (profiledGamepadIds.has(device.controllerId)) {
-+        return;
-+      }
-+      addChoice({
-+        controllerId: device.controllerId,
-+        deviceType: "Gamepad",
-+        label: device.label,
-         profileId: "",
--        selectionKey: "device:mouse",
-+        selectionKey: `device:gamepad:${keyFromText(device.controllerId || device.value)}`,
-         selectionType: "device",
--      },
--    ];
--    const detectedGamepads = this.deviceOptions().map((device) => ({
--      controllerId: device.controllerId,
--      deviceType: "Gamepad",
--      label: device.label,
--      profileId: "",
--      selectionKey: `device:gamepad:${keyFromText(device.controllerId || device.value)}`,
--      selectionType: "device",
--    }));
--    const playerProfiles = this.profiles.map((profile) => ({
--      controllerId: profile.controllerId,
--      deviceType: this.profileListFamily(profile),
--      label: `${profile.controllerName} (${profile.mappingProfile})`,
--      profileId: profile.id,
--      selectionKey: `profile:${profile.id}`,
--      selectionType: "profile",
--    }));
--    return [...fixedDevices, ...detectedGamepads, ...playerProfiles];
-+      });
-+    });
-+    return choices;
-   }
- 
-   selectedInputDeviceConnected(selection) {
+
 diff --git a/account/user-controls.html b/account/user-controls.html
-index 28bc880e5..8d0c9c08d 100644
+index 8d0c9c08d..ebcbcb4fa 100644
 --- a/account/user-controls.html
 +++ b/account/user-controls.html
-@@ -21,10 +21,10 @@
-             </div>
-         </section>
-         <section class="section">
--            <div class="container account-panel">
-+            <div class="container account-panel account-panel--fill">
-                 <div data-partial="account-side-nav" data-partial-replace></div>
--                <div class="card">
--                    <div class="card-body content-stack">
-+                <div class="card card--fill">
-+                    <div class="card-body card-body--fill content-stack">
-                         <div>
-                             <div class="kicker">User Controls</div>
+@@ -30,11 +30,7 @@
                              <h2>Physical Input Mapping</h2>
-diff --git a/assets/theme-v2/css/layout.css b/assets/theme-v2/css/layout.css
-index 077a793f0..45e4788db 100644
---- a/assets/theme-v2/css/layout.css
-+++ b/assets/theme-v2/css/layout.css
-@@ -376,6 +376,15 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
-   gap: var(--space-18)
+                             <p>User Controls resolves physical input to normalized controls. Game behavior stays in Game Controls.</p>
+                         </div>
+-                        <div class="content-stack content-stack--compact">
+-                            <h3>Selected Device</h3>
+-                            <div class="content-cluster" role="radiogroup" aria-label="Selected Device" data-account-user-controls-selected-device-options></div>
+-                            <p class="status" role="status" data-account-user-controls-selected-device-status>Default Profile</p>
+-                        </div>
++                        <p class="status" role="status" data-account-user-controls-selected-device-status>Default Profile</p>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open data-account-user-controls-section="Keyboard">
+                                 <summary>Keyboard</summary>
+@@ -44,6 +40,7 @@
+                                         <table class="data-table" aria-label="Keyboard user control profile" data-account-user-controls-table="Keyboard">
+                                             <thead>
+                                                 <tr>
++                                                    <th>Selected Device</th>
+                                                     <th>Physical Controller</th>
+                                                     <th>Physical Input</th>
+                                                     <th>Normalized Control</th>
+@@ -66,6 +63,7 @@
+                                         <table class="data-table" aria-label="Mouse user control profile" data-account-user-controls-table="Mouse">
+                                             <thead>
+                                                 <tr>
++                                                    <th>Selected Device</th>
+                                                     <th>Physical Controller</th>
+                                                     <th>Physical Input</th>
+                                                     <th>Normalized Control</th>
+@@ -98,6 +96,7 @@
+                                         <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
+                                             <thead>
+                                                 <tr>
++                                                    <th>Selected Device</th>
+                                                     <th>Physical Controller</th>
+                                                     <th>Physical Input</th>
+                                                     <th>Normalized Control</th>
+@@ -124,7 +123,7 @@
+                             <details class="vertical-accordion" open>
+                                 <summary>Supported Control Types</summary>
+                                 <div class="accordion-body">
+-                                    <ul data-account-user-controls-types></ul>
++                                    <ul class="list--multi-column" data-account-user-controls-types></ul>
+                                 </div>
+                             </details>
+                             <details class="vertical-accordion" open>
+diff --git a/assets/theme-v2/css/typography.css b/assets/theme-v2/css/typography.css
+index 990317e82..80a122111 100644
+--- a/assets/theme-v2/css/typography.css
++++ b/assets/theme-v2/css/typography.css
+@@ -109,6 +109,18 @@ li {
+   line-height: 1.5
  }
- 
-+.account-panel--fill {
-+  align-items: stretch;
-+  min-height: 100%
+
++.list--multi-column {
++  columns: 2;
++  column-gap: var(--space-24);
++  list-style-position: outside;
++  padding-left: var(--space-18)
 +}
 +
-+.account-panel--fill>.card {
-+  width: 100%
++.list--multi-column li {
++  break-inside: avoid;
++  padding-left: var(--space-4)
 +}
 +
- .admin-page-stack {
-   display: grid;
-   gap: var(--space-18);
-diff --git a/assets/theme-v2/css/panels.css b/assets/theme-v2/css/panels.css
-index 09637f89e..2bd85d8cf 100644
---- a/assets/theme-v2/css/panels.css
-+++ b/assets/theme-v2/css/panels.css
-@@ -38,6 +38,12 @@
-   padding: var(--space-18)
+ dl {
+   margin: var(--space-0)
  }
- 
-+.card--fill,
-+.card-body--fill {
-+  min-height: 100%;
-+  width: 100%
-+}
-+
- .tool-workspace article.card>.card-body.content-stack {
-   margin: var(--space-8)
- }
-diff --git a/assets/theme-v2/partials/account-side-nav.html b/assets/theme-v2/partials/account-side-nav.html
-index 00724fd7d..4747ef311 100644
---- a/assets/theme-v2/partials/account-side-nav.html
-+++ b/assets/theme-v2/partials/account-side-nav.html
-@@ -1,8 +1,21 @@
- <aside class="side-menu" aria-label="Account pages" data-account-side-nav>
--    <a data-account-side-nav-link data-route="account" href="/account/index.html">Account Home</a>
--    <a data-account-side-nav-link data-route="account-achievements" href="/account/achievements.html">Achievements</a>
--    <a data-account-side-nav-link data-route="account-preferences" href="/account/preferences.html">Preferences</a>
--    <a data-account-side-nav-link data-route="account-profile" href="/account/profile.html">Profile</a>
--    <a data-account-side-nav-link data-route="account-security" href="/account/security.html">Security</a>
--    <a data-account-side-nav-link data-route="account-user-controls" href="/account/user-controls.html">User Controls</a>
-+    <div class="accordion-stack" data-account-side-nav-accordion-layout="left-right">
-+        <details class="vertical-accordion" open data-account-side-nav-accordion="left">
-+            <summary>Account Pages</summary>
-+            <div class="accordion-body content-stack content-stack--compact">
-+                <a data-account-side-nav-link data-route="account" href="/account/index.html">Account Home</a>
-+                <a data-account-side-nav-link data-route="account-achievements" href="/account/achievements.html">Achievements</a>
-+                <a data-account-side-nav-link data-route="account-preferences" href="/account/preferences.html">Preferences</a>
-+                <a data-account-side-nav-link data-route="account-profile" href="/account/profile.html">Profile</a>
-+                <a data-account-side-nav-link data-route="account-security" href="/account/security.html">Security</a>
-+                <a data-account-side-nav-link data-route="account-user-controls" href="/account/user-controls.html">User Controls</a>
-+            </div>
-+        </details>
-+        <details class="vertical-accordion" data-account-side-nav-accordion="right">
-+            <summary>Account Guidance</summary>
-+            <div class="accordion-body content-stack content-stack--compact">
-+                <p class="status">Manage profile, security, preferences, achievements, and controls from Account pages.</p>
-+            </div>
-+        </details>
-+    </div>
- </aside>
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 82149fada..043e4bc4b 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,10 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
- Changed runtime JS files considered:
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
- 
- Guardrail warnings:
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(100%) none - no changed runtime JS coverage warnings
-diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
-index 69a827c13..676cfc33a 100644
---- a/docs_build/dev/reports/dependency_gating_report.md
-+++ b/docs_build/dev/reports/dependency_gating_report.md
-@@ -1,6 +1,6 @@
- # Dependency Gating Report
- 
--Generated: 2026-06-11T23:23:59.602Z
-+Generated: 2026-06-12T15:50:41.568Z
- Status: PASS
- 
- ## Gate Order
-diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-index 725948e24..fc7d97e9a 100644
---- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
-+++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-@@ -1,22 +1,22 @@
- # Dependency Hydration Reuse Report
- 
--Generated: 2026-06-11T23:23:59.602Z
-+Generated: 2026-06-12T15:50:41.569Z
- Status: PASS
- 
- ## Summary
- 
--Reused dependency hydration: 1
--Invalidated dependency hydration: 0
-+Reused dependency hydration: 0
-+Invalidated dependency hydration: 1
- Generated dependency hydration: 0
--Prevented dependency graph hydration: 1
--Prevented helper resolution passes: 4
-+Prevented dependency graph hydration: 0
-+Prevented helper resolution passes: 0
- Prevented fixture ownership traversal: 0
- 
- ## Hydration Decisions
- 
- | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 24678cbf69e8345f | Dependency hydration reused from validated warm-start state. |
-+| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 297b1d93be3128ae | Dependency hydration was refreshed after warm-start invalidation. |
- 
- ## Safeguards
- 
-diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
-index 11682fcf0..bb72465cc 100644
---- a/docs_build/dev/reports/execution_graph_reuse_report.md
-+++ b/docs_build/dev/reports/execution_graph_reuse_report.md
-@@ -1,22 +1,22 @@
- # Execution Graph Reuse Report
- 
--Generated: 2026-06-11T23:23:59.602Z
-+Generated: 2026-06-12T15:50:41.570Z
- Status: PASS
- 
- ## Summary
- 
--Reused execution graphs: 1
--Prevented graph rebuilds: 1
--Prevented redundant dependency traversal: 1
--Prevented fixture/helper graph assembly: 4
--Prevented manifest traversal: 1
--Prevented targeted scheduling work: 1
-+Reused execution graphs: 0
-+Prevented graph rebuilds: 0
-+Prevented redundant dependency traversal: 0
-+Prevented fixture/helper graph assembly: 0
-+Prevented manifest traversal: 0
-+Prevented targeted scheduling work: 0
- 
- ## Execution Graph Decisions
- 
- | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | REUSED | 8b9f7987b5ee1aca | Lane snapshot is part of the selected targeted execution graph. |
-+| workspace-contract | INVALIDATED | INVALIDATED | 47ce54aa275bb703 | Lane snapshot is part of the selected targeted execution graph. |
- 
- ## Safeguards
- 
-diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
-index 9ce1ee557..502ef6e64 100644
---- a/docs_build/dev/reports/failure_fingerprint_report.md
-+++ b/docs_build/dev/reports/failure_fingerprint_report.md
-@@ -1,6 +1,6 @@
- # Failure Fingerprint Report
- 
--Generated: 2026-06-11T23:24:42.918Z
-+Generated: 2026-06-12T15:51:29.216Z
- Status: PASS
- 
- ## Summary
-diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-index cfc41272c..1fffd0758 100644
---- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
-+++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-@@ -1,6 +1,6 @@
- # Filesystem Scan Reduction Report
- 
--Generated: 2026-06-11T23:23:59.589Z
-+Generated: 2026-06-12T15:50:41.542Z
- Status: PASS
- 
- ## Scan Enforcement
-diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
-index 7867e003c..468c09a87 100644
---- a/docs_build/dev/reports/incremental_validation_report.md
-+++ b/docs_build/dev/reports/incremental_validation_report.md
-@@ -1,24 +1,24 @@
- # Incremental Validation Report
- 
--Generated: 2026-06-11T23:23:59.603Z
-+Generated: 2026-06-12T15:50:41.571Z
- Status: PASS
- 
- ## Reuse Summary
- 
--Reused manifests: 1
--Invalidated manifests: 0
-+Reused manifests: 0
-+Invalidated manifests: 1
- Generated manifests: 0
- Skipped manifests: 0
--Prevented lane regeneration: 1
--Prevented discovery scans: 1
--Prevented helper resolution passes: 4
-+Prevented lane regeneration: 0
-+Prevented discovery scans: 0
-+Prevented helper resolution passes: 0
- Prevented fixture resolution passes: 0
- 
- ## Incremental Decisions
- 
- | Lane | Decision | Invalidated By | Runtime Savings Observation |
- | --- | --- | --- | --- |
--| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
-+| workspace-contract | INVALIDATED | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
- 
- ## Invalidation Rules
- 
-diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
-index d8b688067..a4521493a 100644
---- a/docs_build/dev/reports/lane_compilation_report.md
-+++ b/docs_build/dev/reports/lane_compilation_report.md
-@@ -1,6 +1,6 @@
- # Lane Compilation Report
- 
--Generated: 2026-06-11T23:23:59.601Z
-+Generated: 2026-06-12T15:50:41.568Z
- Status: PASS
- 
- ## Lane Graph
-diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
-index 34c58985a..46a4b7321 100644
---- a/docs_build/dev/reports/lane_deduplication_report.md
-+++ b/docs_build/dev/reports/lane_deduplication_report.md
-@@ -1,6 +1,6 @@
- # Lane Deduplication Report
- 
--Generated: 2026-06-11T23:23:59.602Z
-+Generated: 2026-06-12T15:50:41.569Z
- Status: PASS
- 
- ## Summary
-diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
-index 49b8a84f6..f45ee2370 100644
---- a/docs_build/dev/reports/lane_input_validation_report.md
-+++ b/docs_build/dev/reports/lane_input_validation_report.md
-@@ -1,6 +1,6 @@
- # Lane Input Validation Report
- 
--Generated: 2026-06-11T23:23:59.603Z
-+Generated: 2026-06-12T15:50:41.571Z
- Status: PASS
- 
- ## Input Files
-diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-index 28af09859..67b2d5b6b 100644
---- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-@@ -1,11 +1,11 @@
- {
-   "commandsHash": "39e16c9d480a1e51",
-   "dependencies": [],
--  "dependencyGraphHash": "0e4e45b146ae24a2",
-+  "dependencyGraphHash": "f14f5fc27c53a533",
-   "fileHashes": {
-     "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
-     "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
--    "src/dev-runtime/persistence/mock-db-store.js": "5c42bfc08d232e24",
-+    "src/dev-runtime/persistence/mock-db-store.js": "da6ec9e9ff2ecbb0",
-     "src/dev-runtime/server/mock-api-router.mjs": "0b4765a5041062b3",
-     "tests/helpers/playwrightRepoServer.mjs": "654bc59251c146da",
-     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-@@ -32,15 +32,15 @@
-     "tests/helpers/workspaceV2CoverageReporter.mjs",
-     "toolbox/toolRegistry.js"
-   ],
--  "inputHash": "d6960402a61f2e3b",
-+  "inputHash": "8c5fa55c0781b788",
-   "lane": "workspace-contract",
-   "laneDefinitionHash": "fde48767b345621c",
--  "manifestHash": "0b0229bf83a32394",
-+  "manifestHash": "7fad4acbe9d725da",
-   "ownership": "tools",
-   "tests": [
-     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-   ],
-   "version": 1,
--  "generatedAt": "2026-06-11T18:11:40.842Z",
-+  "generatedAt": "2026-06-12T15:50:40.593Z",
-   "source": "generated"
- }
-diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
-index 4fe591f11..f439d6045 100644
---- a/docs_build/dev/reports/lane_runtime_optimization_report.md
-+++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
-@@ -1,16 +1,16 @@
- # Lane Runtime Optimization Report
- 
--Generated: 2026-06-11T23:23:59.602Z
-+Generated: 2026-06-12T15:50:41.569Z
- Status: PASS
- 
- ## Runtime Cost Summary
- 
- Reused runtime sessions: 0
--Reused lane snapshots: 1
--Reused warm-start lanes: 1
--Reused dependency hydration: 1
--Prevented graph rebuilds: 1
--Prevented redundant initialization: 1
-+Reused lane snapshots: 0
-+Reused warm-start lanes: 0
-+Reused dependency hydration: 0
-+Prevented graph rebuilds: 0
-+Prevented redundant initialization: 0
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
- Baseline Playwright/browser launches: 1
-@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
- 
- | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
- 
- ## Runtime Savings Observations
- 
-diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
-index afe685c93..ca2f2865e 100644
---- a/docs_build/dev/reports/lane_snapshot_report.md
-+++ b/docs_build/dev/reports/lane_snapshot_report.md
-@@ -1,23 +1,23 @@
- # Lane Snapshot Report
- 
--Generated: 2026-06-11T23:23:59.602Z
-+Generated: 2026-06-12T15:50:41.570Z
- Status: PASS
- Snapshot directory: docs_build/dev/reports/lane_snapshots
- 
- ## Summary
- 
--Reused lane snapshots: 1
--Invalidated snapshots: 0
-+Reused lane snapshots: 0
-+Invalidated snapshots: 1
- Generated snapshots: 0
- Skipped snapshots: 0
--Prevented graph rebuilds: 1
--Prevented manifest traversal: 1
-+Prevented graph rebuilds: 0
-+Prevented manifest traversal: 0
- 
- ## Snapshot Decisions
- 
- | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 0b0229bf83a32394 | 0e4e45b146ae24a2 | 6c558c65ec6914d2 | 6c4fac7630b0b6f3 | c99c4343771f1683 | 8b9f7987b5ee1aca | 64d97bba41be6caf | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 7fad4acbe9d725da | f14f5fc27c53a533 | 6c558c65ec6914d2 | 6c4fac7630b0b6f3 | c99c4343771f1683 | 47ce54aa275bb703 | a626c81d484bac50 | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
- 
- ## Snapshot Validation Findings
- 
-diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-index 3090d8a90..fcefbba15 100644
---- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-@@ -3,11 +3,11 @@
-   "dependencyGateStatus": "PASS",
-   "dependencyGraph": {
-     "dependencies": [],
--    "dependencyGraphHash": "0e4e45b146ae24a2",
-+    "dependencyGraphHash": "f14f5fc27c53a533",
-     "importHashes": {
-       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
-       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
--      "src/dev-runtime/persistence/mock-db-store.js": "5c42bfc08d232e24",
-+      "src/dev-runtime/persistence/mock-db-store.js": "da6ec9e9ff2ecbb0",
-       "src/dev-runtime/server/mock-api-router.mjs": "0b4765a5041062b3",
-       "tests/helpers/playwrightRepoServer.mjs": "654bc59251c146da",
-       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-@@ -27,8 +27,8 @@
-       "toolbox/toolRegistry.js"
-     ]
-   },
--  "dependencyGraphHash": "0e4e45b146ae24a2",
--  "executionGraphHash": "8b9f7987b5ee1aca",
-+  "dependencyGraphHash": "f14f5fc27c53a533",
-+  "executionGraphHash": "47ce54aa275bb703",
-   "fixtureGraph": {
-     "fixtureHashes": {},
-     "fixtures": []
-@@ -49,7 +49,7 @@
-     ]
-   },
-   "helperGraphHash": "6c558c65ec6914d2",
--  "inputHash": "d6960402a61f2e3b",
-+  "inputHash": "8c5fa55c0781b788",
-   "lane": "workspace-contract",
-   "laneCompilationStatus": "PASS",
-   "laneDefinitionHash": "fde48767b345621c",
-@@ -57,7 +57,7 @@
-     "fileHashes": {
-       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
-       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
--      "src/dev-runtime/persistence/mock-db-store.js": "5c42bfc08d232e24",
-+      "src/dev-runtime/persistence/mock-db-store.js": "da6ec9e9ff2ecbb0",
-       "src/dev-runtime/server/mock-api-router.mjs": "0b4765a5041062b3",
-       "tests/helpers/playwrightRepoServer.mjs": "654bc59251c146da",
-       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-@@ -84,14 +84,14 @@
-       "tests/helpers/workspaceV2CoverageReporter.mjs",
-       "toolbox/toolRegistry.js"
-     ],
--    "manifestHash": "0b0229bf83a32394",
-+    "manifestHash": "7fad4acbe9d725da",
-     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-     "source": "generated",
-     "tests": [
-       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-     ]
-   },
--  "manifestHash": "0b0229bf83a32394",
-+  "manifestHash": "7fad4acbe9d725da",
-   "ownership": "tools",
-   "runtimeConfiguration": {
-     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
-@@ -118,8 +118,8 @@
-     "requiresSamplesFlag": false
-   },
-   "runtimeConfigurationHash": "c99c4343771f1683",
--  "snapshotHash": "64d97bba41be6caf",
-+  "snapshotHash": "a626c81d484bac50",
-   "version": 1,
--  "warmStartHash": "85ed9dde3b71d0d9",
--  "generatedAt": "2026-06-11T18:11:41.717Z"
-+  "warmStartHash": "fe9f5b6ad64c8380",
-+  "generatedAt": "2026-06-12T15:50:41.563Z"
- }
-diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
-index feb4dd589..794ca5061 100644
---- a/docs_build/dev/reports/lane_warm_start_report.md
-+++ b/docs_build/dev/reports/lane_warm_start_report.md
-@@ -1,23 +1,23 @@
- # Lane Warm-Start Report
- 
--Generated: 2026-06-11T23:23:59.602Z
-+Generated: 2026-06-12T15:50:41.569Z
- Status: PASS
- Warm-start directory: docs_build/dev/reports/lane_warm_starts
- 
- ## Summary
- 
--Reused warm-start lanes: 1
--Invalidated warm-start states: 0
-+Reused warm-start lanes: 0
-+Invalidated warm-start states: 1
- Generated warm-start states: 0
- Skipped warm-start states: 0
--Prevented redundant initialization: 1
--Prevented lane graph assembly: 1
-+Prevented redundant initialization: 0
-+Prevented lane graph assembly: 0
- 
- ## Warm-Start Decisions
- 
- | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 0b0229bf83a32394 | 85ed9dde3b71d0d9 | 24678cbf69e8345f | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 7fad4acbe9d725da | fe9f5b6ad64c8380 | 297b1d93be3128ae | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
- 
- ## Fast-Fail Safeguards
- 
-diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-index bc3d5cda8..6a94c88c0 100644
---- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-@@ -1,8 +1,8 @@
- {
-   "commandsHash": "39e16c9d480a1e51",
--  "dependencyGraphHash": "0e4e45b146ae24a2",
-+  "dependencyGraphHash": "f14f5fc27c53a533",
-   "dependencyHydration": {
--    "dependencyHydrationHash": "24678cbf69e8345f",
-+    "dependencyHydrationHash": "297b1d93be3128ae",
-     "fixtureHashes": {},
-     "fixtures": [],
-     "helperHashes": {
-@@ -20,7 +20,7 @@
-     "importHashes": {
-       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
-       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
--      "src/dev-runtime/persistence/mock-db-store.js": "5c42bfc08d232e24",
-+      "src/dev-runtime/persistence/mock-db-store.js": "da6ec9e9ff2ecbb0",
-       "src/dev-runtime/server/mock-api-router.mjs": "0b4765a5041062b3",
-       "tests/helpers/playwrightRepoServer.mjs": "654bc59251c146da",
-       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-@@ -40,16 +40,16 @@
-       "toolbox/toolRegistry.js"
-     ]
-   },
--  "dependencyHydrationHash": "24678cbf69e8345f",
--  "inputHash": "d6960402a61f2e3b",
-+  "dependencyHydrationHash": "297b1d93be3128ae",
-+  "inputHash": "8c5fa55c0781b788",
-   "lane": "workspace-contract",
-   "laneConfigHash": "3d8db02cddc33911",
-   "laneDefinitionHash": "fde48767b345621c",
--  "manifestHash": "0b0229bf83a32394",
-+  "manifestHash": "7fad4acbe9d725da",
-   "ownership": "tools",
--  "warmStartHash": "85ed9dde3b71d0d9",
-+  "warmStartHash": "fe9f5b6ad64c8380",
-   "version": 1,
--  "generatedAt": "2026-06-11T18:11:40.851Z",
-+  "generatedAt": "2026-06-12T15:50:40.599Z",
-   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-   "sourceManifest": "generated"
- }
-diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
-index e2b51b76e..91a1a7ef0 100644
---- a/docs_build/dev/reports/monolith_trigger_removal_report.md
-+++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
-@@ -1,6 +1,6 @@
- # Monolith Trigger Removal Report
- 
--Generated: 2026-06-11T23:24:42.918Z
-+Generated: 2026-06-12T15:51:29.217Z
- Status: PASS
- 
- ## Removed Broad Execution Triggers
-diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
-index 93c1e9f2e..0398cb136 100644
---- a/docs_build/dev/reports/persistent_lane_manifest_report.md
-+++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
-@@ -1,27 +1,27 @@
- # Persistent Lane Manifest Report
- 
--Generated: 2026-06-11T23:23:59.603Z
-+Generated: 2026-06-12T15:50:41.570Z
- Status: PASS
- Manifest directory: docs_build/dev/reports/lane_manifests
- 
- ## Summary
- 
--Reused manifests: 1
--Invalidated manifests: 0
-+Reused manifests: 0
-+Invalidated manifests: 1
- Generated manifests: 0
--Prevented discovery scans: 1
-+Prevented discovery scans: 0
- 
- ## Manifest Events
- 
- | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | d6960402a61f2e3b | 0b0229bf83a32394 | Inputs unchanged; persisted lane manifest reused. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 8c5fa55c0781b788 | 7fad4acbe9d725da | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
- 
- ## Persisted Manifest Files
- 
- | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 0e4e45b146ae24a2 | 0b0229bf83a32394 |
-+| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | f14f5fc27c53a533 | 7fad4acbe9d725da |
- 
- ## Fast-Fail Enforcement
- 
-diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-index 629568d2a..f3e3a94a7 100644
---- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Ownership Report
- 
--Generated: 2026-06-11T23:23:59.585Z
-+Generated: 2026-06-12T15:50:41.534Z
- Status: PASS
- 
- ## Discovery-Time Ownership
-diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
-index feff5d3a1..00acffd28 100644
---- a/docs_build/dev/reports/playwright_discovery_scope_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Scope Report
- 
--Generated: 2026-06-11T23:23:59.587Z
-+Generated: 2026-06-12T15:50:41.540Z
- Status: PASS
- Scoped discovery: Yes
- 
-diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
-index 586b60ee0..63fd9f2b2 100644
---- a/docs_build/dev/reports/playwright_structure_audit.md
-+++ b/docs_build/dev/reports/playwright_structure_audit.md
-@@ -1,6 +1,6 @@
- # Playwright Structure Audit
- 
--Generated: 2026-06-11T23:23:59.570Z
-+Generated: 2026-06-12T15:50:41.514Z
- Status: PASS
- 
- ## Lane Directories
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 57f79b4b2..a57c59303 100644
+index a57c59303..e9f6263f5 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,8 +17,6 @@ Exercised tool entry points detected:
- (62%) Theme V2 Shared JS - exercised 2 runtime JS files
- 
+@@ -12,12 +12,12 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(89%) Toolbox Index - exercised 3 runtime JS files
++(100%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(62%) Theme V2 Shared JS - exercised 2 runtime JS files
++(61%) Theme V2 Shared JS - exercised 1 runtime JS files
+
  Changed runtime JS files covered:
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
- 
+-(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
++(100%) none changed - no changed runtime JS files
+
  Files with executed line/function counts where available:
-@@ -38,18 +36,16 @@ Files with executed line/function counts where available:
- (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
+ (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
+@@ -32,20 +32,16 @@ Files with executed line/function counts where available:
+ (59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
+ (60%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 9/15
+ (61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 33/54
+-(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+-(75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
  (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
  (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
--(93%) account/user-controls-page.js - executed lines 1242/1242; executed functions 137/148
-+(93%) account/user-controls-page.js - executed lines 1279/1279; executed functions 144/155
- (94%) toolbox/controls/controls.js - executed lines 667/667; executed functions 68/72
+-(93%) account/user-controls-page.js - executed lines 1279/1279; executed functions 144/155
+-(94%) toolbox/controls/controls.js - executed lines 667/667; executed functions 68/72
++(93%) account/user-controls-page.js - executed lines 1318/1318; executed functions 150/161
  (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
  (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
- 
+
  Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-+(100%) none - no low-coverage changed runtime JS files
- 
+-(100%) none - no low-coverage changed runtime JS files
++(100%) none changed - no changed runtime JS files
+
  Changed JS files considered:
--(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
- (89%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage
+-(89%) src/engine/input/NormalizedInputRegistry.js - changed JS file with browser V8 coverage
  (93%) account/user-controls-page.js - changed JS file with browser V8 coverage
-diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
-index 2b3b5720c..3ad307c67 100644
---- a/docs_build/dev/reports/retry_suppression_report.md
-+++ b/docs_build/dev/reports/retry_suppression_report.md
-@@ -1,6 +1,6 @@
- # Retry Suppression Report
- 
--Generated: 2026-06-11T23:24:42.918Z
-+Generated: 2026-06-12T15:51:29.216Z
- Status: PASS
- 
- ## Summary
-diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
-index 3a086fad8..ddd8d6b30 100644
---- a/docs_build/dev/reports/slow_path_pruning_report.md
-+++ b/docs_build/dev/reports/slow_path_pruning_report.md
-@@ -1,19 +1,19 @@
- # Slow Path Pruning Report
- 
--Generated: 2026-06-11T23:24:42.918Z
-+Generated: 2026-06-12T15:51:29.217Z
- Status: PASS
- Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
- 
- ## Before / After Runtime Observations
- 
- PR_26146_038 measured lane elapsed time: 169.71s
--Current measured lane elapsed time: 43.28s
-+Current measured lane elapsed time: 47.60s
- PR_26146_038 actual browser launches: 4
- Current actual browser launches: 1
- Accidental no-argument browser launches prevented: 5
- Reduced Workspace lane nested launches: 1
--Reused dependency hydration: 1
--Reused snapshots: 1
-+Reused dependency hydration: 0
-+Reused snapshots: 0
- Validation cache hits: 18
- 
- ## Slow Paths Optimized
-@@ -31,11 +31,11 @@ Validation cache hits: 18
- | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
- | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
- | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
--| current targeted run | workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
--| current targeted run | workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
--| current targeted run | workspace-contract | 8.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
-+| current targeted run | workspace-contract | 11.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
-+| current targeted run | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
-+| current targeted run | workspace-contract | 9.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
- | current targeted run | workspace-contract | 7.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
--| current targeted run | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
-+| current targeted run | workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
- 
- ## Guardrails
- 
-diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
-index 2ada7ccac..a7abb06d1 100644
---- a/docs_build/dev/reports/static_validation_report.md
-+++ b/docs_build/dev/reports/static_validation_report.md
-@@ -1,6 +1,6 @@
- # Static Validation Report
- 
--Generated: 2026-06-11T23:23:59.597Z
-+Generated: 2026-06-12T15:50:41.560Z
- Status: PASS
- Static only: No
- Dry run: No
-@@ -22,13 +22,13 @@ Reason: No deterministic static validation failure was found.
- | invalid filename detection | PASS | Covered by Playwright structure audit. |
- | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
- | missing fixture detection | PASS | No missing fixture findings. |
--| targeted file manifests | PASS | workspace-contract:0b0229bf83a32394 |
--| persistent lane manifests | PASS | workspace-contract:REUSED |
--| lane warm-start reuse | PASS | workspace-contract:REUSED |
--| dependency hydration reuse | PASS | workspace-contract:REUSED |
-+| targeted file manifests | PASS | workspace-contract:7fad4acbe9d725da |
-+| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
-+| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
-+| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
- | lane input graph expansion | PASS | No inputs escaped manifest scope. |
- | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
--| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
-+| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
- | invalid lane target detection | PASS | No invalid lane target findings. |
- | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
- | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
-diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
-index 8f11883ad..d124eaaa1 100644
---- a/docs_build/dev/reports/targeted_file_manifest_report.md
-+++ b/docs_build/dev/reports/targeted_file_manifest_report.md
-@@ -1,19 +1,19 @@
- # Targeted File Manifest Report
- 
--Generated: 2026-06-11T23:23:59.603Z
-+Generated: 2026-06-12T15:50:41.570Z
- Status: PASS
- 
- ## Manifest-Generated Lane Inputs
- 
- | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 0e4e45b146ae24a2 | 0b0229bf83a32394 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-+| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | f14f5fc27c53a533 | 7fad4acbe9d725da | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
- 
- ## Discovery Expansion Control
- 
- Prevented discovery expansion: Yes
--Prevented redundant scans: 0
--Targeted file/helper reads: 0
-+Prevented redundant scans: 4
-+Targeted file/helper reads: 5
- 
- ## Runtime Savings Observations
- 
-diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
-index ebaf30505..3182957ec 100644
---- a/docs_build/dev/reports/test_cleanup_performance_report.md
-+++ b/docs_build/dev/reports/test_cleanup_performance_report.md
-@@ -1,29 +1,29 @@
- # Test Cleanup Performance Report
- 
--Generated: 2026-06-11T23:24:42.918Z
-+Generated: 2026-06-12T15:51:29.217Z
- Status: PASS
- 
- ## Cost Summary
- 
--Total measured lane elapsed time: 43.28s
-+Total measured lane elapsed time: 47.60s
- Actual browser launch count: 1
- Scheduled browser launch count: 1
- Baseline browser launch count: 1
- Skipped lanes: 14
--Reused manifests: 1
--Reused snapshots: 1
-+Reused manifests: 0
-+Reused snapshots: 0
- Cached validations reused: 18
- Prevented broad execution: 2
- Prevented reruns: 0
- Prevented redundant browser launches: 0
--Prevented graph rebuilds: 1
--Prevented redundant dependency traversal: 1
-+Prevented graph rebuilds: 0
-+Prevented redundant dependency traversal: 0
- 
- ## Lane Elapsed Time
- 
- | Lane | Status | Elapsed | Browser Launches | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 43.28s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | PASS | 47.60s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-@@ -43,11 +43,11 @@ Prevented redundant dependency traversal: 1
- 
- | Lane | Duration | Test | Command |
- | --- | --- | --- | --- |
--| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 8.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 11.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 9.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
- | workspace-contract | 7.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
- 
- ## Prevented Broad Execution
- 
-diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
-index a87d107e3..41a56e3be 100644
---- a/docs_build/dev/reports/test_cleanup_routing_report.md
-+++ b/docs_build/dev/reports/test_cleanup_routing_report.md
-@@ -1,6 +1,6 @@
- # Test Cleanup Routing Report
- 
--Generated: 2026-06-11T23:24:42.918Z
-+Generated: 2026-06-12T15:51:29.217Z
- Status: PASS
- 
- ## Representative Routing Cases
-diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
-index cee16d87c..11a7428c7 100644
---- a/docs_build/dev/reports/testing_lane_execution_report.md
-+++ b/docs_build/dev/reports/testing_lane_execution_report.md
-@@ -1,6 +1,6 @@
- # Testing Lane Execution Report
- 
--Generated: 2026-06-11T23:24:42.942Z
-+Generated: 2026-06-12T15:51:29.229Z
- Dry run: No
- 
- ## Summary
-@@ -9,7 +9,7 @@ PASS: 1
- WARN: 0
- FAIL: 0
- SKIP: 14
--Total lane elapsed time: 43.28s
-+Total lane elapsed time: 47.60s
- Actual browser launches: 1
- 
- ## Full Samples Smoke
-@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
- Status: PASS
- Scheduled lane order: workspace-contract
- Reused runtime sessions: 0
--Reused lane snapshots: 1
--Reused warm-start lanes: 1
--Reused dependency hydration: 1
--Prevented graph rebuilds: 1
--Prevented redundant initialization: 1
-+Reused lane snapshots: 0
-+Reused warm-start lanes: 0
-+Reused dependency hydration: 0
-+Prevented graph rebuilds: 0
-+Prevented redundant initialization: 0
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
- 
-@@ -64,7 +64,7 @@ Status: PASS
- Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
- Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
- Required fixtures: none
--Targeted file/helper reads: 0
-+Targeted file/helper reads: 5
- Cached discovery reuse: Yes
- Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
- 
-@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
- Status: PASS
- Generated manifests: workspace-contract:PASS
- Prevented discovery expansion: Yes
--Prevented redundant scans: 0
--Persistent manifest events: workspace-contract:REUSED
-+Prevented redundant scans: 4
-+Persistent manifest events: workspace-contract:INVALIDATED
- 
- ## Warm-Start Reuse
- 
- Status: PASS
--Warm-start events: workspace-contract:REUSED
--Dependency hydration events: workspace-contract:REUSED
--Prevented redundant initialization: 1
--Prevented helper resolution passes: 4
-+Warm-start events: workspace-contract:INVALIDATED
-+Dependency hydration events: workspace-contract:INVALIDATED
-+Prevented redundant initialization: 0
-+Prevented helper resolution passes: 0
- Prevented fixture ownership traversal: 0
- 
- ## Lane Snapshots
- 
- Status: PASS
--Snapshot events: workspace-contract:REUSED
--Reused snapshots: 1
--Invalidated snapshots: 0
--Prevented graph rebuilds: 1
--Prevented redundant dependency traversal: 1
--Prevented fixture/helper graph assembly: 4
-+Snapshot events: workspace-contract:INVALIDATED
-+Reused snapshots: 0
-+Invalidated snapshots: 1
-+Prevented graph rebuilds: 0
-+Prevented redundant dependency traversal: 0
-+Prevented fixture/helper graph assembly: 0
- 
- ## Lane Deduplication
- 
-@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
- 
- | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 43.28s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-+| workspace-contract | PASS | 47.60s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
-@@ -125,16 +125,16 @@ Prevented Workspace lane reruns: 0
- 
- | Lane | Duration | Test |
- | --- | --- | --- |
--| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
--| workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
--| workspace-contract | 8.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
-+| workspace-contract | 11.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
-+| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
-+| workspace-contract | 9.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
- | workspace-contract | 7.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
--| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
-+| workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
- 
- ## Commands
- 
- ### workspace-contract
--- PASS 43.27s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-+- PASS 47.60s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
- 
- ### game-workspace
- - SKIP
-diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
-index 4a7889f16..719ce233f 100644
---- a/docs_build/dev/reports/validation_cache_report.md
-+++ b/docs_build/dev/reports/validation_cache_report.md
-@@ -1,6 +1,6 @@
- # Validation Cache Report
- 
--Generated: 2026-06-11T23:23:59.604Z
-+Generated: 2026-06-12T15:50:41.573Z
- Status: PASS
- 
- ## Cache Summary
-@@ -15,26 +15,26 @@ Validations computed: 10
- | lane registration validation | MISS | c5f6923cb3e9b570 | initial computation | lane definitions change; package.json lane scripts change |
- | runner preflight validation | MISS | a56dddb91b84bd8e | initial computation | lane definitions change; fixture ownership changes; targeted files change |
- | scoped discovery map | MISS | d1596716e5ff4e22 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| targeted file manifest validation | MISS | 6ee8a0df3e3c2add | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| lane warm-start validation | MISS | a14becdb6564082c | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
--| structural ownership validation | MISS | 0ed522a47cd20cf9 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
-+| targeted file manifest validation | MISS | 0fb329839cd86092 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| lane warm-start validation | MISS | c4c2ec7f908ae296 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-+| structural ownership validation | MISS | d66f4a1cf9f8f9ed | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
- | lane compilation validation | MISS | ff2d20b40fcb0398 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
- | lane compilation validation | HIT | ff2d20b40fcb0398 | dependency validation input | unchanged within execution cycle |
- | dependency validation | MISS | 718132570eea4d98 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
--| lane snapshot validation | MISS | 98e1c2b64ebef005 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
-+| lane snapshot validation | MISS | 4f8e74e681d1f538 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
- | zero-browser preflight | MISS | f19bf3518c98576f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
--| structural ownership validation | HIT | 0ed522a47cd20cf9 | static validation report | unchanged within execution cycle |
--| structural ownership validation | HIT | 0ed522a47cd20cf9 | zero-browser preflight report | unchanged within execution cycle |
-+| structural ownership validation | HIT | d66f4a1cf9f8f9ed | static validation report | unchanged within execution cycle |
-+| structural ownership validation | HIT | d66f4a1cf9f8f9ed | zero-browser preflight report | unchanged within execution cycle |
- | scoped discovery map | HIT | d1596716e5ff4e22 | structural ownership validation input | unchanged within execution cycle |
- | scoped discovery map | HIT | d1596716e5ff4e22 | discovery scope reporting | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 6ee8a0df3e3c2add | lane input validation report | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 6ee8a0df3e3c2add | runtime scheduling blockers | unchanged within execution cycle |
--| lane warm-start validation | HIT | a14becdb6564082c | warm-start report | unchanged within execution cycle |
--| lane warm-start validation | HIT | a14becdb6564082c | dependency hydration reuse report | unchanged within execution cycle |
--| lane warm-start validation | HIT | a14becdb6564082c | runtime scheduling | unchanged within execution cycle |
--| lane snapshot validation | HIT | 98e1c2b64ebef005 | lane snapshot report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 98e1c2b64ebef005 | execution graph reuse report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 98e1c2b64ebef005 | runtime scheduling | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 0fb329839cd86092 | lane input validation report | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 0fb329839cd86092 | runtime scheduling blockers | unchanged within execution cycle |
-+| lane warm-start validation | HIT | c4c2ec7f908ae296 | warm-start report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | c4c2ec7f908ae296 | dependency hydration reuse report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | c4c2ec7f908ae296 | runtime scheduling | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 4f8e74e681d1f538 | lane snapshot report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 4f8e74e681d1f538 | execution graph reuse report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 4f8e74e681d1f538 | runtime scheduling | unchanged within execution cycle |
- | lane compilation validation | HIT | ff2d20b40fcb0398 | lane compilation report | unchanged within execution cycle |
- | lane compilation validation | HIT | ff2d20b40fcb0398 | runtime scheduling | unchanged within execution cycle |
- | dependency validation | HIT | 718132570eea4d98 | dependency report | unchanged within execution cycle |
-diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
-index 7b6cb7b43..e6074ccb8 100644
---- a/docs_build/dev/reports/zero_browser_preflight_report.md
-+++ b/docs_build/dev/reports/zero_browser_preflight_report.md
-@@ -1,6 +1,6 @@
- # Zero-Browser Preflight Report
- 
--Generated: 2026-06-11T23:23:59.604Z
-+Generated: 2026-06-12T15:50:41.572Z
- Status: PASS
- 
- ## Prevented Browser Launches
-@@ -24,10 +24,10 @@ No deterministic setup failures.
- | unresolved fixtures | PASS | No unresolved fixture findings. |
- | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
- | targeted file manifests | PASS | workspace-contract:PASS |
--| persistent lane manifests | PASS | workspace-contract:REUSED |
--| lane warm-start reuse | PASS | workspace-contract:REUSED |
--| dependency hydration reuse | PASS | workspace-contract:REUSED |
--| lane snapshots | PASS | workspace-contract:REUSED |
-+| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
-+| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
-+| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
-+| lane snapshots | PASS | workspace-contract:INVALIDATED |
- | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
- | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
- | invalid grep patterns | PASS | No invalid grep patterns. |
-diff --git a/tests/playwright/account/AchievementsPage.spec.mjs b/tests/playwright/account/AchievementsPage.spec.mjs
-index c6524ac15..66d8fbeec 100644
---- a/tests/playwright/account/AchievementsPage.spec.mjs
-+++ b/tests/playwright/account/AchievementsPage.spec.mjs
-@@ -58,12 +58,14 @@ test("account achievements page switches Build Play Share views", async ({ page
-     await expect(page.locator(".side-menu").getByRole("link", { name: "Achievements" })).toBeVisible();
-     await expect(page.locator("header.site-header a[data-route='account-achievements']")).toHaveAttribute("href", "../account/achievements.html");
-     await expect(page.locator("footer.footer").getByRole("link", { name: "Achievements" })).toBeVisible();
-+    await expect(page.locator("[data-account-side-nav-accordion='left']")).toHaveAttribute("open", "");
-     await expect(page.locator(".side-menu a")).toHaveText([
-       "Account Home",
-       "Achievements",
-       "Preferences",
-       "Profile",
-       "Security",
-+      "User Controls",
-     ]);
-     await expect(page.locator("header.site-header .nav-item").filter({ has: page.locator("> a[data-route='account']") }).locator(".sub-menu a")).toHaveText([
-       "Account Home",
-@@ -72,6 +74,7 @@ test("account achievements page switches Build Play Share views", async ({ page
-       "Preferences",
-       "Profile",
-       "Security",
-+      "User Controls",
-     ]);
-     await expect(page.locator("footer.footer .footer__group").filter({ has: page.locator("#footer-account") }).locator(".footer__links a")).toHaveText([
-       "Account Home",
-@@ -79,6 +82,7 @@ test("account achievements page switches Build Play Share views", async ({ page
-       "Preferences",
-       "Profile",
-       "Security",
-+      "User Controls",
-     ]);
- 
-     await expect(page.locator("[data-achievements-panel='build']")).toBeVisible();
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 36e26b602..c278216d9 100644
+index 1064f3347..21d830492 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -221,6 +221,8 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-     await expect(page.locator(".tool-workspace")).toBeVisible();
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-     await expect(page.locator(".tool-center-panel > h2")).toHaveText("Game Controls");
-+    await expect(page.locator("[data-controls-side-accordion='left']")).toBeVisible();
-+    await expect(page.locator("[data-controls-side-accordion='right']")).toBeVisible();
-     await expect(page.locator("[data-input-mapping-accordion] > summary")).toHaveText("Game Controls");
-     await expect(page.locator("summary").filter({ hasText: "Normalized Controls" })).toHaveCount(0);
-     await expect(page.locator("[data-input-action-catalog], [data-input-default-actions], [data-input-action-label]")).toHaveCount(0);
-@@ -522,6 +524,9 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-     await expect(page.getByRole("heading", { name: "User Controls" })).toBeVisible();
-     await expect(page.locator(".card-body")).not.toContainText("Account User Controls");
-+    await expect(page.locator(".account-panel--fill")).toBeVisible();
-+    await expect(page.locator(".card--fill")).toBeVisible();
-+    await expect(page.locator(".card-body--fill")).toBeVisible();
-     await expect(page.locator("[data-account-user-controls-section] > summary")).toHaveText([
-       "Keyboard",
-       "Mouse",
-@@ -630,27 +635,11 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     expect(keyboardSectionOrder).toBe(true);
- 
-     await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
--    await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
--    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Keyboard Profile. Use Edit to change it.");
--    expect(await controllerProfileRecords(page)).toHaveLength(1);
--    await expect(page.locator("[data-account-user-controls-profile-row='generic-keyboard-keyboard-profile']")).toContainText("Keyboard");
--    await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
--    await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
--    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Keyboard 2 Profile. Use Edit to change it.");
--    expect(await controllerProfileRecords(page)).toHaveLength(2);
--    await page.locator("[data-account-user-controls-edit='generic-keyboard-keyboard-2-profile']").click();
--    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard 2");
--    await page.locator("[data-account-user-controls-controller-name]").fill("Keyboard");
--    await page.locator("[data-account-user-controls-save]").click();
--    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Keyboard Profile already exists for Keyboard.");
--    await page.locator("[data-account-user-controls-cancel]").click();
--    await page.locator("[data-account-user-controls-trash='generic-keyboard-keyboard-2-profile']").click();
--    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("Deleted user control profile.");
--    expect(await controllerProfileRecords(page)).toHaveLength(1);
--
--    await page.locator("[data-account-user-controls-edit='generic-keyboard-keyboard-profile']").click();
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard");
-     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard");
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Keyboard Profile. Editing the new profile.");
-+    expect(await controllerProfileRecords(page)).toHaveLength(1);
-+    await expect(page.locator("[data-account-user-controls-profile-row='generic-keyboard-keyboard-profile']")).toHaveCount(0);
-     await expect(page.locator("[data-account-user-controls-table='Keyboard'] > thead th")).toHaveText([
-       "Physical Controller",
-       "Physical Input",
-@@ -681,13 +670,28 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     await expect(page.locator("[data-account-user-controls-physical-input='1']")).toHaveValue("KeyA");
-     await page.locator("[data-account-user-controls-save]").click();
-     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Keyboard Profile.");
--
--    await page.locator("[data-account-user-controls-section='Mouse'] [data-account-user-controls-edit-family='Mouse']").click();
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
--    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Mouse Profile. Use Edit to change it.");
-+    await expect(page.locator("[data-account-user-controls-profile-row='generic-keyboard-keyboard-profile']")).toContainText("Keyboard");
-+    await expect(page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']")).toBeEnabled();
-+    expect((await controllerProfileRecords(page)).map((profile) => profile.profileName)).toContain("Keyboard Profile");
-+
-+    await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
-+    await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard");
-+    await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Keyboard 2");
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Keyboard 2 Profile. Editing the new profile.");
-     expect(await controllerProfileRecords(page)).toHaveLength(2);
--    await page.locator("[data-account-user-controls-edit='generic-mouse-mouse-profile']").click();
-+    await page.locator("[data-account-user-controls-controller-name]").fill("Keyboard");
-+    await page.locator("[data-account-user-controls-save]").click();
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("FAIL: Keyboard Profile already exists for Keyboard.");
-+    await page.locator("[data-account-user-controls-cancel]").click();
-+    await page.locator("[data-account-user-controls-trash='generic-keyboard-keyboard-2-profile']").click();
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("Deleted user control profile.");
-+    expect(await controllerProfileRecords(page)).toHaveLength(1);
-+
-+    await page.locator("[data-account-user-controls-section='Mouse'] [data-account-user-controls-edit-family='Mouse']").click();
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Mouse");
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Mouse Profile. Editing the new profile.");
-+    expect(await controllerProfileRecords(page)).toHaveLength(2);
-     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Mouse");
-     await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("MouseButton0");
-     const mouseNormalizedOptions = await page.locator("[data-account-user-controls-section='Mouse'] [data-account-user-controls-input-normalized='0'] option").evaluateAll((options) => options.map((option) => option.value));
-@@ -717,11 +721,9 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     await page.locator("[data-account-user-controls-device]").selectOption("gamepad-1");
-     await expect(page.locator("[data-account-user-controls-device]")).toHaveValue("gamepad-1");
-     await page.locator("[data-account-user-controls-add-profile]").click();
--    await expect(page.locator("[data-account-user-controls-editing-row]")).toHaveCount(0);
--    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Use Edit to change it.");
--    expect(await controllerProfileRecords(page)).toHaveLength(3);
--    await page.locator("[data-account-user-controls-edit='studio-flight-pad-studio-flight-pad-profile']").click();
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
-+    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");
-+    expect(await controllerProfileRecords(page)).toHaveLength(3);
-     await expect(page.locator("[data-account-user-controls-controller-name]")).toHaveValue("Studio Flight Pad");
-     await page.locator("[data-account-user-controls-controller-name]").fill("Custom Arcade Pad");
-     await expect(page.locator("[data-account-user-controls-generated-input-table] th")).toHaveText([
-@@ -777,12 +779,14 @@ test("User Controls owns physical input mapping accordions and profiles", async
-       labels.map((label) => label.textContent.trim()),
-     );
-     expect(selectedDeviceLabels).toEqual(expect.arrayContaining([
+@@ -533,26 +533,43 @@ test("User Controls owns physical input mapping accordions and profiles", async
+       "Game Controllers",
+       "Combo Inputs",
+     ]);
+-    await expect(page.locator("[data-account-user-controls-selected-device-options] label")).toHaveText([
 -      "Keyboard",
 -      "Mouse",
+-    ]);
++    await expect(page.locator("[data-account-user-controls-selected-device-options]")).toHaveCount(0);
++    const supportedControlTypes = await page.locator("[data-account-user-controls-types] li").allTextContents();
++    expect(supportedControlTypes).toEqual([...supportedControlTypes].sort((left, right) => left.localeCompare(right)));
++    const supportedControlTypeLayout = await page.locator("[data-account-user-controls-types]").evaluate((list) => {
++      const style = getComputedStyle(list);
++      const leftPositions = Array.from(list.querySelectorAll("li"))
++        .map((item) => Math.round(item.getBoundingClientRect().left));
++      return {
++        columnCount: style.columnCount,
++        listStylePosition: style.listStylePosition,
++        paddingLeft: Number.parseFloat(style.paddingLeft),
++        uniqueColumns: new Set(leftPositions).size,
++      };
++    });
++    expect(supportedControlTypeLayout).toMatchObject({
++      columnCount: "2",
++      listStylePosition: "outside",
++    });
++    expect(supportedControlTypeLayout.paddingLeft).toBeGreaterThan(0);
++    expect(supportedControlTypeLayout.uniqueColumns).toBeGreaterThan(1);
+     await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Default Profile");
+-    await page.locator("[data-account-user-controls-selected-device='device:mouse']").check();
+-    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse.");
++    await expect(page.locator("[data-account-user-controls-default-profile='Mouse'] td").first().locator("[data-account-user-controls-selected-device='default:mouse']")).toBeVisible();
++    await page.locator("[data-account-user-controls-selected-device='default:mouse']").check();
++    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse Default Profile.");
+     await expect.poll(async () => (await selectedInputDeviceRecords(page)).length).toBe(1);
+     expect(await selectedInputDeviceRecords(page)).toEqual([
+       expect.objectContaining({
+         deviceType: "Mouse",
+-        label: "Mouse",
+-        selectionKey: "device:mouse",
+-        selectionType: "device",
++        label: "Mouse Default Profile",
++        selectionKey: "default:mouse",
++        selectionType: "default",
+       }),
+     ]);
+     expect(await controllerProfileRecords(page)).toHaveLength(0);
+     await page.reload({ waitUntil: "networkidle" });
+-    await expect(page.locator("[data-account-user-controls-selected-device='device:mouse']")).toBeChecked();
+-    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse.");
++    await expect(page.locator("[data-account-user-controls-selected-device='default:mouse']")).toBeChecked();
++    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse Default Profile.");
+     expect(await controllerProfileRecords(page)).toHaveLength(0);
+
+     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Default Profile");
+@@ -641,6 +658,7 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     expect(await controllerProfileRecords(page)).toHaveLength(1);
+     await expect(page.locator("[data-account-user-controls-profile-row='generic-keyboard-keyboard-profile']")).toHaveCount(0);
+     await expect(page.locator("[data-account-user-controls-table='Keyboard'] > thead th")).toHaveText([
++      "Selected Device",
+       "Physical Controller",
+       "Physical Input",
+       "Normalized Control",
+@@ -698,11 +716,17 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     expect(mouseNormalizedOptions).not.toContain("dpad.up");
+     expect(mouseNormalizedOptions).not.toContain("trigger.left");
+     expect(mouseNormalizedOptions).toContain("action.scrollUp");
+-    await page.locator("[data-account-user-controls-physical-input='0']").click();
+-    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("");
++    const mouseButton0Input = page.locator("[data-account-user-controls-section='Mouse'] [data-account-user-controls-physical-input='0']");
++    await mouseButton0Input.click();
++    await expect(mouseButton0Input).toHaveValue("");
+     await page.waitForTimeout(20);
+-    await page.locator("[data-account-user-controls-status]").dispatchEvent("mousedown", { button: 3, bubbles: true });
+-    await expect(page.locator("[data-account-user-controls-physical-input='0']")).toHaveValue("MouseButton3");
++    await mouseButton0Input.dispatchEvent("mousedown", { button: 0, bubbles: true });
++    await mouseButton0Input.dispatchEvent("mouseup", { button: 0, bubbles: true });
++    await mouseButton0Input.dispatchEvent("click", { button: 0, bubbles: true });
++    await expect(mouseButton0Input).toHaveValue("MouseButton0");
++    await expect(page.locator("[data-account-user-controls-status]")).toHaveText("Captured MouseButton0. Save the profile to keep it.");
++    await page.waitForTimeout(300);
++    await expect(mouseButton0Input).toHaveValue("MouseButton0");
+     await page.locator("[data-account-user-controls-physical-input='1']").click();
+     await expect(page.locator("[data-account-user-controls-physical-input='1']")).toHaveValue("");
+     await page.waitForTimeout(5200);
+@@ -775,10 +799,13 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     expect(gamepadNormalizedOptions).toContain("trigger.left");
+     await page.locator("[data-account-user-controls-save]").click();
+     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Custom Arcade Pad Profile.");
+-    const selectedDeviceLabels = await page.locator("[data-account-user-controls-selected-device-options] label").evaluateAll((labels) =>
+-      labels.map((label) => label.textContent.trim()),
++    const selectedDeviceLabels = await page.locator("[data-account-user-controls-selected-device]").evaluateAll((inputs) =>
++      inputs.map((input) => (input.getAttribute("aria-label") || "").replace(/^Select /, "")),
+     );
+     expect(selectedDeviceLabels).toEqual(expect.arrayContaining([
++      "Keyboard Default Profile",
++      "Mouse Default Profile",
++      "Gamepad Default Profile",
        "Keyboard (Keyboard Profile)",
        "Mouse (Mouse Profile)",
-+      "Arcade Test Pad",
-       "Custom Arcade Pad (Custom Arcade Pad Profile)",
-     ]));
-+    expect(selectedDeviceLabels).not.toContain("Keyboard");
-+    expect(selectedDeviceLabels).not.toContain("Mouse");
-+    expect(selectedDeviceLabels).not.toContain("Studio Flight Pad");
- 
-     const profiles = await controllerProfileRecords(page);
-     expect(profiles).toHaveLength(3);
-@@ -859,6 +863,9 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
- 
-   try {
-     await expect(page.locator("[data-account-side-nav]")).toBeVisible();
-+    await expect(page.locator("[data-account-side-nav-accordion-layout='left-right']")).toBeVisible();
-+    await expect(page.locator("[data-account-side-nav-accordion='left']")).toHaveAttribute("open", "");
-+    await expect(page.locator("[data-account-side-nav-accordion='right']")).not.toHaveAttribute("open", "");
-     await expect(page.locator("[data-account-side-nav-link]")).toHaveText([
-       "Account Home",
-       "Achievements",
-@@ -868,6 +875,16 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
-       "User Controls",
-     ]);
-     await expect(page.locator("[data-account-side-nav-link][aria-current='page']")).toHaveText("User Controls");
-+    await page.locator("[data-account-side-nav-accordion='left'] > summary").click();
-+    await expect(page.locator("[data-account-side-nav-accordion='left']")).not.toHaveAttribute("open", "");
-+    await expect(page.locator("[data-account-side-nav-link]").first()).toBeHidden();
-+    await page.locator("[data-account-side-nav-accordion='left'] > summary").click();
-+    await expect(page.locator("[data-account-side-nav-accordion='left']")).toHaveAttribute("open", "");
-+    await expect(page.locator("[data-account-side-nav-link]").first()).toBeVisible();
-+    await page.locator("[data-account-side-nav-accordion='right'] > summary").click();
-+    await expect(page.locator("[data-account-side-nav-accordion='right']")).toHaveAttribute("open", "");
-+    await page.locator("[data-account-side-nav-accordion='right'] > summary").click();
-+    await expect(page.locator("[data-account-side-nav-accordion='right']")).not.toHaveAttribute("open", "");
-     await expect(page.locator(".site-header .nav-item").filter({ has: page.locator("[data-route='account']") }).last().locator(".sub-menu a")).toHaveText([
-       "Account Home",
-       "Achievements",
-diff --git a/toolbox/controls/index.html b/toolbox/controls/index.html
-index 947fca340..38a163aec 100644
---- a/toolbox/controls/index.html
-+++ b/toolbox/controls/index.html
-@@ -30,7 +30,7 @@
-                             <h2>Controls</h2>
-                         </div>
-                         <div class="accordion-stack">
--                            <details class="vertical-accordion" open>
-+                            <details class="vertical-accordion" open data-controls-side-accordion="left">
-                                 <summary>Presets</summary>
-                                 <div class="accordion-body content-stack">
-                                     <p class="status">Wireframe only: Presets can become future genre-specific Game Controls templates.</p>
-@@ -101,7 +101,7 @@
-                             <h2>Inspector</h2>
-                         </div>
-                         <div class="accordion-stack">
--                            <details class="vertical-accordion" open>
-+                            <details class="vertical-accordion" open data-controls-side-accordion="right">
-                                 <summary>Status</summary>
-                                 <div class="accordion-body content-stack">
-                                     <p>Status: <span data-input-output-status>Not Configured</span></p>
-diff --git a/docs_build/dev/reports/PR_26163_051-user-controls-profile-and-layout-alignment.md b/docs_build/dev/reports/PR_26163_051-user-controls-profile-and-layout-alignment.md
+       "Arcade Test Pad",
+@@ -806,7 +833,7 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     });
+     expect(profiles.find((profile) => profile.profileName === "Mouse Profile").inputMappings[0]).toMatchObject({
+       normalizedInput: "action.primary",
+-      physicalInput: "MouseButton3",
++      physicalInput: "MouseButton0",
+     });
+     const gamepadProfile = profiles.find((profile) => profile.profileName === "Custom Arcade Pad Profile");
+     expect(gamepadProfile).toMatchObject({
+diff --git a/docs_build/dev/reports/PR_26163_052-user-controls-device-selection-and-capture-fix.md b/docs_build/dev/reports/PR_26163_052-user-controls-device-selection-and-capture-fix.md
 new file mode 100644
-index 000000000..08ab56f26
+index 000000000..c56f2cff7
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26163_051-user-controls-profile-and-layout-alignment.md
-@@ -0,0 +1,128 @@
-+# PR_26163_051-user-controls-profile-and-layout-alignment
++++ b/docs_build/dev/reports/PR_26163_052-user-controls-device-selection-and-capture-fix.md
+@@ -0,0 +1,94 @@
++# PR_26163_052-user-controls-device-selection-and-capture-fix
++
++## Summary
++
++Implemented the User Controls device-selection and capture cleanup as a scoped Account/User Controls PR.
 +
 +## Branch Validation
 +
-+- PASS: Current branch is `main`.
-+- Expected branch: `main`.
++PASS
 +
-+## Impacted Lane
-+
-+- Account/User Controls runtime lane.
-+- Toolbox Controls launch/render lane.
-+- Theme V2 account side-nav/layout lane.
-+- Workspace contract lane through legacy command `npm run test:workspace-v2`.
++- Current branch: `main`
++- Expected branch: `main`
 +
 +## Requirement Checklist
 +
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before changes.
-+- PASS: Verified current branch is `main` before changes.
-+- PASS: `Create my profile` creates a brand-new profile and opens that new profile in edit mode.
-+  - Evidence: Playwright creates `Keyboard Profile`, verifies the edit row opens immediately, saves it, then creates `Keyboard 2 Profile` and verifies the controller name input is `Keyboard 2`.
-+- PASS: `Create my profile` does not open an existing profile.
-+  - Evidence: Playwright verifies the first saved Keyboard row returns, then the second Create action opens the new `Keyboard 2` profile instead of the existing `Keyboard Profile`.
-+- PASS: Selected Device is simplified and no longer lists duplicated raw devices plus saved profiles.
-+  - Evidence: Playwright verifies saved `Keyboard`, `Mouse`, and gamepad profiles replace their raw device choices, while an unprofiled detected controller remains selectable.
-+- PASS: `toolbox/controls` is aligned with the updated side accordion pattern where applicable.
-+  - Evidence: Toolbox Controls keeps its left/right accordion columns and now exposes `data-controls-side-accordion="left"` and `data-controls-side-accordion="right"`; Playwright verifies both render.
-+- PASS: `assets/theme-v2/partials/account-side-nav.html` has left/right accordion structure.
-+  - Evidence: Account side nav now exposes `data-account-side-nav-accordion-layout="left-right"` plus independently toggled left and right `details.vertical-accordion` sections; Playwright verifies both open/close.
-+- PASS: `account/user-controls.html` Account/User Controls card and body use 100% available space.
-+  - Evidence: Reusable Theme V2 fill classes are applied and verified by Playwright on `.account-panel--fill`, `.card--fill`, and `.card-body--fill`.
-+- PASS: Scope remained limited to account controls, toolbox controls alignment, Theme V2 partial/layout files, tests, and reports.
++- PASS: Verified current branch is `main` before edits.
++- PASS: Updated `account/user-controls.html` Supported Control Types to use a bulleted multi-column list through reusable Theme V2 CSS.
++- PASS: Supported Control Types render alphabetically.
++- PASS: Bullet/list alignment stays outside with reusable `.list--multi-column` styling.
++- PASS: Selected Device radio controls moved into the Physical Controller tables, left of selectable Default/Profile/Detected rows.
++- PASS: Selected radio remains DB-backed as the user's active Physical Controller choice.
++- PASS: MouseButton0 capture completes once and does not immediately reopen capture.
++- PASS: Scope stayed limited to Account/User Controls HTML, its external JS/CSS dependencies, targeted Playwright tests, and reports.
++- PASS: Full samples smoke was not run because samples and sample loaders were not touched.
 +
 +## Changed Files
 +
-+- `account/user-controls-page.js`
 +- `account/user-controls.html`
-+- `assets/theme-v2/css/layout.css`
-+- `assets/theme-v2/css/panels.css`
-+- `assets/theme-v2/partials/account-side-nav.html`
-+- `toolbox/controls/index.html`
++- `account/user-controls-page.js`
++- `assets/theme-v2/css/typography.css`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `tests/playwright/account/AchievementsPage.spec.mjs`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
-+- `docs_build/dev/reports/dependency_gating_report.md`
-+- `docs_build/dev/reports/dependency_hydration_reuse_report.md`
-+- `docs_build/dev/reports/execution_graph_reuse_report.md`
-+- `docs_build/dev/reports/failure_fingerprint_report.md`
-+- `docs_build/dev/reports/filesystem_scan_reduction_report.md`
-+- `docs_build/dev/reports/incremental_validation_report.md`
-+- `docs_build/dev/reports/lane_compilation_report.md`
-+- `docs_build/dev/reports/lane_deduplication_report.md`
-+- `docs_build/dev/reports/lane_input_validation_report.md`
-+- `docs_build/dev/reports/lane_manifests/workspace-contract.json`
-+- `docs_build/dev/reports/lane_runtime_optimization_report.md`
-+- `docs_build/dev/reports/lane_snapshot_report.md`
-+- `docs_build/dev/reports/lane_snapshots/workspace-contract.json`
-+- `docs_build/dev/reports/lane_warm_start_report.md`
-+- `docs_build/dev/reports/lane_warm_starts/workspace-contract.json`
-+- `docs_build/dev/reports/monolith_trigger_removal_report.md`
-+- `docs_build/dev/reports/persistent_lane_manifest_report.md`
-+- `docs_build/dev/reports/playwright_discovery_ownership_report.md`
-+- `docs_build/dev/reports/playwright_discovery_scope_report.md`
-+- `docs_build/dev/reports/playwright_structure_audit.md`
-+- `docs_build/dev/reports/retry_suppression_report.md`
-+- `docs_build/dev/reports/slow_path_pruning_report.md`
-+- `docs_build/dev/reports/static_validation_report.md`
-+- `docs_build/dev/reports/targeted_file_manifest_report.md`
-+- `docs_build/dev/reports/test_cleanup_performance_report.md`
-+- `docs_build/dev/reports/test_cleanup_routing_report.md`
-+- `docs_build/dev/reports/testing_lane_execution_report.md`
-+- `docs_build/dev/reports/validation_cache_report.md`
-+- `docs_build/dev/reports/zero_browser_preflight_report.md`
-+- Required review artifacts are generated separately:
-+  - `docs_build/dev/reports/codex_review.diff`
-+  - `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/PR_26163_052-user-controls-device-selection-and-capture-fix.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+## Validation Performed
++## Impacted Lane
 +
-+- PASS: `node --check account/user-controls-page.js`
-+- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- PASS: `node --check tests/playwright/account/AchievementsPage.spec.mjs`
-+- PASS: HTML restriction scan:
-+  - `rg --pcre2 -n "<script(?![^>]+src=)|<style|\son[a-z]+\s*=|style\s*=" account/user-controls.html toolbox/controls/index.html assets/theme-v2/partials/account-side-nav.html`
-+  - Result: no inline script/style/handler matches.
-+- PASS: Targeted Playwright:
-+  - `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs tests/playwright/account/AchievementsPage.spec.mjs`
-+  - Result: 9 passed.
-+- PASS: Requested workspace command:
-+  - `npm run test:workspace-v2`
-+  - Result: 5 passed.
-+  - Note: command name is legacy; this routes the current workspace-contract validation lane.
-+
-+## Playwright Result
-+
-+- PASS: Targeted Controls/User Controls and shared Account side-nav coverage passed.
-+- PASS: `npm run test:workspace-v2` passed.
-+
-+## Coverage
-+
-+- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` produced.
-+- PASS: Changed runtime JS was exercised:
-+  - `(93%) account/user-controls-page.js`
-+  - `(94%) toolbox/controls/controls.js`
-+- PASS: Coverage report states no low-coverage changed runtime JS warnings.
-+- WARN: Changed Playwright spec files are not browser runtime JavaScript and are not collected as V8 runtime coverage; this is expected.
++- Account/User Controls runtime lane.
++- Targeted Controls/User Controls Playwright coverage.
++- Theme V2 typography utility, limited to reusable list layout.
 +
 +## Skipped Lanes
 +
-+- SKIP: Full samples smoke test.
-+  - Reason: explicitly requested not to run full samples smoke; no sample JSON or sample runtime files changed.
-+- SKIP: Engine input lane.
-+  - Reason: no `src/engine/input` implementation changed in this PR.
-+- SKIP: Full repo Playwright suite.
-+  - Reason: targeted Account/User Controls, Toolbox Controls, shared account side-nav, and requested workspace-contract lane covered the affected surfaces.
++- Samples: SKIP. No sample JSON, sample loader, or playable sample runtime changed.
++- Broad engine lanes: SKIP. Input engine contracts were consumed unchanged.
++- Production auth/account system: SKIP. No production account behavior changed.
++
++## Validation Performed
++
++- PASS: `git branch --show-current`
++- PASS: `node --check account/user-controls-page.js`
++- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++- PASS: `git diff --check -- account/user-controls-page.js account/user-controls.html assets/theme-v2/css/typography.css tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++- PASS: HTML restriction check found no inline style/script/event handlers in `account/user-controls.html`.
++- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "User Controls owns physical input mapping accordions and profiles"`
++- PASS: `npm run test:workspace-v2`
++- PASS: Re-ran targeted User Controls Playwright after workspace validation to refresh the final V8 coverage report for changed runtime JS.
++
++## Playwright Result
++
++PASS
++
++- Targeted User Controls Playwright: 1 passed.
++- `npm run test:workspace-v2`: 5 passed.
++
++## Coverage
++
++PASS
++
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt` includes changed runtime JS coverage.
++- `account/user-controls-page.js`: 93% reported by Playwright V8 coverage.
++- Test spec files are listed as changed JS but are not browser runtime JS; this is expected and non-blocking.
 +
 +## Manual Validation Steps
 +
-+1. Open `/account/user-controls.html` as a user session.
-+2. Click Keyboard `Create my profile`; verify the newly created profile opens in edit mode.
-+3. Save it, then click Keyboard `Create my profile` again; verify the new edit row is `Keyboard 2`, not the existing Keyboard profile.
-+4. Create Mouse and detected game controller profiles; verify Selected Device shows saved profile choices without duplicate raw device entries for those same devices.
-+5. Open and close the Account side-nav left and right accordion sections.
-+6. Open `/toolbox/controls/index.html`; verify Game Controls renders with left and right side accordions and expected default rows.
++1. Open `/account/user-controls.html`.
++2. Confirm Supported Control Types appears as an alphabetized bulleted multi-column list.
++3. Confirm the standalone Selected Device radio group is gone.
++4. Confirm Selected Device radios appear in the first column beside Default Profile, saved profile, and detected controller rows.
++5. Select a profile/default radio and confirm the Selected Device status updates.
++6. Create a Mouse profile, click the first Physical Input textbox, press/click mouse Button 0, and confirm `MouseButton0` remains captured without reopening capture.
++7. Reload and confirm selected device/profile and saved profile data persist through the shared DB/mock adapter.
 +
 +## Samples Decision
 +
-+- SKIP: Full samples smoke test was intentionally not run because the PR does not touch samples and the user explicitly requested not to run it.
++SKIP
++
++Reason: The PR does not touch sample JSON, sample launch behavior, or shared sample runtime code.
++
++## Completion
++
++PASS: Every requested item is implemented, validated, and marked PASS.

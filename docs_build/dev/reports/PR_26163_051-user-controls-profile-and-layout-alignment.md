@@ -25,7 +25,7 @@
 - PASS: `toolbox/controls` is aligned with the updated side accordion pattern where applicable.
   - Evidence: Toolbox Controls keeps its left/right accordion columns and now exposes `data-controls-side-accordion="left"` and `data-controls-side-accordion="right"`; Playwright verifies both render.
 - PASS: `assets/theme-v2/partials/account-side-nav.html` has left/right accordion structure.
-  - Evidence: Account side nav now exposes `data-account-side-nav-accordion-layout="left-right"` plus independently toggled left and right `details.vertical-accordion` sections; Playwright verifies both open/close.
+  - Evidence: Account side nav now uses `accordion-stack accordion-stack--left-right`, exposes `data-account-side-nav-accordion-layout="left-right"`, and has independently toggled left and right `details.vertical-accordion` sections. Playwright verifies both open/close and measures the right accordion to the right of the left accordion on the same row.
 - PASS: `account/user-controls.html` Account/User Controls card and body use 100% available space.
   - Evidence: Reusable Theme V2 fill classes are applied and verified by Playwright on `.account-panel--fill`, `.card--fill`, and `.card-body--fill`.
 - PASS: Scope remained limited to account controls, toolbox controls alignment, Theme V2 partial/layout files, tests, and reports.
@@ -34,6 +34,7 @@
 
 - `account/user-controls-page.js`
 - `account/user-controls.html`
+- `assets/theme-v2/css/accordion.css`
 - `assets/theme-v2/css/layout.css`
 - `assets/theme-v2/css/panels.css`
 - `assets/theme-v2/partials/account-side-nav.html`

@@ -30,11 +30,7 @@
                             <h2>Physical Input Mapping</h2>
                             <p>User Controls resolves physical input to normalized controls. Game behavior stays in Game Controls.</p>
                         </div>
-                        <div class="content-stack content-stack--compact">
-                            <h3>Selected Device</h3>
-                            <div class="content-cluster" role="radiogroup" aria-label="Selected Device" data-account-user-controls-selected-device-options></div>
-                            <p class="status" role="status" data-account-user-controls-selected-device-status>Default Profile</p>
-                        </div>
+                        <p class="status" role="status" data-account-user-controls-selected-device-status>Default Profile</p>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open data-account-user-controls-section="Keyboard">
                                 <summary>Keyboard</summary>
@@ -44,6 +40,7 @@
                                         <table class="data-table" aria-label="Keyboard user control profile" data-account-user-controls-table="Keyboard">
                                             <thead>
                                                 <tr>
+                                                    <th>Selected Device</th>
                                                     <th>Physical Controller</th>
                                                     <th>Physical Input</th>
                                                     <th>Normalized Control</th>
@@ -66,6 +63,7 @@
                                         <table class="data-table" aria-label="Mouse user control profile" data-account-user-controls-table="Mouse">
                                             <thead>
                                                 <tr>
+                                                    <th>Selected Device</th>
                                                     <th>Physical Controller</th>
                                                     <th>Physical Input</th>
                                                     <th>Normalized Control</th>
@@ -98,6 +96,7 @@
                                         <table class="data-table" aria-label="Account user control profiles" data-account-user-controls-table>
                                             <thead>
                                                 <tr>
+                                                    <th>Selected Device</th>
                                                     <th>Physical Controller</th>
                                                     <th>Physical Input</th>
                                                     <th>Normalized Control</th>
@@ -124,7 +123,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Supported Control Types</summary>
                                 <div class="accordion-body">
-                                    <ul data-account-user-controls-types></ul>
+                                    <ul class="list--multi-column" data-account-user-controls-types></ul>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
