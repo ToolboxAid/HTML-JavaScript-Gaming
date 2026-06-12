@@ -376,6 +376,17 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
   gap: var(--space-18)
 }
 
+.account-panel>.side-menu {
+  grid-column: 1;
+  grid-row: 1
+}
+
+.account-panel>.card {
+  grid-column: 2;
+  grid-row: 1;
+  min-width: var(--space-0)
+}
+
 .account-panel--fill {
   align-items: stretch;
   min-height: 100%
@@ -820,6 +831,12 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
   body.tool-focus-mode .tool-column:first-of-type,
   body.tool-focus-mode .tool-center-panel,
   body.tool-focus-mode .tool-column:last-of-type {
+    grid-column: auto;
+    grid-row: auto
+  }
+
+  .account-panel>.side-menu,
+  .account-panel>.card {
     grid-column: auto;
     grid-row: auto
   }

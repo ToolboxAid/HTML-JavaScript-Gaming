@@ -995,15 +995,53 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
 
   try {
     await expect(page.locator("[data-account-side-nav]")).toBeVisible();
+    const sideNavStructure = await page.locator("[data-account-side-nav]").evaluate((aside) => {
+      const header = aside.querySelector(":scope > .tool-column-header");
+      const stack = aside.querySelector(":scope > .accordion-stack");
+      return {
+        ariaLabel: aside.getAttribute("aria-label"),
+        classes: Array.from(aside.classList),
+        dataAttribute: aside.getAttribute("data-account-side-nav"),
+        directAccordionCount: stack
+          ? Array.from(stack.children).filter((child) => child.matches("details.vertical-accordion")).length
+          : 0,
+        headerText: header?.textContent?.trim() || "",
+        layout: stack?.getAttribute("data-account-side-nav-accordion-layout") || "",
+        stackClassName: stack?.className || "",
+        stackTagName: stack?.tagName.toLowerCase() || "",
+        tagName: aside.tagName.toLowerCase(),
+      };
+    });
+    expect(sideNavStructure).toEqual(expect.objectContaining({
+      ariaLabel: "Account pages",
+      classes: expect.arrayContaining(["side-menu", "tool-column", "tool-group-platform"]),
+      dataAttribute: "",
+      directAccordionCount: 2,
+      headerText: "Account",
+      layout: "stacked",
+      stackClassName: "accordion-stack",
+      stackTagName: "div",
+      tagName: "aside",
+    }));
     await expect(page.locator("[data-account-side-nav-accordion-layout='stacked']")).toBeVisible();
     await expect(page.locator("[data-account-side-nav-accordion='pages']")).toHaveAttribute("open", "");
     await expect(page.locator("[data-account-side-nav-accordion='guidance']")).not.toHaveAttribute("open", "");
-    const sideNavAccordionMetrics = await page.locator("[data-account-side-nav-accordion-layout='stacked']").evaluate((layout) => {
-      const pages = layout.querySelector("[data-account-side-nav-accordion='pages']")?.getBoundingClientRect();
-      const guidance = layout.querySelector("[data-account-side-nav-accordion='guidance']")?.getBoundingClientRect();
-      return pages && guidance
+    const sideNavAccordionMetrics = await page.locator(".account-panel").evaluate((panel) => {
+      const aside = panel.querySelector("[data-account-side-nav]")?.getBoundingClientRect();
+      const center = panel.querySelector(":scope > .card")?.getBoundingClientRect();
+      const pages = panel.querySelector("[data-account-side-nav-accordion='pages']")?.getBoundingClientRect();
+      const guidance = panel.querySelector("[data-account-side-nav-accordion='guidance']")?.getBoundingClientRect();
+      const panelBox = panel.getBoundingClientRect();
+      return aside && center && pages && guidance
         ? {
+          asideLeft: aside.left,
+          asideRight: aside.right,
+          centerLeft: center.left,
+          centerRight: center.right,
+          expectedCenterWidth: panelBox.right - center.left,
           guidanceY: guidance.y,
+          panelLeft: panelBox.left,
+          panelRight: panelBox.right,
           pagesBottom: pages.bottom,
           xDelta: Math.abs(pages.x - guidance.x),
         }
@@ -1011,9 +1049,21 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
     });
     expect(sideNavAccordionMetrics).toEqual(expect.objectContaining({
       guidanceY: expect.any(Number),
+      asideLeft: expect.any(Number),
+      asideRight: expect.any(Number),
+      centerLeft: expect.any(Number),
+      centerRight: expect.any(Number),
+      expectedCenterWidth: expect.any(Number),
+      panelLeft: expect.any(Number),
+      panelRight: expect.any(Number),
       pagesBottom: expect.any(Number),
       xDelta: expect.any(Number),
     }));
+    expect(sideNavAccordionMetrics.asideLeft).toBeGreaterThanOrEqual(sideNavAccordionMetrics.panelLeft);
+    expect(sideNavAccordionMetrics.asideRight).toBeLessThan(sideNavAccordionMetrics.centerLeft);
+    expect(sideNavAccordionMetrics.centerRight).toBeCloseTo(sideNavAccordionMetrics.panelRight, 0);
+    expect(sideNavAccordionMetrics.centerRight - sideNavAccordionMetrics.centerLeft)
+      .toBeCloseTo(sideNavAccordionMetrics.expectedCenterWidth, 0);
     expect(sideNavAccordionMetrics.xDelta).toBeLessThanOrEqual(1);
     expect(sideNavAccordionMetrics.guidanceY).toBeGreaterThanOrEqual(sideNavAccordionMetrics.pagesBottom);
     await expect(page.locator("[data-account-side-nav-link]")).toHaveText([
