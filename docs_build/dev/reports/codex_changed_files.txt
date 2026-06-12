@@ -1,6 +1,7 @@
 assets/theme-v2/css/layout.css
-assets/theme-v2/partials/account-side-nav.html
+assets/theme-v2/js/gamefoundry-partials.js
 tests/playwright/tools/InputMappingV2Tool.spec.mjs
-docs_build/dev/reports/PR_26163_055-account-aside-left-column-accordion-fix.md
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

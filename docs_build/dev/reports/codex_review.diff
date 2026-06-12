@@ -1,143 +1,264 @@
 diff --git a/assets/theme-v2/css/layout.css b/assets/theme-v2/css/layout.css
-index 45e4788db..60dc9fe20 100644
+index 60dc9fe20..c69d28463 100644
 --- a/assets/theme-v2/css/layout.css
 +++ b/assets/theme-v2/css/layout.css
-@@ -376,6 +376,17 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
-   gap: var(--space-18)
+@@ -387,6 +387,10 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
+   min-width: var(--space-0)
  }
 
-+.account-panel>.side-menu {
-+  grid-column: 1;
-+  grid-row: 1
-+}
-+
-+.account-panel>.card {
-+  grid-column: 2;
-+  grid-row: 1;
-+  min-width: var(--space-0)
++.account-panel.is-left-collapsed {
++  grid-template-columns: var(--tool-column-collapsed-width) minmax(var(--space-0), 1fr)
 +}
 +
  .account-panel--fill {
    align-items: stretch;
    min-height: 100%
-@@ -824,6 +835,12 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
+@@ -841,6 +845,10 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
      grid-row: auto
    }
 
-+  .account-panel>.side-menu,
-+  .account-panel>.card {
-+    grid-column: auto;
-+    grid-row: auto
++  .account-panel.is-left-collapsed {
++    grid-template-columns: var(--one-column)
 +  }
 +
    .tool-column.is-collapsed .tool-column-header {
      height: auto;
      min-height: var(--space-0);
-diff --git a/assets/theme-v2/partials/account-side-nav.html b/assets/theme-v2/partials/account-side-nav.html
-index 6bf957ede..4d30c9eb7 100644
---- a/assets/theme-v2/partials/account-side-nav.html
-+++ b/assets/theme-v2/partials/account-side-nav.html
-@@ -1,4 +1,7 @@
--<aside class="side-menu" aria-label="Account pages" data-account-side-nav>
-+<aside class="side-menu tool-column tool-group-platform" aria-label="Account pages" data-account-side-nav>
-+    <div class="tool-column-header">
-+        <h2>Account</h2>
-+    </div>
-     <div class="accordion-stack" data-account-side-nav-accordion-layout="stacked">
-         <details class="vertical-accordion" open data-account-side-nav-accordion="pages">
-             <summary>Account Pages</summary>
+diff --git a/assets/theme-v2/js/gamefoundry-partials.js b/assets/theme-v2/js/gamefoundry-partials.js
+index b70306f75..abcfd48fc 100644
+--- a/assets/theme-v2/js/gamefoundry-partials.js
++++ b/assets/theme-v2/js/gamefoundry-partials.js
+@@ -568,6 +568,33 @@
+         });
+     }
+
++    function wireAccountSideNavigationCollapse(root) {
++        const header = root.querySelector(".tool-column-header");
++        if (!header || header.querySelector(".horizontal-accordion-toggle")) return;
++
++        const title = header.querySelector("h2, h3");
++        const label = title ? title.textContent.trim() : "Account";
++        const button = document.createElement("button");
++        button.type = "button";
++        button.className = "horizontal-accordion-toggle horizontal-accordion-toggle--left";
++        button.dataset.accountSideNavCollapse = "";
++        button.setAttribute("aria-label", "Collapse " + label);
++        button.setAttribute("aria-expanded", "true");
++        button.textContent = "<";
++        header.insertBefore(button, header.firstChild);
++
++        button.addEventListener("click", function () {
++            const collapsed = root.classList.toggle("is-collapsed");
++            const accountPanel = root.closest(".account-panel");
++            if (accountPanel) {
++                accountPanel.classList.toggle("is-left-collapsed", collapsed);
++            }
++            button.textContent = collapsed ? ">" : "<";
++            button.setAttribute("aria-expanded", collapsed ? "false" : "true");
++            button.setAttribute("aria-label", (collapsed ? "Expand " : "Collapse ") + label);
++        });
++    }
++
+     function wireReturnToTop(root) {
+         const button = root.querySelector("[data-return-to-top]");
+         if (!button) return;
+@@ -625,6 +652,7 @@
+             wireAccountLogout(element);
+         } else if (partialName === "account-side-nav") {
+             markActiveAccountSideNavigation(element);
++            wireAccountSideNavigationCollapse(element);
+         } else if (partialName === "footer") {
+             wireReturnToTop(element);
+         }
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 7605bbd9d..f80f1f610 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -14,38 +14,34 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+ Exercised tool entry points detected:
+ (100%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(65%) Theme V2 Shared JS - exercised 1 runtime JS files
++(63%) Theme V2 Shared JS - exercised 1 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 35/56
+
+ Files with executed line/function counts where available:
++(3%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 1/32
+ (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
++(14%) src/engine/input/InputCaptureService.js - executed lines 163/163; executed functions 2/14
+ (23%) src/engine/input/InputComboState.js - executed lines 173/173; executed functions 3/13
+-(30%) src/engine/input/InputService.js - executed lines 451/451; executed functions 20/66
++(25%) src/engine/input/InputService.js - executed lines 451/451; executed functions 16/65
++(29%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 4/14
+ (33%) src/engine/input/InputMap.js - executed lines 62/62; executed functions 3/9
+ (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
+ (40%) src/engine/input/MouseState.js - executed lines 57/57; executed functions 4/10
+-(41%) src/engine/input/GamepadInputClassifier.js - executed lines 412/412; executed functions 14/34
++(41%) account/user-controls-page.js - executed lines 1359/1359; executed functions 51/124
+ (43%) src/engine/input/KeyboardState.js - executed lines 34/34; executed functions 3/7
+-(50%) src/engine/input/InputCaptureService.js - executed lines 163/163; executed functions 7/14
+ (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
++(53%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 8/15
+ (59%) src/engine/input/PointerDragState.js - executed lines 225/225; executed functions 13/22
+-(60%) src/engine/input/InputCapabilityDescriptors.js - executed lines 261/261; executed functions 9/15
+-(65%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 625/625; executed functions 35/54
+-(80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
+-(89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
+-(93%) account/user-controls-page.js - executed lines 1359/1359; executed functions 153/165
++(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 35/56
++(85%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 22/26
+ (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
+ (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
+
+ Uncovered or low-coverage changed JS files:
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none - no low-coverage changed runtime JS files
+
+ Changed JS files considered:
+-(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
+-(93%) account/user-controls-page.js - changed JS file with browser V8 coverage
++(63%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 3b24dbe5c..97cc1a9d7 100644
+index 97cc1a9d7..f1d4c05d8 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -995,15 +995,53 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
+@@ -994,6 +994,30 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
+   });
 
    try {
-     await expect(page.locator("[data-account-side-nav]")).toBeVisible();
-+    const sideNavStructure = await page.locator("[data-account-side-nav]").evaluate((aside) => {
-+      const header = aside.querySelector(":scope > .tool-column-header");
-+      const stack = aside.querySelector(":scope > .accordion-stack");
-+      return {
-+        ariaLabel: aside.getAttribute("aria-label"),
-+        classes: Array.from(aside.classList),
-+        dataAttribute: aside.getAttribute("data-account-side-nav"),
-+        directAccordionCount: stack
-+          ? Array.from(stack.children).filter((child) => child.matches("details.vertical-accordion")).length
-+          : 0,
-+        headerText: header?.textContent?.trim() || "",
-+        layout: stack?.getAttribute("data-account-side-nav-accordion-layout") || "",
-+        stackClassName: stack?.className || "",
-+        stackTagName: stack?.tagName.toLowerCase() || "",
-+        tagName: aside.tagName.toLowerCase(),
-+      };
-+    });
-+    expect(sideNavStructure).toEqual(expect.objectContaining({
-+      ariaLabel: "Account pages",
-+      classes: expect.arrayContaining(["side-menu", "tool-column", "tool-group-platform"]),
-+      dataAttribute: "",
-+      directAccordionCount: 2,
-+      headerText: "Account",
-+      layout: "stacked",
-+      stackClassName: "accordion-stack",
-+      stackTagName: "div",
-+      tagName: "aside",
-+    }));
-     await expect(page.locator("[data-account-side-nav-accordion-layout='stacked']")).toBeVisible();
-     await expect(page.locator("[data-account-side-nav-accordion='pages']")).toHaveAttribute("open", "");
-     await expect(page.locator("[data-account-side-nav-accordion='guidance']")).not.toHaveAttribute("open", "");
--    const sideNavAccordionMetrics = await page.locator("[data-account-side-nav-accordion-layout='stacked']").evaluate((layout) => {
--      const pages = layout.querySelector("[data-account-side-nav-accordion='pages']")?.getBoundingClientRect();
--      const guidance = layout.querySelector("[data-account-side-nav-accordion='guidance']")?.getBoundingClientRect();
--      return pages && guidance
-+    const sideNavAccordionMetrics = await page.locator(".account-panel").evaluate((panel) => {
++    const readAccountPanelMetrics = async () => page.locator(".account-panel").evaluate((panel) => {
 +      const aside = panel.querySelector("[data-account-side-nav]")?.getBoundingClientRect();
 +      const center = panel.querySelector(":scope > .card")?.getBoundingClientRect();
 +      const pages = panel.querySelector("[data-account-side-nav-accordion='pages']")?.getBoundingClientRect();
 +      const guidance = panel.querySelector("[data-account-side-nav-accordion='guidance']")?.getBoundingClientRect();
 +      const panelBox = panel.getBoundingClientRect();
 +      return aside && center && pages && guidance
-         ? {
++        ? {
 +          asideLeft: aside.left,
 +          asideRight: aside.right,
++          asideWidth: aside.width,
 +          centerLeft: center.left,
 +          centerRight: center.right,
++          centerWidth: center.width,
 +          expectedCenterWidth: panelBox.right - center.left,
-           guidanceY: guidance.y,
++          guidanceY: guidance.y,
 +          panelLeft: panelBox.left,
 +          panelRight: panelBox.right,
-           pagesBottom: pages.bottom,
-           xDelta: Math.abs(pages.x - guidance.x),
++          pagesBottom: pages.bottom,
++          xDelta: Math.abs(pages.x - guidance.x),
++        }
++        : null;
++    });
++
+     await expect(page.locator("[data-account-side-nav]")).toBeVisible();
+     const sideNavStructure = await page.locator("[data-account-side-nav]").evaluate((aside) => {
+       const header = aside.querySelector(":scope > .tool-column-header");
+@@ -1005,7 +1029,7 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
+         directAccordionCount: stack
+           ? Array.from(stack.children).filter((child) => child.matches("details.vertical-accordion")).length
+           : 0,
+-        headerText: header?.textContent?.trim() || "",
++        headerText: header?.querySelector("h2, h3")?.textContent?.trim() || "",
+         layout: stack?.getAttribute("data-account-side-nav-accordion-layout") || "",
+         stackClassName: stack?.className || "",
+         stackTagName: stack?.tagName.toLowerCase() || "",
+@@ -1023,36 +1047,38 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
+       stackTagName: "div",
+       tagName: "aside",
+     }));
+-    await expect(page.locator("[data-account-side-nav-accordion-layout='stacked']")).toBeVisible();
+-    await expect(page.locator("[data-account-side-nav-accordion='pages']")).toHaveAttribute("open", "");
+-    await expect(page.locator("[data-account-side-nav-accordion='guidance']")).not.toHaveAttribute("open", "");
+-    const sideNavAccordionMetrics = await page.locator(".account-panel").evaluate((panel) => {
+-      const aside = panel.querySelector("[data-account-side-nav]")?.getBoundingClientRect();
+-      const center = panel.querySelector(":scope > .card")?.getBoundingClientRect();
+-      const pages = panel.querySelector("[data-account-side-nav-accordion='pages']")?.getBoundingClientRect();
+-      const guidance = panel.querySelector("[data-account-side-nav-accordion='guidance']")?.getBoundingClientRect();
+-      const panelBox = panel.getBoundingClientRect();
+-      return aside && center && pages && guidance
++    const collapseButton = page.locator("[data-account-side-nav-collapse]");
++    await expect(collapseButton).toBeVisible();
++    await expect(collapseButton).toHaveClass(/horizontal-accordion-toggle--left/);
++    await expect(collapseButton).toHaveAttribute("aria-expanded", "true");
++    await expect(collapseButton).toHaveAttribute("aria-label", "Collapse Account");
++    const toggleHeaderMetrics = await collapseButton.evaluate((button) => {
++      const title = button.closest(".tool-column-header")?.querySelector("h2")?.getBoundingClientRect();
++      const buttonBox = button.getBoundingClientRect();
++      return title
+         ? {
+-          asideLeft: aside.left,
+-          asideRight: aside.right,
+-          centerLeft: center.left,
+-          centerRight: center.right,
+-          expectedCenterWidth: panelBox.right - center.left,
+-          guidanceY: guidance.y,
+-          panelLeft: panelBox.left,
+-          panelRight: panelBox.right,
+-          pagesBottom: pages.bottom,
+-          xDelta: Math.abs(pages.x - guidance.x),
++          buttonLeft: buttonBox.left,
++          titleRight: title.right,
          }
-@@ -1011,9 +1049,21 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
+         : null;
      });
++    expect(toggleHeaderMetrics).toEqual(expect.objectContaining({
++      buttonLeft: expect.any(Number),
++      titleRight: expect.any(Number),
++    }));
++    expect(toggleHeaderMetrics.buttonLeft).toBeGreaterThan(toggleHeaderMetrics.titleRight);
++    await expect(page.locator("[data-account-side-nav-accordion-layout='stacked']")).toBeVisible();
++    await expect(page.locator("[data-account-side-nav-accordion='pages']")).toHaveAttribute("open", "");
++    await expect(page.locator("[data-account-side-nav-accordion='guidance']")).not.toHaveAttribute("open", "");
++    const sideNavAccordionMetrics = await readAccountPanelMetrics();
      expect(sideNavAccordionMetrics).toEqual(expect.objectContaining({
        guidanceY: expect.any(Number),
-+      asideLeft: expect.any(Number),
-+      asideRight: expect.any(Number),
-+      centerLeft: expect.any(Number),
-+      centerRight: expect.any(Number),
-+      expectedCenterWidth: expect.any(Number),
-+      panelLeft: expect.any(Number),
-+      panelRight: expect.any(Number),
-       pagesBottom: expect.any(Number),
-       xDelta: expect.any(Number),
-     }));
-+    expect(sideNavAccordionMetrics.asideLeft).toBeGreaterThanOrEqual(sideNavAccordionMetrics.panelLeft);
-+    expect(sideNavAccordionMetrics.asideRight).toBeLessThan(sideNavAccordionMetrics.centerLeft);
-+    expect(sideNavAccordionMetrics.centerRight).toBeCloseTo(sideNavAccordionMetrics.panelRight, 0);
-+    expect(sideNavAccordionMetrics.centerRight - sideNavAccordionMetrics.centerLeft)
-+      .toBeCloseTo(sideNavAccordionMetrics.expectedCenterWidth, 0);
+       asideLeft: expect.any(Number),
+       asideRight: expect.any(Number),
++      asideWidth: expect.any(Number),
+       centerLeft: expect.any(Number),
+       centerRight: expect.any(Number),
++      centerWidth: expect.any(Number),
+       expectedCenterWidth: expect.any(Number),
+       panelLeft: expect.any(Number),
+       panelRight: expect.any(Number),
+@@ -1066,6 +1092,22 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
+       .toBeCloseTo(sideNavAccordionMetrics.expectedCenterWidth, 0);
      expect(sideNavAccordionMetrics.xDelta).toBeLessThanOrEqual(1);
      expect(sideNavAccordionMetrics.guidanceY).toBeGreaterThanOrEqual(sideNavAccordionMetrics.pagesBottom);
++    await collapseButton.click();
++    await expect(page.locator("[data-account-side-nav]")).toHaveClass(/is-collapsed/);
++    await expect(page.locator(".account-panel")).toHaveClass(/is-left-collapsed/);
++    await expect(collapseButton).toHaveAttribute("aria-expanded", "false");
++    await expect(collapseButton).toHaveAttribute("aria-label", "Expand Account");
++    await expect(page.locator("[data-account-side-nav-link]").first()).toBeHidden();
++    const collapsedMetrics = await readAccountPanelMetrics();
++    expect(collapsedMetrics.asideRight).toBeLessThan(collapsedMetrics.centerLeft);
++    expect(collapsedMetrics.centerRight).toBeCloseTo(collapsedMetrics.panelRight, 0);
++    expect(collapsedMetrics.centerWidth).toBeGreaterThan(sideNavAccordionMetrics.centerWidth);
++    await collapseButton.click();
++    await expect(page.locator("[data-account-side-nav]")).not.toHaveClass(/is-collapsed/);
++    await expect(page.locator(".account-panel")).not.toHaveClass(/is-left-collapsed/);
++    await expect(collapseButton).toHaveAttribute("aria-expanded", "true");
++    await expect(collapseButton).toHaveAttribute("aria-label", "Collapse Account");
++    await expect(page.locator("[data-account-side-nav-link]").first()).toBeVisible();
      await expect(page.locator("[data-account-side-nav-link]")).toHaveText([
+       "Account Home",
+       "Achievements",
 
-diff --git a/docs_build/dev/reports/PR_26163_055-account-aside-left-column-accordion-fix.md b/docs_build/dev/reports/PR_26163_055-account-aside-left-column-accordion-fix.md
+diff --git a/docs_build/dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md b/docs_build/dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md
 new file mode 100644
-index 000000000..2f3ec7d79
+index 000000000..c03313034
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26163_055-account-aside-left-column-accordion-fix.md
-@@ -0,0 +1,93 @@
-+# PR_26163_055-account-aside-left-column-accordion-fix
++++ b/docs_build/dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md
+@@ -0,0 +1,100 @@
++# PR_26163_056-account-aside-template-toggle-alignment
 +
 +## Branch Validation
 +
@@ -148,36 +269,39 @@ index 000000000..2f3ec7d79
 +## Requirement Checklist
 +
 +- PASS - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before implementation.
-+- PASS - Created PR scope `PR_26163_055-account-aside-left-column-accordion-fix`.
-+- PASS - Account Pages / Account Guidance accordion is present and visible in the account left column.
-+- PASS - Aside remains on the left through `.account-panel > .side-menu` Theme V2 layout wiring.
-+- PASS - Center content column fills the remaining available space beside the left aside through `.account-panel > .card` Theme V2 layout wiring.
-+- PASS - Account Pages appears above Account Guidance as one stacked vertical accordion column.
-+- PASS - Existing Theme V2/tool accordion classes are reused: `tool-column`, `tool-column-header`, `accordion-stack`, and `vertical-accordion`.
++- PASS - Created PR scope `PR_26163_056-account-aside-template-toggle-alignment`.
++- PASS - Inspected `toolbox/_tool_template-v2/index.html` and current Toolbox left column behavior.
++- PASS - Mirrored the Toolbox left column collapse pattern for `account/user-controls.html` through the shared account side-nav partial wiring.
++- PASS - Added the missing right-side header toggle button beside the Account left-column heading.
++- PASS - Toggle collapses and expands the Account left column using the existing `horizontal-accordion-toggle`, `is-collapsed`, and `is-left-collapsed` class pattern.
++- PASS - Account Pages and Account Guidance remain stacked top/bottom in one vertical accordion stack.
++- PASS - Center column uses the remaining available width when the left column is expanded and when collapsed.
++- PASS - Existing Theme V2/tool accordion classes and shared partial behavior are reused.
 +- PASS - No new accordion system was created.
-+- PASS - No page-local CSS, inline styles, script blocks, or inline event handlers were added.
-+- PASS - Scope stayed limited to account side-nav partial/layout wiring, approved Theme V2 layout CSS, targeted tests, and required reports.
++- PASS - No page-local CSS or inline styles were added.
 +
 +## Changed Files
 +
 +- `assets/theme-v2/css/layout.css`
-+- `assets/theme-v2/partials/account-side-nav.html`
++- `assets/theme-v2/js/gamefoundry-partials.js`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `docs_build/dev/reports/PR_26163_055-account-aside-left-column-accordion-fix.md`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +
 +## Implementation Notes
 +
-+- `account/user-controls.html` already loads the shared account side-nav with `<div data-partial="account-side-nav" data-partial-replace></div>`.
-+- The fix was applied to the loaded side-nav partial so Account/User Controls and other account pages receive the same left-column accordion structure.
-+- `assets/theme-v2/partials/account-side-nav.html` now uses the Toolbox-style left column container pattern: `side-menu tool-column tool-group-platform`, a `tool-column-header`, and a stacked `accordion-stack`.
-+- `assets/theme-v2/css/layout.css` adds account-panel-specific grid placement so `.side-menu` stays in column 1 and the `.card` center content stays in column 2 on desktop, while preserving the existing mobile single-column stack.
-+- The layout CSS is needed because a standalone account `<aside>` with `tool-column` otherwise matches both generic `tool-column:first-of-type` and `tool-column:last-of-type` rules.
++- `toolbox/_tool_template-v2/index.html` uses `tool-workspace`, `tool-column`, `tool-column-header`, and `accordion-stack` for side columns.
++- Toolbox collapse behavior is injected by `assets/theme-v2/js/tool-display-mode.js` with `horizontal-accordion-toggle`, `is-collapsed`, and workspace `is-left-collapsed` classes.
++- Account pages do not host ToolDisplayMode, so the account side-nav partial is wired by `assets/theme-v2/js/gamefoundry-partials.js` using the same toggle class names, aria states, text indicators, and collapse classes.
++- `assets/theme-v2/css/layout.css` now includes `.account-panel.is-left-collapsed` so the account center card expands into the available space when the Account side column collapses.
++- The existing `assets/theme-v2/partials/account-side-nav.html` stacked left-column structure remains the account side-nav source of truth.
 +
 +## Impacted Lanes
 +
 +- Account/User Controls layout lane.
++- Theme V2 shared partial runtime lane.
 +- Theme V2 account-panel layout lane.
 +- Targeted Playwright account navigation lane.
 +- Workspace V2 validation lane.
@@ -185,61 +309,66 @@ index 000000000..2f3ec7d79
 +## Skipped Lanes
 +
 +- Full samples smoke: SKIP. This PR does not change samples, sample JSON contracts, game runtime behavior, or sample launch paths; the user explicitly requested not to run full samples smoke.
-+- Engine lane: SKIP. No engine or runtime input behavior changed.
-+- Runtime JavaScript V8 coverage: SKIP/N/A. No runtime JavaScript files changed in this PR.
++- Engine lane: SKIP. No engine or input runtime behavior changed.
++- Database/auth lane: SKIP. No DB, auth, or account persistence contracts changed.
 +
 +## Validation Performed
 +
 +- PASS - Branch check: `git branch --show-current` returned `main`.
 +- PASS - Syntax check: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`.
-+- PASS - Static patch check: `git diff --check -- assets/theme-v2/partials/account-side-nav.html assets/theme-v2/css/layout.css tests/playwright/tools/InputMappingV2Tool.spec.mjs`.
++- PASS - Syntax check: `node --check assets/theme-v2/js/gamefoundry-partials.js`.
++- PASS - Static patch check: `git diff --check -- assets/theme-v2/js/gamefoundry-partials.js assets/theme-v2/css/layout.css tests/playwright/tools/InputMappingV2Tool.spec.mjs assets/theme-v2/partials/account-side-nav.html`.
 +- PASS - Targeted Playwright: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "Account navigation"` passed 1 test.
 +- PASS - Workspace V2 validation: `npm run test:workspace-v2` passed 5 tests.
++- PASS - Final targeted Playwright rerun generated changed-runtime-JS V8 coverage.
 +
 +## Playwright Result
 +
-+- PASS - Account side accordion is present.
-+- PASS - Account side accordion is positioned in the left column.
++- PASS - Account left column mirrors Toolbox template side-column structure.
++- PASS - Account left column header includes the right-side collapse/expand toggle button.
++- PASS - Toggle collapses and expands the Account left column.
 +- PASS - Account Pages appears above Account Guidance.
-+- PASS - Accordion expand/collapse works.
-+- PASS - Center column fills the remaining available width beside the left aside.
++- PASS - Center column fills remaining available width in expanded state.
++- PASS - Center column fills remaining available width in collapsed state.
 +
 +## Coverage
 +
-+- PASS/N/A - No runtime JavaScript changed, so no changed-runtime-JS Playwright V8 coverage report was required.
++- PASS - Playwright V8 coverage report produced at `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
++- PASS - Changed runtime JS coverage collected for `assets/theme-v2/js/gamefoundry-partials.js`: 63% function coverage, with no low-coverage changed runtime JS warning.
 +
 +## Search Evidence
 +
-+- PASS - `rg -n "tool-column|tool-column-header|account-panel>|stacked|left-right|style=|<style|onclick=" assets/theme-v2/css/layout.css assets/theme-v2/partials/account-side-nav.html account/user-controls.html tests/playwright/tools/InputMappingV2Tool.spec.mjs` shows the shared Theme V2 column/accordion classes and no page-local style or inline handler additions.
-+- PASS - `git diff -- assets/theme-v2/css/layout.css assets/theme-v2/partials/account-side-nav.html tests/playwright/tools/InputMappingV2Tool.spec.mjs` shows only account panel layout, account side-nav partial, and targeted Playwright coverage changes.
++- PASS - `rg -n "horizontal-accordion-toggle|is-left-collapsed|tool-column-header|tool-workspace" toolbox/_tool_template-v2/index.html assets/theme-v2/js/tool-display-mode.js assets/theme-v2/css/layout.css assets/theme-v2/css/accordion.css assets/theme-v2/css/panels.css` confirms the existing Toolbox/template collapse class pattern.
++- PASS - `rg -n "wireAccountSideNavigationCollapse|accountSideNavCollapse|is-left-collapsed|horizontal-accordion-toggle|tool-column-header|data-account-side-nav-accordion-layout|style=|<style|onclick=" assets/theme-v2/js/gamefoundry-partials.js assets/theme-v2/css/layout.css assets/theme-v2/partials/account-side-nav.html account/user-controls.html tests/playwright/tools/InputMappingV2Tool.spec.mjs` confirms the account wiring uses existing Theme V2 classes and no page-local style or inline handler additions.
 +
 +## Manual Validation Steps
 +
 +1. Open `/account/user-controls.html`.
-+2. Confirm the Account left aside appears to the left of the User Controls content.
-+3. Confirm the left aside shows the Account header, Account Pages accordion, and Account Guidance accordion.
-+4. Confirm Account Pages is stacked above Account Guidance.
-+5. Collapse and reopen Account Pages.
-+6. Open and close Account Guidance.
-+7. Confirm the User Controls card fills the remaining width to the right of the aside.
++2. Confirm the left Account side column shows the Account heading with a collapse toggle button to the right.
++3. Confirm Account Pages appears above Account Guidance in the left accordion stack.
++4. Click the Account toggle and confirm the left column collapses.
++5. Confirm the User Controls center card fills the remaining available width.
++6. Click the Account toggle again and confirm the left column expands.
++7. Collapse/reopen Account Pages and Account Guidance to confirm accordion behavior still works.
 +
 +## Samples Validation Decision
 +
-+- SKIP - Full samples smoke was not run because this PR is scoped to account layout and account side-nav wiring only.
++- SKIP - Full samples smoke was not run because this PR is scoped to account layout/partial toggle wiring and shared Theme V2 runtime, with no samples or game runtime changes.
 +
 +## Completion
 +
-+- PASS - Every requested item was implemented, validated, and explicitly marked PASS or documented as N/A/skipped where applicable.
++- PASS - Every requested item was implemented, validated, and explicitly marked PASS or documented as skipped where applicable.
 
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
 new file mode 100644
-index 000000000..cf0b8afc5
+index 000000000..4f6ff9c7c
 --- /dev/null
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -0,0 +1,6 @@
+@@ -0,0 +1,7 @@
 +assets/theme-v2/css/layout.css
-+assets/theme-v2/partials/account-side-nav.html
++assets/theme-v2/js/gamefoundry-partials.js
 +tests/playwright/tools/InputMappingV2Tool.spec.mjs
-+docs_build/dev/reports/PR_26163_055-account-aside-left-column-accordion-fix.md
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++docs_build/dev/reports/PR_26163_056-account-aside-template-toggle-alignment.md
 +docs_build/dev/reports/codex_review.diff
 +docs_build/dev/reports/codex_changed_files.txt

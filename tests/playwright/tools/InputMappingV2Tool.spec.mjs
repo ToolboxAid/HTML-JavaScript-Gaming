@@ -994,6 +994,30 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
   });
 
   try {
+    const readAccountPanelMetrics = async () => page.locator(".account-panel").evaluate((panel) => {
+      const aside = panel.querySelector("[data-account-side-nav]")?.getBoundingClientRect();
+      const center = panel.querySelector(":scope > .card")?.getBoundingClientRect();
+      const pages = panel.querySelector("[data-account-side-nav-accordion='pages']")?.getBoundingClientRect();
+      const guidance = panel.querySelector("[data-account-side-nav-accordion='guidance']")?.getBoundingClientRect();
+      const panelBox = panel.getBoundingClientRect();
+      return aside && center && pages && guidance
+        ? {
+          asideLeft: aside.left,
+          asideRight: aside.right,
+          asideWidth: aside.width,
+          centerLeft: center.left,
+          centerRight: center.right,
+          centerWidth: center.width,
+          expectedCenterWidth: panelBox.right - center.left,
+          guidanceY: guidance.y,
+          panelLeft: panelBox.left,
+          panelRight: panelBox.right,
+          pagesBottom: pages.bottom,
+          xDelta: Math.abs(pages.x - guidance.x),
+        }
+        : null;
+    });
+
     await expect(page.locator("[data-account-side-nav]")).toBeVisible();
     const sideNavStructure = await page.locator("[data-account-side-nav]").evaluate((aside) => {
       const header = aside.querySelector(":scope > .tool-column-header");
@@ -1005,7 +1029,7 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
         directAccordionCount: stack
           ? Array.from(stack.children).filter((child) => child.matches("details.vertical-accordion")).length
           : 0,
-        headerText: header?.textContent?.trim() || "",
+        headerText: header?.querySelector("h2, h3")?.textContent?.trim() || "",
         layout: stack?.getAttribute("data-account-side-nav-accordion-layout") || "",
         stackClassName: stack?.className || "",
         stackTagName: stack?.tagName.toLowerCase() || "",
@@ -1023,36 +1047,38 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
       stackTagName: "div",
       tagName: "aside",
     }));
-    await expect(page.locator("[data-account-side-nav-accordion-layout='stacked']")).toBeVisible();
-    await expect(page.locator("[data-account-side-nav-accordion='pages']")).toHaveAttribute("open", "");
-    await expect(page.locator("[data-account-side-nav-accordion='guidance']")).not.toHaveAttribute("open", "");
-    const sideNavAccordionMetrics = await page.locator(".account-panel").evaluate((panel) => {
-      const aside = panel.querySelector("[data-account-side-nav]")?.getBoundingClientRect();
-      const center = panel.querySelector(":scope > .card")?.getBoundingClientRect();
-      const pages = panel.querySelector("[data-account-side-nav-accordion='pages']")?.getBoundingClientRect();
-      const guidance = panel.querySelector("[data-account-side-nav-accordion='guidance']")?.getBoundingClientRect();
-      const panelBox = panel.getBoundingClientRect();
-      return aside && center && pages && guidance
+    const collapseButton = page.locator("[data-account-side-nav-collapse]");
+    await expect(collapseButton).toBeVisible();
+    await expect(collapseButton).toHaveClass(/horizontal-accordion-toggle--left/);
+    await expect(collapseButton).toHaveAttribute("aria-expanded", "true");
+    await expect(collapseButton).toHaveAttribute("aria-label", "Collapse Account");
+    const toggleHeaderMetrics = await collapseButton.evaluate((button) => {
+      const title = button.closest(".tool-column-header")?.querySelector("h2")?.getBoundingClientRect();
+      const buttonBox = button.getBoundingClientRect();
+      return title
         ? {
-          asideLeft: aside.left,
-          asideRight: aside.right,
-          centerLeft: center.left,
-          centerRight: center.right,
-          expectedCenterWidth: panelBox.right - center.left,
-          guidanceY: guidance.y,
-          panelLeft: panelBox.left,
-          panelRight: panelBox.right,
-          pagesBottom: pages.bottom,
-          xDelta: Math.abs(pages.x - guidance.x),
+          buttonLeft: buttonBox.left,
+          titleRight: title.right,
         }
         : null;
     });
+    expect(toggleHeaderMetrics).toEqual(expect.objectContaining({
+      buttonLeft: expect.any(Number),
+      titleRight: expect.any(Number),
+    }));
+    expect(toggleHeaderMetrics.buttonLeft).toBeGreaterThan(toggleHeaderMetrics.titleRight);
+    await expect(page.locator("[data-account-side-nav-accordion-layout='stacked']")).toBeVisible();
+    await expect(page.locator("[data-account-side-nav-accordion='pages']")).toHaveAttribute("open", "");
+    await expect(page.locator("[data-account-side-nav-accordion='guidance']")).not.toHaveAttribute("open", "");
+    const sideNavAccordionMetrics = await readAccountPanelMetrics();
     expect(sideNavAccordionMetrics).toEqual(expect.objectContaining({
       guidanceY: expect.any(Number),
       asideLeft: expect.any(Number),
       asideRight: expect.any(Number),
+      asideWidth: expect.any(Number),
       centerLeft: expect.any(Number),
       centerRight: expect.any(Number),
+      centerWidth: expect.any(Number),
       expectedCenterWidth: expect.any(Number),
       panelLeft: expect.any(Number),
       panelRight: expect.any(Number),
@@ -1066,6 +1092,22 @@ test("Account navigation exposes User Controls in sorted browseable menus", asyn
       .toBeCloseTo(sideNavAccordionMetrics.expectedCenterWidth, 0);
     expect(sideNavAccordionMetrics.xDelta).toBeLessThanOrEqual(1);
     expect(sideNavAccordionMetrics.guidanceY).toBeGreaterThanOrEqual(sideNavAccordionMetrics.pagesBottom);
+    await collapseButton.click();
+    await expect(page.locator("[data-account-side-nav]")).toHaveClass(/is-collapsed/);
+    await expect(page.locator(".account-panel")).toHaveClass(/is-left-collapsed/);
+    await expect(collapseButton).toHaveAttribute("aria-expanded", "false");
+    await expect(collapseButton).toHaveAttribute("aria-label", "Expand Account");
+    await expect(page.locator("[data-account-side-nav-link]").first()).toBeHidden();
+    const collapsedMetrics = await readAccountPanelMetrics();
+    expect(collapsedMetrics.asideRight).toBeLessThan(collapsedMetrics.centerLeft);
+    expect(collapsedMetrics.centerRight).toBeCloseTo(collapsedMetrics.panelRight, 0);
+    expect(collapsedMetrics.centerWidth).toBeGreaterThan(sideNavAccordionMetrics.centerWidth);
+    await collapseButton.click();
+    await expect(page.locator("[data-account-side-nav]")).not.toHaveClass(/is-collapsed/);
+    await expect(page.locator(".account-panel")).not.toHaveClass(/is-left-collapsed/);
+    await expect(collapseButton).toHaveAttribute("aria-expanded", "true");
+    await expect(collapseButton).toHaveAttribute("aria-label", "Collapse Account");
+    await expect(page.locator("[data-account-side-nav-link]").first()).toBeVisible();
     await expect(page.locator("[data-account-side-nav-link]")).toHaveText([
       "Account Home",
       "Achievements",

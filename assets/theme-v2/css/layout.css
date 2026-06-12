@@ -387,6 +387,10 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
   min-width: var(--space-0)
 }
 
+.account-panel.is-left-collapsed {
+  grid-template-columns: var(--tool-column-collapsed-width) minmax(var(--space-0), 1fr)
+}
+
 .account-panel--fill {
   align-items: stretch;
   min-height: 100%
@@ -839,6 +843,10 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
   .account-panel>.card {
     grid-column: auto;
     grid-row: auto
+  }
+
+  .account-panel.is-left-collapsed {
+    grid-template-columns: var(--one-column)
   }
 
   .tool-column.is-collapsed .tool-column-header {

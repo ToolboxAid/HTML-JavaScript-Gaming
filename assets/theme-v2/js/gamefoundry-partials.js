@@ -568,6 +568,33 @@
         });
     }
 
+    function wireAccountSideNavigationCollapse(root) {
+        const header = root.querySelector(".tool-column-header");
+        if (!header || header.querySelector(".horizontal-accordion-toggle")) return;
+
+        const title = header.querySelector("h2, h3");
+        const label = title ? title.textContent.trim() : "Account";
+        const button = document.createElement("button");
+        button.type = "button";
+        button.className = "horizontal-accordion-toggle horizontal-accordion-toggle--left";
+        button.dataset.accountSideNavCollapse = "";
+        button.setAttribute("aria-label", "Collapse " + label);
+        button.setAttribute("aria-expanded", "true");
+        button.textContent = "<";
+        header.insertBefore(button, header.firstChild);
+
+        button.addEventListener("click", function () {
+            const collapsed = root.classList.toggle("is-collapsed");
+            const accountPanel = root.closest(".account-panel");
+            if (accountPanel) {
+                accountPanel.classList.toggle("is-left-collapsed", collapsed);
+            }
+            button.textContent = collapsed ? ">" : "<";
+            button.setAttribute("aria-expanded", collapsed ? "false" : "true");
+            button.setAttribute("aria-label", (collapsed ? "Expand " : "Collapse ") + label);
+        });
+    }
+
     function wireReturnToTop(root) {
         const button = root.querySelector("[data-return-to-top]");
         if (!button) return;
@@ -625,6 +652,7 @@
             wireAccountLogout(element);
         } else if (partialName === "account-side-nav") {
             markActiveAccountSideNavigation(element);
+            wireAccountSideNavigationCollapse(element);
         } else if (partialName === "footer") {
             wireReturnToTop(element);
         }
