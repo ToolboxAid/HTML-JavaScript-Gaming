@@ -1,7 +1,8 @@
-account/user-controls.html
-assets/theme-v2/css/layout.css
-assets/theme-v2/css/typography.css
+account/user-controls-page.js
+src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
 tests/playwright/tools/InputMappingV2Tool.spec.mjs
-docs_build/dev/reports/PR_26163_066-user-controls-layout-polish.md
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
+tmp/PR_26163_067-user-controls-profile-radio-groups_delta.zip

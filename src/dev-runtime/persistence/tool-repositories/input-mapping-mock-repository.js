@@ -189,6 +189,7 @@ function selectedInputDeviceFromRecord(record = {}) {
     profileId: normalizeText(record.profileId),
     selectionKey,
     selectionType,
+    updatedAt: normalizeText(record.updatedAt),
   };
 }
 
@@ -271,10 +272,20 @@ export function createInputMappingToolMockRepository(options = {}) {
 
   function getSelectedInputDevice() {
     const targetPlayerId = activeUserKey();
-    const record = [...(tables.player_input_device_selections || [])]
-      .filter((candidate) => normalizeText(candidate.playerId) === targetPlayerId)
+    const record = listSelectedInputDevices()
       .sort((left, right) => normalizeText(right.updatedAt).localeCompare(normalizeText(left.updatedAt)))[0];
-    return record ? selectedInputDeviceFromRecord(record) : null;
+    return record || null;
+  }
+
+  function listSelectedInputDevices() {
+    const targetPlayerId = activeUserKey();
+    return [...(tables.player_input_device_selections || [])]
+      .filter((candidate) => normalizeText(candidate.playerId) === targetPlayerId)
+      .sort((left, right) => (
+        normalizeText(left.deviceType).localeCompare(normalizeText(right.deviceType))
+          || normalizeText(left.label).localeCompare(normalizeText(right.label))
+      ))
+      .map(selectedInputDeviceFromRecord);
   }
 
   function listCustomActions(gameId = "") {
@@ -355,14 +366,18 @@ export function createInputMappingToolMockRepository(options = {}) {
     const timestamp = new Date().toISOString();
     const userKey = activeUserKey();
     const selectionKey = normalizeText(selection.selectionKey || selection.id);
+    const deviceType = normalizeText(selection.deviceType) || "Gamepad";
     const previous = (tables.player_input_device_selections || [])
-      .find((record) => normalizeText(record.playerId) === targetPlayerId);
-    const id = normalizeText(previous?.id) || "selected-input-device";
+      .find((record) =>
+        normalizeText(record.playerId) === targetPlayerId
+          && normalizeText(record.deviceType) === deviceType,
+      );
+    const id = normalizeText(previous?.id) || `selected-input-device-${mappingKeyFromText(deviceType)}`;
     const nextRow = {
       controllerId: normalizeText(selection.controllerId),
       createdAt: previous?.createdAt || timestamp,
       createdBy: previous?.createdBy || userKey,
-      deviceType: normalizeText(selection.deviceType),
+      deviceType,
       id,
       key: previous?.key,
       label: normalizeText(selection.label),
@@ -375,14 +390,18 @@ export function createInputMappingToolMockRepository(options = {}) {
     };
     tables.player_input_device_selections = [
       ...(tables.player_input_device_selections || []).filter(
-        (record) => normalizeText(record.playerId) !== targetPlayerId,
+        (record) => !(
+          normalizeText(record.playerId) === targetPlayerId
+            && normalizeText(record.deviceType) === deviceType
+        ),
       ),
       nextRow,
     ];
     persistTables();
     return {
       saved: true,
-      selectedInputDevice: getSelectedInputDevice(),
+      selectedInputDevice: selectedInputDeviceFromRecord(nextRow),
+      selectedInputDevices: listSelectedInputDevices(),
       snapshot: getSnapshot(),
     };
   }
@@ -509,6 +528,7 @@ export function createInputMappingToolMockRepository(options = {}) {
       customActions: listCustomActions(),
       mappings: listMappings(),
       selectedInputDevice: getSelectedInputDevice(),
+      selectedInputDevices: listSelectedInputDevices(),
       tableCounts: tableCounts(normalizedTables),
       tables: normalizedTables,
     };
@@ -519,6 +539,7 @@ export function createInputMappingToolMockRepository(options = {}) {
     getSnapshot,
     getTables,
     getSelectedInputDevice,
+    listSelectedInputDevices,
     listControllerProfiles,
     listCustomActions,
     listMappings,

@@ -139,7 +139,7 @@ export class AccountUserControlsPage {
     this.captureService = new InputCaptureService({ inputService: this.inputService });
     this.profiles = [];
     this.editingProfile = null;
-    this.selectedInputDevice = null;
+    this.selectedInputDevices = new Map();
     this.sessionUserKey = "";
     this.viewingDefaultFamily = "";
     this.devicePollingTimer = null;
@@ -162,7 +162,7 @@ export class AccountUserControlsPage {
     this.inputService.attach();
     this.sessionUserKey = this.currentSessionUserKey();
     this.profiles = this.readProfiles();
-    this.selectedInputDevice = this.readSelectedInputDevice();
+    this.selectedInputDevices = this.readSelectedInputDevices();
     this.renderDeviceSelect();
     this.renderDefaultFallbacks();
     this.renderTypes();
@@ -215,7 +215,7 @@ export class AccountUserControlsPage {
     this.repository = createControlsToolApiRepository();
     this.sessionUserKey = this.currentSessionUserKey();
     this.profiles = this.readProfiles();
-    this.selectedInputDevice = this.readSelectedInputDevice();
+    this.selectedInputDevices = this.readSelectedInputDevices();
     this.editingProfile = null;
     this.viewingDefaultFamily = "";
     this.renderDeviceSelect();
@@ -317,16 +317,46 @@ export class AccountUserControlsPage {
     return Array.isArray(result) ? result.map((profile) => this.normalizeProfile(profile)) : [];
   }
 
-  readSelectedInputDevice() {
-    if (!this.currentSessionUserKey()) {
-      return null;
+  selectionFamily(selection = {}) {
+    const deviceType = normalizeText(selection.deviceType);
+    if (deviceType === "Keyboard" || deviceType === "Mouse") {
+      return deviceType;
     }
-    let result = this.repository.getSelectedInputDevice();
+    return "Gamepad";
+  }
+
+  selectedInputDeviceForFamily(family) {
+    return this.selectedInputDevices.get(this.selectionFamily({ deviceType: family })) || null;
+  }
+
+  selectedInputDeviceMapFromList(selections = []) {
+    const selectedInputDevices = new Map();
+    (Array.isArray(selections) ? selections : []).forEach((selection) => {
+      if (selection?.selectionKey) {
+        selectedInputDevices.set(this.selectionFamily(selection), selection);
+      }
+    });
+    return selectedInputDevices;
+  }
+
+  readSelectedInputDevices() {
+    if (!this.currentSessionUserKey()) {
+      return new Map();
+    }
+    let result = this.repository.listSelectedInputDevices();
+    if (result?.error) {
+      this.repository = createControlsToolApiRepository();
+      result = this.repository.listSelectedInputDevices();
+    }
+    if (Array.isArray(result)) {
+      return this.selectedInputDeviceMapFromList(result);
+    }
+    result = this.repository.getSelectedInputDevice();
     if (result?.error) {
       this.repository = createControlsToolApiRepository();
       result = this.repository.getSelectedInputDevice();
     }
-    return result && !result.error ? result : null;
+    return result && !result.error ? this.selectedInputDeviceMapFromList([result]) : new Map();
   }
 
   saveSelectedInputDevice(selection) {
@@ -339,8 +369,13 @@ export class AccountUserControlsPage {
       this.repository = createControlsToolApiRepository();
       result = this.repository.saveSelectedInputDevice(selection);
     }
+    if (Array.isArray(result?.selectedInputDevices)) {
+      this.selectedInputDevices = this.selectedInputDeviceMapFromList(result.selectedInputDevices);
+      this.renderSelectedInputDevices();
+      return true;
+    }
     if (result?.selectedInputDevice) {
-      this.selectedInputDevice = result.selectedInputDevice;
+      this.selectedInputDevices.set(this.selectionFamily(result.selectedInputDevice), result.selectedInputDevice);
       this.renderSelectedInputDevices();
       return true;
     }
@@ -552,14 +587,21 @@ export class AccountUserControlsPage {
     if (!this.elements.selectedDeviceStatus) {
       return;
     }
-    if (!this.selectedInputDevice?.selectionKey) {
+    const selections = ["Keyboard", "Mouse", "Gamepad"]
+      .map((family) => this.selectedInputDeviceForFamily(family))
+      .filter(Boolean);
+    if (!selections.length) {
       this.elements.selectedDeviceStatus.textContent = "Default Profile";
       return;
     }
-    const connected = this.selectedInputDeviceConnected(this.selectedInputDevice);
-    this.elements.selectedDeviceStatus.textContent = connected
-      ? `Selected Device: ${this.selectedInputDevice.label || this.selectedInputDevice.deviceType}.`
-      : "Selected device not connected. Using Default Profile.";
+    const labels = selections.map((selection) => (
+      this.selectedInputDeviceConnected(selection)
+        ? selection.label || selection.deviceType
+        : `${selection.deviceType} selected device not connected. Using Default Profile`
+    ));
+    this.elements.selectedDeviceStatus.textContent = labels.length === 1
+      ? `Selected Device: ${labels[0]}.`
+      : `Selected Devices: ${labels.join("; ")}.`;
   }
 
   renderSelectedInputDevices() {
@@ -742,11 +784,12 @@ export class AccountUserControlsPage {
   selectedDeviceCell(choice) {
     const cell = document.createElement("td");
     const input = document.createElement("input");
+    const family = this.selectionFamily(choice);
     input.type = "radio";
-    input.name = "account-user-controls-selected-device";
+    input.name = `account-user-controls-selected-device-${family.toLowerCase()}`;
     input.value = choice.selectionKey;
     input.dataset.accountUserControlsSelectedDevice = choice.selectionKey;
-    input.checked = this.selectedInputDevice?.selectionKey === choice.selectionKey;
+    input.checked = this.selectedInputDeviceForFamily(family)?.selectionKey === choice.selectionKey;
     input.setAttribute("aria-label", `Select ${choice.label}`);
     cell.append(input);
     return cell;

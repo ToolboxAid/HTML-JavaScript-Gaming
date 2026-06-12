@@ -1,296 +1,569 @@
-diff --git a/account/user-controls.html b/account/user-controls.html
-index 0c290ff6c..7288e155b 100644
---- a/account/user-controls.html
-+++ b/account/user-controls.html
-@@ -84,10 +84,10 @@
-                             <details class="vertical-accordion" open data-account-user-controls-section="Game Controllers">
-                                 <summary>Game Controllers</summary>
-                                 <div class="accordion-body content-stack">
--                                    <div class="content-cluster" aria-label="Account controller device selection">
-+                                    <div class="content-cluster content-cluster--nowrap" aria-label="Account controller device selection">
-                                         <button class="btn" type="button" data-account-user-controls-refresh>Refresh Devices</button>
-                                         <label class="field-label" for="account-user-controls-device">Controller</label>
--                                        <select id="account-user-controls-device" data-account-user-controls-device></select>
-+                                        <select class="content-cluster__grow" id="account-user-controls-device" data-account-user-controls-device></select>
-                                         <button class="btn" type="button" data-account-user-controls-add-profile>Create User Control Profile</button>
-                                     </div>
-                                     <p class="status" role="status" data-account-user-controls-device-status>Game controllers auto-detect after the browser exposes them.</p>
-@@ -119,7 +119,7 @@
-                             <details class="vertical-accordion" open>
-                                 <summary>Supported Control Types</summary>
-                                 <div class="accordion-body">
--                                    <ul class="list--multi-column" data-account-user-controls-types></ul>
-+                                    <ul class="list--multi-column list--multi-column-3" data-account-user-controls-types></ul>
-                                 </div>
-                             </details>
-                             <details class="vertical-accordion" open>
-diff --git a/assets/theme-v2/css/layout.css b/assets/theme-v2/css/layout.css
-index c69d28463..f94eb3d72 100644
---- a/assets/theme-v2/css/layout.css
-+++ b/assets/theme-v2/css/layout.css
-@@ -95,6 +95,21 @@ div {
-   align-items: center
+﻿diff --git a/account/user-controls-page.js b/account/user-controls-page.js
+index a3069fddf..8872874c5 100644
+--- a/account/user-controls-page.js
++++ b/account/user-controls-page.js
+@@ -139,7 +139,7 @@ export class AccountUserControlsPage {
+     this.captureService = new InputCaptureService({ inputService: this.inputService });
+     this.profiles = [];
+     this.editingProfile = null;
+-    this.selectedInputDevice = null;
++    this.selectedInputDevices = new Map();
+     this.sessionUserKey = "";
+     this.viewingDefaultFamily = "";
+     this.devicePollingTimer = null;
+@@ -162,7 +162,7 @@ export class AccountUserControlsPage {
+     this.inputService.attach();
+     this.sessionUserKey = this.currentSessionUserKey();
+     this.profiles = this.readProfiles();
+-    this.selectedInputDevice = this.readSelectedInputDevice();
++    this.selectedInputDevices = this.readSelectedInputDevices();
+     this.renderDeviceSelect();
+     this.renderDefaultFallbacks();
+     this.renderTypes();
+@@ -215,7 +215,7 @@ export class AccountUserControlsPage {
+     this.repository = createControlsToolApiRepository();
+     this.sessionUserKey = this.currentSessionUserKey();
+     this.profiles = this.readProfiles();
+-    this.selectedInputDevice = this.readSelectedInputDevice();
++    this.selectedInputDevices = this.readSelectedInputDevices();
+     this.editingProfile = null;
+     this.viewingDefaultFamily = "";
+     this.renderDeviceSelect();
+@@ -317,16 +317,46 @@ export class AccountUserControlsPage {
+     return Array.isArray(result) ? result.map((profile) => this.normalizeProfile(profile)) : [];
+   }
+
+-  readSelectedInputDevice() {
++  selectionFamily(selection = {}) {
++    const deviceType = normalizeText(selection.deviceType);
++    if (deviceType === "Keyboard" || deviceType === "Mouse") {
++      return deviceType;
++    }
++    return "Gamepad";
++  }
++
++  selectedInputDeviceForFamily(family) {
++    return this.selectedInputDevices.get(this.selectionFamily({ deviceType: family })) || null;
++  }
++
++  selectedInputDeviceMapFromList(selections = []) {
++    const selectedInputDevices = new Map();
++    (Array.isArray(selections) ? selections : []).forEach((selection) => {
++      if (selection?.selectionKey) {
++        selectedInputDevices.set(this.selectionFamily(selection), selection);
++      }
++    });
++    return selectedInputDevices;
++  }
++
++  readSelectedInputDevices() {
+     if (!this.currentSessionUserKey()) {
+-      return null;
++      return new Map();
++    }
++    let result = this.repository.listSelectedInputDevices();
++    if (result?.error) {
++      this.repository = createControlsToolApiRepository();
++      result = this.repository.listSelectedInputDevices();
+     }
+-    let result = this.repository.getSelectedInputDevice();
++    if (Array.isArray(result)) {
++      return this.selectedInputDeviceMapFromList(result);
++    }
++    result = this.repository.getSelectedInputDevice();
+     if (result?.error) {
+       this.repository = createControlsToolApiRepository();
+       result = this.repository.getSelectedInputDevice();
+     }
+-    return result && !result.error ? result : null;
++    return result && !result.error ? this.selectedInputDeviceMapFromList([result]) : new Map();
+   }
+
+   saveSelectedInputDevice(selection) {
+@@ -339,8 +369,13 @@ export class AccountUserControlsPage {
+       this.repository = createControlsToolApiRepository();
+       result = this.repository.saveSelectedInputDevice(selection);
+     }
++    if (Array.isArray(result?.selectedInputDevices)) {
++      this.selectedInputDevices = this.selectedInputDeviceMapFromList(result.selectedInputDevices);
++      this.renderSelectedInputDevices();
++      return true;
++    }
+     if (result?.selectedInputDevice) {
+-      this.selectedInputDevice = result.selectedInputDevice;
++      this.selectedInputDevices.set(this.selectionFamily(result.selectedInputDevice), result.selectedInputDevice);
+       this.renderSelectedInputDevices();
+       return true;
+     }
+@@ -552,14 +587,21 @@ export class AccountUserControlsPage {
+     if (!this.elements.selectedDeviceStatus) {
+       return;
+     }
+-    if (!this.selectedInputDevice?.selectionKey) {
++    const selections = ["Keyboard", "Mouse", "Gamepad"]
++      .map((family) => this.selectedInputDeviceForFamily(family))
++      .filter(Boolean);
++    if (!selections.length) {
+       this.elements.selectedDeviceStatus.textContent = "Default Profile";
+       return;
+     }
+-    const connected = this.selectedInputDeviceConnected(this.selectedInputDevice);
+-    this.elements.selectedDeviceStatus.textContent = connected
+-      ? `Selected Device: ${this.selectedInputDevice.label || this.selectedInputDevice.deviceType}.`
+-      : "Selected device not connected. Using Default Profile.";
++    const labels = selections.map((selection) => (
++      this.selectedInputDeviceConnected(selection)
++        ? selection.label || selection.deviceType
++        : `${selection.deviceType} selected device not connected. Using Default Profile`
++    ));
++    this.elements.selectedDeviceStatus.textContent = labels.length === 1
++      ? `Selected Device: ${labels[0]}.`
++      : `Selected Devices: ${labels.join("; ")}.`;
+   }
+
+   renderSelectedInputDevices() {
+@@ -742,11 +784,12 @@ export class AccountUserControlsPage {
+   selectedDeviceCell(choice) {
+     const cell = document.createElement("td");
+     const input = document.createElement("input");
++    const family = this.selectionFamily(choice);
+     input.type = "radio";
+-    input.name = "account-user-controls-selected-device";
++    input.name = `account-user-controls-selected-device-${family.toLowerCase()}`;
+     input.value = choice.selectionKey;
+     input.dataset.accountUserControlsSelectedDevice = choice.selectionKey;
+-    input.checked = this.selectedInputDevice?.selectionKey === choice.selectionKey;
++    input.checked = this.selectedInputDeviceForFamily(family)?.selectionKey === choice.selectionKey;
+     input.setAttribute("aria-label", `Select ${choice.label}`);
+     cell.append(input);
+     return cell;
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index acf41c3b5..05367b1a7 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -17,7 +17,7 @@ Exercised tool entry points detected:
+ (61%) Theme V2 Shared JS - exercised 1 runtime JS files
+
+ Changed runtime JS files covered:
+-(92%) account/user-controls-page.js - changed runtime JS file with browser V8 coverage
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+
+ Files with executed line/function counts where available:
+ (11%) src/engine/input/InputMappingManifest.js - executed lines 78/78; executed functions 1/9
+@@ -35,13 +35,14 @@ Files with executed line/function counts where available:
+ (61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 34/56
+ (80%) src/engine/input/GamepadState.js - executed lines 100/100; executed functions 16/20
+ (89%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 24/27
+-(92%) account/user-controls-page.js - executed lines 1332/1332; executed functions 146/159
++(92%) account/user-controls-page.js - executed lines 1372/1372; executed functions 152/165
+ (100%) account/user-controls.js - executed lines 2/2; executed functions 1/1
+ (100%) toolbox/controls/controls-api-client.js - executed lines 12/12; executed functions 2/2
+
+ Uncovered or low-coverage changed JS files:
+-(100%) none - no low-coverage changed runtime JS files
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+
+ Changed JS files considered:
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
+ (92%) account/user-controls-page.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+index bbb57a07e..51d1a0067 100644
+--- a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+@@ -189,6 +189,7 @@ function selectedInputDeviceFromRecord(record = {}) {
+     profileId: normalizeText(record.profileId),
+     selectionKey,
+     selectionType,
++    updatedAt: normalizeText(record.updatedAt),
+   };
  }
 
-+.content-cluster--nowrap {
-+  flex-wrap: nowrap
-+}
-+
-+.content-cluster--nowrap > .btn,
-+.content-cluster--nowrap > .field-label {
-+  flex: 0 0 auto;
-+  white-space: nowrap
-+}
-+
-+.content-cluster__grow {
-+  flex: 1 1 auto;
-+  min-width: var(--space-0)
-+}
-+
- .content-grid {
-   display: grid;
-   grid-template-columns: var(--grid-cols-2);
-diff --git a/assets/theme-v2/css/typography.css b/assets/theme-v2/css/typography.css
-index 80a122111..753b68115 100644
---- a/assets/theme-v2/css/typography.css
-+++ b/assets/theme-v2/css/typography.css
-@@ -116,6 +116,10 @@ li {
-   padding-left: var(--space-18)
- }
+@@ -271,10 +272,20 @@ export function createInputMappingToolMockRepository(options = {}) {
 
-+.list--multi-column-3 {
-+  columns: 3
-+}
+   function getSelectedInputDevice() {
+     const targetPlayerId = activeUserKey();
+-    const record = [...(tables.player_input_device_selections || [])]
+-      .filter((candidate) => normalizeText(candidate.playerId) === targetPlayerId)
++    const record = listSelectedInputDevices()
+       .sort((left, right) => normalizeText(right.updatedAt).localeCompare(normalizeText(left.updatedAt)))[0];
+-    return record ? selectedInputDeviceFromRecord(record) : null;
++    return record || null;
++  }
 +
- .list--multi-column li {
-   break-inside: avoid;
-   padding-left: var(--space-4)
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 6dda01b3e..0d2a037cb 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,6 +1,7 @@
--account/user-controls-page.js
-+account/user-controls.html
-+assets/theme-v2/css/layout.css
-+assets/theme-v2/css/typography.css
- tests/playwright/tools/InputMappingV2Tool.spec.mjs
--docs_build/dev/reports/playwright_v8_coverage_report.txt
--docs_build/dev/reports/PR_26163_065-user-controls-multiple-profiles-per-controller.md
-+docs_build/dev/reports/PR_26163_066-user-controls-layout-polish.md
- docs_build/dev/reports/codex_review.diff
- docs_build/dev/reports/codex_changed_files.txt
++  function listSelectedInputDevices() {
++    const targetPlayerId = activeUserKey();
++    return [...(tables.player_input_device_selections || [])]
++      .filter((candidate) => normalizeText(candidate.playerId) === targetPlayerId)
++      .sort((left, right) => (
++        normalizeText(left.deviceType).localeCompare(normalizeText(right.deviceType))
++          || normalizeText(left.label).localeCompare(normalizeText(right.label))
++      ))
++      .map(selectedInputDeviceFromRecord);
+   }
+
+   function listCustomActions(gameId = "") {
+@@ -355,14 +366,18 @@ export function createInputMappingToolMockRepository(options = {}) {
+     const timestamp = new Date().toISOString();
+     const userKey = activeUserKey();
+     const selectionKey = normalizeText(selection.selectionKey || selection.id);
++    const deviceType = normalizeText(selection.deviceType) || "Gamepad";
+     const previous = (tables.player_input_device_selections || [])
+-      .find((record) => normalizeText(record.playerId) === targetPlayerId);
+-    const id = normalizeText(previous?.id) || "selected-input-device";
++      .find((record) =>
++        normalizeText(record.playerId) === targetPlayerId
++          && normalizeText(record.deviceType) === deviceType,
++      );
++    const id = normalizeText(previous?.id) || `selected-input-device-${mappingKeyFromText(deviceType)}`;
+     const nextRow = {
+       controllerId: normalizeText(selection.controllerId),
+       createdAt: previous?.createdAt || timestamp,
+       createdBy: previous?.createdBy || userKey,
+-      deviceType: normalizeText(selection.deviceType),
++      deviceType,
+       id,
+       key: previous?.key,
+       label: normalizeText(selection.label),
+@@ -375,14 +390,18 @@ export function createInputMappingToolMockRepository(options = {}) {
+     };
+     tables.player_input_device_selections = [
+       ...(tables.player_input_device_selections || []).filter(
+-        (record) => normalizeText(record.playerId) !== targetPlayerId,
++        (record) => !(
++          normalizeText(record.playerId) === targetPlayerId
++            && normalizeText(record.deviceType) === deviceType
++        ),
+       ),
+       nextRow,
+     ];
+     persistTables();
+     return {
+       saved: true,
+-      selectedInputDevice: getSelectedInputDevice(),
++      selectedInputDevice: selectedInputDeviceFromRecord(nextRow),
++      selectedInputDevices: listSelectedInputDevices(),
+       snapshot: getSnapshot(),
+     };
+   }
+@@ -509,6 +528,7 @@ export function createInputMappingToolMockRepository(options = {}) {
+       customActions: listCustomActions(),
+       mappings: listMappings(),
+       selectedInputDevice: getSelectedInputDevice(),
++      selectedInputDevices: listSelectedInputDevices(),
+       tableCounts: tableCounts(normalizedTables),
+       tables: normalizedTables,
+     };
+@@ -519,6 +539,7 @@ export function createInputMappingToolMockRepository(options = {}) {
+     getSnapshot,
+     getTables,
+     getSelectedInputDevice,
++    listSelectedInputDevices,
+     listControllerProfiles,
+     listCustomActions,
+     listMappings,
 diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 6866f5e14..e6842ee4e 100644
+index e6842ee4e..2eda1fafa 100644
 --- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
 +++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -544,6 +544,7 @@ test("User Controls owns physical input mapping accordions and profiles", async
-   });
-
-   try {
-+    await page.setViewportSize({ width: 1440, height: 1100 });
-     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-     await expect(page.getByRole("heading", { name: "User Controls" })).toBeVisible();
-@@ -562,21 +563,45 @@ test("User Controls owns physical input mapping accordions and profiles", async
-     expect(supportedControlTypes).toEqual([...supportedControlTypes].sort((left, right) => left.localeCompare(right)));
-     const supportedControlTypeLayout = await page.locator("[data-account-user-controls-types]").evaluate((list) => {
-       const style = getComputedStyle(list);
--      const leftPositions = Array.from(list.querySelectorAll("li"))
--        .map((item) => Math.round(item.getBoundingClientRect().left));
-+      const items = Array.from(list.querySelectorAll("li")).map((item, index) => {
-+        const rect = item.getBoundingClientRect();
-+        return {
-+          index,
-+          left: Math.round(rect.left),
-+          top: Math.round(rect.top),
-+        };
-+      });
-+      const leftPositions = [...new Set(items.map((item) => item.left))].sort((left, right) => left - right);
-+      const columnIndexes = leftPositions.map((left) => items
-+        .filter((item) => item.left === left)
-+        .sort((leftItem, rightItem) => leftItem.top - rightItem.top)
-+        .map((item) => item.index));
-       return {
-+        columnIndexes,
-         columnCount: style.columnCount,
-         listStylePosition: style.listStylePosition,
-         paddingLeft: Number.parseFloat(style.paddingLeft),
--        uniqueColumns: new Set(leftPositions).size,
-+        topSortedByColumn: columnIndexes.every((indexes) =>
-+          indexes.every((itemIndex, index) => index === 0 || indexes[index - 1] < itemIndex),
-+        ),
-+        topToBottomThenLeftToRight: columnIndexes.every((indexes, index) => {
-+          if (index === 0) {
-+            return true;
-+          }
-+          return Math.max(...columnIndexes[index - 1]) < Math.min(...indexes);
-+        }),
-+        uniqueColumns: leftPositions.length,
-       };
-     });
-     expect(supportedControlTypeLayout).toMatchObject({
--      columnCount: "2",
-+      columnCount: "3",
-       listStylePosition: "outside",
-+      topSortedByColumn: true,
-+      topToBottomThenLeftToRight: true,
-+      uniqueColumns: 3,
-     });
-+    expect(supportedControlTypeLayout.columnIndexes.every((indexes) => indexes.length > 0)).toBe(true);
+@@ -603,22 +603,53 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     expect(supportedControlTypeLayout.columnIndexes.every((indexes) => indexes.length > 0)).toBe(true);
      expect(supportedControlTypeLayout.paddingLeft).toBeGreaterThan(0);
--    expect(supportedControlTypeLayout.uniqueColumns).toBeGreaterThan(1);
      await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Default Profile");
++    const keyboardDefaultRadio = page.locator("[data-account-user-controls-selected-device='default:keyboard']");
++    const mouseDefaultRadio = page.locator("[data-account-user-controls-selected-device='default:mouse']");
++    const gamepadDefaultRadio = page.locator("[data-account-user-controls-selected-device='default:gamepad']");
++    await expect(page.locator("[data-account-user-controls-default-profile='Keyboard'] td").first().locator("[data-account-user-controls-selected-device='default:keyboard']")).toBeVisible();
      await expect(page.locator("[data-account-user-controls-default-profile='Mouse'] td").first().locator("[data-account-user-controls-selected-device='default:mouse']")).toBeVisible();
-     await page.locator("[data-account-user-controls-selected-device='default:mouse']").check();
-@@ -662,8 +687,44 @@ test("User Controls owns physical input mapping accordions and profiles", async
+-    await page.locator("[data-account-user-controls-selected-device='default:mouse']").check();
+-    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse Default Profile.");
+-    await expect.poll(async () => (await selectedInputDeviceRecords(page)).length).toBe(1);
+-    expect(await selectedInputDeviceRecords(page)).toEqual([
++    await expect(page.locator("[data-account-user-controls-default-profile='Gamepad'] td").first().locator("[data-account-user-controls-selected-device='default:gamepad']")).toBeVisible();
++    await expect(keyboardDefaultRadio).toHaveAttribute("name", "account-user-controls-selected-device-keyboard");
++    await expect(mouseDefaultRadio).toHaveAttribute("name", "account-user-controls-selected-device-mouse");
++    await expect(gamepadDefaultRadio).toHaveAttribute("name", "account-user-controls-selected-device-gamepad");
++    await keyboardDefaultRadio.check();
++    await expect(keyboardDefaultRadio).toBeChecked();
++    await expect(mouseDefaultRadio).not.toBeChecked();
++    await mouseDefaultRadio.check();
++    await expect(keyboardDefaultRadio).toBeChecked();
++    await expect(mouseDefaultRadio).toBeChecked();
++    await gamepadDefaultRadio.check();
++    await expect(keyboardDefaultRadio).toBeChecked();
++    await expect(mouseDefaultRadio).toBeChecked();
++    await expect(gamepadDefaultRadio).toBeChecked();
++    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Devices: Keyboard Default Profile; Mouse Default Profile; Gamepad Default Profile.");
++    await expect.poll(async () => (await selectedInputDeviceRecords(page)).length).toBe(3);
++    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
++      expect.objectContaining({
++        deviceType: "Keyboard",
++        label: "Keyboard Default Profile",
++        selectionKey: "default:keyboard",
++        selectionType: "default",
++      }),
+       expect.objectContaining({
+         deviceType: "Mouse",
+         label: "Mouse Default Profile",
+         selectionKey: "default:mouse",
+         selectionType: "default",
+       }),
+-    ]);
++      expect.objectContaining({
++        deviceType: "Gamepad",
++        label: "Gamepad Default Profile",
++        selectionKey: "default:gamepad",
++        selectionType: "default",
++      }),
++    ]));
+     expect(await controllerProfileRecords(page)).toHaveLength(0);
+     await page.reload({ waitUntil: "networkidle" });
++    await expect(page.locator("[data-account-user-controls-selected-device='default:keyboard']")).toBeChecked();
+     await expect(page.locator("[data-account-user-controls-selected-device='default:mouse']")).toBeChecked();
+-    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Mouse Default Profile.");
++    await expect(page.locator("[data-account-user-controls-selected-device='default:gamepad']")).toBeChecked();
++    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Devices: Keyboard Default Profile; Mouse Default Profile; Gamepad Default Profile.");
      expect(await controllerProfileRecords(page)).toHaveLength(0);
 
-     const controllerDropdown = page.locator("[data-account-user-controls-device]");
-+    const controllerToolbar = page.locator("[aria-label='Account controller device selection']");
-+    const expectControllerToolbarSingleLine = async () => {
-+      const toolbarLayout = await controllerToolbar.evaluate((toolbar) => {
-+        const refresh = toolbar.querySelector("[data-account-user-controls-refresh]");
-+        const label = toolbar.querySelector("label[for='account-user-controls-device']");
-+        const select = toolbar.querySelector("[data-account-user-controls-device]");
-+        const create = toolbar.querySelector("[data-account-user-controls-add-profile]");
-+        const controls = [refresh, label, select, create].filter(Boolean);
-+        const rects = controls.map((control) => control.getBoundingClientRect());
-+        const centers = rects.map((rect) => Math.round(rect.top + (rect.height / 2)));
-+        const selectRect = select.getBoundingClientRect();
-+        const refreshRect = refresh.getBoundingClientRect();
-+        const createRect = create.getBoundingClientRect();
-+        return {
-+          createVisible: createRect.width > 0 && createRect.height > 0,
-+          flexWrap: getComputedStyle(toolbar).flexWrap,
-+          maxCenterDelta: Math.max(...centers) - Math.min(...centers),
-+          refreshVisible: refreshRect.width > 0 && refreshRect.height > 0,
-+          selectFlexGrow: getComputedStyle(select).flexGrow,
-+          selectWidth: Math.round(selectRect.width),
-+          widerThanCreate: selectRect.width > createRect.width,
-+          widerThanRefresh: selectRect.width > refreshRect.width,
-+        };
-+      });
-+      expect(toolbarLayout).toMatchObject({
-+        createVisible: true,
-+        flexWrap: "nowrap",
-+        refreshVisible: true,
-+        selectFlexGrow: "1",
-+        widerThanCreate: true,
-+        widerThanRefresh: true,
-+      });
-+      expect(toolbarLayout.maxCenterDelta).toBeLessThanOrEqual(2);
-+      expect(toolbarLayout.selectWidth).toBeGreaterThan(0);
-+    };
-     await expect(controllerDropdown).toHaveCount(1);
-     await expect(controllerDropdown.locator("option")).toHaveText(["Choose a game controller"]);
-+    await expectControllerToolbarSingleLine();
-     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Gamepad:");
-     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Keyboard Profile");
-     await expect(page.locator("[data-account-user-controls-section='Game Controllers']")).not.toContainText("Mouse Profile");
-@@ -772,6 +833,7 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     await expect(page.locator("[data-account-user-controls-section='Keyboard']")).toContainText("Default Profile");
+@@ -777,6 +808,31 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     await expect(page.locator("[data-account-user-controls-profile-row='generic-keyboard-keyboard-profile']")).toContainText("Keyboard");
+     await expect(page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']")).toBeEnabled();
+     expect((await controllerProfileRecords(page)).map((profile) => profile.profileName)).toContain("Keyboard Profile");
++    const keyboardProfileRadio = page.locator("[data-account-user-controls-selected-device='profile:generic-keyboard-keyboard-profile']");
++    await expect(keyboardProfileRadio).toHaveAttribute("name", "account-user-controls-selected-device-keyboard");
++    await keyboardProfileRadio.check();
++    await expect(keyboardProfileRadio).toBeChecked();
++    await expect(page.locator("[data-account-user-controls-selected-device='default:mouse']")).toBeChecked();
++    await expect(page.locator("[data-account-user-controls-selected-device='default:gamepad']")).toBeChecked();
++    await expect.poll(async () => (await selectedInputDeviceRecords(page)).length).toBe(3);
++    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
++      expect.objectContaining({
++        deviceType: "Keyboard",
++        profileId: "generic-keyboard-keyboard-profile",
++        selectionKey: "profile:generic-keyboard-keyboard-profile",
++        selectionType: "profile",
++      }),
++      expect.objectContaining({
++        deviceType: "Mouse",
++        selectionKey: "default:mouse",
++        selectionType: "default",
++      }),
++      expect.objectContaining({
++        deviceType: "Gamepad",
++        selectionKey: "default:gamepad",
++        selectionType: "default",
++      }),
++    ]));
+
+     await page.locator("[data-account-user-controls-section='Keyboard'] [data-account-user-controls-edit-family='Keyboard']").click();
+     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Keyboard");
+@@ -819,6 +875,29 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     await expect(page.locator("[data-account-user-controls-input-normalized='0']")).toHaveValue("action.primary");
+     await page.locator("[data-account-user-controls-save]").click();
+     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Saved Mouse Profile.");
++    const mouseProfileRadio = page.locator("[data-account-user-controls-selected-device='profile:generic-mouse-mouse-profile']");
++    await expect(mouseProfileRadio).toHaveAttribute("name", "account-user-controls-selected-device-mouse");
++    await mouseProfileRadio.check();
++    await expect(keyboardProfileRadio).toBeChecked();
++    await expect(mouseProfileRadio).toBeChecked();
++    await expect(page.locator("[data-account-user-controls-selected-device='default:gamepad']")).toBeChecked();
++    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
++      expect.objectContaining({
++        deviceType: "Keyboard",
++        profileId: "generic-keyboard-keyboard-profile",
++        selectionType: "profile",
++      }),
++      expect.objectContaining({
++        deviceType: "Mouse",
++        profileId: "generic-mouse-mouse-profile",
++        selectionType: "profile",
++      }),
++      expect.objectContaining({
++        deviceType: "Gamepad",
++        selectionKey: "default:gamepad",
++        selectionType: "default",
++      }),
++    ]));
+
+     await exposeGamepads(page);
+     await page.locator("[data-account-user-controls-refresh]").click();
+@@ -829,6 +908,7 @@ test("User Controls owns physical input mapping accordions and profiles", async
+       "Studio Flight Pad",
+     ]);
+     await expect(page.locator("[data-account-user-controls-detected-device]")).toHaveCount(0);
++    await expect(page.locator("[data-account-user-controls-detected-device] [data-account-user-controls-selected-device]")).toHaveCount(0);
+     await expect(page.locator("[data-account-user-controls-selected-device='device:gamepad:studio-flight-pad']")).toHaveCount(0);
      await controllerDropdown.selectOption("gamepad-1");
      await expect(controllerDropdown).toHaveValue("gamepad-1");
-     await expect(page.locator("[data-account-user-controls-device-status]")).toContainText("Studio Flight Pad selected.");
-+    await expectControllerToolbarSingleLine();
-     await page.locator("[data-account-user-controls-add-profile]").click();
-     await expect(page.locator("[data-account-user-controls-editing-row]")).toContainText("Gamepad");
-     await expect(page.locator("[data-account-user-controls-status]")).toHaveText("PASS: Created Studio Flight Pad Profile. Editing the new profile.");
+@@ -950,12 +1030,54 @@ test("User Controls owns physical input mapping accordions and profiles", async
+     expect(JSON.stringify(profiles)).not.toContain("eventD");
+     expect(JSON.stringify(profiles)).not.toContain("eventU");
+     expect(JSON.stringify(profiles)).not.toContain("eventDC");
+-    await page.locator(`[data-account-user-controls-selected-device='profile:${gamepadProfile.id}']`).check();
+-    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Device: Custom Arcade Pad (Custom Arcade Pad Profile).");
++    const gamepadProfileRadio = page.locator(`[data-account-user-controls-selected-device='profile:${gamepadProfile.id}']`);
++    await expect(gamepadProfileRadio).toHaveAttribute("name", "account-user-controls-selected-device-gamepad");
++    await gamepadProfileRadio.check();
++    await expect(keyboardProfileRadio).toBeChecked();
++    await expect(mouseProfileRadio).toBeChecked();
++    await expect(gamepadProfileRadio).toBeChecked();
++    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Devices: Keyboard (Keyboard Profile); Mouse (Mouse Profile); Custom Arcade Pad (Custom Arcade Pad Profile).");
++    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
++      expect.objectContaining({
++        deviceType: "Keyboard",
++        profileId: "generic-keyboard-keyboard-profile",
++        selectionType: "profile",
++      }),
++      expect.objectContaining({
++        deviceType: "Mouse",
++        profileId: "generic-mouse-mouse-profile",
++        selectionType: "profile",
++      }),
++      expect.objectContaining({
++        deviceType: "Gamepad",
++        profileId: gamepadProfile.id,
++        selectionType: "profile",
++      }),
++    ]));
 
-diff --git a/docs_build/dev/reports/PR_26163_066-user-controls-layout-polish.md b/docs_build/dev/reports/PR_26163_066-user-controls-layout-polish.md
+     await page.reload({ waitUntil: "networkidle" });
+-    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected device not connected. Using Default Profile.");
++    await expect(page.locator("[data-account-user-controls-selected-device='profile:generic-keyboard-keyboard-profile']")).toBeChecked();
++    await expect(page.locator("[data-account-user-controls-selected-device='profile:generic-mouse-mouse-profile']")).toBeChecked();
++    await expect(page.locator(`[data-account-user-controls-selected-device='profile:${gamepadProfile.id}']`)).toBeChecked();
++    await expect(page.locator("[data-account-user-controls-selected-device-status]")).toHaveText("Selected Devices: Keyboard (Keyboard Profile); Mouse (Mouse Profile); Gamepad selected device not connected. Using Default Profile.");
+     expect(await controllerProfileRecords(page)).toHaveLength(3);
++    expect(await selectedInputDeviceRecords(page)).toEqual(expect.arrayContaining([
++      expect.objectContaining({
++        deviceType: "Keyboard",
++        profileId: "generic-keyboard-keyboard-profile",
++        selectionType: "profile",
++      }),
++      expect.objectContaining({
++        deviceType: "Mouse",
++        profileId: "generic-mouse-mouse-profile",
++        selectionType: "profile",
++      }),
++      expect.objectContaining({
++        deviceType: "Gamepad",
++        profileId: gamepadProfile.id,
++        selectionType: "profile",
++      }),
++    ]));
+     expect((await controllerProfileRecords(page)).map((profile) => profile.profileName)).not.toContain("Default Profile");
+     await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).toContainText("Keyboard");
+     await expect(page.locator("[data-account-user-controls-list-family='Keyboard']")).not.toContainText("Keyboard:");
+@@ -989,6 +1111,7 @@ test("User Controls creates one profile from only the selected controller dropdo
+       "Studio Flight Pad",
+     ]);
+     await expect(page.locator("[data-account-user-controls-detected-device]")).toHaveCount(0);
++    await expect(page.locator("[data-account-user-controls-detected-device] [data-account-user-controls-selected-device]")).toHaveCount(0);
+     await expect(page.locator("[data-account-user-controls-list-family='Gamepad'] [data-account-user-controls-profile-row]")).toHaveCount(0);
+     expect(await controllerProfileRecords(page)).toHaveLength(0);
+
+@@ -1025,6 +1148,7 @@ test("User Controls creates one profile from only the selected controller dropdo
+     expect(firstProfiles.map((profile) => profile.profileName)).not.toContain("Arcade Test Pad Profile");
+     const firstProfileId = firstProfiles[0].id;
+     await expect(page.locator("[data-account-user-controls-detected-device]")).toHaveCount(0);
++    await expect(page.locator("[data-account-user-controls-detected-device] [data-account-user-controls-selected-device]")).toHaveCount(0);
+     const savedFirstProfileRow = page.locator(`[data-account-user-controls-profile-row='${firstProfileId}']`);
+     await expect(savedFirstProfileRow).toContainText("1.1");
+     await expect(savedFirstProfileRow.getByRole("button", { name: "Edit" })).toBeVisible();
+diff --git a/docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md b/docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md
 new file mode 100644
-index 000000000..82f7e41a7
+index 000000000..499d8a4b2
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26163_066-user-controls-layout-polish.md
-@@ -0,0 +1,91 @@
-+# PR_26163_066-user-controls-layout-polish
++++ b/docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md
+@@ -0,0 +1,77 @@
++# PR_26163_067-user-controls-profile-radio-groups
 +
 +## Branch Validation
-+
 +- PASS: Current branch is `main`.
-+- PASS: Expected branch is `main`.
-+- Evidence: `git branch --show-current` returned `main`.
++- Expected branch: `main`.
++
++## Summary
++- Updated Account > User Controls selected profile radios so Keyboard, Mouse, and Gamepad selections each use an independent radio group.
++- Persisted active profile selection by device type through the shared mock DB adapter.
++- Kept detected controller rows profile-free; controller detection continues to feed the dropdown workflow only.
 +
 +## Requirement Checklist
-+
-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before implementation.
-+- PASS: `account/user-controls.html` renders Supported Control Types with `list--multi-column list--multi-column-3`.
-+- PASS: Supported Control Types render as exactly 3 columns.
-+- PASS: Bullet alignment is maintained with the existing outside bullet positioning and padding from `list--multi-column`.
-+- PASS: Alphabetical ordering remains unchanged because the DOM order is still generated from the sorted `SUPPORTED_CONTROL_TYPES` list.
-+- PASS: Columns fill top-to-bottom, then left-to-right; Playwright validates column-local top order and cross-column index order.
-+- PASS: Controller selection toolbar renders as one line: `[ Refresh Devices ] [ Controller ] [ Controller Dropdown ] [ Create User Control Profile ]`.
-+- PASS: Controller dropdown consumes remaining horizontal space with reusable `content-cluster__grow`.
-+- PASS: Controller names do not force the toolbar onto multiple lines at 1440px desktop width; Playwright validates no-wrap layout before and after selecting a controller.
-+- PASS: Refresh Devices and Create User Control Profile remain visible and sized to content.
-+- PASS: Workflow/profile behavior was not changed; no account runtime JavaScript changed.
-+- PASS: Reused and extended Theme V2 only; no page-local CSS, inline styles, or new layout system.
-+
-+## Theme V2 Notes
-+
-+- Existing Theme V2 already had `list--multi-column` for 2-column lists and `content-cluster` for wrapping control rows.
-+- This PR added small reusable modifiers in Theme V2:
-+  - `list--multi-column-3`
-+  - `content-cluster--nowrap`
-+  - `content-cluster__grow`
-+- These are reusable modifiers on existing Theme V2 patterns, not page-local CSS.
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before edits.
++- PASS: Verified current branch is `main` before changes.
++- PASS: Keyboard profiles use radio group `account-user-controls-selected-device-keyboard`.
++- PASS: Mouse profiles use radio group `account-user-controls-selected-device-mouse`.
++- PASS: Gamepad profiles use radio group `account-user-controls-selected-device-gamepad`.
++- PASS: Selecting a Gamepad profile does not deselect the active Keyboard profile.
++- PASS: Selecting a Mouse profile does not deselect the active Gamepad profile.
++- PASS: One active profile is persisted per device type for Keyboard, Mouse, and Gamepad.
++- PASS: Default profiles participate in their device-type groups.
++- PASS: User-created profiles participate in their device-type groups.
++- PASS: Detection rows remain profile-free and contain no radios.
++- PASS: Active profile selection persists by device type for the current user.
++- PASS: Scope stayed limited to Account/User Controls profile selection behavior, mock DB selection persistence, targeted tests, and required reports.
 +
 +## Changed Files
-+
-+- `account/user-controls.html`
-+- `assets/theme-v2/css/layout.css`
-+- `assets/theme-v2/css/typography.css`
++- `account/user-controls-page.js`
++- `src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
 +- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- `docs_build/dev/reports/PR_26163_066-user-controls-layout-polish.md`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +
 +## Impacted Lane
++- Account/User Controls profile selection.
++- Shared mock DB adapter persistence for selected input device/profile records.
++- Targeted Account/User Controls Playwright coverage.
 +
-+- Account/User Controls layout lane.
-+- Theme V2 reusable CSS modifier lane.
-+- Targeted Account/User Controls Playwright lane.
-+- Required legacy workspace command: `npm run test:workspace-v2`.
-+
-+Note: `npm run test:workspace-v2` is a legacy command name retained by repo scripts.
-+
-+## Skipped Lanes
-+
-+- Full samples smoke: SKIP. Safe because this PR changes account layout/CSS and targeted Playwright assertions only; no sample JSON, sample loader, or game runtime sample path changed.
-+- Engine input lane: SKIP. Safe because `src/engine/input` was not modified.
-+- Account/User Controls runtime DB lane: SKIP. Safe because no runtime JavaScript or persistence behavior changed.
-+
-+## Testing Performed
-+
++## Validation Performed
++- PASS: `node --check account/user-controls-page.js`
++- PASS: `node --check src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js`
 +- PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
-+- PASS: `git diff --check`
-+- PASS: `rg -n "<style| on[a-z]+=" account/user-controls.html` returned no inline style/event handler matches.
-+- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "User Controls owns physical input mapping accordions and profiles" --reporter=line` passed 1 test.
-+- PASS: `npm run test:workspace-v2` passed; workspace-contract lane reported 5 passed.
++- PASS: `rg -n '<style| on[a-z]+=' account/user-controls.html account/user-controls-page.js src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js tests/playwright/tools/InputMappingV2Tool.spec.mjs` returned no matches.
++- PASS: `git diff --check -- account/user-controls-page.js src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++- PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs --grep "User Controls owns physical input mapping accordions and profiles|User Controls creates one profile from only the selected controller dropdown device" --reporter=line`
++  - Result: 2 passed.
++- PASS: `npm run test:workspace-v2`
++  - Result: 5 passed in the workspace-contract lane.
 +
 +## Playwright Result
-+
 +- PASS: Targeted Account/User Controls Playwright checks passed.
 +- PASS: Required `npm run test:workspace-v2` passed.
 +
-+## Coverage
-+
-+- PASS: Playwright V8 coverage report was not produced for PR066 because no runtime JavaScript changed.
++## V8 Coverage
++- PASS: `account/user-controls-page.js` collected browser V8 coverage at 92%.
++- WARN: `src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js` is exercised through the local dev-runtime/server path, but Chromium browser V8 coverage does not collect that server-side module.
++- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
 +
 +## Manual Validation Steps
++1. Open `account/user-controls.html` as a signed-in user.
++2. Select Keyboard Default Profile, Mouse Default Profile, and Gamepad Default Profile; confirm all three stay selected and the status lists all selected devices.
++3. Create and save Keyboard, Mouse, and Gamepad user profiles.
++4. Select one user-created profile in each device type; confirm selecting one device type does not clear the other device type selections.
++5. Refresh detected controllers; confirm detected controllers appear in the controller dropdown and no detected row radios are rendered.
++6. Reload the page; confirm active Keyboard, Mouse, and Gamepad selections persist for the current user.
 +
-+1. Open `/account/user-controls.html` at a normal desktop width.
-+2. Open Supported Control Types and confirm it displays exactly 3 bullet columns.
-+3. Confirm Supported Control Types remains alphabetical and fills down each column before continuing to the next column.
-+4. Open Game Controllers and confirm the toolbar stays on one line.
-+5. Confirm Refresh Devices and Create User Control Profile remain visible and content-sized.
-+6. Confirm the Controller dropdown expands to use the available horizontal space.
-+7. Refresh devices, select a detected controller, and confirm the selected controller name does not wrap the toolbar.
++## Skipped Lanes
++- SKIP: Full samples smoke test. Safe to skip because this PR only changes Account/User Controls profile selection and mock DB persistence, and the user explicitly requested no full samples smoke test.
++- SKIP: Unrelated Toolbox/Game Controls lanes. Safe to skip because no Toolbox/Game Controls runtime behavior changed.
 +
-+## Samples Validation Decision
++## Samples Validation
++- SKIP: Full samples smoke test was not run by request.
 +
-+- SKIP: Full samples smoke was not run because no samples, sample JSON, sample loader, or production game runtime behavior changed.
-+
-+## ZIP Artifact
-+
-+- PASS: Repo-structured delta ZIP produced at `tmp/PR_26163_066-user-controls-layout-polish_delta.zip`.
++## Packaging
++- PASS: Repo-structured delta ZIP produced under `tmp/PR_26163_067-user-controls-profile-radio-groups_delta.zip`.
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+new file mode 100644
+index 000000000..99b86e752
+--- /dev/null
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -0,0 +1,8 @@
++account/user-controls-page.js
++src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
++tests/playwright/tools/InputMappingV2Tool.spec.mjs
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++docs_build/dev/reports/PR_26163_067-user-controls-profile-radio-groups.md
++docs_build/dev/reports/codex_review.diff
++docs_build/dev/reports/codex_changed_files.txt
++tmp/PR_26163_067-user-controls-profile-radio-groups_delta.zip
