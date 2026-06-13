@@ -39,6 +39,9 @@ let editingAssetType = "";
 let selectedAssetId = "";
 const draftAssetValues = new Map();
 const draftTagKeys = new Map();
+const REFERENCE_ASSET_TYPES = new Set(["Palette References", "Data"]);
+const UPLOAD_COLUMNS = Object.freeze(["Source", "File", "Usage", "Tags", "Preview", "Actions"]);
+const REFERENCE_COLUMNS = Object.freeze(["Reference", "Usage", "Tags", "Preview", "Actions"]);
 
 function normalizeText(value) {
   return String(value || "").trim();
@@ -93,6 +96,30 @@ function tagNameForKey(tags, tagKey) {
 
 function assetTags(asset) {
   return Array.isArray(asset?.tagKeys) ? asset.tagKeys : [];
+}
+
+function isReferenceAssetType(assetType) {
+  return REFERENCE_ASSET_TYPES.has(assetType);
+}
+
+function tableColumnsForType(assetType) {
+  return isReferenceAssetType(assetType) ? REFERENCE_COLUMNS : UPLOAD_COLUMNS;
+}
+
+function assetSource(asset) {
+  return normalizeText(asset?.source || asset?.name) || "Unnamed source";
+}
+
+function assetReference(asset) {
+  return normalizeText(asset?.reference || asset?.name) || "Unnamed reference";
+}
+
+function assetFile(asset) {
+  return normalizeText(asset?.fileName || asset?.originalName) || "No file";
+}
+
+function assetPreview(asset) {
+  return normalizeText(asset?.storedPath || asset?.path || asset?.previewKind) || "Preview ready";
 }
 
 function tagKeysForEditRow(row) {
@@ -161,10 +188,16 @@ function createTagEditor(tagKeys, tags) {
 }
 
 function assetRowValues(row, assetType) {
+  const source = row.querySelector("[data-asset-tool-source-input]")?.value || "";
+  const reference = row.querySelector("[data-asset-tool-reference-input]")?.value || "";
+  const fileName = row.querySelector("[data-asset-tool-file-input]")?.value || "";
+  const name = isReferenceAssetType(assetType) ? reference : source;
   return {
     assetType,
-    description: row.querySelector("[data-asset-tool-description-input]")?.value || "",
-    name: row.querySelector("[data-asset-tool-name-input]")?.value || "",
+    fileName,
+    name,
+    reference,
+    source,
     tagKeys: tagKeysForEditRow(row),
     usage: row.querySelector("[data-asset-tool-usage-input]")?.value || "",
   };
@@ -189,17 +222,25 @@ function createEditRow(assetType, asset = null, tags = []) {
     draftTagKeys.set(rowId, assetTags(asset));
   }
 
-  const nameCell = document.createElement("td");
-  nameCell.append(createInput(draftValues.name ?? asset?.name ?? "", "Asset Name", "assetToolNameInput"));
+  const leadingCell = document.createElement("td");
+  if (isReferenceAssetType(assetType)) {
+    leadingCell.append(createInput(draftValues.reference ?? (asset ? assetReference(asset) : ""), "Reference", "assetToolReferenceInput"));
+  } else {
+    leadingCell.append(createInput(draftValues.source ?? (asset ? assetSource(asset) : ""), "Source", "assetToolSourceInput"));
+  }
+
+  const fileCell = document.createElement("td");
+  if (!isReferenceAssetType(assetType)) {
+    fileCell.append(createInput(draftValues.fileName ?? (asset ? assetFile(asset) : ""), "File", "assetToolFileInput"));
+  }
 
   const usageCell = document.createElement("td");
   usageCell.append(createUsageSelect(draftValues.usage ?? asset?.usage));
 
-  const descriptionCell = document.createElement("td");
-  descriptionCell.append(createInput(draftValues.description ?? asset?.description ?? "", "Description", "assetToolDescriptionInput"));
-
   const tagsCell = document.createElement("td");
   tagsCell.append(createTagEditor(tagKeysForEditRow(row), tags));
+
+  const previewCell = createCell(asset ? assetPreview(asset) : "Preview after save");
 
   const actionsCell = document.createElement("td");
   const actions = document.createElement("div");
@@ -210,7 +251,11 @@ function createEditRow(assetType, asset = null, tags = []) {
   );
   actionsCell.append(actions);
 
-  row.append(nameCell, usageCell, descriptionCell, tagsCell, actionsCell);
+  if (isReferenceAssetType(assetType)) {
+    row.append(leadingCell, usageCell, tagsCell, previewCell, actionsCell);
+  } else {
+    row.append(leadingCell, fileCell, usageCell, tagsCell, previewCell, actionsCell);
+  }
   return row;
 }
 
@@ -240,11 +285,23 @@ function createAssetRow(asset, tags) {
   );
   actionsCell.append(actions);
 
+  if (isReferenceAssetType(row.dataset.assetToolAssetType)) {
+    row.append(
+      createCell(assetReference(asset)),
+      createCell(asset.usage),
+      tagsCell,
+      createCell(assetPreview(asset)),
+      actionsCell
+    );
+    return row;
+  }
+
   row.append(
-    createCell(asset.name),
+    createCell(assetSource(asset)),
+    createCell(assetFile(asset)),
     createCell(asset.usage),
-    createCell(asset.description || "No description"),
     tagsCell,
+    createCell(assetPreview(asset)),
     actionsCell
   );
   return row;
@@ -261,7 +318,7 @@ function createAssetTypeTable(assetType, assets, tags) {
 
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  ["Asset Name", "Usage", "Description", "Asset Tags", "Actions"].forEach((label) => {
+  tableColumnsForType(assetType).forEach((label) => {
     const heading = document.createElement("th");
     heading.scope = "col";
     heading.textContent = label;
@@ -279,7 +336,7 @@ function createAssetTypeTable(assetType, assets, tags) {
   if (!assets.length && editingAssetId !== `__new__:${assetType}`) {
     const emptyRow = document.createElement("tr");
     const emptyCell = document.createElement("td");
-    emptyCell.colSpan = 5;
+    emptyCell.colSpan = tableColumnsForType(assetType).length;
     emptyCell.textContent = `No ${assetType} assets added yet.`;
     emptyRow.append(emptyCell);
     body.append(emptyRow);
@@ -395,13 +452,18 @@ function renderMetadata(snapshot) {
   }
 
   setText(elements.selected, asset.name);
-  [
+  const metadataLines = [
     `Type: ${asset.assetType || asset.type}`,
     `Usage: ${asset.usage}`,
-    `Description: ${asset.description || "No description"}`,
     `Tags: ${assetTags(asset).map((tagKey) => tagNameForKey(snapshot.tags || [], tagKey)).join(", ") || "No tags"}`,
     `Stored path: ${asset.storedPath || asset.path}`,
-  ].forEach((line) => {
+  ];
+  if (isReferenceAssetType(asset.assetType || asset.type)) {
+    metadataLines.splice(1, 0, `Reference: ${assetReference(asset)}`);
+  } else {
+    metadataLines.splice(1, 0, `Source: ${assetSource(asset)}`, `File: ${assetFile(asset)}`);
+  }
+  metadataLines.forEach((line) => {
     const item = document.createElement("li");
     item.textContent = line;
     elements.metadata.append(item);

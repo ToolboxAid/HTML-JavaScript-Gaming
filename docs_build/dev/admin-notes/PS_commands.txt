@@ -10,7 +10,9 @@ tree /f
 
 - resize images:
 -- output may not be 64x64 if not a square
-magick "image1.png" -resize 64x64 "image2.png"
+
+magick "image1-1024.png" -resize 64x64 "image1.png"
+magick "image2-1024.png" -resize 400x225 "image2.png"
 
 -- force the output to be exactly 64×64 regardless of aspect ratio:
 magick "image1.png" -resize 64x64! "image2.png"

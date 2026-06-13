@@ -24,9 +24,7 @@ const DEFAULT_ASSET_USER_KEY = MOCK_DB_KEYS.users.user1;
 
 export const ASSET_PICKER_MODES = Object.freeze([
   "file",
-  "palette",
-  "managed-tool",
-  "advanced"
+  "managed-tool"
 ]);
 
 export const ASSET_ROLE_DEFINITIONS = Object.freeze([
@@ -42,19 +40,6 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     maxSizeBytes: 52428800,
     usageRoles: ["sound", "music"],
     validationNeeds: ["MIME must be audio/* or approved audio MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/audio/<usage>/"]
-  },
-  {
-    id: "color",
-    label: "Color",
-    storageFolder: "color",
-    extensions: [],
-    mimeTypes: [],
-    previewBehavior: "Swatch metadata preview",
-    uploadEnabled: true,
-    inputMode: "palette",
-    maxSizeBytes: 1048576,
-    usageRoles: ["hud", "text", "background", "border", "accent", "warning", "success", "danger", "shadow", "highlight"],
-    validationNeeds: ["Active Palette Tool swatch required", "Palette color metadata must include key, hex, name, and tags when present"]
   },
   {
     id: "data",
@@ -95,45 +80,6 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     usageRoles: ["sprite", "background", "bezel", "preview", "ui"],
     validationNeeds: ["MIME must be image/* or approved image MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/image/<usage>/"]
   },
-  {
-    id: "localization",
-    label: "Localization",
-    storageFolder: "localization",
-    extensions: [".json", ".po", ".pot", ".xliff", ".xlf"],
-    mimeTypes: ["application/json", "text/plain", "application/x-xliff+xml"],
-    previewBehavior: "Localization Tool managed preview",
-    uploadEnabled: false,
-    inputMode: "managed-tool",
-    maxSizeBytes: 5242880,
-    usageRoles: ["strings", "dialogue"],
-    validationNeeds: ["Localization Tool required", "Localization files must declare locale"]
-  },
-  {
-    id: "shader",
-    label: "Shader",
-    storageFolder: "shader",
-    extensions: [".glsl", ".vert", ".frag", ".wgsl"],
-    mimeTypes: ["text/plain"],
-    previewBehavior: "Advanced shader source metadata preview",
-    uploadEnabled: false,
-    inputMode: "advanced",
-    maxSizeBytes: 2097152,
-    usageRoles: ["fragment", "vertex", "compute"],
-    validationNeeds: ["Advanced/Admin mode required", "Shader stage metadata is required"]
-  },
-  {
-    id: "video",
-    label: "Video",
-    storageFolder: "video",
-    extensions: [".mp4", ".webm", ".mov"],
-    mimeTypes: ["video/mp4", "video/webm", "video/quicktime"],
-    previewBehavior: "Browser video metadata preview",
-    uploadEnabled: true,
-    inputMode: "file",
-    maxSizeBytes: 209715200,
-    usageRoles: ["cutscene", "loop"],
-    validationNeeds: ["MIME must be video/* or approved video MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/video/<usage>/"]
-  }
 ]);
 
 export const ASSET_ROLE_LABELS = Object.freeze(ASSET_ROLE_DEFINITIONS.map((role) => role.label));
@@ -172,7 +118,6 @@ export const ASSET_USAGE_OPTIONS = Object.freeze([
 
 const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
 const PROJECT_ASSET_STORAGE_ROOT = "projects";
-const COLOR_ASSET_MIME_TYPE = "application/x.gamefoundry.palette-color";
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 
 const REQUIRED_UPLOAD_FIELDS = Object.freeze([
@@ -221,6 +166,7 @@ function cloneTables(tables) {
 function roleDefinitionRows() {
   return ASSET_ROLE_DEFINITIONS.map((role, index) => ({
     id: role.id,
+    key: role.id,
     label: role.label,
     storageFolder: role.storageFolder,
     extensions: role.extensions.join(", "),
@@ -278,6 +224,10 @@ function normalizeCatalogUsage(value) {
   return match || "";
 }
 
+function isReferenceCatalogType(assetType) {
+  return assetType === "Palette References" || assetType === "Data";
+}
+
 function catalogAssetRoleForType(assetType) {
   if (assetType === "Audio") return "audio";
   if (assetType === "Fonts") return "font";
@@ -329,23 +279,8 @@ export function pickerDiagnosticForRole(role, paletteSnapshot = null) {
   if (!role) {
     return "Choose an approved asset role.";
   }
-  if (role.inputMode === "palette") {
-    if (!paletteSnapshot?.activeProject) {
-      return "Palette Tool required / active project required.";
-    }
-    if (!Array.isArray(paletteSnapshot.swatches) || paletteSnapshot.swatches.length === 0) {
-      return "Palette Tool required / no swatches available.";
-    }
-    return "Palette swatch picker ready.";
-  }
   if (role.id === "data") {
     return "Data/Table Tool required.";
-  }
-  if (role.id === "localization") {
-    return "Localization Tool required.";
-  }
-  if (role.inputMode === "advanced") {
-    return "Advanced/Admin mode required.";
   }
   return `${role.label} file upload ready.`;
 }
@@ -439,13 +374,6 @@ function storagePathForProjectAsset(projectId, assetRole, usage, fileName) {
   return `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/${role.storageFolder}/${normalizedUsage}/${sanitizeFileName(fileName)}`;
 }
 
-function colorAssetFileName(swatch) {
-  if (!swatch) {
-    return "";
-  }
-  return `${slugify(`${swatch.key}-${swatch.name}`)}.color`;
-}
-
 function clonePaletteSwatch(swatch) {
   if (!swatch) {
     return null;
@@ -479,7 +407,6 @@ function previewKindForRole(role) {
   if (!role) return "Asset metadata preview";
   if (role.id === "image") return "Image preview";
   if (role.id === "audio") return "Audio preview";
-  if (role.id === "video") return "Video preview";
   return role.previewBehavior;
 }
 
@@ -509,6 +436,7 @@ function createValidationRows(projectId, findings) {
     action: finding.action,
     field: finding.field,
     id: `${projectId || "asset"}-asset-validation-${index + 1}`,
+    key: `${projectId || "asset"}-asset-validation-${index + 1}`,
     label: finding.label,
     projectId,
     status: "Missing",
@@ -536,13 +464,16 @@ function createStorageObject({ assetRole, fileName, mimeType, name, ownerUserKey
     size
   });
   const timestamp = new Date().toISOString();
+  const assetId = `${projectId}-asset-${assetRole}-${slugify(name || originalName)}`;
+  const storageId = `${projectId}-storage-${assetRole}-${slugify(usage)}-${slugify(originalName)}`;
 
   return {
-    assetId: `${projectId}-asset-${assetRole}-${slugify(name || originalName)}`,
+    assetId,
     checksum,
     createdAt: timestamp,
     createdBy: ownerUserKey,
-    id: `${projectId}-storage-${assetRole}-${slugify(usage)}-${slugify(originalName)}`,
+    id: storageId,
+    key: storageId,
     mimeType,
     originalName,
     ownerProjectId: projectId,
@@ -572,12 +503,14 @@ function createEditableSpriteAssetRecord({ assetKey, ownerUserKey, project }) {
     size
   });
   const timestamp = new Date().toISOString();
+  const storageId = `${projectId}-storage-image-sprite-${assetKey}`;
   const storageObject = {
     assetId: assetKey,
     checksum,
     createdAt: timestamp,
     createdBy: ownerUserKey,
-    id: `${projectId}-storage-image-sprite-${assetKey}`,
+    id: storageId,
+    key: storageId,
     mimeType,
     originalName: fileName,
     ownerProjectId: projectId,
@@ -597,6 +530,7 @@ function createEditableSpriteAssetRecord({ assetKey, ownerUserKey, project }) {
     createdBy: ownerUserKey,
     fileName,
     id: assetKey,
+    key: assetKey,
     mimeType,
     name: assetKey,
     originalName: fileName,
@@ -606,8 +540,10 @@ function createEditableSpriteAssetRecord({ assetKey, ownerUserKey, project }) {
     path: storedPath,
     previewKind: previewKindForRole(role),
     projectId,
+    reference: "",
     role: role.label,
     size,
+    source: assetKey,
     status: "Ready",
     storedPath,
     storageObjectId: storageObject.id,
@@ -724,29 +660,19 @@ export function createAssetToolMockRepository(options = {}) {
     const activeProject = handoff.activeProject || null;
     const assetRole = normalizeRoleId(input.assetRole || input.type);
     const role = roleDefinitionForId(assetRole);
-    const paletteMode = role?.inputMode === "palette";
-    const paletteSnapshot = paletteRepository.getSnapshot();
-    const selectedPaletteSwatch = paletteMode
-      ? paletteRepository.findSwatch(input.paletteColor || input.paletteSwatchKey)
-      : null;
     const filePickerMode = role?.inputMode === "file";
     const fileName = filePickerMode
       ? normalizeText(input.fileName || input.originalName)
-      : paletteMode
-        ? colorAssetFileName(selectedPaletteSwatch)
-        : "";
+      : "";
     const mimeType = filePickerMode
       ? normalizeText(input.mimeType).toLowerCase()
-      : paletteMode && selectedPaletteSwatch
-        ? COLOR_ASSET_MIME_TYPE
-        : "";
+      : "";
     const normalized = {
       assetRole,
       fileName,
       mimeType,
       name: normalizeText(input.name),
-      paletteColor: normalizeText(input.paletteColor || input.paletteSwatchKey),
-      paletteSwatch: clonePaletteSwatch(selectedPaletteSwatch),
+      paletteSwatch: null,
       pickerMode: normalizeText(input.pickerMode),
       size: Number(input.size) || 0,
       storedPath: storagePathForProjectAsset(activeProject?.id || "", assetRole, input.usage || input.role, fileName),
@@ -778,35 +704,7 @@ export function createAssetToolMockRepository(options = {}) {
       }
     });
 
-    if (paletteMode) {
-      if (!paletteSnapshot.activeProject) {
-        findings.push({
-          field: "palette",
-          label: "Palette Tool",
-          action: "Open Game Workspace before selecting a Palette Tool swatch."
-        });
-      } else if (paletteSnapshot.swatches.length === 0) {
-        findings.push({
-          field: "palette",
-          label: "Palette Tool",
-          action: "Palette Tool required / no swatches available."
-        });
-      }
-
-      if (!normalized.paletteColor) {
-        findings.push({
-          field: "paletteColor",
-          label: "Palette Color",
-          action: "Choose a swatch from the active project palette."
-        });
-      } else if (!selectedPaletteSwatch) {
-        findings.push({
-          field: "paletteColor",
-          label: "Palette Color",
-          action: "Selected palette swatch is not in the active project palette."
-        });
-      }
-    } else if (role && !filePickerMode) {
+    if (role && !filePickerMode) {
       findings.push({
         field: "assetRole",
         label: role.label,
@@ -909,6 +807,7 @@ export function createAssetToolMockRepository(options = {}) {
       createdBy: ownerUserKey,
       fileName: validation.asset.fileName,
       id: storageObject.assetId,
+      key: storageObject.assetId,
       mimeType: validation.asset.mimeType,
       name: validation.asset.name,
       originalName: storageObject.originalName,
@@ -918,8 +817,10 @@ export function createAssetToolMockRepository(options = {}) {
       path: storageObject.storedPath,
       previewKind: previewKindForRole(role),
       projectId,
+      reference: "",
       role: role.label,
       size: validation.asset.size,
+      source: validation.asset.name,
       status: "Ready",
       storedPath: storageObject.storedPath,
       storageObjectId: storageObject.id,
@@ -939,6 +840,7 @@ export function createAssetToolMockRepository(options = {}) {
       createdBy: ownerUserKey,
       fileName: asset.fileName,
       id: `${asset.id}-import-${tables.asset_import_events.length + 1}`,
+      key: `${asset.id}-import-${tables.asset_import_events.length + 1}`,
       mimeType: asset.mimeType,
       projectId,
       status: "Uploaded",
@@ -1043,6 +945,7 @@ export function createAssetToolMockRepository(options = {}) {
       createdBy: ownerUserKey,
       fileName: record.asset.fileName,
       id: `${record.asset.id}-import-${tables.asset_import_events.length + 1}`,
+      key: `${record.asset.id}-import-${tables.asset_import_events.length + 1}`,
       mimeType: record.asset.mimeType,
       projectId,
       status: "Created",
@@ -1093,7 +996,11 @@ export function createAssetToolMockRepository(options = {}) {
 
   function validateCatalogAssetInput(input = {}, existingAsset = null) {
     const assetType = normalizeCatalogAssetType(input.assetType || input.type);
-    const name = normalizeText(input.name);
+    const referenceType = isReferenceCatalogType(assetType);
+    const source = normalizeText(input.source || input.name || existingAsset?.source);
+    const reference = normalizeText(input.reference || input.name || existingAsset?.reference);
+    const name = referenceType ? reference : source;
+    const fileName = normalizeText(input.fileName || input.file || existingAsset?.fileName);
     const usage = normalizeCatalogUsage(input.usage);
     const description = normalizeText(input.description);
     const tags = listTags();
@@ -1109,11 +1016,25 @@ export function createAssetToolMockRepository(options = {}) {
         label: "Asset Type"
       });
     }
-    if (!name) {
+    if (assetType && referenceType && !reference) {
       findings.push({
-        action: "Name the asset before saving.",
-        field: "name",
-        label: "Asset Name"
+        action: "Enter a reference before saving.",
+        field: "reference",
+        label: "Reference"
+      });
+    }
+    if (assetType && !referenceType && !source) {
+      findings.push({
+        action: "Enter a source before saving.",
+        field: "source",
+        label: "Source"
+      });
+    }
+    if (assetType && !referenceType && !fileName) {
+      findings.push({
+        action: "Enter a file name before saving.",
+        field: "fileName",
+        label: "File"
       });
     }
     if (!usage) {
@@ -1135,7 +1056,10 @@ export function createAssetToolMockRepository(options = {}) {
       asset: {
         assetType: assetType || existingAsset?.assetType || "",
         description,
+        fileName,
         name: name || existingAsset?.name || "",
+        reference,
+        source,
         tagKeys,
         usage: usage || existingAsset?.usage || ""
       },
@@ -1152,13 +1076,11 @@ export function createAssetToolMockRepository(options = {}) {
     const assetType = input.assetType;
     const assetRole = catalogAssetRoleForType(assetType);
     const role = roleDefinitionForId(assetRole) || roleDefinitionForId("image");
-    const fileName = catalogFileNameForName(input.name, assetType);
-    const storedPath = storagePathForProjectAsset(
-      projectId,
-      assetRole,
-      normalizeUsage(input.usage.toLowerCase().replaceAll(" ", "-"), assetRole) || "sprite",
-      fileName
-    ) || `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(assetType)}/${slugify(input.usage)}/${fileName}`;
+    const fileName = input.fileName || catalogFileNameForName(input.name, assetType);
+    const roleUsage = normalizeUsage(input.usage.toLowerCase().replaceAll(" ", "-"), assetRole);
+    const storedPath = roleUsage
+      ? storagePathForProjectAsset(projectId, assetRole, roleUsage, fileName)
+      : `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(assetType)}/${slugify(input.usage)}/${fileName}`;
     const checksum = checksumForMetadata({
       assetRole,
       fileName,
@@ -1179,6 +1101,7 @@ export function createAssetToolMockRepository(options = {}) {
       description: input.description,
       fileName,
       id,
+      key: id,
       mimeType: "",
       name: input.name,
       originalName: fileName,
@@ -1189,6 +1112,8 @@ export function createAssetToolMockRepository(options = {}) {
       previewKind: `${assetType} catalog record`,
       projectId,
       role: assetType,
+      source: input.source,
+      reference: input.reference,
       size: 0,
       status: "Ready",
       storedPath,
@@ -1223,6 +1148,7 @@ export function createAssetToolMockRepository(options = {}) {
       createdAt: asset.createdAt,
       createdBy: asset.createdBy,
       id: asset.storageObjectId,
+      key: asset.storageObjectId,
       mimeType: asset.mimeType,
       originalName: asset.originalName,
       ownerProjectId: projectId,
@@ -1240,6 +1166,7 @@ export function createAssetToolMockRepository(options = {}) {
       createdBy: asset.createdBy,
       fileName: asset.fileName,
       id: `${asset.id}-catalog-${tables.asset_import_events.length + 1}`,
+      key: `${asset.id}-catalog-${tables.asset_import_events.length + 1}`,
       mimeType: asset.mimeType,
       projectId,
       status: "Cataloged",
@@ -1292,10 +1219,27 @@ export function createAssetToolMockRepository(options = {}) {
     asset.role = validation.asset.assetType;
     asset.name = validation.asset.name;
     asset.description = validation.asset.description;
+    asset.fileName = validation.asset.fileName || asset.fileName;
+    asset.originalName = asset.fileName;
+    asset.reference = validation.asset.reference;
+    asset.source = validation.asset.source;
     asset.usage = validation.asset.usage;
     asset.tagKeys = validation.asset.tagKeys;
     asset.updatedAt = now;
     asset.updatedBy = activeUserKey();
+    const roleUsage = normalizeUsage(asset.usage.toLowerCase().replaceAll(" ", "-"), asset.assetRole);
+    const nextStoredPath = roleUsage
+      ? storagePathForProjectAsset(projectId, asset.assetRole, roleUsage, asset.fileName)
+      : `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(asset.assetType)}/${slugify(asset.usage)}/${asset.fileName}`;
+    asset.storedPath = nextStoredPath;
+    asset.path = nextStoredPath;
+    const storageObject = tables.asset_storage_objects.find((row) => row.id === asset.storageObjectId);
+    if (storageObject) {
+      storageObject.originalName = asset.fileName;
+      storageObject.storedPath = nextStoredPath;
+      storageObject.updatedAt = now;
+      storageObject.updatedBy = asset.updatedBy;
+    }
     selectedAssetId = asset.id;
     replaceValidationRows(projectId, []);
     persistTables();
@@ -1388,9 +1332,7 @@ export function createAssetToolMockRepository(options = {}) {
     }
 
     const timestamp = new Date().toISOString();
-    const fileName = role.inputMode === "palette"
-      ? colorAssetFileName(asset.paletteSwatch)
-      : asset.originalName || asset.fileName;
+    const fileName = asset.originalName || asset.fileName;
     const storedPath = storagePathForProjectAsset(projectId, asset.assetRole, nextUsage, fileName);
     asset.name = nextName;
     asset.usage = nextUsage;
@@ -1545,13 +1487,7 @@ export function createAssetToolMockRepository(options = {}) {
     const handoff = getConfigurationHandoff();
     const projectId = handoff.activeProject?.id || "";
     const assetRole = normalizeRoleId(input.assetRole || input.type);
-    const role = roleDefinitionForId(assetRole);
-    const swatch = role?.inputMode === "palette"
-      ? paletteRepository.findSwatch(input.paletteColor || input.paletteSwatchKey)
-      : null;
-    const fileName = role?.inputMode === "palette"
-      ? colorAssetFileName(swatch)
-      : input.fileName || input.originalName;
+    const fileName = input.fileName || input.originalName;
     return storagePathForProjectAsset(projectId, assetRole, input.usage || input.role, fileName);
   }
 

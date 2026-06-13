@@ -1,6 +1,7 @@
 import { expect, test } from "@playwright/test";
 import {
   ASSET_CATALOG_TYPES,
+  ASSET_ROLE_DEFINITIONS,
   ASSET_TOOL_TABLES,
   ASSET_USAGE_OPTIONS,
   createAssetToolMockRepository
@@ -26,6 +27,9 @@ const USAGE_VALUES = [
   "Tile",
   "Voice"
 ];
+const UPLOAD_COLUMNS = ["Source", "File", "Usage", "Tags", "Preview", "Actions"];
+const REFERENCE_COLUMNS = ["Reference", "Usage", "Tags", "Preview", "Actions"];
+const REFERENCE_ASSET_TYPES = new Set(["Palette References", "Data"]);
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -120,6 +124,11 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
   expect(ASSET_CATALOG_TYPES).toEqual(["Images", "Audio", "Fonts", "Sprites", "Vectors", "Palette References", "Data"]);
   expect(ASSET_USAGE_OPTIONS).toEqual(USAGE_VALUES);
   expect(ASSET_USAGE_OPTIONS).not.toContain("Projectile");
+  expect(ASSET_ROLE_DEFINITIONS.map((role) => role.label).sort()).toEqual(["Audio", "Data", "Font", "Image"]);
+  for (const legacyRole of ["Color", "Localization", "Shader", "Video"]) {
+    expect(ASSET_CATALOG_TYPES).not.toContain(legacyRole);
+    expect(ASSET_ROLE_DEFINITIONS.map((role) => role.label)).not.toContain(legacyRole);
+  }
 
   const tagResult = tagsRepository.addTag({
     description: "Hero vocabulary",
@@ -127,17 +136,41 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
   });
   const assetResult = assetRepository.addAssetRecord({
     assetType: "Images",
-    description: "Main character portrait",
+    fileName: "hero-portrait.png",
     name: "Hero Portrait",
+    source: "Hero Portrait",
     tagKeys: [tagResult.tag.id],
     usage: "Character"
   });
 
   expect(assetResult.added).toBe(true);
+  expect(assetResult.asset).toEqual(expect.objectContaining({
+    createdBy: MOCK_DB_KEYS.users.user1,
+    key: assetResult.asset.id,
+    source: "Hero Portrait",
+    updatedBy: MOCK_DB_KEYS.users.user1
+  }));
+  expect(assetResult.asset.createdAt).toEqual(expect.any(String));
+  expect(assetResult.asset.updatedAt).toEqual(expect.any(String));
   expect(assetResult.asset.ownerUserId).toBe(MOCK_DB_KEYS.users.user1);
   expect(assetResult.asset.assetType).toBe("Images");
+  expect(assetResult.asset.fileName).toBe("hero-portrait.png");
   expect(assetResult.asset.usage).toBe("Character");
   expect(assetResult.asset.tagKeys).toEqual([tagResult.tag.id]);
+  const populatedAssetTables = Object.entries(assetRepository.getTables())
+    .filter(([, rows]) => rows.length > 0);
+  expect(populatedAssetTables.length).toBeGreaterThan(0);
+  for (const [, rows] of populatedAssetTables) {
+    for (const row of rows) {
+      expect(row).toEqual(expect.objectContaining({
+        createdAt: expect.any(String),
+        createdBy: expect.any(String),
+        key: expect.any(String),
+        updatedAt: expect.any(String),
+        updatedBy: expect.any(String)
+      }));
+    }
+  }
   expect(tagsRepository.findTag(tagResult.tag.id).usage).toEqual([
     expect.objectContaining({
       itemName: "Hero Portrait",
@@ -164,7 +197,15 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
       await expect(page.locator(`[data-asset-type-accordion="${assetType}"]`)).toBeVisible();
       await expect(page.locator(`[data-asset-type-table="${assetType}"]`)).toBeVisible();
       await expect(page.getByRole("button", { name: `Add ${assetType}` })).toBeVisible();
+      const headers = await page.locator(`[data-asset-type-table="${assetType}"] thead th`).evaluateAll((headerNodes) =>
+        headerNodes.map((header) => header.textContent?.trim() || "")
+      );
+      expect(headers).toEqual(REFERENCE_ASSET_TYPES.has(assetType) ? REFERENCE_COLUMNS : UPLOAD_COLUMNS);
     }
+    await expect(page.locator("[data-asset-type-accordion='Color']")).toHaveCount(0);
+    await expect(page.locator("[data-asset-type-accordion='Localization']")).toHaveCount(0);
+    await expect(page.locator("[data-asset-type-accordion='Shader']")).toHaveCount(0);
+    await expect(page.locator("[data-asset-type-accordion='Video']")).toHaveCount(0);
 
     await addSharedTag(page, "Hero");
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
@@ -174,21 +215,23 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
 
     await page.getByRole("button", { name: "Add Images" }).click();
     const newRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
-    await newRow.getByLabel("Asset Name").fill("Hero Portrait");
+    await newRow.getByLabel("Source").fill("Hero Portrait");
+    await newRow.getByLabel("File").fill("hero-portrait.png");
     const usageOptions = await newRow.getByLabel("Usage").locator("option").evaluateAll((options) =>
       options.map((option) => option.textContent?.trim() || "")
     );
     expect(usageOptions).toEqual(USAGE_VALUES);
     expect(usageOptions).not.toContain("Projectile");
     await newRow.getByLabel("Usage").selectOption("Character");
-    await newRow.getByLabel("Description").fill("Main character portrait");
     await newRow.getByLabel("Asset Tags").fill("Hero");
+    await expect(newRow.getByLabel("Asset Tags")).toHaveAttribute("list", "assetToolTagOptions");
     await newRow.getByRole("button", { name: "Add Tag" }).click();
     await expect(newRow).toContainText("Hero");
     await newRow.getByRole("button", { name: "Save" }).click();
 
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added Hero Portrait to Images.");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" })).toContainText("Character");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" })).toContainText("hero-portrait.png");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" })).toContainText("Hero");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
     await expect(page.locator("[data-asset-tool-output-missing]")).toHaveText("None");
@@ -196,11 +239,14 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" }).getByRole("button", { name: "View" }).click();
     await expect(page.locator("[data-asset-tool-selected]")).toHaveText("Hero Portrait");
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Tags: Hero");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Source: Hero Portrait");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("File: hero-portrait.png");
 
     await page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" }).getByRole("button", { name: "Edit" }).click();
     const editRow = page.locator("[data-asset-tool-editing-row]");
-    await expect(editRow.getByLabel("Asset Name")).toHaveValue("Hero Portrait");
-    await editRow.getByLabel("Asset Name").fill("Hero Portrait XL");
+    await expect(editRow.getByLabel("Source")).toHaveValue("Hero Portrait");
+    await expect(editRow.getByLabel("File")).toHaveValue("hero-portrait.png");
+    await editRow.getByLabel("Source").fill("Hero Portrait XL");
     await editRow.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated Hero Portrait XL.");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait XL" })).toBeVisible();

@@ -77,6 +77,13 @@ test("Tags repository exposes shared workspace tag table", () => {
     name: "Hero"
   });
   expect(addResult.added).toBe(true);
+  expect(addResult.tag).toEqual(expect.objectContaining({
+    createdAt: expect.any(String),
+    createdBy: expect.any(String),
+    key: addResult.tag.id,
+    updatedAt: expect.any(String),
+    updatedBy: expect.any(String)
+  }));
   expect(repository.listTags()).toEqual([
     expect.objectContaining({
       description: "Hero vocabulary",
@@ -104,6 +111,14 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
     await expect(page.getByRole("heading", { level: 1, name: "Tags" })).toBeVisible();
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    const addTagPlacement = await page.locator("[data-tags-add]").evaluate((button) => ({
+      insideTagsTableCard: Boolean(button.closest(".card")?.querySelector("[data-tags-table]")),
+      insideSidePanel: Boolean(button.closest("aside"))
+    }));
+    expect(addTagPlacement).toEqual({
+      insideTagsTableCard: true,
+      insideSidePanel: false
+    });
     const runtimeReferences = await page.locator("script[src], link[href]").evaluateAll((nodes) =>
       nodes.map((node) => node.getAttribute("src") || node.getAttribute("href") || "")
     );
@@ -140,10 +155,22 @@ test("Tags page supports add, edit, usage expansion, delete, and toolbox registr
     const registryPayload = await registryResponse.json();
     expect(registryPayload.ok).toBe(true);
     expect(registryPayload.data.activeTools.find((tool) => tool.id === "tags")).toEqual(expect.objectContaining({
+      badge: "/assets/theme-v2/images/badges/tags.png",
       displayName: "Tags",
       route: "toolbox/tags/index.html",
+      tool: "/assets/theme-v2/images/tools/tags.png",
       visibleInToolsList: true
     }));
+    const tagsRegistryTool = registryPayload.data.activeTools.find((tool) => tool.id === "tags");
+    expect(tagsRegistryTool.badge).not.toBe("/assets/theme-v2/images/badges/assets.png");
+    expect(tagsRegistryTool.tool).not.toBe("/assets/theme-v2/images/tools/assets.png");
+
+    await page.goto(`${failures.server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+    const tagsTile = page.locator("[data-toolbox-tool-card='Tags']");
+    await expect(tagsTile).toBeVisible();
+    await expect(tagsTile.locator("img[alt='Tags badge']")).toHaveAttribute("src", "/assets/theme-v2/images/badges/tags.png");
+    await expect(tagsTile.locator(".card-media img")).toHaveAttribute("src", "/assets/theme-v2/images/tools/tags.png");
+    await expect(tagsTile.locator("[data-tool-image-diagnostic]")).toHaveCount(0);
 
     expectNoPageFailures(failures);
   } finally {

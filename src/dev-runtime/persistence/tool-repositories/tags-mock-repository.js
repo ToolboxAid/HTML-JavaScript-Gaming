@@ -191,6 +191,7 @@ export function createTagsToolMockRepository(options = {}) {
     const id = tagKeyForName(validation.name, tables.workspace_tag_records);
     const row = {
       id,
+      key: id,
       gameId: activeGameId(),
       name: validation.name,
       description: validation.description,
