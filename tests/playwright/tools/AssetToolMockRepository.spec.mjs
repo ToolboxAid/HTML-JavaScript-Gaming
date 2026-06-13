@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { existsSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -34,22 +34,26 @@ const UPLOAD_COLUMNS = ["Source", "File", "Usage", "Tags", "Preview", "Actions"]
 const REFERENCE_COLUMNS = ["Source", "Reference", "Usage", "Tags", "Preview", "Actions"];
 const REFERENCE_ASSET_TYPES = new Set(["Sprites", "Vectors", "Palette References"]);
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
-const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
+const GENERATED_PROJECT_ID_PATTERN = "[0-9A-HJKMNP-TV-Z]{26}";
+const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+const LEGACY_FALLBACK_PROJECT_ID = ["01K8M3K0EX7", "V5A3W9Q2Y6R4T1B"].join("");
 const SMALL_PNG = Buffer.from(
   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVR42mP8z8AABQMBgMZ0X4AAAAAASUVORK5CYII=",
   "base64"
 );
+const projectIdsToClean = new Set();
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "asset-tool-catalog",
     surface: "Assets catalog accordions and shared Tags references"
   });
-  ["image", "audio", "font", "data"].forEach((folder) => resetProjectAssetFolder(folder));
+  resetLegacyFallbackProjectFolder();
 });
 
 test.afterEach(async ({ page }) => {
   await clearPlaywrightStorage(page);
+  cleanupGeneratedProjectFolders();
 });
 
 test.afterAll(async () => {
@@ -111,17 +115,54 @@ function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
-function projectAssetPath(assetFolder, fileName = "") {
-  return resolve(REPO_ROOT, "projects", DEMO_ASSET_PROJECT_ID, assetFolder, fileName);
+function projectsRoot() {
+  return resolve(REPO_ROOT, "projects");
 }
 
-function resetProjectAssetFolder(assetFolder) {
-  const folder = projectAssetPath(assetFolder);
-  const allowedRoot = resolve(REPO_ROOT, "projects", DEMO_ASSET_PROJECT_ID);
-  if (!folder.startsWith(allowedRoot)) {
-    throw new Error(`Refusing to remove unexpected test asset folder: ${folder}`);
+function projectRootNames() {
+  if (!existsSync(projectsRoot())) {
+    return [];
   }
-  rmSync(folder, { force: true, recursive: true });
+  return readdirSync(projectsRoot(), { withFileTypes: true })
+    .filter((entry) => entry.isDirectory())
+    .map((entry) => entry.name)
+    .sort();
+}
+
+function projectRootPath(projectId) {
+  return resolve(projectsRoot(), projectId);
+}
+
+function projectAssetPath(projectId, assetFolder, fileName = "") {
+  return resolve(projectRootPath(projectId), assetFolder, fileName);
+}
+
+function rememberProjectId(projectId) {
+  expect(projectId).toMatch(ULID_PATTERN);
+  projectIdsToClean.add(projectId);
+  return projectId;
+}
+
+async function projectIdFromProjectPath(page) {
+  const text = await page.locator("[data-asset-tool-project-path]").textContent();
+  const projectId = text?.match(new RegExp(`projects/(${GENERATED_PROJECT_ID_PATTERN})/`))?.[1] || "";
+  return rememberProjectId(projectId);
+}
+
+function cleanupGeneratedProjectFolders() {
+  for (const projectId of projectIdsToClean) {
+    const folder = projectRootPath(projectId);
+    const allowedRoot = projectsRoot();
+    if (!folder.startsWith(allowedRoot)) {
+      throw new Error(`Refusing to remove unexpected test project folder: ${folder}`);
+    }
+    rmSync(folder, { force: true, recursive: true });
+  }
+  projectIdsToClean.clear();
+}
+
+function resetLegacyFallbackProjectFolder() {
+  rmSync(projectRootPath(LEGACY_FALLBACK_PROJECT_ID), { force: true, recursive: true });
 }
 
 async function addSharedTag(page, tagName = "Hero") {
@@ -219,8 +260,9 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
   expect(assetResult.asset.ownerUserId).toBe(MOCK_DB_KEYS.users.user1);
   expect(assetResult.asset.assetType).toBe("Images");
   expect(assetResult.asset.fileName).toBe("hero-portrait.png");
-  expect(assetResult.asset.storedPath).toBe(`projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`);
-  expect(assetResult.asset.viewPath).toBe(`projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`);
+  const repositoryProjectId = rememberProjectId(assetResult.asset.projectId);
+  expect(assetResult.asset.storedPath).toBe(`projects/${repositoryProjectId}/image/hero-portrait.png`);
+  expect(assetResult.asset.viewPath).toBe(`projects/${repositoryProjectId}/image/hero-portrait.png`);
   expect(assetResult.asset.writeResult).toBe("Written");
   expect(assetResult.asset.usage).toBe("Character");
   expect(assetResult.asset.tagKeys).toEqual([tagResult.tag.id]);
@@ -240,12 +282,12 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
     assetType: "Images",
     fileName: "hero-portrait.png",
     name: "hero-portrait.png",
-    path: `projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`,
+    path: `projects/${repositoryProjectId}/image/hero-portrait.png`,
     source: "Upload",
-    storedPath: `projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`,
+    storedPath: `projects/${repositoryProjectId}/image/hero-portrait.png`,
     usage: "Icon"
   }));
-  expect(existsSync(projectAssetPath("audio", "replacement.wav"))).toBe(false);
+  expect(existsSync(projectAssetPath(repositoryProjectId, "audio", "replacement.wav"))).toBe(false);
   const populatedAssetTables = Object.entries(assetRepository.getTables())
     .filter(([, rows]) => rows.length > 0);
   expect(populatedAssetTables.length).toBeGreaterThan(0);
@@ -274,7 +316,6 @@ test("Assets source controls require real upload filenames and valid references"
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -354,6 +395,7 @@ test("Assets source controls require real upload filenames and valid references"
     await editRow.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose a reference source before saving.");
 
+    await projectIdFromProjectPath(page);
     expectNoPageFailures(failures);
   } finally {
     await workspaceV2CoverageReporter.stop(page);
@@ -362,19 +404,18 @@ test("Assets source controls require real upload filenames and valid references"
 });
 
 test("Assets upload writes to the project folder before creating a record and Image View renders the file", async ({ page }) => {
-  resetProjectAssetFolder("image");
-  expect(existsSync(projectAssetPath("image"))).toBe(false);
-
+  const projectRootsBeforeLaunch = projectRootNames();
   const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
     sessionModeId: "local-db",
     sessionUserKey: MOCK_DB_KEYS.users.user1
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
     const projectPath = page.locator("[data-asset-tool-project-path]");
-    await expect(projectPath).toHaveText(`Path: projects/${DEMO_ASSET_PROJECT_ID}/`);
+    await expect(projectPath).toHaveText("Path: No project path yet");
+    expect(projectRootNames()).toEqual(projectRootsBeforeLaunch);
+    expect(existsSync(projectRootPath(LEGACY_FALLBACK_PROJECT_ID))).toBe(false);
     await expect.poll(() => projectPath.evaluate((node) => getComputedStyle(node).textAlign)).toBe("center");
     const projectPathBox = await projectPath.boundingBox();
     const imagesAccordionBox = await page.locator("[data-asset-type-accordion='Images']").boundingBox();
@@ -387,27 +428,35 @@ test("Assets upload writes to the project folder before creating a record and Im
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" })).toBeVisible();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" })).toContainText("image/write-view-image.png");
+    const uploadProjectId = await projectIdFromProjectPath(page);
 
-    const writtenFile = projectAssetPath("image", "write-view-image.png");
-    expect(existsSync(projectAssetPath("image"))).toBe(true);
+    const writtenFile = projectAssetPath(uploadProjectId, "image", "write-view-image.png");
+    expect(existsSync(projectAssetPath(uploadProjectId, "image"))).toBe(true);
     expect(existsSync(writtenFile)).toBe(true);
     expect(readFileSync(writtenFile)).toEqual(SMALL_PNG);
 
     await page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" }).getByRole("button", { name: "View" }).click();
     const metadata = page.locator("[data-asset-tool-metadata]");
-    await expect(metadata).toContainText(`Stored path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
-    await expect(metadata).toContainText(`Project ID: ${DEMO_ASSET_PROJECT_ID}`);
-    await expect(metadata).toContainText(`Target folder: projects/${DEMO_ASSET_PROJECT_ID}/image`);
-    await expect(metadata).toContainText(`Target directory: projects/${DEMO_ASSET_PROJECT_ID}/image`);
-    await expect(metadata).toContainText(`Directory result: Directory created: projects/${DEMO_ASSET_PROJECT_ID}/image.`);
+    await expect(metadata).toContainText(`Stored path: projects/${uploadProjectId}/image/write-view-image.png`);
+    await expect(metadata).toContainText(`Project ID: ${uploadProjectId}`);
+    await expect(metadata).toContainText(`Target folder: projects/${uploadProjectId}/image`);
+    await expect(metadata).toContainText(`Target directory: projects/${uploadProjectId}/image`);
+    await expect(metadata).toContainText(`Directory result: Directory created: projects/${uploadProjectId}/image.`);
     await expect(metadata).toContainText("Directory status: created");
-    await expect(metadata).toContainText(`Target file path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
+    await expect(metadata).toContainText(`Target file path: projects/${uploadProjectId}/image/write-view-image.png`);
     await expect(metadata).toContainText("Write result: Written");
-    await expect(metadata).toContainText(`View path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
+    await expect(metadata).toContainText(`View path: projects/${uploadProjectId}/image/write-view-image.png`);
     const preview = page.locator("[data-asset-tool-view-preview]");
     await expect(preview).toBeVisible();
-    await expect(preview).toHaveAttribute("src", new RegExp(`projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image\\.png$`));
+    await expect(preview).toHaveAttribute("src", new RegExp(`projects/${uploadProjectId}/image/write-view-image\\.png$`));
     await expect.poll(() => preview.evaluate((node) => node.naturalWidth)).toBeGreaterThan(0);
+
+    await addUploadBatch(page, "Images", [
+      uploadFile("write-view-image-two.png", "image/png", SMALL_PNG)
+    ], "Icon");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image-two.png" })).toBeVisible();
+    expect(await projectIdFromProjectPath(page)).toBe(uploadProjectId);
+    expect(existsSync(projectAssetPath(uploadProjectId, "image", "write-view-image-two.png"))).toBe(true);
 
     expectNoPageFailures(failures);
   } finally {
@@ -417,25 +466,24 @@ test("Assets upload writes to the project folder before creating a record and Im
 });
 
 test("Assets Trash deletes uploaded records and physical files with scoped failure handling", async ({ page }) => {
-  resetProjectAssetFolder("image");
   const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
     sessionModeId: "local-db",
     sessionUserKey: MOCK_DB_KEYS.users.user1
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await page.getByRole("button", { name: "Add Images" }).click();
     const row = page.locator("[data-asset-tool-editing-row='__new__:Images']");
     await row.getByLabel("Usage").selectOption("Character");
     await row.getByLabel("Upload File").setInputFiles(uploadFile("trash-delete-ok.png", "image/png", SMALL_PNG));
+    const uploadProjectId = await projectIdFromProjectPath(page);
 
-    const writtenFile = projectAssetPath("image", "trash-delete-ok.png");
+    const writtenFile = projectAssetPath(uploadProjectId, "image", "trash-delete-ok.png");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-ok.png" })).toBeVisible();
     expect(existsSync(writtenFile)).toBe(true);
 
     await page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-ok.png" }).getByRole("button", { name: "Trash" }).click();
-    await expect(page.locator("[data-asset-tool-log]")).toContainText(`Deleted file projects/${DEMO_ASSET_PROJECT_ID}/image/trash-delete-ok.png.`);
+    await expect(page.locator("[data-asset-tool-log]")).toContainText(`Deleted file projects/${uploadProjectId}/image/trash-delete-ok.png.`);
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-ok.png" })).toHaveCount(0);
     expect(existsSync(writtenFile)).toBe(false);
 
@@ -444,7 +492,7 @@ test("Assets Trash deletes uploaded records and physical files with scoped failu
     await missingRow.getByLabel("Usage").selectOption("Character");
     await missingRow.getByLabel("Upload File").setInputFiles(uploadFile("trash-delete-missing.png", "image/png", SMALL_PNG));
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-missing.png" })).toBeVisible();
-    const missingFile = projectAssetPath("image", "trash-delete-missing.png");
+    const missingFile = projectAssetPath(uploadProjectId, "image", "trash-delete-missing.png");
     expect(existsSync(missingFile)).toBe(true);
     rmSync(missingFile, { force: true });
     await page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-missing.png" }).getByRole("button", { name: "Trash" }).click();
@@ -460,20 +508,19 @@ test("Assets Trash deletes uploaded records and physical files with scoped failu
 });
 
 test("Assets Trash rejects uploaded delete paths outside projects", async ({ page }) => {
-  resetProjectAssetFolder("image");
   const failures = await openRepoPage(page, "/toolbox/assets/index.html?deletePath=escape", {
     sessionModeId: "local-db",
     sessionUserKey: MOCK_DB_KEYS.users.user1
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await page.getByRole("button", { name: "Add Images" }).click();
     const row = page.locator("[data-asset-tool-editing-row='__new__:Images']");
     await row.getByLabel("Usage").selectOption("Character");
     await row.getByLabel("Upload File").setInputFiles(uploadFile("trash-delete-escape.png", "image/png", SMALL_PNG));
+    const uploadProjectId = await projectIdFromProjectPath(page);
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-escape.png" })).toBeVisible();
-    const writtenFile = projectAssetPath("image", "trash-delete-escape.png");
+    const writtenFile = projectAssetPath(uploadProjectId, "image", "trash-delete-escape.png");
     expect(existsSync(writtenFile)).toBe(true);
 
     await page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-escape.png" }).getByRole("button", { name: "Trash" }).click();
@@ -495,7 +542,6 @@ test("Assets worker keeps UI responsive while server-received upload progress dr
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -587,6 +633,7 @@ test("Assets worker keeps UI responsive while server-received upload progress dr
     expect(progressEvents[1].at - progressEvents[0].at).toBeGreaterThanOrEqual(900);
     await expect(inlineProgress.locator("[data-asset-tool-upload-status='OK']")).toContainText("worker-progress.png");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "worker-progress.png" })).toHaveCount(1);
+    await projectIdFromProjectPath(page);
 
     expectNoPageFailures(failures);
   } finally {
@@ -602,7 +649,6 @@ test("Assets batch progress uses summed uploaded bytes across selected files", a
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -622,6 +668,7 @@ test("Assets batch progress uses summed uploaded bytes across selected files", a
     await expect(progressBar).toHaveJSProperty("value", 100);
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-byte-a.png" })).toHaveCount(1);
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-byte-b.png" })).toHaveCount(1);
+    await projectIdFromProjectPath(page);
 
     expectNoPageFailures(failures);
   } finally {
@@ -636,7 +683,6 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -765,6 +811,7 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
     await expect(page.locator("[data-asset-tool-view-preview]")).toHaveAttribute("href", /projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2$/);
 
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("9");
+    await projectIdFromProjectPath(page);
 
     for (const assetType of ["Sprites", "Palette References"]) {
       await page.getByRole("button", { name: `Add ${assetType}` }).click();
@@ -788,7 +835,6 @@ test("Assets duplicate project-path uploads fail before write and do not create 
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -797,7 +843,8 @@ test("Assets duplicate project-path uploads fail before write and do not create 
     await editRow.getByLabel("Upload File").setInputFiles(uploadFile("duplicate-path.png", "image/png", SMALL_PNG));
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
-    expect(existsSync(projectAssetPath("image", "duplicate-path.png"))).toBe(true);
+    const uploadProjectId = await projectIdFromProjectPath(page);
+    expect(existsSync(projectAssetPath(uploadProjectId, "image", "duplicate-path.png"))).toBe(true);
 
     await page.getByRole("button", { name: "Add Images" }).click();
     editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
@@ -827,7 +874,6 @@ test("Assets upload fails visibly when the resolved target directory would escap
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -846,7 +892,8 @@ test("Assets upload fails visibly when the resolved target directory would escap
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "escape-target.png" })).toHaveCount(0);
-    expect(existsSync(projectAssetPath("image", "escape-target.png"))).toBe(false);
+    const uploadProjectId = await projectIdFromProjectPath(page);
+    expect(existsSync(projectAssetPath(uploadProjectId, "outside", "escape-target.png"))).toBe(false);
 
     expectNoPageFailures(failures);
   } finally {
@@ -855,12 +902,15 @@ test("Assets upload fails visibly when the resolved target directory would escap
   }
 });
 
-test("Assets multi-file upload fails visibly when no current project id is available", async ({ page }) => {
+test("Assets authenticated upload lazily creates one project id when no current project exists", async ({ page }) => {
+  const projectRootsBeforeLaunch = projectRootNames();
   const failures = await openRepoPage(page, "/toolbox/assets/index.html?handoff=missing", {
     sessionUserKey: MOCK_DB_KEYS.users.user1
   });
 
   try {
+    await expect(page.locator("[data-asset-tool-project-path]")).toHaveText("Path: No project path yet");
+    expect(projectRootNames()).toEqual(projectRootsBeforeLaunch);
     await page.getByRole("button", { name: "Add Images" }).click();
     const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
     await expect(editRow.getByLabel("Upload File")).toHaveJSProperty("multiple", true);
@@ -871,18 +921,18 @@ test("Assets multi-file upload fails visibly when no current project id is avail
     ]);
     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
     await expect(uploadDialog).toBeVisible();
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 1 skipped, 0 warnings.");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("0");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("1");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("1");
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 2 written, 0 failed, 0 skipped, 0 warnings.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("2");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("0");
     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("0");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("missing-project-a.png");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("missing-project-b.png");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("Open an active game with a valid project upload target before uploading.");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='SKIP']")).toContainText("Open an active game with a valid project upload target before uploading.");
-    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Open an active game");
-    await expect(page.locator("[data-asset-tool-batch-status='SKIP']")).toContainText("Open an active game");
-    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']")).toHaveCount(2);
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("2");
+    const uploadProjectId = await projectIdFromProjectPath(page);
+    expect(existsSync(projectAssetPath(uploadProjectId, "image", "missing-project-a.png"))).toBe(true);
+    expect(existsSync(projectAssetPath(uploadProjectId, "image", "missing-project-b.png"))).toBe(true);
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "missing-project-a.png" }).getByRole("button", { name: "View" }).click();
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(`Project ID: ${uploadProjectId}`);
 
     expectNoPageFailures(failures);
   } finally {
@@ -897,7 +947,6 @@ test("Assets upload write failure after byte transfer is visible and creates no 
   });
 
   try {
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -925,6 +974,7 @@ test("Assets upload write failure after byte transfer is visible and creates no 
     await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("This runtime cannot write upload files.");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "unsupported-write-a.png" })).toHaveCount(0);
+    await projectIdFromProjectPath(page);
 
     expectNoPageFailures(failures);
   } finally {
@@ -934,11 +984,13 @@ test("Assets upload write failure after byte transfer is visible and creates no 
 });
 
 test("Assets guest upload action shows account prompt and creates no record", async ({ page }) => {
+  const projectRootsBeforeLaunch = projectRootNames();
   const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
     sessionUserKey: ""
   });
 
   try {
+    await expect(page.locator("[data-asset-tool-project-path]")).toHaveText("Path: No project path yet");
     const startingCount = await page.locator("[data-asset-tool-count]").textContent();
     await expect(page.getByRole("button", { name: "Add Images" })).toBeEnabled();
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -954,6 +1006,8 @@ test("Assets guest upload action shows account prompt and creates no record", as
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploads require a Game Foundry account.");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText(startingCount || "0");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "guest-upload.png" })).toHaveCount(0);
+    await expect(page.locator("[data-asset-tool-project-path]")).toHaveText("Path: No project path yet");
+    expect(projectRootNames()).toEqual(projectRootsBeforeLaunch);
 
     expectNoPageFailures(failures);
   } finally {
@@ -978,6 +1032,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
   try {
     await expect(page.getByRole("heading", { level: 1, name: "Assets" })).toBeVisible();
     await expect(page.locator(".tool-workspace")).toBeVisible();
+    await expect(page.locator("[data-asset-tool-project-path]")).toHaveText("Path: No project path yet");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     const runtimeReferences = await page.locator("script[src], link[href]").evaluateAll((nodes) =>
       nodes.map((node) => node.getAttribute("src") || node.getAttribute("href") || "")
@@ -1001,7 +1056,6 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await addSharedTag(page, "Hero");
     await addSharedTag(page, "Rare");
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
     await expect(page.locator("[data-asset-tool-shared-tags]")).toContainText("Hero");
 
@@ -1025,6 +1079,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     });
 
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
+    await projectIdFromProjectPath(page);
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Character");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Upload");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Hero");

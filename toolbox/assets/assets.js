@@ -12,8 +12,6 @@ if (params.get("handoff") === "missing") {
   repository.makeMissingGameConfiguration();
 } else if (params.get("handoff") === "invalid") {
   repository.makeInvalidGameConfiguration();
-} else {
-  repository.makeReadyGameConfiguration();
 }
 if (params.get("uploadWrite") === "unsupported") {
   repository.setUploadFileWriteSupport(false);
@@ -282,7 +280,7 @@ function assetViewPath(asset) {
 
 function projectPathForSnapshot(snapshot = {}) {
   const projectId = normalizeText(snapshot.handoff?.activeProject?.id || "");
-  return projectId ? `projects/${projectId}/` : "projects/";
+  return projectId ? `projects/${projectId}/` : "No project path yet";
 }
 
 function uploadDiagnosticsText(diagnostics = {}) {
@@ -1067,6 +1065,14 @@ async function saveUploadBatch(row, assetType) {
   }
   hideAccountPrompt();
   const files = selectedUploadFiles(row).length ? selectedUploadFiles(row) : uploadPayloadsForEditRow(row);
+  const projectResult = repository.ensureUploadProject();
+  if (!projectResult?.projectId) {
+    setText(elements.log, projectResult?.message || "Upload blocked: no project storage path is available.");
+    render();
+    return false;
+  }
+  setText(elements.log, projectResult.created ? `Created project path projects/${projectResult.projectId}/.` : `Using project path projects/${projectResult.projectId}/.`);
+  setText(elements.projectPath, `Path: ${projectPathForSnapshot(projectResult.snapshot)}`);
   const uploadState = createUploadState(files);
   uploadState.assetType = assetType;
   activeUploadAssetType = assetType;

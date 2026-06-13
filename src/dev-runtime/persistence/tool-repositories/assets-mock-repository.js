@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -122,9 +123,9 @@ export const ASSET_USAGE_OPTIONS = Object.freeze([
 const UPLOAD_SOURCE_MODE = "Upload";
 const REFERENCE_SOURCE_MODE = "Reference";
 const ASSET_SOURCE_MODES = Object.freeze([UPLOAD_SOURCE_MODE, REFERENCE_SOURCE_MODE]);
-const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
 const PROJECT_ASSET_STORAGE_ROOT = "projects";
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
+const ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 
 const REQUIRED_UPLOAD_FIELDS = Object.freeze([
   {
@@ -260,16 +261,23 @@ function normalizeProjectId(value) {
   return ULID_PATTERN.test(normalized) ? normalized : "";
 }
 
-function assetProjectIdForProject(project) {
-  if (!project) {
-    return "";
+function encodeUlidValue(value, length) {
+  let remaining = BigInt(value);
+  let encoded = "";
+  for (let index = 0; index < length; index += 1) {
+    encoded = ULID_ALPHABET[Number(remaining % 32n)] + encoded;
+    remaining /= 32n;
   }
+  return encoded;
+}
 
-  if (project.id === "demo-game") {
-    return DEMO_ASSET_PROJECT_ID;
-  }
-
-  return normalizeProjectId(project.id);
+function createProjectStorageId() {
+  const timePart = encodeUlidValue(Date.now(), 10);
+  const randomPart = Array.from(randomBytes(16))
+    .map((byte) => ULID_ALPHABET[byte % 32])
+    .join("")
+    .slice(0, 16);
+  return `${timePart}${randomPart}`;
 }
 
 function roleDefinitionForId(roleId) {
@@ -586,6 +594,7 @@ export function createAssetToolMockRepository(options = {}) {
     tables.asset_role_definitions = roleDefinitionRows();
   }
   let selectedAssetId = "";
+  let uploadProjectId = "";
   let uploadFileWritesEnabled = options.uploadFileWritesEnabled !== false;
   let unsafeDeletePathForTest = false;
   let unsafeUploadPathForTest = false;
@@ -597,11 +606,67 @@ export function createAssetToolMockRepository(options = {}) {
     }
   }
 
-  function activeUserKey() {
+  function sessionUserKey() {
     const sessionUserKey = typeof options.sessionUserKey === "function"
       ? options.sessionUserKey()
       : options.sessionUserKey;
-    return normalizeText(sessionUserKey) || DEFAULT_ASSET_USER_KEY;
+    return normalizeText(sessionUserKey);
+  }
+
+  function hasExplicitGuestSession() {
+    return Object.prototype.hasOwnProperty.call(options, "sessionUserKey") && !sessionUserKey();
+  }
+
+  function activeUserKey() {
+    const userKey = sessionUserKey();
+    return userKey || DEFAULT_ASSET_USER_KEY;
+  }
+
+  function configuredProjectId(snapshot = configurationRepository.getSnapshot()) {
+    return normalizeProjectId(snapshot.handoff?.activeProject?.id || "");
+  }
+
+  function existingOwnedProjectId() {
+    const ownerUserId = activeUserKey();
+    const asset = tables.asset_library_items.find(
+      (record) => record.ownerUserId === ownerUserId && normalizeProjectId(record.projectId)
+    );
+    return normalizeProjectId(uploadProjectId) || normalizeProjectId(asset?.projectId);
+  }
+
+  function currentProjectId(snapshot = configurationRepository.getSnapshot()) {
+    return configuredProjectId(snapshot) || existingOwnedProjectId();
+  }
+
+  function ensureUploadProject() {
+    if (hasExplicitGuestSession()) {
+      return {
+        created: false,
+        message: "Uploads require a Game Foundry account.",
+        projectId: "",
+        snapshot: getSnapshot()
+      };
+    }
+
+    const existingProjectId = currentProjectId();
+    if (existingProjectId) {
+      uploadProjectId = existingProjectId;
+      return {
+        created: false,
+        message: `Using existing project path projects/${existingProjectId}/.`,
+        projectId: existingProjectId,
+        snapshot: getSnapshot()
+      };
+    }
+
+    uploadProjectId = createProjectStorageId();
+    persistTables();
+    return {
+      created: true,
+      message: `Created project path projects/${uploadProjectId}/.`,
+      projectId: uploadProjectId,
+      snapshot: getSnapshot()
+    };
   }
 
   function repositoryRoot() {
@@ -999,18 +1064,30 @@ export function createAssetToolMockRepository(options = {}) {
 
   function getConfigurationHandoff() {
     const snapshot = configurationRepository.getSnapshot();
+    const projectId = currentProjectId(snapshot);
     const activeProject = snapshot.handoff.activeProject
       ? {
           ...snapshot.handoff.activeProject,
-          id: assetProjectIdForProject(snapshot.handoff.activeProject),
+          id: projectId,
           sourceProjectId: snapshot.handoff.activeProject.id
         }
+      : projectId
+        ? {
+            id: projectId,
+            name: "Asset Upload Project",
+            sourceProjectId: "",
+          }
       : null;
     const ready = Boolean(
-      snapshot.handoff.ready
-      && snapshot.configuration
-      && snapshot.validation.findings.length === 0
-      && activeProject?.id
+      activeProject?.id
+      && (
+        (
+          snapshot.handoff.ready
+          && snapshot.configuration
+          && snapshot.validation.findings.length === 0
+        )
+        || existingOwnedProjectId()
+      )
     );
 
     return {
@@ -1593,8 +1670,12 @@ export function createAssetToolMockRepository(options = {}) {
 
   function addAssetRecord(input = {}) {
     const handoff = getConfigurationHandoff();
-    const projectId = handoff.activeProject?.id || "";
     const validation = validateCatalogAssetInput(input);
+    const projectId = validation.findings.length
+      ? handoff.activeProject?.id || ""
+      : (validation.asset.source === UPLOAD_SOURCE_MODE
+          ? ensureUploadProject().projectId
+          : handoff.activeProject?.id || "");
     replaceValidationRows(projectId, validation.findings);
     if (validation.findings.length || !projectId) {
       return {
@@ -2078,7 +2159,6 @@ export function createAssetToolMockRepository(options = {}) {
       return getSnapshot();
     }
     clearAssetLibrary();
-    seedDemoAssets();
     return getSnapshot();
   }
 
@@ -2190,7 +2270,6 @@ export function createAssetToolMockRepository(options = {}) {
     persistTables();
   } else {
     clearAssetLibrary();
-    seedDemoAssets();
   }
 
   return {
@@ -2214,6 +2293,7 @@ export function createAssetToolMockRepository(options = {}) {
     getSnapshot,
     getTables,
     importAsset,
+    ensureUploadProject,
     listAssets,
     listAssetsByType,
     listPaletteSwatches,

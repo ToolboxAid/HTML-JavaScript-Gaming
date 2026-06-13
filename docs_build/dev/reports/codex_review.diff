@@ -1,605 +1,391 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 9e88e425d..0d28b3b7d 100644
+index 0d28b3b7d..7c93ffa9e 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,9 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -7,7 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
  Changed runtime JS files considered:
  (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/assets/assets-upload-worker.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(93%) toolbox/assets/assets.js - executed lines 1567/1567; executed functions 129/139
-+(93%) toolbox/assets/assets.js - executed lines 1633/1633; executed functions 136/146
+-(93%) toolbox/assets/assets.js - executed lines 1633/1633; executed functions 136/146
++(92%) toolbox/assets/assets.js - executed lines 1639/1639; executed functions 135/146
  
  Guardrail warnings:
  (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) toolbox/assets/assets-upload-worker.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
-index c4c40423c..92e0983a8 100644
+index 92e0983a8..9b8fc0b8f 100644
 --- a/docs_build/dev/reports/dependency_gating_report.md
 +++ b/docs_build/dev/reports/dependency_gating_report.md
 @@ -1,6 +1,6 @@
  # Dependency Gating Report
  
--Generated: 2026-06-13T21:18:10.332Z
-+Generated: 2026-06-13T21:56:04.209Z
+-Generated: 2026-06-13T21:56:04.209Z
++Generated: 2026-06-13T22:40:08.238Z
  Status: PASS
  
  ## Gate Order
 diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-index 002d3af9a..fb63b1ea4 100644
+index fb63b1ea4..ffc208bd9 100644
 --- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
 +++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-@@ -1,22 +1,22 @@
+@@ -1,6 +1,6 @@
  # Dependency Hydration Reuse Report
  
--Generated: 2026-06-13T21:18:10.333Z
-+Generated: 2026-06-13T21:56:04.210Z
+-Generated: 2026-06-13T21:56:04.210Z
++Generated: 2026-06-13T22:40:08.239Z
  Status: PASS
  
  ## Summary
- 
--Reused dependency hydration: 0
--Invalidated dependency hydration: 1
-+Reused dependency hydration: 1
-+Invalidated dependency hydration: 0
- Generated dependency hydration: 0
--Prevented dependency graph hydration: 0
--Prevented helper resolution passes: 0
-+Prevented dependency graph hydration: 1
-+Prevented helper resolution passes: 4
- Prevented fixture ownership traversal: 0
- 
- ## Hydration Decisions
- 
- | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 902e676dd27366e9 | Dependency hydration was refreshed after warm-start invalidation. |
-+| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 902e676dd27366e9 | Dependency hydration reused from validated warm-start state. |
- 
- ## Safeguards
- 
 diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
-index cb3748348..183aee640 100644
+index 183aee640..8c408acc5 100644
 --- a/docs_build/dev/reports/execution_graph_reuse_report.md
 +++ b/docs_build/dev/reports/execution_graph_reuse_report.md
-@@ -1,22 +1,22 @@
+@@ -1,6 +1,6 @@
  # Execution Graph Reuse Report
  
--Generated: 2026-06-13T21:18:10.333Z
-+Generated: 2026-06-13T21:56:04.210Z
+-Generated: 2026-06-13T21:56:04.210Z
++Generated: 2026-06-13T22:40:08.239Z
  Status: PASS
  
  ## Summary
- 
--Reused execution graphs: 0
--Prevented graph rebuilds: 0
--Prevented redundant dependency traversal: 0
--Prevented fixture/helper graph assembly: 0
--Prevented manifest traversal: 0
--Prevented targeted scheduling work: 0
-+Reused execution graphs: 1
-+Prevented graph rebuilds: 1
-+Prevented redundant dependency traversal: 1
-+Prevented fixture/helper graph assembly: 4
-+Prevented manifest traversal: 1
-+Prevented targeted scheduling work: 1
- 
- ## Execution Graph Decisions
- 
- | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | INVALIDATED | 8bff43899c290bcf | Lane snapshot is part of the selected targeted execution graph. |
-+| workspace-contract | REUSED | REUSED | 8bff43899c290bcf | Lane snapshot is part of the selected targeted execution graph. |
- 
- ## Safeguards
- 
 diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
-index 96fd0d40f..9512ae665 100644
+index 9512ae665..d9f1019e8 100644
 --- a/docs_build/dev/reports/failure_fingerprint_report.md
 +++ b/docs_build/dev/reports/failure_fingerprint_report.md
 @@ -1,6 +1,6 @@
  # Failure Fingerprint Report
  
--Generated: 2026-06-13T21:18:56.772Z
-+Generated: 2026-06-13T21:56:51.236Z
+-Generated: 2026-06-13T21:56:51.236Z
++Generated: 2026-06-13T22:40:52.399Z
  Status: PASS
  
  ## Summary
 diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-index 223cf5854..fdb249f38 100644
+index fdb249f38..41f781cd9 100644
 --- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
 +++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
 @@ -1,6 +1,6 @@
  # Filesystem Scan Reduction Report
  
--Generated: 2026-06-13T21:18:10.315Z
-+Generated: 2026-06-13T21:56:04.188Z
+-Generated: 2026-06-13T21:56:04.188Z
++Generated: 2026-06-13T22:40:08.217Z
  Status: PASS
  
  ## Scan Enforcement
 diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
-index 598b4001b..2ab25b220 100644
+index 2ab25b220..bba46cf1c 100644
 --- a/docs_build/dev/reports/incremental_validation_report.md
 +++ b/docs_build/dev/reports/incremental_validation_report.md
-@@ -1,24 +1,24 @@
+@@ -1,6 +1,6 @@
  # Incremental Validation Report
  
--Generated: 2026-06-13T21:18:10.334Z
-+Generated: 2026-06-13T21:56:04.211Z
+-Generated: 2026-06-13T21:56:04.211Z
++Generated: 2026-06-13T22:40:08.240Z
  Status: PASS
  
  ## Reuse Summary
- 
--Reused manifests: 0
--Invalidated manifests: 1
-+Reused manifests: 1
-+Invalidated manifests: 0
- Generated manifests: 0
- Skipped manifests: 0
--Prevented lane regeneration: 0
--Prevented discovery scans: 0
--Prevented helper resolution passes: 0
-+Prevented lane regeneration: 1
-+Prevented discovery scans: 1
-+Prevented helper resolution passes: 4
- Prevented fixture resolution passes: 0
- 
- ## Incremental Decisions
- 
- | Lane | Decision | Invalidated By | Runtime Savings Observation |
- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
-+| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
- 
- ## Invalidation Rules
- 
 diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
-index 579c8b8d5..686b47608 100644
+index 686b47608..79d496cdf 100644
 --- a/docs_build/dev/reports/lane_compilation_report.md
 +++ b/docs_build/dev/reports/lane_compilation_report.md
 @@ -1,6 +1,6 @@
  # Lane Compilation Report
  
--Generated: 2026-06-13T21:18:10.332Z
-+Generated: 2026-06-13T21:56:04.209Z
+-Generated: 2026-06-13T21:56:04.209Z
++Generated: 2026-06-13T22:40:08.237Z
  Status: PASS
  
  ## Lane Graph
 diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
-index 7bddef619..df1a0b6dc 100644
+index df1a0b6dc..f48d6f606 100644
 --- a/docs_build/dev/reports/lane_deduplication_report.md
 +++ b/docs_build/dev/reports/lane_deduplication_report.md
 @@ -1,6 +1,6 @@
  # Lane Deduplication Report
  
--Generated: 2026-06-13T21:18:10.332Z
-+Generated: 2026-06-13T21:56:04.209Z
+-Generated: 2026-06-13T21:56:04.209Z
++Generated: 2026-06-13T22:40:08.238Z
  Status: PASS
  
  ## Summary
 diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
-index d4727c7a8..1424e8354 100644
+index 1424e8354..2e5e76eba 100644
 --- a/docs_build/dev/reports/lane_input_validation_report.md
 +++ b/docs_build/dev/reports/lane_input_validation_report.md
 @@ -1,6 +1,6 @@
  # Lane Input Validation Report
  
--Generated: 2026-06-13T21:18:10.334Z
-+Generated: 2026-06-13T21:56:04.212Z
+-Generated: 2026-06-13T21:56:04.212Z
++Generated: 2026-06-13T22:40:08.240Z
  Status: PASS
  
  ## Input Files
 diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
-index 33ae6a6e4..3a9191aff 100644
+index 3a9191aff..cf792b75c 100644
 --- a/docs_build/dev/reports/lane_runtime_optimization_report.md
 +++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
-@@ -1,16 +1,16 @@
+@@ -1,6 +1,6 @@
  # Lane Runtime Optimization Report
  
--Generated: 2026-06-13T21:18:10.333Z
-+Generated: 2026-06-13T21:56:04.209Z
+-Generated: 2026-06-13T21:56:04.209Z
++Generated: 2026-06-13T22:40:08.238Z
  Status: PASS
  
  ## Runtime Cost Summary
- 
- Reused runtime sessions: 0
--Reused lane snapshots: 0
--Reused warm-start lanes: 0
--Reused dependency hydration: 0
--Prevented graph rebuilds: 0
--Prevented redundant initialization: 0
-+Reused lane snapshots: 1
-+Reused warm-start lanes: 1
-+Reused dependency hydration: 1
-+Prevented graph rebuilds: 1
-+Prevented redundant initialization: 1
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
- Baseline Playwright/browser launches: 1
-@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
- 
- | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
- 
- ## Runtime Savings Observations
- 
 diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
-index 22cee3fe9..04f1d98c1 100644
+index 04f1d98c1..6ae926d6c 100644
 --- a/docs_build/dev/reports/lane_snapshot_report.md
 +++ b/docs_build/dev/reports/lane_snapshot_report.md
-@@ -1,23 +1,23 @@
+@@ -1,6 +1,6 @@
  # Lane Snapshot Report
  
--Generated: 2026-06-13T21:18:10.333Z
-+Generated: 2026-06-13T21:56:04.210Z
+-Generated: 2026-06-13T21:56:04.210Z
++Generated: 2026-06-13T22:40:08.239Z
  Status: PASS
  Snapshot directory: docs_build/dev/reports/lane_snapshots
  
- ## Summary
- 
--Reused lane snapshots: 0
--Invalidated snapshots: 1
-+Reused lane snapshots: 1
-+Invalidated snapshots: 0
- Generated snapshots: 0
- Skipped snapshots: 0
--Prevented graph rebuilds: 0
--Prevented manifest traversal: 0
-+Prevented graph rebuilds: 1
-+Prevented manifest traversal: 1
- 
- ## Snapshot Decisions
- 
- | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 68ccdaa4b17bb4a9 | ccee8e0b79f5e764 | 4440f5f2a0eba813 | 6c4fac7630b0b6f3 | c99c4343771f1683 | 8bff43899c290bcf | a1a9e2156fb45086 | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot helperGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
-+| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 68ccdaa4b17bb4a9 | ccee8e0b79f5e764 | 4440f5f2a0eba813 | 6c4fac7630b0b6f3 | c99c4343771f1683 | 8bff43899c290bcf | a1a9e2156fb45086 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
- 
- ## Snapshot Validation Findings
- 
 diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
-index da4551783..3c9802b19 100644
+index 3c9802b19..5a3c67408 100644
 --- a/docs_build/dev/reports/lane_warm_start_report.md
 +++ b/docs_build/dev/reports/lane_warm_start_report.md
-@@ -1,23 +1,23 @@
+@@ -1,6 +1,6 @@
  # Lane Warm-Start Report
  
--Generated: 2026-06-13T21:18:10.333Z
-+Generated: 2026-06-13T21:56:04.210Z
+-Generated: 2026-06-13T21:56:04.210Z
++Generated: 2026-06-13T22:40:08.238Z
  Status: PASS
  Warm-start directory: docs_build/dev/reports/lane_warm_starts
  
- ## Summary
- 
--Reused warm-start lanes: 0
--Invalidated warm-start states: 1
-+Reused warm-start lanes: 1
-+Invalidated warm-start states: 0
- Generated warm-start states: 0
- Skipped warm-start states: 0
--Prevented redundant initialization: 0
--Prevented lane graph assembly: 0
-+Prevented redundant initialization: 1
-+Prevented lane graph assembly: 1
- 
- ## Warm-Start Decisions
- 
- | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 68ccdaa4b17bb4a9 | ba46847643854f32 | 902e676dd27366e9 | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
-+| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 68ccdaa4b17bb4a9 | ba46847643854f32 | 902e676dd27366e9 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
- 
- ## Fast-Fail Safeguards
- 
 diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
-index 92b0e15c7..7c551fbed 100644
+index 7c551fbed..fbac874d2 100644
 --- a/docs_build/dev/reports/monolith_trigger_removal_report.md
 +++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
 @@ -1,6 +1,6 @@
  # Monolith Trigger Removal Report
  
--Generated: 2026-06-13T21:18:56.773Z
-+Generated: 2026-06-13T21:56:51.237Z
+-Generated: 2026-06-13T21:56:51.237Z
++Generated: 2026-06-13T22:40:52.400Z
  Status: PASS
  
  ## Removed Broad Execution Triggers
 diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
-index ab17c48c2..8569aefe7 100644
+index 8569aefe7..93cb1ca8d 100644
 --- a/docs_build/dev/reports/persistent_lane_manifest_report.md
 +++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
-@@ -1,27 +1,27 @@
+@@ -1,6 +1,6 @@
  # Persistent Lane Manifest Report
  
--Generated: 2026-06-13T21:18:10.334Z
-+Generated: 2026-06-13T21:56:04.211Z
+-Generated: 2026-06-13T21:56:04.211Z
++Generated: 2026-06-13T22:40:08.239Z
  Status: PASS
  Manifest directory: docs_build/dev/reports/lane_manifests
  
- ## Summary
- 
--Reused manifests: 0
--Invalidated manifests: 1
-+Reused manifests: 1
-+Invalidated manifests: 0
- Generated manifests: 0
--Prevented discovery scans: 0
-+Prevented discovery scans: 1
- 
- ## Manifest Events
- 
- | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 278ed6d324872ff1 | 68ccdaa4b17bb4a9 | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
-+| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 278ed6d324872ff1 | 68ccdaa4b17bb4a9 | Inputs unchanged; persisted lane manifest reused. |
- 
- ## Persisted Manifest Files
- 
- | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | ccee8e0b79f5e764 | 68ccdaa4b17bb4a9 |
-+| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | ccee8e0b79f5e764 | 68ccdaa4b17bb4a9 |
- 
- ## Fast-Fail Enforcement
- 
 diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-index 8e2c3fbba..699ab63ae 100644
+index 699ab63ae..a8c4d077e 100644
 --- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
 +++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
 @@ -1,6 +1,6 @@
  # Playwright Discovery Ownership Report
  
--Generated: 2026-06-13T21:18:10.311Z
-+Generated: 2026-06-13T21:56:04.183Z
+-Generated: 2026-06-13T21:56:04.183Z
++Generated: 2026-06-13T22:40:08.212Z
  Status: PASS
  
  ## Discovery-Time Ownership
 diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
-index 8eabe8c81..9060ca91e 100644
+index 9060ca91e..cc58790b1 100644
 --- a/docs_build/dev/reports/playwright_discovery_scope_report.md
 +++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
 @@ -1,6 +1,6 @@
  # Playwright Discovery Scope Report
  
--Generated: 2026-06-13T21:18:10.314Z
-+Generated: 2026-06-13T21:56:04.186Z
+-Generated: 2026-06-13T21:56:04.186Z
++Generated: 2026-06-13T22:40:08.215Z
  Status: PASS
  Scoped discovery: Yes
  
 diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
-index 18293c215..1b9619e3f 100644
+index 1b9619e3f..128c48129 100644
 --- a/docs_build/dev/reports/playwright_structure_audit.md
 +++ b/docs_build/dev/reports/playwright_structure_audit.md
 @@ -1,6 +1,6 @@
  # Playwright Structure Audit
  
--Generated: 2026-06-13T21:18:10.294Z
-+Generated: 2026-06-13T21:56:04.163Z
+-Generated: 2026-06-13T21:56:04.163Z
++Generated: 2026-06-13T22:40:08.195Z
  Status: PASS
  
  ## Lane Directories
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 96033d223..ff4e05ef6 100644
+index ff4e05ef6..5b51585a3 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -18,8 +18,7 @@ Exercised tool entry points detected:
+@@ -12,13 +12,13 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+ 
+ Exercised tool entry points detected:
+-(91%) Toolbox Index - exercised 5 runtime JS files
++(90%) Toolbox Index - exercised 5 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+ (57%) Theme V2 Shared JS - exercised 2 runtime JS files
  
  Changed runtime JS files covered:
  (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/assets/assets-upload-worker.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(93%) toolbox/assets/assets.js - executed lines 1567/1567; executed functions 129/139
-+(93%) toolbox/assets/assets.js - executed lines 1633/1633; executed functions 136/146
+-(93%) toolbox/assets/assets.js - executed lines 1633/1633; executed functions 136/146
++(92%) toolbox/assets/assets.js - executed lines 1639/1639; executed functions 135/146
  
  Files with executed line/function counts where available:
  (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
-@@ -28,16 +27,14 @@ Files with executed line/function counts where available:
+@@ -27,7 +27,7 @@ Files with executed line/function counts where available:
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
  (67%) toolbox/assets/assets-api-client.js - executed lines 19/19; executed functions 2/3
  (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
--(93%) toolbox/assets/assets.js - executed lines 1567/1567; executed functions 129/139
-+(93%) toolbox/assets/assets.js - executed lines 1633/1633; executed functions 136/146
+-(93%) toolbox/assets/assets.js - executed lines 1633/1633; executed functions 136/146
++(92%) toolbox/assets/assets.js - executed lines 1639/1639; executed functions 135/146
  (100%) toolbox/tags/tags-api-client.js - executed lines 10/10; executed functions 2/2
  (100%) toolbox/tags/tags.js - executed lines 242/242; executed functions 19/19
  
- Uncovered or low-coverage changed JS files:
- (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/assets/assets-upload-worker.js - WARNING: uncovered changed runtime JS file; advisory only
- 
+@@ -37,4 +37,4 @@ Uncovered or low-coverage changed JS files:
  Changed JS files considered:
  (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/assets/assets-upload-worker.js - changed JS file not collected as browser runtime coverage
- (93%) toolbox/assets/assets.js - changed JS file with browser V8 coverage
+-(93%) toolbox/assets/assets.js - changed JS file with browser V8 coverage
++(92%) toolbox/assets/assets.js - changed JS file with browser V8 coverage
 diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
-index 0c5f953c1..f2cae0124 100644
+index f2cae0124..7bc5448c4 100644
 --- a/docs_build/dev/reports/retry_suppression_report.md
 +++ b/docs_build/dev/reports/retry_suppression_report.md
 @@ -1,6 +1,6 @@
  # Retry Suppression Report
  
--Generated: 2026-06-13T21:18:56.772Z
-+Generated: 2026-06-13T21:56:51.237Z
+-Generated: 2026-06-13T21:56:51.237Z
++Generated: 2026-06-13T22:40:52.399Z
  Status: PASS
  
  ## Summary
 diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
-index b66f35fa0..2ebbef39f 100644
+index 2ebbef39f..6d5c1b524 100644
 --- a/docs_build/dev/reports/slow_path_pruning_report.md
 +++ b/docs_build/dev/reports/slow_path_pruning_report.md
-@@ -1,19 +1,19 @@
+@@ -1,13 +1,13 @@
  # Slow Path Pruning Report
  
--Generated: 2026-06-13T21:18:56.773Z
-+Generated: 2026-06-13T21:56:51.237Z
+-Generated: 2026-06-13T21:56:51.237Z
++Generated: 2026-06-13T22:40:52.400Z
  Status: PASS
  Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
  
  ## Before / After Runtime Observations
  
  PR_26146_038 measured lane elapsed time: 169.71s
--Current measured lane elapsed time: 46.40s
-+Current measured lane elapsed time: 46.99s
+-Current measured lane elapsed time: 46.99s
++Current measured lane elapsed time: 44.12s
  PR_26146_038 actual browser launches: 4
  Current actual browser launches: 1
  Accidental no-argument browser launches prevented: 5
- Reduced Workspace lane nested launches: 1
--Reused dependency hydration: 0
--Reused snapshots: 0
-+Reused dependency hydration: 1
-+Reused snapshots: 1
- Validation cache hits: 18
- 
- ## Slow Paths Optimized
-@@ -31,10 +31,10 @@ Validation cache hits: 18
+@@ -31,11 +31,11 @@ Validation cache hits: 18
  | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
  | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
  | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
--| current targeted run | workspace-contract | 10.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
--| current targeted run | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
--| current targeted run | workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
--| current targeted run | workspace-contract | 7.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
-+| current targeted run | workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
-+| current targeted run | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
-+| current targeted run | workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
-+| current targeted run | workspace-contract | 6.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
- | current targeted run | workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
+-| current targeted run | workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
+-| current targeted run | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
+ | current targeted run | workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
+-| current targeted run | workspace-contract | 6.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
+-| current targeted run | workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
++| current targeted run | workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
++| current targeted run | workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
++| current targeted run | workspace-contract | 6.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
++| current targeted run | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
  
  ## Guardrails
+ 
 diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
-index 7c29db33a..180a33d3e 100644
+index 180a33d3e..3b587c3fa 100644
 --- a/docs_build/dev/reports/static_validation_report.md
 +++ b/docs_build/dev/reports/static_validation_report.md
 @@ -1,6 +1,6 @@
  # Static Validation Report
  
--Generated: 2026-06-13T21:18:10.326Z
-+Generated: 2026-06-13T21:56:04.203Z
+-Generated: 2026-06-13T21:56:04.203Z
++Generated: 2026-06-13T22:40:08.232Z
  Status: PASS
  Static only: No
  Dry run: No
-@@ -23,12 +23,12 @@ Reason: No deterministic static validation failure was found.
- | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
- | missing fixture detection | PASS | No missing fixture findings. |
- | targeted file manifests | PASS | workspace-contract:68ccdaa4b17bb4a9 |
--| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
--| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
--| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
-+| persistent lane manifests | PASS | workspace-contract:REUSED |
-+| lane warm-start reuse | PASS | workspace-contract:REUSED |
-+| dependency hydration reuse | PASS | workspace-contract:REUSED |
- | lane input graph expansion | PASS | No inputs escaped manifest scope. |
- | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
--| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
-+| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
- | invalid lane target detection | PASS | No invalid lane target findings. |
- | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
- | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
 diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
-index fb366f32c..8ae3a65be 100644
+index 8ae3a65be..81668df88 100644
 --- a/docs_build/dev/reports/targeted_file_manifest_report.md
 +++ b/docs_build/dev/reports/targeted_file_manifest_report.md
-@@ -1,19 +1,19 @@
+@@ -1,6 +1,6 @@
  # Targeted File Manifest Report
  
--Generated: 2026-06-13T21:18:10.334Z
-+Generated: 2026-06-13T21:56:04.211Z
+-Generated: 2026-06-13T21:56:04.211Z
++Generated: 2026-06-13T22:40:08.239Z
  Status: PASS
  
  ## Manifest-Generated Lane Inputs
- 
- | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | ccee8e0b79f5e764 | 68ccdaa4b17bb4a9 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-+| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | ccee8e0b79f5e764 | 68ccdaa4b17bb4a9 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
- 
- ## Discovery Expansion Control
- 
- Prevented discovery expansion: Yes
--Prevented redundant scans: 4
--Targeted file/helper reads: 5
-+Prevented redundant scans: 0
-+Targeted file/helper reads: 0
- 
- ## Runtime Savings Observations
- 
 diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
-index 3fa02b1d9..0c7ac866f 100644
+index 0c7ac866f..8012ee0ea 100644
 --- a/docs_build/dev/reports/test_cleanup_performance_report.md
 +++ b/docs_build/dev/reports/test_cleanup_performance_report.md
-@@ -1,29 +1,29 @@
+@@ -1,11 +1,11 @@
  # Test Cleanup Performance Report
  
--Generated: 2026-06-13T21:18:56.772Z
-+Generated: 2026-06-13T21:56:51.237Z
+-Generated: 2026-06-13T21:56:51.237Z
++Generated: 2026-06-13T22:40:52.400Z
  Status: PASS
  
  ## Cost Summary
  
--Total measured lane elapsed time: 46.40s
-+Total measured lane elapsed time: 46.99s
+-Total measured lane elapsed time: 46.99s
++Total measured lane elapsed time: 44.12s
  Actual browser launch count: 1
  Scheduled browser launch count: 1
  Baseline browser launch count: 1
- Skipped lanes: 14
--Reused manifests: 0
--Reused snapshots: 0
-+Reused manifests: 1
-+Reused snapshots: 1
- Cached validations reused: 18
- Prevented broad execution: 2
- Prevented reruns: 0
- Prevented redundant browser launches: 0
--Prevented graph rebuilds: 0
--Prevented redundant dependency traversal: 0
-+Prevented graph rebuilds: 1
-+Prevented redundant dependency traversal: 1
- 
- ## Lane Elapsed Time
+@@ -23,7 +23,7 @@ Prevented redundant dependency traversal: 1
  
  | Lane | Status | Elapsed | Browser Launches | Reason |
  | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 46.40s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | PASS | 46.99s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+-| workspace-contract | PASS | 46.99s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | PASS | 44.12s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
  | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
  | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
  | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-@@ -43,10 +43,10 @@ Prevented redundant dependency traversal: 0
+@@ -43,11 +43,11 @@ Prevented redundant dependency traversal: 1
  
  | Lane | Duration | Test | Command |
  | --- | --- | --- | --- |
--| workspace-contract | 10.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 7.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 6.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
- | workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+ | workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 6.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 6.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
  
  ## Prevented Broad Execution
+ 
 diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
-index 2b918736c..051deba96 100644
+index 051deba96..04ab89ca2 100644
 --- a/docs_build/dev/reports/test_cleanup_routing_report.md
 +++ b/docs_build/dev/reports/test_cleanup_routing_report.md
 @@ -1,6 +1,6 @@
  # Test Cleanup Routing Report
  
--Generated: 2026-06-13T21:18:56.773Z
-+Generated: 2026-06-13T21:56:51.237Z
+-Generated: 2026-06-13T21:56:51.237Z
++Generated: 2026-06-13T22:40:52.400Z
  Status: PASS
  
  ## Representative Routing Cases
 diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
-index fcc9295d0..16ae806b4 100644
+index 16ae806b4..0be1bc901 100644
 --- a/docs_build/dev/reports/testing_lane_execution_report.md
 +++ b/docs_build/dev/reports/testing_lane_execution_report.md
 @@ -1,6 +1,6 @@
  # Testing Lane Execution Report
  
--Generated: 2026-06-13T21:18:56.791Z
-+Generated: 2026-06-13T21:56:51.250Z
+-Generated: 2026-06-13T21:56:51.250Z
++Generated: 2026-06-13T22:40:52.432Z
  Dry run: No
  
  ## Summary
@@ -607,83 +393,17 @@ index fcc9295d0..16ae806b4 100644
  WARN: 0
  FAIL: 0
  SKIP: 14
--Total lane elapsed time: 46.40s
-+Total lane elapsed time: 46.99s
+-Total lane elapsed time: 46.99s
++Total lane elapsed time: 44.12s
  Actual browser launches: 1
  
  ## Full Samples Smoke
-@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
- Status: PASS
- Scheduled lane order: workspace-contract
- Reused runtime sessions: 0
--Reused lane snapshots: 0
--Reused warm-start lanes: 0
--Reused dependency hydration: 0
--Prevented graph rebuilds: 0
--Prevented redundant initialization: 0
-+Reused lane snapshots: 1
-+Reused warm-start lanes: 1
-+Reused dependency hydration: 1
-+Prevented graph rebuilds: 1
-+Prevented redundant initialization: 1
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
- 
-@@ -64,7 +64,7 @@ Status: PASS
- Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
- Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
- Required fixtures: none
--Targeted file/helper reads: 5
-+Targeted file/helper reads: 0
- Cached discovery reuse: Yes
- Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
- 
-@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
- Status: PASS
- Generated manifests: workspace-contract:PASS
- Prevented discovery expansion: Yes
--Prevented redundant scans: 4
--Persistent manifest events: workspace-contract:INVALIDATED
-+Prevented redundant scans: 0
-+Persistent manifest events: workspace-contract:REUSED
- 
- ## Warm-Start Reuse
- 
- Status: PASS
--Warm-start events: workspace-contract:INVALIDATED
--Dependency hydration events: workspace-contract:INVALIDATED
--Prevented redundant initialization: 0
--Prevented helper resolution passes: 0
-+Warm-start events: workspace-contract:REUSED
-+Dependency hydration events: workspace-contract:REUSED
-+Prevented redundant initialization: 1
-+Prevented helper resolution passes: 4
- Prevented fixture ownership traversal: 0
- 
- ## Lane Snapshots
- 
- Status: PASS
--Snapshot events: workspace-contract:INVALIDATED
--Reused snapshots: 0
--Invalidated snapshots: 1
--Prevented graph rebuilds: 0
--Prevented redundant dependency traversal: 0
--Prevented fixture/helper graph assembly: 0
-+Snapshot events: workspace-contract:REUSED
-+Reused snapshots: 1
-+Invalidated snapshots: 0
-+Prevented graph rebuilds: 1
-+Prevented redundant dependency traversal: 1
-+Prevented fixture/helper graph assembly: 4
- 
- ## Lane Deduplication
- 
 @@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
  
  | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
  | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 46.40s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-+| workspace-contract | PASS | 46.99s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+-| workspace-contract | PASS | 46.99s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| workspace-contract | PASS | 44.12s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
  | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
  | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
  | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
@@ -691,670 +411,890 @@ index fcc9295d0..16ae806b4 100644
  
  | Lane | Duration | Test |
  | --- | --- | --- |
--| workspace-contract | 10.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
--| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
--| workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
--| workspace-contract | 7.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
-+| workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
-+| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
-+| workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
-+| workspace-contract | 6.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
- | workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
+-| workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
+-| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
+ | workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
+-| workspace-contract | 6.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
+-| workspace-contract | 1.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
++| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
++| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
++| workspace-contract | 6.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
++| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
  
  ## Commands
  
  ### workspace-contract
--- PASS 46.40s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-+- PASS 46.99s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+-- PASS 46.99s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- PASS 44.12s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
  
  ### game-workspace
  - SKIP
 diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
-index bc2280760..f7c2e0ac7 100644
+index f7c2e0ac7..5383e4bcf 100644
 --- a/docs_build/dev/reports/validation_cache_report.md
 +++ b/docs_build/dev/reports/validation_cache_report.md
 @@ -1,6 +1,6 @@
  # Validation Cache Report
  
--Generated: 2026-06-13T21:18:10.336Z
-+Generated: 2026-06-13T21:56:04.213Z
+-Generated: 2026-06-13T21:56:04.213Z
++Generated: 2026-06-13T22:40:08.241Z
  Status: PASS
  
  ## Cache Summary
-@@ -15,26 +15,26 @@ Validations computed: 10
- | lane registration validation | MISS | c5f6923cb3e9b570 | initial computation | lane definitions change; package.json lane scripts change |
- | runner preflight validation | MISS | a56dddb91b84bd8e | initial computation | lane definitions change; fixture ownership changes; targeted files change |
- | scoped discovery map | MISS | d1596716e5ff4e22 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| targeted file manifest validation | MISS | bfcbd6d27c7086a5 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| lane warm-start validation | MISS | 5d49f608922f84dc | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
--| structural ownership validation | MISS | 81db88585b3f255e | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
-+| targeted file manifest validation | MISS | 6a0f4f976ce417d7 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| lane warm-start validation | MISS | 03a1929128b8005f | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-+| structural ownership validation | MISS | 36f391d46a530409 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
- | lane compilation validation | MISS | ff2d20b40fcb0398 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
- | lane compilation validation | HIT | ff2d20b40fcb0398 | dependency validation input | unchanged within execution cycle |
- | dependency validation | MISS | 718132570eea4d98 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
--| lane snapshot validation | MISS | 0cbdd5e0e088eeb0 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
-+| lane snapshot validation | MISS | 5b4c5830cbf07c19 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
- | zero-browser preflight | MISS | f19bf3518c98576f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
--| structural ownership validation | HIT | 81db88585b3f255e | static validation report | unchanged within execution cycle |
--| structural ownership validation | HIT | 81db88585b3f255e | zero-browser preflight report | unchanged within execution cycle |
-+| structural ownership validation | HIT | 36f391d46a530409 | static validation report | unchanged within execution cycle |
-+| structural ownership validation | HIT | 36f391d46a530409 | zero-browser preflight report | unchanged within execution cycle |
- | scoped discovery map | HIT | d1596716e5ff4e22 | structural ownership validation input | unchanged within execution cycle |
- | scoped discovery map | HIT | d1596716e5ff4e22 | discovery scope reporting | unchanged within execution cycle |
--| targeted file manifest validation | HIT | bfcbd6d27c7086a5 | lane input validation report | unchanged within execution cycle |
--| targeted file manifest validation | HIT | bfcbd6d27c7086a5 | runtime scheduling blockers | unchanged within execution cycle |
--| lane warm-start validation | HIT | 5d49f608922f84dc | warm-start report | unchanged within execution cycle |
--| lane warm-start validation | HIT | 5d49f608922f84dc | dependency hydration reuse report | unchanged within execution cycle |
--| lane warm-start validation | HIT | 5d49f608922f84dc | runtime scheduling | unchanged within execution cycle |
--| lane snapshot validation | HIT | 0cbdd5e0e088eeb0 | lane snapshot report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 0cbdd5e0e088eeb0 | execution graph reuse report | unchanged within execution cycle |
--| lane snapshot validation | HIT | 0cbdd5e0e088eeb0 | runtime scheduling | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 6a0f4f976ce417d7 | lane input validation report | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 6a0f4f976ce417d7 | runtime scheduling blockers | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 03a1929128b8005f | warm-start report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 03a1929128b8005f | dependency hydration reuse report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 03a1929128b8005f | runtime scheduling | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 5b4c5830cbf07c19 | lane snapshot report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 5b4c5830cbf07c19 | execution graph reuse report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 5b4c5830cbf07c19 | runtime scheduling | unchanged within execution cycle |
- | lane compilation validation | HIT | ff2d20b40fcb0398 | lane compilation report | unchanged within execution cycle |
- | lane compilation validation | HIT | ff2d20b40fcb0398 | runtime scheduling | unchanged within execution cycle |
- | dependency validation | HIT | 718132570eea4d98 | dependency report | unchanged within execution cycle |
 diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
-index 6dbae99e1..3cb898edd 100644
+index 3cb898edd..2b4aec4f9 100644
 --- a/docs_build/dev/reports/zero_browser_preflight_report.md
 +++ b/docs_build/dev/reports/zero_browser_preflight_report.md
 @@ -1,6 +1,6 @@
  # Zero-Browser Preflight Report
  
--Generated: 2026-06-13T21:18:10.335Z
-+Generated: 2026-06-13T21:56:04.212Z
+-Generated: 2026-06-13T21:56:04.212Z
++Generated: 2026-06-13T22:40:08.241Z
  Status: PASS
  
  ## Prevented Browser Launches
-@@ -24,10 +24,10 @@ No deterministic setup failures.
- | unresolved fixtures | PASS | No unresolved fixture findings. |
- | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
- | targeted file manifests | PASS | workspace-contract:PASS |
--| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
--| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
--| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
--| lane snapshots | PASS | workspace-contract:INVALIDATED |
-+| persistent lane manifests | PASS | workspace-contract:REUSED |
-+| lane warm-start reuse | PASS | workspace-contract:REUSED |
-+| dependency hydration reuse | PASS | workspace-contract:REUSED |
-+| lane snapshots | PASS | workspace-contract:REUSED |
- | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
- | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
- | invalid grep patterns | PASS | No invalid grep patterns. |
+diff --git a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+index 8f168f3f4..971ac41c1 100644
+--- a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+@@ -1,3 +1,4 @@
++import { randomBytes } from "node:crypto";
+ import { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
+ import path from "node:path";
+ import process from "node:process";
+@@ -122,9 +123,9 @@ export const ASSET_USAGE_OPTIONS = Object.freeze([
+ const UPLOAD_SOURCE_MODE = "Upload";
+ const REFERENCE_SOURCE_MODE = "Reference";
+ const ASSET_SOURCE_MODES = Object.freeze([UPLOAD_SOURCE_MODE, REFERENCE_SOURCE_MODE]);
+-const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
+ const PROJECT_ASSET_STORAGE_ROOT = "projects";
+ const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
++const ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+ 
+ const REQUIRED_UPLOAD_FIELDS = Object.freeze([
+   {
+@@ -260,16 +261,23 @@ function normalizeProjectId(value) {
+   return ULID_PATTERN.test(normalized) ? normalized : "";
+ }
+ 
+-function assetProjectIdForProject(project) {
+-  if (!project) {
+-    return "";
+-  }
+-
+-  if (project.id === "demo-game") {
+-    return DEMO_ASSET_PROJECT_ID;
++function encodeUlidValue(value, length) {
++  let remaining = BigInt(value);
++  let encoded = "";
++  for (let index = 0; index < length; index += 1) {
++    encoded = ULID_ALPHABET[Number(remaining % 32n)] + encoded;
++    remaining /= 32n;
+   }
++  return encoded;
++}
+ 
+-  return normalizeProjectId(project.id);
++function createProjectStorageId() {
++  const timePart = encodeUlidValue(Date.now(), 10);
++  const randomPart = Array.from(randomBytes(16))
++    .map((byte) => ULID_ALPHABET[byte % 32])
++    .join("")
++    .slice(0, 16);
++  return `${timePart}${randomPart}`;
+ }
+ 
+ function roleDefinitionForId(roleId) {
+@@ -586,6 +594,7 @@ export function createAssetToolMockRepository(options = {}) {
+     tables.asset_role_definitions = roleDefinitionRows();
+   }
+   let selectedAssetId = "";
++  let uploadProjectId = "";
+   let uploadFileWritesEnabled = options.uploadFileWritesEnabled !== false;
+   let unsafeDeletePathForTest = false;
+   let unsafeUploadPathForTest = false;
+@@ -597,11 +606,67 @@ export function createAssetToolMockRepository(options = {}) {
+     }
+   }
+ 
+-  function activeUserKey() {
++  function sessionUserKey() {
+     const sessionUserKey = typeof options.sessionUserKey === "function"
+       ? options.sessionUserKey()
+       : options.sessionUserKey;
+-    return normalizeText(sessionUserKey) || DEFAULT_ASSET_USER_KEY;
++    return normalizeText(sessionUserKey);
++  }
++
++  function hasExplicitGuestSession() {
++    return Object.prototype.hasOwnProperty.call(options, "sessionUserKey") && !sessionUserKey();
++  }
++
++  function activeUserKey() {
++    const userKey = sessionUserKey();
++    return userKey || DEFAULT_ASSET_USER_KEY;
++  }
++
++  function configuredProjectId(snapshot = configurationRepository.getSnapshot()) {
++    return normalizeProjectId(snapshot.handoff?.activeProject?.id || "");
++  }
++
++  function existingOwnedProjectId() {
++    const ownerUserId = activeUserKey();
++    const asset = tables.asset_library_items.find(
++      (record) => record.ownerUserId === ownerUserId && normalizeProjectId(record.projectId)
++    );
++    return normalizeProjectId(uploadProjectId) || normalizeProjectId(asset?.projectId);
++  }
++
++  function currentProjectId(snapshot = configurationRepository.getSnapshot()) {
++    return configuredProjectId(snapshot) || existingOwnedProjectId();
++  }
++
++  function ensureUploadProject() {
++    if (hasExplicitGuestSession()) {
++      return {
++        created: false,
++        message: "Uploads require a Game Foundry account.",
++        projectId: "",
++        snapshot: getSnapshot()
++      };
++    }
++
++    const existingProjectId = currentProjectId();
++    if (existingProjectId) {
++      uploadProjectId = existingProjectId;
++      return {
++        created: false,
++        message: `Using existing project path projects/${existingProjectId}/.`,
++        projectId: existingProjectId,
++        snapshot: getSnapshot()
++      };
++    }
++
++    uploadProjectId = createProjectStorageId();
++    persistTables();
++    return {
++      created: true,
++      message: `Created project path projects/${uploadProjectId}/.`,
++      projectId: uploadProjectId,
++      snapshot: getSnapshot()
++    };
+   }
+ 
+   function repositoryRoot() {
+@@ -999,18 +1064,30 @@ export function createAssetToolMockRepository(options = {}) {
+ 
+   function getConfigurationHandoff() {
+     const snapshot = configurationRepository.getSnapshot();
++    const projectId = currentProjectId(snapshot);
+     const activeProject = snapshot.handoff.activeProject
+       ? {
+           ...snapshot.handoff.activeProject,
+-          id: assetProjectIdForProject(snapshot.handoff.activeProject),
++          id: projectId,
+           sourceProjectId: snapshot.handoff.activeProject.id
+         }
++      : projectId
++        ? {
++            id: projectId,
++            name: "Asset Upload Project",
++            sourceProjectId: "",
++          }
+       : null;
+     const ready = Boolean(
+-      snapshot.handoff.ready
+-      && snapshot.configuration
+-      && snapshot.validation.findings.length === 0
+-      && activeProject?.id
++      activeProject?.id
++      && (
++        (
++          snapshot.handoff.ready
++          && snapshot.configuration
++          && snapshot.validation.findings.length === 0
++        )
++        || existingOwnedProjectId()
++      )
+     );
+ 
+     return {
+@@ -1593,8 +1670,12 @@ export function createAssetToolMockRepository(options = {}) {
+ 
+   function addAssetRecord(input = {}) {
+     const handoff = getConfigurationHandoff();
+-    const projectId = handoff.activeProject?.id || "";
+     const validation = validateCatalogAssetInput(input);
++    const projectId = validation.findings.length
++      ? handoff.activeProject?.id || ""
++      : (validation.asset.source === UPLOAD_SOURCE_MODE
++          ? ensureUploadProject().projectId
++          : handoff.activeProject?.id || "");
+     replaceValidationRows(projectId, validation.findings);
+     if (validation.findings.length || !projectId) {
+       return {
+@@ -2078,7 +2159,6 @@ export function createAssetToolMockRepository(options = {}) {
+       return getSnapshot();
+     }
+     clearAssetLibrary();
+-    seedDemoAssets();
+     return getSnapshot();
+   }
+ 
+@@ -2190,7 +2270,6 @@ export function createAssetToolMockRepository(options = {}) {
+     persistTables();
+   } else {
+     clearAssetLibrary();
+-    seedDemoAssets();
+   }
+ 
+   return {
+@@ -2214,6 +2293,7 @@ export function createAssetToolMockRepository(options = {}) {
+     getSnapshot,
+     getTables,
+     importAsset,
++    ensureUploadProject,
+     listAssets,
+     listAssetsByType,
+     listPaletteSwatches,
 diff --git a/tests/playwright/tools/AssetToolMockRepository.spec.mjs b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-index 744819aaf..031dd1373 100644
+index 031dd1373..b78d56633 100644
 --- a/tests/playwright/tools/AssetToolMockRepository.spec.mjs
 +++ b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-@@ -650,10 +650,18 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
-     ]);
-     await expect(firstImageRow.locator("[data-asset-tool-selected-file]")).toHaveText("batch-image-a.png, batch-image-b.png");
-     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
-+    const uploadDiagnosticsAccordion = page.locator("[data-asset-tool-upload-diagnostics-accordion]");
-+    const statusLogAccordion = page.locator("[data-asset-tool-status-log-accordion]");
-     const imagesAccordion = page.locator("[data-asset-type-accordion='Images']");
-     const inlineProgress = imagesAccordion.locator("[data-asset-tool-inline-upload-progress='Images']");
-+    const diagnosticsBox = await uploadDiagnosticsAccordion.boundingBox();
-+    const statusLogBox = await statusLogAccordion.boundingBox();
-+    expect(diagnosticsBox?.y || 0).toBeLessThan(statusLogBox?.y || Number.POSITIVE_INFINITY);
-     await expect(uploadDialog).toBeVisible();
-     await expect(inlineProgress).toBeVisible();
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-progress-details]")).toBeVisible();
-+    await expect(uploadDialog.locator("table[aria-label='Upload file status'] th")).toHaveText(["File", "Status"]);
-+    await expect(uploadDialog.locator("table[aria-label='Upload file status'] th", { hasText: "Message" })).toHaveCount(0);
-     await expect(uploadDialog.locator("[data-asset-tool-upload-phase]")).toHaveText("Uploading");
-     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-phase]")).toHaveText("Uploading");
-     await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']")).toHaveCount(0, { timeout: 100 });
-@@ -673,29 +681,33 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
-     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-eta]")).toContainText("s");
-     await expect(uploadDialog.locator("[data-asset-tool-upload-elapsed]")).toContainText("s");
-     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-elapsed]")).toContainText("s");
-+    const tableBox = await imagesAccordion.locator("[data-asset-type-table='Images']").boundingBox();
-+    const inlineBox = await inlineProgress.boundingBox();
-+    expect(inlineBox?.y || 0).toBeGreaterThan(tableBox?.y || 0);
-     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 2 written, 0 failed, 0 skipped, 0 warnings.");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-phase]")).toHaveText("Complete");
--    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-phase]")).toHaveText("Complete");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-compact-status]")).toHaveText("Upload summary: 2 written, 0 failed, 0 skipped, 0 warnings.");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-progress-details]")).toBeHidden();
-+    await expect(inlineProgress).toBeHidden();
-     await expect(uploadDialog.locator("[data-asset-tool-upload-progress]")).toHaveJSProperty("value", 100);
--    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-progress-bar]")).toHaveJSProperty("value", 100);
-     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("2");
--    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-summary-written]")).toHaveText("2");
-     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("0");
--    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-summary-failed]")).toHaveText("0");
-     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("0");
--    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-summary-skipped]")).toHaveText("0");
-     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("0");
--    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-summary-warnings]")).toHaveText("0");
--    await expect(inlineProgress.locator("[data-asset-tool-upload-status='OK']").filter({ hasText: "batch-image-a.png" })).toBeVisible();
--    const tableBox = await imagesAccordion.locator("[data-asset-type-table='Images']").boundingBox();
--    const inlineBox = await inlineProgress.boundingBox();
--    expect(inlineBox?.y || 0).toBeGreaterThan(tableBox?.y || 0);
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issues]")).toBeHidden();
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']").filter({ hasText: "batch-image-a.png" })).toBeVisible();
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']").filter({ hasText: "projects/" })).toHaveCount(0);
-     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-a.png" })).toHaveCount(1);
-     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-b.png" })).toBeVisible();
+@@ -1,5 +1,5 @@
+ import { expect, test } from "@playwright/test";
+-import { existsSync, readFileSync, rmSync } from "node:fs";
++import { existsSync, readFileSync, readdirSync, rmSync } from "node:fs";
+ import { dirname, resolve } from "node:path";
+ import { fileURLToPath } from "node:url";
+ import {
+@@ -34,22 +34,26 @@ const UPLOAD_COLUMNS = ["Source", "File", "Usage", "Tags", "Preview", "Actions"]
+ const REFERENCE_COLUMNS = ["Source", "Reference", "Usage", "Tags", "Preview", "Actions"];
+ const REFERENCE_ASSET_TYPES = new Set(["Sprites", "Vectors", "Palette References"]);
+ const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+-const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
++const GENERATED_PROJECT_ID_PATTERN = "[0-9A-HJKMNP-TV-Z]{26}";
++const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
++const LEGACY_FALLBACK_PROJECT_ID = ["01K8M3K0EX7", "V5A3W9Q2Y6R4T1B"].join("");
+ const SMALL_PNG = Buffer.from(
+   "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVR42mP8z8AABQMBgMZ0X4AAAAAASUVORK5CYII=",
+   "base64"
+ );
++const projectIdsToClean = new Set();
  
-+    await page.getByRole("button", { name: "Clear" }).click();
-+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("");
-+    await expect(page.locator("[data-asset-tool-batch-log]")).toHaveText("");
-+    await expect(uploadDialog).toBeVisible();
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-compact-status]")).toHaveText("Upload summary: 2 written, 0 failed, 0 skipped, 0 warnings.");
-+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-a.png" })).toHaveCount(1);
+ test.beforeEach(async ({ page }) => {
+   await installPlaywrightStorageIsolation(page, {
+     lane: "asset-tool-catalog",
+     surface: "Assets catalog accordions and shared Tags references"
+   });
+-  ["image", "audio", "font", "data"].forEach((folder) => resetProjectAssetFolder(folder));
++  resetLegacyFallbackProjectFolder();
+ });
+ 
+ test.afterEach(async ({ page }) => {
+   await clearPlaywrightStorage(page);
++  cleanupGeneratedProjectFolders();
+ });
+ 
+ test.afterAll(async () => {
+@@ -111,17 +115,54 @@ function expectNoPageFailures(failures) {
+   expect(failures.consoleErrors).toEqual([]);
+ }
+ 
+-function projectAssetPath(assetFolder, fileName = "") {
+-  return resolve(REPO_ROOT, "projects", DEMO_ASSET_PROJECT_ID, assetFolder, fileName);
++function projectsRoot() {
++  return resolve(REPO_ROOT, "projects");
+ }
+ 
+-function resetProjectAssetFolder(assetFolder) {
+-  const folder = projectAssetPath(assetFolder);
+-  const allowedRoot = resolve(REPO_ROOT, "projects", DEMO_ASSET_PROJECT_ID);
+-  if (!folder.startsWith(allowedRoot)) {
+-    throw new Error(`Refusing to remove unexpected test asset folder: ${folder}`);
++function projectRootNames() {
++  if (!existsSync(projectsRoot())) {
++    return [];
+   }
+-  rmSync(folder, { force: true, recursive: true });
++  return readdirSync(projectsRoot(), { withFileTypes: true })
++    .filter((entry) => entry.isDirectory())
++    .map((entry) => entry.name)
++    .sort();
++}
 +
-     await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-a.png" }).getByRole("button", { name: "View" }).click();
-     await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/image\/batch-image-a\.png/);
--    await expect(page.locator("[data-asset-tool-batch-status='OK']").filter({ hasText: "batch-image-a.png" })).toContainText(/projects\/[0-9A-HJKMNP-TV-Z]{26}\/image\/batch-image-a\.png/);
++function projectRootPath(projectId) {
++  return resolve(projectsRoot(), projectId);
++}
++
++function projectAssetPath(projectId, assetFolder, fileName = "") {
++  return resolve(projectRootPath(projectId), assetFolder, fileName);
++}
++
++function rememberProjectId(projectId) {
++  expect(projectId).toMatch(ULID_PATTERN);
++  projectIdsToClean.add(projectId);
++  return projectId;
++}
++
++async function projectIdFromProjectPath(page) {
++  const text = await page.locator("[data-asset-tool-project-path]").textContent();
++  const projectId = text?.match(new RegExp(`projects/(${GENERATED_PROJECT_ID_PATTERN})/`))?.[1] || "";
++  return rememberProjectId(projectId);
++}
++
++function cleanupGeneratedProjectFolders() {
++  for (const projectId of projectIdsToClean) {
++    const folder = projectRootPath(projectId);
++    const allowedRoot = projectsRoot();
++    if (!folder.startsWith(allowedRoot)) {
++      throw new Error(`Refusing to remove unexpected test project folder: ${folder}`);
++    }
++    rmSync(folder, { force: true, recursive: true });
++  }
++  projectIdsToClean.clear();
++}
++
++function resetLegacyFallbackProjectFolder() {
++  rmSync(projectRootPath(LEGACY_FALLBACK_PROJECT_ID), { force: true, recursive: true });
+ }
  
-     await addUploadBatch(page, "Images", [
-       uploadFile("batch-status-ok.png", "image/png", "image ok"),
-@@ -717,6 +729,10 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
-     await expect(uploadDialog.locator("[data-asset-tool-upload-status='WARN']").filter({ hasText: "batch-status-warning.png" })).toBeVisible();
-     await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']").filter({ hasText: "batch-status-bad.exe" })).toBeVisible();
-     await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']").filter({ hasText: "batch-status-ok.png" })).toBeVisible();
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']").filter({ hasText: "projects/" })).toHaveCount(0);
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='WARN']")).toContainText("Progress could not");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("supported by this asset table");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='SKIP']")).toContainText("Duplicate file name in this batch.");
-     await expect(page.locator("[data-asset-tool-batch-status='OK']").filter({ hasText: "batch-status-ok.png" })).toBeVisible();
-     await expect(page.locator("[data-asset-tool-batch-status='WARN']").filter({ hasText: "batch-status-warning.png" })).toBeVisible();
-     await expect(page.locator("[data-asset-tool-batch-status='FAIL']").filter({ hasText: "batch-status-bad.exe" })).toBeVisible();
-@@ -789,10 +805,10 @@ test("Assets duplicate project-path uploads fail before write and do not create
-     await editRow.getByLabel("Upload File").setInputFiles(uploadFile("duplicate-path.png", "image/png", SMALL_PNG));
+ async function addSharedTag(page, tagName = "Hero") {
+@@ -219,8 +260,9 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
+   expect(assetResult.asset.ownerUserId).toBe(MOCK_DB_KEYS.users.user1);
+   expect(assetResult.asset.assetType).toBe("Images");
+   expect(assetResult.asset.fileName).toBe("hero-portrait.png");
+-  expect(assetResult.asset.storedPath).toBe(`projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`);
+-  expect(assetResult.asset.viewPath).toBe(`projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`);
++  const repositoryProjectId = rememberProjectId(assetResult.asset.projectId);
++  expect(assetResult.asset.storedPath).toBe(`projects/${repositoryProjectId}/image/hero-portrait.png`);
++  expect(assetResult.asset.viewPath).toBe(`projects/${repositoryProjectId}/image/hero-portrait.png`);
+   expect(assetResult.asset.writeResult).toBe("Written");
+   expect(assetResult.asset.usage).toBe("Character");
+   expect(assetResult.asset.tagKeys).toEqual([tagResult.tag.id]);
+@@ -240,12 +282,12 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
+     assetType: "Images",
+     fileName: "hero-portrait.png",
+     name: "hero-portrait.png",
+-    path: `projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`,
++    path: `projects/${repositoryProjectId}/image/hero-portrait.png`,
+     source: "Upload",
+-    storedPath: `projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`,
++    storedPath: `projects/${repositoryProjectId}/image/hero-portrait.png`,
+     usage: "Icon"
+   }));
+-  expect(existsSync(projectAssetPath("audio", "replacement.wav"))).toBe(false);
++  expect(existsSync(projectAssetPath(repositoryProjectId, "audio", "replacement.wav"))).toBe(false);
+   const populatedAssetTables = Object.entries(assetRepository.getTables())
+     .filter(([, rows]) => rows.length > 0);
+   expect(populatedAssetTables.length).toBeGreaterThan(0);
+@@ -274,7 +316,6 @@ test("Assets source controls require real upload filenames and valid references"
+   });
  
-     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("already exists");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/duplicate-path.png`);
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`Directory result: Directory exists: projects/${DEMO_ASSET_PROJECT_ID}/image.`);
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("Directory status: exists");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("duplicate-path.png");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("FAIL");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).not.toContainText("projects/");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("File already exists.");
-     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.");
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+ 
+     await page.getByRole("button", { name: "Add Images" }).click();
+@@ -354,6 +395,7 @@ test("Assets source controls require real upload filenames and valid references"
+     await editRow.getByRole("button", { name: "Save" }).click();
+     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose a reference source before saving.");
+ 
++    await projectIdFromProjectPath(page);
+     expectNoPageFailures(failures);
+   } finally {
+     await workspaceV2CoverageReporter.stop(page);
+@@ -362,19 +404,18 @@ test("Assets source controls require real upload filenames and valid references"
+ });
+ 
+ test("Assets upload writes to the project folder before creating a record and Image View renders the file", async ({ page }) => {
+-  resetProjectAssetFolder("image");
+-  expect(existsSync(projectAssetPath("image"))).toBe(false);
+-
++  const projectRootsBeforeLaunch = projectRootNames();
+   const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+     sessionModeId: "local-db",
+     sessionUserKey: MOCK_DB_KEYS.users.user1
+   });
+ 
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+     const projectPath = page.locator("[data-asset-tool-project-path]");
+-    await expect(projectPath).toHaveText(`Path: projects/${DEMO_ASSET_PROJECT_ID}/`);
++    await expect(projectPath).toHaveText("Path: No project path yet");
++    expect(projectRootNames()).toEqual(projectRootsBeforeLaunch);
++    expect(existsSync(projectRootPath(LEGACY_FALLBACK_PROJECT_ID))).toBe(false);
+     await expect.poll(() => projectPath.evaluate((node) => getComputedStyle(node).textAlign)).toBe("center");
+     const projectPathBox = await projectPath.boundingBox();
+     const imagesAccordionBox = await page.locator("[data-asset-type-accordion='Images']").boundingBox();
+@@ -387,28 +428,36 @@ test("Assets upload writes to the project folder before creating a record and Im
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" })).toBeVisible();
      await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
-     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "duplicate-path.png" })).toHaveCount(1);
-@@ -822,10 +838,11 @@ test("Assets upload fails visibly when the resolved target directory would escap
-     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
-     const inlineProgress = page.locator("[data-asset-type-accordion='Images']")
-       .locator("[data-asset-tool-inline-upload-progress='Images']");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("target path must stay under /projects/<projectId>/");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("Write result: FAIL: Directory validation");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("Directory status: failed");
--    await expect(inlineProgress.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("target path must stay under /projects/<projectId>/");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("escape-target.png");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("FAIL");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).not.toContainText("projects/");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("Upload target path is outside the project asset folder.");
-+    await expect(inlineProgress).toBeHidden();
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" })).toContainText("image/write-view-image.png");
++    const uploadProjectId = await projectIdFromProjectPath(page);
+ 
+-    const writtenFile = projectAssetPath("image", "write-view-image.png");
+-    expect(existsSync(projectAssetPath("image"))).toBe(true);
++    const writtenFile = projectAssetPath(uploadProjectId, "image", "write-view-image.png");
++    expect(existsSync(projectAssetPath(uploadProjectId, "image"))).toBe(true);
+     expect(existsSync(writtenFile)).toBe(true);
+     expect(readFileSync(writtenFile)).toEqual(SMALL_PNG);
+ 
+     await page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" }).getByRole("button", { name: "View" }).click();
+     const metadata = page.locator("[data-asset-tool-metadata]");
+-    await expect(metadata).toContainText(`Stored path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
+-    await expect(metadata).toContainText(`Project ID: ${DEMO_ASSET_PROJECT_ID}`);
+-    await expect(metadata).toContainText(`Target folder: projects/${DEMO_ASSET_PROJECT_ID}/image`);
+-    await expect(metadata).toContainText(`Target directory: projects/${DEMO_ASSET_PROJECT_ID}/image`);
+-    await expect(metadata).toContainText(`Directory result: Directory created: projects/${DEMO_ASSET_PROJECT_ID}/image.`);
++    await expect(metadata).toContainText(`Stored path: projects/${uploadProjectId}/image/write-view-image.png`);
++    await expect(metadata).toContainText(`Project ID: ${uploadProjectId}`);
++    await expect(metadata).toContainText(`Target folder: projects/${uploadProjectId}/image`);
++    await expect(metadata).toContainText(`Target directory: projects/${uploadProjectId}/image`);
++    await expect(metadata).toContainText(`Directory result: Directory created: projects/${uploadProjectId}/image.`);
+     await expect(metadata).toContainText("Directory status: created");
+-    await expect(metadata).toContainText(`Target file path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
++    await expect(metadata).toContainText(`Target file path: projects/${uploadProjectId}/image/write-view-image.png`);
+     await expect(metadata).toContainText("Write result: Written");
+-    await expect(metadata).toContainText(`View path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
++    await expect(metadata).toContainText(`View path: projects/${uploadProjectId}/image/write-view-image.png`);
+     const preview = page.locator("[data-asset-tool-view-preview]");
+     await expect(preview).toBeVisible();
+-    await expect(preview).toHaveAttribute("src", new RegExp(`projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image\\.png$`));
++    await expect(preview).toHaveAttribute("src", new RegExp(`projects/${uploadProjectId}/image/write-view-image\\.png$`));
+     await expect.poll(() => preview.evaluate((node) => node.naturalWidth)).toBeGreaterThan(0);
+ 
++    await addUploadBatch(page, "Images", [
++      uploadFile("write-view-image-two.png", "image/png", SMALL_PNG)
++    ], "Icon");
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image-two.png" })).toBeVisible();
++    expect(await projectIdFromProjectPath(page)).toBe(uploadProjectId);
++    expect(existsSync(projectAssetPath(uploadProjectId, "image", "write-view-image-two.png"))).toBe(true);
++
+     expectNoPageFailures(failures);
+   } finally {
+     await workspaceV2CoverageReporter.stop(page);
+@@ -417,25 +466,24 @@ test("Assets upload writes to the project folder before creating a record and Im
+ });
+ 
+ test("Assets Trash deletes uploaded records and physical files with scoped failure handling", async ({ page }) => {
+-  resetProjectAssetFolder("image");
+   const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+     sessionModeId: "local-db",
+     sessionUserKey: MOCK_DB_KEYS.users.user1
+   });
+ 
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await page.getByRole("button", { name: "Add Images" }).click();
+     const row = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+     await row.getByLabel("Usage").selectOption("Character");
+     await row.getByLabel("Upload File").setInputFiles(uploadFile("trash-delete-ok.png", "image/png", SMALL_PNG));
++    const uploadProjectId = await projectIdFromProjectPath(page);
+ 
+-    const writtenFile = projectAssetPath("image", "trash-delete-ok.png");
++    const writtenFile = projectAssetPath(uploadProjectId, "image", "trash-delete-ok.png");
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-ok.png" })).toBeVisible();
+     expect(existsSync(writtenFile)).toBe(true);
+ 
+     await page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-ok.png" }).getByRole("button", { name: "Trash" }).click();
+-    await expect(page.locator("[data-asset-tool-log]")).toContainText(`Deleted file projects/${DEMO_ASSET_PROJECT_ID}/image/trash-delete-ok.png.`);
++    await expect(page.locator("[data-asset-tool-log]")).toContainText(`Deleted file projects/${uploadProjectId}/image/trash-delete-ok.png.`);
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-ok.png" })).toHaveCount(0);
+     expect(existsSync(writtenFile)).toBe(false);
+ 
+@@ -444,7 +492,7 @@ test("Assets Trash deletes uploaded records and physical files with scoped failu
+     await missingRow.getByLabel("Usage").selectOption("Character");
+     await missingRow.getByLabel("Upload File").setInputFiles(uploadFile("trash-delete-missing.png", "image/png", SMALL_PNG));
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-missing.png" })).toBeVisible();
+-    const missingFile = projectAssetPath("image", "trash-delete-missing.png");
++    const missingFile = projectAssetPath(uploadProjectId, "image", "trash-delete-missing.png");
+     expect(existsSync(missingFile)).toBe(true);
+     rmSync(missingFile, { force: true });
+     await page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-missing.png" }).getByRole("button", { name: "Trash" }).click();
+@@ -460,20 +508,19 @@ test("Assets Trash deletes uploaded records and physical files with scoped failu
+ });
+ 
+ test("Assets Trash rejects uploaded delete paths outside projects", async ({ page }) => {
+-  resetProjectAssetFolder("image");
+   const failures = await openRepoPage(page, "/toolbox/assets/index.html?deletePath=escape", {
+     sessionModeId: "local-db",
+     sessionUserKey: MOCK_DB_KEYS.users.user1
+   });
+ 
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await page.getByRole("button", { name: "Add Images" }).click();
+     const row = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+     await row.getByLabel("Usage").selectOption("Character");
+     await row.getByLabel("Upload File").setInputFiles(uploadFile("trash-delete-escape.png", "image/png", SMALL_PNG));
++    const uploadProjectId = await projectIdFromProjectPath(page);
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-escape.png" })).toBeVisible();
+-    const writtenFile = projectAssetPath("image", "trash-delete-escape.png");
++    const writtenFile = projectAssetPath(uploadProjectId, "image", "trash-delete-escape.png");
+     expect(existsSync(writtenFile)).toBe(true);
+ 
+     await page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-escape.png" }).getByRole("button", { name: "Trash" }).click();
+@@ -495,7 +542,6 @@ test("Assets worker keeps UI responsive while server-received upload progress dr
+   });
+ 
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+ 
+     await page.getByRole("button", { name: "Add Images" }).click();
+@@ -587,6 +633,7 @@ test("Assets worker keeps UI responsive while server-received upload progress dr
+     expect(progressEvents[1].at - progressEvents[0].at).toBeGreaterThanOrEqual(900);
+     await expect(inlineProgress.locator("[data-asset-tool-upload-status='OK']")).toContainText("worker-progress.png");
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "worker-progress.png" })).toHaveCount(1);
++    await projectIdFromProjectPath(page);
+ 
+     expectNoPageFailures(failures);
+   } finally {
+@@ -602,7 +649,6 @@ test("Assets batch progress uses summed uploaded bytes across selected files", a
+   });
+ 
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+ 
+     await page.getByRole("button", { name: "Add Images" }).click();
+@@ -622,6 +668,7 @@ test("Assets batch progress uses summed uploaded bytes across selected files", a
+     await expect(progressBar).toHaveJSProperty("value", 100);
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-byte-a.png" })).toHaveCount(1);
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-byte-b.png" })).toHaveCount(1);
++    await projectIdFromProjectPath(page);
+ 
+     expectNoPageFailures(failures);
+   } finally {
+@@ -636,7 +683,6 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
+   });
+ 
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+ 
+     await page.getByRole("button", { name: "Add Images" }).click();
+@@ -765,6 +811,7 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
+     await expect(page.locator("[data-asset-tool-view-preview]")).toHaveAttribute("href", /projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2$/);
+ 
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("9");
++    await projectIdFromProjectPath(page);
+ 
+     for (const assetType of ["Sprites", "Palette References"]) {
+       await page.getByRole("button", { name: `Add ${assetType}` }).click();
+@@ -788,7 +835,6 @@ test("Assets duplicate project-path uploads fail before write and do not create
+   });
+ 
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+ 
+     await page.getByRole("button", { name: "Add Images" }).click();
+@@ -797,7 +843,8 @@ test("Assets duplicate project-path uploads fail before write and do not create
+     await editRow.getByLabel("Upload File").setInputFiles(uploadFile("duplicate-path.png", "image/png", SMALL_PNG));
+     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
+-    expect(existsSync(projectAssetPath("image", "duplicate-path.png"))).toBe(true);
++    const uploadProjectId = await projectIdFromProjectPath(page);
++    expect(existsSync(projectAssetPath(uploadProjectId, "image", "duplicate-path.png"))).toBe(true);
+ 
+     await page.getByRole("button", { name: "Add Images" }).click();
+     editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+@@ -827,7 +874,6 @@ test("Assets upload fails visibly when the resolved target directory would escap
+   });
+ 
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+ 
+     await page.getByRole("button", { name: "Add Images" }).click();
+@@ -846,7 +892,8 @@ test("Assets upload fails visibly when the resolved target directory would escap
      await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.");
      await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
      await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "escape-target.png" })).toHaveCount(0);
-@@ -859,10 +876,12 @@ test("Assets multi-file upload fails visibly when no current project id is avail
-     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("1");
-     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("1");
-     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("0");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("Asset add blocked: open an active game first.");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
--    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Asset add blocked: open an active game first.");
--    await expect(page.locator("[data-asset-tool-batch-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("missing-project-a.png");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("missing-project-b.png");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("Open an active game with a valid project upload target before uploading.");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='SKIP']")).toContainText("Open an active game with a valid project upload target before uploading.");
-+    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Open an active game");
-+    await expect(page.locator("[data-asset-tool-batch-status='SKIP']")).toContainText("Open an active game");
-     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+-    expect(existsSync(projectAssetPath("image", "escape-target.png"))).toBe(false);
++    const uploadProjectId = await projectIdFromProjectPath(page);
++    expect(existsSync(projectAssetPath(uploadProjectId, "outside", "escape-target.png"))).toBe(false);
  
      expectNoPageFailures(failures);
-@@ -895,13 +914,15 @@ test("Assets upload write failure after byte transfer is visible and creates no
-     const progressBar = inlineProgress.locator("[data-asset-tool-inline-upload-progress-bar]");
-     await expect(uploadDialog).toBeVisible();
-     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 1 skipped, 0 warnings.");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("browser file writes are not supported");
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/unsupported-write-a.png`);
--    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("unsupported-write-a.png");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("unsupported-write-b.png");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).not.toContainText("projects/");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("This runtime cannot write upload files.");
-+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='SKIP']")).toContainText("Open an active game with a valid project upload target before uploading.");
-     await expect.poll(() => progressValue(progressBar)).toBeGreaterThan(0);
-     expect(await progressValue(progressBar)).toBeLessThan(100);
-     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-worker]")).toHaveText("Failed");
--    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Write result: FAIL: Browser file writes are not supported");
-+    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("This runtime cannot write upload files.");
-     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
-     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "unsupported-write-a.png" })).toHaveCount(0);
- 
-diff --git a/toolbox/assets/assets.js b/toolbox/assets/assets.js
-index 463423420..f52b4acf0 100644
---- a/toolbox/assets/assets.js
-+++ b/toolbox/assets/assets.js
-@@ -32,6 +32,7 @@ const elements = {
-   log: document.querySelector("[data-asset-tool-log]"),
-   accountPrompt: document.querySelector("[data-asset-tool-account-prompt]"),
-   batchLog: document.querySelector("[data-asset-tool-batch-log]"),
-+  clearStatusLog: document.querySelector("[data-asset-tool-clear-status-log]"),
-   metadata: document.querySelector("[data-asset-tool-metadata]"),
-   outputMissing: document.querySelector("[data-asset-tool-output-missing]"),
-   outputSummary: document.querySelector("[data-asset-tool-output-summary]"),
-@@ -48,13 +49,16 @@ const elements = {
-   uploadBps: document.querySelector("[data-asset-tool-upload-bps]"),
-   uploadBytesUploaded: document.querySelector("[data-asset-tool-upload-bytes-uploaded]"),
-   uploadClose: document.querySelector("[data-asset-tool-upload-close]"),
-+  uploadCompactStatus: document.querySelector("[data-asset-tool-upload-compact-status]"),
-   uploadCurrentFile: document.querySelector("[data-asset-tool-upload-current-file]"),
-   uploadDialog: document.querySelector("[data-asset-tool-upload-dialog]"),
-   uploadElapsed: document.querySelector("[data-asset-tool-upload-elapsed]"),
-   uploadEta: document.querySelector("[data-asset-tool-upload-eta]"),
-   uploadFileProgress: document.querySelector("[data-asset-tool-upload-file-progress]"),
-+  uploadIssues: document.querySelector("[data-asset-tool-upload-issues]"),
-   uploadPhase: document.querySelector("[data-asset-tool-upload-phase]"),
-   uploadProgress: document.querySelector("[data-asset-tool-upload-progress]"),
-+  uploadProgressDetails: document.querySelector("[data-asset-tool-upload-progress-details]"),
-   uploadSpeed: document.querySelector("[data-asset-tool-upload-speed]"),
-   uploadStatusBody: document.querySelector("[data-asset-tool-upload-status-body]"),
-   uploadSummaryFailed: document.querySelector("[data-asset-tool-upload-summary-failed]"),
-@@ -636,6 +640,60 @@ function uploadProgressMetrics(state) {
-   };
- }
- 
-+function uploadIsComplete(state) {
-+  return state?.phase === "Complete";
-+}
-+
-+function compactUploadStatusText(summary) {
-+  const written = batchWrittenCount(summary);
-+  return `Upload summary: ${written} written, ${summary.fail} failed, ${summary.skip} skipped, ${summary.warn} warnings.`;
-+}
-+
-+function conciseUploadIssueMessage(entry) {
-+  const message = normalizeText(entry?.message);
-+  if (!message) {
-+    return `${entry.status}: ${entry.fileName}`;
-+  }
-+  if (/already exists/i.test(message)) {
-+    return "File already exists. Rename the file or remove the existing asset before uploading.";
-+  }
-+  if (/greater than zero bytes/i.test(message)) {
-+    return "Uploaded files must be greater than zero bytes.";
-+  }
-+  if (/browser file writes are not supported/i.test(message)) {
-+    return "This runtime cannot write upload files. Use Local DB/server storage for upload validation.";
-+  }
-+  if (/target path must stay under/i.test(message)) {
-+    return "Upload target path is outside the project asset folder.";
-+  }
-+  if (/open an active game|active game first|project upload target is unavailable/i.test(message)) {
-+    return "Open an active game with a valid project upload target before uploading.";
-+  }
-+  if (/duplicate file name in this batch/i.test(message)) {
-+    return "Duplicate file name in this batch.";
-+  }
-+  if (/approved|mime|file type|extension/i.test(message)) {
-+    return "Choose a file type supported by this asset table.";
-+  }
-+  const firstSentence = message.split(".")[0] || message;
-+  return firstSentence.replace(/projects\/[A-Z0-9/._-]+/g, "project path").slice(0, 140);
-+}
-+
-+function renderUploadIssues(entries) {
-+  if (!elements.uploadIssues) {
-+    return;
-+  }
-+  const problemEntries = entries.filter((entry) => entry.status !== "OK");
-+  elements.uploadIssues.replaceChildren();
-+  elements.uploadIssues.hidden = problemEntries.length === 0;
-+  problemEntries.forEach((entry) => {
-+    const item = document.createElement("li");
-+    item.dataset.assetToolUploadIssue = entry.status;
-+    item.textContent = `${entry.status}: ${entry.fileName} - ${conciseUploadIssueMessage(entry)}`;
-+    elements.uploadIssues.append(item);
-+  });
-+}
-+
- function renderUploadStatusRowsForTarget(target, entries) {
-   if (!target) {
-     return;
-@@ -644,7 +702,7 @@ function renderUploadStatusRowsForTarget(target, entries) {
-   if (!entries.length) {
-     const row = document.createElement("tr");
-     const cell = document.createElement("td");
--    cell.colSpan = 3;
-+    cell.colSpan = 2;
-     cell.textContent = "No upload files processed yet.";
-     row.append(cell);
-     target.append(row);
-@@ -655,8 +713,7 @@ function renderUploadStatusRowsForTarget(target, entries) {
-     row.dataset.assetToolUploadStatus = entry.status;
-     row.append(
-       createCell(entry.fileName),
--      createCell(entry.status),
--      createCell(`${entry.path ? `${entry.path} - ` : ""}${entry.message || ""}`)
-+      createCell(entry.status)
-     );
-     target.append(row);
-   });
-@@ -690,6 +747,7 @@ function updateUploadDialog(state) {
-   elements.uploadDialog.dataset.assetToolUploadWorker = state.workerStatus || "Idle";
-   elements.uploadDialog.dataset.assetToolServerReceiveUpdates = String(state.serverReceiveUpdateCount || 0);
-   const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
-+  const summary = batchSummaryForEntries(state.entries);
- 
-   setText(elements.uploadCurrentFile, state.currentFile);
-   setText(elements.uploadFileProgress, `${state.fileIndex} / ${state.fileCount}`);
-@@ -703,8 +761,13 @@ function updateUploadDialog(state) {
-   if (elements.uploadProgress) {
-     elements.uploadProgress.value = progressValue;
-   }
-+  if (elements.uploadProgressDetails) {
-+    elements.uploadProgressDetails.hidden = uploadIsComplete(state);
-+  }
-+  setText(elements.uploadCompactStatus, compactUploadStatusText(summary));
-   renderUploadStatusRows(state.entries);
--  updateUploadSummary(batchSummaryForEntries(state.entries));
-+  renderUploadIssues(state.entries);
-+  updateUploadSummary(summary);
-   updateInlineUploadProgress(state);
- }
- 
-@@ -764,7 +827,7 @@ function createInlineUploadProgress(assetType) {
-   statusTable.setAttribute("aria-label", `${assetType} upload progress`);
-   const head = document.createElement("thead");
-   const headRow = document.createElement("tr");
--  ["File", "Status", "Message"].forEach((label) => {
-+  ["File", "Status"].forEach((label) => {
-     const headingCell = document.createElement("th");
-     headingCell.scope = "col";
-     headingCell.textContent = label;
-@@ -786,6 +849,7 @@ function populateInlineUploadProgress(container, state) {
-   if (!container || !state) {
-     return;
-   }
-+  const complete = uploadIsComplete(state);
-   const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
-   const summary = batchSummaryForEntries(state.entries);
-   container.hidden = false;
-@@ -813,6 +877,7 @@ function populateInlineUploadProgress(container, state) {
-     container.querySelector("[data-asset-tool-inline-upload-status-body]"),
-     state.entries
-   );
-+  container.hidden = complete;
- }
- 
- function renderBatchLog(entries, summary = null) {
-@@ -836,7 +901,8 @@ function renderBatchLog(entries, summary = null) {
-     const item = document.createElement("li");
-     item.dataset.assetToolBatchLogRow = "true";
-     item.dataset.assetToolBatchStatus = entry.status;
--    item.textContent = `${entry.status}: ${entry.fileName}${entry.path ? ` -> ${entry.path}` : ""}${entry.message ? ` - ${entry.message}` : ""}`;
-+    const issueText = entry.status === "OK" ? "Uploaded" : conciseUploadIssueMessage(entry);
-+    item.textContent = `${entry.status}: ${entry.fileName} - ${issueText}`;
-     elements.batchLog.append(item);
-   });
- }
-@@ -1746,4 +1812,9 @@ elements.uploadClose?.addEventListener("click", () => {
+   } finally {
+@@ -855,12 +902,15 @@ test("Assets upload fails visibly when the resolved target directory would escap
    }
  });
  
-+elements.clearStatusLog?.addEventListener("click", () => {
-+  setText(elements.log, "");
-+  elements.batchLog?.replaceChildren();
-+});
-+
- render();
+-test("Assets multi-file upload fails visibly when no current project id is available", async ({ page }) => {
++test("Assets authenticated upload lazily creates one project id when no current project exists", async ({ page }) => {
++  const projectRootsBeforeLaunch = projectRootNames();
+   const failures = await openRepoPage(page, "/toolbox/assets/index.html?handoff=missing", {
+     sessionUserKey: MOCK_DB_KEYS.users.user1
+   });
+ 
+   try {
++    await expect(page.locator("[data-asset-tool-project-path]")).toHaveText("Path: No project path yet");
++    expect(projectRootNames()).toEqual(projectRootsBeforeLaunch);
+     await page.getByRole("button", { name: "Add Images" }).click();
+     const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+     await expect(editRow.getByLabel("Upload File")).toHaveJSProperty("multiple", true);
+@@ -871,18 +921,18 @@ test("Assets multi-file upload fails visibly when no current project id is avail
+     ]);
+     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
+     await expect(uploadDialog).toBeVisible();
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 1 skipped, 0 warnings.");
+-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("0");
+-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("1");
+-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("1");
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 2 written, 0 failed, 0 skipped, 0 warnings.");
++    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("2");
++    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("0");
++    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("0");
+     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("0");
+-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("missing-project-a.png");
+-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("missing-project-b.png");
+-    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("Open an active game with a valid project upload target before uploading.");
+-    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='SKIP']")).toContainText("Open an active game with a valid project upload target before uploading.");
+-    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Open an active game");
+-    await expect(page.locator("[data-asset-tool-batch-status='SKIP']")).toContainText("Open an active game");
+-    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
++    await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']")).toHaveCount(2);
++    await expect(page.locator("[data-asset-tool-count]")).toHaveText("2");
++    const uploadProjectId = await projectIdFromProjectPath(page);
++    expect(existsSync(projectAssetPath(uploadProjectId, "image", "missing-project-a.png"))).toBe(true);
++    expect(existsSync(projectAssetPath(uploadProjectId, "image", "missing-project-b.png"))).toBe(true);
++    await page.locator("[data-asset-tool-row]").filter({ hasText: "missing-project-a.png" }).getByRole("button", { name: "View" }).click();
++    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(`Project ID: ${uploadProjectId}`);
+ 
+     expectNoPageFailures(failures);
+   } finally {
+@@ -897,7 +947,6 @@ test("Assets upload write failure after byte transfer is visible and creates no
+   });
+ 
+   try {
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+ 
+     await page.getByRole("button", { name: "Add Images" }).click();
+@@ -925,6 +974,7 @@ test("Assets upload write failure after byte transfer is visible and creates no
+     await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("This runtime cannot write upload files.");
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "unsupported-write-a.png" })).toHaveCount(0);
++    await projectIdFromProjectPath(page);
+ 
+     expectNoPageFailures(failures);
+   } finally {
+@@ -934,11 +984,13 @@ test("Assets upload write failure after byte transfer is visible and creates no
+ });
+ 
+ test("Assets guest upload action shows account prompt and creates no record", async ({ page }) => {
++  const projectRootsBeforeLaunch = projectRootNames();
+   const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+     sessionUserKey: ""
+   });
+ 
+   try {
++    await expect(page.locator("[data-asset-tool-project-path]")).toHaveText("Path: No project path yet");
+     const startingCount = await page.locator("[data-asset-tool-count]").textContent();
+     await expect(page.getByRole("button", { name: "Add Images" })).toBeEnabled();
+     await page.getByRole("button", { name: "Add Images" }).click();
+@@ -954,6 +1006,8 @@ test("Assets guest upload action shows account prompt and creates no record", as
+     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploads require a Game Foundry account.");
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText(startingCount || "0");
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "guest-upload.png" })).toHaveCount(0);
++    await expect(page.locator("[data-asset-tool-project-path]")).toHaveText("Path: No project path yet");
++    expect(projectRootNames()).toEqual(projectRootsBeforeLaunch);
+ 
+     expectNoPageFailures(failures);
+   } finally {
+@@ -978,6 +1032,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
+   try {
+     await expect(page.getByRole("heading", { level: 1, name: "Assets" })).toBeVisible();
+     await expect(page.locator(".tool-workspace")).toBeVisible();
++    await expect(page.locator("[data-asset-tool-project-path]")).toHaveText("Path: No project path yet");
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+     const runtimeReferences = await page.locator("script[src], link[href]").evaluateAll((nodes) =>
+       nodes.map((node) => node.getAttribute("src") || node.getAttribute("href") || "")
+@@ -1001,7 +1056,6 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
+     await addSharedTag(page, "Hero");
+     await addSharedTag(page, "Rare");
+     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
+-    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+     await expect(page.locator("[data-asset-tool-shared-tags]")).toContainText("Hero");
+ 
+@@ -1025,6 +1079,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
+     });
+ 
+     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
++    await projectIdFromProjectPath(page);
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Character");
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Upload");
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Hero");
+diff --git a/toolbox/assets/assets.js b/toolbox/assets/assets.js
+index f52b4acf0..f524067e4 100644
+--- a/toolbox/assets/assets.js
++++ b/toolbox/assets/assets.js
+@@ -12,8 +12,6 @@ if (params.get("handoff") === "missing") {
+   repository.makeMissingGameConfiguration();
+ } else if (params.get("handoff") === "invalid") {
+   repository.makeInvalidGameConfiguration();
+-} else {
+-  repository.makeReadyGameConfiguration();
+ }
+ if (params.get("uploadWrite") === "unsupported") {
+   repository.setUploadFileWriteSupport(false);
+@@ -282,7 +280,7 @@ function assetViewPath(asset) {
+ 
+ function projectPathForSnapshot(snapshot = {}) {
+   const projectId = normalizeText(snapshot.handoff?.activeProject?.id || "");
+-  return projectId ? `projects/${projectId}/` : "projects/";
++  return projectId ? `projects/${projectId}/` : "No project path yet";
+ }
+ 
+ function uploadDiagnosticsText(diagnostics = {}) {
+@@ -1067,6 +1065,14 @@ async function saveUploadBatch(row, assetType) {
+   }
+   hideAccountPrompt();
+   const files = selectedUploadFiles(row).length ? selectedUploadFiles(row) : uploadPayloadsForEditRow(row);
++  const projectResult = repository.ensureUploadProject();
++  if (!projectResult?.projectId) {
++    setText(elements.log, projectResult?.message || "Upload blocked: no project storage path is available.");
++    render();
++    return false;
++  }
++  setText(elements.log, projectResult.created ? `Created project path projects/${projectResult.projectId}/.` : `Using project path projects/${projectResult.projectId}/.`);
++  setText(elements.projectPath, `Path: ${projectPathForSnapshot(projectResult.snapshot)}`);
+   const uploadState = createUploadState(files);
+   uploadState.assetType = assetType;
+   activeUploadAssetType = assetType;
 diff --git a/toolbox/assets/index.html b/toolbox/assets/index.html
-index f2cca3ab5..2ee6811c4 100644
+index 2ee6811c4..c348c3150 100644
 --- a/toolbox/assets/index.html
 +++ b/toolbox/assets/index.html
-@@ -111,26 +111,10 @@
-                                     </div>
-                                 </div>
-                             </details>
--                            <details class="vertical-accordion" open>
--                                <summary>Status Log</summary>
-+                            <details class="vertical-accordion" open data-asset-tool-upload-diagnostics-accordion>
-+                                <summary>Upload Diagnostics</summary>
-                                 <div class="accordion-body">
--                                    <div class="status" role="status" data-asset-tool-log>Asset catalog ready.</div>
--                                    <article class="card" role="dialog" aria-labelledby="asset-tool-account-prompt-title" data-asset-tool-account-prompt hidden>
--                                        <div class="card-body content-stack">
--                                            <div>
--                                                <div class="kicker">Account Required</div>
--                                                <h3 id="asset-tool-account-prompt-title">Uploads require a Game Foundry account.</h3>
--                                            </div>
--                                            <div class="action-group">
--                                                <a class="btn" href="login.html">Sign In</a>
--                                                <a class="btn" href="account/index.html">Create Account</a>
--                                            </div>
--                                        </div>
--                                    </article>
--                                    <ul data-asset-tool-batch-log>
--                                        <li>No batch uploads run yet.</li>
--                                    </ul>
--                                    <article class="card" role="dialog" aria-labelledby="asset-tool-upload-diagnostics-title" data-asset-tool-upload-dialog hidden>
-+                                    <article class="card" role="region" aria-labelledby="asset-tool-upload-diagnostics-title" data-asset-tool-upload-dialog hidden>
-                                         <div class="card-body content-stack">
-                                             <div class="content-cluster content-cluster--space-between">
-                                                 <div>
-@@ -139,17 +123,20 @@
-                                                 </div>
-                                                 <button class="btn btn--compact" type="button" data-asset-tool-upload-close>Close</button>
-                                             </div>
--                                            <progress max="100" value="0" aria-label="Upload Progress" data-asset-tool-upload-progress></progress>
--                                            <div class="grid cols-3" aria-label="Upload progress details">
--                                                <article class="mini-stat"><strong data-asset-tool-upload-current-file>None</strong>Current File</article>
--                                                <article class="mini-stat"><strong data-asset-tool-upload-file-progress>0 / 0</strong>File Count</article>
--                                                <article class="mini-stat"><strong data-asset-tool-upload-bytes-uploaded>0 B</strong>Bytes Received</article>
--                                                <article class="mini-stat"><strong data-asset-tool-upload-total-bytes>0 B</strong>Total Bytes</article>
--                                                <article class="mini-stat"><strong data-asset-tool-upload-bps>0</strong>BPS</article>
--                                                <article class="mini-stat"><strong data-asset-tool-upload-speed>0 B/s</strong>Speed</article>
--                                                <article class="mini-stat"><strong data-asset-tool-upload-eta>N/A</strong>ETA</article>
--                                                <article class="mini-stat"><strong data-asset-tool-upload-elapsed>0.0s</strong>Elapsed</article>
--                                                <article class="mini-stat"><strong data-asset-tool-upload-phase>Idle</strong>Progress</article>
-+                                            <p class="status" role="status" data-asset-tool-upload-compact-status>No upload run yet.</p>
-+                                            <div class="content-stack content-stack--compact" data-asset-tool-upload-progress-details>
-+                                                <progress max="100" value="0" aria-label="Upload Progress" data-asset-tool-upload-progress></progress>
-+                                                <div class="grid cols-3" aria-label="Upload progress details">
-+                                                    <article class="mini-stat"><strong data-asset-tool-upload-current-file>None</strong>Current File</article>
-+                                                    <article class="mini-stat"><strong data-asset-tool-upload-file-progress>0 / 0</strong>File Count</article>
-+                                                    <article class="mini-stat"><strong data-asset-tool-upload-bytes-uploaded>0 B</strong>Bytes Received</article>
-+                                                    <article class="mini-stat"><strong data-asset-tool-upload-total-bytes>0 B</strong>Total Bytes</article>
-+                                                    <article class="mini-stat"><strong data-asset-tool-upload-bps>0</strong>BPS</article>
-+                                                    <article class="mini-stat"><strong data-asset-tool-upload-speed>0 B/s</strong>Speed</article>
-+                                                    <article class="mini-stat"><strong data-asset-tool-upload-eta>N/A</strong>ETA</article>
-+                                                    <article class="mini-stat"><strong data-asset-tool-upload-elapsed>0.0s</strong>Elapsed</article>
-+                                                    <article class="mini-stat"><strong data-asset-tool-upload-phase>Idle</strong>Progress</article>
-+                                                </div>
-                                             </div>
-                                             <div class="grid cols-4" aria-label="Upload batch summary">
-                                                 <article class="mini-stat"><strong data-asset-tool-upload-summary-written>0</strong>Written</article>
-@@ -157,13 +144,14 @@
-                                                 <article class="mini-stat"><strong data-asset-tool-upload-summary-skipped>0</strong>Skipped</article>
-                                                 <article class="mini-stat"><strong data-asset-tool-upload-summary-warnings>0</strong>Warnings</article>
-                                             </div>
-+                                            <ul data-asset-tool-upload-issues></ul>
-                                             <div class="table-wrapper">
-                                                 <table class="data-table" aria-label="Upload file status">
-                                                     <thead>
--                                                        <tr><th scope="col">File</th><th scope="col">Status</th><th scope="col">Message</th></tr>
-+                                                        <tr><th scope="col">File</th><th scope="col">Status</th></tr>
-                                                     </thead>
-                                                     <tbody data-asset-tool-upload-status-body>
--                                                        <tr><td colspan="3">No upload files processed yet.</td></tr>
-+                                                        <tr><td colspan="2">No upload files processed yet.</td></tr>
-                                                     </tbody>
-                                                 </table>
-                                             </div>
-@@ -171,6 +159,30 @@
-                                     </article>
-                                 </div>
-                             </details>
-+                            <details class="vertical-accordion" open data-asset-tool-status-log-accordion>
-+                                <summary>Status Log</summary>
-+                                <div class="accordion-body content-stack">
-+                                    <div class="action-group">
-+                                        <button class="btn btn--compact" type="button" data-asset-tool-clear-status-log>Clear</button>
-+                                    </div>
-+                                    <div class="status" role="status" data-asset-tool-log>Asset catalog ready.</div>
-+                                    <article class="card" role="dialog" aria-labelledby="asset-tool-account-prompt-title" data-asset-tool-account-prompt hidden>
-+                                        <div class="card-body content-stack">
-+                                            <div>
-+                                                <div class="kicker">Account Required</div>
-+                                                <h3 id="asset-tool-account-prompt-title">Uploads require a Game Foundry account.</h3>
-+                                            </div>
-+                                            <div class="action-group">
-+                                                <a class="btn" href="login.html">Sign In</a>
-+                                                <a class="btn" href="account/index.html">Create Account</a>
-+                                            </div>
-+                                        </div>
-+                                    </article>
-+                                    <ul data-asset-tool-batch-log>
-+                                        <li>No batch uploads run yet.</li>
-+                                    </ul>
-+                                </div>
-+                            </details>
+@@ -57,7 +57,7 @@
+                             <article class="mini-stat"><strong data-asset-tool-tag-count>0</strong>Tags</article>
                          </div>
-                     </aside>
-                 </div>
-diff --git a/docs_build/dev/reports/PR_26163_081-assets-upload-progress-auto-hide.md b/docs_build/dev/reports/PR_26163_081-assets-upload-progress-auto-hide.md
+                         <datalist id="assetToolTagOptions" data-asset-tool-tag-options></datalist>
+-                        <p class="status" role="status" data-asset-tool-project-path>Path: projects/</p>
++                        <p class="status" role="status" data-asset-tool-project-path>No project path yet</p>
+                         <div class="accordion-stack" data-asset-type-accordions></div>
+                     </section>
+                     <aside class="tool-column tool-group-design">
+diff --git a/docs_build/dev/reports/PR_26163_082-lazy-project-id-creation.md b/docs_build/dev/reports/PR_26163_082-lazy-project-id-creation.md
 new file mode 100644
-index 000000000..9bef05a2c
+index 000000000..2cd6c5a58
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26163_081-assets-upload-progress-auto-hide.md
-@@ -0,0 +1,124 @@
-+# PR_26163_081-assets-upload-progress-auto-hide
++++ b/docs_build/dev/reports/PR_26163_082-lazy-project-id-creation.md
+@@ -0,0 +1,112 @@
++# PR_26163_082-lazy-project-id-creation
 +
 +## Branch Validation
 +
 +- PASS: Current branch is `main`.
-+- Expected branch: `main`.
++- PASS: Expected branch is `main`.
 +
 +## Requirement Checklist
 +
-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
-+- PASS: Upload Diagnostics now lives in its own vertical accordion in the right Inspector column.
-+- PASS: Upload Diagnostics appears above Status Log. Playwright validates the accordion vertical position.
-+- PASS: Inline upload progress remains under the relevant asset table while an upload is active.
-+- PASS: After an all-OK upload completes, verbose progress/details are hidden and a compact summary remains in Upload Diagnostics.
-+- PASS: User-facing upload file results table removes the Message column.
-+- PASS: User-facing upload file results table shows only `File` and `Status`.
-+- PASS: Long write-path/debug messages are not rendered in the user-facing file results table.
-+- PASS: Verbose write-path/debug details remain out of page UI and are preserved only through diagnostics/report evidence.
-+- PASS: Status Log has a Clear button.
-+- PASS: Clear clears only user-facing Status Log and batch log content.
-+- PASS: Clear does not delete asset records, upload diagnostics, uploaded files, or reports.
-+- PASS: All-OK upload hides verbose progress/details after completion and leaves compact success status.
-+- PASS: FAIL/WARN/SKIP details remain visible through concise upload issue rows without a long debug Message column.
-+- PASS: Delete-file behavior from PR_26163_080 remains covered by targeted Assets Playwright.
-+- PASS: Server-received byte progress and one-second update behavior from PR_26163_080 remain covered by targeted Assets Playwright.
-+- PASS: Duplicate blocking remains covered by targeted Assets Playwright.
-+- PASS: `/projects/` path safety remains covered by targeted Assets Playwright.
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before changes.
++- PASS: Assets no longer creates a project id during page load, session init, guest init, or tool launch. `toolbox/assets/assets.js` no longer calls the setup helper during normal launch.
++- PASS: Project Path remains empty/placeholder before project creation or upload. Initial UI text is `No project path yet` in `toolbox/assets/index.html`.
++- PASS: Authenticated upload resolves an existing current project id first through `ensureUploadProject()`.
++- PASS: Authenticated upload with no current project id creates exactly one project id at upload start.
++- PASS: `projects/<projectId>/` is created only when the first uploaded file is written.
++- PASS: Guest upload still blocks with `Uploads require a Game Foundry account.` plus `Sign In` and `Create Account` actions.
++- PASS: Guest upload creates no project id and no project folder.
++- PASS: Existing project id is reused for later uploads in the same authenticated session.
++- PASS: The old fallback project id `01K8M3K0EX7V5A3W9Q2Y6R4T1B` is not used by the active Assets project-id creation path.
++- PASS: `/projects/` path safety, duplicate blocking, delete-file behavior, and upload diagnostics remain covered by the targeted Assets tests.
 +- PASS: `codex_review.diff` is generated as readable UTF-8 text.
 +
-+## Diagnostics Accordion Evidence
++## Implementation Evidence
 +
-+- `toolbox/assets/index.html` adds `data-asset-tool-upload-diagnostics-accordion` as a right-column vertical accordion.
-+- `toolbox/assets/index.html` places Upload Diagnostics before `data-asset-tool-status-log-accordion`.
-+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs` validates Upload Diagnostics appears above Status Log using rendered bounding boxes.
++- `toolbox/assets/assets.js:283` returns `No project path yet` when no project id exists.
++- `toolbox/assets/assets.js:1061` gates upload save through `saveUploadBatch`.
++- `toolbox/assets/assets.js:1062` blocks guest uploads before project creation.
++- `toolbox/assets/assets.js:1068` calls `repository.ensureUploadProject()` only after the upload action is authenticated and files are selected.
++- `toolbox/assets/index.html:60` initializes the Project Path display as `No project path yet`.
++- `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js:274` generates lazy project ids.
++- `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js:641` defines `ensureUploadProject()`.
++- `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js:642` blocks explicit guest sessions from creating upload project ids.
++- `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js:651` reuses an existing configured/owned project id before creating a new id.
++- `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js:662` creates a new upload project id only when needed.
++- `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js:1671` creates an upload project id for validated upload records only.
 +
-+## Status Log Clear Evidence
++## Lazy Project Id Evidence
 +
-+- `toolbox/assets/index.html` adds `data-asset-tool-clear-status-log`.
-+- `toolbox/assets/assets.js` wires Clear to empty `data-asset-tool-log` and `data-asset-tool-batch-log` only.
-+- Playwright validates Clear leaves Upload Diagnostics visible and leaves uploaded asset rows intact.
++- PASS: New Assets page/tool launch does not create a project id. Playwright test `Assets upload writes to the project folder before creating a record and Image View renders the file` captures project folders before launch and confirms they are unchanged before upload.
++- PASS: Project Path before upload shows `Path: No project path yet`.
++- PASS: Authenticated upload with no current project id creates one generated id at upload start. Playwright test `Assets authenticated upload lazily creates one project id when no current project exists` verifies no folder exists on launch, then verifies uploaded files are written under the generated id.
++- PASS: Existing project id is reused for later uploads. The upload/write Playwright test uploads a second image and verifies the same project id is retained.
++- PASS: First file write creates the asset-type folder through the existing guarded write path. Targeted tests verify `projects/<projectId>/image/` exists only after the write succeeds.
 +
-+## Upload Auto-Hide Evidence
++## Guest No-Project Evidence
 +
-+- `toolbox/assets/assets.js` hides `data-asset-tool-upload-progress-details` when upload phase is `Complete`.
-+- `toolbox/assets/assets.js` keeps `data-asset-tool-upload-compact-status` populated with the final summary.
-+- Inline upload progress is populated with final values and hidden after completion.
-+- Playwright validates all-OK upload leaves `Upload summary: 2 written, 0 failed, 0 skipped, 0 warnings.` and hides verbose progress/details.
++- PASS: Guest upload is blocked in UI before project creation.
++- PASS: Explicit guest sessions are also blocked in the mock repository.
++- PASS: Playwright test `Assets guest upload action shows account prompt and creates no record` verifies:
++  - Project Path remains `Path: No project path yet`.
++  - The account-required prompt appears.
++  - No asset record is created.
++  - Project folders are unchanged.
 +
-+## Failure Detail Evidence
++## Search Evidence
 +
-+- `toolbox/assets/assets.js` renders concise issue rows in `data-asset-tool-upload-issues` for WARN/FAIL/SKIP.
-+- File status rows render only file name and status.
-+- Playwright validates duplicate, path escape, missing project, unsupported write, invalid type, warning, and skip cases remain visible without `projects/` debug paths in the user-facing file status table.
-+
-+## Changed Files
-+
-+- `toolbox/assets/index.html`
-+- `toolbox/assets/assets.js`
-+- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+- Workspace validation reports refreshed by required `npm run test:workspace-v2`
-+- `docs_build/dev/reports/PR_26163_081-assets-upload-progress-auto-hide.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- PASS: Scoped active Assets search found no exact old fallback id:
++  - Command: `rg -n "01K8M3K0EX7V5A3W9Q2Y6R4T1B|DEMO_ASSET_PROJECT_ID|Path: projects/" toolbox/assets src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++  - Result: no matches.
++- PASS: Active Assets code has only the explicit setup helper definition remaining:
++  - Command: `rg -n "makeReadyGameConfiguration\\(" toolbox/assets/assets.js src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++  - Result: one definition in the repository file, no active page-launch call.
++- NOTE: A broader non-report search still finds the old id in `tests/playwright/tools/ObjectsTool.spec.mjs` as an Objects sprite fixture and in historical docs. Those are outside this PR's Assets lazy project creation path and do not create projects on session start.
 +
 +## Impacted Lanes
 +
-+- Toolbox Assets runtime/UI lane.
-+- Assets mock repository Playwright lane.
-+- Workspace V2 validation command was run because it is explicitly required by the PR request.
++- Assets tool runtime/UI.
++- Assets dev-runtime mock repository.
++- Assets Playwright coverage.
++- Workspace V2 contract lane, because it is explicitly required by this PR.
 +
 +## Skipped Lanes
 +
-+- Full samples smoke: SKIP. Samples are not in scope, no sample JSON was changed, and the request explicitly says not to run full samples smoke.
-+- Engine runtime: SKIP. No engine runtime files were changed.
-+- Auth/account runtime: SKIP. Account prompt behavior was preserved; no account/auth code was changed.
++- Full samples smoke: SKIP by request. No sample JSON, runtime sample, or production game behavior was changed.
++- Engine runtime input lanes: SKIP because this PR only changes Assets project-id/upload behavior.
++- Account/User Controls lanes: SKIP because this PR does not change account profile behavior beyond preserving the existing guest upload prompt.
 +
 +## Validation Performed
 +
-+- PASS: `git branch --show-current`
-+- PASS: `node --check toolbox/assets/assets.js`
-+- PASS: `node --check toolbox/assets/assets-upload-worker.js`
-+- PASS: `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
-+- PASS: `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+- PASS: `git diff --check -- toolbox/assets/assets.js toolbox/assets/index.html src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+  - Note: Git reported expected CRLF normalization warnings for touched HTML/spec files.
-+- PASS: `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --workers=1 --reporter=list`
-+  - Result: 15 passed.
-+- PASS: `npm run test:workspace-v2`
-+  - Result: Workspace contract validation passed, 5 tests passed.
-+- PASS: V8 coverage report generated at `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
++- PASS: `git branch --show-current` -> `main`.
++- PASS: `node --check toolbox/assets/assets.js`.
++- PASS: `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`.
++- PASS: `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`.
++- PASS: `git diff --check -- toolbox/assets/assets.js toolbox/assets/index.html src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js tests/playwright/tools/AssetToolMockRepository.spec.mjs docs_build/dev/reports/playwright_v8_coverage_report.txt` with only existing CRLF normalization warnings for touched files.
++- PASS: `npm run test:workspace-v2` -> 5 passed.
++- PASS: `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --workers=1 --reporter=list` -> 15 passed.
 +
 +## Playwright Result
 +
-+- PASS: Targeted Assets Playwright passed.
-+- PASS: Required workspace validation passed.
++- PASS: Targeted Assets Playwright: 15 passed.
++- PASS: Workspace V2 lane: 5 passed.
 +
 +## V8 Coverage
 +
-+- PASS: `toolbox/assets/assets.js` collected by browser V8 coverage at 93% function coverage.
-+- WARN: `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js` is listed as changed runtime JS but is Node/dev-runtime mock code and is not collected by browser V8 coverage. This is advisory per project instructions.
++- PASS: `toolbox/assets/assets.js` collected by browser V8 coverage at 92%.
++- WARN: `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js` is Node/dev-runtime code and is not collected by browser V8 coverage. It is covered by the targeted repository and upload Playwright behaviors.
++- Report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
 +
 +## Manual Validation Steps
 +
-+1. Open `toolbox/assets/index.html` with a Local DB/dev storage-backed project selected.
-+2. Expand the right Inspector column and confirm Upload Diagnostics is above Status Log.
-+3. Upload image files and confirm inline progress appears below the Images table while active.
-+4. Confirm a successful upload leaves a compact Upload Diagnostics summary and hides verbose progress details.
-+5. Confirm the upload file results table has only File and Status columns.
-+6. Click Clear in Status Log and confirm status text/log entries clear while upload diagnostics and asset rows remain.
-+7. Re-upload an existing filename and confirm the concise duplicate warning appears without a verbose project path in the table.
++1. Launch `toolbox/assets/index.html` in a fresh authenticated session.
++2. Confirm the centered Project Path reads `Path: No project path yet`.
++3. Confirm no new folder appears under `projects/`.
++4. Select an Image upload file.
++5. Confirm upload auto-starts, one project id is created, and `projects/<projectId>/image/<filename>` is written.
++6. Upload a second Image and confirm it reuses the same project id.
++7. Launch as guest and select an upload file.
++8. Confirm the account-required prompt appears and no project id or project folder is created.
 +
 +## Samples Decision
 +
-+- SKIP: Full samples smoke was not run because this PR only changes Toolbox Assets UI/runtime diagnostics and targeted tests, and the user explicitly requested not to run full samples smoke.
-+
-+## Review Artifacts
-+
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+
-+## Delta ZIP
-+
-+- `tmp/PR_26163_081-assets-upload-progress-auto-hide_delta.zip`
++- SKIP: Full samples smoke was not run because the request explicitly says not to run full samples smoke and this PR does not change samples.

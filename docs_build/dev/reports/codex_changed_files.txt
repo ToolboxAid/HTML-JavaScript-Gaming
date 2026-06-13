@@ -27,44 +27,46 @@ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/testing_lane_execution_report.md
  M docs_build/dev/reports/validation_cache_report.md
  M docs_build/dev/reports/zero_browser_preflight_report.md
+ M src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
  M tests/playwright/tools/AssetToolMockRepository.spec.mjs
  M toolbox/assets/assets.js
  M toolbox/assets/index.html
-?? docs_build/dev/reports/PR_26163_081-assets-upload-progress-auto-hide.md
+?? docs_build/dev/reports/PR_26163_082-lazy-project-id-creation.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26163_081-assets-upload-progress-auto-hide.md
+docs_build/dev/reports/PR_26163_082-lazy-project-id-creation.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  4 +-
- docs_build/dev/reports/dependency_gating_report.md |  2 +-
- .../reports/dependency_hydration_reuse_report.md   | 12 ++--
- .../dev/reports/execution_graph_reuse_report.md    | 16 ++---
- .../dev/reports/failure_fingerprint_report.md      |  2 +-
- .../reports/filesystem_scan_reduction_report.md    |  2 +-
- .../dev/reports/incremental_validation_report.md   | 14 ++--
- docs_build/dev/reports/lane_compilation_report.md  |  2 +-
- .../dev/reports/lane_deduplication_report.md       |  2 +-
- .../dev/reports/lane_input_validation_report.md    |  2 +-
- .../reports/lane_runtime_optimization_report.md    | 14 ++--
- docs_build/dev/reports/lane_snapshot_report.md     | 12 ++--
- docs_build/dev/reports/lane_warm_start_report.md   | 12 ++--
- .../dev/reports/monolith_trigger_removal_report.md |  2 +-
- .../dev/reports/persistent_lane_manifest_report.md | 12 ++--
- .../playwright_discovery_ownership_report.md       |  2 +-
- .../reports/playwright_discovery_scope_report.md   |  2 +-
- .../dev/reports/playwright_structure_audit.md      |  2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  7 +-
- docs_build/dev/reports/retry_suppression_report.md |  2 +-
- docs_build/dev/reports/slow_path_pruning_report.md | 16 ++---
- docs_build/dev/reports/static_validation_report.md | 10 +--
- .../dev/reports/targeted_file_manifest_report.md   |  8 +--
- .../dev/reports/test_cleanup_performance_report.md | 22 +++---
- .../dev/reports/test_cleanup_routing_report.md     |  2 +-
- .../dev/reports/testing_lane_execution_report.md   | 52 +++++++-------
- docs_build/dev/reports/validation_cache_report.md  | 30 ++++----
- .../dev/reports/zero_browser_preflight_report.md   | 10 +--
- .../tools/AssetToolMockRepository.spec.mjs         | 77 ++++++++++++--------
- toolbox/assets/assets.js                           | 83 ++++++++++++++++++++--
- toolbox/assets/index.html                          | 76 +++++++++++---------
- 31 files changed, 305 insertions(+), 206 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  |   2 +-
+ docs_build/dev/reports/dependency_gating_report.md |   2 +-
+ .../reports/dependency_hydration_reuse_report.md   |   2 +-
+ .../dev/reports/execution_graph_reuse_report.md    |   2 +-
+ .../dev/reports/failure_fingerprint_report.md      |   2 +-
+ .../reports/filesystem_scan_reduction_report.md    |   2 +-
+ .../dev/reports/incremental_validation_report.md   |   2 +-
+ docs_build/dev/reports/lane_compilation_report.md  |   2 +-
+ .../dev/reports/lane_deduplication_report.md       |   2 +-
+ .../dev/reports/lane_input_validation_report.md    |   2 +-
+ .../reports/lane_runtime_optimization_report.md    |   2 +-
+ docs_build/dev/reports/lane_snapshot_report.md     |   2 +-
+ docs_build/dev/reports/lane_warm_start_report.md   |   2 +-
+ .../dev/reports/monolith_trigger_removal_report.md |   2 +-
+ .../dev/reports/persistent_lane_manifest_report.md |   2 +-
+ .../playwright_discovery_ownership_report.md       |   2 +-
+ .../reports/playwright_discovery_scope_report.md   |   2 +-
+ .../dev/reports/playwright_structure_audit.md      |   2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   8 +-
+ docs_build/dev/reports/retry_suppression_report.md |   2 +-
+ docs_build/dev/reports/slow_path_pruning_report.md |  12 +-
+ docs_build/dev/reports/static_validation_report.md |   2 +-
+ .../dev/reports/targeted_file_manifest_report.md   |   2 +-
+ .../dev/reports/test_cleanup_performance_report.md |  14 +-
+ .../dev/reports/test_cleanup_routing_report.md     |   2 +-
+ .../dev/reports/testing_lane_execution_report.md   |  16 +-
+ docs_build/dev/reports/validation_cache_report.md  |   2 +-
+ .../dev/reports/zero_browser_preflight_report.md   |   2 +-
+ .../tool-repositories/assets-mock-repository.js    | 118 +++++++++++---
+ .../tools/AssetToolMockRepository.spec.mjs         | 177 ++++++++++++++-------
+ toolbox/assets/assets.js                           |  12 +-
+ toolbox/assets/index.html                          |   2 +-
+ 32 files changed, 274 insertions(+), 133 deletions(-)
