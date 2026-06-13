@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync, readFileSync, rmSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -34,6 +34,11 @@ const UPLOAD_COLUMNS = ["Source", "File", "Usage", "Tags", "Preview", "Actions"]
 const REFERENCE_COLUMNS = ["Source", "Reference", "Usage", "Tags", "Preview", "Actions"];
 const REFERENCE_ASSET_TYPES = new Set(["Sprites", "Vectors", "Palette References"]);
 const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
+const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
+const SMALL_PNG = Buffer.from(
+  "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAAAAAA6fptVAAAACklEQVR42mP8z8AABQMBgMZ0X4AAAAAASUVORK5CYII=",
+  "base64"
+);
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -102,6 +107,19 @@ function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
+function projectAssetPath(assetFolder, fileName = "") {
+  return resolve(REPO_ROOT, "projects", DEMO_ASSET_PROJECT_ID, assetFolder, fileName);
+}
+
+function resetProjectAssetFolder(assetFolder) {
+  const folder = projectAssetPath(assetFolder);
+  const allowedRoot = resolve(REPO_ROOT, "projects", DEMO_ASSET_PROJECT_ID);
+  if (!folder.startsWith(allowedRoot)) {
+    throw new Error(`Refusing to remove unexpected test asset folder: ${folder}`);
+  }
+  rmSync(folder, { force: true, recursive: true });
+}
+
 async function addSharedTag(page, tagName = "Hero") {
   await page.goto(`${page.url().split("/toolbox/")[0]}/toolbox/tags/index.html`, { waitUntil: "networkidle" });
   await page.getByRole("button", { name: "Add Tag" }).click();
@@ -114,7 +132,7 @@ async function addSharedTag(page, tagName = "Hero") {
 
 function uploadFile(name, mimeType, contents = `mock ${name}`) {
   return {
-    buffer: Buffer.from(contents),
+    buffer: Buffer.isBuffer(contents) ? contents : Buffer.from(contents),
     mimeType,
     name
   };
@@ -168,8 +186,12 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
   });
   const assetResult = assetRepository.addAssetRecord({
     assetType: "Images",
+    fileContentBase64: Buffer.from("repository image").toString("base64"),
     fileName: "hero-portrait.png",
+    hasFileBytes: true,
+    mimeType: "image/png",
     name: "Hero Portrait",
+    size: 16,
     source: "Upload",
     tagKeys: [tagResult.tag.id],
     usage: "Character"
@@ -187,6 +209,9 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
   expect(assetResult.asset.ownerUserId).toBe(MOCK_DB_KEYS.users.user1);
   expect(assetResult.asset.assetType).toBe("Images");
   expect(assetResult.asset.fileName).toBe("hero-portrait.png");
+  expect(assetResult.asset.storedPath).toBe(`projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`);
+  expect(assetResult.asset.viewPath).toBe(`projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`);
+  expect(assetResult.asset.writeResult).toBe("Written");
   expect(assetResult.asset.usage).toBe("Character");
   expect(assetResult.asset.tagKeys).toEqual([tagResult.tag.id]);
   const populatedAssetTables = Object.entries(assetRepository.getTables())
@@ -342,6 +367,50 @@ test("Assets source controls require real upload filenames and valid references"
   }
 });
 
+test("Assets upload writes to the project folder before creating a record and Image View renders the file", async ({ page }) => {
+  resetProjectAssetFolder("image");
+  expect(existsSync(projectAssetPath("image"))).toBe(false);
+
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const newRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await newRow.getByLabel("Upload File").setInputFiles(uploadFile("write-view-image.png", "image/png", SMALL_PNG));
+    await newRow.getByLabel("Usage").selectOption("Character");
+    await newRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
+
+    const writtenFile = projectAssetPath("image", "write-view-image.png");
+    expect(existsSync(projectAssetPath("image"))).toBe(true);
+    expect(existsSync(writtenFile)).toBe(true);
+    expect(readFileSync(writtenFile)).toEqual(SMALL_PNG);
+
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" }).getByRole("button", { name: "View" }).click();
+    const metadata = page.locator("[data-asset-tool-metadata]");
+    await expect(metadata).toContainText(`Project ID: ${DEMO_ASSET_PROJECT_ID}`);
+    await expect(metadata).toContainText(`Target folder: projects/${DEMO_ASSET_PROJECT_ID}/image`);
+    await expect(metadata).toContainText(`Target file path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
+    await expect(metadata).toContainText("Write result: Written");
+    await expect(metadata).toContainText(`View path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
+    const preview = page.locator("[data-asset-tool-view-preview]");
+    await expect(preview).toBeVisible();
+    await expect(preview).toHaveAttribute("src", new RegExp(`projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image\\.png$`));
+    await expect.poll(() => preview.evaluate((node) => node.naturalWidth)).toBeGreaterThan(0);
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
 test("Assets multi-file uploads create one catalog row per valid selected file with project paths and batch statuses", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
     sessionUserKey: MOCK_DB_KEYS.users.user1
@@ -418,6 +487,8 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-audio-b.mp3" })).toBeVisible();
     await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-audio-a.wav" }).getByRole("button", { name: "View" }).click();
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/audio\/batch-audio-a\.wav/);
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/View path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/audio\/batch-audio-a\.wav/);
+    await expect(page.locator("[data-asset-tool-view-preview]")).toHaveAttribute("src", /projects\/[0-9A-HJKMNP-TV-Z]{26}\/audio\/batch-audio-a\.wav$/);
 
     await addUploadBatch(page, "Fonts", [
       uploadFile("batch-font-a.woff2", "font/woff2", "font a"),
@@ -427,6 +498,8 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-font-b.ttf" })).toBeVisible();
     await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-font-a.woff2" }).getByRole("button", { name: "View" }).click();
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2/);
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/View path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2/);
+    await expect(page.locator("[data-asset-tool-view-preview]")).toHaveAttribute("href", /projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2$/);
 
     await addUploadBatch(page, "Data", [
       uploadFile("batch-data-a.json", "application/json", "{\"ok\":true}"),
@@ -436,6 +509,8 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-b.csv" })).toBeVisible();
     await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-a.json" }).getByRole("button", { name: "View" }).click();
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json/);
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/View path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json/);
+    await expect(page.locator("[data-asset-tool-view-preview]")).toHaveAttribute("href", /projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json$/);
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("11");
 
     for (const assetType of ["Sprites", "Vectors", "Palette References"]) {
@@ -480,6 +555,41 @@ test("Assets multi-file upload fails visibly when no current project id is avail
     await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Asset add blocked: open an active game first.");
     await expect(page.locator("[data-asset-tool-batch-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Assets upload write failure is visible and creates no asset record", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadWrite=unsupported", {
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await editRow.getByLabel("Upload File").setInputFiles([
+      uploadFile("unsupported-write-a.png", "image/png", SMALL_PNG),
+      uploadFile("unsupported-write-b.png", "image/png", SMALL_PNG)
+    ]);
+    await editRow.getByLabel("Usage").selectOption("Character");
+    await editRow.getByRole("button", { name: "Save" }).click();
+
+    const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
+    await expect(uploadDialog).toBeVisible();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 1 skipped, 0 warnings.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("browser file writes are not supported");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/unsupported-write-a.png`);
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
+    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Write result: FAIL: Browser file writes are not supported");
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "unsupported-write-a.png" })).toHaveCount(0);
 
     expectNoPageFailures(failures);
   } finally {

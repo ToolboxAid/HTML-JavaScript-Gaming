@@ -14,6 +14,9 @@ if (params.get("handoff") === "missing") {
 } else {
   repository.makeReadyGameConfiguration();
 }
+if (params.get("uploadWrite") === "unsupported") {
+  repository.setUploadFileWriteSupport(false);
+}
 
 const elements = {
   accordions: document.querySelector("[data-asset-type-accordions]"),
@@ -57,6 +60,7 @@ let editingAssetType = "";
 let selectedAssetId = "";
 const draftAssetValues = new Map();
 const draftTagKeys = new Map();
+const draftUploadPayloads = new Map();
 const REFERENCE_ONLY_ASSET_TYPES = new Set(["Sprites", "Vectors", "Palette References"]);
 const ALWAYS_MIXED_SOURCE_ASSET_TYPES = new Set(["Data"]);
 const UPLOAD_COLUMNS = Object.freeze(["Source", "File", "Usage", "Tags", "Preview", "Actions"]);
@@ -173,7 +177,54 @@ function assetFile(asset) {
 }
 
 function assetPreview(asset) {
-  return normalizeText(asset?.storedPath || asset?.path || asset?.previewKind) || "Preview ready";
+  return normalizeText(asset?.viewPath || asset?.storedPath || asset?.path || asset?.previewKind) || "Preview ready";
+}
+
+function assetViewPath(asset) {
+  return normalizeText(asset?.viewPath || asset?.storedPath || asset?.path);
+}
+
+function uploadDiagnosticsText(diagnostics = {}) {
+  const parts = [];
+  if (diagnostics.projectId) parts.push(`Project ID: ${diagnostics.projectId}`);
+  if (diagnostics.targetFolder) parts.push(`Target folder: ${diagnostics.targetFolder}`);
+  if (diagnostics.targetFilePath) parts.push(`Target file path: ${diagnostics.targetFilePath}`);
+  if (diagnostics.writeResult) parts.push(`Write result: ${diagnostics.writeResult}`);
+  if (diagnostics.viewPath) parts.push(`View path: ${diagnostics.viewPath}`);
+  if (diagnostics.message) parts.push(diagnostics.message);
+  return parts.join("; ");
+}
+
+function createAssetViewPreview(asset) {
+  const viewPath = assetViewPath(asset);
+  if (!viewPath || assetSource(asset) !== UPLOAD_SOURCE) {
+    return null;
+  }
+  const assetType = asset.assetType || asset.type || "";
+  if (assetType === "Images") {
+    const image = document.createElement("img");
+    image.alt = `${asset.name || asset.fileName || "Asset"} preview`;
+    image.dataset.assetToolViewPreview = "true";
+    image.src = viewPath;
+    return image;
+  }
+  if (assetType === "Audio") {
+    const audio = document.createElement("audio");
+    audio.controls = true;
+    audio.dataset.assetToolViewPreview = "true";
+    audio.src = viewPath;
+    return audio;
+  }
+  if (assetType === "Fonts" || assetType === "Data") {
+    const link = document.createElement("a");
+    link.dataset.assetToolViewPreview = "true";
+    link.href = viewPath;
+    link.rel = "noreferrer";
+    link.target = "_blank";
+    link.textContent = `Open ${assetType} asset`;
+    return link;
+  }
+  return null;
 }
 
 function tagKeysForEditRow(row) {
@@ -332,7 +383,11 @@ function selectedUploadFiles(row) {
 }
 
 function selectedUploadFileNames(row) {
-  return selectedUploadFiles(row).map((file) => file.name).filter(Boolean);
+  const files = selectedUploadFiles(row);
+  if (files.length) {
+    return files.map((file) => file.name).filter(Boolean);
+  }
+  return uploadPayloadsForEditRow(row).map((payload) => payload.name).filter(Boolean);
 }
 
 function fileSelectionLabel(files) {
@@ -340,6 +395,53 @@ function fileSelectionLabel(files) {
     return "No file selected";
   }
   return files.map((file) => file.name).join(", ");
+}
+
+function base64FromArrayBuffer(buffer) {
+  const bytes = new Uint8Array(buffer);
+  const chunkSize = 0x8000;
+  let binary = "";
+  for (let index = 0; index < bytes.length; index += chunkSize) {
+    binary += String.fromCharCode(...bytes.subarray(index, index + chunkSize));
+  }
+  return window.btoa(binary);
+}
+
+async function uploadPayloadForFile(file) {
+  if (!file || typeof file.arrayBuffer !== "function") {
+    throw new Error("Upload file read failed: browser file data is unavailable.");
+  }
+  const buffer = await file.arrayBuffer();
+  return {
+    fileContentBase64: base64FromArrayBuffer(buffer),
+    hasFileBytes: true,
+    mimeType: file.type || "",
+    size: Number(file.size) || 0
+  };
+}
+
+async function uploadPayloadForUploadItem(item) {
+  if (item?.hasFileBytes === true && typeof item.fileContentBase64 === "string") {
+    return {
+      fileContentBase64: item.fileContentBase64,
+      hasFileBytes: true,
+      mimeType: item.mimeType || item.type || "",
+      size: Number(item.size) || 0
+    };
+  }
+  return uploadPayloadForFile(item);
+}
+
+function uploadPayloadsForEditRow(row) {
+  const rowId = row?.dataset.assetToolEditingRow || "";
+  return rowId ? (draftUploadPayloads.get(rowId) || []) : [];
+}
+
+function setUploadPayloadsForEditRow(row, payloads) {
+  const rowId = row?.dataset.assetToolEditingRow || "";
+  if (rowId) {
+    draftUploadPayloads.set(rowId, payloads);
+  }
 }
 
 function formatBytes(value) {
@@ -497,12 +599,14 @@ function batchSummaryForEntries(entries) {
 }
 
 function isGlobalUploadFailure(result) {
-  return !result?.added && /active game|projectid|project id/i.test(result?.message || "");
+  return !result?.added && /active game|projectid|project id|browser file writes|file writes are not supported/i.test(result?.message || "");
 }
 
-function batchInputForFile(row, assetType, file) {
+async function batchInputForFile(row, assetType, file) {
+  const payload = await uploadPayloadForUploadItem(file);
   return {
     ...assetRowValues(row, assetType),
+    ...payload,
     fileName: file.name,
     name: file.name,
     source: UPLOAD_SOURCE
@@ -521,7 +625,7 @@ function addBatchLogEntry(entries, entry, uploadState = null) {
 }
 
 async function saveUploadBatch(row, assetType) {
-  const files = selectedUploadFiles(row);
+  const files = selectedUploadFiles(row).length ? selectedUploadFiles(row) : uploadPayloadsForEditRow(row);
   const uploadState = createUploadState(files);
   const seenNames = new Set();
   let globalFailure = false;
@@ -573,12 +677,28 @@ async function saveUploadBatch(row, assetType) {
       await uploadDelay();
     }
 
-    const result = repository.addAssetRecord(batchInputForFile(row, assetType, file));
+    let batchInput = null;
+    try {
+      batchInput = await batchInputForFile(row, assetType, file);
+    } catch (error) {
+      uploadState.phase = "Failed";
+      addBatchLogEntry(uploadState.entries, {
+        fileName,
+        message: error instanceof Error ? error.message : "Upload file read failed.",
+        status: "FAIL"
+      }, uploadState);
+      globalFailure = true;
+      await uploadDelay();
+      continue;
+    }
+
+    const result = repository.addAssetRecord(batchInput);
     if (!result.added) {
       uploadState.phase = "Failed";
       addBatchLogEntry(uploadState.entries, {
         fileName,
-        message: result.message,
+        message: uploadDiagnosticsText(result.writeDiagnostics) || result.message,
+        path: result.writeDiagnostics?.targetFilePath || "",
         status: "FAIL"
       }, uploadState);
       globalFailure = isGlobalUploadFailure(result);
@@ -593,8 +713,10 @@ async function saveUploadBatch(row, assetType) {
     uploadState.phase = status === "WARN" ? "Warning" : "Uploaded";
     addBatchLogEntry(uploadState.entries, {
       fileName,
-      message: status === "WARN" ? "Progress could not be calculated for this file; uploaded with a warning." : result.message,
-      path: result.asset.storedPath,
+      message: status === "WARN"
+        ? `Progress could not be calculated for this file; uploaded with a warning. ${uploadDiagnosticsText(result.asset.writeDiagnostics)}`
+        : uploadDiagnosticsText(result.asset.writeDiagnostics) || result.message,
+      path: result.asset.targetFilePath || result.asset.storedPath,
       status
     }, uploadState);
     selectedAssetId = result.asset.id;
@@ -671,6 +793,33 @@ function assetRowValues(row, assetType) {
     source,
     tagKeys: tagKeysForEditRow(row),
     usage: row.querySelector("[data-asset-tool-usage-input]")?.value || "",
+  };
+}
+
+async function assetRowValuesForSave(row, assetType) {
+  const values = assetRowValues(row, assetType);
+  if (values.source !== UPLOAD_SOURCE) {
+    return values;
+  }
+  const file = selectedUploadFiles(row)[0] || null;
+  if (!file) {
+    const payload = uploadPayloadsForEditRow(row)[0] || null;
+    return payload
+      ? {
+          ...values,
+          ...payload,
+          fileName: payload.name,
+          name: payload.name,
+          source: UPLOAD_SOURCE
+        }
+      : values;
+  }
+  return {
+    ...values,
+    ...(await uploadPayloadForUploadItem(file)),
+    fileName: file.name,
+    name: file.name,
+    source: UPLOAD_SOURCE
   };
 }
 
@@ -932,6 +1081,11 @@ function renderMetadata(snapshot) {
     `Tags: ${assetTags(asset).map((tagKey) => tagNameForKey(snapshot.tags || [], tagKey)).join(", ") || "No tags"}`,
     `Stored path: ${asset.storedPath || asset.path}`,
   ];
+  if (asset.projectId) metadataLines.push(`Project ID: ${asset.projectId}`);
+  if (asset.targetFolder) metadataLines.push(`Target folder: ${asset.targetFolder}`);
+  if (asset.targetFilePath) metadataLines.push(`Target file path: ${asset.targetFilePath}`);
+  if (asset.writeResult) metadataLines.push(`Write result: ${asset.writeResult}`);
+  if (assetViewPath(asset)) metadataLines.push(`View path: ${assetViewPath(asset)}`);
   if (assetSource(asset) === REFERENCE_SOURCE) {
     metadataLines.splice(1, 0, `Source: ${REFERENCE_SOURCE}`, `Reference: ${assetReference(asset)}`);
   } else {
@@ -942,6 +1096,12 @@ function renderMetadata(snapshot) {
     item.textContent = line;
     elements.metadata.append(item);
   });
+  const preview = createAssetViewPreview(asset);
+  if (preview) {
+    const item = document.createElement("li");
+    item.append(preview);
+    elements.metadata.append(item);
+  }
 }
 
 function renderOutput(snapshot) {
@@ -981,6 +1141,7 @@ function clearEditState() {
   editingAssetType = "";
   draftAssetValues.clear();
   draftTagKeys.clear();
+  draftUploadPayloads.clear();
 }
 
 elements.accordions?.addEventListener("click", async (event) => {
@@ -1062,14 +1223,27 @@ elements.accordions?.addEventListener("click", async (event) => {
       await saveUploadBatch(row, assetType);
       return;
     }
+    let values = null;
+    try {
+      values = await assetRowValuesForSave(row, assetType);
+    } catch (error) {
+      setText(elements.log, error instanceof Error ? error.message : "Upload file read failed.");
+      render();
+      return;
+    }
     const result = save.dataset.assetToolSave === "__new__"
-      ? repository.addAssetRecord(assetRowValues(row, assetType))
-      : repository.updateAssetRecord(save.dataset.assetToolSave, assetRowValues(row, assetType));
+      ? repository.addAssetRecord(values)
+      : repository.updateAssetRecord(save.dataset.assetToolSave, values);
     if (result.added || result.updated) {
       selectedAssetId = result.asset.id;
       clearEditState();
     }
-    setText(elements.log, result.message);
+    setText(
+      elements.log,
+      result.writeDiagnostics && !(result.added || result.updated)
+        ? `${result.message} ${uploadDiagnosticsText(result.writeDiagnostics)}`
+        : result.message
+    );
     render();
     return;
   }
@@ -1085,7 +1259,7 @@ elements.accordions?.addEventListener("click", async (event) => {
   }
 });
 
-elements.accordions?.addEventListener("change", (event) => {
+elements.accordions?.addEventListener("change", async (event) => {
   const sourceInput = event.target.closest("[data-asset-tool-source-input]");
   const fileInput = event.target.closest("[data-asset-tool-file-input]");
   const referenceInput = event.target.closest("[data-asset-tool-reference-input]");
@@ -1093,6 +1267,7 @@ elements.accordions?.addEventListener("change", (event) => {
   if (sourceInput) {
     const row = editedRowForControl(sourceInput);
     captureDraftAssetValues(row);
+    setUploadPayloadsForEditRow(row, []);
     updateDraftValues(row, {
       fileName: "",
       reference: "",
@@ -1107,6 +1282,18 @@ elements.accordions?.addEventListener("change", (event) => {
     const row = editedRowForControl(fileInput);
     const files = selectedUploadFiles(row);
     const fileName = files[0]?.name || "";
+    try {
+      const payloads = await Promise.all(files.map(async (file) => ({
+        ...(await uploadPayloadForFile(file)),
+        name: file.name,
+        type: file.type || ""
+      })));
+      setUploadPayloadsForEditRow(row, payloads);
+    } catch (error) {
+      setUploadPayloadsForEditRow(row, []);
+      setText(elements.log, error instanceof Error ? error.message : "Upload file read failed.");
+      return;
+    }
     updateDraftValues(row, {
       fileName,
       reference: "",
@@ -1122,6 +1309,7 @@ elements.accordions?.addEventListener("change", (event) => {
 
   if (referenceInput) {
     const row = editedRowForControl(referenceInput);
+    setUploadPayloadsForEditRow(row, []);
     updateDraftValues(row, {
       fileName: "",
       reference: referenceInput.value,

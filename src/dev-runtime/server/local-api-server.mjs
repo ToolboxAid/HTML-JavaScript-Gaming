@@ -17,6 +17,20 @@ function contentTypeForPath(filePath) {
   if (extension === ".json") return "application/json; charset=utf-8";
   if (extension === ".css") return "text/css; charset=utf-8";
   if (extension === ".svg") return "image/svg+xml";
+  if (extension === ".png") return "image/png";
+  if (extension === ".jpg" || extension === ".jpeg") return "image/jpeg";
+  if (extension === ".webp") return "image/webp";
+  if (extension === ".gif") return "image/gif";
+  if (extension === ".wav") return "audio/wav";
+  if (extension === ".mp3") return "audio/mpeg";
+  if (extension === ".ogg") return "audio/ogg";
+  if (extension === ".m4a") return "audio/mp4";
+  if (extension === ".woff2") return "font/woff2";
+  if (extension === ".woff") return "font/woff";
+  if (extension === ".ttf") return "font/ttf";
+  if (extension === ".otf") return "font/otf";
+  if (extension === ".csv") return "text/csv; charset=utf-8";
+  if (extension === ".txt") return "text/plain; charset=utf-8";
   return "application/octet-stream";
 }
 
