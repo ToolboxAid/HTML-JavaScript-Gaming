@@ -39,9 +39,18 @@ let editingAssetType = "";
 let selectedAssetId = "";
 const draftAssetValues = new Map();
 const draftTagKeys = new Map();
-const REFERENCE_ASSET_TYPES = new Set(["Palette References", "Data"]);
+const REFERENCE_ONLY_ASSET_TYPES = new Set(["Palette References", "Data"]);
 const UPLOAD_COLUMNS = Object.freeze(["Source", "File", "Usage", "Tags", "Preview", "Actions"]);
-const REFERENCE_COLUMNS = Object.freeze(["Reference", "Usage", "Tags", "Preview", "Actions"]);
+const REFERENCE_COLUMNS = Object.freeze(["Source", "Reference", "Usage", "Tags", "Preview", "Actions"]);
+const UPLOAD_SOURCE = "Upload";
+const REFERENCE_SOURCE = "Reference";
+const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
+  Audio: "audio/*,.mp3,.wav,.ogg,.m4a",
+  Fonts: ".ttf,.otf,.woff,.woff2",
+  Images: "image/*,.png,.jpg,.jpeg,.webp,.gif,.svg",
+  Sprites: "image/*,.png,.jpg,.jpeg,.webp,.gif",
+  Vectors: ".svg,image/svg+xml"
+});
 
 function normalizeText(value) {
   return String(value || "").trim();
@@ -77,6 +86,14 @@ function createInput(value, label, datasetName) {
   return input;
 }
 
+function createSelect(label, datasetName, options, selectedValue) {
+  const select = document.createElement("select");
+  select.setAttribute("aria-label", label);
+  select.dataset[datasetName] = "true";
+  appendOptions(select, options, selectedValue || options[0]);
+  return select;
+}
+
 function appendOptions(select, values, selectedValue) {
   select.replaceChildren();
   values.forEach((value) => {
@@ -99,15 +116,23 @@ function assetTags(asset) {
 }
 
 function isReferenceAssetType(assetType) {
-  return REFERENCE_ASSET_TYPES.has(assetType);
+  return REFERENCE_ONLY_ASSET_TYPES.has(assetType);
 }
 
 function tableColumnsForType(assetType) {
   return isReferenceAssetType(assetType) ? REFERENCE_COLUMNS : UPLOAD_COLUMNS;
 }
 
+function isSourceMode(value) {
+  return value === UPLOAD_SOURCE || value === REFERENCE_SOURCE;
+}
+
 function assetSource(asset) {
-  return normalizeText(asset?.source || asset?.name) || "Unnamed source";
+  const source = normalizeText(asset?.source);
+  if (isSourceMode(source)) {
+    return source;
+  }
+  return isReferenceAssetType(asset?.assetType || asset?.type) ? REFERENCE_SOURCE : UPLOAD_SOURCE;
 }
 
 function assetReference(asset) {
@@ -167,6 +192,113 @@ function createUsageSelect(value) {
   return select;
 }
 
+function sourceModeForEdit(assetType, values = {}) {
+  const existingSource = normalizeText(values.source);
+  if (isSourceMode(existingSource)) {
+    return existingSource;
+  }
+  return isReferenceAssetType(assetType) ? REFERENCE_SOURCE : UPLOAD_SOURCE;
+}
+
+function referenceOptionsForAssetType(assetType, snapshot = {}, currentAssetId = "") {
+  if (assetType === "Palette References") {
+    return (snapshot.palette?.swatches || []).map((swatch) => ({
+      label: `${swatch.name || swatch.key} (${swatch.hex || "palette"})`,
+      value: swatch.key
+    }));
+  }
+
+  return (snapshot.assets || [])
+    .filter((asset) => asset.id !== currentAssetId && (asset.assetType || asset.type) === assetType)
+    .map((asset) => ({
+      label: asset.name || asset.fileName || asset.id,
+      value: asset.id
+    }));
+}
+
+function sourceOptionsForAssetType(assetType, referenceOptions, selectedSource) {
+  if (isReferenceAssetType(assetType)) {
+    return [REFERENCE_SOURCE];
+  }
+  if (referenceOptions.length > 0 || selectedSource === REFERENCE_SOURCE) {
+    return [UPLOAD_SOURCE, REFERENCE_SOURCE];
+  }
+  return [UPLOAD_SOURCE];
+}
+
+function createSourceSelect(assetType, selectedSource, referenceOptions) {
+  const options = sourceOptionsForAssetType(assetType, referenceOptions, selectedSource);
+  return createSelect("Source", "assetToolSourceInput", options, selectedSource);
+}
+
+function createFileUploadControl(assetType, selectedFileName) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "content-stack content-stack--compact";
+
+  const input = document.createElement("input");
+  input.type = "file";
+  input.setAttribute("aria-label", "Upload File");
+  input.dataset.assetToolFileInput = "true";
+  const accept = UPLOAD_ACCEPT_BY_ASSET_TYPE[assetType] || "";
+  if (accept) {
+    input.accept = accept;
+  }
+
+  const filename = document.createElement("span");
+  filename.dataset.assetToolSelectedFile = "true";
+  filename.textContent = normalizeText(selectedFileName) || "No file selected";
+  wrapper.append(input, filename);
+  return wrapper;
+}
+
+function createReferenceSelect(referenceOptions, selectedReference) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "content-stack content-stack--compact";
+  const select = document.createElement("select");
+  select.setAttribute("aria-label", "Reference");
+  select.dataset.assetToolReferenceInput = "true";
+
+  if (referenceOptions.length) {
+    appendOptions(select, referenceOptions.map((option) => option.value), selectedReference);
+    Array.from(select.options).forEach((option) => {
+      const referenceOption = referenceOptions.find((candidate) => candidate.value === option.value);
+      if (referenceOption) {
+        option.textContent = referenceOption.label;
+      }
+    });
+  } else {
+    const option = document.createElement("option");
+    option.value = "";
+    option.textContent = "No reference sources available";
+    select.append(option);
+    select.value = "";
+  }
+
+  wrapper.append(select);
+  if (!referenceOptions.length) {
+    const message = document.createElement("span");
+    message.textContent = "No valid reference source exists.";
+    wrapper.append(message);
+  }
+  return wrapper;
+}
+
+function editedRowForControl(control) {
+  return control?.closest("[data-asset-tool-editing-row]");
+}
+
+function updateDraftValues(row, values) {
+  const rowId = row?.dataset.assetToolEditingRow || "";
+  if (!rowId) {
+    return;
+  }
+  const currentValues = draftAssetValues.get(rowId) || {};
+  draftAssetValues.set(rowId, {
+    ...currentValues,
+    ...values
+  });
+}
+
 function createTagEditor(tagKeys, tags) {
   const wrapper = document.createElement("div");
   wrapper.className = "content-stack content-stack--compact";
@@ -188,10 +320,20 @@ function createTagEditor(tagKeys, tags) {
 }
 
 function assetRowValues(row, assetType) {
-  const source = row.querySelector("[data-asset-tool-source-input]")?.value || "";
-  const reference = row.querySelector("[data-asset-tool-reference-input]")?.value || "";
-  const fileName = row.querySelector("[data-asset-tool-file-input]")?.value || "";
-  const name = isReferenceAssetType(assetType) ? reference : source;
+  const rowId = row?.dataset.assetToolEditingRow || "";
+  const draftValues = draftAssetValues.get(rowId) || {};
+  const source = row.querySelector("[data-asset-tool-source-input]")?.value || sourceModeForEdit(assetType, draftValues);
+  const reference = source === REFERENCE_SOURCE
+    ? row.querySelector("[data-asset-tool-reference-input]")?.value
+      || draftValues.reference
+      || row.dataset.assetToolExistingReference
+      || ""
+    : "";
+  const fileInput = row.querySelector("[data-asset-tool-file-input]");
+  const fileName = source === UPLOAD_SOURCE
+    ? fileInput?.files?.[0]?.name || draftValues.fileName || row.dataset.assetToolExistingFileName || ""
+    : "";
+  const name = source === REFERENCE_SOURCE ? reference : fileName;
   return {
     assetType,
     fileName,
@@ -212,33 +354,39 @@ function captureDraftAssetValues(row) {
   draftAssetValues.set(rowId, assetRowValues(row, assetType));
 }
 
-function createEditRow(assetType, asset = null, tags = []) {
+function createEditRow(assetType, asset = null, snapshot = {}) {
   const row = document.createElement("tr");
   const rowId = asset?.id || `__new__:${assetType}`;
   const draftValues = draftAssetValues.get(rowId) || {};
+  const referenceOptions = referenceOptionsForAssetType(assetType, snapshot, asset?.id || "");
+  const selectedSource = sourceModeForEdit(assetType, {
+    source: draftValues.source ?? asset?.source
+  });
+  const selectedReference = draftValues.reference ?? asset?.reference ?? "";
+  const selectedFileName = draftValues.fileName ?? asset?.fileName ?? "";
   row.dataset.assetToolEditingRow = rowId;
   row.dataset.assetToolAssetType = assetType;
+  row.dataset.assetToolExistingFileName = selectedFileName;
+  row.dataset.assetToolExistingReference = selectedReference;
   if (!draftTagKeys.has(rowId)) {
     draftTagKeys.set(rowId, assetTags(asset));
   }
 
-  const leadingCell = document.createElement("td");
-  if (isReferenceAssetType(assetType)) {
-    leadingCell.append(createInput(draftValues.reference ?? (asset ? assetReference(asset) : ""), "Reference", "assetToolReferenceInput"));
-  } else {
-    leadingCell.append(createInput(draftValues.source ?? (asset ? assetSource(asset) : ""), "Source", "assetToolSourceInput"));
-  }
+  const sourceCell = document.createElement("td");
+  sourceCell.append(createSourceSelect(assetType, selectedSource, referenceOptions));
 
-  const fileCell = document.createElement("td");
-  if (!isReferenceAssetType(assetType)) {
-    fileCell.append(createInput(draftValues.fileName ?? (asset ? assetFile(asset) : ""), "File", "assetToolFileInput"));
+  const detailCell = document.createElement("td");
+  if (selectedSource === REFERENCE_SOURCE) {
+    detailCell.append(createReferenceSelect(referenceOptions, selectedReference));
+  } else {
+    detailCell.append(createFileUploadControl(assetType, selectedFileName));
   }
 
   const usageCell = document.createElement("td");
   usageCell.append(createUsageSelect(draftValues.usage ?? asset?.usage));
 
   const tagsCell = document.createElement("td");
-  tagsCell.append(createTagEditor(tagKeysForEditRow(row), tags));
+  tagsCell.append(createTagEditor(tagKeysForEditRow(row), snapshot.tags || []));
 
   const previewCell = createCell(asset ? assetPreview(asset) : "Preview after save");
 
@@ -251,17 +399,13 @@ function createEditRow(assetType, asset = null, tags = []) {
   );
   actionsCell.append(actions);
 
-  if (isReferenceAssetType(assetType)) {
-    row.append(leadingCell, usageCell, tagsCell, previewCell, actionsCell);
-  } else {
-    row.append(leadingCell, fileCell, usageCell, tagsCell, previewCell, actionsCell);
-  }
+  row.append(sourceCell, detailCell, usageCell, tagsCell, previewCell, actionsCell);
   return row;
 }
 
-function createAssetRow(asset, tags) {
+function createAssetRow(asset, snapshot) {
   if (editingAssetId === asset.id) {
-    return createEditRow(asset.assetType || asset.type || "Images", asset, tags);
+    return createEditRow(asset.assetType || asset.type || "Images", asset, snapshot);
   }
 
   const row = document.createElement("tr");
@@ -273,7 +417,7 @@ function createAssetRow(asset, tags) {
   }
 
   const tagsCell = document.createElement("td");
-  tagsCell.append(createTagTokens(assetTags(asset), tags));
+  tagsCell.append(createTagTokens(assetTags(asset), snapshot.tags || []));
 
   const actionsCell = document.createElement("td");
   const actions = document.createElement("div");
@@ -287,6 +431,7 @@ function createAssetRow(asset, tags) {
 
   if (isReferenceAssetType(row.dataset.assetToolAssetType)) {
     row.append(
+      createCell(assetSource(asset)),
       createCell(assetReference(asset)),
       createCell(asset.usage),
       tagsCell,
@@ -307,7 +452,7 @@ function createAssetRow(asset, tags) {
   return row;
 }
 
-function createAssetTypeTable(assetType, assets, tags) {
+function createAssetTypeTable(assetType, assets, snapshot) {
   const wrapper = document.createElement("div");
   wrapper.className = "table-wrapper";
 
@@ -330,7 +475,7 @@ function createAssetTypeTable(assetType, assets, tags) {
   body.dataset.assetTypeBody = assetType;
 
   if (editingAssetId === `__new__:${assetType}`) {
-    body.append(createEditRow(assetType, null, tags));
+    body.append(createEditRow(assetType, null, snapshot));
   }
 
   if (!assets.length && editingAssetId !== `__new__:${assetType}`) {
@@ -342,14 +487,14 @@ function createAssetTypeTable(assetType, assets, tags) {
     body.append(emptyRow);
   }
 
-  assets.forEach((asset) => body.append(createAssetRow(asset, tags)));
+  assets.forEach((asset) => body.append(createAssetRow(asset, snapshot)));
 
   table.append(head, body);
   wrapper.append(table);
   return wrapper;
 }
 
-function createAssetTypeAccordion(assetType, assets, tags) {
+function createAssetTypeAccordion(assetType, assets, snapshot) {
   const details = document.createElement("details");
   details.className = "vertical-accordion";
   details.dataset.assetTypeAccordion = assetType;
@@ -367,7 +512,7 @@ function createAssetTypeAccordion(assetType, assets, tags) {
   addButton.disabled = editingAssetId === `__new__:${assetType}`;
   actions.append(addButton);
 
-  body.append(actions, createAssetTypeTable(assetType, assets, tags));
+  body.append(actions, createAssetTypeTable(assetType, assets, snapshot));
   details.append(summary, body);
   return details;
 }
@@ -417,7 +562,7 @@ function renderAccordions(snapshot) {
   }
 
   elements.accordions.replaceChildren(...ASSET_CATALOG_TYPES.map((assetType) =>
-    createAssetTypeAccordion(assetType, snapshot.assetsByType?.[assetType] || [], snapshot.tags || [])
+    createAssetTypeAccordion(assetType, snapshot.assetsByType?.[assetType] || [], snapshot)
   ));
 }
 
@@ -602,6 +747,51 @@ elements.accordions?.addEventListener("click", (event) => {
     }
     setText(elements.log, result.message);
     render();
+  }
+});
+
+elements.accordions?.addEventListener("change", (event) => {
+  const sourceInput = event.target.closest("[data-asset-tool-source-input]");
+  const fileInput = event.target.closest("[data-asset-tool-file-input]");
+  const referenceInput = event.target.closest("[data-asset-tool-reference-input]");
+
+  if (sourceInput) {
+    const row = editedRowForControl(sourceInput);
+    captureDraftAssetValues(row);
+    updateDraftValues(row, {
+      fileName: "",
+      reference: "",
+      source: sourceInput.value
+    });
+    setText(elements.log, `Source set to ${sourceInput.value}.`);
+    render();
+    return;
+  }
+
+  if (fileInput) {
+    const row = editedRowForControl(fileInput);
+    const fileName = fileInput.files?.[0]?.name || "";
+    updateDraftValues(row, {
+      fileName,
+      reference: "",
+      source: UPLOAD_SOURCE
+    });
+    const display = row?.querySelector("[data-asset-tool-selected-file]");
+    if (display) {
+      display.textContent = fileName || "No file selected";
+    }
+    setText(elements.log, fileName ? `Selected upload file ${fileName}.` : "No upload file selected.");
+    return;
+  }
+
+  if (referenceInput) {
+    const row = editedRowForControl(referenceInput);
+    updateDraftValues(row, {
+      fileName: "",
+      reference: referenceInput.value,
+      source: REFERENCE_SOURCE
+    });
+    setText(elements.log, referenceInput.value ? "Reference source selected." : "Choose a valid reference source.");
   }
 });
 

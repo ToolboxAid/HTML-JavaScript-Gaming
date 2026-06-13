@@ -116,6 +116,9 @@ export const ASSET_USAGE_OPTIONS = Object.freeze([
   "Voice"
 ]);
 
+const UPLOAD_SOURCE_MODE = "Upload";
+const REFERENCE_SOURCE_MODE = "Reference";
+const ASSET_SOURCE_MODES = Object.freeze([UPLOAD_SOURCE_MODE, REFERENCE_SOURCE_MODE]);
 const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
 const PROJECT_ASSET_STORAGE_ROOT = "projects";
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
@@ -228,21 +231,16 @@ function isReferenceCatalogType(assetType) {
   return assetType === "Palette References" || assetType === "Data";
 }
 
+function normalizeCatalogSourceMode(value) {
+  const normalized = normalizeText(value);
+  return ASSET_SOURCE_MODES.find((mode) => mode.toLowerCase() === normalized.toLowerCase()) || "";
+}
+
 function catalogAssetRoleForType(assetType) {
   if (assetType === "Audio") return "audio";
   if (assetType === "Fonts") return "font";
   if (assetType === "Data") return "data";
   return "image";
-}
-
-function catalogFileNameForName(name, assetType) {
-  const slug = slugify(name || assetType);
-  if (assetType === "Audio") return `${slug}.wav`;
-  if (assetType === "Fonts") return `${slug}.woff2`;
-  if (assetType === "Data") return `${slug}.json`;
-  if (assetType === "Vectors") return `${slug}.svg`;
-  if (assetType === "Palette References") return `${slug}.palette`;
-  return `${slug}.png`;
 }
 
 function normalizeAssetTagKeys(values, tagOptions = []) {
@@ -372,6 +370,16 @@ function storagePathForProjectAsset(projectId, assetRole, usage, fileName) {
     return "";
   }
   return `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/${role.storageFolder}/${normalizedUsage}/${sanitizeFileName(fileName)}`;
+}
+
+function catalogStoredPath({ assetRole, assetType, fileName, projectId, reference, source, usage }) {
+  if (source === REFERENCE_SOURCE_MODE) {
+    return `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(assetType)}/${slugify(usage)}/reference/${slugify(reference)}`;
+  }
+  const roleUsage = normalizeUsage(usage.toLowerCase().replaceAll(" ", "-"), assetRole);
+  return roleUsage
+    ? storagePathForProjectAsset(projectId, assetRole, roleUsage, fileName)
+    : `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(assetType)}/${slugify(usage)}/${fileName}`;
 }
 
 function clonePaletteSwatch(swatch) {
@@ -543,7 +551,7 @@ function createEditableSpriteAssetRecord({ assetKey, ownerUserKey, project }) {
     reference: "",
     role: role.label,
     size,
-    source: assetKey,
+    source: UPLOAD_SOURCE_MODE,
     status: "Ready",
     storedPath,
     storageObjectId: storageObject.id,
@@ -820,7 +828,7 @@ export function createAssetToolMockRepository(options = {}) {
       reference: "",
       role: role.label,
       size: validation.asset.size,
-      source: validation.asset.name,
+      source: UPLOAD_SOURCE_MODE,
       status: "Ready",
       storedPath: storageObject.storedPath,
       storageObjectId: storageObject.id,
@@ -994,13 +1002,28 @@ export function createAssetToolMockRepository(options = {}) {
     return listAssets().filter((asset) => assetTypeForRecord(asset) === normalizedType);
   }
 
+  function referenceValuesForAssetType(assetType, projectId, currentAssetId = "") {
+    if (assetType === "Palette References") {
+      return paletteRepository.listSwatches().map((swatch) => swatch.key);
+    }
+    return ownedAssetsForProject(projectId)
+      .filter((asset) => asset.id !== currentAssetId && assetTypeForRecord(asset) === assetType)
+      .map((asset) => asset.id);
+  }
+
   function validateCatalogAssetInput(input = {}, existingAsset = null) {
     const assetType = normalizeCatalogAssetType(input.assetType || input.type);
-    const referenceType = isReferenceCatalogType(assetType);
-    const source = normalizeText(input.source || input.name || existingAsset?.source);
-    const reference = normalizeText(input.reference || input.name || existingAsset?.reference);
-    const name = referenceType ? reference : source;
-    const fileName = normalizeText(input.fileName || input.file || existingAsset?.fileName);
+    const projectId = existingAsset?.projectId || getConfigurationHandoff().activeProject?.id || "";
+    const existingSource = normalizeCatalogSourceMode(existingAsset?.source);
+    const requestedSource = normalizeCatalogSourceMode(input.source);
+    const source = requestedSource || existingSource || (isReferenceCatalogType(assetType) ? REFERENCE_SOURCE_MODE : "");
+    const reference = source === REFERENCE_SOURCE_MODE
+      ? normalizeText(input.reference || input.name || existingAsset?.reference)
+      : "";
+    const fileName = source === UPLOAD_SOURCE_MODE
+      ? normalizeText(input.fileName || input.file || existingAsset?.fileName)
+      : "";
+    const name = source === REFERENCE_SOURCE_MODE ? reference : fileName;
     const usage = normalizeCatalogUsage(input.usage);
     const description = normalizeText(input.description);
     const tags = listTags();
@@ -1016,23 +1039,40 @@ export function createAssetToolMockRepository(options = {}) {
         label: "Asset Type"
       });
     }
-    if (assetType && referenceType && !reference) {
+    if (assetType && !source) {
       findings.push({
-        action: "Enter a reference before saving.",
-        field: "reference",
-        label: "Reference"
-      });
-    }
-    if (assetType && !referenceType && !source) {
-      findings.push({
-        action: "Enter a source before saving.",
+        action: "Choose Upload or Reference before saving.",
         field: "source",
         label: "Source"
       });
     }
-    if (assetType && !referenceType && !fileName) {
+    if (assetType && isReferenceCatalogType(assetType) && source !== REFERENCE_SOURCE_MODE) {
       findings.push({
-        action: "Enter a file name before saving.",
+        action: "Use Reference for this asset type.",
+        field: "source",
+        label: "Source"
+      });
+    }
+    if (assetType && source === REFERENCE_SOURCE_MODE && !reference) {
+      findings.push({
+        action: "Choose a reference source before saving.",
+        field: "reference",
+        label: "Reference"
+      });
+    }
+    if (assetType && source === REFERENCE_SOURCE_MODE && reference) {
+      const referenceValues = referenceValuesForAssetType(assetType, projectId, existingAsset?.id || "");
+      if (!referenceValues.includes(reference)) {
+        findings.push({
+          action: "Choose a valid reference source before saving.",
+          field: "reference",
+          label: "Reference"
+        });
+      }
+    }
+    if (assetType && source === UPLOAD_SOURCE_MODE && !fileName) {
+      findings.push({
+        action: "Choose an upload file before saving.",
         field: "fileName",
         label: "File"
       });
@@ -1076,14 +1116,20 @@ export function createAssetToolMockRepository(options = {}) {
     const assetType = input.assetType;
     const assetRole = catalogAssetRoleForType(assetType);
     const role = roleDefinitionForId(assetRole) || roleDefinitionForId("image");
-    const fileName = input.fileName || catalogFileNameForName(input.name, assetType);
-    const roleUsage = normalizeUsage(input.usage.toLowerCase().replaceAll(" ", "-"), assetRole);
-    const storedPath = roleUsage
-      ? storagePathForProjectAsset(projectId, assetRole, roleUsage, fileName)
-      : `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(assetType)}/${slugify(input.usage)}/${fileName}`;
+    const fileName = input.source === UPLOAD_SOURCE_MODE ? input.fileName : "";
+    const originalName = fileName || input.reference;
+    const storedPath = catalogStoredPath({
+      assetRole,
+      assetType,
+      fileName,
+      projectId,
+      reference: input.reference,
+      source: input.source,
+      usage: input.usage
+    });
     const checksum = checksumForMetadata({
       assetRole,
-      fileName,
+      fileName: originalName,
       mimeType: "",
       projectId,
       size: 0
@@ -1104,7 +1150,7 @@ export function createAssetToolMockRepository(options = {}) {
       key: id,
       mimeType: "",
       name: input.name,
-      originalName: fileName,
+      originalName,
       ownerProjectId: projectId,
       ownerUserId: ownerUserKey,
       paletteSwatch: null,
@@ -1217,25 +1263,33 @@ export function createAssetToolMockRepository(options = {}) {
     asset.assetType = validation.asset.assetType;
     asset.type = validation.asset.assetType;
     asset.role = validation.asset.assetType;
+    asset.assetRole = catalogAssetRoleForType(validation.asset.assetType);
+    asset.assetRoleLabel = roleDefinitionForId(asset.assetRole)?.label || validation.asset.assetType;
     asset.name = validation.asset.name;
     asset.description = validation.asset.description;
-    asset.fileName = validation.asset.fileName || asset.fileName;
-    asset.originalName = asset.fileName;
+    asset.fileName = validation.asset.fileName;
+    asset.originalName = asset.fileName || validation.asset.reference;
     asset.reference = validation.asset.reference;
     asset.source = validation.asset.source;
     asset.usage = validation.asset.usage;
     asset.tagKeys = validation.asset.tagKeys;
     asset.updatedAt = now;
     asset.updatedBy = activeUserKey();
-    const roleUsage = normalizeUsage(asset.usage.toLowerCase().replaceAll(" ", "-"), asset.assetRole);
-    const nextStoredPath = roleUsage
-      ? storagePathForProjectAsset(projectId, asset.assetRole, roleUsage, asset.fileName)
-      : `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(asset.assetType)}/${slugify(asset.usage)}/${asset.fileName}`;
+    const nextStoredPath = catalogStoredPath({
+      assetRole: asset.assetRole,
+      assetType: asset.assetType,
+      fileName: asset.fileName,
+      projectId,
+      reference: asset.reference,
+      source: asset.source,
+      usage: asset.usage
+    });
     asset.storedPath = nextStoredPath;
     asset.path = nextStoredPath;
     const storageObject = tables.asset_storage_objects.find((row) => row.id === asset.storageObjectId);
     if (storageObject) {
-      storageObject.originalName = asset.fileName;
+      storageObject.originalName = asset.originalName;
+      storageObject.role = asset.type;
       storageObject.storedPath = nextStoredPath;
       storageObject.updatedAt = now;
       storageObject.updatedBy = asset.updatedBy;

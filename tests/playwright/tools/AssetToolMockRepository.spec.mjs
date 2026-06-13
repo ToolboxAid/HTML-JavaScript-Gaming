@@ -28,7 +28,7 @@ const USAGE_VALUES = [
   "Voice"
 ];
 const UPLOAD_COLUMNS = ["Source", "File", "Usage", "Tags", "Preview", "Actions"];
-const REFERENCE_COLUMNS = ["Reference", "Usage", "Tags", "Preview", "Actions"];
+const REFERENCE_COLUMNS = ["Source", "Reference", "Usage", "Tags", "Preview", "Actions"];
 const REFERENCE_ASSET_TYPES = new Set(["Palette References", "Data"]);
 
 test.beforeEach(async ({ page }) => {
@@ -138,7 +138,7 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
     assetType: "Images",
     fileName: "hero-portrait.png",
     name: "Hero Portrait",
-    source: "Hero Portrait",
+    source: "Upload",
     tagKeys: [tagResult.tag.id],
     usage: "Character"
   });
@@ -147,7 +147,7 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
   expect(assetResult.asset).toEqual(expect.objectContaining({
     createdBy: MOCK_DB_KEYS.users.user1,
     key: assetResult.asset.id,
-    source: "Hero Portrait",
+    source: "Upload",
     updatedBy: MOCK_DB_KEYS.users.user1
   }));
   expect(assetResult.asset.createdAt).toEqual(expect.any(String));
@@ -173,10 +173,89 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
   }
   expect(tagsRepository.findTag(tagResult.tag.id).usage).toEqual([
     expect.objectContaining({
-      itemName: "Hero Portrait",
+      itemName: "hero-portrait.png",
       tool: "Assets"
     })
   ]);
+});
+
+test("Assets source controls require real upload filenames and valid references", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    let editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
+    await expect(editRow.getByLabel("Upload File")).toBeVisible();
+    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Upload"]);
+    await editRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose an upload file before saving.");
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    await editRow.getByLabel("Upload File").setInputFiles({
+      buffer: Buffer.from("mock image"),
+      mimeType: "image/png",
+      name: "source-image.png"
+    });
+    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-image.png");
+    await editRow.getByLabel("Usage").selectOption("Character");
+    await editRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-image.png" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Upload", "Reference"]);
+    await editRow.getByLabel("Source").selectOption("Reference");
+    await expect(editRow.getByLabel("Reference")).toBeVisible();
+    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
+    await editRow.getByLabel("Reference").selectOption({ label: "source-image.png" });
+    await editRow.getByLabel("Usage").selectOption("Background");
+    await editRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Reference" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Add Audio" }).click();
+    editRow = page.locator("[data-asset-tool-editing-row='__new__:Audio']");
+    await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
+    await expect(editRow.getByLabel("Upload File")).toBeVisible();
+    await editRow.getByLabel("Upload File").setInputFiles({
+      buffer: Buffer.from("mock audio"),
+      mimeType: "audio/wav",
+      name: "source-audio.wav"
+    });
+    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-audio.wav");
+    await editRow.getByRole("button", { name: "Cancel" }).click();
+
+    await page.getByRole("button", { name: "Add Fonts" }).click();
+    editRow = page.locator("[data-asset-tool-editing-row='__new__:Fonts']");
+    await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
+    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Upload"]);
+    await editRow.getByLabel("Upload File").setInputFiles({
+      buffer: Buffer.from("mock font"),
+      mimeType: "font/woff2",
+      name: "source-font.woff2"
+    });
+    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-font.woff2");
+    await editRow.getByRole("button", { name: "Cancel" }).click();
+
+    await page.getByRole("button", { name: "Add Palette References" }).click();
+    editRow = page.locator("[data-asset-tool-editing-row='__new__:Palette References']");
+    await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
+    await expect(editRow.getByLabel("Reference")).toBeVisible();
+    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
+    await expect(editRow).toContainText("No valid reference source exists.");
+    await editRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose a reference source before saving.");
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
 });
 
 test("Assets launches as asset-type accordions with table row add, edit, delete, tags, and owner scope", async ({ page }) => {
@@ -215,8 +294,13 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
 
     await page.getByRole("button", { name: "Add Images" }).click();
     const newRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
-    await newRow.getByLabel("Source").fill("Hero Portrait");
-    await newRow.getByLabel("File").fill("hero-portrait.png");
+    await expect(newRow.getByLabel("Source")).toHaveValue("Upload");
+    await newRow.getByLabel("Upload File").setInputFiles({
+      buffer: Buffer.from("mock image"),
+      mimeType: "image/png",
+      name: "hero-portrait.png"
+    });
+    await expect(newRow.locator("[data-asset-tool-selected-file]")).toHaveText("hero-portrait.png");
     const usageOptions = await newRow.getByLabel("Usage").locator("option").evaluateAll((options) =>
       options.map((option) => option.textContent?.trim() || "")
     );
@@ -229,27 +313,31 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await expect(newRow).toContainText("Hero");
     await newRow.getByRole("button", { name: "Save" }).click();
 
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added Hero Portrait to Images.");
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" })).toContainText("Character");
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" })).toContainText("hero-portrait.png");
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" })).toContainText("Hero");
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added hero-portrait.png to Images.");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Character");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Upload");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Hero");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
     await expect(page.locator("[data-asset-tool-output-missing]")).toHaveText("None");
 
-    await page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" }).getByRole("button", { name: "View" }).click();
-    await expect(page.locator("[data-asset-tool-selected]")).toHaveText("Hero Portrait");
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" }).getByRole("button", { name: "View" }).click();
+    await expect(page.locator("[data-asset-tool-selected]")).toHaveText("hero-portrait.png");
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Tags: Hero");
-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Source: Hero Portrait");
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText("Source: Upload");
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText("File: hero-portrait.png");
 
-    await page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait" }).getByRole("button", { name: "Edit" }).click();
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" }).getByRole("button", { name: "Edit" }).click();
     const editRow = page.locator("[data-asset-tool-editing-row]");
-    await expect(editRow.getByLabel("Source")).toHaveValue("Hero Portrait");
-    await expect(editRow.getByLabel("File")).toHaveValue("hero-portrait.png");
-    await editRow.getByLabel("Source").fill("Hero Portrait XL");
+    await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
+    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("hero-portrait.png");
+    await editRow.getByLabel("Upload File").setInputFiles({
+      buffer: Buffer.from("mock image xl"),
+      mimeType: "image/png",
+      name: "hero-portrait-xl.png"
+    });
     await editRow.getByRole("button", { name: "Save" }).click();
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated Hero Portrait XL.");
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait XL" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated hero-portrait-xl.png.");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
 
     await page.goto(`${failures.server.baseUrl}/toolbox/tags/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tags-row]").filter({ hasText: "Hero" })).toContainText("1");
@@ -257,21 +345,21 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Tool");
     await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Item Name");
     await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Assets");
-    await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Hero Portrait XL");
+    await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("hero-portrait-xl.png");
 
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait XL" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
 
     await setServerUser(failures.server, MOCK_DB_KEYS.users.user2);
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait XL" })).toHaveCount(0);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toHaveCount(0);
 
     await setServerUser(failures.server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait XL" })).toBeVisible();
-    await page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait XL" }).getByRole("button", { name: "Trash" }).click();
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Deleted Hero Portrait XL from your asset library.");
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Hero Portrait XL" })).toHaveCount(0);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" }).getByRole("button", { name: "Trash" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Deleted hero-portrait-xl.png from your asset library.");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toHaveCount(0);
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     expectNoPageFailures(failures);
