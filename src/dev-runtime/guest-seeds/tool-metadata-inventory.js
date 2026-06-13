@@ -236,6 +236,7 @@ export const TOOL_REGISTRY = Object.freeze([
       "nextGroup": "Design",
       "nextToolIds": [
         "assets",
+        "tags",
         "colors",
         "fonts",
         "sprites",
@@ -275,6 +276,41 @@ export const TOOL_REGISTRY = Object.freeze([
       "Game Configuration handoff checked",
       "Mock asset library available",
       "Import preview workflow validates path-based asset records"
+    ],
+    "deferred": false,
+    "hidden": false,
+    "adminOnly": false,
+    "visibleInToolsList": true,
+    "toolboxGroup": "Content"
+  },
+  {
+    "id": "tags",
+    "name": "Tags",
+    "displayName": "Tags",
+    "shortDescription": "Manage shared Game Workspace tags for assets and tool records.",
+    "shortLabel": "Tags",
+    "path": "tags",
+    "folderName": "tags",
+    "entryPoint": "tags/index.html",
+    "badge": "/assets/theme-v2/images/badges/assets.png",
+    "tool": "/assets/theme-v2/images/tools/assets.png",
+    "description": "Manage shared Game Workspace tags for assets and tool records.",
+    "category": "Design",
+    "colorGroup": "tool-group-design",
+    "active": true,
+    "order": 13,
+    "requiredForPlayable": false,
+    "requiredForTestable": true,
+    "requiredForPublish": true,
+    "requires": [
+      "game-workspace"
+    ],
+    "status": "beta",
+    "releaseChannel": "beta",
+    "progressChecklist": [
+      "Shared workspace tag table available",
+      "Usage count references asset records",
+      "Assets consume tag references from shared Tags"
     ],
     "deferred": false,
     "hidden": false,

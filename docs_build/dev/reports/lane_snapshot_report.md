@@ -1,6 +1,6 @@
 # Lane Snapshot Report
 
-Generated: 2026-06-12T18:30:05.068Z
+Generated: 2026-06-12T23:25:17.577Z
 Status: PASS
 Snapshot directory: docs_build/dev/reports/lane_snapshots
 
@@ -17,7 +17,7 @@ Prevented manifest traversal: 0
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 1793a4a30d4c8c5c | 6b9b99bd5507c276 | 6c558c65ec6914d2 | 6c4fac7630b0b6f3 | c99c4343771f1683 | bb94c199bb12762d | 8ed540def3b4cb81 | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | ff1c1f26d1f0cec3 | e4d4d5ed3ccbaa29 | 6c558c65ec6914d2 | 6c4fac7630b0b6f3 | c99c4343771f1683 | ac8d0f3338e6717c | 7733d72995d2c055 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
 
 ## Snapshot Validation Findings
 

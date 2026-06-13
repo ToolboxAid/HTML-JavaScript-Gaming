@@ -4,8 +4,8 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
-const EXPECTED_TOOL_COUNT = 44;
-const EXPECTED_VISIBLE_TOOL_COUNT = 43;
+const EXPECTED_TOOL_COUNT = 45;
+const EXPECTED_VISIBLE_TOOL_COUNT = 44;
 const REQUIRED_ADMIN_TOOLS = [
   "Environments",
   "Game Migration",
@@ -30,6 +30,7 @@ const EXPECTED_SETUP_COMPACT_ORDER = [
   "Debug",
   "Game Testing",
   "Publish",
+  "Tags",
   "Game Journey",
 ];
 const INTENDED_SETUP_PATH_TOOLS = [
@@ -47,6 +48,7 @@ const INTENDED_SETUP_PATH_TOOLS = [
   "Debug",
   "Game Testing",
   "Publish",
+  "Tags",
   "Game Journey",
 ];
 const SETUP_TOOL_RECORD_MAP = Object.freeze({
@@ -235,7 +237,7 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
     const counts = countByStatus(snapshot.rows);
     const visibleCounts = countByStatus(visibleSnapshotRows);
     expect(counts).toMatchObject({
-      beta: 6,
+      beta: 7,
       complete: 1,
       planned: 31,
       wireframe: 4,

@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tags - GameFoundryStudio</title>
+    <meta name="description" content="Tags Toolbox runtime for shared Game Workspace vocabulary and usage references.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body class="meaning-molten-orange">
+    <div data-partial="header-nav"></div>
+    <main>
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Toolbox / Tags</div>
+                <h1>Tags</h1>
+                <p class="lede">Manage shared Game Workspace tags used by creator tools.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container container--tool-wide">
+                <div class="tool-workspace tool-workspace--wide">
+                    <aside class="tool-column tool-group-design">
+                        <div class="tool-column-header">
+                            <h2>Tags</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Workspace Vocabulary</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Tags are shared vocabulary for the active Game Workspace.</p>
+                                    <p>Assets and future tools should choose tags from this shared list.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Actions</summary>
+                                <div class="accordion-body content-stack">
+                                    <button class="btn" type="button" data-tags-add>Add Tag</button>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="tags" data-tool-icon-src="assets/theme-v2/images/badges/assets.png" data-tool-character-src="assets/theme-v2/images/tools/assets.png"></div>
+                    <section class="tool-center-panel">
+                        <h2>Workspace Tags</h2>
+                        <p>Use this table as the shared tag vocabulary for the active Game Workspace.</p>
+                        <div class="grid cols-3" aria-label="Tags summary">
+                            <article class="mini-stat"><strong data-tags-status>Needs Tags</strong>Status</article>
+                            <article class="mini-stat"><strong data-tags-count>0</strong>Tags</article>
+                            <article class="mini-stat"><strong data-tags-usage-count>0</strong>Usage</article>
+                        </div>
+                        <article class="card">
+                            <div class="card-body content-stack">
+                                <div>
+                                    <div class="kicker">Shared Vocabulary</div>
+                                    <h3>Tags Table</h3>
+                                </div>
+                                <div class="table-wrapper">
+                                    <table class="data-table" aria-label="Workspace tags">
+                                        <thead>
+                                            <tr>
+                                                <th scope="col">Tag Name</th>
+                                                <th scope="col">Description</th>
+                                                <th scope="col">Usage Count</th>
+                                                <th scope="col">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody data-tags-table>
+                                            <tr><td colspan="4">No tags added yet.</td></tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </article>
+                    </section>
+                    <aside class="tool-column tool-group-design">
+                        <div class="tool-column-header">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Output</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Status: <span data-tags-output-status>Needs Tags</span></p>
+                                    <p>Selected Tag: <span data-tags-selected>None</span></p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Repository Tables</summary>
+                                <div class="accordion-body">
+                                    <div class="table-wrapper">
+                                        <table class="data-table" aria-label="Tags repository table counts">
+                                            <thead>
+                                                <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
+                                            </thead>
+                                            <tbody data-tags-table-counts>
+                                                <tr><td>workspace_tag_records</td><td>0</td></tr>
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Log</summary>
+                                <div class="accordion-body">
+                                    <div class="status" role="status" data-tags-log>Tags repository ready.</div>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="toolbox/tags/tags.js"></script>
+</body>
+
+</html>

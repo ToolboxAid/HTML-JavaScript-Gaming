@@ -7,6 +7,9 @@ import {
   pickerDiagnosticForRole,
 } from "../persistence/tool-repositories/assets-mock-repository.js";
 import {
+  createTagsToolMockRepository,
+} from "../persistence/tool-repositories/tags-mock-repository.js";
+import {
   createObjectsToolMockRepository,
 } from "../persistence/tool-repositories/objects-mock-repository.js";
 import {
@@ -79,7 +82,7 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 const LOCAL_MEM_MODE_ID = "local-mem";
 const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
-const TOOL_ORDER = ["game-workspace", "game-design", "game-configuration", "objects", "controls", "game-journey", "palette", "asset"];
+const TOOL_ORDER = ["game-workspace", "game-design", "game-configuration", "objects", "controls", "game-journey", "palette", "tags", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
 const TOOLBOX_PLANNING_FIELDS = Object.freeze([
@@ -110,14 +113,14 @@ const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
 });
 const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
   Owner: null,
-  Designer: Object.freeze(["Game Workspace", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets"]),
-  "World Builder": Object.freeze(["Worlds", "Objects", "Assets", "Colors", "Animations"]),
-  Artist: Object.freeze(["Assets", "Colors", "Fonts", "Sprites", "Characters", "Objects", "Animations"]),
+  Designer: Object.freeze(["Game Workspace", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Characters", "Colors", "Assets", "Tags"]),
+  "World Builder": Object.freeze(["Worlds", "Objects", "Assets", "Colors", "Tags", "Animations"]),
+  Artist: Object.freeze(["Assets", "Colors", "Tags", "Fonts", "Sprites", "Characters", "Objects", "Animations"]),
   "Audio Creator": Object.freeze(["Audio", "Music", "Voices", "MIDI", "Audio Effects", "Voice Capture", "Voice Output", "Assets"]),
   Translator: Object.freeze(["Languages", "Voices", "Voice Capture", "Voice Output"]),
   Tester: Object.freeze(["Game Testing", "Controls", "Hitboxes", "Debug", "Performance", "Events"]),
   Publisher: Object.freeze(["Publish", "Marketplace", "Community", "Cloud", "Languages"]),
-  Viewer: Object.freeze(["Game Workspace", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
+  Viewer: Object.freeze(["Game Workspace", "Game Journey", "Game Design", "Game Configuration", "Objects", "Worlds", "Assets", "Colors", "Tags", "Audio", "Publish", "Marketplace", "Community", "Languages", "Achievements", "Ratings"]),
 });
 const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
@@ -670,6 +673,10 @@ function paletteTables(repository) {
   });
 }
 
+function tagsTables(repository) {
+  return normalizeOwnedTables("tags", repository.getTables());
+}
+
 function assetTables(repository) {
   return normalizeOwnedTables("asset", repository.getTables());
 }
@@ -932,9 +939,16 @@ class LocalDevMockDataSource {
       gameWorkspaceRepository: this.gameWorkspaceRepository,
       ...this.sharedOptions,
     });
+    this.tagsRepository = createTagsToolMockRepository({
+      gameWorkspaceRepository: this.gameWorkspaceRepository,
+      ...this.sharedOptions,
+      sessionUserKey: () => this.sessionUserKey,
+      usageProvider: () => this.assetRepository?.listAssets() || [],
+    });
     this.assetRepository = createAssetToolMockRepository({
       configurationRepository: this.gameConfigurationRepository,
       paletteRepository: this.paletteRepository,
+      tagsRepository: this.tagsRepository,
       ...this.sharedOptions,
       sessionUserKey: () => this.sessionUserKey,
     });
@@ -1472,6 +1486,7 @@ class LocalDevMockDataSource {
     if (toolId === "game-journey") return this.gameJourneyRepository;
     if (toolId === "palette") return this.paletteRepository;
     if (toolId === "colors") return this.paletteRepository;
+    if (toolId === "tags") return this.tagsRepository;
     if (toolId === "asset") return this.assetRepository;
     if (toolId === "assets") return this.assetRepository;
     throw new Error(`Unknown toolbox API data source: ${toolId}.`);
@@ -1526,11 +1541,18 @@ class LocalDevMockDataSource {
         PALETTE_WORKSPACE_PATH,
       };
     }
+    if (toolId === "tags") {
+      return {
+        TAGS_TOOL_TABLES: this.tagsRepository.TAGS_TOOL_TABLES,
+      };
+    }
     if (toolId === "asset" || toolId === "assets") {
       return {
         ASSET_ROLE_DEFINITIONS: this.assetRepository.ASSET_ROLE_DEFINITIONS,
+        ASSET_CATALOG_TYPES: this.assetRepository.ASSET_CATALOG_TYPES,
         ASSET_TOOL_TABLES: this.assetRepository.ASSET_TOOL_TABLES,
         ASSET_TYPES: this.assetRepository.ASSET_TYPES,
+        ASSET_USAGE_OPTIONS: this.assetRepository.ASSET_USAGE_OPTIONS,
         ASSET_USAGE_BY_ROLE: this.assetRepository.ASSET_USAGE_BY_ROLE,
       };
     }
@@ -1589,7 +1611,7 @@ class LocalDevMockDataSource {
     if (repository === this.assetRepository && (methodName === "makeInvalidGameConfiguration" || methodName === "makeMissingGameConfiguration" || methodName === "clearAssetLibrary" || methodName === "resetAssetLibrary")) {
       this.assetReadyInitialized = false;
     }
-    if (repository === this.assetRepository && methodName === "importAsset") {
+    if (repository === this.assetRepository && (methodName === "importAsset" || methodName === "addAssetRecord")) {
       this.assetReadyInitialized = true;
     }
     const result = method(...args);
@@ -1652,6 +1674,7 @@ class LocalDevMockDataSource {
       ...controlsTables(this.inputMappingRepository),
       ...gameJourneyTables(this.gameJourneyRepository),
       ...paletteTables(this.paletteRepository),
+      ...tagsTables(this.tagsRepository),
       ...assetTables(this.assetRepository),
     };
 

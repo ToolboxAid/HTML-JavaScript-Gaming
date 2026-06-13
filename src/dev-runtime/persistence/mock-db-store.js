@@ -110,6 +110,10 @@ export const MOCK_DB_TOOL_GROUPS = Object.freeze({
       "project_workspace_palette_globals",
     ]),
   }),
+  tags: Object.freeze({
+    label: "Tags",
+    tableNames: Object.freeze(["workspace_tag_records"]),
+  }),
   asset: Object.freeze({
     label: "Asset",
     tableNames: Object.freeze([
@@ -149,8 +153,9 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   palette_source_swatches: Object.freeze(["key", "id", "swatchKey", "hex", "name", "source", "sourceLabel", "tags", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   palette_swatch_usages: Object.freeze(["key", "id", "gameId", "assetId", "swatchHex", "swatchName", "swatchKey", "toolId", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   project_workspace_palette_globals: Object.freeze(["key", "gameId", "swatchCount", "toolKey", "workspacePath", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  workspace_tag_records: Object.freeze(["key", "id", "gameId", "name", "description", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_role_definitions: Object.freeze(["key", "id", "label", "storageFolder", "extensions", "mimeTypes", "previewBehavior", "uploadEnabled", "inputMode", "usageRoles", "maxSizeBytes", "dbFields", "validationNeeds", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-  asset_library_items: Object.freeze(["key", "id", "gameId", "ownerProjectId", "ownerUserId", "assetRole", "assetRoleLabel", "name", "fileName", "originalName", "mimeType", "size", "checksum", "storageObjectId", "storedPath", "path", "previewKind", "role", "type", "usage", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  asset_library_items: Object.freeze(["key", "id", "gameId", "ownerProjectId", "ownerUserId", "assetRole", "assetRoleLabel", "assetType", "description", "tagKeys", "name", "fileName", "originalName", "mimeType", "size", "checksum", "storageObjectId", "storedPath", "path", "previewKind", "role", "type", "usage", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_storage_objects: Object.freeze(["key", "id", "assetId", "gameId", "ownerProjectId", "role", "originalName", "storedPath", "mimeType", "size", "checksum", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_import_events: Object.freeze(["key", "id", "assetId", "gameId", "fileName", "mimeType", "storedPath", "status", "type", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   asset_validation_items: Object.freeze(["key", "id", "gameId", "field", "label", "status", "action", "createdAt", "updatedAt", "createdBy", "updatedBy"]),

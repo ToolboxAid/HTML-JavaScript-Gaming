@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Assets - GameFoundryStudio</title>
-    <meta name="description" content="Assets Toolbox runtime for user-owned asset library records, imports, previews, and validation.">
+    <meta name="description" content="Assets Toolbox runtime for owner-scoped asset catalog records and shared tag references.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Assets</div>
                 <h1>Assets</h1>
-                <p class="lede">Manage user-owned asset records after Game Configuration is ready.</p>
+                <p class="lede">Catalog owner-scoped game assets by type, usage, and shared workspace tags.</p>
             </div>
         </section>
         <section class="section">
@@ -30,159 +30,34 @@
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Configuration Handoff</summary>
+                                <summary>Shared Tags</summary>
                                 <div class="accordion-body content-stack">
-                                    <p data-asset-tool-handoff-context>No ready Game Configuration handoff</p>
-                                    <a class="btn" href="toolbox/game-configuration/index.html">Open Game Configuration</a>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Import Asset</summary>
-                                <div class="accordion-body content-stack">
-                                    <form class="content-stack" data-asset-tool-form>
-                                        <div class="table-wrapper">
-                                            <table class="data-table tool-form-table" aria-label="Asset import fields" data-asset-tool-form-table>
-                                                <tbody>
-                                                    <tr>
-                                                        <th scope="row"><label for="assetToolAssetRole">Asset<br>Role</label></th>
-                                                        <td><select id="assetToolAssetRole" data-asset-tool-asset-role></select></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="assetToolUsage">Usage</label></th>
-                                                        <td><select id="assetToolUsage" data-asset-tool-usage></select></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row">Picker<br>Mode</th>
-                                                        <td><span data-asset-tool-picker-mode>file</span></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="assetToolName">Name</label></th>
-                                                        <td><input id="assetToolName" type="text" placeholder="Player sprite" data-asset-tool-name></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <th scope="row"><label for="assetToolPath">Storage<br>Path</label></th>
-                                                        <td><input id="assetToolPath" type="text" placeholder="projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/sprite/player.png" data-asset-tool-path readonly></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="2" data-asset-tool-path-format>Storage Path format: projects/&lt;projectId&gt;/&lt;assetRole&gt;/&lt;usage&gt;/&lt;filename&gt;.</td>
-                                                    </tr>
-                                                    <tr data-asset-tool-file-row>
-                                                        <th scope="row"><label for="assetToolFile">File</label></th>
-                                                        <td><input id="assetToolFile" type="file" data-asset-tool-file aria-describedby="assetToolFileHelp"></td>
-                                                    </tr>
-                                                    <tr data-asset-tool-file-name-row>
-                                                        <td colspan="2">Selected file: <span data-asset-tool-file-name>No file selected.</span></td>
-                                                    </tr>
-                                                    <tr data-asset-tool-palette-row hidden>
-                                                        <th scope="row"><label for="assetToolPaletteColor">Palette<br>Color</label></th>
-                                                        <td><select id="assetToolPaletteColor" data-asset-tool-palette-color disabled><option>Palette Tool required</option></select></td>
-                                                    </tr>
-                                                    <tr data-asset-tool-palette-detail-row hidden>
-                                                        <td colspan="2" data-asset-tool-palette-selection>Palette Tool required / no swatches available. <a href="toolbox/colors/index.html" data-asset-tool-palette-link>Open Palette Tool</a></td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="2" data-asset-tool-import-diagnostic>File upload ready.</td>
-                                                    </tr>
-                                                    <tr>
-                                                        <td colspan="2" data-asset-tool-upload-help-cell><p id="assetToolFileHelp">File-based roles use user-owned asset records with generated storage paths. Color requires Palette Tool selection.</p></td>
-                                                    </tr>
-                                                </tbody>
-                                            </table>
-                                        </div>
-                                        <div class="action-group">
-                                            <button class="btn" type="submit" data-asset-tool-submit>Add Asset</button>
-                                            <button class="btn" type="button" data-asset-tool-cancel-edit hidden>Cancel</button>
-                                        </div>
-                                    </form>
+                                    <p>Asset Tags must come from the shared Tags tool list.</p>
+                                    <a class="btn" href="toolbox/tags/index.html">Open Tags</a>
+                                    <ul data-asset-tool-shared-tags>
+                                        <li>No workspace tags added yet.</li>
+                                    </ul>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
                                 <summary>Library Actions</summary>
                                 <div class="accordion-body content-stack">
-                                    <button class="btn" type="button" data-asset-tool-seed>Seed Demo Assets</button>
                                     <button class="btn" type="button" data-asset-tool-reset>Reset Asset Library</button>
                                 </div>
                             </details>
                         </div>
                     </aside>
-                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="assets" data-tool-icon-src="assets/theme-v2/images/badges/index.png" data-tool-character-src="assets/theme-v2/images/characters/index.png"></div>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="assets" data-tool-icon-src="assets/theme-v2/images/badges/assets.png" data-tool-character-src="assets/theme-v2/images/tools/assets.png"></div>
                     <section class="tool-center-panel">
-                        <h2>User Assets</h2>
-                        <p>Assets stores user-owned asset metadata through the shared DB/mock adapter. Real binary file persistence, cloud upload, and export packaging are not implemented yet.</p>
-                        <div class="grid cols-3" aria-label="Asset readiness summary">
+                        <h2>Asset Library Catalog</h2>
+                        <p>Each asset type owns an editable table of owner-scoped catalog records.</p>
+                        <div class="grid cols-3" aria-label="Asset catalog summary">
                             <article class="mini-stat"><strong data-asset-tool-library-status>Needs Input</strong>Library Status</article>
                             <article class="mini-stat"><strong data-asset-tool-count>0</strong>Assets</article>
-                            <article class="mini-stat"><strong data-asset-tool-next-step>Assets</strong>Next Step</article>
+                            <article class="mini-stat"><strong data-asset-tool-tag-count>0</strong>Tags</article>
                         </div>
-                        <article class="card" role="dialog" aria-labelledby="asset-tool-handoff-overlay-title" data-asset-tool-handoff-overlay hidden>
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Missing Requirements</div>
-                                    <h3 id="asset-tool-handoff-overlay-title">Game Configuration Required</h3>
-                                </div>
-                                <p>Complete a valid Game Configuration before importing Assets.</p>
-                                <a class="btn" href="toolbox/game-configuration/index.html">Open Game Configuration</a>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">User Assets</div>
-                                    <h3>Library Records</h3>
-                                </div>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Asset library records">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Asset</th>
-                                                <th scope="col">Role</th>
-                                                <th scope="col">Usage</th>
-                                                <th scope="col">Stored Path</th>
-                                                <th scope="col">Metadata</th>
-                                                <th scope="col">Status</th>
-                                                <th scope="col">Actions</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-asset-tool-library>
-                                            <tr><td colspan="7">No user assets added yet.</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Asset Library</div>
-                                    <h3>Asset Roles</h3>
-                                </div>
-                                <div class="table-wrapper">
-                                    <table class="data-table" aria-label="Asset roles">
-                                        <thead>
-                                            <tr>
-                                                <th scope="col">Role</th>
-                                                <th scope="col">File Types</th>
-                                                <th scope="col">Preview</th>
-                                                <th scope="col">Upload</th>
-                                                <th scope="col">Validation Needs</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody data-asset-tool-role-library>
-                                            <tr><td colspan="5">Loading asset roles.</td></tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </div>
-                        </article>
-                        <article class="card">
-                            <div class="card-body content-stack">
-                                <div>
-                                    <div class="kicker">Preview</div>
-                                    <h3 data-asset-tool-preview-title>Selected Asset Preview</h3>
-                                </div>
-                                <p data-asset-tool-preview>Choose or import an asset to preview its project record.</p>
-                            </div>
-                        </article>
+                        <datalist id="assetToolTagOptions" data-asset-tool-tag-options></datalist>
+                        <div class="accordion-stack" data-asset-type-accordions></div>
                     </section>
                     <aside class="tool-column tool-group-design">
                         <div class="tool-column-header">
@@ -195,11 +70,11 @@
                                     <p>Library Summary: <span data-asset-tool-output-summary>No user assets added yet.</span></p>
                                     <p>Validation Status: <span data-asset-tool-output-validation>Needs Input</span></p>
                                     <p>Missing Items: <span data-asset-tool-output-missing>Add at least one user asset.</span></p>
-                                    <p>Next Step: <span data-asset-tool-output-next-step>Assets</span></p>
+                                    <p>Selected Asset: <span data-asset-tool-selected>None</span></p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>DB Metadata</summary>
+                                <summary>Selected Asset</summary>
                                 <div class="accordion-body content-stack">
                                     <ul data-asset-tool-metadata>
                                         <li>No selected asset metadata.</li>
@@ -218,9 +93,6 @@
                                             <ul data-asset-tool-validation-list></ul>
                                         </div>
                                     </article>
-                                    <ul data-asset-tool-role-diagnostics>
-                                        <li>Role metadata loading.</li>
-                                    </ul>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -232,11 +104,7 @@
                                                 <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
                                             </thead>
                                             <tbody data-asset-tool-table-counts>
-                                                <tr><td>asset_role_definitions</td><td>8</td></tr>
                                                 <tr><td>asset_library_items</td><td>0</td></tr>
-                                                <tr><td>asset_storage_objects</td><td>0</td></tr>
-                                                <tr><td>asset_import_events</td><td>0</td></tr>
-                                                <tr><td>asset_validation_items</td><td>0</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -245,7 +113,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status Log</summary>
                                 <div class="accordion-body">
-                                    <div class="status" role="status" data-asset-tool-log>Asset repository ready.</div>
+                                    <div class="status" role="status" data-asset-tool-log>Asset catalog ready.</div>
                                 </div>
                             </details>
                         </div>

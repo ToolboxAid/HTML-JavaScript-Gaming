@@ -1,122 +1,53 @@
 import {
-  ASSET_ROLE_DEFINITIONS,
-  createAssetToolApiRepository,
-  pickerDiagnosticForRole
+  ASSET_CATALOG_TYPES,
+  ASSET_USAGE_OPTIONS,
+  createAssetToolApiRepository
 } from "./assets-api-client.js";
 
 const repository = createAssetToolApiRepository();
 const params = new URLSearchParams(window.location.search);
-const handoffMode = params.get("handoff");
-const advancedPickerAllowed = params.get("role")?.toLowerCase() === "admin"
-  || params.get("advanced")?.toLowerCase() === "true";
 
-if (handoffMode === "missing") {
+if (params.get("handoff") === "missing") {
   repository.makeMissingGameConfiguration();
-} else if (handoffMode === "invalid") {
+} else if (params.get("handoff") === "invalid") {
   repository.makeInvalidGameConfiguration();
 } else {
   repository.makeReadyGameConfiguration();
 }
 
-if (params.get("palette") === "seed") {
-  repository.seedActiveProjectPalette();
-}
-
 const elements = {
-  assetRole: document.querySelector("[data-asset-tool-asset-role]"),
+  accordions: document.querySelector("[data-asset-type-accordions]"),
   count: document.querySelector("[data-asset-tool-count]"),
-  file: document.querySelector("[data-asset-tool-file]"),
-  fileName: document.querySelector("[data-asset-tool-file-name]"),
-  fileNameRow: document.querySelector("[data-asset-tool-file-name-row]"),
-  fileRow: document.querySelector("[data-asset-tool-file-row]"),
-  form: document.querySelector("[data-asset-tool-form]"),
-  handoffContext: document.querySelector("[data-asset-tool-handoff-context]"),
-  handoffOverlay: document.querySelector("[data-asset-tool-handoff-overlay]"),
-  importDiagnostic: document.querySelector("[data-asset-tool-import-diagnostic]"),
-  library: document.querySelector("[data-asset-tool-library]"),
   libraryStatus: document.querySelector("[data-asset-tool-library-status]"),
   log: document.querySelector("[data-asset-tool-log]"),
   metadata: document.querySelector("[data-asset-tool-metadata]"),
-  name: document.querySelector("[data-asset-tool-name]"),
-  nextStep: document.querySelectorAll("[data-asset-tool-next-step], [data-asset-tool-output-next-step]"),
   outputMissing: document.querySelector("[data-asset-tool-output-missing]"),
   outputSummary: document.querySelector("[data-asset-tool-output-summary]"),
   outputValidation: document.querySelector("[data-asset-tool-output-validation]"),
-  paletteColor: document.querySelector("[data-asset-tool-palette-color]"),
-  paletteDetailRow: document.querySelector("[data-asset-tool-palette-detail-row]"),
-  paletteRow: document.querySelector("[data-asset-tool-palette-row]"),
-  paletteSelection: document.querySelector("[data-asset-tool-palette-selection]"),
-  path: document.querySelector("[data-asset-tool-path]"),
-  pickerMode: document.querySelector("[data-asset-tool-picker-mode]"),
-  preview: document.querySelector("[data-asset-tool-preview]"),
-  previewTitle: document.querySelector("[data-asset-tool-preview-title]"),
-  cancelEdit: document.querySelector("[data-asset-tool-cancel-edit]"),
   reset: document.querySelector("[data-asset-tool-reset]"),
-  roleDiagnostics: document.querySelector("[data-asset-tool-role-diagnostics]"),
-  roleLibrary: document.querySelector("[data-asset-tool-role-library]"),
-  seed: document.querySelector("[data-asset-tool-seed]"),
-  submit: document.querySelector("[data-asset-tool-submit]"),
+  selected: document.querySelector("[data-asset-tool-selected]"),
+  sharedTags: document.querySelector("[data-asset-tool-shared-tags]"),
   tableCounts: document.querySelector("[data-asset-tool-table-counts]"),
-  usage: document.querySelector("[data-asset-tool-usage]"),
+  tagCount: document.querySelector("[data-asset-tool-tag-count]"),
+  tagOptions: document.querySelector("[data-asset-tool-tag-options]"),
   validationList: document.querySelector("[data-asset-tool-validation-list]"),
-  validationOverlay: document.querySelector("[data-asset-tool-validation-overlay]")
+  validationOverlay: document.querySelector("[data-asset-tool-validation-overlay]"),
 };
 
-let editingAsset = null;
+let editingAssetId = "";
+let editingAssetType = "";
+let selectedAssetId = "";
+const draftAssetValues = new Map();
+const draftTagKeys = new Map();
+
+function normalizeText(value) {
+  return String(value || "").trim();
+}
 
 function setText(target, value) {
-  if (target && typeof target.forEach === "function" && !target.nodeType) {
-    target.forEach((item) => setText(item, value));
-    return;
-  }
-
   if (target) {
     target.textContent = value;
   }
-}
-
-function setHidden(target, hidden) {
-  if (target) {
-    target.hidden = hidden;
-  }
-}
-
-function visibleRoleDefinitions() {
-  return ASSET_ROLE_DEFINITIONS.filter((role) => (
-    role.inputMode !== "advanced" || advancedPickerAllowed
-  ));
-}
-
-function visibleRoleDefinitionForId(roleId) {
-  return visibleRoleDefinitions().find((role) => role.id === roleId) || visibleRoleDefinitions()[0];
-}
-
-function appendRoleOptions(select, definitions) {
-  if (!select) {
-    return;
-  }
-
-  select.replaceChildren();
-  definitions.forEach((role) => {
-    const option = document.createElement("option");
-    option.value = role.id;
-    option.textContent = role.label;
-    select.append(option);
-  });
-}
-
-function appendOptions(select, values) {
-  if (!select) {
-    return;
-  }
-
-  select.replaceChildren();
-  values.forEach((value) => {
-    const option = document.createElement("option");
-    option.value = value;
-    option.textContent = value;
-    select.append(option);
-  });
 }
 
 function createCell(text) {
@@ -125,226 +56,288 @@ function createCell(text) {
   return cell;
 }
 
-function createActionButton(label, datasetName, assetId) {
+function createButton(label, datasetName, value) {
   const button = document.createElement("button");
-  button.className = "btn";
+  button.className = "btn btn--compact";
   button.type = "button";
-  button.dataset[datasetName] = assetId;
+  button.dataset[datasetName] = value;
   button.textContent = label;
   return button;
 }
 
-function createListItem(text) {
-  const item = document.createElement("li");
-  item.textContent = text;
-  return item;
+function createInput(value, label, datasetName) {
+  const input = document.createElement("input");
+  input.type = "text";
+  input.value = value || "";
+  input.setAttribute("aria-label", label);
+  input.dataset[datasetName] = "true";
+  return input;
 }
 
-function createMetadataCell(asset) {
-  const cell = document.createElement("td");
-  const lines = asset.paletteSwatch
-    ? [
-        `${asset.paletteSwatch.key} ${asset.paletteSwatch.hex}`,
-        asset.paletteSwatch.name,
-        asset.paletteSwatch.tags.length ? `Tags: ${asset.paletteSwatch.tags.join(", ")}` : "Tags: None",
-        asset.checksum
-      ]
-    : [
-        `${asset.originalName} ${asset.mimeType}`,
-        `${asset.size} bytes`,
-        asset.checksum
-      ];
-
-  lines.forEach((line) => {
-    const item = document.createElement("div");
-    item.textContent = line;
-    cell.append(item);
+function appendOptions(select, values, selectedValue) {
+  select.replaceChildren();
+  values.forEach((value) => {
+    const option = document.createElement("option");
+    option.value = value;
+    option.textContent = value;
+    select.append(option);
   });
-  return cell;
+  if (selectedValue && values.includes(selectedValue)) {
+    select.value = selectedValue;
+  }
 }
 
-function currentFile() {
-  return elements.file?.files?.[0] || null;
+function tagNameForKey(tags, tagKey) {
+  return tags.find((tag) => tag.id === tagKey)?.name || tagKey;
 }
 
-function readAssetForm() {
-  const file = currentFile();
-  const role = selectedRoleDefinition();
+function assetTags(asset) {
+  return Array.isArray(asset?.tagKeys) ? asset.tagKeys : [];
+}
+
+function tagKeysForEditRow(row) {
+  const key = row?.dataset.assetToolEditingRow || "";
+  return draftTagKeys.get(key) || [];
+}
+
+function setTagKeysForEditRow(row, tagKeys) {
+  const key = row?.dataset.assetToolEditingRow || "";
+  if (key) {
+    draftTagKeys.set(key, tagKeys);
+  }
+}
+
+function createTagTokens(tagKeys, tags, editable = false) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "content-cluster";
+  if (!tagKeys.length) {
+    const empty = document.createElement("span");
+    empty.textContent = "No tags";
+    wrapper.append(empty);
+    return wrapper;
+  }
+
+  tagKeys.forEach((tagKey) => {
+    if (editable) {
+      const token = createButton(tagNameForKey(tags, tagKey), "assetToolRemoveTag", tagKey);
+      wrapper.append(token);
+      return;
+    }
+    const token = document.createElement("span");
+    token.className = "pill";
+    token.textContent = tagNameForKey(tags, tagKey);
+    wrapper.append(token);
+  });
+
+  return wrapper;
+}
+
+function createUsageSelect(value) {
+  const select = document.createElement("select");
+  select.dataset.assetToolUsageInput = "true";
+  select.setAttribute("aria-label", "Usage");
+  appendOptions(select, ASSET_USAGE_OPTIONS, value || ASSET_USAGE_OPTIONS[0]);
+  return select;
+}
+
+function createTagEditor(tagKeys, tags) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "content-stack content-stack--compact";
+
+  const tokens = createTagTokens(tagKeys, tags, true);
+
+  const controls = document.createElement("div");
+  controls.className = "action-group action-group--tight";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.setAttribute("aria-label", "Asset Tags");
+  input.setAttribute("list", "assetToolTagOptions");
+  input.dataset.assetToolTagInput = "true";
+  const add = createButton("Add Tag", "assetToolAddTagToken", "true");
+  controls.append(input, add);
+
+  wrapper.append(tokens, controls);
+  return wrapper;
+}
+
+function assetRowValues(row, assetType) {
   return {
-    assetRole: elements.assetRole?.value,
-    fileName: role.inputMode === "file" ? editingAsset?.originalName || file?.name || "" : "",
-    mimeType: role.inputMode === "file" ? editingAsset?.mimeType || file?.type || "" : "",
-    name: elements.name?.value,
-    paletteColor: elements.paletteColor?.value || editingAsset?.paletteSwatch?.key || "",
-    path: elements.path?.value,
-    pickerMode: role.inputMode,
-    size: role.inputMode === "file" ? editingAsset?.size || file?.size || 0 : 0,
-    usage: elements.usage?.value
+    assetType,
+    description: row.querySelector("[data-asset-tool-description-input]")?.value || "",
+    name: row.querySelector("[data-asset-tool-name-input]")?.value || "",
+    tagKeys: tagKeysForEditRow(row),
+    usage: row.querySelector("[data-asset-tool-usage-input]")?.value || "",
   };
 }
 
-function fileStem(fileName) {
-  return String(fileName || "").replace(/\.[^.]+$/, "");
-}
-
-function selectedRoleDefinition() {
-  const roleId = elements.assetRole?.value || "image";
-  return visibleRoleDefinitionForId(roleId);
-}
-
-function updateUsageOptions() {
-  const role = selectedRoleDefinition();
-  const currentUsage = elements.usage?.value || "";
-  appendOptions(elements.usage, role.usageRoles);
-  if (elements.usage && role.usageRoles.includes(currentUsage)) {
-    elements.usage.value = currentUsage;
-  }
-}
-
-function updatePalettePicker() {
-  if (!elements.paletteColor) {
+function captureDraftAssetValues(row) {
+  const rowId = row?.dataset.assetToolEditingRow || "";
+  const assetType = row?.dataset.assetToolAssetType || editingAssetType;
+  if (!rowId) {
     return;
   }
+  draftAssetValues.set(rowId, assetRowValues(row, assetType));
+}
 
-  const currentValue = elements.paletteColor.value;
-  const palette = repository.getPaletteSnapshot();
-  elements.paletteColor.replaceChildren();
-  const placeholder = document.createElement("option");
-  placeholder.value = "";
-  placeholder.textContent = palette.activeProject
-    ? "Choose palette swatch"
-    : "Palette Tool required";
-  elements.paletteColor.append(placeholder);
+function createEditRow(assetType, asset = null, tags = []) {
+  const row = document.createElement("tr");
+  const rowId = asset?.id || `__new__:${assetType}`;
+  const draftValues = draftAssetValues.get(rowId) || {};
+  row.dataset.assetToolEditingRow = rowId;
+  row.dataset.assetToolAssetType = assetType;
+  if (!draftTagKeys.has(rowId)) {
+    draftTagKeys.set(rowId, assetTags(asset));
+  }
 
-  palette.swatches.forEach((swatch) => {
+  const nameCell = document.createElement("td");
+  nameCell.append(createInput(draftValues.name ?? asset?.name ?? "", "Asset Name", "assetToolNameInput"));
+
+  const usageCell = document.createElement("td");
+  usageCell.append(createUsageSelect(draftValues.usage ?? asset?.usage));
+
+  const descriptionCell = document.createElement("td");
+  descriptionCell.append(createInput(draftValues.description ?? asset?.description ?? "", "Description", "assetToolDescriptionInput"));
+
+  const tagsCell = document.createElement("td");
+  tagsCell.append(createTagEditor(tagKeysForEditRow(row), tags));
+
+  const actionsCell = document.createElement("td");
+  const actions = document.createElement("div");
+  actions.className = "action-group action-group--tight";
+  actions.append(
+    createButton("Save", "assetToolSave", asset?.id || "__new__"),
+    createButton("Cancel", "assetToolCancel", asset?.id || "__new__")
+  );
+  actionsCell.append(actions);
+
+  row.append(nameCell, usageCell, descriptionCell, tagsCell, actionsCell);
+  return row;
+}
+
+function createAssetRow(asset, tags) {
+  if (editingAssetId === asset.id) {
+    return createEditRow(asset.assetType || asset.type || "Images", asset, tags);
+  }
+
+  const row = document.createElement("tr");
+  row.dataset.assetToolRow = asset.id;
+  row.dataset.assetToolAssetType = asset.assetType || asset.type || "Images";
+
+  if (selectedAssetId === asset.id) {
+    row.dataset.assetToolSelectedRow = "true";
+  }
+
+  const tagsCell = document.createElement("td");
+  tagsCell.append(createTagTokens(assetTags(asset), tags));
+
+  const actionsCell = document.createElement("td");
+  const actions = document.createElement("div");
+  actions.className = "action-group action-group--tight";
+  actions.append(
+    createButton("View", "assetToolView", asset.id),
+    createButton("Edit", "assetToolEdit", asset.id),
+    createButton("Trash", "assetToolDelete", asset.id)
+  );
+  actionsCell.append(actions);
+
+  row.append(
+    createCell(asset.name),
+    createCell(asset.usage),
+    createCell(asset.description || "No description"),
+    tagsCell,
+    actionsCell
+  );
+  return row;
+}
+
+function createAssetTypeTable(assetType, assets, tags) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "table-wrapper";
+
+  const table = document.createElement("table");
+  table.className = "data-table";
+  table.setAttribute("aria-label", `${assetType} assets`);
+  table.dataset.assetTypeTable = assetType;
+
+  const head = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  ["Asset Name", "Usage", "Description", "Asset Tags", "Actions"].forEach((label) => {
+    const heading = document.createElement("th");
+    heading.scope = "col";
+    heading.textContent = label;
+    headRow.append(heading);
+  });
+  head.append(headRow);
+
+  const body = document.createElement("tbody");
+  body.dataset.assetTypeBody = assetType;
+
+  if (editingAssetId === `__new__:${assetType}`) {
+    body.append(createEditRow(assetType, null, tags));
+  }
+
+  if (!assets.length && editingAssetId !== `__new__:${assetType}`) {
+    const emptyRow = document.createElement("tr");
+    const emptyCell = document.createElement("td");
+    emptyCell.colSpan = 5;
+    emptyCell.textContent = `No ${assetType} assets added yet.`;
+    emptyRow.append(emptyCell);
+    body.append(emptyRow);
+  }
+
+  assets.forEach((asset) => body.append(createAssetRow(asset, tags)));
+
+  table.append(head, body);
+  wrapper.append(table);
+  return wrapper;
+}
+
+function createAssetTypeAccordion(assetType, assets, tags) {
+  const details = document.createElement("details");
+  details.className = "vertical-accordion";
+  details.dataset.assetTypeAccordion = assetType;
+  details.open = true;
+
+  const summary = document.createElement("summary");
+  summary.textContent = assetType;
+
+  const body = document.createElement("div");
+  body.className = "accordion-body content-stack";
+
+  const actions = document.createElement("div");
+  actions.className = "action-group";
+  const addButton = createButton(`Add ${assetType}`, "assetToolAddType", assetType);
+  addButton.disabled = editingAssetId === `__new__:${assetType}`;
+  actions.append(addButton);
+
+  body.append(actions, createAssetTypeTable(assetType, assets, tags));
+  details.append(summary, body);
+  return details;
+}
+
+function renderTagOptions(tags) {
+  elements.tagOptions?.replaceChildren(...tags.map((tag) => {
     const option = document.createElement("option");
-    option.value = swatch.key;
-    option.textContent = `${swatch.key} ${swatch.hex} ${swatch.name}`;
-    elements.paletteColor.append(option);
+    option.value = tag.name;
+    option.dataset.tagKey = tag.id;
+    return option;
+  }));
+
+  if (!elements.sharedTags) {
+    return;
+  }
+  elements.sharedTags.replaceChildren();
+  if (!tags.length) {
+    const item = document.createElement("li");
+    item.textContent = "No workspace tags added yet.";
+    elements.sharedTags.append(item);
+    return;
+  }
+  tags.forEach((tag) => {
+    const item = document.createElement("li");
+    item.textContent = `${tag.name}: ${tag.description || "No description"}`;
+    elements.sharedTags.append(item);
   });
-
-  if (currentValue && palette.swatches.some((swatch) => swatch.key === currentValue)) {
-    elements.paletteColor.value = currentValue;
-  }
-  elements.paletteColor.disabled = palette.swatches.length === 0;
-  updatePaletteSelectionDetails();
-}
-
-function selectedPaletteSwatch() {
-  const key = elements.paletteColor?.value || "";
-  return key ? repository.getPaletteSnapshot().swatches.find((swatch) => swatch.key === key) || null : null;
-}
-
-function setPaletteSelectionContent(message, includeLink = true) {
-  if (!elements.paletteSelection) {
-    return;
-  }
-
-  elements.paletteSelection.replaceChildren(document.createTextNode(message));
-  if (includeLink) {
-    elements.paletteSelection.append(document.createTextNode(" "));
-    const link = document.createElement("a");
-    link.href = "toolbox/colors/index.html";
-    link.textContent = "Open Palette Tool";
-    link.dataset.assetToolPaletteLink = "true";
-    elements.paletteSelection.append(link);
-  }
-}
-
-function updatePaletteSelectionDetails() {
-  const role = selectedRoleDefinition();
-  if (role.inputMode !== "palette") {
-    return;
-  }
-
-  const palette = repository.getPaletteSnapshot();
-  const swatch = selectedPaletteSwatch();
-  if (!palette.activeProject) {
-    setPaletteSelectionContent("Palette Tool required / active project required.");
-    return;
-  }
-  if (palette.swatches.length === 0) {
-    setPaletteSelectionContent("Palette Tool required / no swatches available.");
-    return;
-  }
-  if (!swatch) {
-    setPaletteSelectionContent("Choose a palette swatch for this Color asset.", false);
-    return;
-  }
-
-  const tags = swatch.tags.length ? ` Tags: ${swatch.tags.join(", ")}` : "";
-  if (elements.name && !elements.name.value.trim()) {
-    elements.name.value = swatch.name;
-  }
-  setPaletteSelectionContent(`Key: ${swatch.key} Hex: ${swatch.hex} Name: ${swatch.name}${tags}`, false);
-}
-
-function updateFileAccept() {
-  if (!elements.file) {
-    return;
-  }
-
-  const role = selectedRoleDefinition();
-  const fileMode = role.inputMode === "file";
-  const paletteMode = role.inputMode === "palette";
-  const editing = Boolean(editingAsset);
-
-  setText(elements.pickerMode, editing ? "edit" : role.inputMode);
-  setHidden(elements.fileRow, !fileMode || editing);
-  setHidden(elements.fileNameRow, !fileMode);
-  setHidden(elements.paletteRow, !paletteMode || editing);
-  setHidden(elements.paletteDetailRow, !paletteMode || editing);
-
-  elements.file.accept = fileMode ? role.extensions.join(",") : "";
-  elements.file.disabled = !fileMode || editing;
-  if (!fileMode || editing) {
-    elements.file.value = "";
-  }
-  if (paletteMode && !editing) {
-    updatePalettePicker();
-    updatePaletteSelectionDetails();
-  }
-}
-
-function updateImportDiagnostic() {
-  if (editingAsset) {
-    setText(elements.importDiagnostic, "Editing asset metadata. Save to update your asset library.");
-    return;
-  }
-  const role = selectedRoleDefinition();
-  setText(elements.importDiagnostic, pickerDiagnosticForRole(role, repository.getPaletteSnapshot()));
-}
-
-function updateStoragePathPreview() {
-  if (!elements.path) {
-    return;
-  }
-
-  const role = selectedRoleDefinition();
-  const file = currentFile();
-  elements.path.value = repository.previewStoragePath({
-    assetRole: elements.assetRole?.value,
-    fileName: role.inputMode === "file" ? editingAsset?.originalName || file?.name || "" : "",
-    paletteColor: role.inputMode === "palette" ? editingAsset?.paletteSwatch?.key || elements.paletteColor?.value || "" : "",
-    usage: elements.usage?.value
-  });
-}
-
-function renderHandoff(snapshot) {
-  const project = snapshot.handoff.activeProject;
-  const configuration = snapshot.handoff.configuration;
-  const text = snapshot.handoff.ready && project && configuration
-    ? `${project.name} - ${project.purpose} - Game Configuration ready`
-    : "No active project with ready Game Configuration handoff";
-
-  setText(elements.handoffContext, text);
-  if (elements.handoffOverlay) {
-    elements.handoffOverlay.hidden = snapshot.handoff.ready;
-  }
-  if (elements.form) {
-    elements.form.hidden = !snapshot.handoff.ready;
-    elements.form.setAttribute("aria-hidden", String(!snapshot.handoff.ready));
-  }
 }
 
 function renderValidation(snapshot) {
@@ -354,111 +347,21 @@ function renderValidation(snapshot) {
 
   elements.validationList.replaceChildren();
   snapshot.validation.findings.forEach((finding) => {
-    elements.validationList.append(createListItem(`${finding.label}: ${finding.action}`));
+    const item = document.createElement("li");
+    item.textContent = `${finding.label}: ${finding.action}`;
+    elements.validationList.append(item);
   });
   elements.validationOverlay.hidden = snapshot.validation.findings.length === 0;
 }
 
-function renderRoleLibrary(snapshot) {
-  if (!elements.roleLibrary) {
+function renderAccordions(snapshot) {
+  if (!elements.accordions) {
     return;
   }
 
-  elements.roleLibrary.replaceChildren();
-  visibleRoleDefinitions().forEach((role) => {
-    const row = document.createElement("tr");
-    row.dataset.assetToolRoleRow = role.id;
-    row.append(
-      createCell(role.label),
-      createCell(role.extensions.join(", ")),
-      createCell(role.previewBehavior),
-      createCell(role.uploadEnabled ? "Upload ready" : "Planned"),
-      createCell(role.validationNeeds.join("; "))
-    );
-    elements.roleLibrary.append(row);
-  });
-}
-
-function renderRoleDiagnostics(snapshot) {
-  if (!elements.roleDiagnostics) {
-    return;
-  }
-
-  elements.roleDiagnostics.replaceChildren();
-  const visibleRoleIds = new Set(visibleRoleDefinitions().map((role) => role.id));
-  snapshot.roleDiagnostics
-    .filter((diagnostic) => visibleRoleIds.has(diagnostic.id.replace(/-role-diagnostic$/, "")))
-    .forEach((diagnostic) => {
-      elements.roleDiagnostics.append(createListItem(`${diagnostic.label}: ${diagnostic.action}`));
-    });
-}
-
-function renderLibrary(snapshot) {
-  if (!elements.library) {
-    return;
-  }
-
-  elements.library.replaceChildren();
-
-  if (snapshot.assets.length === 0) {
-    const row = document.createElement("tr");
-    const cell = document.createElement("td");
-    cell.colSpan = 7;
-    cell.textContent = "No user assets added yet.";
-    row.append(cell);
-    elements.library.append(row);
-    return;
-  }
-
-  snapshot.assets.forEach((asset) => {
-    const row = document.createElement("tr");
-    row.dataset.assetToolRow = asset.id;
-
-    const nameCell = document.createElement("td");
-    nameCell.textContent = asset.name;
-    if (snapshot.selectedAsset?.id === asset.id) {
-      row.dataset.assetToolSelectedRow = "true";
-    }
-
-    const actionsCell = document.createElement("td");
-    const actions = document.createElement("div");
-    actions.className = "action-group action-group--tight";
-    actions.append(
-      createActionButton("View", "assetToolView", asset.id),
-      createActionButton("Edit", "assetToolEdit", asset.id),
-      createActionButton("Delete", "assetToolDelete", asset.id)
-    );
-    actionsCell.append(actions);
-
-    row.append(
-      nameCell,
-      createCell(asset.assetRoleLabel),
-      createCell(asset.usage),
-      createCell(asset.storedPath),
-      createMetadataCell(asset),
-      createCell(asset.status),
-      actionsCell
-    );
-    elements.library.append(row);
-  });
-}
-
-function renderPreview(snapshot) {
-  const asset = snapshot.selectedAsset;
-
-  if (!asset) {
-    setText(elements.previewTitle, "Selected Asset Preview");
-    setText(elements.preview, "Choose or upload an asset to preview its project storage metadata.");
-    return;
-  }
-
-  setText(elements.previewTitle, `${asset.name} Preview`);
-  if (asset.paletteSwatch) {
-    const tags = asset.paletteSwatch.tags.length ? ` Tags: ${asset.paletteSwatch.tags.join(", ")}` : "";
-    setText(elements.preview, `${asset.previewKind}: ${asset.paletteSwatch.key} ${asset.paletteSwatch.hex} ${asset.paletteSwatch.name}.${tags}`);
-    return;
-  }
-  setText(elements.preview, `${asset.previewKind}: ${asset.storedPath} from ${asset.originalName}.`);
+  elements.accordions.replaceChildren(...ASSET_CATALOG_TYPES.map((assetType) =>
+    createAssetTypeAccordion(assetType, snapshot.assetsByType?.[assetType] || [], snapshot.tags || [])
+  ));
 }
 
 function renderTables(snapshot) {
@@ -480,244 +383,170 @@ function renderMetadata(snapshot) {
   }
 
   elements.metadata.replaceChildren();
-  const asset = snapshot.selectedAsset;
+  const asset = snapshot.assets.find((candidate) => candidate.id === selectedAssetId)
+    || snapshot.selectedAsset
+    || null;
   if (!asset) {
-    elements.metadata.append(createListItem("No selected asset metadata."));
+    const item = document.createElement("li");
+    item.textContent = "No selected asset metadata.";
+    elements.metadata.append(item);
+    setText(elements.selected, "None");
     return;
   }
 
+  setText(elements.selected, asset.name);
   [
-    `${asset.originalName} ${asset.mimeType}`,
-    `${asset.size} bytes`,
-    asset.checksum,
-    `Stored path: ${asset.storedPath}`,
-    `Role: ${asset.assetRoleLabel}`,
-    `Owner project: ${asset.ownerProjectId}`,
-    asset.paletteSwatch ? `Swatch key: ${asset.paletteSwatch.key}` : "",
-    asset.paletteSwatch ? `Swatch hex: ${asset.paletteSwatch.hex}` : "",
-    asset.paletteSwatch ? `Swatch name: ${asset.paletteSwatch.name}` : "",
-    asset.paletteSwatch && asset.paletteSwatch.tags.length ? `Swatch tags: ${asset.paletteSwatch.tags.join(", ")}` : ""
-  ].filter(Boolean).forEach((item) => elements.metadata.append(createListItem(item)));
+    `Type: ${asset.assetType || asset.type}`,
+    `Usage: ${asset.usage}`,
+    `Description: ${asset.description || "No description"}`,
+    `Tags: ${assetTags(asset).map((tagKey) => tagNameForKey(snapshot.tags || [], tagKey)).join(", ") || "No tags"}`,
+    `Stored path: ${asset.storedPath || asset.path}`,
+  ].forEach((line) => {
+    const item = document.createElement("li");
+    item.textContent = line;
+    elements.metadata.append(item);
+  });
 }
 
 function renderOutput(snapshot) {
-  const missing = snapshot.validation.findings.map((finding) => finding.label).join(", ");
   const assetCount = snapshot.assets.length;
-
+  const missing = snapshot.validation.findings.map((finding) => finding.label).join(", ");
   setText(elements.count, String(assetCount));
-  setText(elements.libraryStatus, snapshot.progressHandoff.libraryStatus);
-  setText(elements.nextStep, snapshot.progressHandoff.nextStep);
-  setText(elements.outputValidation, snapshot.validation.status);
-  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Add at least one user asset."));
+  setText(elements.tagCount, String(snapshot.tags.length));
+  setText(elements.libraryStatus, assetCount > 0 ? "Ready" : "Needs Input");
   setText(
     elements.outputSummary,
-    assetCount === 1 ? "1 user asset ready." : `${assetCount} user assets ready.`
+    assetCount === 1 ? "1 user asset catalog record ready." : `${assetCount} user asset catalog records ready.`
   );
+  setText(elements.outputValidation, snapshot.validation.status);
+  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Add at least one user asset."));
 }
 
 function render() {
   const snapshot = repository.getSnapshot();
-  if (editingAsset && !snapshot.assets.some((asset) => asset.id === editingAsset.id)) {
-    editingAsset = null;
+  if (selectedAssetId && !snapshot.assets.some((asset) => asset.id === selectedAssetId)) {
+    selectedAssetId = "";
   }
-  renderHandoff(snapshot);
+  renderTagOptions(snapshot.tags || []);
   renderValidation(snapshot);
-  renderRoleLibrary(snapshot);
-  renderRoleDiagnostics(snapshot);
-  renderLibrary(snapshot);
-  renderPreview(snapshot);
+  renderAccordions(snapshot);
   renderTables(snapshot);
   renderMetadata(snapshot);
-  updatePalettePicker();
   renderOutput(snapshot);
-  updateStoragePathPreview();
-  updateSelectedFileName();
-  updateImportDiagnostic();
-  setFormMode();
 }
 
-function updateSelectedFileName() {
-  if (editingAsset) {
-    setText(elements.fileName, editingAsset.originalName ? `Existing file: ${editingAsset.originalName}` : "Existing asset source.");
-    return;
-  }
-  setText(elements.fileName, currentFile()?.name || "No file selected.");
+function tagKeyFromInputValue(value, tags) {
+  const normalized = normalizeText(value).toLowerCase();
+  return tags.find((tag) => tag.name.toLowerCase() === normalized || tag.id.toLowerCase() === normalized)?.id || "";
 }
 
-function validateCurrentForm() {
-  updateStoragePathPreview();
-  const validation = repository.validateAssetInput(readAssetForm());
-  const findings = validation.findings.map((finding) => ({
-    action: finding.action,
-    label: finding.label
-  }));
-  renderValidation({
-    validation: {
-      findings
-    }
-  });
-  setText(elements.outputValidation, validation.status);
+function clearEditState() {
+  editingAssetId = "";
+  editingAssetType = "";
+  draftAssetValues.clear();
+  draftTagKeys.clear();
 }
 
-function populateFormFromAsset(asset) {
-  if (!asset) {
-    return;
-  }
-  if (elements.assetRole) {
-    elements.assetRole.value = asset.assetRole;
-  }
-  updateUsageOptions();
-  if (elements.usage) {
-    elements.usage.value = asset.usage;
-  }
-  if (elements.name) {
-    elements.name.value = asset.name;
-  }
-  if (elements.paletteColor && asset.paletteSwatch?.key) {
-    elements.paletteColor.value = asset.paletteSwatch.key;
-  }
-  updateFileAccept();
-  updateSelectedFileName();
-  updateStoragePathPreview();
-  updateImportDiagnostic();
-}
-
-function setFormMode() {
-  const editing = Boolean(editingAsset);
-  if (elements.submit) {
-    elements.submit.textContent = editing ? "Save Asset" : "Add Asset";
-  }
-  if (elements.cancelEdit) {
-    elements.cancelEdit.hidden = !editing;
-  }
-  if (elements.assetRole) {
-    elements.assetRole.disabled = editing;
-  }
-}
-
-function clearEditMode() {
-  editingAsset = null;
-  setFormMode();
-  updateFileAccept();
-  updateSelectedFileName();
-  updateStoragePathPreview();
-  updateImportDiagnostic();
-}
-
-function enterEditMode(assetId) {
-  const snapshot = repository.selectAsset(assetId);
-  const asset = snapshot.assets.find((candidate) => candidate.id === assetId);
-  if (!asset) {
-    setText(elements.log, "Asset edit blocked: choose an asset owned by the current user.");
-    render();
-    return;
-  }
-  editingAsset = asset;
-  populateFormFromAsset(asset);
-  setFormMode();
-  setText(elements.log, `Editing ${asset.name}.`);
-  render();
-  populateFormFromAsset(asset);
-  setFormMode();
-}
-
-appendRoleOptions(elements.assetRole, visibleRoleDefinitions());
-updateUsageOptions();
-updateFileAccept();
-updateImportDiagnostic();
-
-elements.assetRole?.addEventListener("change", () => {
-  updateUsageOptions();
-  updateFileAccept();
-  updateImportDiagnostic();
-  updateSelectedFileName();
-  updateStoragePathPreview();
-  validateCurrentForm();
-});
-
-elements.usage?.addEventListener("change", () => {
-  updateStoragePathPreview();
-  validateCurrentForm();
-});
-
-elements.file?.addEventListener("change", () => {
-  const file = currentFile();
-  if (!file) {
-    return;
-  }
-
-  if (elements.name && !elements.name.value.trim()) {
-    elements.name.value = fileStem(file.name);
-  }
-  updateSelectedFileName();
-  updateStoragePathPreview();
-  validateCurrentForm();
-});
-
-elements.paletteColor?.addEventListener("change", () => {
-  updatePaletteSelectionDetails();
-  updateStoragePathPreview();
-  validateCurrentForm();
-});
-
-elements.form?.addEventListener("input", validateCurrentForm);
-
-elements.form?.addEventListener("submit", (event) => {
-  event.preventDefault();
-  const result = editingAsset
-    ? repository.updateAsset(editingAsset.id, readAssetForm())
-    : repository.importAsset(readAssetForm());
-  setText(elements.log, result.message);
-  if (result.updated || result.imported) {
-    editingAsset = null;
-  }
-  render();
-});
-
-elements.library?.addEventListener("click", (event) => {
+elements.accordions?.addEventListener("click", (event) => {
+  const addType = event.target.closest("[data-asset-tool-add-type]");
   const view = event.target.closest("[data-asset-tool-view]");
   const edit = event.target.closest("[data-asset-tool-edit]");
   const deleteButton = event.target.closest("[data-asset-tool-delete]");
-  if (!view && !edit && !deleteButton) {
+  const save = event.target.closest("[data-asset-tool-save]");
+  const cancel = event.target.closest("[data-asset-tool-cancel]");
+  const addTagToken = event.target.closest("[data-asset-tool-add-tag-token]");
+  const removeTag = event.target.closest("[data-asset-tool-remove-tag]");
+
+  if (addType) {
+    editingAssetId = `__new__:${addType.dataset.assetToolAddType}`;
+    editingAssetType = addType.dataset.assetToolAddType;
+    selectedAssetId = "";
+    setText(elements.log, `Adding ${editingAssetType} asset.`);
+    render();
     return;
   }
 
   if (view) {
-    const snapshot = repository.selectAsset(view.dataset.assetToolView);
-    setText(elements.log, snapshot.selectedAsset ? `Viewing ${snapshot.selectedAsset.name}.` : "Asset view blocked: choose an asset owned by the current user.");
-    editingAsset = null;
+    selectedAssetId = view.dataset.assetToolView;
+    repository.selectAsset(selectedAssetId);
+    setText(elements.log, "Viewing asset catalog record.");
     render();
     return;
   }
 
   if (edit) {
-    enterEditMode(edit.dataset.assetToolEdit);
+    editingAssetId = edit.dataset.assetToolEdit;
+    const row = edit.closest("[data-asset-tool-row]");
+    editingAssetType = row?.dataset.assetToolAssetType || "";
+    selectedAssetId = editingAssetId;
+    repository.selectAsset(editingAssetId);
+    setText(elements.log, "Editing asset catalog record.");
+    render();
     return;
   }
 
-  const result = repository.deleteAsset(deleteButton.dataset.assetToolDelete);
-  if (editingAsset?.id === deleteButton.dataset.assetToolDelete) {
-    editingAsset = null;
+  if (cancel) {
+    clearEditState();
+    setText(elements.log, "Asset edit canceled.");
+    render();
+    return;
   }
-  setText(elements.log, result.message);
-  render();
-});
 
-elements.cancelEdit?.addEventListener("click", () => {
-  clearEditMode();
-  setText(elements.log, "Asset edit canceled.");
-});
+  if (addTagToken || removeTag) {
+    const row = event.target.closest("[data-asset-tool-editing-row]");
+    captureDraftAssetValues(row);
+    const snapshot = repository.getSnapshot();
+    const tagKeys = tagKeysForEditRow(row);
+    if (addTagToken) {
+      const input = row.querySelector("[data-asset-tool-tag-input]");
+      const tagKey = tagKeyFromInputValue(input?.value, snapshot.tags || []);
+      if (tagKey && !tagKeys.includes(tagKey)) {
+        setTagKeysForEditRow(row, [...tagKeys, tagKey]);
+        if (input) {
+          input.value = "";
+        }
+        setText(elements.log, "Added shared tag reference.");
+      } else {
+        setText(elements.log, "Choose an existing tag from the shared Tags tool list.");
+      }
+    } else {
+      setTagKeysForEditRow(row, tagKeys.filter((tagKey) => tagKey !== removeTag.dataset.assetToolRemoveTag));
+      setText(elements.log, "Removed shared tag reference.");
+    }
+    render();
+    return;
+  }
 
-elements.seed?.addEventListener("click", () => {
-  repository.seedDemoAssets();
-  editingAsset = null;
-  setText(elements.log, "Demo user assets seeded.");
-  render();
+  if (save) {
+    const row = save.closest("[data-asset-tool-editing-row]");
+    const assetType = row?.dataset.assetToolAssetType || editingAssetType;
+    const result = save.dataset.assetToolSave === "__new__"
+      ? repository.addAssetRecord(assetRowValues(row, assetType))
+      : repository.updateAssetRecord(save.dataset.assetToolSave, assetRowValues(row, assetType));
+    if (result.added || result.updated) {
+      selectedAssetId = result.asset.id;
+      clearEditState();
+    }
+    setText(elements.log, result.message);
+    render();
+    return;
+  }
+
+  if (deleteButton) {
+    const result = repository.deleteAssetRecord(deleteButton.dataset.assetToolDelete);
+    if (result.deleted) {
+      clearEditState();
+      selectedAssetId = "";
+    }
+    setText(elements.log, result.message);
+    render();
+  }
 });
 
 elements.reset?.addEventListener("click", () => {
   const result = repository.resetAssetLibrary();
-  editingAsset = null;
+  clearEditState();
+  selectedAssetId = "";
   setText(elements.log, result.message);
   render();
 });

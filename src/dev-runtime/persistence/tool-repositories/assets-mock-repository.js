@@ -144,6 +144,32 @@ export const ASSET_USAGE_BY_ROLE = Object.freeze(Object.fromEntries(
 
 export const ASSET_TYPES = ASSET_ROLE_LABELS;
 
+export const ASSET_CATALOG_TYPES = Object.freeze([
+  "Images",
+  "Audio",
+  "Fonts",
+  "Sprites",
+  "Vectors",
+  "Palette References",
+  "Data"
+]);
+
+export const ASSET_USAGE_OPTIONS = Object.freeze([
+  "Background",
+  "Character",
+  "Enemy",
+  "Environment",
+  "Font",
+  "Icon",
+  "Interface",
+  "Music",
+  "Sound Effect",
+  "Sprite",
+  "Theme",
+  "Tile",
+  "Voice"
+]);
+
 const DEMO_ASSET_PROJECT_ID = "01K8M3K0EX7V5A3W9Q2Y6R4T1B";
 const PROJECT_ASSET_STORAGE_ROOT = "projects";
 const COLOR_ASSET_MIME_TYPE = "application/x.gamefoundry.palette-color";
@@ -238,6 +264,44 @@ function normalizeUsage(value, assetRole) {
   const normalized = normalizeText(value);
   const role = roleDefinitionForId(assetRole);
   return role?.usageRoles.includes(normalized) ? normalized : "";
+}
+
+function normalizeCatalogAssetType(value) {
+  const normalized = normalizeText(value);
+  const match = ASSET_CATALOG_TYPES.find((type) => type.toLowerCase() === normalized.toLowerCase());
+  return match || "";
+}
+
+function normalizeCatalogUsage(value) {
+  const normalized = normalizeText(value);
+  const match = ASSET_USAGE_OPTIONS.find((usage) => usage.toLowerCase() === normalized.toLowerCase());
+  return match || "";
+}
+
+function catalogAssetRoleForType(assetType) {
+  if (assetType === "Audio") return "audio";
+  if (assetType === "Fonts") return "font";
+  if (assetType === "Data") return "data";
+  return "image";
+}
+
+function catalogFileNameForName(name, assetType) {
+  const slug = slugify(name || assetType);
+  if (assetType === "Audio") return `${slug}.wav`;
+  if (assetType === "Fonts") return `${slug}.woff2`;
+  if (assetType === "Data") return `${slug}.json`;
+  if (assetType === "Vectors") return `${slug}.svg`;
+  if (assetType === "Palette References") return `${slug}.palette`;
+  return `${slug}.png`;
+}
+
+function normalizeAssetTagKeys(values, tagOptions = []) {
+  const allowed = new Set(tagOptions.map((tag) => tag.id));
+  return (Array.isArray(values) ? values : [])
+    .map(normalizeText)
+    .filter(Boolean)
+    .filter((value, index, all) => all.indexOf(value) === index)
+    .filter((value) => allowed.has(value));
 }
 
 function normalizeProjectId(value) {
@@ -1009,6 +1073,252 @@ export function createAssetToolMockRepository(options = {}) {
       .sort((left, right) => left.name.localeCompare(right.name));
   }
 
+  function listTags() {
+    return typeof options.tagsRepository?.listTags === "function"
+      ? options.tagsRepository.listTags()
+      : [];
+  }
+
+  function assetTypeForRecord(asset) {
+    if (normalizeText(asset.usage).toLowerCase() === "sprite") {
+      return "Sprites";
+    }
+    return normalizeCatalogAssetType(asset.assetType || asset.type || asset.assetRoleLabel) || "Images";
+  }
+
+  function listAssetsByType(assetType) {
+    const normalizedType = normalizeCatalogAssetType(assetType);
+    return listAssets().filter((asset) => assetTypeForRecord(asset) === normalizedType);
+  }
+
+  function validateCatalogAssetInput(input = {}, existingAsset = null) {
+    const assetType = normalizeCatalogAssetType(input.assetType || input.type);
+    const name = normalizeText(input.name);
+    const usage = normalizeCatalogUsage(input.usage);
+    const description = normalizeText(input.description);
+    const tags = listTags();
+    const tagKeys = normalizeAssetTagKeys(input.tagKeys, tags);
+    const requestedTagKeys = Array.isArray(input.tagKeys) ? input.tagKeys.map(normalizeText).filter(Boolean) : [];
+    const invalidTagKeys = requestedTagKeys.filter((tagKey) => !tagKeys.includes(tagKey));
+    const findings = [];
+
+    if (!assetType) {
+      findings.push({
+        action: `Choose an asset type: ${ASSET_CATALOG_TYPES.join(", ")}.`,
+        field: "assetType",
+        label: "Asset Type"
+      });
+    }
+    if (!name) {
+      findings.push({
+        action: "Name the asset before saving.",
+        field: "name",
+        label: "Asset Name"
+      });
+    }
+    if (!usage) {
+      findings.push({
+        action: `Choose a usage: ${ASSET_USAGE_OPTIONS.join(", ")}.`,
+        field: "usage",
+        label: "Usage"
+      });
+    }
+    if (invalidTagKeys.length) {
+      findings.push({
+        action: "Choose tags from the shared Tags tool list.",
+        field: "tagKeys",
+        label: "Asset Tags"
+      });
+    }
+
+    return {
+      asset: {
+        assetType: assetType || existingAsset?.assetType || "",
+        description,
+        name: name || existingAsset?.name || "",
+        tagKeys,
+        usage: usage || existingAsset?.usage || ""
+      },
+      findings,
+      status: findings.length === 0 ? "Ready" : "Needs Input"
+    };
+  }
+
+  function createCatalogAssetRecord(input = {}) {
+    const handoff = getConfigurationHandoff();
+    const project = handoff.activeProject || null;
+    const projectId = project?.id || "";
+    const ownerUserKey = activeUserKey();
+    const assetType = input.assetType;
+    const assetRole = catalogAssetRoleForType(assetType);
+    const role = roleDefinitionForId(assetRole) || roleDefinitionForId("image");
+    const fileName = catalogFileNameForName(input.name, assetType);
+    const storedPath = storagePathForProjectAsset(
+      projectId,
+      assetRole,
+      normalizeUsage(input.usage.toLowerCase().replaceAll(" ", "-"), assetRole) || "sprite",
+      fileName
+    ) || `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(assetType)}/${slugify(input.usage)}/${fileName}`;
+    const checksum = checksumForMetadata({
+      assetRole,
+      fileName,
+      mimeType: "",
+      projectId,
+      size: 0
+    });
+    const now = new Date().toISOString();
+    const id = `${projectId}-asset-${slugify(assetType)}-${slugify(input.name)}-${tables.asset_library_items.length + 1}`;
+
+    return {
+      assetRole,
+      assetRoleLabel: role?.label || assetType,
+      assetType,
+      checksum,
+      createdAt: now,
+      createdBy: ownerUserKey,
+      description: input.description,
+      fileName,
+      id,
+      mimeType: "",
+      name: input.name,
+      originalName: fileName,
+      ownerProjectId: projectId,
+      ownerUserId: ownerUserKey,
+      paletteSwatch: null,
+      path: storedPath,
+      previewKind: `${assetType} catalog record`,
+      projectId,
+      role: assetType,
+      size: 0,
+      status: "Ready",
+      storedPath,
+      storageObjectId: `${id}-storage`,
+      tagKeys: input.tagKeys,
+      type: assetType,
+      updatedAt: now,
+      updatedBy: ownerUserKey,
+      usage: input.usage
+    };
+  }
+
+  function addAssetRecord(input = {}) {
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    const validation = validateCatalogAssetInput(input);
+    replaceValidationRows(projectId, validation.findings);
+    if (validation.findings.length || !projectId) {
+      return {
+        added: false,
+        message: validation.findings[0]?.action || "Asset add blocked: open an active game first.",
+        snapshot: getSnapshot(),
+        validation
+      };
+    }
+
+    const asset = createCatalogAssetRecord(validation.asset);
+    tables.asset_library_items.push(asset);
+    tables.asset_storage_objects.push({
+      assetId: asset.id,
+      checksum: asset.checksum,
+      createdAt: asset.createdAt,
+      createdBy: asset.createdBy,
+      id: asset.storageObjectId,
+      mimeType: asset.mimeType,
+      originalName: asset.originalName,
+      ownerProjectId: projectId,
+      projectId,
+      role: asset.type,
+      size: asset.size,
+      status: "Cataloged",
+      storedPath: asset.storedPath,
+      updatedAt: asset.updatedAt,
+      updatedBy: asset.updatedBy
+    });
+    tables.asset_import_events.push({
+      assetId: asset.id,
+      createdAt: asset.createdAt,
+      createdBy: asset.createdBy,
+      fileName: asset.fileName,
+      id: `${asset.id}-catalog-${tables.asset_import_events.length + 1}`,
+      mimeType: asset.mimeType,
+      projectId,
+      status: "Cataloged",
+      storedPath: asset.storedPath,
+      type: asset.type,
+      updatedAt: asset.updatedAt,
+      updatedBy: asset.updatedBy
+    });
+    selectedAssetId = asset.id;
+    replaceValidationRows(projectId, []);
+    persistTables();
+
+    return {
+      added: true,
+      asset,
+      message: `Added ${asset.name} to ${asset.assetType}.`,
+      snapshot: getSnapshot(),
+      validation
+    };
+  }
+
+  function updateAssetRecord(assetId, input = {}) {
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    const asset = findOwnedAsset(assetId, projectId);
+    if (!asset) {
+      return {
+        asset: null,
+        message: blockedOwnerMessage("update"),
+        snapshot: getSnapshot(),
+        updated: false
+      };
+    }
+
+    const validation = validateCatalogAssetInput(input, asset);
+    replaceValidationRows(projectId, validation.findings);
+    if (validation.findings.length) {
+      return {
+        asset,
+        message: validation.findings[0].action,
+        snapshot: getSnapshot(),
+        updated: false,
+        validation
+      };
+    }
+
+    const now = new Date().toISOString();
+    asset.assetType = validation.asset.assetType;
+    asset.type = validation.asset.assetType;
+    asset.role = validation.asset.assetType;
+    asset.name = validation.asset.name;
+    asset.description = validation.asset.description;
+    asset.usage = validation.asset.usage;
+    asset.tagKeys = validation.asset.tagKeys;
+    asset.updatedAt = now;
+    asset.updatedBy = activeUserKey();
+    selectedAssetId = asset.id;
+    replaceValidationRows(projectId, []);
+    persistTables();
+
+    return {
+      asset,
+      message: `Updated ${asset.name}.`,
+      snapshot: getSnapshot(),
+      updated: true,
+      validation
+    };
+  }
+
+  function deleteAssetRecord(assetId) {
+    return deleteAsset(assetId);
+  }
+
+  function assetsByType() {
+    return Object.fromEntries(
+      ASSET_CATALOG_TYPES.map((assetType) => [assetType, listAssetsByType(assetType)])
+    );
+  }
+
   function getSelectedAsset() {
     const handoff = getConfigurationHandoff();
     return findOwnedAsset(selectedAssetId, handoff.activeProject?.id || "");
@@ -1299,6 +1609,8 @@ export function createAssetToolMockRepository(options = {}) {
 
     return {
       assets,
+      assetsByType: assetsByType(),
+      assetTypes: [...ASSET_CATALOG_TYPES],
       handoff,
       metadataFields: uploadedAssetMetadataFields(),
       palette: getPaletteSnapshot(),
@@ -1306,8 +1618,10 @@ export function createAssetToolMockRepository(options = {}) {
       roleDefinitions: ASSET_ROLE_DEFINITIONS.map((role) => ({ ...role })),
       roleDiagnostics: getRoleDiagnostics(),
       selectedAsset,
+      tags: listTags(),
       tableCounts: tableCounts(tables),
       tables: getTables(),
+      usageOptions: [...ASSET_USAGE_OPTIONS],
       validation: {
         findings,
         status: findings.length > 0 ? "Needs Input" : assets.length > 0 && handoff.ready ? "Ready" : validateRoleMetadata().status
@@ -1326,13 +1640,18 @@ export function createAssetToolMockRepository(options = {}) {
   }
 
   return {
+    ASSET_CATALOG_TYPES,
     ASSET_ROLE_DEFINITIONS,
     ASSET_ROLE_LABELS,
     ASSET_TOOL_TABLES,
     ASSET_TYPES,
+    ASSET_USAGE_OPTIONS,
     ASSET_USAGE_BY_ROLE,
+    addAssetRecord,
+    assetsByType,
     clearAssetLibrary,
     deleteAsset,
+    deleteAssetRecord,
     ensureSpriteAssetForObject,
     getConfigurationHandoff,
     getPaletteSnapshot,
@@ -1342,7 +1661,9 @@ export function createAssetToolMockRepository(options = {}) {
     getTables,
     importAsset,
     listAssets,
+    listAssetsByType,
     listPaletteSwatches,
+    listTags,
     makeInvalidGameConfiguration,
     makeMissingGameConfiguration,
     makeReadyGameConfiguration,
@@ -1352,6 +1673,8 @@ export function createAssetToolMockRepository(options = {}) {
     seedActiveProjectPalette,
     selectAsset,
     updateAsset,
+    updateAssetRecord,
+    validateCatalogAssetInput,
     validateAssetInput
   };
 }
