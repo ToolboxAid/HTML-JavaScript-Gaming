@@ -1,16 +1,16 @@
 # git status --short
 M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
  M tests/playwright/tools/AssetToolMockRepository.spec.mjs
  M toolbox/assets/assets.js
- M toolbox/assets/index.html
-?? docs_build/dev/reports/PR_26163_076-assets-upload-prod-alignment.md
+?? docs_build/dev/reports/PR_26163_077-assets-upload-ux-and-duplicate-guard.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26163_076-assets-upload-prod-alignment.md
+docs_build/dev/reports/PR_26163_077-assets-upload-ux-and-duplicate-guard.md
 
 # git diff --stat
-.../dev/reports/playwright_v8_coverage_report.txt  |   7 +-
- .../tools/AssetToolMockRepository.spec.mjs         | 156 ++++++++++-----------
- toolbox/assets/assets.js                           | 152 +++++++++++++++-----
- toolbox/assets/index.html                          |  13 ++
- 4 files changed, 206 insertions(+), 122 deletions(-)
+.../dev/reports/playwright_v8_coverage_report.txt  |   8 +-
+ .../tool-repositories/assets-mock-repository.js    |  31 ++++--
+ .../tools/AssetToolMockRepository.spec.mjs         | 109 +++++++++++++++++----
+ toolbox/assets/assets.js                           |  51 +++++++---
+ 4 files changed, 153 insertions(+), 46 deletions(-)

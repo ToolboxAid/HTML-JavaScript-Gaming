@@ -684,6 +684,15 @@ export function createAssetToolMockRepository(options = {}) {
     try {
       const targetFolder = path.dirname(resolved.absolutePath);
       const fileBytes = Buffer.from(input.fileContentBase64, "base64");
+      if (existsSync(resolved.absolutePath)) {
+        return createWriteDiagnostics({
+          message: `Upload file blocked: ${resolved.relativePath} already exists. Rename the file or remove the existing asset before uploading.`,
+          ok: false,
+          projectId,
+          targetFilePath: resolved.relativePath,
+          writeResult: "FAIL: Duplicate project path"
+        });
+      }
       mkdirSync(targetFolder, { recursive: true });
       writeFileSync(resolved.absolutePath, fileBytes);
       if (!existsSync(resolved.absolutePath)) {
@@ -1183,20 +1192,22 @@ export function createAssetToolMockRepository(options = {}) {
   }
 
   function validateCatalogAssetInput(input = {}, existingAsset = null) {
-    const assetType = normalizeCatalogAssetType(input.assetType || input.type);
+    const assetType = existingAsset
+      ? normalizeCatalogAssetType(existingAsset.assetType || existingAsset.type)
+      : normalizeCatalogAssetType(input.assetType || input.type);
     const projectId = existingAsset?.projectId || getConfigurationHandoff().activeProject?.id || "";
     const existingSource = normalizeCatalogSourceMode(existingAsset?.source);
-    const requestedSource = normalizeCatalogSourceMode(input.source);
+    const requestedSource = existingAsset ? "" : normalizeCatalogSourceMode(input.source);
     const source = requestedSource || existingSource || (isReferenceCatalogType(assetType) ? REFERENCE_SOURCE_MODE : "");
     const reference = source === REFERENCE_SOURCE_MODE
-      ? normalizeText(input.reference || input.name || existingAsset?.reference)
+      ? normalizeText(existingAsset?.reference || input.reference || input.name)
       : "";
     const fileName = source === UPLOAD_SOURCE_MODE
-      ? normalizeText(input.fileName || input.file || existingAsset?.fileName)
+      ? normalizeText(existingAsset?.fileName || input.fileName || input.file)
       : "";
-    const name = source === REFERENCE_SOURCE_MODE ? reference : fileName;
+    const name = existingAsset?.name || (source === REFERENCE_SOURCE_MODE ? reference : fileName);
     const usage = normalizeCatalogUsage(input.usage);
-    const description = normalizeText(input.description);
+    const description = existingAsset ? normalizeText(existingAsset.description) : normalizeText(input.description);
     const tags = listTags();
     const tagKeys = normalizeAssetTagKeys(input.tagKeys, tags);
     const requestedTagKeys = Array.isArray(input.tagKeys) ? input.tagKeys.map(normalizeText).filter(Boolean) : [];
@@ -1278,12 +1289,12 @@ export function createAssetToolMockRepository(options = {}) {
         assetType: assetType || existingAsset?.assetType || "",
         description,
         fileName,
-        fileContentBase64: typeof input.fileContentBase64 === "string" ? input.fileContentBase64 : undefined,
-        hasFileBytes: input.hasFileBytes === true,
-        mimeType: normalizeText(input.mimeType || existingAsset?.mimeType),
+        fileContentBase64: existingAsset ? undefined : (typeof input.fileContentBase64 === "string" ? input.fileContentBase64 : undefined),
+        hasFileBytes: existingAsset ? false : input.hasFileBytes === true,
+        mimeType: normalizeText(existingAsset?.mimeType || input.mimeType),
         name: name || existingAsset?.name || "",
         reference,
-        size: Number(input.size ?? existingAsset?.size) || 0,
+        size: Number(existingAsset?.size ?? input.size) || 0,
         source,
         tagKeys,
         usage: usage || existingAsset?.usage || ""

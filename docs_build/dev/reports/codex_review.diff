@@ -1,315 +1,213 @@
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 2810a9974..33b05cc54 100644
+index 33b05cc54..b2cc28ad4 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,22 +12,23 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
- Exercised tool entry points detected:
--(93%) Toolbox Index - exercised 5 runtime JS files
-+(92%) Toolbox Index - exercised 5 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
- (57%) Theme V2 Shared JS - exercised 2 runtime JS files
+@@ -18,8 +18,7 @@ Exercised tool entry points detected:
  
  Changed runtime JS files covered:
  (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(96%) toolbox/assets/assets.js - executed lines 1196/1196; executed functions 105/109
-+(96%) toolbox/assets/assets.js - executed lines 1271/1271; executed functions 111/116
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(96%) toolbox/assets/assets.js - executed lines 1271/1271; executed functions 111/116
++(96%) toolbox/assets/assets.js - executed lines 1296/1296; executed functions 113/118
  
  Files with executed line/function counts where available:
-+(38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
- (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
- (56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 30/54
+ (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
+@@ -28,17 +27,14 @@ Files with executed line/function counts where available:
  (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
  (67%) toolbox/assets/assets-api-client.js - executed lines 19/19; executed functions 2/3
  (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
--(96%) toolbox/assets/assets.js - executed lines 1196/1196; executed functions 105/109
-+(96%) toolbox/assets/assets.js - executed lines 1271/1271; executed functions 111/116
+-(96%) toolbox/assets/assets.js - executed lines 1271/1271; executed functions 111/116
++(96%) toolbox/assets/assets.js - executed lines 1296/1296; executed functions 113/118
  (100%) toolbox/tags/tags-api-client.js - executed lines 10/10; executed functions 2/2
  (100%) toolbox/tags/tags.js - executed lines 242/242; executed functions 19/19
  
+ Uncovered or low-coverage changed JS files:
+ (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ 
+ Changed JS files considered:
+ (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+ (96%) toolbox/assets/assets.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+index 39998db3f..10a8bb3ab 100644
+--- a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+@@ -684,6 +684,15 @@ export function createAssetToolMockRepository(options = {}) {
+     try {
+       const targetFolder = path.dirname(resolved.absolutePath);
+       const fileBytes = Buffer.from(input.fileContentBase64, "base64");
++      if (existsSync(resolved.absolutePath)) {
++        return createWriteDiagnostics({
++          message: `Upload file blocked: ${resolved.relativePath} already exists. Rename the file or remove the existing asset before uploading.`,
++          ok: false,
++          projectId,
++          targetFilePath: resolved.relativePath,
++          writeResult: "FAIL: Duplicate project path"
++        });
++      }
+       mkdirSync(targetFolder, { recursive: true });
+       writeFileSync(resolved.absolutePath, fileBytes);
+       if (!existsSync(resolved.absolutePath)) {
+@@ -1183,20 +1192,22 @@ export function createAssetToolMockRepository(options = {}) {
+   }
+ 
+   function validateCatalogAssetInput(input = {}, existingAsset = null) {
+-    const assetType = normalizeCatalogAssetType(input.assetType || input.type);
++    const assetType = existingAsset
++      ? normalizeCatalogAssetType(existingAsset.assetType || existingAsset.type)
++      : normalizeCatalogAssetType(input.assetType || input.type);
+     const projectId = existingAsset?.projectId || getConfigurationHandoff().activeProject?.id || "";
+     const existingSource = normalizeCatalogSourceMode(existingAsset?.source);
+-    const requestedSource = normalizeCatalogSourceMode(input.source);
++    const requestedSource = existingAsset ? "" : normalizeCatalogSourceMode(input.source);
+     const source = requestedSource || existingSource || (isReferenceCatalogType(assetType) ? REFERENCE_SOURCE_MODE : "");
+     const reference = source === REFERENCE_SOURCE_MODE
+-      ? normalizeText(input.reference || input.name || existingAsset?.reference)
++      ? normalizeText(existingAsset?.reference || input.reference || input.name)
+       : "";
+     const fileName = source === UPLOAD_SOURCE_MODE
+-      ? normalizeText(input.fileName || input.file || existingAsset?.fileName)
++      ? normalizeText(existingAsset?.fileName || input.fileName || input.file)
+       : "";
+-    const name = source === REFERENCE_SOURCE_MODE ? reference : fileName;
++    const name = existingAsset?.name || (source === REFERENCE_SOURCE_MODE ? reference : fileName);
+     const usage = normalizeCatalogUsage(input.usage);
+-    const description = normalizeText(input.description);
++    const description = existingAsset ? normalizeText(existingAsset.description) : normalizeText(input.description);
+     const tags = listTags();
+     const tagKeys = normalizeAssetTagKeys(input.tagKeys, tags);
+     const requestedTagKeys = Array.isArray(input.tagKeys) ? input.tagKeys.map(normalizeText).filter(Boolean) : [];
+@@ -1278,12 +1289,12 @@ export function createAssetToolMockRepository(options = {}) {
+         assetType: assetType || existingAsset?.assetType || "",
+         description,
+         fileName,
+-        fileContentBase64: typeof input.fileContentBase64 === "string" ? input.fileContentBase64 : undefined,
+-        hasFileBytes: input.hasFileBytes === true,
+-        mimeType: normalizeText(input.mimeType || existingAsset?.mimeType),
++        fileContentBase64: existingAsset ? undefined : (typeof input.fileContentBase64 === "string" ? input.fileContentBase64 : undefined),
++        hasFileBytes: existingAsset ? false : input.hasFileBytes === true,
++        mimeType: normalizeText(existingAsset?.mimeType || input.mimeType),
+         name: name || existingAsset?.name || "",
+         reference,
+-        size: Number(input.size ?? existingAsset?.size) || 0,
++        size: Number(existingAsset?.size ?? input.size) || 0,
+         source,
+         tagKeys,
+         usage: usage || existingAsset?.usage || ""
 diff --git a/tests/playwright/tools/AssetToolMockRepository.spec.mjs b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-index e2dfd5090..acf85e10f 100644
+index acf85e10f..f97eb7bff 100644
 --- a/tests/playwright/tools/AssetToolMockRepository.spec.mjs
 +++ b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
-@@ -55,9 +55,9 @@ test.afterAll(async () => {
-   await workspaceV2CoverageReporter.writeReport();
+@@ -45,6 +45,7 @@ test.beforeEach(async ({ page }) => {
+     lane: "asset-tool-catalog",
+     surface: "Assets catalog accordions and shared Tags references"
+   });
++  ["image", "audio", "font", "data"].forEach((folder) => resetProjectAssetFolder(folder));
  });
  
--async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
-+async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1, modeId = "local-mem") {
-   await fetch(`${server.baseUrl}/api/session/mode`, {
--    body: JSON.stringify({ modeId: "local-mem" }),
-+    body: JSON.stringify({ modeId }),
-     headers: { "Content-Type": "application/json" },
-     method: "POST"
-   });
-@@ -95,7 +95,10 @@ async function openRepoPage(page, pathName, options = {}) {
-     failedRequests.push(`FAILED ${request.url()}`);
-   });
- 
--  await setServerSession(server, options.sessionUserKey || MOCK_DB_KEYS.users.user1);
-+  const sessionUserKey = Object.prototype.hasOwnProperty.call(options, "sessionUserKey")
-+    ? options.sessionUserKey
-+    : MOCK_DB_KEYS.users.user1;
-+  await setServerSession(server, sessionUserKey, options.sessionModeId || "local-mem");
-   await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-   return { consoleErrors, failedRequests, pageErrors, server };
-@@ -146,15 +149,17 @@ function zeroByteUploadFile(name, mimeType) {
-   };
- }
- 
-+function addButtonNameForType(assetType) {
-+  return assetType === "Vectors" ? "Add Vector" : `Add ${assetType}`;
-+}
-+
- async function addUploadBatch(page, assetType, files, usage = "Interface") {
-   await page.getByRole("button", { name: `Add ${assetType}` }).click();
-   const editRow = page.locator(`[data-asset-tool-editing-row='__new__:${assetType}']`);
-   await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
-   await expect(editRow.getByLabel("Upload File")).toHaveJSProperty("multiple", true);
--  await editRow.getByLabel("Upload File").setInputFiles(files);
--  await expect(editRow.locator("[data-asset-tool-selected-file]")).toContainText(files[0].name);
-   await editRow.getByLabel("Usage").selectOption(usage);
--  await editRow.getByRole("button", { name: "Save" }).click();
-+  await editRow.getByLabel("Upload File").setInputFiles(files);
-   return editRow;
- }
- 
-@@ -254,14 +259,13 @@ test("Assets source controls require real upload filenames and valid references"
-     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose an upload file before saving.");
-     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
- 
-+    await editRow.getByLabel("Usage").selectOption("Character");
-     await editRow.getByLabel("Upload File").setInputFiles({
-       buffer: Buffer.from("mock image"),
+ test.afterEach(async ({ page }) => {
+@@ -219,6 +220,28 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
+   expect(assetResult.asset.writeResult).toBe("Written");
+   expect(assetResult.asset.usage).toBe("Character");
+   expect(assetResult.asset.tagKeys).toEqual([tagResult.tag.id]);
++  const lockedUpdateResult = assetRepository.updateAssetRecord(assetResult.asset.id, {
++    assetType: "Audio",
++    fileContentBase64: Buffer.from("malicious replacement").toString("base64"),
++    fileName: "replacement.wav",
++    hasFileBytes: true,
++    mimeType: "audio/wav",
++    name: "Replacement",
++    source: "Upload",
++    tagKeys: [tagResult.tag.id],
++    usage: "Icon"
++  });
++  expect(lockedUpdateResult.updated).toBe(true);
++  expect(lockedUpdateResult.asset).toEqual(expect.objectContaining({
++    assetType: "Images",
++    fileName: "hero-portrait.png",
++    name: "hero-portrait.png",
++    path: `projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`,
++    source: "Upload",
++    storedPath: `projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`,
++    usage: "Icon"
++  }));
++  expect(existsSync(projectAssetPath("audio", "replacement.wav"))).toBe(false);
+   const populatedAssetTables = Object.entries(assetRepository.getTables())
+     .filter(([, rows]) => rows.length > 0);
+   expect(populatedAssetTables.length).toBeGreaterThan(0);
+@@ -265,7 +288,7 @@ test("Assets source controls require real upload filenames and valid references"
        mimeType: "image/png",
        name: "source-image.png"
      });
--    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-image.png");
--    await editRow.getByLabel("Usage").selectOption("Character");
--    await editRow.getByRole("button", { name: "Save" }).click();
-+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added source-image.png to Images.");
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added source-image.png to Images.");
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
      await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-image.png" })).toBeVisible();
  
      await page.getByRole("button", { name: "Add Images" }).click();
-@@ -275,62 +279,34 @@ test("Assets source controls require real upload filenames and valid references"
-     await editRow.getByRole("button", { name: "Save" }).click();
-     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Reference" })).toBeVisible();
+@@ -387,7 +410,7 @@ test("Assets upload writes to the project folder before creating a record and Im
+ });
  
--    await page.getByRole("button", { name: "Add Data" }).click();
--    editRow = page.locator("[data-asset-tool-editing-row='__new__:Data']");
--    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Upload", "Reference"]);
--    await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText(".json, .csv, or .txt");
--    await expect(editRow.getByLabel("Upload File")).toBeVisible();
--    await expect(editRow.getByLabel("Upload File")).toHaveAttribute("accept", /\.json/);
--    await expect(editRow.getByLabel("Upload File")).toHaveAttribute("accept", /\.csv/);
--    await expect(editRow.getByLabel("Upload File")).toHaveAttribute("accept", /\.txt/);
--    await editRow.getByRole("button", { name: "Save" }).click();
--    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose an upload file before saving.");
--    await expect(page.locator("[data-asset-tool-count]")).toHaveText("2");
--    for (const fileName of ["source-data.json", "source-data.csv", "source-data.txt"]) {
--      await editRow.getByLabel("Upload File").setInputFiles({
--        buffer: Buffer.from("mock data"),
--        mimeType: "text/plain",
--        name: fileName
--      });
--      await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText(fileName);
--    }
--    await editRow.getByLabel("Usage").selectOption("Theme");
--    await editRow.getByRole("button", { name: "Save" }).click();
--    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-data.txt" })).toBeVisible();
--
--    await page.getByRole("button", { name: "Add Data" }).click();
--    editRow = page.locator("[data-asset-tool-editing-row='__new__:Data']");
--    await editRow.getByLabel("Source").selectOption("Reference");
--    await expect(editRow.getByLabel("Reference")).toBeVisible();
--    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
--    await editRow.getByLabel("Reference").selectOption({ label: "source-data.txt" });
--    await editRow.getByLabel("Usage").selectOption("Interface");
--    await editRow.getByRole("button", { name: "Save" }).click();
--    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Reference" }).filter({ hasText: "Interface" })).toBeVisible();
-+    await expect(page.getByRole("button", { name: "Add Data" })).toBeDisabled();
-+    await expect(page.getByRole("button", { name: "Add Data" })).toHaveAttribute("title", "Planned");
-+    await expect(page.getByRole("button", { name: "Add Vector" })).toBeDisabled();
-+    await expect(page.getByRole("button", { name: "Add Vector" })).toHaveAttribute("title", "Planned");
- 
-     await page.getByRole("button", { name: "Add Audio" }).click();
-     editRow = page.locator("[data-asset-tool-editing-row='__new__:Audio']");
-     await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
-     await expect(editRow.getByLabel("Upload File")).toBeVisible();
-+    await editRow.getByLabel("Usage").selectOption("Music");
-     await editRow.getByLabel("Upload File").setInputFiles({
-       buffer: Buffer.from("mock audio"),
-       mimeType: "audio/wav",
-       name: "source-audio.wav"
-     });
--    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-audio.wav");
--    await editRow.getByRole("button", { name: "Cancel" }).click();
-+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-audio.wav" })).toBeVisible();
- 
-     await page.getByRole("button", { name: "Add Fonts" }).click();
-     editRow = page.locator("[data-asset-tool-editing-row='__new__:Fonts']");
-     await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
-     await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Upload"]);
-+    await editRow.getByLabel("Usage").selectOption("Font");
-     await editRow.getByLabel("Upload File").setInputFiles({
-       buffer: Buffer.from("mock font"),
-       mimeType: "font/woff2",
-       name: "source-font.woff2"
-     });
--    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-font.woff2");
--    await editRow.getByRole("button", { name: "Cancel" }).click();
-+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-font.woff2" })).toBeVisible();
- 
-     await page.getByRole("button", { name: "Add Sprites" }).click();
-     editRow = page.locator("[data-asset-tool-editing-row='__new__:Sprites']");
-@@ -341,15 +317,6 @@ test("Assets source controls require real upload filenames and valid references"
-     await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText("Reference-only");
-     await editRow.getByRole("button", { name: "Cancel" }).click();
- 
--    await page.getByRole("button", { name: "Add Vectors" }).click();
--    editRow = page.locator("[data-asset-tool-editing-row='__new__:Vectors']");
--    await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
--    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Reference"]);
--    await expect(editRow.getByLabel("Reference")).toBeVisible();
--    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
--    await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText("Reference-only");
--    await editRow.getByRole("button", { name: "Cancel" }).click();
--
-     await page.getByRole("button", { name: "Add Palette References" }).click();
-     editRow = page.locator("[data-asset-tool-editing-row='__new__:Palette References']");
-     await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
-@@ -372,20 +339,27 @@ test("Assets upload writes to the project folder before creating a record and Im
-   expect(existsSync(projectAssetPath("image"))).toBe(false);
- 
-   const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
-+    sessionModeId: "local-db",
+ test("Assets multi-file uploads create one catalog row per valid selected file with project paths and batch statuses", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
++  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=250", {
      sessionUserKey: MOCK_DB_KEYS.users.user1
    });
  
-   try {
-     await page.getByRole("button", { name: "Reset Asset Library" }).click();
-     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
-+    const projectPath = page.locator("[data-asset-tool-project-path]");
-+    await expect(projectPath).toHaveText(`Path: projects/${DEMO_ASSET_PROJECT_ID}/`);
-+    await expect.poll(() => projectPath.evaluate((node) => getComputedStyle(node).textAlign)).toBe("center");
-+    const projectPathBox = await projectPath.boundingBox();
-+    const imagesAccordionBox = await page.locator("[data-asset-type-accordion='Images']").boundingBox();
-+    expect(projectPathBox?.y || 0).toBeLessThan(imagesAccordionBox?.y || Number.POSITIVE_INFINITY);
- 
-     await page.getByRole("button", { name: "Add Images" }).click();
-     const newRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
--    await newRow.getByLabel("Upload File").setInputFiles(uploadFile("write-view-image.png", "image/png", SMALL_PNG));
-     await newRow.getByLabel("Usage").selectOption("Character");
--    await newRow.getByRole("button", { name: "Save" }).click();
-+    await newRow.getByLabel("Upload File").setInputFiles(uploadFile("write-view-image.png", "image/png", SMALL_PNG));
-     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" })).toBeVisible();
-     await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
-+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" })).toContainText("image/write-view-image.png");
- 
-     const writtenFile = projectAssetPath("image", "write-view-image.png");
-     expect(existsSync(projectAssetPath("image"))).toBe(true);
-@@ -394,6 +368,7 @@ test("Assets upload writes to the project folder before creating a record and Im
- 
-     await page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" }).getByRole("button", { name: "View" }).click();
-     const metadata = page.locator("[data-asset-tool-metadata]");
-+    await expect(metadata).toContainText(`Stored path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
-     await expect(metadata).toContainText(`Project ID: ${DEMO_ASSET_PROJECT_ID}`);
-     await expect(metadata).toContainText(`Target folder: projects/${DEMO_ASSET_PROJECT_ID}/image`);
-     await expect(metadata).toContainText(`Target file path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
-@@ -422,12 +397,11 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
+@@ -397,14 +420,18 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
  
      await page.getByRole("button", { name: "Add Images" }).click();
      const firstImageRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
-+    await firstImageRow.getByLabel("Usage").selectOption("Character");
++    await expect(firstImageRow.locator("[data-asset-tool-selected-file]")).toHaveText("No file chosen");
++    await expect(firstImageRow).not.toContainText("No file selected");
+     await firstImageRow.getByLabel("Usage").selectOption("Character");
      await firstImageRow.getByLabel("Upload File").setInputFiles([
        uploadFile("batch-image-a.png", "image/png", "image a"),
        uploadFile("batch-image-b.png", "image/png", "image b")
      ]);
--    await firstImageRow.getByLabel("Usage").selectOption("Character");
--    await firstImageRow.getByRole("button", { name: "Save" }).click();
++    await expect(firstImageRow.locator("[data-asset-tool-selected-file]")).toHaveText("batch-image-a.png, batch-image-b.png");
      const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
      await expect(uploadDialog).toBeVisible();
      await expect(uploadDialog.locator("[data-asset-tool-upload-phase]")).toHaveText("Uploading");
-@@ -501,19 +475,9 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
-     await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/View path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2/);
-     await expect(page.locator("[data-asset-tool-view-preview]")).toHaveAttribute("href", /projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2$/);
- 
--    await addUploadBatch(page, "Data", [
--      uploadFile("batch-data-a.json", "application/json", "{\"ok\":true}"),
--      uploadFile("batch-data-b.csv", "text/csv", "name,value")
--    ], "Theme");
--    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-a.json" })).toBeVisible();
--    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-b.csv" })).toBeVisible();
--    await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-a.json" }).getByRole("button", { name: "View" }).click();
--    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json/);
--    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/View path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json/);
--    await expect(page.locator("[data-asset-tool-view-preview]")).toHaveAttribute("href", /projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json$/);
--    await expect(page.locator("[data-asset-tool-count]")).toHaveText("11");
--
--    for (const assetType of ["Sprites", "Vectors", "Palette References"]) {
-+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("9");
-+
-+    for (const assetType of ["Sprites", "Palette References"]) {
-       await page.getByRole("button", { name: `Add ${assetType}` }).click();
-       const editRow = page.locator(`[data-asset-tool-editing-row='__new__:${assetType}']`);
-       await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
-@@ -537,12 +501,11 @@ test("Assets multi-file upload fails visibly when no current project id is avail
-     await page.getByRole("button", { name: "Add Images" }).click();
-     const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
-     await expect(editRow.getByLabel("Upload File")).toHaveJSProperty("multiple", true);
-+    await editRow.getByLabel("Usage").selectOption("Character");
-     await editRow.getByLabel("Upload File").setInputFiles([
-       uploadFile("missing-project-a.png", "image/png", "image a"),
-       uploadFile("missing-project-b.png", "image/png", "image b")
-     ]);
--    await editRow.getByLabel("Usage").selectOption("Character");
--    await editRow.getByRole("button", { name: "Save" }).click();
-     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
-     await expect(uploadDialog).toBeVisible();
-     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 1 skipped, 0 warnings.");
-@@ -574,12 +537,11 @@ test("Assets upload write failure is visible and creates no asset record", async
- 
-     await page.getByRole("button", { name: "Add Images" }).click();
-     const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
-+    await editRow.getByLabel("Usage").selectOption("Character");
-     await editRow.getByLabel("Upload File").setInputFiles([
-       uploadFile("unsupported-write-a.png", "image/png", SMALL_PNG),
-       uploadFile("unsupported-write-b.png", "image/png", SMALL_PNG)
-     ]);
--    await editRow.getByLabel("Usage").selectOption("Character");
--    await editRow.getByRole("button", { name: "Save" }).click();
- 
-     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
-     await expect(uploadDialog).toBeVisible();
-@@ -598,6 +560,35 @@ test("Assets upload write failure is visible and creates no asset record", async
++    await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']")).toHaveCount(0, { timeout: 100 });
+     await expect(uploadDialog.locator("[data-asset-tool-upload-current-file]")).toContainText(/batch-image-[ab]\.png/);
+     await expect(uploadDialog.locator("[data-asset-tool-upload-file-progress]")).toContainText("/ 2");
+     await expect(uploadDialog.locator("[data-asset-tool-upload-total-bytes]")).not.toHaveText("0 B");
+@@ -492,6 +519,43 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
    }
  });
  
-+test("Assets guest upload action shows account prompt and creates no record", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
-+    sessionUserKey: ""
++test("Assets duplicate project-path uploads fail before write and do not create duplicate records", async ({ page }) => {
++  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=120", {
++    sessionModeId: "local-db",
++    sessionUserKey: MOCK_DB_KEYS.users.user1
 +  });
 +
 +  try {
-+    const startingCount = await page.locator("[data-asset-tool-count]").textContent();
-+    await expect(page.getByRole("button", { name: "Add Images" })).toBeEnabled();
-+    await page.getByRole("button", { name: "Add Images" }).click();
-+    const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
-+    await editRow.getByLabel("Usage").selectOption("Character");
-+    await editRow.getByLabel("Upload File").setInputFiles(uploadFile("guest-upload.png", "image/png", SMALL_PNG));
++    await page.getByRole("button", { name: "Reset Asset Library" }).click();
++    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 +
-+    const prompt = page.locator("[data-asset-tool-account-prompt]");
-+    await expect(prompt).toBeVisible();
-+    await expect(prompt).toContainText("Uploads require a Game Foundry account.");
-+    await expect(prompt.getByRole("link", { name: "Sign In" })).toBeVisible();
-+    await expect(prompt.getByRole("link", { name: "Create Account" })).toBeVisible();
-+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploads require a Game Foundry account.");
-+    await expect(page.locator("[data-asset-tool-count]")).toHaveText(startingCount || "0");
-+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "guest-upload.png" })).toHaveCount(0);
++    await page.getByRole("button", { name: "Add Images" }).click();
++    let editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
++    await editRow.getByLabel("Usage").selectOption("Character");
++    await editRow.getByLabel("Upload File").setInputFiles(uploadFile("duplicate-path.png", "image/png", SMALL_PNG));
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
++    await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
++    expect(existsSync(projectAssetPath("image", "duplicate-path.png"))).toBe(true);
++
++    await page.getByRole("button", { name: "Add Images" }).click();
++    editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
++    await editRow.getByLabel("Usage").selectOption("Character");
++    await editRow.getByLabel("Upload File").setInputFiles(uploadFile("duplicate-path.png", "image/png", SMALL_PNG));
++
++    const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
++    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("already exists");
++    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/duplicate-path.png`);
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.");
++    await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "duplicate-path.png" })).toHaveCount(1);
 +
 +    expectNoPageFailures(failures);
 +  } finally {
@@ -318,356 +216,213 @@ index e2dfd5090..acf85e10f 100644
 +  }
 +});
 +
- test("codex review diff artifact is readable UTF-8 text", () => {
-   const reviewDiffPath = resolve(REPO_ROOT, "docs_build", "dev", "reports", "codex_review.diff");
-   expect(existsSync(reviewDiffPath)).toBe(true);
-@@ -623,7 +614,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
-     for (const assetType of ASSET_CATALOG_TYPES) {
-       await expect(page.locator(`[data-asset-type-accordion="${assetType}"]`)).toBeVisible();
-       await expect(page.locator(`[data-asset-type-table="${assetType}"]`)).toBeVisible();
--      await expect(page.getByRole("button", { name: `Add ${assetType}` })).toBeVisible();
-+      await expect(page.getByRole("button", { name: addButtonNameForType(assetType) })).toBeVisible();
-       const headers = await page.locator(`[data-asset-type-table="${assetType}"] thead th`).evaluateAll((headerNodes) =>
-         headerNodes.map((header) => header.textContent?.trim() || "")
-       );
-@@ -643,12 +634,6 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
-     await page.getByRole("button", { name: "Add Images" }).click();
-     const newRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
-     await expect(newRow.getByLabel("Source")).toHaveValue("Upload");
--    await newRow.getByLabel("Upload File").setInputFiles({
--      buffer: Buffer.from("mock image"),
--      mimeType: "image/png",
--      name: "hero-portrait.png"
--    });
--    await expect(newRow.locator("[data-asset-tool-selected-file]")).toHaveText("hero-portrait.png");
-     const usageOptions = await newRow.getByLabel("Usage").locator("option").evaluateAll((options) =>
-       options.map((option) => option.textContent?.trim() || "")
-     );
-@@ -659,7 +644,11 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
-     await expect(newRow.getByLabel("Asset Tags")).toHaveAttribute("list", "assetToolTagOptions");
-     await newRow.getByRole("button", { name: "Add Tag" }).click();
-     await expect(newRow).toContainText("Hero");
--    await newRow.getByRole("button", { name: "Save" }).click();
-+    await newRow.getByLabel("Upload File").setInputFiles({
-+      buffer: Buffer.from("mock image"),
-+      mimeType: "image/png",
-+      name: "hero-portrait.png"
-+    });
+ test("Assets multi-file upload fails visibly when no current project id is available", async ({ page }) => {
+   const failures = await openRepoPage(page, "/toolbox/assets/index.html?handoff=missing", {
+     sessionUserKey: MOCK_DB_KEYS.users.user1
+@@ -626,6 +690,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
+     await expect(page.locator("[data-asset-type-accordion='Video']")).toHaveCount(0);
  
-     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added hero-portrait.png to Images.");
-     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Character");
-@@ -683,7 +672,6 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
-       mimeType: "image/png",
-       name: "hero-portrait-xl.png"
+     await addSharedTag(page, "Hero");
++    await addSharedTag(page, "Rare");
+     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
+     await page.getByRole("button", { name: "Reset Asset Library" }).click();
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+@@ -650,7 +715,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
+       name: "hero-portrait.png"
      });
--    await editRow.getByRole("button", { name: "Save" }).click();
-     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated hero-portrait-xl.png.");
-     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
  
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added hero-portrait.png to Images.");
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Character");
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Upload");
+     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Hero");
+@@ -665,15 +730,21 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
+ 
+     await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" }).getByRole("button", { name: "Edit" }).click();
+     const editRow = page.locator("[data-asset-tool-editing-row]");
+-    await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
+-    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("hero-portrait.png");
+-    await editRow.getByLabel("Upload File").setInputFiles({
+-      buffer: Buffer.from("mock image xl"),
+-      mimeType: "image/png",
+-      name: "hero-portrait-xl.png"
+-    });
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated hero-portrait-xl.png.");
+-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
++    await expect(editRow.getByLabel("Source")).toHaveCount(0);
++    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
++    await expect(editRow.getByLabel("Reference")).toHaveCount(0);
++    await expect(editRow.getByLabel("Asset Type")).toHaveCount(0);
++    await expect(editRow).toContainText("Upload");
++    await expect(editRow).toContainText("hero-portrait.png");
++    await expect(editRow).not.toContainText("projects/");
++    await editRow.getByLabel("Usage").selectOption("Icon");
++    await editRow.getByLabel("Asset Tags").fill("Rare");
++    await editRow.getByRole("button", { name: "Add Tag" }).click();
++    await expect(editRow).toContainText("Rare");
++    await editRow.getByRole("button", { name: "Save" }).click();
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated hero-portrait.png.");
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Icon");
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Rare");
+ 
+     await page.goto(`${failures.server.baseUrl}/toolbox/tags/index.html`, { waitUntil: "networkidle" });
+     await expect(page.locator("[data-tags-row]").filter({ hasText: "Hero" })).toContainText("1");
+@@ -681,21 +752,21 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
+     await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Tool");
+     await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Item Name");
+     await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Assets");
+-    await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("hero-portrait-xl.png");
++    await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("hero-portrait.png");
+ 
+     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toBeVisible();
+ 
+     await setServerUser(failures.server, MOCK_DB_KEYS.users.user2);
+     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toHaveCount(0);
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toHaveCount(0);
+ 
+     await setServerUser(failures.server, MOCK_DB_KEYS.users.user1);
+     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
+-    await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" }).getByRole("button", { name: "Trash" }).click();
+-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Deleted hero-portrait-xl.png from your asset library.");
+-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toHaveCount(0);
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toBeVisible();
++    await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" }).getByRole("button", { name: "Trash" }).click();
++    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Deleted hero-portrait.png from your asset library.");
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toHaveCount(0);
+     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+ 
+     expectNoPageFailures(failures);
 diff --git a/toolbox/assets/assets.js b/toolbox/assets/assets.js
-index 35c4cf8fc..654968227 100644
+index 654968227..8e7de9392 100644
 --- a/toolbox/assets/assets.js
 +++ b/toolbox/assets/assets.js
-@@ -3,6 +3,7 @@ import {
-   ASSET_USAGE_OPTIONS,
-   createAssetToolApiRepository
- } from "./assets-api-client.js";
-+import { getSessionCurrent } from "../../src/engine/api/session-api-client.js";
- 
- const repository = createAssetToolApiRepository();
- const params = new URLSearchParams(window.location.search);
-@@ -23,11 +24,13 @@ const elements = {
-   count: document.querySelector("[data-asset-tool-count]"),
-   libraryStatus: document.querySelector("[data-asset-tool-library-status]"),
-   log: document.querySelector("[data-asset-tool-log]"),
-+  accountPrompt: document.querySelector("[data-asset-tool-account-prompt]"),
-   batchLog: document.querySelector("[data-asset-tool-batch-log]"),
-   metadata: document.querySelector("[data-asset-tool-metadata]"),
-   outputMissing: document.querySelector("[data-asset-tool-output-missing]"),
-   outputSummary: document.querySelector("[data-asset-tool-output-summary]"),
-   outputValidation: document.querySelector("[data-asset-tool-output-validation]"),
-+  projectPath: document.querySelector("[data-asset-tool-project-path]"),
-   reset: document.querySelector("[data-asset-tool-reset]"),
-   selected: document.querySelector("[data-asset-tool-selected]"),
-   sharedTags: document.querySelector("[data-asset-tool-shared-tags]"),
-@@ -62,7 +65,8 @@ const draftAssetValues = new Map();
- const draftTagKeys = new Map();
- const draftUploadPayloads = new Map();
- const REFERENCE_ONLY_ASSET_TYPES = new Set(["Sprites", "Vectors", "Palette References"]);
--const ALWAYS_MIXED_SOURCE_ASSET_TYPES = new Set(["Data"]);
-+const MVP_DEFERRED_ADD_ASSET_TYPES = new Set(["Data", "Vectors"]);
-+const ALWAYS_MIXED_SOURCE_ASSET_TYPES = new Set([]);
- const UPLOAD_COLUMNS = Object.freeze(["Source", "File", "Usage", "Tags", "Preview", "Actions"]);
- const REFERENCE_COLUMNS = Object.freeze(["Source", "Reference", "Usage", "Tags", "Preview", "Actions"]);
+@@ -72,13 +72,30 @@ const REFERENCE_COLUMNS = Object.freeze(["Source", "Reference", "Usage", "Tags",
  const UPLOAD_SOURCE = "Upload";
-@@ -95,6 +99,31 @@ function setText(target, value) {
+ const REFERENCE_SOURCE = "Reference";
+ const UPLOAD_LOG_STATUSES = Object.freeze(["OK", "WARN", "FAIL", "SKIP"]);
+-const UPLOAD_PROGRESS_STEP_MS = 60;
+ const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
+   Audio: "audio/*,.mp3,.wav,.ogg,.m4a",
+   Data: ".json,.csv,.txt,application/json,text/csv,text/plain",
+   Fonts: ".ttf,.otf,.woff,.woff2",
+   Images: "image/*,.png,.jpg,.jpeg,.webp,.gif,.svg"
+ });
++
++function isLocalDevRuntime() {
++  return ["", "localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
++}
++
++// Local/dev validation hook only; production hosts get no simulated upload delay.
++function devUploadProgressStepMs() {
++  if (!isLocalDevRuntime()) {
++    return 0;
++  }
++  const requestedDelay = Number(params.get("uploadProgressDelayMs"));
++  if (Number.isFinite(requestedDelay) && requestedDelay >= 0) {
++    return Math.min(1000, requestedDelay);
++  }
++  return 60;
++}
++
++const UPLOAD_PROGRESS_STEP_MS = devUploadProgressStepMs();
+ const SOURCE_HELP_BY_ASSET_TYPE = Object.freeze({
+   Audio: "Audio can upload a sound file or reference an existing audio source.",
+   Data: "Data can upload .json, .csv, or .txt files, or reference an existing data source.",
+@@ -384,7 +401,7 @@ function createFileUploadControl(assetType, selectedFileName) {
+ 
+   const filename = document.createElement("span");
+   filename.dataset.assetToolSelectedFile = "true";
+-  filename.textContent = normalizeText(selectedFileName) || "No file selected";
++  filename.textContent = normalizeText(selectedFileName) || "No file chosen";
+   wrapper.append(input, filename);
+   return wrapper;
+ }
+@@ -436,7 +453,10 @@ function selectedUploadFileNames(row) {
+ 
+ function fileSelectionLabel(files) {
+   if (!files.length) {
+-    return "No file selected";
++    return "No file chosen";
++  }
++  if (files.length > 3) {
++    return `${files.length} files selected`;
    }
+   return files.map((file) => file.name).join(", ");
+ }
+@@ -511,6 +531,9 @@ function formatDuration(milliseconds) {
  }
  
-+function currentSession() {
-+  try {
-+    return getSessionCurrent();
-+  } catch {
-+    return { authenticated: false };
+ function uploadDelay() {
++  if (UPLOAD_PROGRESS_STEP_MS <= 0) {
++    return Promise.resolve();
 +  }
-+}
-+
-+function isGuestSession() {
-+  return currentSession()?.authenticated !== true;
-+}
-+
-+function showAccountPrompt() {
-+  if (elements.accountPrompt) {
-+    elements.accountPrompt.hidden = false;
-+  }
-+  setText(elements.log, "Uploads require a Game Foundry account.");
-+}
-+
-+function hideAccountPrompt() {
-+  if (elements.accountPrompt) {
-+    elements.accountPrompt.hidden = true;
-+  }
-+}
-+
- function createCell(text) {
-   const cell = document.createElement("td");
-   cell.textContent = text;
-@@ -110,6 +139,10 @@ function createButton(label, datasetName, value) {
-   return button;
- }
+   return new Promise((resolve) => {
+     window.setTimeout(resolve, UPLOAD_PROGRESS_STEP_MS);
+   });
+@@ -823,7 +846,9 @@ function createTagEditor(tagKeys, tags) {
+ function assetRowValues(row, assetType) {
+   const rowId = row?.dataset.assetToolEditingRow || "";
+   const draftValues = draftAssetValues.get(rowId) || {};
+-  const source = row.querySelector("[data-asset-tool-source-input]")?.value || sourceModeForEdit(assetType, draftValues);
++  const source = row.querySelector("[data-asset-tool-source-input]")?.value
++    || row.dataset.assetToolExistingSource
++    || sourceModeForEdit(assetType, draftValues);
+   const reference = source === REFERENCE_SOURCE
+     ? row.querySelector("[data-asset-tool-reference-input]")?.value
+       || draftValues.reference
+@@ -892,8 +917,10 @@ function createEditRow(assetType, asset = null, snapshot = {}) {
+   });
+   const selectedReference = draftValues.reference ?? asset?.reference ?? "";
+   const selectedFileName = draftValues.fileName ?? asset?.fileName ?? "";
++  const savedAsset = Boolean(asset);
+   row.dataset.assetToolEditingRow = rowId;
+   row.dataset.assetToolAssetType = assetType;
++  row.dataset.assetToolExistingSource = selectedSource;
+   row.dataset.assetToolExistingFileName = selectedFileName;
+   row.dataset.assetToolExistingReference = selectedReference;
+   if (!draftTagKeys.has(rowId)) {
+@@ -901,10 +928,16 @@ function createEditRow(assetType, asset = null, snapshot = {}) {
+   }
  
-+function addButtonLabelForType(assetType) {
-+  return assetType === "Vectors" ? "Add Vector" : `Add ${assetType}`;
-+}
-+
- function createInput(value, label, datasetName) {
-   const input = document.createElement("input");
-   input.type = "text";
-@@ -177,13 +210,24 @@ function assetFile(asset) {
- }
- 
- function assetPreview(asset) {
--  return normalizeText(asset?.viewPath || asset?.storedPath || asset?.path || asset?.previewKind) || "Preview ready";
-+  const fullPath = assetViewPath(asset);
-+  const projectId = normalizeText(asset?.projectId || "");
-+  const prefix = projectId ? `projects/${projectId}/` : "";
-+  if (fullPath && prefix && fullPath.startsWith(prefix)) {
-+    return fullPath.slice(prefix.length);
-+  }
-+  return fullPath || normalizeText(asset?.previewKind) || "Preview ready";
- }
- 
- function assetViewPath(asset) {
-   return normalizeText(asset?.viewPath || asset?.storedPath || asset?.path);
- }
- 
-+function projectPathForSnapshot(snapshot = {}) {
-+  const projectId = normalizeText(snapshot.handoff?.activeProject?.id || "");
-+  return projectId ? `projects/${projectId}/` : "projects/";
-+}
-+
- function uploadDiagnosticsText(diagnostics = {}) {
-   const parts = [];
-   if (diagnostics.projectId) parts.push(`Project ID: ${diagnostics.projectId}`);
-@@ -625,6 +669,11 @@ function addBatchLogEntry(entries, entry, uploadState = null) {
- }
- 
- async function saveUploadBatch(row, assetType) {
-+  if (isGuestSession()) {
-+    showAccountPrompt();
-+    return false;
-+  }
-+  hideAccountPrompt();
-   const files = selectedUploadFiles(row).length ? selectedUploadFiles(row) : uploadPayloadsForEditRow(row);
-   const uploadState = createUploadState(files);
-   const seenNames = new Set();
-@@ -732,6 +781,7 @@ async function saveUploadBatch(row, assetType) {
-   const totalSaved = batchWrittenCount(summary);
-   setText(elements.log, `Batch upload complete: ${totalSaved} written, ${summary.fail} failed, ${summary.skip} skipped, ${summary.warn} warnings.`);
-   render();
-+  return summary.fail === 0 && summary.skip === 0;
- }
- 
- function editedRowForControl(control) {
-@@ -986,8 +1036,14 @@ function createAssetTypeAccordion(assetType, assets, snapshot) {
- 
-   const actions = document.createElement("div");
-   actions.className = "action-group";
--  const addButton = createButton(`Add ${assetType}`, "assetToolAddType", assetType);
--  addButton.disabled = editingAssetId === `__new__:${assetType}`;
-+  const addButton = createButton(addButtonLabelForType(assetType), "assetToolAddType", assetType);
-+  if (MVP_DEFERRED_ADD_ASSET_TYPES.has(assetType)) {
-+    addButton.disabled = true;
-+    addButton.title = "Planned";
-+    addButton.dataset.assetToolPlanned = "true";
+   const sourceCell = document.createElement("td");
+-  sourceCell.append(createSourceControl(assetType, selectedSource, referenceOptions));
++  if (savedAsset) {
++    sourceCell.textContent = selectedSource;
 +  } else {
-+    addButton.disabled = editingAssetId === `__new__:${assetType}`;
++    sourceCell.append(createSourceControl(assetType, selectedSource, referenceOptions));
 +  }
-   actions.append(addButton);
  
-   body.append(actions, createAssetTypeTable(assetType, assets, snapshot));
-@@ -1107,6 +1163,7 @@ function renderMetadata(snapshot) {
- function renderOutput(snapshot) {
-   const assetCount = snapshot.assets.length;
-   const missing = snapshot.validation.findings.map((finding) => finding.label).join(", ");
-+  setText(elements.projectPath, `Path: ${projectPathForSnapshot(snapshot)}`);
-   setText(elements.count, String(assetCount));
-   setText(elements.tagCount, String(snapshot.tags.length));
-   setText(elements.libraryStatus, assetCount > 0 ? "Ready" : "Needs Input");
-@@ -1144,6 +1201,37 @@ function clearEditState() {
-   draftUploadPayloads.clear();
- }
- 
-+async function saveSingleAssetRow(row, assetType, saveTarget) {
-+  if (isGuestSession()) {
-+    showAccountPrompt();
-+    return null;
-+  }
-+  hideAccountPrompt();
-+  let values = null;
-+  try {
-+    values = await assetRowValuesForSave(row, assetType);
-+  } catch (error) {
-+    setText(elements.log, error instanceof Error ? error.message : "Upload file read failed.");
-+    render();
-+    return null;
-+  }
-+  const result = saveTarget === "__new__"
-+    ? repository.addAssetRecord(values)
-+    : repository.updateAssetRecord(saveTarget, values);
-+  if (result.added || result.updated) {
-+    selectedAssetId = result.asset.id;
-+    clearEditState();
-+  }
-+  setText(
-+    elements.log,
-+    result.writeDiagnostics && !(result.added || result.updated)
-+      ? `${result.message} ${uploadDiagnosticsText(result.writeDiagnostics)}`
-+      : result.message
-+  );
-+  render();
-+  return result;
-+}
-+
- elements.accordions?.addEventListener("click", async (event) => {
-   const addType = event.target.closest("[data-asset-tool-add-type]");
-   const view = event.target.closest("[data-asset-tool-view]");
-@@ -1223,28 +1311,7 @@ elements.accordions?.addEventListener("click", async (event) => {
-       await saveUploadBatch(row, assetType);
-       return;
+   const detailCell = document.createElement("td");
+-  if (selectedSource === REFERENCE_SOURCE) {
++  if (savedAsset) {
++    detailCell.textContent = selectedSource === REFERENCE_SOURCE ? assetReference(asset) : assetFile(asset);
++  } else if (selectedSource === REFERENCE_SOURCE) {
+     detailCell.append(createReferenceSelect(referenceOptions, selectedReference));
+   } else {
+     detailCell.append(createFileUploadControl(assetType, selectedFileName));
+@@ -1381,11 +1414,7 @@ elements.accordions?.addEventListener("change", async (event) => {
      }
--    let values = null;
--    try {
--      values = await assetRowValuesForSave(row, assetType);
--    } catch (error) {
--      setText(elements.log, error instanceof Error ? error.message : "Upload file read failed.");
--      render();
--      return;
+     setText(elements.log, files.length > 1 ? `Selected ${files.length} upload files.` : `Selected upload file ${fileName}.`);
+     const assetType = row?.dataset.assetToolAssetType || editingAssetType;
+-    if (files.length > 1) {
+-      await saveUploadBatch(row, assetType);
+-    } else {
+-      await saveSingleAssetRow(row, assetType, row?.dataset.assetToolEditingRow === `__new__:${assetType}` ? "__new__" : row?.dataset.assetToolEditingRow || "__new__");
 -    }
--    const result = save.dataset.assetToolSave === "__new__"
--      ? repository.addAssetRecord(values)
--      : repository.updateAssetRecord(save.dataset.assetToolSave, values);
--    if (result.added || result.updated) {
--      selectedAssetId = result.asset.id;
--      clearEditState();
--    }
--    setText(
--      elements.log,
--      result.writeDiagnostics && !(result.added || result.updated)
--        ? `${result.message} ${uploadDiagnosticsText(result.writeDiagnostics)}`
--        : result.message
--    );
--    render();
-+    await saveSingleAssetRow(row, assetType, save.dataset.assetToolSave);
++    await saveUploadBatch(row, assetType);
      return;
    }
- 
-@@ -1282,6 +1349,24 @@ elements.accordions?.addEventListener("change", async (event) => {
-     const row = editedRowForControl(fileInput);
-     const files = selectedUploadFiles(row);
-     const fileName = files[0]?.name || "";
-+    const display = row?.querySelector("[data-asset-tool-selected-file]");
-+    if (display) {
-+      display.textContent = fileSelectionLabel(files);
-+    }
-+    updateDraftValues(row, {
-+      fileName,
-+      reference: "",
-+      source: UPLOAD_SOURCE
-+    });
-+    if (!files.length) {
-+      setUploadPayloadsForEditRow(row, []);
-+      setText(elements.log, "No upload file selected.");
-+      return;
-+    }
-+    if (isGuestSession()) {
-+      showAccountPrompt();
-+      return;
-+    }
-     try {
-       const payloads = await Promise.all(files.map(async (file) => ({
-         ...(await uploadPayloadForFile(file)),
-@@ -1294,16 +1379,13 @@ elements.accordions?.addEventListener("change", async (event) => {
-       setText(elements.log, error instanceof Error ? error.message : "Upload file read failed.");
-       return;
-     }
--    updateDraftValues(row, {
--      fileName,
--      reference: "",
--      source: UPLOAD_SOURCE
--    });
--    const display = row?.querySelector("[data-asset-tool-selected-file]");
--    if (display) {
--      display.textContent = fileSelectionLabel(files);
-+    setText(elements.log, files.length > 1 ? `Selected ${files.length} upload files.` : `Selected upload file ${fileName}.`);
-+    const assetType = row?.dataset.assetToolAssetType || editingAssetType;
-+    if (files.length > 1) {
-+      await saveUploadBatch(row, assetType);
-+    } else {
-+      await saveSingleAssetRow(row, assetType, row?.dataset.assetToolEditingRow === `__new__:${assetType}` ? "__new__" : row?.dataset.assetToolEditingRow || "__new__");
-     }
--    setText(elements.log, files.length > 1 ? `Selected ${files.length} upload files.` : (fileName ? `Selected upload file ${fileName}.` : "No upload file selected."));
-     return;
-   }
- 
-diff --git a/toolbox/assets/index.html b/toolbox/assets/index.html
-index 39d36e352..8720b7a81 100644
---- a/toolbox/assets/index.html
-+++ b/toolbox/assets/index.html
-@@ -57,6 +57,7 @@
-                             <article class="mini-stat"><strong data-asset-tool-tag-count>0</strong>Tags</article>
-                         </div>
-                         <datalist id="assetToolTagOptions" data-asset-tool-tag-options></datalist>
-+                        <p class="status" role="status" data-asset-tool-project-path>Path: projects/</p>
-                         <div class="accordion-stack" data-asset-type-accordions></div>
-                     </section>
-                     <aside class="tool-column tool-group-design">
-@@ -114,6 +115,18 @@
-                                 <summary>Status Log</summary>
-                                 <div class="accordion-body">
-                                     <div class="status" role="status" data-asset-tool-log>Asset catalog ready.</div>
-+                                    <article class="card" role="dialog" aria-labelledby="asset-tool-account-prompt-title" data-asset-tool-account-prompt hidden>
-+                                        <div class="card-body content-stack">
-+                                            <div>
-+                                                <div class="kicker">Account Required</div>
-+                                                <h3 id="asset-tool-account-prompt-title">Uploads require a Game Foundry account.</h3>
-+                                            </div>
-+                                            <div class="action-group">
-+                                                <a class="btn" href="login.html">Sign In</a>
-+                                                <a class="btn" href="account/index.html">Create Account</a>
-+                                            </div>
-+                                        </div>
-+                                    </article>
-                                     <ul data-asset-tool-batch-log>
-                                         <li>No batch uploads run yet.</li>
-                                     </ul>
-diff --git a/docs_build/dev/reports/PR_26163_076-assets-upload-prod-alignment.md b/docs_build/dev/reports/PR_26163_076-assets-upload-prod-alignment.md
+diff --git a/docs_build/dev/reports/PR_26163_077-assets-upload-ux-and-duplicate-guard.md b/docs_build/dev/reports/PR_26163_077-assets-upload-ux-and-duplicate-guard.md
 new file mode 100644
-index 000000000..ccb8b4a4a
+index 000000000..ae21852b8
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26163_076-assets-upload-prod-alignment.md
++++ b/docs_build/dev/reports/PR_26163_077-assets-upload-ux-and-duplicate-guard.md
 @@ -0,0 +1,89 @@
-+# PR_26163_076-assets-upload-prod-alignment
++# PR_26163_077-assets-upload-ux-and-duplicate-guard
 +
 +## Branch Validation
 +- PASS - Current branch: `main`
@@ -675,84 +430,84 @@ index 000000000..ccb8b4a4a
 +
 +## Requirement Checklist
 +- PASS - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before implementation.
-+- PASS - `Add Data` remains visible and disabled with `title="Planned"`.
-+- PASS - `Add Vector` remains visible and disabled with `title="Planned"`.
-+- PASS - Images, Audio, and Fonts remain upload-capable. Evidence: targeted Playwright uploads one file for each type and sees catalog rows.
-+- PASS - Sprites and Palette References remain reference-only. Evidence: targeted Playwright verifies no upload file input for those asset types.
-+- PASS - Upload auto-starts after file selection; no separate Upload button is required. Evidence: targeted Playwright sets files and asserts rows/logs without clicking Save.
-+- PASS - Guest upload/create action is not visually disabled but blocks on action. Evidence: `Add Images` stays enabled, file selection shows `Uploads require a Game Foundry account.` with `Sign In` and `Create Account`, and no row is created.
-+- PASS - Centered Project Path display appears above asset accordions. Evidence: Playwright checks `Path: projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/`, computed center alignment, and placement above Images.
-+- PASS - Preview column shows asset-type-relative paths only. Evidence: Playwright verifies uploaded image row contains `image/write-view-image.png`.
-+- PASS - Stored record keeps the full project-relative path. Evidence: View metadata shows `Stored path: projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/write-view-image.png`.
-+- PASS - View uses the stored full project-relative path. Evidence: Image View preview `src` resolves to `projects/<projectId>/image/write-view-image.png`.
-+- PASS - Server/dev DB storage creates physical folder/file. Evidence: local-db Playwright lane removes `projects/<projectId>/image/`, uploads an image, then verifies the folder/file exists and bytes match.
-+- PASS - Unsupported browser-style file writes fail visibly without false OK records. Evidence: `?uploadWrite=unsupported` shows FAIL/SKIP diagnostics and asset count remains `0`.
-+- PASS - `codex_review.diff` is generated as readable UTF-8 text. Evidence: artifact writer uses Node UTF-8 output and the targeted Playwright UTF-8 check passes.
-+- PASS - Owner-scoped records are preserved. Evidence: existing owner-scope Playwright verifies user2 cannot see user1-created assets.
++- PASS - Improved upload progress visibility with a local/dev-only delay hook. Evidence: `toolbox/assets/assets.js` uses `uploadProgressDelayMs` only on local/dev hosts; production hosts get `0` simulated delay.
++- PASS - Progress still reflects selected files and final write results. Evidence: Playwright verifies bytes/BPS/speed/ETA/elapsed render during upload, no OK status appears before final write status, and final rows include OK/FAIL/SKIP outcomes.
++- PASS - Duplicate project folder/path uploads are blocked before write. Evidence: repository checks `existsSync(resolved.absolutePath)` before `writeFileSync`.
++- PASS - Duplicate blocked upload creates no extra asset record. Evidence: Playwright uploads `duplicate-path.png`, retries the same file, sees FAIL, and count remains `1`.
++- PASS - Saved asset edit allows Usage and Tags only. Evidence: Playwright changes Usage to `Icon`, adds tag `Rare`, and saves.
++- PASS - Saved asset edit does not allow Source/File/Filename/Path/Asset Type changes. Evidence: saved edit row has no Source select, Upload File input, Reference select, Asset Type field, or project path edit surface; repository malicious-update test preserves the original file/type/path.
++- PASS - File picker text uses `No file chosen` initially and no longer shows `No file selected`. Evidence: Playwright checks the add row text.
++- PASS - File picker shows selected filenames after selection. Evidence: Playwright checks `batch-image-a.png, batch-image-b.png`.
++- PASS - Auto-start upload on file selection is preserved. Evidence: tests set files and assert rows/logs without clicking Save.
++- PASS - Images, Audio, and Fonts remain upload-capable. Evidence: targeted Playwright uploads each type.
++- PASS - Data and Vector Add buttons remain Planned/disabled from PR_076. Evidence: source-control Playwright checks both disabled buttons with Planned title.
++- PASS - Sprites and Palette References remain reference-only. Evidence: targeted Playwright verifies no upload file input.
++- PASS - Guest upload prompt behavior is preserved. Evidence: guest test still shows `Uploads require a Game Foundry account.` with `Sign In` and `Create Account`, and creates no record.
++- PASS - Owner-scoped records are preserved. Evidence: existing user1/user2 owner-scope Playwright still passes.
++- PASS - `codex_review.diff` is generated as readable UTF-8 text. Evidence: artifact writer uses UTF-8 and the Playwright UTF-8 check passes.
 +
-+## Architecture Recommendation
-+- Dev MEM is UI-only and cannot prove file storage.
-+- Dev DB/server-side storage should be used for MVP/UAT-like upload validation.
-+- MEM was not removed in this PR; the repo already supports an API-backed dev DB/server validation path, and this PR keeps MEM as a UI/runtime exercise mode.
++## Upload Progress Evidence
++- PASS - `?uploadProgressDelayMs=250` is used in targeted Playwright as a local/dev validation hook.
++- PASS - Upload dialog shows current file, file count, bytes uploaded, total bytes, BPS, speed, ETA, elapsed time, phase, per-file statuses, and batch summary.
++- PASS - During upload, phase is `Uploading`, progress fields are non-zero/visible, and OK rows are absent before the final write result.
++- PASS - Completion shows final OK/WARN/FAIL/SKIP rows and batch summary.
++
++## Duplicate-Block Evidence
++- PASS - First `duplicate-path.png` upload writes `projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/duplicate-path.png`.
++- PASS - Second upload of the same filename fails with `already exists`.
++- PASS - Count remains `1`; no duplicate asset row is created.
++
++## Saved-Edit Lock Evidence
++- PASS - Saved upload edit row displays Source/File as text and only exposes Usage, Tags, Save, and Cancel controls.
++- PASS - Repository update ignores attempted changes to asset type, source, replacement file, filename, name, and path for an existing record.
++- PASS - Usage and Tags changes persist.
 +
 +## Changed Files
-+- `toolbox/assets/index.html`
 +- `toolbox/assets/assets.js`
++- `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
 +- `tests/playwright/tools/AssetToolMockRepository.spec.mjs`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/PR_26163_076-assets-upload-prod-alignment.md`
++- `docs_build/dev/reports/PR_26163_077-assets-upload-ux-and-duplicate-guard.md`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +
 +## Impacted Lanes
 +- Assets tool runtime lane.
-+- Assets upload/write/view behavior.
-+- Assets owner-scoped catalog behavior.
++- Assets mock repository/dev-runtime upload persistence lane.
 +- Targeted Assets Playwright lane.
 +- Workspace V2 contract lane.
 +
 +## Skipped Lanes
-+- Full samples smoke: SKIP - explicitly out of scope and no sample runtime behavior changed.
-+- Production auth/account system: SKIP - guest gating is UI/API-session behavior only; no production account system changes were made.
-+- Unrelated toolbox tools: SKIP - scoped to Assets and its targeted Playwright coverage.
++- Full samples smoke: SKIP - explicitly out of scope; no sample runtime behavior changed.
++- Production auth/account system: SKIP - guest upload blocking remains the existing UI/session prompt behavior.
++- Unrelated toolbox tools: SKIP - scope is limited to Assets upload UX and duplicate guards.
 +
 +## Validation Performed
 +- PASS - `node --check toolbox/assets/assets.js`
++- PASS - `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
 +- PASS - `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+- PASS - `git diff --check -- toolbox/assets/index.html toolbox/assets/assets.js tests/playwright/tools/AssetToolMockRepository.spec.mjs`
-+- PASS - `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --workers=1 --reporter=list` -> 9 passed
++- PASS - `git diff --check -- toolbox/assets/assets.js src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++- PASS - `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs --workers=1 --reporter=list` -> 10 passed
 +- PASS - `npm run test:workspace-v2` -> 5 passed in workspace-contract lane
 +
 +## Playwright Result
-+- PASS - Targeted Assets Playwright: 9 passed.
++- PASS - Targeted Assets Playwright: 10 passed.
 +- PASS - Workspace V2: 5 passed.
 +
 +## V8 Coverage
 +- PASS/WARN - `docs_build/dev/reports/playwright_v8_coverage_report.txt` refreshed from targeted Assets Playwright.
 +- PASS - Browser runtime `toolbox/assets/assets.js`: 96% advisory V8 coverage.
-+- WARN - Node-side/repository helper files listed by the shared coverage reporter are not collected by browser V8 coverage; behavior is covered by targeted Playwright and syntax/static checks.
-+
-+## Upload Write Evidence
-+- PASS - Local DB/server-backed lane used `sessionModeId: local-db`.
-+- PASS - Folder evidence: `projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/` is recreated during upload.
-+- PASS - File evidence: `projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/write-view-image.png` exists after upload and matches selected bytes.
-+- PASS - No false OK evidence: unsupported write mode shows visible FAIL/SKIP diagnostics and creates no asset record.
-+
-+## Guest Block Evidence
-+- PASS - Guest Add Images button remains enabled.
-+- PASS - Guest file selection shows `Uploads require a Game Foundry account.`
-+- PASS - Guest prompt includes `Sign In` and `Create Account`.
-+- PASS - Guest upload creates no `guest-upload.png` asset row.
++- WARN - Node-side repository file is not collected by browser V8 coverage; duplicate/edit-lock behavior is covered by targeted Playwright and syntax checks.
 +
 +## Manual Validation Steps
-+1. Open `toolbox/assets/index.html` through the local API-backed server.
-+2. Confirm `Path: projects/<projectId>/` appears centered above the asset type accordions.
-+3. Confirm `Add Data` and `Add Vector` are visible, disabled, and show Planned tooltip text.
-+4. Add an Image file and confirm upload starts immediately after file selection.
-+5. Confirm the row Preview value is `image/<filename>` and View metadata stores/uses `projects/<projectId>/image/<filename>`.
-+6. Repeat auto-start file selection for Audio and Fonts.
-+7. Open as a guest session, attempt an Image upload, and confirm the account-required prompt appears with no new record.
-+8. Use server/dev DB validation mode for UAT-like storage proof and confirm the physical file exists under `projects/<projectId>/<asset-type>/`.
++1. Open `toolbox/assets/index.html?uploadProgressDelayMs=250` through the local API-backed server.
++2. Add Images and select multiple image files.
++3. Confirm upload diagnostics update while upload is running and do not show OK before final write status.
++4. Upload an Image file, then try uploading the same filename again for the same project.
++5. Confirm visible FAIL/WARN duplicate messaging and no additional asset row.
++6. Edit the saved asset and confirm only Usage and Tags are editable.
++7. Confirm the saved edit row does not allow Source/File/Filename/Path/Asset Type changes.
++8. Open as guest and confirm upload action prompts for a Game Foundry account without creating a record.
 +
 +## Samples Decision
-+- SKIP - Full samples smoke was not run because the request explicitly said not to run it and this PR is scoped to Assets upload/catalog behavior.
++- SKIP - Full samples smoke was not run because the request explicitly said not to run it and this PR is scoped to Assets upload UX/repository behavior.

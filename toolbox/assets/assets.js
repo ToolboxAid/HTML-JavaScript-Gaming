@@ -72,13 +72,30 @@ const REFERENCE_COLUMNS = Object.freeze(["Source", "Reference", "Usage", "Tags",
 const UPLOAD_SOURCE = "Upload";
 const REFERENCE_SOURCE = "Reference";
 const UPLOAD_LOG_STATUSES = Object.freeze(["OK", "WARN", "FAIL", "SKIP"]);
-const UPLOAD_PROGRESS_STEP_MS = 60;
 const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
   Audio: "audio/*,.mp3,.wav,.ogg,.m4a",
   Data: ".json,.csv,.txt,application/json,text/csv,text/plain",
   Fonts: ".ttf,.otf,.woff,.woff2",
   Images: "image/*,.png,.jpg,.jpeg,.webp,.gif,.svg"
 });
+
+function isLocalDevRuntime() {
+  return ["", "localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
+}
+
+// Local/dev validation hook only; production hosts get no simulated upload delay.
+function devUploadProgressStepMs() {
+  if (!isLocalDevRuntime()) {
+    return 0;
+  }
+  const requestedDelay = Number(params.get("uploadProgressDelayMs"));
+  if (Number.isFinite(requestedDelay) && requestedDelay >= 0) {
+    return Math.min(1000, requestedDelay);
+  }
+  return 60;
+}
+
+const UPLOAD_PROGRESS_STEP_MS = devUploadProgressStepMs();
 const SOURCE_HELP_BY_ASSET_TYPE = Object.freeze({
   Audio: "Audio can upload a sound file or reference an existing audio source.",
   Data: "Data can upload .json, .csv, or .txt files, or reference an existing data source.",
@@ -384,7 +401,7 @@ function createFileUploadControl(assetType, selectedFileName) {
 
   const filename = document.createElement("span");
   filename.dataset.assetToolSelectedFile = "true";
-  filename.textContent = normalizeText(selectedFileName) || "No file selected";
+  filename.textContent = normalizeText(selectedFileName) || "No file chosen";
   wrapper.append(input, filename);
   return wrapper;
 }
@@ -436,7 +453,10 @@ function selectedUploadFileNames(row) {
 
 function fileSelectionLabel(files) {
   if (!files.length) {
-    return "No file selected";
+    return "No file chosen";
+  }
+  if (files.length > 3) {
+    return `${files.length} files selected`;
   }
   return files.map((file) => file.name).join(", ");
 }
@@ -511,6 +531,9 @@ function formatDuration(milliseconds) {
 }
 
 function uploadDelay() {
+  if (UPLOAD_PROGRESS_STEP_MS <= 0) {
+    return Promise.resolve();
+  }
   return new Promise((resolve) => {
     window.setTimeout(resolve, UPLOAD_PROGRESS_STEP_MS);
   });
@@ -823,7 +846,9 @@ function createTagEditor(tagKeys, tags) {
 function assetRowValues(row, assetType) {
   const rowId = row?.dataset.assetToolEditingRow || "";
   const draftValues = draftAssetValues.get(rowId) || {};
-  const source = row.querySelector("[data-asset-tool-source-input]")?.value || sourceModeForEdit(assetType, draftValues);
+  const source = row.querySelector("[data-asset-tool-source-input]")?.value
+    || row.dataset.assetToolExistingSource
+    || sourceModeForEdit(assetType, draftValues);
   const reference = source === REFERENCE_SOURCE
     ? row.querySelector("[data-asset-tool-reference-input]")?.value
       || draftValues.reference
@@ -892,8 +917,10 @@ function createEditRow(assetType, asset = null, snapshot = {}) {
   });
   const selectedReference = draftValues.reference ?? asset?.reference ?? "";
   const selectedFileName = draftValues.fileName ?? asset?.fileName ?? "";
+  const savedAsset = Boolean(asset);
   row.dataset.assetToolEditingRow = rowId;
   row.dataset.assetToolAssetType = assetType;
+  row.dataset.assetToolExistingSource = selectedSource;
   row.dataset.assetToolExistingFileName = selectedFileName;
   row.dataset.assetToolExistingReference = selectedReference;
   if (!draftTagKeys.has(rowId)) {
@@ -901,10 +928,16 @@ function createEditRow(assetType, asset = null, snapshot = {}) {
   }
 
   const sourceCell = document.createElement("td");
-  sourceCell.append(createSourceControl(assetType, selectedSource, referenceOptions));
+  if (savedAsset) {
+    sourceCell.textContent = selectedSource;
+  } else {
+    sourceCell.append(createSourceControl(assetType, selectedSource, referenceOptions));
+  }
 
   const detailCell = document.createElement("td");
-  if (selectedSource === REFERENCE_SOURCE) {
+  if (savedAsset) {
+    detailCell.textContent = selectedSource === REFERENCE_SOURCE ? assetReference(asset) : assetFile(asset);
+  } else if (selectedSource === REFERENCE_SOURCE) {
     detailCell.append(createReferenceSelect(referenceOptions, selectedReference));
   } else {
     detailCell.append(createFileUploadControl(assetType, selectedFileName));
@@ -1381,11 +1414,7 @@ elements.accordions?.addEventListener("change", async (event) => {
     }
     setText(elements.log, files.length > 1 ? `Selected ${files.length} upload files.` : `Selected upload file ${fileName}.`);
     const assetType = row?.dataset.assetToolAssetType || editingAssetType;
-    if (files.length > 1) {
-      await saveUploadBatch(row, assetType);
-    } else {
-      await saveSingleAssetRow(row, assetType, row?.dataset.assetToolEditingRow === `__new__:${assetType}` ? "__new__" : row?.dataset.assetToolEditingRow || "__new__");
-    }
+    await saveUploadBatch(row, assetType);
     return;
   }
 

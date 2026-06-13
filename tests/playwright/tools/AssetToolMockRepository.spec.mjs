@@ -45,6 +45,7 @@ test.beforeEach(async ({ page }) => {
     lane: "asset-tool-catalog",
     surface: "Assets catalog accordions and shared Tags references"
   });
+  ["image", "audio", "font", "data"].forEach((folder) => resetProjectAssetFolder(folder));
 });
 
 test.afterEach(async ({ page }) => {
@@ -219,6 +220,28 @@ test("Asset repository exposes catalog tables, usage values, and shared tag refe
   expect(assetResult.asset.writeResult).toBe("Written");
   expect(assetResult.asset.usage).toBe("Character");
   expect(assetResult.asset.tagKeys).toEqual([tagResult.tag.id]);
+  const lockedUpdateResult = assetRepository.updateAssetRecord(assetResult.asset.id, {
+    assetType: "Audio",
+    fileContentBase64: Buffer.from("malicious replacement").toString("base64"),
+    fileName: "replacement.wav",
+    hasFileBytes: true,
+    mimeType: "audio/wav",
+    name: "Replacement",
+    source: "Upload",
+    tagKeys: [tagResult.tag.id],
+    usage: "Icon"
+  });
+  expect(lockedUpdateResult.updated).toBe(true);
+  expect(lockedUpdateResult.asset).toEqual(expect.objectContaining({
+    assetType: "Images",
+    fileName: "hero-portrait.png",
+    name: "hero-portrait.png",
+    path: `projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`,
+    source: "Upload",
+    storedPath: `projects/${DEMO_ASSET_PROJECT_ID}/image/hero-portrait.png`,
+    usage: "Icon"
+  }));
+  expect(existsSync(projectAssetPath("audio", "replacement.wav"))).toBe(false);
   const populatedAssetTables = Object.entries(assetRepository.getTables())
     .filter(([, rows]) => rows.length > 0);
   expect(populatedAssetTables.length).toBeGreaterThan(0);
@@ -265,7 +288,7 @@ test("Assets source controls require real upload filenames and valid references"
       mimeType: "image/png",
       name: "source-image.png"
     });
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added source-image.png to Images.");
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-image.png" })).toBeVisible();
 
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -387,7 +410,7 @@ test("Assets upload writes to the project folder before creating a record and Im
 });
 
 test("Assets multi-file uploads create one catalog row per valid selected file with project paths and batch statuses", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=250", {
     sessionUserKey: MOCK_DB_KEYS.users.user1
   });
 
@@ -397,14 +420,18 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
 
     await page.getByRole("button", { name: "Add Images" }).click();
     const firstImageRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await expect(firstImageRow.locator("[data-asset-tool-selected-file]")).toHaveText("No file chosen");
+    await expect(firstImageRow).not.toContainText("No file selected");
     await firstImageRow.getByLabel("Usage").selectOption("Character");
     await firstImageRow.getByLabel("Upload File").setInputFiles([
       uploadFile("batch-image-a.png", "image/png", "image a"),
       uploadFile("batch-image-b.png", "image/png", "image b")
     ]);
+    await expect(firstImageRow.locator("[data-asset-tool-selected-file]")).toHaveText("batch-image-a.png, batch-image-b.png");
     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
     await expect(uploadDialog).toBeVisible();
     await expect(uploadDialog.locator("[data-asset-tool-upload-phase]")).toHaveText("Uploading");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']")).toHaveCount(0, { timeout: 100 });
     await expect(uploadDialog.locator("[data-asset-tool-upload-current-file]")).toContainText(/batch-image-[ab]\.png/);
     await expect(uploadDialog.locator("[data-asset-tool-upload-file-progress]")).toContainText("/ 2");
     await expect(uploadDialog.locator("[data-asset-tool-upload-total-bytes]")).not.toHaveText("0 B");
@@ -484,6 +511,43 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
       await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
       await editRow.getByRole("button", { name: "Cancel" }).click();
     }
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Assets duplicate project-path uploads fail before write and do not create duplicate records", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=120", {
+    sessionModeId: "local-db",
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    let editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await editRow.getByLabel("Usage").selectOption("Character");
+    await editRow.getByLabel("Upload File").setInputFiles(uploadFile("duplicate-path.png", "image/png", SMALL_PNG));
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
+    expect(existsSync(projectAssetPath("image", "duplicate-path.png"))).toBe(true);
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await editRow.getByLabel("Usage").selectOption("Character");
+    await editRow.getByLabel("Upload File").setInputFiles(uploadFile("duplicate-path.png", "image/png", SMALL_PNG));
+
+    const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("already exists");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/duplicate-path.png`);
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.");
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "duplicate-path.png" })).toHaveCount(1);
 
     expectNoPageFailures(failures);
   } finally {
@@ -626,6 +690,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await expect(page.locator("[data-asset-type-accordion='Video']")).toHaveCount(0);
 
     await addSharedTag(page, "Hero");
+    await addSharedTag(page, "Rare");
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
     await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
@@ -650,7 +715,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
       name: "hero-portrait.png"
     });
 
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added hero-portrait.png to Images.");
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Character");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Upload");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Hero");
@@ -665,15 +730,21 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
 
     await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" }).getByRole("button", { name: "Edit" }).click();
     const editRow = page.locator("[data-asset-tool-editing-row]");
-    await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
-    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("hero-portrait.png");
-    await editRow.getByLabel("Upload File").setInputFiles({
-      buffer: Buffer.from("mock image xl"),
-      mimeType: "image/png",
-      name: "hero-portrait-xl.png"
-    });
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated hero-portrait-xl.png.");
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
+    await expect(editRow.getByLabel("Source")).toHaveCount(0);
+    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
+    await expect(editRow.getByLabel("Reference")).toHaveCount(0);
+    await expect(editRow.getByLabel("Asset Type")).toHaveCount(0);
+    await expect(editRow).toContainText("Upload");
+    await expect(editRow).toContainText("hero-portrait.png");
+    await expect(editRow).not.toContainText("projects/");
+    await editRow.getByLabel("Usage").selectOption("Icon");
+    await editRow.getByLabel("Asset Tags").fill("Rare");
+    await editRow.getByRole("button", { name: "Add Tag" }).click();
+    await expect(editRow).toContainText("Rare");
+    await editRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated hero-portrait.png.");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Icon");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Rare");
 
     await page.goto(`${failures.server.baseUrl}/toolbox/tags/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-tags-row]").filter({ hasText: "Hero" })).toContainText("1");
@@ -681,21 +752,21 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Tool");
     await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Item Name");
     await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("Assets");
-    await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("hero-portrait-xl.png");
+    await expect(page.locator("[data-tags-usage-row='hero']")).toContainText("hero-portrait.png");
 
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toBeVisible();
 
     await setServerUser(failures.server, MOCK_DB_KEYS.users.user2);
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toHaveCount(0);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toHaveCount(0);
 
     await setServerUser(failures.server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
-    await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" }).getByRole("button", { name: "Trash" }).click();
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Deleted hero-portrait-xl.png from your asset library.");
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toHaveCount(0);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toBeVisible();
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" }).getByRole("button", { name: "Trash" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Deleted hero-portrait.png from your asset library.");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toHaveCount(0);
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     expectNoPageFailures(failures);
