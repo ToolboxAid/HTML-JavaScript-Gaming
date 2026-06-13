@@ -39,7 +39,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     inputMode: "file",
     maxSizeBytes: 52428800,
     usageRoles: ["sound", "music"],
-    validationNeeds: ["MIME must be audio/* or approved audio MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/audio/<usage>/"]
+    validationNeeds: ["MIME must be audio/* or approved audio MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/audio/"]
   },
   {
     id: "data",
@@ -52,7 +52,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     inputMode: "file",
     maxSizeBytes: 5242880,
     usageRoles: ["config", "table"],
-    validationNeeds: ["Data files must use .json, .csv, or .txt", "Structured data must declare format"]
+    validationNeeds: ["Data files must use .json, .csv, or .txt", "Project storage path must be generated under projects/<projectId>/data/"]
   },
   {
     id: "font",
@@ -65,7 +65,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     inputMode: "file",
     maxSizeBytes: 10485760,
     usageRoles: ["ui", "display"],
-    validationNeeds: ["Font files must use approved font formats", "Project storage path must be generated under projects/<projectId>/font/<usage>/"]
+    validationNeeds: ["Font files must use approved font formats", "Project storage path must be generated under projects/<projectId>/font/"]
   },
   {
     id: "image",
@@ -78,7 +78,7 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     inputMode: "file",
     maxSizeBytes: 10485760,
     usageRoles: ["sprite", "background", "bezel", "preview", "ui"],
-    validationNeeds: ["MIME must be image/* or approved image MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/image/<usage>/"]
+    validationNeeds: ["MIME must be image/* or approved image MIME", "File size must be greater than zero", "Project storage path must be generated under projects/<projectId>/image/"]
   },
 ]);
 
@@ -369,14 +369,20 @@ function storagePathForProjectAsset(projectId, assetRole, usage, fileName) {
   return `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/${role.storageFolder}/${normalizedUsage}/${sanitizeFileName(fileName)}`;
 }
 
+function catalogUploadStoredPath(projectId, assetRole, fileName) {
+  const role = roleDefinitionForId(assetRole);
+  const normalizedProjectId = normalizeProjectId(projectId);
+  if (!normalizedProjectId || !role || !fileName) {
+    return "";
+  }
+  return `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/${role.storageFolder}/${sanitizeFileName(fileName)}`;
+}
+
 function catalogStoredPath({ assetRole, assetType, fileName, projectId, reference, source, usage }) {
   if (source === REFERENCE_SOURCE_MODE) {
     return `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(assetType)}/${slugify(usage)}/reference/${slugify(reference)}`;
   }
-  const roleUsage = normalizeUsage(usage.toLowerCase().replaceAll(" ", "-"), assetRole);
-  return roleUsage
-    ? storagePathForProjectAsset(projectId, assetRole, roleUsage, fileName)
-    : `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}/${slugify(assetType)}/${slugify(usage)}/${fileName}`;
+  return catalogUploadStoredPath(projectId, assetRole, fileName);
 }
 
 function clonePaletteSwatch(swatch) {

@@ -20,6 +20,7 @@ const elements = {
   count: document.querySelector("[data-asset-tool-count]"),
   libraryStatus: document.querySelector("[data-asset-tool-library-status]"),
   log: document.querySelector("[data-asset-tool-log]"),
+  batchLog: document.querySelector("[data-asset-tool-batch-log]"),
   metadata: document.querySelector("[data-asset-tool-metadata]"),
   outputMissing: document.querySelector("[data-asset-tool-output-missing]"),
   outputSummary: document.querySelector("[data-asset-tool-output-summary]"),
@@ -32,6 +33,23 @@ const elements = {
   tagOptions: document.querySelector("[data-asset-tool-tag-options]"),
   validationList: document.querySelector("[data-asset-tool-validation-list]"),
   validationOverlay: document.querySelector("[data-asset-tool-validation-overlay]"),
+  uploadBps: document.querySelector("[data-asset-tool-upload-bps]"),
+  uploadBytesUploaded: document.querySelector("[data-asset-tool-upload-bytes-uploaded]"),
+  uploadClose: document.querySelector("[data-asset-tool-upload-close]"),
+  uploadCurrentFile: document.querySelector("[data-asset-tool-upload-current-file]"),
+  uploadDialog: document.querySelector("[data-asset-tool-upload-dialog]"),
+  uploadElapsed: document.querySelector("[data-asset-tool-upload-elapsed]"),
+  uploadEta: document.querySelector("[data-asset-tool-upload-eta]"),
+  uploadFileProgress: document.querySelector("[data-asset-tool-upload-file-progress]"),
+  uploadPhase: document.querySelector("[data-asset-tool-upload-phase]"),
+  uploadProgress: document.querySelector("[data-asset-tool-upload-progress]"),
+  uploadSpeed: document.querySelector("[data-asset-tool-upload-speed]"),
+  uploadStatusBody: document.querySelector("[data-asset-tool-upload-status-body]"),
+  uploadSummaryFailed: document.querySelector("[data-asset-tool-upload-summary-failed]"),
+  uploadSummarySkipped: document.querySelector("[data-asset-tool-upload-summary-skipped]"),
+  uploadSummaryWarnings: document.querySelector("[data-asset-tool-upload-summary-warnings]"),
+  uploadSummaryWritten: document.querySelector("[data-asset-tool-upload-summary-written]"),
+  uploadTotalBytes: document.querySelector("[data-asset-tool-upload-total-bytes]"),
 };
 
 let editingAssetId = "";
@@ -45,6 +63,8 @@ const UPLOAD_COLUMNS = Object.freeze(["Source", "File", "Usage", "Tags", "Previe
 const REFERENCE_COLUMNS = Object.freeze(["Source", "Reference", "Usage", "Tags", "Preview", "Actions"]);
 const UPLOAD_SOURCE = "Upload";
 const REFERENCE_SOURCE = "Reference";
+const UPLOAD_LOG_STATUSES = Object.freeze(["OK", "WARN", "FAIL", "SKIP"]);
+const UPLOAD_PROGRESS_STEP_MS = 60;
 const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
   Audio: "audio/*,.mp3,.wav,.ogg,.m4a",
   Data: ".json,.csv,.txt,application/json,text/csv,text/plain",
@@ -261,6 +281,7 @@ function createFileUploadControl(assetType, selectedFileName) {
   input.type = "file";
   input.setAttribute("aria-label", "Upload File");
   input.dataset.assetToolFileInput = "true";
+  input.multiple = true;
   const accept = UPLOAD_ACCEPT_BY_ASSET_TYPE[assetType] || "";
   if (accept) {
     input.accept = accept;
@@ -303,6 +324,292 @@ function createReferenceSelect(referenceOptions, selectedReference) {
     wrapper.append(message);
   }
   return wrapper;
+}
+
+function selectedUploadFiles(row) {
+  const fileInput = row?.querySelector("[data-asset-tool-file-input]");
+  return Array.from(fileInput?.files || []);
+}
+
+function selectedUploadFileNames(row) {
+  return selectedUploadFiles(row).map((file) => file.name).filter(Boolean);
+}
+
+function fileSelectionLabel(files) {
+  if (!files.length) {
+    return "No file selected";
+  }
+  return files.map((file) => file.name).join(", ");
+}
+
+function formatBytes(value) {
+  const bytes = Number(value) || 0;
+  if (bytes < 1024) {
+    return `${Math.max(0, Math.round(bytes))} B`;
+  }
+  const units = ["KB", "MB", "GB"];
+  let scaled = bytes / 1024;
+  let unitIndex = 0;
+  while (scaled >= 1024 && unitIndex < units.length - 1) {
+    scaled /= 1024;
+    unitIndex += 1;
+  }
+  return `${scaled.toFixed(1)} ${units[unitIndex]}`;
+}
+
+function formatDuration(milliseconds) {
+  if (!Number.isFinite(milliseconds) || milliseconds < 0) {
+    return "N/A";
+  }
+  return `${(milliseconds / 1000).toFixed(1)}s`;
+}
+
+function uploadDelay() {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, UPLOAD_PROGRESS_STEP_MS);
+  });
+}
+
+function totalUploadBytes(files) {
+  return files.reduce((total, file) => {
+    const size = Number(file.size);
+    return Number.isFinite(size) && size > 0 ? total + size : total;
+  }, 0);
+}
+
+function createUploadState(files) {
+  return {
+    bytesUploaded: 0,
+    currentFile: "None",
+    entries: [],
+    fileCount: files.length,
+    fileIndex: 0,
+    phase: "Preparing",
+    startedAt: performance.now(),
+    totalBytes: totalUploadBytes(files)
+  };
+}
+
+function batchWrittenCount(summary) {
+  return summary.ok + summary.warn;
+}
+
+function updateUploadSummary(summary) {
+  setText(elements.uploadSummaryWritten, String(batchWrittenCount(summary)));
+  setText(elements.uploadSummaryFailed, String(summary.fail));
+  setText(elements.uploadSummarySkipped, String(summary.skip));
+  setText(elements.uploadSummaryWarnings, String(summary.warn));
+}
+
+function renderUploadStatusRows(entries) {
+  if (!elements.uploadStatusBody) {
+    return;
+  }
+  elements.uploadStatusBody.replaceChildren();
+  if (!entries.length) {
+    const row = document.createElement("tr");
+    const cell = document.createElement("td");
+    cell.colSpan = 3;
+    cell.textContent = "No upload files processed yet.";
+    row.append(cell);
+    elements.uploadStatusBody.append(row);
+    return;
+  }
+  entries.forEach((entry) => {
+    const row = document.createElement("tr");
+    row.dataset.assetToolUploadStatus = entry.status;
+    row.append(
+      createCell(entry.fileName),
+      createCell(entry.status),
+      createCell(`${entry.path ? `${entry.path} - ` : ""}${entry.message || ""}`)
+    );
+    elements.uploadStatusBody.append(row);
+  });
+}
+
+function updateUploadDialog(state) {
+  if (!elements.uploadDialog) {
+    return;
+  }
+  elements.uploadDialog.hidden = false;
+  const elapsedMilliseconds = Math.max(0, performance.now() - state.startedAt);
+  const elapsedSeconds = elapsedMilliseconds / 1000;
+  const bps = elapsedSeconds > 0 ? Math.round(state.bytesUploaded / elapsedSeconds) : 0;
+  const remainingBytes = Math.max(0, state.totalBytes - state.bytesUploaded);
+  const etaMilliseconds = bps > 0 ? (remainingBytes / bps) * 1000 : NaN;
+  const progressValue = state.totalBytes > 0
+    ? Math.min(100, Math.round((state.bytesUploaded / state.totalBytes) * 100))
+    : 0;
+
+  setText(elements.uploadCurrentFile, state.currentFile);
+  setText(elements.uploadFileProgress, `${state.fileIndex} / ${state.fileCount}`);
+  setText(elements.uploadBytesUploaded, formatBytes(state.bytesUploaded));
+  setText(elements.uploadTotalBytes, formatBytes(state.totalBytes));
+  setText(elements.uploadBps, String(bps));
+  setText(elements.uploadSpeed, `${formatBytes(bps)}/s`);
+  setText(elements.uploadEta, formatDuration(etaMilliseconds));
+  setText(elements.uploadElapsed, formatDuration(elapsedMilliseconds));
+  setText(elements.uploadPhase, state.phase);
+  if (elements.uploadProgress) {
+    elements.uploadProgress.value = progressValue;
+  }
+  renderUploadStatusRows(state.entries);
+  updateUploadSummary(batchSummaryForEntries(state.entries));
+}
+
+function renderBatchLog(entries, summary = null) {
+  if (!elements.batchLog) {
+    return;
+  }
+  elements.batchLog.replaceChildren();
+  if (summary) {
+    const summaryItem = document.createElement("li");
+    summaryItem.dataset.assetToolBatchSummary = "true";
+    summaryItem.textContent = `Batch summary: ${summary.ok} OK, ${summary.warn} WARN, ${summary.fail} FAIL, ${summary.skip} SKIP.`;
+    elements.batchLog.append(summaryItem);
+  }
+  if (!entries.length) {
+    const item = document.createElement("li");
+    item.textContent = "No batch uploads run yet.";
+    elements.batchLog.append(item);
+    return;
+  }
+  entries.forEach((entry) => {
+    const item = document.createElement("li");
+    item.dataset.assetToolBatchLogRow = "true";
+    item.dataset.assetToolBatchStatus = entry.status;
+    item.textContent = `${entry.status}: ${entry.fileName}${entry.path ? ` -> ${entry.path}` : ""}${entry.message ? ` - ${entry.message}` : ""}`;
+    elements.batchLog.append(item);
+  });
+}
+
+function batchSummaryForEntries(entries) {
+  return entries.reduce((summary, entry) => {
+    const status = UPLOAD_LOG_STATUSES.includes(entry.status) ? entry.status.toLowerCase() : "fail";
+    summary[status] += 1;
+    return summary;
+  }, {
+    fail: 0,
+    ok: 0,
+    skip: 0,
+    warn: 0
+  });
+}
+
+function isGlobalUploadFailure(result) {
+  return !result?.added && /active game|projectid|project id/i.test(result?.message || "");
+}
+
+function batchInputForFile(row, assetType, file) {
+  return {
+    ...assetRowValues(row, assetType),
+    fileName: file.name,
+    name: file.name,
+    source: UPLOAD_SOURCE
+  };
+}
+
+function addBatchLogEntry(entries, entry, uploadState = null) {
+  entries.push(entry);
+  renderBatchLog(entries, batchSummaryForEntries(entries));
+  if (uploadState) {
+    updateUploadDialog(uploadState);
+  } else {
+    renderUploadStatusRows(entries);
+    updateUploadSummary(batchSummaryForEntries(entries));
+  }
+}
+
+async function saveUploadBatch(row, assetType) {
+  const files = selectedUploadFiles(row);
+  const uploadState = createUploadState(files);
+  const seenNames = new Set();
+  let globalFailure = false;
+
+  updateUploadDialog(uploadState);
+  await uploadDelay();
+
+  for (let index = 0; index < files.length; index += 1) {
+    const file = files[index];
+    const fileName = file.name;
+    uploadState.currentFile = fileName;
+    uploadState.fileIndex = index + 1;
+    uploadState.phase = "Uploading";
+    updateUploadDialog(uploadState);
+    await uploadDelay();
+
+    if (globalFailure) {
+      uploadState.phase = "Skipped";
+      addBatchLogEntry(uploadState.entries, {
+        fileName,
+        message: "Skipped because the project upload target is unavailable.",
+        status: "SKIP"
+      }, uploadState);
+      await uploadDelay();
+      continue;
+    }
+    if (seenNames.has(fileName.toLowerCase())) {
+      uploadState.phase = "Skipped";
+      addBatchLogEntry(uploadState.entries, {
+        fileName,
+        message: "Skipped duplicate file name in this batch.",
+        status: "SKIP"
+      }, uploadState);
+      await uploadDelay();
+      continue;
+    }
+    seenNames.add(fileName.toLowerCase());
+
+    const fileSize = Number(file.size);
+    const progressCalculable = Number.isFinite(fileSize) && fileSize > 0;
+    const startingBytes = uploadState.bytesUploaded;
+    if (progressCalculable) {
+      uploadState.bytesUploaded = Math.min(uploadState.totalBytes, startingBytes + Math.max(1, Math.ceil(fileSize / 2)));
+      updateUploadDialog(uploadState);
+      await uploadDelay();
+    } else {
+      uploadState.phase = "Progress WARN";
+      updateUploadDialog(uploadState);
+      await uploadDelay();
+    }
+
+    const result = repository.addAssetRecord(batchInputForFile(row, assetType, file));
+    if (!result.added) {
+      uploadState.phase = "Failed";
+      addBatchLogEntry(uploadState.entries, {
+        fileName,
+        message: result.message,
+        status: "FAIL"
+      }, uploadState);
+      globalFailure = isGlobalUploadFailure(result);
+      await uploadDelay();
+      continue;
+    }
+
+    if (progressCalculable) {
+      uploadState.bytesUploaded = Math.min(uploadState.totalBytes, startingBytes + fileSize);
+    }
+    const status = progressCalculable ? "OK" : "WARN";
+    uploadState.phase = status === "WARN" ? "Warning" : "Uploaded";
+    addBatchLogEntry(uploadState.entries, {
+      fileName,
+      message: status === "WARN" ? "Progress could not be calculated for this file; uploaded with a warning." : result.message,
+      path: result.asset.storedPath,
+      status
+    }, uploadState);
+    selectedAssetId = result.asset.id;
+    await uploadDelay();
+  }
+
+  uploadState.phase = "Complete";
+  updateUploadDialog(uploadState);
+  const summary = batchSummaryForEntries(uploadState.entries);
+  if (summary.ok + summary.warn > 0) {
+    clearEditState();
+  }
+  const totalSaved = batchWrittenCount(summary);
+  setText(elements.log, `Batch upload complete: ${totalSaved} written, ${summary.fail} failed, ${summary.skip} skipped, ${summary.warn} warnings.`);
+  render();
 }
 
 function editedRowForControl(control) {
@@ -353,7 +660,7 @@ function assetRowValues(row, assetType) {
     : "";
   const fileInput = row.querySelector("[data-asset-tool-file-input]");
   const fileName = source === UPLOAD_SOURCE
-    ? fileInput?.files?.[0]?.name || draftValues.fileName || row.dataset.assetToolExistingFileName || ""
+    ? selectedUploadFileNames(row)[0] || draftValues.fileName || row.dataset.assetToolExistingFileName || ""
     : "";
   const name = source === REFERENCE_SOURCE ? reference : fileName;
   return {
@@ -676,7 +983,7 @@ function clearEditState() {
   draftTagKeys.clear();
 }
 
-elements.accordions?.addEventListener("click", (event) => {
+elements.accordions?.addEventListener("click", async (event) => {
   const addType = event.target.closest("[data-asset-tool-add-type]");
   const view = event.target.closest("[data-asset-tool-view]");
   const edit = event.target.closest("[data-asset-tool-edit]");
@@ -749,6 +1056,12 @@ elements.accordions?.addEventListener("click", (event) => {
   if (save) {
     const row = save.closest("[data-asset-tool-editing-row]");
     const assetType = row?.dataset.assetToolAssetType || editingAssetType;
+    const source = row?.querySelector("[data-asset-tool-source-input]")?.value || sourceModeForEdit(assetType);
+    const uploadFiles = selectedUploadFiles(row);
+    if (save.dataset.assetToolSave === "__new__" && source === UPLOAD_SOURCE && uploadFiles.length > 1) {
+      await saveUploadBatch(row, assetType);
+      return;
+    }
     const result = save.dataset.assetToolSave === "__new__"
       ? repository.addAssetRecord(assetRowValues(row, assetType))
       : repository.updateAssetRecord(save.dataset.assetToolSave, assetRowValues(row, assetType));
@@ -792,7 +1105,8 @@ elements.accordions?.addEventListener("change", (event) => {
 
   if (fileInput) {
     const row = editedRowForControl(fileInput);
-    const fileName = fileInput.files?.[0]?.name || "";
+    const files = selectedUploadFiles(row);
+    const fileName = files[0]?.name || "";
     updateDraftValues(row, {
       fileName,
       reference: "",
@@ -800,9 +1114,9 @@ elements.accordions?.addEventListener("change", (event) => {
     });
     const display = row?.querySelector("[data-asset-tool-selected-file]");
     if (display) {
-      display.textContent = fileName || "No file selected";
+      display.textContent = fileSelectionLabel(files);
     }
-    setText(elements.log, fileName ? `Selected upload file ${fileName}.` : "No upload file selected.");
+    setText(elements.log, files.length > 1 ? `Selected ${files.length} upload files.` : (fileName ? `Selected upload file ${fileName}.` : "No upload file selected."));
     return;
   }
 
@@ -823,6 +1137,12 @@ elements.reset?.addEventListener("click", () => {
   selectedAssetId = "";
   setText(elements.log, result.message);
   render();
+});
+
+elements.uploadClose?.addEventListener("click", () => {
+  if (elements.uploadDialog) {
+    elements.uploadDialog.hidden = true;
+  }
 });
 
 render();

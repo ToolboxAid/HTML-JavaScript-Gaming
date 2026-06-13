@@ -1,4 +1,7 @@
 import { expect, test } from "@playwright/test";
+import { existsSync, readFileSync } from "node:fs";
+import { dirname, resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 import {
   ASSET_CATALOG_TYPES,
   ASSET_ROLE_DEFINITIONS,
@@ -30,6 +33,7 @@ const USAGE_VALUES = [
 const UPLOAD_COLUMNS = ["Source", "File", "Usage", "Tags", "Preview", "Actions"];
 const REFERENCE_COLUMNS = ["Source", "Reference", "Usage", "Tags", "Preview", "Actions"];
 const REFERENCE_ASSET_TYPES = new Set(["Sprites", "Vectors", "Palette References"]);
+const REPO_ROOT = resolve(dirname(fileURLToPath(import.meta.url)), "..", "..", "..");
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -106,6 +110,34 @@ async function addSharedTag(page, tagName = "Hero") {
   await row.getByLabel("Description").fill(`${tagName} assets`);
   await row.getByRole("button", { name: "Save" }).click();
   await expect(page.locator("[data-tags-row]").filter({ hasText: tagName })).toBeVisible();
+}
+
+function uploadFile(name, mimeType, contents = `mock ${name}`) {
+  return {
+    buffer: Buffer.from(contents),
+    mimeType,
+    name
+  };
+}
+
+function zeroByteUploadFile(name, mimeType) {
+  return {
+    buffer: Buffer.alloc(0),
+    mimeType,
+    name
+  };
+}
+
+async function addUploadBatch(page, assetType, files, usage = "Interface") {
+  await page.getByRole("button", { name: `Add ${assetType}` }).click();
+  const editRow = page.locator(`[data-asset-tool-editing-row='__new__:${assetType}']`);
+  await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
+  await expect(editRow.getByLabel("Upload File")).toHaveJSProperty("multiple", true);
+  await editRow.getByLabel("Upload File").setInputFiles(files);
+  await expect(editRow.locator("[data-asset-tool-selected-file]")).toContainText(files[0].name);
+  await editRow.getByLabel("Usage").selectOption(usage);
+  await editRow.getByRole("button", { name: "Save" }).click();
+  return editRow;
 }
 
 test("Asset repository exposes catalog tables, usage values, and shared tag references", () => {
@@ -308,6 +340,160 @@ test("Assets source controls require real upload filenames and valid references"
     await workspaceV2CoverageReporter.stop(page);
     await failures.server.close();
   }
+});
+
+test("Assets multi-file uploads create one catalog row per valid selected file with project paths and batch statuses", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const firstImageRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await firstImageRow.getByLabel("Upload File").setInputFiles([
+      uploadFile("batch-image-a.png", "image/png", "image a"),
+      uploadFile("batch-image-b.png", "image/png", "image b")
+    ]);
+    await firstImageRow.getByLabel("Usage").selectOption("Character");
+    await firstImageRow.getByRole("button", { name: "Save" }).click();
+    const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
+    await expect(uploadDialog).toBeVisible();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-phase]")).toHaveText("Uploading");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-current-file]")).toContainText(/batch-image-[ab]\.png/);
+    await expect(uploadDialog.locator("[data-asset-tool-upload-file-progress]")).toContainText("/ 2");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-total-bytes]")).not.toHaveText("0 B");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-bytes-uploaded]")).not.toHaveText("0 B");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-bps]")).not.toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-speed]")).toContainText("/s");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-eta]")).toContainText("s");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-elapsed]")).toContainText("s");
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 2 written, 0 failed, 0 skipped, 0 warnings.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-phase]")).toHaveText("Complete");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-progress]")).toHaveJSProperty("value", 100);
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("2");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("0");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-a.png" })).toHaveCount(1);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-b.png" })).toBeVisible();
+
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-a.png" }).getByRole("button", { name: "View" }).click();
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/image\/batch-image-a\.png/);
+    await expect(page.locator("[data-asset-tool-batch-status='OK']").filter({ hasText: "batch-image-a.png" })).toContainText(/projects\/[0-9A-HJKMNP-TV-Z]{26}\/image\/batch-image-a\.png/);
+
+    await addUploadBatch(page, "Images", [
+      uploadFile("batch-status-ok.png", "image/png", "image ok"),
+      zeroByteUploadFile("batch-status-warning.png", "image/png"),
+      uploadFile("batch-status-bad.exe", "application/octet-stream", "bad image"),
+      uploadFile("batch-status-ok.png", "image/png", "duplicate image ok"),
+      uploadFile("batch-status-late.png", "image/png", "image late")
+    ], "Icon");
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 3 written, 1 failed, 1 skipped, 1 warnings.");
+    await expect(page.locator("[data-asset-tool-batch-summary]")).toContainText("2 OK, 1 WARN, 1 FAIL, 1 SKIP");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("3");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("1");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("1");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("1");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']").filter({ hasText: "batch-status-ok.png" })).toBeVisible();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='WARN']").filter({ hasText: "batch-status-warning.png" })).toBeVisible();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']").filter({ hasText: "batch-status-bad.exe" })).toBeVisible();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']").filter({ hasText: "batch-status-ok.png" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-batch-status='OK']").filter({ hasText: "batch-status-ok.png" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-batch-status='WARN']").filter({ hasText: "batch-status-warning.png" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-batch-status='FAIL']").filter({ hasText: "batch-status-bad.exe" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-batch-status='SKIP']").filter({ hasText: "batch-status-ok.png" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-status-ok.png" })).toHaveCount(1);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-status-warning.png" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-status-late.png" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-status-bad.exe" })).toHaveCount(0);
+
+    await addUploadBatch(page, "Audio", [
+      uploadFile("batch-audio-a.wav", "audio/wav", "audio a"),
+      uploadFile("batch-audio-b.mp3", "audio/mpeg", "audio b")
+    ], "Music");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-audio-a.wav" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-audio-b.mp3" })).toBeVisible();
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-audio-a.wav" }).getByRole("button", { name: "View" }).click();
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/audio\/batch-audio-a\.wav/);
+
+    await addUploadBatch(page, "Fonts", [
+      uploadFile("batch-font-a.woff2", "font/woff2", "font a"),
+      uploadFile("batch-font-b.ttf", "font/ttf", "font b")
+    ], "Font");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-font-a.woff2" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-font-b.ttf" })).toBeVisible();
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-font-a.woff2" }).getByRole("button", { name: "View" }).click();
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2/);
+
+    await addUploadBatch(page, "Data", [
+      uploadFile("batch-data-a.json", "application/json", "{\"ok\":true}"),
+      uploadFile("batch-data-b.csv", "text/csv", "name,value")
+    ], "Theme");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-a.json" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-b.csv" })).toBeVisible();
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-a.json" }).getByRole("button", { name: "View" }).click();
+    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json/);
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("11");
+
+    for (const assetType of ["Sprites", "Vectors", "Palette References"]) {
+      await page.getByRole("button", { name: `Add ${assetType}` }).click();
+      const editRow = page.locator(`[data-asset-tool-editing-row='__new__:${assetType}']`);
+      await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
+      await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
+      await editRow.getByRole("button", { name: "Cancel" }).click();
+    }
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Assets multi-file upload fails visibly when no current project id is available", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?handoff=missing", {
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await expect(editRow.getByLabel("Upload File")).toHaveJSProperty("multiple", true);
+    await editRow.getByLabel("Upload File").setInputFiles([
+      uploadFile("missing-project-a.png", "image/png", "image a"),
+      uploadFile("missing-project-b.png", "image/png", "image b")
+    ]);
+    await editRow.getByLabel("Usage").selectOption("Character");
+    await editRow.getByRole("button", { name: "Save" }).click();
+    const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
+    await expect(uploadDialog).toBeVisible();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 1 skipped, 0 warnings.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("1");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("1");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("Asset add blocked: open an active game first.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
+    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Asset add blocked: open an active game first.");
+    await expect(page.locator("[data-asset-tool-batch-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("codex review diff artifact is readable UTF-8 text", () => {
+  const reviewDiffPath = resolve(REPO_ROOT, "docs_build", "dev", "reports", "codex_review.diff");
+  expect(existsSync(reviewDiffPath)).toBe(true);
+  const bytes = readFileSync(reviewDiffPath);
+  const text = new TextDecoder("utf-8", { fatal: true }).decode(bytes);
+  expect(text).not.toContain("\u0000");
 });
 
 test("Assets launches as asset-type accordions with table row add, edit, delete, tags, and owner scope", async ({ page }) => {
