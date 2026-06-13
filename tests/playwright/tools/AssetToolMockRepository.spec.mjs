@@ -29,7 +29,7 @@ const USAGE_VALUES = [
 ];
 const UPLOAD_COLUMNS = ["Source", "File", "Usage", "Tags", "Preview", "Actions"];
 const REFERENCE_COLUMNS = ["Source", "Reference", "Usage", "Tags", "Preview", "Actions"];
-const REFERENCE_ASSET_TYPES = new Set(["Palette References", "Data"]);
+const REFERENCE_ASSET_TYPES = new Set(["Sprites", "Vectors", "Palette References"]);
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -218,6 +218,39 @@ test("Assets source controls require real upload filenames and valid references"
     await editRow.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Reference" })).toBeVisible();
 
+    await page.getByRole("button", { name: "Add Data" }).click();
+    editRow = page.locator("[data-asset-tool-editing-row='__new__:Data']");
+    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Upload", "Reference"]);
+    await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText(".json, .csv, or .txt");
+    await expect(editRow.getByLabel("Upload File")).toBeVisible();
+    await expect(editRow.getByLabel("Upload File")).toHaveAttribute("accept", /\.json/);
+    await expect(editRow.getByLabel("Upload File")).toHaveAttribute("accept", /\.csv/);
+    await expect(editRow.getByLabel("Upload File")).toHaveAttribute("accept", /\.txt/);
+    await editRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose an upload file before saving.");
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("2");
+    for (const fileName of ["source-data.json", "source-data.csv", "source-data.txt"]) {
+      await editRow.getByLabel("Upload File").setInputFiles({
+        buffer: Buffer.from("mock data"),
+        mimeType: "text/plain",
+        name: fileName
+      });
+      await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText(fileName);
+    }
+    await editRow.getByLabel("Usage").selectOption("Theme");
+    await editRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-data.txt" })).toBeVisible();
+
+    await page.getByRole("button", { name: "Add Data" }).click();
+    editRow = page.locator("[data-asset-tool-editing-row='__new__:Data']");
+    await editRow.getByLabel("Source").selectOption("Reference");
+    await expect(editRow.getByLabel("Reference")).toBeVisible();
+    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
+    await editRow.getByLabel("Reference").selectOption({ label: "source-data.txt" });
+    await editRow.getByLabel("Usage").selectOption("Interface");
+    await editRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Reference" }).filter({ hasText: "Interface" })).toBeVisible();
+
     await page.getByRole("button", { name: "Add Audio" }).click();
     editRow = page.locator("[data-asset-tool-editing-row='__new__:Audio']");
     await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
@@ -242,9 +275,28 @@ test("Assets source controls require real upload filenames and valid references"
     await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-font.woff2");
     await editRow.getByRole("button", { name: "Cancel" }).click();
 
+    await page.getByRole("button", { name: "Add Sprites" }).click();
+    editRow = page.locator("[data-asset-tool-editing-row='__new__:Sprites']");
+    await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
+    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Reference"]);
+    await expect(editRow.getByLabel("Reference")).toBeVisible();
+    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
+    await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText("Reference-only");
+    await editRow.getByRole("button", { name: "Cancel" }).click();
+
+    await page.getByRole("button", { name: "Add Vectors" }).click();
+    editRow = page.locator("[data-asset-tool-editing-row='__new__:Vectors']");
+    await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
+    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Reference"]);
+    await expect(editRow.getByLabel("Reference")).toBeVisible();
+    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
+    await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText("Reference-only");
+    await editRow.getByRole("button", { name: "Cancel" }).click();
+
     await page.getByRole("button", { name: "Add Palette References" }).click();
     editRow = page.locator("[data-asset-tool-editing-row='__new__:Palette References']");
     await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
+    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Reference"]);
     await expect(editRow.getByLabel("Reference")).toBeVisible();
     await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
     await expect(editRow).toContainText("No valid reference source exists.");

@@ -48,11 +48,11 @@ export const ASSET_ROLE_DEFINITIONS = Object.freeze([
     extensions: [".json", ".csv", ".txt"],
     mimeTypes: ["application/json", "text/csv", "text/plain"],
     previewBehavior: "Data/Table Tool managed preview",
-    uploadEnabled: false,
-    inputMode: "managed-tool",
+    uploadEnabled: true,
+    inputMode: "file",
     maxSizeBytes: 5242880,
     usageRoles: ["config", "table"],
-    validationNeeds: ["Data/Table Tool required", "Structured data must declare format"]
+    validationNeeds: ["Data files must use .json, .csv, or .txt", "Structured data must declare format"]
   },
   {
     id: "font",
@@ -228,7 +228,7 @@ function normalizeCatalogUsage(value) {
 }
 
 function isReferenceCatalogType(assetType) {
-  return assetType === "Palette References" || assetType === "Data";
+  return assetType === "Sprites" || assetType === "Vectors" || assetType === "Palette References";
 }
 
 function normalizeCatalogSourceMode(value) {
@@ -276,9 +276,6 @@ function roleDefinitionForId(roleId) {
 export function pickerDiagnosticForRole(role, paletteSnapshot = null) {
   if (!role) {
     return "Choose an approved asset role.";
-  }
-  if (role.id === "data") {
-    return "Data/Table Tool required.";
   }
   return `${role.label} file upload ready.`;
 }
@@ -1076,6 +1073,16 @@ export function createAssetToolMockRepository(options = {}) {
         field: "fileName",
         label: "File"
       });
+    }
+    if (assetType && source === UPLOAD_SOURCE_MODE && fileName) {
+      const role = roleDefinitionForId(catalogAssetRoleForType(assetType));
+      if (role && !extensionMatchesRole(role, fileName)) {
+        findings.push({
+          action: `Choose an approved ${assetType} file: ${role.extensions.join(", ")}.`,
+          field: "fileName",
+          label: "File"
+        });
+      }
     }
     if (!usage) {
       findings.push({

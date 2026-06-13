@@ -1,14 +1,14 @@
 Playwright V8 Coverage Report
 
-PR: PR_26163_072-assets-source-upload-reference-details
+PR: PR_26163_073-assets-source-rules-followup
 Coverage source: targeted Playwright/Chromium V8 coverage from tests/playwright/tools/AssetToolMockRepository.spec.mjs.
 Dependencies: no new npm packages.
 Thresholds: none enforced; coverage is advisory.
-Result: WARN only for dev-runtime code that is exercised by tests but not collectible by browser V8 runtime coverage.
+Result: PASS/WARN. Browser runtime coverage was collected for the changed Assets UI module; dev-runtime repository code is covered by assertions and API behavior but is not browser-collected V8 code.
 
 Changed runtime JavaScript files:
-(94%) toolbox/assets/assets.js - covered by targeted Assets Playwright; V8 reported executed lines 704/704 and executed functions 67/71.
+(96%) toolbox/assets/assets.js - covered by targeted Assets Playwright; V8 reported executed lines 725/725 and executed functions 69/72.
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARN: dev-runtime repository code is exercised by Node-side repository assertions and browser behavior through the API adapter, but it is not browser runtime JavaScript collected by Playwright V8 coverage.
 
 Changed non-runtime validation files:
-(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - Playwright spec updated for PR072 behavior; test files are not browser runtime coverage targets.
+(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - Playwright spec updated for PR073 behavior; test files are not browser runtime coverage targets.

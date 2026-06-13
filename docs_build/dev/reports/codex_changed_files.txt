@@ -1,4 +1,4 @@
-docs_build/dev/reports/PR_26163_072-assets-source-upload-reference-details.md
+docs_build/dev/reports/PR_26163_073-assets-source-rules-followup.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/playwright_v8_coverage_report.txt
 src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js

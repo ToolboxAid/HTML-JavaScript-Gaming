@@ -39,17 +39,26 @@ let editingAssetType = "";
 let selectedAssetId = "";
 const draftAssetValues = new Map();
 const draftTagKeys = new Map();
-const REFERENCE_ONLY_ASSET_TYPES = new Set(["Palette References", "Data"]);
+const REFERENCE_ONLY_ASSET_TYPES = new Set(["Sprites", "Vectors", "Palette References"]);
+const ALWAYS_MIXED_SOURCE_ASSET_TYPES = new Set(["Data"]);
 const UPLOAD_COLUMNS = Object.freeze(["Source", "File", "Usage", "Tags", "Preview", "Actions"]);
 const REFERENCE_COLUMNS = Object.freeze(["Source", "Reference", "Usage", "Tags", "Preview", "Actions"]);
 const UPLOAD_SOURCE = "Upload";
 const REFERENCE_SOURCE = "Reference";
 const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
   Audio: "audio/*,.mp3,.wav,.ogg,.m4a",
+  Data: ".json,.csv,.txt,application/json,text/csv,text/plain",
   Fonts: ".ttf,.otf,.woff,.woff2",
-  Images: "image/*,.png,.jpg,.jpeg,.webp,.gif,.svg",
-  Sprites: "image/*,.png,.jpg,.jpeg,.webp,.gif",
-  Vectors: ".svg,image/svg+xml"
+  Images: "image/*,.png,.jpg,.jpeg,.webp,.gif,.svg"
+});
+const SOURCE_HELP_BY_ASSET_TYPE = Object.freeze({
+  Audio: "Audio can upload a sound file or reference an existing audio source.",
+  Data: "Data can upload .json, .csv, or .txt files, or reference an existing data source.",
+  Fonts: "Fonts upload font files; Reference appears when a font source exists.",
+  Images: "Images can upload an image file or reference an existing image source.",
+  "Palette References": "Palette References must reference a palette swatch.",
+  Sprites: "Sprites are Reference-only for MVP.",
+  Vectors: "Vectors are Reference-only for MVP."
 });
 
 function normalizeText(value) {
@@ -220,6 +229,9 @@ function sourceOptionsForAssetType(assetType, referenceOptions, selectedSource) 
   if (isReferenceAssetType(assetType)) {
     return [REFERENCE_SOURCE];
   }
+  if (ALWAYS_MIXED_SOURCE_ASSET_TYPES.has(assetType)) {
+    return [UPLOAD_SOURCE, REFERENCE_SOURCE];
+  }
   if (referenceOptions.length > 0 || selectedSource === REFERENCE_SOURCE) {
     return [UPLOAD_SOURCE, REFERENCE_SOURCE];
   }
@@ -229,6 +241,16 @@ function sourceOptionsForAssetType(assetType, referenceOptions, selectedSource) 
 function createSourceSelect(assetType, selectedSource, referenceOptions) {
   const options = sourceOptionsForAssetType(assetType, referenceOptions, selectedSource);
   return createSelect("Source", "assetToolSourceInput", options, selectedSource);
+}
+
+function createSourceControl(assetType, selectedSource, referenceOptions) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "content-stack content-stack--compact";
+  const help = document.createElement("span");
+  help.dataset.assetToolSourceHelp = "true";
+  help.textContent = SOURCE_HELP_BY_ASSET_TYPE[assetType] || "Choose how this asset source is created.";
+  wrapper.append(createSourceSelect(assetType, selectedSource, referenceOptions), help);
+  return wrapper;
 }
 
 function createFileUploadControl(assetType, selectedFileName) {
@@ -373,7 +395,7 @@ function createEditRow(assetType, asset = null, snapshot = {}) {
   }
 
   const sourceCell = document.createElement("td");
-  sourceCell.append(createSourceSelect(assetType, selectedSource, referenceOptions));
+  sourceCell.append(createSourceControl(assetType, selectedSource, referenceOptions));
 
   const detailCell = document.createElement("td");
   if (selectedSource === REFERENCE_SOURCE) {
@@ -603,8 +625,8 @@ function renderMetadata(snapshot) {
     `Tags: ${assetTags(asset).map((tagKey) => tagNameForKey(snapshot.tags || [], tagKey)).join(", ") || "No tags"}`,
     `Stored path: ${asset.storedPath || asset.path}`,
   ];
-  if (isReferenceAssetType(asset.assetType || asset.type)) {
-    metadataLines.splice(1, 0, `Reference: ${assetReference(asset)}`);
+  if (assetSource(asset) === REFERENCE_SOURCE) {
+    metadataLines.splice(1, 0, `Source: ${REFERENCE_SOURCE}`, `Reference: ${assetReference(asset)}`);
   } else {
     metadataLines.splice(1, 0, `Source: ${assetSource(asset)}`, `File: ${assetFile(asset)}`);
   }
