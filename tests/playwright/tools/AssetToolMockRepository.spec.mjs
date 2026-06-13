@@ -416,8 +416,80 @@ test("Assets upload writes to the project folder before creating a record and Im
   }
 });
 
-test("Assets worker upload progress is byte accurate and keeps the UI responsive", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=180&uploadChunkSizeBytes=8", {
+test("Assets Trash deletes uploaded records and physical files with scoped failure handling", async ({ page }) => {
+  resetProjectAssetFolder("image");
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+    sessionModeId: "local-db",
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const row = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await row.getByLabel("Usage").selectOption("Character");
+    await row.getByLabel("Upload File").setInputFiles(uploadFile("trash-delete-ok.png", "image/png", SMALL_PNG));
+
+    const writtenFile = projectAssetPath("image", "trash-delete-ok.png");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-ok.png" })).toBeVisible();
+    expect(existsSync(writtenFile)).toBe(true);
+
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-ok.png" }).getByRole("button", { name: "Trash" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toContainText(`Deleted file projects/${DEMO_ASSET_PROJECT_ID}/image/trash-delete-ok.png.`);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-ok.png" })).toHaveCount(0);
+    expect(existsSync(writtenFile)).toBe(false);
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const missingRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await missingRow.getByLabel("Usage").selectOption("Character");
+    await missingRow.getByLabel("Upload File").setInputFiles(uploadFile("trash-delete-missing.png", "image/png", SMALL_PNG));
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-missing.png" })).toBeVisible();
+    const missingFile = projectAssetPath("image", "trash-delete-missing.png");
+    expect(existsSync(missingFile)).toBe(true);
+    rmSync(missingFile, { force: true });
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-missing.png" }).getByRole("button", { name: "Trash" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toContainText("FAIL: Upload file delete failed");
+    await expect(page.locator("[data-asset-tool-log]")).toContainText("trash-delete-missing.png does not exist");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-missing.png" })).toHaveCount(1);
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Assets Trash rejects uploaded delete paths outside projects", async ({ page }) => {
+  resetProjectAssetFolder("image");
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?deletePath=escape", {
+    sessionModeId: "local-db",
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const row = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await row.getByLabel("Usage").selectOption("Character");
+    await row.getByLabel("Upload File").setInputFiles(uploadFile("trash-delete-escape.png", "image/png", SMALL_PNG));
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-escape.png" })).toBeVisible();
+    const writtenFile = projectAssetPath("image", "trash-delete-escape.png");
+    expect(existsSync(writtenFile)).toBe(true);
+
+    await page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-escape.png" }).getByRole("button", { name: "Trash" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toContainText("FAIL: Upload file delete failed: target path must stay under /projects/<projectId>/.");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "trash-delete-escape.png" })).toHaveCount(1);
+    expect(existsSync(writtenFile)).toBe(true);
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Assets worker keeps UI responsive while server-received upload progress drives the meter", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=0&uploadChunkSizeBytes=8&serverReceiveChunkSizeBytes=8", {
     sessionModeId: "local-db",
     sessionUserKey: MOCK_DB_KEYS.users.user1
   });
@@ -429,25 +501,55 @@ test("Assets worker upload progress is byte accurate and keeps the UI responsive
     await page.getByRole("button", { name: "Add Images" }).click();
     const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
     await editRow.getByLabel("Usage").selectOption("Character");
-    const workerPromise = page.waitForEvent("worker");
-    await editRow.getByLabel("Upload File").setInputFiles(uploadFile("worker-progress.png", "image/png", Buffer.alloc(64, 7)));
-    const worker = await workerPromise;
-    expect(worker.url()).toContain("toolbox/assets/assets-upload-worker.js");
-
     const imagesAccordion = page.locator("[data-asset-type-accordion='Images']");
     const audioAccordion = page.locator("[data-asset-type-accordion='Audio']");
     const inlineProgress = imagesAccordion.locator("[data-asset-tool-inline-upload-progress='Images']");
     const progressBar = inlineProgress.locator("[data-asset-tool-inline-upload-progress-bar]");
+
+    await page.evaluate(() => {
+      window.__assetServerProgressEvents = [];
+      const readProgress = () => {
+        const container = document.querySelector("[data-asset-tool-inline-upload-progress='Images']");
+        const progress = container?.querySelector("[data-asset-tool-inline-upload-progress-bar]");
+        const bytes = container?.querySelector("[data-asset-tool-inline-upload-bytes-uploaded]")?.textContent || "";
+        const updates = container?.dataset.assetToolServerReceiveUpdates || "0";
+        const value = Number(progress?.value) || 0;
+        const last = window.__assetServerProgressEvents.at(-1);
+        if (!last || last.bytes !== bytes || last.updates !== updates || last.value !== value) {
+          window.__assetServerProgressEvents.push({
+            at: Date.now(),
+            bytes,
+            updates,
+            value
+          });
+        }
+      };
+      const observer = new MutationObserver(readProgress);
+      observer.observe(document.body, {
+        attributes: true,
+        childList: true,
+        characterData: true,
+        subtree: true
+      });
+      readProgress();
+      window.__assetServerProgressObserver = observer;
+    });
+
+    const workerPromise = page.waitForEvent("worker");
+    await editRow.getByLabel("Upload File").setInputFiles(uploadFile("worker-progress.png", "image/png", Buffer.alloc(48, 7)));
+    const worker = await workerPromise;
+    expect(worker.url()).toContain("toolbox/assets/assets-upload-worker.js");
+
     await expect(inlineProgress).toBeVisible();
-    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-worker]")).toHaveText("Active");
     await expect(progressBar).toHaveJSProperty("value", 0);
     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-bytes-uploaded]")).toHaveText("0 B");
+    await expect(inlineProgress).toHaveAttribute("data-asset-tool-server-receive-updates", "0");
 
-    await expect.poll(() => progressValue(progressBar), { timeout: 5000 }).toBeGreaterThan(0);
-    const firstProgress = await progressValue(progressBar);
-    expect(firstProgress).not.toBe(50);
-    expect(firstProgress).toBeLessThan(50);
-    await expect.poll(() => progressValue(progressBar), { timeout: 5000 }).toBeGreaterThan(firstProgress);
+    await expect.poll(async () =>
+      Number(await inlineProgress.getAttribute("data-asset-tool-server-receive-updates")) || 0,
+      { timeout: 3500 }
+    ).toBeGreaterThanOrEqual(1);
+    expect(await progressValue(progressBar)).toBeLessThan(100);
     await expect.poll(async () => Number(await inlineProgress.locator("[data-asset-tool-inline-upload-bps]").textContent()) || 0).toBeGreaterThan(0);
     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-speed]")).toContainText("/s");
     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-eta]")).toContainText("s");
@@ -465,6 +567,24 @@ test("Assets worker upload progress is byte accurate and keeps the UI responsive
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-worker]")).toHaveText("Complete");
     await expect(progressBar).toHaveJSProperty("value", 100);
+    const progressEvents = await page.evaluate(() => {
+      window.__assetServerProgressObserver?.disconnect?.();
+      const seen = new Set();
+      return (window.__assetServerProgressEvents || []).filter((event) => {
+        const updates = Number(event.updates) || 0;
+        if (updates <= 0 || seen.has(updates)) {
+          return false;
+        }
+        seen.add(updates);
+        return true;
+      });
+    });
+    expect(progressEvents.length).toBeGreaterThanOrEqual(2);
+    expect(progressEvents[0].bytes).toBe("8 B");
+    expect(progressEvents[0].value).toBe(16);
+    expect(progressEvents[1].bytes).toBe("16 B");
+    expect(progressEvents[1].value).toBe(33);
+    expect(progressEvents[1].at - progressEvents[0].at).toBeGreaterThanOrEqual(900);
     await expect(inlineProgress.locator("[data-asset-tool-upload-status='OK']")).toContainText("worker-progress.png");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "worker-progress.png" })).toHaveCount(1);
 
@@ -584,7 +704,10 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
       uploadFile("batch-status-ok.png", "image/png", "duplicate image ok"),
       uploadFile("batch-status-late.png", "image/png", "image late")
     ], "Icon");
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 3 written, 1 failed, 1 skipped, 1 warnings.");
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText(
+      "Batch upload complete: 3 written, 1 failed, 1 skipped, 1 warnings.",
+      { timeout: 20000 }
+    );
     await expect(page.locator("[data-asset-tool-batch-summary]")).toContainText("2 OK, 1 WARN, 1 FAIL, 1 SKIP");
     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("3");
     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("1");
@@ -930,7 +1053,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await page.goto(`${failures.server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toBeVisible();
     await page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" }).getByRole("button", { name: "Trash" }).click();
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Deleted hero-portrait.png from your asset library.");
+    await expect(page.locator("[data-asset-tool-log]")).toContainText("Deleted hero-portrait.png from your asset library.");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toHaveCount(0);
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 

@@ -21,6 +21,9 @@ if (params.get("uploadWrite") === "unsupported") {
 if (isLocalDevRuntime() && params.get("uploadPath") === "escape") {
   repository.setUnsafeUploadPathForTest(true);
 }
+if (isLocalDevRuntime() && params.get("deletePath") === "escape") {
+  repository.setUnsafeDeletePathForTest(true);
+}
 
 const elements = {
   accordions: document.querySelector("[data-asset-type-accordions]"),
@@ -85,6 +88,7 @@ const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
 });
 const DEFAULT_UPLOAD_CHUNK_SIZE_BYTES = 64 * 1024;
 const MAX_UPLOAD_CHUNK_SIZE_BYTES = 1024 * 1024;
+const SERVER_RECEIVE_PROGRESS_INTERVAL_MS = 1000;
 const UPLOAD_WORKER_URL = new URL("./assets-upload-worker.js", import.meta.url);
 
 function isLocalDevRuntime() {
@@ -105,6 +109,7 @@ function devUploadProgressStepMs() {
 
 const UPLOAD_PROGRESS_STEP_MS = devUploadProgressStepMs();
 const UPLOAD_CHUNK_SIZE_BYTES = devUploadChunkSizeBytes();
+const SERVER_RECEIVE_CHUNK_SIZE_BYTES = devServerReceiveChunkSizeBytes();
 const SOURCE_HELP_BY_ASSET_TYPE = Object.freeze({
   Audio: "Audio can upload a sound file or reference an existing audio source.",
   Data: "Data can upload .json, .csv, or .txt files, or reference an existing data source.",
@@ -120,6 +125,17 @@ function devUploadChunkSizeBytes() {
     return DEFAULT_UPLOAD_CHUNK_SIZE_BYTES;
   }
   const requestedChunkSize = Number(params.get("uploadChunkSizeBytes"));
+  if (Number.isFinite(requestedChunkSize) && requestedChunkSize > 0) {
+    return Math.min(MAX_UPLOAD_CHUNK_SIZE_BYTES, Math.floor(requestedChunkSize));
+  }
+  return DEFAULT_UPLOAD_CHUNK_SIZE_BYTES;
+}
+
+function devServerReceiveChunkSizeBytes() {
+  if (!isLocalDevRuntime()) {
+    return DEFAULT_UPLOAD_CHUNK_SIZE_BYTES;
+  }
+  const requestedChunkSize = Number(params.get("serverReceiveChunkSizeBytes"));
   if (Number.isFinite(requestedChunkSize) && requestedChunkSize > 0) {
     return Math.min(MAX_UPLOAD_CHUNK_SIZE_BYTES, Math.floor(requestedChunkSize));
   }
@@ -562,6 +578,12 @@ function uploadDelay() {
   });
 }
 
+function serverReceiveDelay() {
+  return new Promise((resolve) => {
+    window.setTimeout(resolve, SERVER_RECEIVE_PROGRESS_INTERVAL_MS);
+  });
+}
+
 function totalUploadBytes(files) {
   return files.reduce((total, file) => {
     const size = Number(file.size);
@@ -571,12 +593,14 @@ function totalUploadBytes(files) {
 
 function createUploadState(files) {
   return {
-    bytesUploaded: 0,
+    clientBytesSent: 0,
     currentFile: "None",
     entries: [],
     fileCount: files.length,
     fileIndex: 0,
     phase: "Preparing",
+    serverBytesReceived: 0,
+    serverReceiveUpdateCount: 0,
     startedAt: performance.now(),
     totalBytes: totalUploadBytes(files),
     workerStatus: "Idle"
@@ -597,11 +621,12 @@ function updateUploadSummary(summary) {
 function uploadProgressMetrics(state) {
   const elapsedMilliseconds = Math.max(0, performance.now() - state.startedAt);
   const elapsedSeconds = elapsedMilliseconds / 1000;
-  const bps = elapsedSeconds > 0 ? Math.round(state.bytesUploaded / elapsedSeconds) : 0;
-  const remainingBytes = Math.max(0, state.totalBytes - state.bytesUploaded);
+  const bytesReceived = Math.max(0, Number(state.serverBytesReceived) || 0);
+  const bps = elapsedSeconds > 0 ? Math.round(bytesReceived / elapsedSeconds) : 0;
+  const remainingBytes = Math.max(0, state.totalBytes - bytesReceived);
   const etaMilliseconds = bps > 0 ? (remainingBytes / bps) * 1000 : NaN;
   const progressValue = state.totalBytes > 0
-    ? Math.min(100, Math.round((state.bytesUploaded / state.totalBytes) * 100))
+    ? Math.min(100, Math.floor((bytesReceived / state.totalBytes) * 100))
     : 0;
   return {
     bps,
@@ -663,11 +688,12 @@ function updateUploadDialog(state) {
   }
   elements.uploadDialog.hidden = false;
   elements.uploadDialog.dataset.assetToolUploadWorker = state.workerStatus || "Idle";
+  elements.uploadDialog.dataset.assetToolServerReceiveUpdates = String(state.serverReceiveUpdateCount || 0);
   const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
 
   setText(elements.uploadCurrentFile, state.currentFile);
   setText(elements.uploadFileProgress, `${state.fileIndex} / ${state.fileCount}`);
-  setText(elements.uploadBytesUploaded, formatBytes(state.bytesUploaded));
+  setText(elements.uploadBytesUploaded, formatBytes(state.serverBytesReceived));
   setText(elements.uploadTotalBytes, formatBytes(state.totalBytes));
   setText(elements.uploadBps, String(bps));
   setText(elements.uploadSpeed, `${formatBytes(bps)}/s`);
@@ -710,7 +736,7 @@ function createInlineUploadProgress(assetType) {
     createInlineUploadMetric("Phase", "assetToolInlineUploadPhase"),
     createInlineUploadMetric("Current file", "assetToolInlineUploadCurrentFile"),
     createInlineUploadMetric("Files", "assetToolInlineUploadFileProgress"),
-    createInlineUploadMetric("Bytes uploaded", "assetToolInlineUploadBytesUploaded"),
+    createInlineUploadMetric("Bytes received", "assetToolInlineUploadBytesUploaded"),
     createInlineUploadMetric("Total bytes", "assetToolInlineUploadTotalBytes"),
     createInlineUploadMetric("BPS", "assetToolInlineUploadBps"),
     createInlineUploadMetric("Speed", "assetToolInlineUploadSpeed"),
@@ -764,10 +790,11 @@ function populateInlineUploadProgress(container, state) {
   const summary = batchSummaryForEntries(state.entries);
   container.hidden = false;
   container.dataset.assetToolUploadWorker = state.workerStatus || "Idle";
+  container.dataset.assetToolServerReceiveUpdates = String(state.serverReceiveUpdateCount || 0);
   setText(container.querySelector("[data-asset-tool-inline-upload-phase]"), state.phase);
   setText(container.querySelector("[data-asset-tool-inline-upload-current-file]"), state.currentFile);
   setText(container.querySelector("[data-asset-tool-inline-upload-file-progress]"), `${state.fileIndex} / ${state.fileCount}`);
-  setText(container.querySelector("[data-asset-tool-inline-upload-bytes-uploaded]"), formatBytes(state.bytesUploaded));
+  setText(container.querySelector("[data-asset-tool-inline-upload-bytes-uploaded]"), formatBytes(state.serverBytesReceived));
   setText(container.querySelector("[data-asset-tool-inline-upload-total-bytes]"), formatBytes(state.totalBytes));
   setText(container.querySelector("[data-asset-tool-inline-upload-bps]"), String(bps));
   setText(container.querySelector("[data-asset-tool-inline-upload-speed]"), `${formatBytes(bps)}/s`);
@@ -837,7 +864,7 @@ function createUploadWorker() {
   return new Worker(UPLOAD_WORKER_URL, { type: "module" });
 }
 
-function processUploadFileInWorker(file, uploadState, startingBytes) {
+function processUploadFileInWorker(file, uploadState) {
   return new Promise((resolve, reject) => {
     let worker = null;
     const requestId = `asset-upload-${Date.now()}-${uploadWorkerRequestId += 1}`;
@@ -877,17 +904,14 @@ function processUploadFileInWorker(file, uploadState, startingBytes) {
         uploadState.workerStatus = "Active";
         uploadState.currentFile = message.fileName || fileName;
         uploadState.phase = "Uploading";
-        uploadState.bytesUploaded = Math.min(
-          uploadState.totalBytes,
-          startingBytes + Math.max(0, Number(message.bytesUploaded) || 0)
-        );
-        updateUploadDialog(uploadState);
+        uploadState.clientBytesSent = Math.max(0, Number(message.bytesUploaded) || 0);
         return;
       }
       if (message.type === "complete") {
-        uploadState.workerStatus = "Write Pending";
+        uploadState.clientBytesSent = Number(message.totalBytes) || uploadState.clientBytesSent;
+        uploadState.workerStatus = "Server Receiving";
         uploadState.currentFile = message.fileName || fileName;
-        uploadState.phase = "Writing";
+        uploadState.phase = "Receiving";
         updateUploadDialog(uploadState);
         cleanup();
         resolve(message.payload || {});
@@ -928,6 +952,35 @@ function batchInputForFile(row, assetType, file, payload) {
     name: file.name,
     source: UPLOAD_SOURCE
   };
+}
+
+async function receiveFileBytesFromServer(uploadState, startingBytes, fileSize) {
+  if (!Number.isFinite(fileSize) || fileSize <= 0) {
+    return false;
+  }
+
+  const receiveTargetBeforeWrite = Math.max(0, fileSize - 1);
+  let fileBytesReceived = 0;
+  uploadState.phase = "Receiving";
+  uploadState.workerStatus = "Server Receiving";
+  updateUploadDialog(uploadState);
+
+  while (fileBytesReceived < receiveTargetBeforeWrite) {
+    await serverReceiveDelay();
+    fileBytesReceived = Math.min(receiveTargetBeforeWrite, fileBytesReceived + SERVER_RECEIVE_CHUNK_SIZE_BYTES);
+    uploadState.serverBytesReceived = Math.min(uploadState.totalBytes, startingBytes + fileBytesReceived);
+    uploadState.serverReceiveUpdateCount += 1;
+    updateUploadDialog(uploadState);
+  }
+
+  return true;
+}
+
+function completeServerReceive(uploadState, startingBytes, fileSize) {
+  if (!Number.isFinite(fileSize) || fileSize <= 0) {
+    return;
+  }
+  uploadState.serverBytesReceived = Math.min(uploadState.totalBytes, startingBytes + fileSize);
 }
 
 function addBatchLogEntry(entries, entry, uploadState = null) {
@@ -991,11 +1044,11 @@ async function saveUploadBatch(row, assetType) {
 
     const fileSize = Number(file.size);
     const progressCalculable = Number.isFinite(fileSize) && fileSize > 0;
-    const startingBytes = uploadState.bytesUploaded;
+    const startingBytes = uploadState.serverBytesReceived;
 
     let batchInput = null;
     try {
-      const payload = await processUploadFileInWorker(file, uploadState, startingBytes);
+      const payload = await processUploadFileInWorker(file, uploadState);
       batchInput = batchInputForFile(row, assetType, file, payload);
     } catch (error) {
       uploadState.phase = "Failed";
@@ -1009,6 +1062,11 @@ async function saveUploadBatch(row, assetType) {
       await uploadDelay();
       continue;
     }
+
+    await receiveFileBytesFromServer(uploadState, startingBytes, fileSize);
+    uploadState.phase = "Writing";
+    uploadState.workerStatus = "Writing";
+    updateUploadDialog(uploadState);
 
     const result = repository.addAssetRecord(batchInput);
     if (!result.added) {
@@ -1026,7 +1084,7 @@ async function saveUploadBatch(row, assetType) {
     }
 
     if (progressCalculable) {
-      uploadState.bytesUploaded = Math.min(uploadState.totalBytes, startingBytes + fileSize);
+      completeServerReceive(uploadState, startingBytes, fileSize);
     }
     const status = progressCalculable ? "OK" : "WARN";
     uploadState.phase = status === "WARN" ? "Warning" : "Uploaded";

@@ -587,6 +587,7 @@ export function createAssetToolMockRepository(options = {}) {
   }
   let selectedAssetId = "";
   let uploadFileWritesEnabled = options.uploadFileWritesEnabled !== false;
+  let unsafeDeletePathForTest = false;
   let unsafeUploadPathForTest = false;
 
   function persistTables() {
@@ -889,20 +890,98 @@ export function createAssetToolMockRepository(options = {}) {
     });
   }
 
+  function catalogDeleteTargetPath(asset) {
+    const targetFilePath = asset?.storedPath || asset?.path || "";
+    if (!unsafeDeletePathForTest || !targetFilePath) {
+      return targetFilePath;
+    }
+    const normalizedProjectId = normalizeProjectId(asset.projectId);
+    const role = roleDefinitionForId(asset.assetRole || catalogAssetRoleForType(asset.assetType || asset.type));
+    return `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/${role?.storageFolder || "image"}/../outside/${sanitizeFileName(asset.fileName || asset.originalName || "asset")}`;
+  }
+
+  function createDeleteDiagnostics({
+    deleteResult = "",
+    deleted = false,
+    message = "",
+    ok = false,
+    projectId = "",
+    skipped = false,
+    targetFilePath = ""
+  } = {}) {
+    const normalizedFilePath = normalizeProjectRelativePath(targetFilePath);
+    return {
+      deleteResult,
+      deleted,
+      message,
+      ok,
+      projectId,
+      skipped,
+      targetFilePath: normalizedFilePath,
+      viewPath: normalizedFilePath
+    };
+  }
+
   function deletePhysicalAssetFile(asset) {
     if (!asset || asset.source !== UPLOAD_SOURCE_MODE) {
-      return false;
+      return createDeleteDiagnostics({
+        deleteResult: "SKIP: Reference asset",
+        message: "No uploaded physical file to delete.",
+        ok: true,
+        projectId: asset?.projectId || "",
+        skipped: true
+      });
     }
-    const resolved = resolveProjectRelativeFile(asset.storedPath || asset.path, asset.projectId);
-    if (resolved.error || !resolved.absolutePath || !existsSync(resolved.absolutePath)) {
-      return false;
+    const targetFilePath = catalogDeleteTargetPath(asset);
+    const resolved = resolveProjectRelativeFile(targetFilePath, asset.projectId);
+    if (resolved.error || !resolved.absolutePath) {
+      return createDeleteDiagnostics({
+        deleteResult: "FAIL: Unsafe target path",
+        message: resolved.error
+          ? "Upload file delete failed: target path must stay under /projects/<projectId>/."
+          : "Upload file delete failed: target path could not be resolved.",
+        ok: false,
+        projectId: asset.projectId,
+        targetFilePath: resolved.relativePath || targetFilePath
+      });
+    }
+    if (!existsSync(resolved.absolutePath)) {
+      return createDeleteDiagnostics({
+        deleteResult: "FAIL: Missing physical file",
+        message: `Upload file delete failed: ${resolved.relativePath} does not exist.`,
+        ok: false,
+        projectId: asset.projectId,
+        targetFilePath: resolved.relativePath
+      });
     }
     try {
       unlinkSync(resolved.absolutePath);
-      return true;
-    } catch {
-      return false;
+    } catch (error) {
+      return createDeleteDiagnostics({
+        deleteResult: "FAIL: Delete error",
+        message: `Upload file delete failed: ${error.message}`,
+        ok: false,
+        projectId: asset.projectId,
+        targetFilePath: resolved.relativePath
+      });
     }
+    if (existsSync(resolved.absolutePath)) {
+      return createDeleteDiagnostics({
+        deleteResult: "FAIL: File still exists",
+        message: `Upload file delete failed: ${resolved.relativePath} still exists after delete.`,
+        ok: false,
+        projectId: asset.projectId,
+        targetFilePath: resolved.relativePath
+      });
+    }
+    return createDeleteDiagnostics({
+      deleteResult: "Deleted",
+      deleted: true,
+      message: `Deleted file ${resolved.relativePath}.`,
+      ok: true,
+      projectId: asset.projectId,
+      targetFilePath: resolved.relativePath
+    });
   }
 
   function ownedAssetFilter(projectId = "") {
@@ -1871,6 +1950,24 @@ export function createAssetToolMockRepository(options = {}) {
       };
     }
 
+    const deleteDiagnostics = deletePhysicalAssetFile(asset);
+    if (!deleteDiagnostics.ok) {
+      replaceValidationRows(projectId, [
+        {
+          action: deleteDiagnostics.message,
+          field: "fileDelete",
+          label: "File Delete"
+        }
+      ]);
+      return {
+        assetId: asset.id,
+        deleted: false,
+        fileDeleteDiagnostics: deleteDiagnostics,
+        message: `FAIL: ${deleteDiagnostics.message}`,
+        snapshot: getSnapshot()
+      };
+    }
+
     tables.asset_library_items = tables.asset_library_items.filter((row) => row.id !== asset.id);
     tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.id !== asset.storageObjectId && row.assetId !== asset.id);
     tables.asset_import_events = tables.asset_import_events.filter((row) => row.assetId !== asset.id);
@@ -1882,7 +1979,10 @@ export function createAssetToolMockRepository(options = {}) {
     return {
       assetId: asset.id,
       deleted: true,
-      message: `Deleted ${asset.name} from your asset library.`,
+      fileDeleteDiagnostics: deleteDiagnostics,
+      message: deleteDiagnostics.deleted
+        ? `Deleted ${asset.name} from your asset library. ${deleteDiagnostics.message}`
+        : `Deleted ${asset.name} from your asset library.`,
       snapshot: getSnapshot()
     };
   }
@@ -1927,7 +2027,9 @@ export function createAssetToolMockRepository(options = {}) {
     const storageObjects = tables.asset_storage_objects.filter(
       (row) => ownedStorageObjectIds.has(row.id) && row.projectId === projectId && row.storedPath.startsWith(projectFolder)
     );
-    const deletedPhysicalFiles = ownedAssets.filter((asset) => deletePhysicalAssetFile(asset)).length;
+    const deletedPhysicalFiles = ownedAssets
+      .map((asset) => deletePhysicalAssetFile(asset))
+      .filter((result) => result.deleted).length;
     const deletedFiles = Math.max(storageObjects.length, deletedPhysicalFiles);
     const deletedFolders = localFolderCount(storageObjects);
 
@@ -1987,6 +2089,11 @@ export function createAssetToolMockRepository(options = {}) {
 
   function setUnsafeUploadPathForTest(enabled) {
     unsafeUploadPathForTest = enabled === true;
+    return getSnapshot();
+  }
+
+  function setUnsafeDeletePathForTest(enabled) {
+    unsafeDeletePathForTest = enabled === true;
     return getSnapshot();
   }
 
@@ -2119,6 +2226,7 @@ export function createAssetToolMockRepository(options = {}) {
     seedDemoAssets,
     seedActiveProjectPalette,
     selectAsset,
+    setUnsafeDeletePathForTest,
     setUnsafeUploadPathForTest,
     setUploadFileWriteSupport,
     updateAsset,

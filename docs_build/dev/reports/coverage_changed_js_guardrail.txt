@@ -6,19 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(67%) toolbox/assets/assets-api-client.js - executed lines 19/19; executed functions 2/3
-(96%) toolbox/assets/assets.js - executed lines 533/533; executed functions 52/54
-(100%) toolbox/tags/tags-api-client.js - executed lines 10/10; executed functions 2/2
-(100%) toolbox/tags/tags.js - executed lines 242/242; executed functions 19/19
+(0%) toolbox/assets/assets-upload-worker.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(93%) toolbox/assets/assets.js - executed lines 1567/1567; executed functions 129/139
 
 Guardrail warnings:
-(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/assets/assets-upload-worker.js - WARNING: changed runtime JS file missing from coverage; advisory only
