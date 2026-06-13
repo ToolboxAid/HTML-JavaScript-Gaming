@@ -3,6 +3,7 @@ import {
   ASSET_USAGE_OPTIONS,
   createAssetToolApiRepository
 } from "./assets-api-client.js";
+import { getSessionCurrent } from "../../src/engine/api/session-api-client.js";
 
 const repository = createAssetToolApiRepository();
 const params = new URLSearchParams(window.location.search);
@@ -23,11 +24,13 @@ const elements = {
   count: document.querySelector("[data-asset-tool-count]"),
   libraryStatus: document.querySelector("[data-asset-tool-library-status]"),
   log: document.querySelector("[data-asset-tool-log]"),
+  accountPrompt: document.querySelector("[data-asset-tool-account-prompt]"),
   batchLog: document.querySelector("[data-asset-tool-batch-log]"),
   metadata: document.querySelector("[data-asset-tool-metadata]"),
   outputMissing: document.querySelector("[data-asset-tool-output-missing]"),
   outputSummary: document.querySelector("[data-asset-tool-output-summary]"),
   outputValidation: document.querySelector("[data-asset-tool-output-validation]"),
+  projectPath: document.querySelector("[data-asset-tool-project-path]"),
   reset: document.querySelector("[data-asset-tool-reset]"),
   selected: document.querySelector("[data-asset-tool-selected]"),
   sharedTags: document.querySelector("[data-asset-tool-shared-tags]"),
@@ -62,7 +65,8 @@ const draftAssetValues = new Map();
 const draftTagKeys = new Map();
 const draftUploadPayloads = new Map();
 const REFERENCE_ONLY_ASSET_TYPES = new Set(["Sprites", "Vectors", "Palette References"]);
-const ALWAYS_MIXED_SOURCE_ASSET_TYPES = new Set(["Data"]);
+const MVP_DEFERRED_ADD_ASSET_TYPES = new Set(["Data", "Vectors"]);
+const ALWAYS_MIXED_SOURCE_ASSET_TYPES = new Set([]);
 const UPLOAD_COLUMNS = Object.freeze(["Source", "File", "Usage", "Tags", "Preview", "Actions"]);
 const REFERENCE_COLUMNS = Object.freeze(["Source", "Reference", "Usage", "Tags", "Preview", "Actions"]);
 const UPLOAD_SOURCE = "Upload";
@@ -95,6 +99,31 @@ function setText(target, value) {
   }
 }
 
+function currentSession() {
+  try {
+    return getSessionCurrent();
+  } catch {
+    return { authenticated: false };
+  }
+}
+
+function isGuestSession() {
+  return currentSession()?.authenticated !== true;
+}
+
+function showAccountPrompt() {
+  if (elements.accountPrompt) {
+    elements.accountPrompt.hidden = false;
+  }
+  setText(elements.log, "Uploads require a Game Foundry account.");
+}
+
+function hideAccountPrompt() {
+  if (elements.accountPrompt) {
+    elements.accountPrompt.hidden = true;
+  }
+}
+
 function createCell(text) {
   const cell = document.createElement("td");
   cell.textContent = text;
@@ -108,6 +137,10 @@ function createButton(label, datasetName, value) {
   button.dataset[datasetName] = value;
   button.textContent = label;
   return button;
+}
+
+function addButtonLabelForType(assetType) {
+  return assetType === "Vectors" ? "Add Vector" : `Add ${assetType}`;
 }
 
 function createInput(value, label, datasetName) {
@@ -177,11 +210,22 @@ function assetFile(asset) {
 }
 
 function assetPreview(asset) {
-  return normalizeText(asset?.viewPath || asset?.storedPath || asset?.path || asset?.previewKind) || "Preview ready";
+  const fullPath = assetViewPath(asset);
+  const projectId = normalizeText(asset?.projectId || "");
+  const prefix = projectId ? `projects/${projectId}/` : "";
+  if (fullPath && prefix && fullPath.startsWith(prefix)) {
+    return fullPath.slice(prefix.length);
+  }
+  return fullPath || normalizeText(asset?.previewKind) || "Preview ready";
 }
 
 function assetViewPath(asset) {
   return normalizeText(asset?.viewPath || asset?.storedPath || asset?.path);
+}
+
+function projectPathForSnapshot(snapshot = {}) {
+  const projectId = normalizeText(snapshot.handoff?.activeProject?.id || "");
+  return projectId ? `projects/${projectId}/` : "projects/";
 }
 
 function uploadDiagnosticsText(diagnostics = {}) {
@@ -625,6 +669,11 @@ function addBatchLogEntry(entries, entry, uploadState = null) {
 }
 
 async function saveUploadBatch(row, assetType) {
+  if (isGuestSession()) {
+    showAccountPrompt();
+    return false;
+  }
+  hideAccountPrompt();
   const files = selectedUploadFiles(row).length ? selectedUploadFiles(row) : uploadPayloadsForEditRow(row);
   const uploadState = createUploadState(files);
   const seenNames = new Set();
@@ -732,6 +781,7 @@ async function saveUploadBatch(row, assetType) {
   const totalSaved = batchWrittenCount(summary);
   setText(elements.log, `Batch upload complete: ${totalSaved} written, ${summary.fail} failed, ${summary.skip} skipped, ${summary.warn} warnings.`);
   render();
+  return summary.fail === 0 && summary.skip === 0;
 }
 
 function editedRowForControl(control) {
@@ -986,8 +1036,14 @@ function createAssetTypeAccordion(assetType, assets, snapshot) {
 
   const actions = document.createElement("div");
   actions.className = "action-group";
-  const addButton = createButton(`Add ${assetType}`, "assetToolAddType", assetType);
-  addButton.disabled = editingAssetId === `__new__:${assetType}`;
+  const addButton = createButton(addButtonLabelForType(assetType), "assetToolAddType", assetType);
+  if (MVP_DEFERRED_ADD_ASSET_TYPES.has(assetType)) {
+    addButton.disabled = true;
+    addButton.title = "Planned";
+    addButton.dataset.assetToolPlanned = "true";
+  } else {
+    addButton.disabled = editingAssetId === `__new__:${assetType}`;
+  }
   actions.append(addButton);
 
   body.append(actions, createAssetTypeTable(assetType, assets, snapshot));
@@ -1107,6 +1163,7 @@ function renderMetadata(snapshot) {
 function renderOutput(snapshot) {
   const assetCount = snapshot.assets.length;
   const missing = snapshot.validation.findings.map((finding) => finding.label).join(", ");
+  setText(elements.projectPath, `Path: ${projectPathForSnapshot(snapshot)}`);
   setText(elements.count, String(assetCount));
   setText(elements.tagCount, String(snapshot.tags.length));
   setText(elements.libraryStatus, assetCount > 0 ? "Ready" : "Needs Input");
@@ -1142,6 +1199,37 @@ function clearEditState() {
   draftAssetValues.clear();
   draftTagKeys.clear();
   draftUploadPayloads.clear();
+}
+
+async function saveSingleAssetRow(row, assetType, saveTarget) {
+  if (isGuestSession()) {
+    showAccountPrompt();
+    return null;
+  }
+  hideAccountPrompt();
+  let values = null;
+  try {
+    values = await assetRowValuesForSave(row, assetType);
+  } catch (error) {
+    setText(elements.log, error instanceof Error ? error.message : "Upload file read failed.");
+    render();
+    return null;
+  }
+  const result = saveTarget === "__new__"
+    ? repository.addAssetRecord(values)
+    : repository.updateAssetRecord(saveTarget, values);
+  if (result.added || result.updated) {
+    selectedAssetId = result.asset.id;
+    clearEditState();
+  }
+  setText(
+    elements.log,
+    result.writeDiagnostics && !(result.added || result.updated)
+      ? `${result.message} ${uploadDiagnosticsText(result.writeDiagnostics)}`
+      : result.message
+  );
+  render();
+  return result;
 }
 
 elements.accordions?.addEventListener("click", async (event) => {
@@ -1223,28 +1311,7 @@ elements.accordions?.addEventListener("click", async (event) => {
       await saveUploadBatch(row, assetType);
       return;
     }
-    let values = null;
-    try {
-      values = await assetRowValuesForSave(row, assetType);
-    } catch (error) {
-      setText(elements.log, error instanceof Error ? error.message : "Upload file read failed.");
-      render();
-      return;
-    }
-    const result = save.dataset.assetToolSave === "__new__"
-      ? repository.addAssetRecord(values)
-      : repository.updateAssetRecord(save.dataset.assetToolSave, values);
-    if (result.added || result.updated) {
-      selectedAssetId = result.asset.id;
-      clearEditState();
-    }
-    setText(
-      elements.log,
-      result.writeDiagnostics && !(result.added || result.updated)
-        ? `${result.message} ${uploadDiagnosticsText(result.writeDiagnostics)}`
-        : result.message
-    );
-    render();
+    await saveSingleAssetRow(row, assetType, save.dataset.assetToolSave);
     return;
   }
 
@@ -1282,6 +1349,24 @@ elements.accordions?.addEventListener("change", async (event) => {
     const row = editedRowForControl(fileInput);
     const files = selectedUploadFiles(row);
     const fileName = files[0]?.name || "";
+    const display = row?.querySelector("[data-asset-tool-selected-file]");
+    if (display) {
+      display.textContent = fileSelectionLabel(files);
+    }
+    updateDraftValues(row, {
+      fileName,
+      reference: "",
+      source: UPLOAD_SOURCE
+    });
+    if (!files.length) {
+      setUploadPayloadsForEditRow(row, []);
+      setText(elements.log, "No upload file selected.");
+      return;
+    }
+    if (isGuestSession()) {
+      showAccountPrompt();
+      return;
+    }
     try {
       const payloads = await Promise.all(files.map(async (file) => ({
         ...(await uploadPayloadForFile(file)),
@@ -1294,16 +1379,13 @@ elements.accordions?.addEventListener("change", async (event) => {
       setText(elements.log, error instanceof Error ? error.message : "Upload file read failed.");
       return;
     }
-    updateDraftValues(row, {
-      fileName,
-      reference: "",
-      source: UPLOAD_SOURCE
-    });
-    const display = row?.querySelector("[data-asset-tool-selected-file]");
-    if (display) {
-      display.textContent = fileSelectionLabel(files);
+    setText(elements.log, files.length > 1 ? `Selected ${files.length} upload files.` : `Selected upload file ${fileName}.`);
+    const assetType = row?.dataset.assetToolAssetType || editingAssetType;
+    if (files.length > 1) {
+      await saveUploadBatch(row, assetType);
+    } else {
+      await saveSingleAssetRow(row, assetType, row?.dataset.assetToolEditingRow === `__new__:${assetType}` ? "__new__" : row?.dataset.assetToolEditingRow || "__new__");
     }
-    setText(elements.log, files.length > 1 ? `Selected ${files.length} upload files.` : (fileName ? `Selected upload file ${fileName}.` : "No upload file selected."));
     return;
   }
 

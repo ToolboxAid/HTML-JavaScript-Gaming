@@ -55,9 +55,9 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
+async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1, modeId = "local-mem") {
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: "local-mem" }),
+    body: JSON.stringify({ modeId }),
     headers: { "Content-Type": "application/json" },
     method: "POST"
   });
@@ -95,7 +95,10 @@ async function openRepoPage(page, pathName, options = {}) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
-  await setServerSession(server, options.sessionUserKey || MOCK_DB_KEYS.users.user1);
+  const sessionUserKey = Object.prototype.hasOwnProperty.call(options, "sessionUserKey")
+    ? options.sessionUserKey
+    : MOCK_DB_KEYS.users.user1;
+  await setServerSession(server, sessionUserKey, options.sessionModeId || "local-mem");
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, pageErrors, server };
@@ -146,15 +149,17 @@ function zeroByteUploadFile(name, mimeType) {
   };
 }
 
+function addButtonNameForType(assetType) {
+  return assetType === "Vectors" ? "Add Vector" : `Add ${assetType}`;
+}
+
 async function addUploadBatch(page, assetType, files, usage = "Interface") {
   await page.getByRole("button", { name: `Add ${assetType}` }).click();
   const editRow = page.locator(`[data-asset-tool-editing-row='__new__:${assetType}']`);
   await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
   await expect(editRow.getByLabel("Upload File")).toHaveJSProperty("multiple", true);
-  await editRow.getByLabel("Upload File").setInputFiles(files);
-  await expect(editRow.locator("[data-asset-tool-selected-file]")).toContainText(files[0].name);
   await editRow.getByLabel("Usage").selectOption(usage);
-  await editRow.getByRole("button", { name: "Save" }).click();
+  await editRow.getByLabel("Upload File").setInputFiles(files);
   return editRow;
 }
 
@@ -254,14 +259,13 @@ test("Assets source controls require real upload filenames and valid references"
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose an upload file before saving.");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
+    await editRow.getByLabel("Usage").selectOption("Character");
     await editRow.getByLabel("Upload File").setInputFiles({
       buffer: Buffer.from("mock image"),
       mimeType: "image/png",
       name: "source-image.png"
     });
-    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-image.png");
-    await editRow.getByLabel("Usage").selectOption("Character");
-    await editRow.getByRole("button", { name: "Save" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added source-image.png to Images.");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-image.png" })).toBeVisible();
 
     await page.getByRole("button", { name: "Add Images" }).click();
@@ -275,74 +279,37 @@ test("Assets source controls require real upload filenames and valid references"
     await editRow.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Reference" })).toBeVisible();
 
-    await page.getByRole("button", { name: "Add Data" }).click();
-    editRow = page.locator("[data-asset-tool-editing-row='__new__:Data']");
-    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Upload", "Reference"]);
-    await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText(".json, .csv, or .txt");
-    await expect(editRow.getByLabel("Upload File")).toBeVisible();
-    await expect(editRow.getByLabel("Upload File")).toHaveAttribute("accept", /\.json/);
-    await expect(editRow.getByLabel("Upload File")).toHaveAttribute("accept", /\.csv/);
-    await expect(editRow.getByLabel("Upload File")).toHaveAttribute("accept", /\.txt/);
-    await editRow.getByRole("button", { name: "Save" }).click();
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose an upload file before saving.");
-    await expect(page.locator("[data-asset-tool-count]")).toHaveText("2");
-    for (const fileName of ["source-data.json", "source-data.csv", "source-data.txt"]) {
-      await editRow.getByLabel("Upload File").setInputFiles({
-        buffer: Buffer.from("mock data"),
-        mimeType: "text/plain",
-        name: fileName
-      });
-      await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText(fileName);
-    }
-    await editRow.getByLabel("Usage").selectOption("Theme");
-    await editRow.getByRole("button", { name: "Save" }).click();
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-data.txt" })).toBeVisible();
-
-    await page.getByRole("button", { name: "Add Data" }).click();
-    editRow = page.locator("[data-asset-tool-editing-row='__new__:Data']");
-    await editRow.getByLabel("Source").selectOption("Reference");
-    await expect(editRow.getByLabel("Reference")).toBeVisible();
-    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
-    await editRow.getByLabel("Reference").selectOption({ label: "source-data.txt" });
-    await editRow.getByLabel("Usage").selectOption("Interface");
-    await editRow.getByRole("button", { name: "Save" }).click();
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "Reference" }).filter({ hasText: "Interface" })).toBeVisible();
+    await expect(page.getByRole("button", { name: "Add Data" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Add Data" })).toHaveAttribute("title", "Planned");
+    await expect(page.getByRole("button", { name: "Add Vector" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Add Vector" })).toHaveAttribute("title", "Planned");
 
     await page.getByRole("button", { name: "Add Audio" }).click();
     editRow = page.locator("[data-asset-tool-editing-row='__new__:Audio']");
     await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
     await expect(editRow.getByLabel("Upload File")).toBeVisible();
+    await editRow.getByLabel("Usage").selectOption("Music");
     await editRow.getByLabel("Upload File").setInputFiles({
       buffer: Buffer.from("mock audio"),
       mimeType: "audio/wav",
       name: "source-audio.wav"
     });
-    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-audio.wav");
-    await editRow.getByRole("button", { name: "Cancel" }).click();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-audio.wav" })).toBeVisible();
 
     await page.getByRole("button", { name: "Add Fonts" }).click();
     editRow = page.locator("[data-asset-tool-editing-row='__new__:Fonts']");
     await expect(editRow.getByLabel("Source")).toHaveValue("Upload");
     await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Upload"]);
+    await editRow.getByLabel("Usage").selectOption("Font");
     await editRow.getByLabel("Upload File").setInputFiles({
       buffer: Buffer.from("mock font"),
       mimeType: "font/woff2",
       name: "source-font.woff2"
     });
-    await expect(editRow.locator("[data-asset-tool-selected-file]")).toHaveText("source-font.woff2");
-    await editRow.getByRole("button", { name: "Cancel" }).click();
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "source-font.woff2" })).toBeVisible();
 
     await page.getByRole("button", { name: "Add Sprites" }).click();
     editRow = page.locator("[data-asset-tool-editing-row='__new__:Sprites']");
-    await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
-    await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Reference"]);
-    await expect(editRow.getByLabel("Reference")).toBeVisible();
-    await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
-    await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText("Reference-only");
-    await editRow.getByRole("button", { name: "Cancel" }).click();
-
-    await page.getByRole("button", { name: "Add Vectors" }).click();
-    editRow = page.locator("[data-asset-tool-editing-row='__new__:Vectors']");
     await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
     await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Reference"]);
     await expect(editRow.getByLabel("Reference")).toBeVisible();
@@ -372,20 +339,27 @@ test("Assets upload writes to the project folder before creating a record and Im
   expect(existsSync(projectAssetPath("image"))).toBe(false);
 
   const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+    sessionModeId: "local-db",
     sessionUserKey: MOCK_DB_KEYS.users.user1
   });
 
   try {
     await page.getByRole("button", { name: "Reset Asset Library" }).click();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+    const projectPath = page.locator("[data-asset-tool-project-path]");
+    await expect(projectPath).toHaveText(`Path: projects/${DEMO_ASSET_PROJECT_ID}/`);
+    await expect.poll(() => projectPath.evaluate((node) => getComputedStyle(node).textAlign)).toBe("center");
+    const projectPathBox = await projectPath.boundingBox();
+    const imagesAccordionBox = await page.locator("[data-asset-type-accordion='Images']").boundingBox();
+    expect(projectPathBox?.y || 0).toBeLessThan(imagesAccordionBox?.y || Number.POSITIVE_INFINITY);
 
     await page.getByRole("button", { name: "Add Images" }).click();
     const newRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
-    await newRow.getByLabel("Upload File").setInputFiles(uploadFile("write-view-image.png", "image/png", SMALL_PNG));
     await newRow.getByLabel("Usage").selectOption("Character");
-    await newRow.getByRole("button", { name: "Save" }).click();
+    await newRow.getByLabel("Upload File").setInputFiles(uploadFile("write-view-image.png", "image/png", SMALL_PNG));
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" })).toBeVisible();
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" })).toContainText("image/write-view-image.png");
 
     const writtenFile = projectAssetPath("image", "write-view-image.png");
     expect(existsSync(projectAssetPath("image"))).toBe(true);
@@ -394,6 +368,7 @@ test("Assets upload writes to the project folder before creating a record and Im
 
     await page.locator("[data-asset-tool-row]").filter({ hasText: "write-view-image.png" }).getByRole("button", { name: "View" }).click();
     const metadata = page.locator("[data-asset-tool-metadata]");
+    await expect(metadata).toContainText(`Stored path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
     await expect(metadata).toContainText(`Project ID: ${DEMO_ASSET_PROJECT_ID}`);
     await expect(metadata).toContainText(`Target folder: projects/${DEMO_ASSET_PROJECT_ID}/image`);
     await expect(metadata).toContainText(`Target file path: projects/${DEMO_ASSET_PROJECT_ID}/image/write-view-image.png`);
@@ -422,12 +397,11 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
 
     await page.getByRole("button", { name: "Add Images" }).click();
     const firstImageRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await firstImageRow.getByLabel("Usage").selectOption("Character");
     await firstImageRow.getByLabel("Upload File").setInputFiles([
       uploadFile("batch-image-a.png", "image/png", "image a"),
       uploadFile("batch-image-b.png", "image/png", "image b")
     ]);
-    await firstImageRow.getByLabel("Usage").selectOption("Character");
-    await firstImageRow.getByRole("button", { name: "Save" }).click();
     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
     await expect(uploadDialog).toBeVisible();
     await expect(uploadDialog.locator("[data-asset-tool-upload-phase]")).toHaveText("Uploading");
@@ -501,19 +475,9 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/View path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2/);
     await expect(page.locator("[data-asset-tool-view-preview]")).toHaveAttribute("href", /projects\/[0-9A-HJKMNP-TV-Z]{26}\/font\/batch-font-a\.woff2$/);
 
-    await addUploadBatch(page, "Data", [
-      uploadFile("batch-data-a.json", "application/json", "{\"ok\":true}"),
-      uploadFile("batch-data-b.csv", "text/csv", "name,value")
-    ], "Theme");
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-a.json" })).toBeVisible();
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-b.csv" })).toBeVisible();
-    await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-data-a.json" }).getByRole("button", { name: "View" }).click();
-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json/);
-    await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/View path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json/);
-    await expect(page.locator("[data-asset-tool-view-preview]")).toHaveAttribute("href", /projects\/[0-9A-HJKMNP-TV-Z]{26}\/data\/batch-data-a\.json$/);
-    await expect(page.locator("[data-asset-tool-count]")).toHaveText("11");
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("9");
 
-    for (const assetType of ["Sprites", "Vectors", "Palette References"]) {
+    for (const assetType of ["Sprites", "Palette References"]) {
       await page.getByRole("button", { name: `Add ${assetType}` }).click();
       const editRow = page.locator(`[data-asset-tool-editing-row='__new__:${assetType}']`);
       await expect(editRow.getByLabel("Source")).toHaveValue("Reference");
@@ -537,12 +501,11 @@ test("Assets multi-file upload fails visibly when no current project id is avail
     await page.getByRole("button", { name: "Add Images" }).click();
     const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
     await expect(editRow.getByLabel("Upload File")).toHaveJSProperty("multiple", true);
+    await editRow.getByLabel("Usage").selectOption("Character");
     await editRow.getByLabel("Upload File").setInputFiles([
       uploadFile("missing-project-a.png", "image/png", "image a"),
       uploadFile("missing-project-b.png", "image/png", "image b")
     ]);
-    await editRow.getByLabel("Usage").selectOption("Character");
-    await editRow.getByRole("button", { name: "Save" }).click();
     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
     await expect(uploadDialog).toBeVisible();
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 1 skipped, 0 warnings.");
@@ -574,12 +537,11 @@ test("Assets upload write failure is visible and creates no asset record", async
 
     await page.getByRole("button", { name: "Add Images" }).click();
     const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await editRow.getByLabel("Usage").selectOption("Character");
     await editRow.getByLabel("Upload File").setInputFiles([
       uploadFile("unsupported-write-a.png", "image/png", SMALL_PNG),
       uploadFile("unsupported-write-b.png", "image/png", SMALL_PNG)
     ]);
-    await editRow.getByLabel("Usage").selectOption("Character");
-    await editRow.getByRole("button", { name: "Save" }).click();
 
     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
     await expect(uploadDialog).toBeVisible();
@@ -590,6 +552,35 @@ test("Assets upload write failure is visible and creates no asset record", async
     await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Write result: FAIL: Browser file writes are not supported");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "unsupported-write-a.png" })).toHaveCount(0);
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Assets guest upload action shows account prompt and creates no record", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html", {
+    sessionUserKey: ""
+  });
+
+  try {
+    const startingCount = await page.locator("[data-asset-tool-count]").textContent();
+    await expect(page.getByRole("button", { name: "Add Images" })).toBeEnabled();
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await editRow.getByLabel("Usage").selectOption("Character");
+    await editRow.getByLabel("Upload File").setInputFiles(uploadFile("guest-upload.png", "image/png", SMALL_PNG));
+
+    const prompt = page.locator("[data-asset-tool-account-prompt]");
+    await expect(prompt).toBeVisible();
+    await expect(prompt).toContainText("Uploads require a Game Foundry account.");
+    await expect(prompt.getByRole("link", { name: "Sign In" })).toBeVisible();
+    await expect(prompt.getByRole("link", { name: "Create Account" })).toBeVisible();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Uploads require a Game Foundry account.");
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText(startingCount || "0");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "guest-upload.png" })).toHaveCount(0);
 
     expectNoPageFailures(failures);
   } finally {
@@ -623,7 +614,7 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     for (const assetType of ASSET_CATALOG_TYPES) {
       await expect(page.locator(`[data-asset-type-accordion="${assetType}"]`)).toBeVisible();
       await expect(page.locator(`[data-asset-type-table="${assetType}"]`)).toBeVisible();
-      await expect(page.getByRole("button", { name: `Add ${assetType}` })).toBeVisible();
+      await expect(page.getByRole("button", { name: addButtonNameForType(assetType) })).toBeVisible();
       const headers = await page.locator(`[data-asset-type-table="${assetType}"] thead th`).evaluateAll((headerNodes) =>
         headerNodes.map((header) => header.textContent?.trim() || "")
       );
@@ -643,12 +634,6 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await page.getByRole("button", { name: "Add Images" }).click();
     const newRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
     await expect(newRow.getByLabel("Source")).toHaveValue("Upload");
-    await newRow.getByLabel("Upload File").setInputFiles({
-      buffer: Buffer.from("mock image"),
-      mimeType: "image/png",
-      name: "hero-portrait.png"
-    });
-    await expect(newRow.locator("[data-asset-tool-selected-file]")).toHaveText("hero-portrait.png");
     const usageOptions = await newRow.getByLabel("Usage").locator("option").evaluateAll((options) =>
       options.map((option) => option.textContent?.trim() || "")
     );
@@ -659,7 +644,11 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await expect(newRow.getByLabel("Asset Tags")).toHaveAttribute("list", "assetToolTagOptions");
     await newRow.getByRole("button", { name: "Add Tag" }).click();
     await expect(newRow).toContainText("Hero");
-    await newRow.getByRole("button", { name: "Save" }).click();
+    await newRow.getByLabel("Upload File").setInputFiles({
+      buffer: Buffer.from("mock image"),
+      mimeType: "image/png",
+      name: "hero-portrait.png"
+    });
 
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Added hero-portrait.png to Images.");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait.png" })).toContainText("Character");
@@ -683,7 +672,6 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
       mimeType: "image/png",
       name: "hero-portrait-xl.png"
     });
-    await editRow.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Updated hero-portrait-xl.png.");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "hero-portrait-xl.png" })).toBeVisible();
 

@@ -1,24 +1,16 @@
 # git status --short
-M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
- M src/dev-runtime/server/local-api-server.mjs
- M tests/helpers/playwrightRepoServer.mjs
+M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/tools/AssetToolMockRepository.spec.mjs
  M toolbox/assets/assets.js
-?? docs_build/dev/reports/PR_26163_075-assets-upload-write-and-view-fix.md
+ M toolbox/assets/index.html
+?? docs_build/dev/reports/PR_26163_076-assets-upload-prod-alignment.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26163_075-assets-upload-write-and-view-fix.md
+docs_build/dev/reports/PR_26163_076-assets-upload-prod-alignment.md
 
 # git diff --stat
-docs_build/dev/reports/codex_changed_files.txt     |   26 +-
- docs_build/dev/reports/codex_review.diff           | 1872 +++++++++++---------
- .../dev/reports/playwright_v8_coverage_report.txt  |   10 +-
- .../tool-repositories/assets-mock-repository.js    |  305 +++-
- src/dev-runtime/server/local-api-server.mjs        |   14 +
- tests/helpers/playwrightRepoServer.mjs             |   14 +
- .../tools/AssetToolMockRepository.spec.mjs         |  114 +-
- toolbox/assets/assets.js                           |  214 ++-
- 8 files changed, 1720 insertions(+), 849 deletions(-)
+.../dev/reports/playwright_v8_coverage_report.txt  |   7 +-
+ .../tools/AssetToolMockRepository.spec.mjs         | 156 ++++++++++-----------
+ toolbox/assets/assets.js                           | 152 +++++++++++++++-----
+ toolbox/assets/index.html                          |  13 ++
+ 4 files changed, 206 insertions(+), 122 deletions(-)
