@@ -32,6 +32,7 @@ const elements = {
   log: document.querySelector("[data-asset-tool-log]"),
   accountPrompt: document.querySelector("[data-asset-tool-account-prompt]"),
   batchLog: document.querySelector("[data-asset-tool-batch-log]"),
+  clearStatusLog: document.querySelector("[data-asset-tool-clear-status-log]"),
   metadata: document.querySelector("[data-asset-tool-metadata]"),
   outputMissing: document.querySelector("[data-asset-tool-output-missing]"),
   outputSummary: document.querySelector("[data-asset-tool-output-summary]"),
@@ -48,13 +49,16 @@ const elements = {
   uploadBps: document.querySelector("[data-asset-tool-upload-bps]"),
   uploadBytesUploaded: document.querySelector("[data-asset-tool-upload-bytes-uploaded]"),
   uploadClose: document.querySelector("[data-asset-tool-upload-close]"),
+  uploadCompactStatus: document.querySelector("[data-asset-tool-upload-compact-status]"),
   uploadCurrentFile: document.querySelector("[data-asset-tool-upload-current-file]"),
   uploadDialog: document.querySelector("[data-asset-tool-upload-dialog]"),
   uploadElapsed: document.querySelector("[data-asset-tool-upload-elapsed]"),
   uploadEta: document.querySelector("[data-asset-tool-upload-eta]"),
   uploadFileProgress: document.querySelector("[data-asset-tool-upload-file-progress]"),
+  uploadIssues: document.querySelector("[data-asset-tool-upload-issues]"),
   uploadPhase: document.querySelector("[data-asset-tool-upload-phase]"),
   uploadProgress: document.querySelector("[data-asset-tool-upload-progress]"),
+  uploadProgressDetails: document.querySelector("[data-asset-tool-upload-progress-details]"),
   uploadSpeed: document.querySelector("[data-asset-tool-upload-speed]"),
   uploadStatusBody: document.querySelector("[data-asset-tool-upload-status-body]"),
   uploadSummaryFailed: document.querySelector("[data-asset-tool-upload-summary-failed]"),
@@ -636,6 +640,60 @@ function uploadProgressMetrics(state) {
   };
 }
 
+function uploadIsComplete(state) {
+  return state?.phase === "Complete";
+}
+
+function compactUploadStatusText(summary) {
+  const written = batchWrittenCount(summary);
+  return `Upload summary: ${written} written, ${summary.fail} failed, ${summary.skip} skipped, ${summary.warn} warnings.`;
+}
+
+function conciseUploadIssueMessage(entry) {
+  const message = normalizeText(entry?.message);
+  if (!message) {
+    return `${entry.status}: ${entry.fileName}`;
+  }
+  if (/already exists/i.test(message)) {
+    return "File already exists. Rename the file or remove the existing asset before uploading.";
+  }
+  if (/greater than zero bytes/i.test(message)) {
+    return "Uploaded files must be greater than zero bytes.";
+  }
+  if (/browser file writes are not supported/i.test(message)) {
+    return "This runtime cannot write upload files. Use Local DB/server storage for upload validation.";
+  }
+  if (/target path must stay under/i.test(message)) {
+    return "Upload target path is outside the project asset folder.";
+  }
+  if (/open an active game|active game first|project upload target is unavailable/i.test(message)) {
+    return "Open an active game with a valid project upload target before uploading.";
+  }
+  if (/duplicate file name in this batch/i.test(message)) {
+    return "Duplicate file name in this batch.";
+  }
+  if (/approved|mime|file type|extension/i.test(message)) {
+    return "Choose a file type supported by this asset table.";
+  }
+  const firstSentence = message.split(".")[0] || message;
+  return firstSentence.replace(/projects\/[A-Z0-9/._-]+/g, "project path").slice(0, 140);
+}
+
+function renderUploadIssues(entries) {
+  if (!elements.uploadIssues) {
+    return;
+  }
+  const problemEntries = entries.filter((entry) => entry.status !== "OK");
+  elements.uploadIssues.replaceChildren();
+  elements.uploadIssues.hidden = problemEntries.length === 0;
+  problemEntries.forEach((entry) => {
+    const item = document.createElement("li");
+    item.dataset.assetToolUploadIssue = entry.status;
+    item.textContent = `${entry.status}: ${entry.fileName} - ${conciseUploadIssueMessage(entry)}`;
+    elements.uploadIssues.append(item);
+  });
+}
+
 function renderUploadStatusRowsForTarget(target, entries) {
   if (!target) {
     return;
@@ -644,7 +702,7 @@ function renderUploadStatusRowsForTarget(target, entries) {
   if (!entries.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
-    cell.colSpan = 3;
+    cell.colSpan = 2;
     cell.textContent = "No upload files processed yet.";
     row.append(cell);
     target.append(row);
@@ -655,8 +713,7 @@ function renderUploadStatusRowsForTarget(target, entries) {
     row.dataset.assetToolUploadStatus = entry.status;
     row.append(
       createCell(entry.fileName),
-      createCell(entry.status),
-      createCell(`${entry.path ? `${entry.path} - ` : ""}${entry.message || ""}`)
+      createCell(entry.status)
     );
     target.append(row);
   });
@@ -690,6 +747,7 @@ function updateUploadDialog(state) {
   elements.uploadDialog.dataset.assetToolUploadWorker = state.workerStatus || "Idle";
   elements.uploadDialog.dataset.assetToolServerReceiveUpdates = String(state.serverReceiveUpdateCount || 0);
   const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
+  const summary = batchSummaryForEntries(state.entries);
 
   setText(elements.uploadCurrentFile, state.currentFile);
   setText(elements.uploadFileProgress, `${state.fileIndex} / ${state.fileCount}`);
@@ -703,8 +761,13 @@ function updateUploadDialog(state) {
   if (elements.uploadProgress) {
     elements.uploadProgress.value = progressValue;
   }
+  if (elements.uploadProgressDetails) {
+    elements.uploadProgressDetails.hidden = uploadIsComplete(state);
+  }
+  setText(elements.uploadCompactStatus, compactUploadStatusText(summary));
   renderUploadStatusRows(state.entries);
-  updateUploadSummary(batchSummaryForEntries(state.entries));
+  renderUploadIssues(state.entries);
+  updateUploadSummary(summary);
   updateInlineUploadProgress(state);
 }
 
@@ -764,7 +827,7 @@ function createInlineUploadProgress(assetType) {
   statusTable.setAttribute("aria-label", `${assetType} upload progress`);
   const head = document.createElement("thead");
   const headRow = document.createElement("tr");
-  ["File", "Status", "Message"].forEach((label) => {
+  ["File", "Status"].forEach((label) => {
     const headingCell = document.createElement("th");
     headingCell.scope = "col";
     headingCell.textContent = label;
@@ -786,6 +849,7 @@ function populateInlineUploadProgress(container, state) {
   if (!container || !state) {
     return;
   }
+  const complete = uploadIsComplete(state);
   const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
   const summary = batchSummaryForEntries(state.entries);
   container.hidden = false;
@@ -813,6 +877,7 @@ function populateInlineUploadProgress(container, state) {
     container.querySelector("[data-asset-tool-inline-upload-status-body]"),
     state.entries
   );
+  container.hidden = complete;
 }
 
 function renderBatchLog(entries, summary = null) {
@@ -836,7 +901,8 @@ function renderBatchLog(entries, summary = null) {
     const item = document.createElement("li");
     item.dataset.assetToolBatchLogRow = "true";
     item.dataset.assetToolBatchStatus = entry.status;
-    item.textContent = `${entry.status}: ${entry.fileName}${entry.path ? ` -> ${entry.path}` : ""}${entry.message ? ` - ${entry.message}` : ""}`;
+    const issueText = entry.status === "OK" ? "Uploaded" : conciseUploadIssueMessage(entry);
+    item.textContent = `${entry.status}: ${entry.fileName} - ${issueText}`;
     elements.batchLog.append(item);
   });
 }
@@ -1744,6 +1810,11 @@ elements.uploadClose?.addEventListener("click", () => {
   if (elements.uploadDialog) {
     elements.uploadDialog.hidden = true;
   }
+});
+
+elements.clearStatusLog?.addEventListener("click", () => {
+  setText(elements.log, "");
+  elements.batchLog?.replaceChildren();
 });
 
 render();

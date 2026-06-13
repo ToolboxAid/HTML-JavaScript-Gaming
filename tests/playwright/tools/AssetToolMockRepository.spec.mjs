@@ -650,10 +650,18 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
     ]);
     await expect(firstImageRow.locator("[data-asset-tool-selected-file]")).toHaveText("batch-image-a.png, batch-image-b.png");
     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
+    const uploadDiagnosticsAccordion = page.locator("[data-asset-tool-upload-diagnostics-accordion]");
+    const statusLogAccordion = page.locator("[data-asset-tool-status-log-accordion]");
     const imagesAccordion = page.locator("[data-asset-type-accordion='Images']");
     const inlineProgress = imagesAccordion.locator("[data-asset-tool-inline-upload-progress='Images']");
+    const diagnosticsBox = await uploadDiagnosticsAccordion.boundingBox();
+    const statusLogBox = await statusLogAccordion.boundingBox();
+    expect(diagnosticsBox?.y || 0).toBeLessThan(statusLogBox?.y || Number.POSITIVE_INFINITY);
     await expect(uploadDialog).toBeVisible();
     await expect(inlineProgress).toBeVisible();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-progress-details]")).toBeVisible();
+    await expect(uploadDialog.locator("table[aria-label='Upload file status'] th")).toHaveText(["File", "Status"]);
+    await expect(uploadDialog.locator("table[aria-label='Upload file status'] th", { hasText: "Message" })).toHaveCount(0);
     await expect(uploadDialog.locator("[data-asset-tool-upload-phase]")).toHaveText("Uploading");
     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-phase]")).toHaveText("Uploading");
     await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']")).toHaveCount(0, { timeout: 100 });
@@ -673,29 +681,33 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-eta]")).toContainText("s");
     await expect(uploadDialog.locator("[data-asset-tool-upload-elapsed]")).toContainText("s");
     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-elapsed]")).toContainText("s");
-    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 2 written, 0 failed, 0 skipped, 0 warnings.");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-phase]")).toHaveText("Complete");
-    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-phase]")).toHaveText("Complete");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-progress]")).toHaveJSProperty("value", 100);
-    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-progress-bar]")).toHaveJSProperty("value", 100);
-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("2");
-    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-summary-written]")).toHaveText("2");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("0");
-    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-summary-failed]")).toHaveText("0");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("0");
-    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-summary-skipped]")).toHaveText("0");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("0");
-    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-summary-warnings]")).toHaveText("0");
-    await expect(inlineProgress.locator("[data-asset-tool-upload-status='OK']").filter({ hasText: "batch-image-a.png" })).toBeVisible();
     const tableBox = await imagesAccordion.locator("[data-asset-type-table='Images']").boundingBox();
     const inlineBox = await inlineProgress.boundingBox();
     expect(inlineBox?.y || 0).toBeGreaterThan(tableBox?.y || 0);
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 2 written, 0 failed, 0 skipped, 0 warnings.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-compact-status]")).toHaveText("Upload summary: 2 written, 0 failed, 0 skipped, 0 warnings.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-progress-details]")).toBeHidden();
+    await expect(inlineProgress).toBeHidden();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-progress]")).toHaveJSProperty("value", 100);
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-written]")).toHaveText("2");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("0");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issues]")).toBeHidden();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']").filter({ hasText: "batch-image-a.png" })).toBeVisible();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='OK']").filter({ hasText: "projects/" })).toHaveCount(0);
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-a.png" })).toHaveCount(1);
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-b.png" })).toBeVisible();
 
+    await page.getByRole("button", { name: "Clear" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("");
+    await expect(page.locator("[data-asset-tool-batch-log]")).toHaveText("");
+    await expect(uploadDialog).toBeVisible();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-compact-status]")).toHaveText("Upload summary: 2 written, 0 failed, 0 skipped, 0 warnings.");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-a.png" })).toHaveCount(1);
+
     await page.locator("[data-asset-tool-row]").filter({ hasText: "batch-image-a.png" }).getByRole("button", { name: "View" }).click();
     await expect(page.locator("[data-asset-tool-metadata]")).toContainText(/Stored path: projects\/[0-9A-HJKMNP-TV-Z]{26}\/image\/batch-image-a\.png/);
-    await expect(page.locator("[data-asset-tool-batch-status='OK']").filter({ hasText: "batch-image-a.png" })).toContainText(/projects\/[0-9A-HJKMNP-TV-Z]{26}\/image\/batch-image-a\.png/);
 
     await addUploadBatch(page, "Images", [
       uploadFile("batch-status-ok.png", "image/png", "image ok"),
@@ -717,6 +729,10 @@ test("Assets multi-file uploads create one catalog row per valid selected file w
     await expect(uploadDialog.locator("[data-asset-tool-upload-status='WARN']").filter({ hasText: "batch-status-warning.png" })).toBeVisible();
     await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']").filter({ hasText: "batch-status-bad.exe" })).toBeVisible();
     await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']").filter({ hasText: "batch-status-ok.png" })).toBeVisible();
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']").filter({ hasText: "projects/" })).toHaveCount(0);
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='WARN']")).toContainText("Progress could not");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("supported by this asset table");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='SKIP']")).toContainText("Duplicate file name in this batch.");
     await expect(page.locator("[data-asset-tool-batch-status='OK']").filter({ hasText: "batch-status-ok.png" })).toBeVisible();
     await expect(page.locator("[data-asset-tool-batch-status='WARN']").filter({ hasText: "batch-status-warning.png" })).toBeVisible();
     await expect(page.locator("[data-asset-tool-batch-status='FAIL']").filter({ hasText: "batch-status-bad.exe" })).toBeVisible();
@@ -789,10 +805,10 @@ test("Assets duplicate project-path uploads fail before write and do not create 
     await editRow.getByLabel("Upload File").setInputFiles(uploadFile("duplicate-path.png", "image/png", SMALL_PNG));
 
     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("already exists");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/duplicate-path.png`);
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`Directory result: Directory exists: projects/${DEMO_ASSET_PROJECT_ID}/image.`);
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("Directory status: exists");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("duplicate-path.png");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("FAIL");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).not.toContainText("projects/");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("File already exists.");
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("1");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "duplicate-path.png" })).toHaveCount(1);
@@ -822,10 +838,11 @@ test("Assets upload fails visibly when the resolved target directory would escap
     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
     const inlineProgress = page.locator("[data-asset-type-accordion='Images']")
       .locator("[data-asset-tool-inline-upload-progress='Images']");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("target path must stay under /projects/<projectId>/");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("Write result: FAIL: Directory validation");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("Directory status: failed");
-    await expect(inlineProgress.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("target path must stay under /projects/<projectId>/");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("escape-target.png");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("FAIL");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).not.toContainText("projects/");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("Upload target path is outside the project asset folder.");
+    await expect(inlineProgress).toBeHidden();
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 0 skipped, 0 warnings.");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "escape-target.png" })).toHaveCount(0);
@@ -859,10 +876,12 @@ test("Assets multi-file upload fails visibly when no current project id is avail
     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-failed]")).toHaveText("1");
     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-skipped]")).toHaveText("1");
     await expect(uploadDialog.locator("[data-asset-tool-upload-summary-warnings]")).toHaveText("0");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("Asset add blocked: open an active game first.");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
-    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Asset add blocked: open an active game first.");
-    await expect(page.locator("[data-asset-tool-batch-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("missing-project-a.png");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("missing-project-b.png");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("Open an active game with a valid project upload target before uploading.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='SKIP']")).toContainText("Open an active game with a valid project upload target before uploading.");
+    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Open an active game");
+    await expect(page.locator("[data-asset-tool-batch-status='SKIP']")).toContainText("Open an active game");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
 
     expectNoPageFailures(failures);
@@ -895,13 +914,15 @@ test("Assets upload write failure after byte transfer is visible and creates no 
     const progressBar = inlineProgress.locator("[data-asset-tool-inline-upload-progress-bar]");
     await expect(uploadDialog).toBeVisible();
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 1 skipped, 0 warnings.");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("browser file writes are not supported");
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/unsupported-write-a.png`);
-    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("unsupported-write-a.png");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("unsupported-write-b.png");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).not.toContainText("projects/");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='FAIL']")).toContainText("This runtime cannot write upload files.");
+    await expect(uploadDialog.locator("[data-asset-tool-upload-issue='SKIP']")).toContainText("Open an active game with a valid project upload target before uploading.");
     await expect.poll(() => progressValue(progressBar)).toBeGreaterThan(0);
     expect(await progressValue(progressBar)).toBeLessThan(100);
     await expect(inlineProgress.locator("[data-asset-tool-inline-upload-worker]")).toHaveText("Failed");
-    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Write result: FAIL: Browser file writes are not supported");
+    await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("This runtime cannot write upload files.");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "unsupported-write-a.png" })).toHaveCount(0);
 
