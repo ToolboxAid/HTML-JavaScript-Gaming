@@ -83,6 +83,9 @@ const UPLOAD_ACCEPT_BY_ASSET_TYPE = Object.freeze({
   Fonts: ".ttf,.otf,.woff,.woff2",
   Images: "image/*,.png,.jpg,.jpeg,.webp,.gif,.svg"
 });
+const DEFAULT_UPLOAD_CHUNK_SIZE_BYTES = 64 * 1024;
+const MAX_UPLOAD_CHUNK_SIZE_BYTES = 1024 * 1024;
+const UPLOAD_WORKER_URL = new URL("./assets-upload-worker.js", import.meta.url);
 
 function isLocalDevRuntime() {
   return ["", "localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
@@ -101,6 +104,7 @@ function devUploadProgressStepMs() {
 }
 
 const UPLOAD_PROGRESS_STEP_MS = devUploadProgressStepMs();
+const UPLOAD_CHUNK_SIZE_BYTES = devUploadChunkSizeBytes();
 const SOURCE_HELP_BY_ASSET_TYPE = Object.freeze({
   Audio: "Audio can upload a sound file or reference an existing audio source.",
   Data: "Data can upload .json, .csv, or .txt files, or reference an existing data source.",
@@ -110,6 +114,17 @@ const SOURCE_HELP_BY_ASSET_TYPE = Object.freeze({
   Sprites: "Sprites are Reference-only for MVP.",
   Vectors: "Vectors are Reference-only for MVP."
 });
+
+function devUploadChunkSizeBytes() {
+  if (!isLocalDevRuntime()) {
+    return DEFAULT_UPLOAD_CHUNK_SIZE_BYTES;
+  }
+  const requestedChunkSize = Number(params.get("uploadChunkSizeBytes"));
+  if (Number.isFinite(requestedChunkSize) && requestedChunkSize > 0) {
+    return Math.min(MAX_UPLOAD_CHUNK_SIZE_BYTES, Math.floor(requestedChunkSize));
+  }
+  return DEFAULT_UPLOAD_CHUNK_SIZE_BYTES;
+}
 
 function normalizeText(value) {
   return String(value || "").trim();
@@ -563,7 +578,8 @@ function createUploadState(files) {
     fileIndex: 0,
     phase: "Preparing",
     startedAt: performance.now(),
-    totalBytes: totalUploadBytes(files)
+    totalBytes: totalUploadBytes(files),
+    workerStatus: "Idle"
   };
 }
 
@@ -646,6 +662,7 @@ function updateUploadDialog(state) {
     return;
   }
   elements.uploadDialog.hidden = false;
+  elements.uploadDialog.dataset.assetToolUploadWorker = state.workerStatus || "Idle";
   const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
 
   setText(elements.uploadCurrentFile, state.currentFile);
@@ -698,7 +715,8 @@ function createInlineUploadProgress(assetType) {
     createInlineUploadMetric("BPS", "assetToolInlineUploadBps"),
     createInlineUploadMetric("Speed", "assetToolInlineUploadSpeed"),
     createInlineUploadMetric("ETA", "assetToolInlineUploadEta"),
-    createInlineUploadMetric("Elapsed", "assetToolInlineUploadElapsed")
+    createInlineUploadMetric("Elapsed", "assetToolInlineUploadElapsed"),
+    createInlineUploadMetric("Worker", "assetToolInlineUploadWorker")
   );
 
   const progress = document.createElement("progress");
@@ -745,6 +763,7 @@ function populateInlineUploadProgress(container, state) {
   const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
   const summary = batchSummaryForEntries(state.entries);
   container.hidden = false;
+  container.dataset.assetToolUploadWorker = state.workerStatus || "Idle";
   setText(container.querySelector("[data-asset-tool-inline-upload-phase]"), state.phase);
   setText(container.querySelector("[data-asset-tool-inline-upload-current-file]"), state.currentFile);
   setText(container.querySelector("[data-asset-tool-inline-upload-file-progress]"), `${state.fileIndex} / ${state.fileCount}`);
@@ -754,6 +773,7 @@ function populateInlineUploadProgress(container, state) {
   setText(container.querySelector("[data-asset-tool-inline-upload-speed]"), `${formatBytes(bps)}/s`);
   setText(container.querySelector("[data-asset-tool-inline-upload-eta]"), formatDuration(etaMilliseconds));
   setText(container.querySelector("[data-asset-tool-inline-upload-elapsed]"), formatDuration(elapsedMilliseconds));
+  setText(container.querySelector("[data-asset-tool-inline-upload-worker]"), state.workerStatus || "Idle");
   setText(container.querySelector("[data-asset-tool-inline-upload-summary-written]"), String(batchWrittenCount(summary)));
   setText(container.querySelector("[data-asset-tool-inline-upload-summary-failed]"), String(summary.fail));
   setText(container.querySelector("[data-asset-tool-inline-upload-summary-skipped]"), String(summary.skip));
@@ -811,8 +831,96 @@ function isGlobalUploadFailure(result) {
   return !result?.added && /active game|projectid|project id|browser file writes|file writes are not supported/i.test(result?.message || "");
 }
 
-async function batchInputForFile(row, assetType, file) {
-  const payload = await uploadPayloadForUploadItem(file);
+let uploadWorkerRequestId = 0;
+
+function createUploadWorker() {
+  return new Worker(UPLOAD_WORKER_URL, { type: "module" });
+}
+
+function processUploadFileInWorker(file, uploadState, startingBytes) {
+  return new Promise((resolve, reject) => {
+    let worker = null;
+    const requestId = `asset-upload-${Date.now()}-${uploadWorkerRequestId += 1}`;
+    const fileName = file?.name || "upload";
+
+    function cleanup() {
+      if (worker) {
+        worker.terminate();
+      }
+    }
+
+    function failUpload(message) {
+      cleanup();
+      reject(new Error(message || "Upload worker failed."));
+    }
+
+    try {
+      worker = createUploadWorker();
+    } catch (error) {
+      failUpload(error instanceof Error ? error.message : "Upload worker could not start.");
+      return;
+    }
+
+    worker.addEventListener("message", (event) => {
+      const message = event.data || {};
+      if (message.requestId !== requestId) {
+        return;
+      }
+      if (message.type === "started") {
+        uploadState.workerStatus = "Active";
+        uploadState.currentFile = message.fileName || fileName;
+        uploadState.phase = "Uploading";
+        updateUploadDialog(uploadState);
+        return;
+      }
+      if (message.type === "progress") {
+        uploadState.workerStatus = "Active";
+        uploadState.currentFile = message.fileName || fileName;
+        uploadState.phase = "Uploading";
+        uploadState.bytesUploaded = Math.min(
+          uploadState.totalBytes,
+          startingBytes + Math.max(0, Number(message.bytesUploaded) || 0)
+        );
+        updateUploadDialog(uploadState);
+        return;
+      }
+      if (message.type === "complete") {
+        uploadState.workerStatus = "Write Pending";
+        uploadState.currentFile = message.fileName || fileName;
+        uploadState.phase = "Writing";
+        updateUploadDialog(uploadState);
+        cleanup();
+        resolve(message.payload || {});
+        return;
+      }
+      if (message.type === "error") {
+        uploadState.workerStatus = "Failed";
+        uploadState.currentFile = message.fileName || fileName;
+        uploadState.phase = "Failed";
+        updateUploadDialog(uploadState);
+        failUpload(message.message || "Upload worker failed.");
+      }
+    });
+
+    worker.addEventListener("error", (error) => {
+      uploadState.workerStatus = "Failed";
+      uploadState.currentFile = fileName;
+      uploadState.phase = "Failed";
+      updateUploadDialog(uploadState);
+      failUpload(error.message || "Upload worker failed.");
+    });
+
+    worker.postMessage({
+      chunkSizeBytes: UPLOAD_CHUNK_SIZE_BYTES,
+      file,
+      requestId,
+      throttleMs: UPLOAD_PROGRESS_STEP_MS,
+      type: "process-file"
+    });
+  });
+}
+
+function batchInputForFile(row, assetType, file, payload) {
   return {
     ...assetRowValues(row, assetType),
     ...payload,
@@ -884,21 +992,14 @@ async function saveUploadBatch(row, assetType) {
     const fileSize = Number(file.size);
     const progressCalculable = Number.isFinite(fileSize) && fileSize > 0;
     const startingBytes = uploadState.bytesUploaded;
-    if (progressCalculable) {
-      uploadState.bytesUploaded = Math.min(uploadState.totalBytes, startingBytes + Math.max(1, Math.ceil(fileSize / 2)));
-      updateUploadDialog(uploadState);
-      await uploadDelay();
-    } else {
-      uploadState.phase = "Progress WARN";
-      updateUploadDialog(uploadState);
-      await uploadDelay();
-    }
 
     let batchInput = null;
     try {
-      batchInput = await batchInputForFile(row, assetType, file);
+      const payload = await processUploadFileInWorker(file, uploadState, startingBytes);
+      batchInput = batchInputForFile(row, assetType, file, payload);
     } catch (error) {
       uploadState.phase = "Failed";
+      uploadState.workerStatus = "Failed";
       addBatchLogEntry(uploadState.entries, {
         fileName,
         message: error instanceof Error ? error.message : "Upload file read failed.",
@@ -912,6 +1013,7 @@ async function saveUploadBatch(row, assetType) {
     const result = repository.addAssetRecord(batchInput);
     if (!result.added) {
       uploadState.phase = "Failed";
+      uploadState.workerStatus = "Failed";
       addBatchLogEntry(uploadState.entries, {
         fileName,
         message: uploadDiagnosticsText(result.writeDiagnostics) || result.message,
@@ -928,6 +1030,7 @@ async function saveUploadBatch(row, assetType) {
     }
     const status = progressCalculable ? "OK" : "WARN";
     uploadState.phase = status === "WARN" ? "Warning" : "Uploaded";
+    uploadState.workerStatus = "Complete";
     addBatchLogEntry(uploadState.entries, {
       fileName,
       message: status === "WARN"
@@ -940,9 +1043,10 @@ async function saveUploadBatch(row, assetType) {
     await uploadDelay();
   }
 
-  uploadState.phase = "Complete";
-  updateUploadDialog(uploadState);
   const summary = batchSummaryForEntries(uploadState.entries);
+  uploadState.phase = "Complete";
+  uploadState.workerStatus = summary.fail > 0 ? "Failed" : "Complete";
+  updateUploadDialog(uploadState);
   if (summary.ok + summary.warn > 0) {
     clearEditState();
   }
@@ -1491,7 +1595,7 @@ elements.accordions?.addEventListener("click", async (event) => {
     const assetType = row?.dataset.assetToolAssetType || editingAssetType;
     const source = row?.querySelector("[data-asset-tool-source-input]")?.value || sourceModeForEdit(assetType);
     const uploadFiles = selectedUploadFiles(row);
-    if (save.dataset.assetToolSave === "__new__" && source === UPLOAD_SOURCE && uploadFiles.length > 1) {
+    if (save.dataset.assetToolSave === "__new__" && source === UPLOAD_SOURCE && uploadFiles.length) {
       await saveUploadBatch(row, assetType);
       return;
     }
@@ -1551,18 +1655,7 @@ elements.accordions?.addEventListener("change", async (event) => {
       showAccountPrompt();
       return;
     }
-    try {
-      const payloads = await Promise.all(files.map(async (file) => ({
-        ...(await uploadPayloadForFile(file)),
-        name: file.name,
-        type: file.type || ""
-      })));
-      setUploadPayloadsForEditRow(row, payloads);
-    } catch (error) {
-      setUploadPayloadsForEditRow(row, []);
-      setText(elements.log, error instanceof Error ? error.message : "Upload file read failed.");
-      return;
-    }
+    setUploadPayloadsForEditRow(row, []);
     setText(elements.log, files.length > 1 ? `Selected ${files.length} upload files.` : `Selected upload file ${fileName}.`);
     const assetType = row?.dataset.assetToolAssetType || editingAssetType;
     await saveUploadBatch(row, assetType);

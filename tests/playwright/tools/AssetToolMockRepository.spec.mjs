@@ -150,6 +150,10 @@ function zeroByteUploadFile(name, mimeType) {
   };
 }
 
+async function progressValue(locator) {
+  return locator.evaluate((node) => Number(node.value) || 0);
+}
+
 function addButtonNameForType(assetType) {
   return assetType === "Vectors" ? "Add Vector" : `Add ${assetType}`;
 }
@@ -412,6 +416,100 @@ test("Assets upload writes to the project folder before creating a record and Im
   }
 });
 
+test("Assets worker upload progress is byte accurate and keeps the UI responsive", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=180&uploadChunkSizeBytes=8", {
+    sessionModeId: "local-db",
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await editRow.getByLabel("Usage").selectOption("Character");
+    const workerPromise = page.waitForEvent("worker");
+    await editRow.getByLabel("Upload File").setInputFiles(uploadFile("worker-progress.png", "image/png", Buffer.alloc(64, 7)));
+    const worker = await workerPromise;
+    expect(worker.url()).toContain("toolbox/assets/assets-upload-worker.js");
+
+    const imagesAccordion = page.locator("[data-asset-type-accordion='Images']");
+    const audioAccordion = page.locator("[data-asset-type-accordion='Audio']");
+    const inlineProgress = imagesAccordion.locator("[data-asset-tool-inline-upload-progress='Images']");
+    const progressBar = inlineProgress.locator("[data-asset-tool-inline-upload-progress-bar]");
+    await expect(inlineProgress).toBeVisible();
+    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-worker]")).toHaveText("Active");
+    await expect(progressBar).toHaveJSProperty("value", 0);
+    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-bytes-uploaded]")).toHaveText("0 B");
+
+    await expect.poll(() => progressValue(progressBar), { timeout: 5000 }).toBeGreaterThan(0);
+    const firstProgress = await progressValue(progressBar);
+    expect(firstProgress).not.toBe(50);
+    expect(firstProgress).toBeLessThan(50);
+    await expect.poll(() => progressValue(progressBar), { timeout: 5000 }).toBeGreaterThan(firstProgress);
+    await expect.poll(async () => Number(await inlineProgress.locator("[data-asset-tool-inline-upload-bps]").textContent()) || 0).toBeGreaterThan(0);
+    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-speed]")).toContainText("/s");
+    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-eta]")).toContainText("s");
+    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-elapsed]")).toContainText("s");
+
+    const audioOpenBefore = await audioAccordion.evaluate((node) => node.open);
+    await audioAccordion.locator("summary").click();
+    await expect.poll(() => audioAccordion.evaluate((node) => node.open)).toBe(!audioOpenBefore);
+    const scrollY = await page.evaluate(() => {
+      window.scrollTo(0, document.body.scrollHeight);
+      return window.scrollY;
+    });
+    expect(scrollY).toBeGreaterThan(0);
+
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
+    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-worker]")).toHaveText("Complete");
+    await expect(progressBar).toHaveJSProperty("value", 100);
+    await expect(inlineProgress.locator("[data-asset-tool-upload-status='OK']")).toContainText("worker-progress.png");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "worker-progress.png" })).toHaveCount(1);
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
+test("Assets batch progress uses summed uploaded bytes across selected files", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=180&uploadChunkSizeBytes=10", {
+    sessionModeId: "local-db",
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Reset Asset Library" }).click();
+    await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
+
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const editRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await editRow.getByLabel("Usage").selectOption("Character");
+    await editRow.getByLabel("Upload File").setInputFiles([
+      uploadFile("batch-byte-a.png", "image/png", Buffer.alloc(20, 1)),
+      uploadFile("batch-byte-b.png", "image/png", Buffer.alloc(20, 2))
+    ]);
+
+    const inlineProgress = page.locator("[data-asset-type-accordion='Images']")
+      .locator("[data-asset-tool-inline-upload-progress='Images']");
+    const progressBar = inlineProgress.locator("[data-asset-tool-inline-upload-progress-bar]");
+    await expect(inlineProgress.locator("[data-asset-tool-upload-status='OK']").filter({ hasText: "batch-byte-a.png" })).toBeVisible();
+    await expect.poll(() => progressValue(progressBar), { timeout: 5000 }).toBe(50);
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 2 written, 0 failed, 0 skipped, 0 warnings.");
+    await expect(progressBar).toHaveJSProperty("value", 100);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-byte-a.png" })).toHaveCount(1);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "batch-byte-b.png" })).toHaveCount(1);
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+  }
+});
+
 test("Assets multi-file uploads create one catalog row per valid selected file with project paths and batch statuses", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=250", {
     sessionUserKey: MOCK_DB_KEYS.users.user1
@@ -651,8 +749,8 @@ test("Assets multi-file upload fails visibly when no current project id is avail
   }
 });
 
-test("Assets upload write failure is visible and creates no asset record", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadWrite=unsupported", {
+test("Assets upload write failure after byte transfer is visible and creates no asset record", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadWrite=unsupported&uploadProgressDelayMs=100&uploadChunkSizeBytes=8", {
     sessionUserKey: MOCK_DB_KEYS.users.user1
   });
 
@@ -669,11 +767,17 @@ test("Assets upload write failure is visible and creates no asset record", async
     ]);
 
     const uploadDialog = page.locator("[data-asset-tool-upload-dialog]");
+    const inlineProgress = page.locator("[data-asset-type-accordion='Images']")
+      .locator("[data-asset-tool-inline-upload-progress='Images']");
+    const progressBar = inlineProgress.locator("[data-asset-tool-inline-upload-progress-bar]");
     await expect(uploadDialog).toBeVisible();
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 0 written, 1 failed, 1 skipped, 0 warnings.");
     await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText("browser file writes are not supported");
     await expect(uploadDialog.locator("[data-asset-tool-upload-status='FAIL']")).toContainText(`projects/${DEMO_ASSET_PROJECT_ID}/image/unsupported-write-a.png`);
     await expect(uploadDialog.locator("[data-asset-tool-upload-status='SKIP']")).toContainText("Skipped because the project upload target is unavailable.");
+    await expect.poll(() => progressValue(progressBar)).toBeGreaterThan(0);
+    expect(await progressValue(progressBar)).toBeLessThan(100);
+    await expect(inlineProgress.locator("[data-asset-tool-inline-upload-worker]")).toHaveText("Failed");
     await expect(page.locator("[data-asset-tool-batch-status='FAIL']")).toContainText("Write result: FAIL: Browser file writes are not supported");
     await expect(page.locator("[data-asset-tool-count]")).toHaveText("0");
     await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "unsupported-write-a.png" })).toHaveCount(0);
