@@ -12,13 +12,13 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(92%) Toolbox Index - exercised 5 runtime JS files
+(93%) Toolbox Index - exercised 5 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
 (57%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(96%) toolbox/assets/assets.js - executed lines 1296/1296; executed functions 113/118
+(96%) toolbox/assets/assets.js - executed lines 1434/1434; executed functions 122/127
 
 Files with executed line/function counts where available:
 (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
@@ -27,7 +27,7 @@ Files with executed line/function counts where available:
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (67%) toolbox/assets/assets-api-client.js - executed lines 19/19; executed functions 2/3
 (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
-(96%) toolbox/assets/assets.js - executed lines 1296/1296; executed functions 113/118
+(96%) toolbox/assets/assets.js - executed lines 1434/1434; executed functions 122/127
 (100%) toolbox/tags/tags-api-client.js - executed lines 10/10; executed functions 2/2
 (100%) toolbox/tags/tags.js - executed lines 242/242; executed functions 19/19
 

@@ -18,6 +18,9 @@ if (params.get("handoff") === "missing") {
 if (params.get("uploadWrite") === "unsupported") {
   repository.setUploadFileWriteSupport(false);
 }
+if (isLocalDevRuntime() && params.get("uploadPath") === "escape") {
+  repository.setUnsafeUploadPathForTest(true);
+}
 
 const elements = {
   accordions: document.querySelector("[data-asset-type-accordions]"),
@@ -61,6 +64,8 @@ const elements = {
 let editingAssetId = "";
 let editingAssetType = "";
 let selectedAssetId = "";
+let activeUploadAssetType = "";
+let activeUploadState = null;
 const draftAssetValues = new Map();
 const draftTagKeys = new Map();
 const draftUploadPayloads = new Map();
@@ -249,6 +254,9 @@ function uploadDiagnosticsText(diagnostics = {}) {
   const parts = [];
   if (diagnostics.projectId) parts.push(`Project ID: ${diagnostics.projectId}`);
   if (diagnostics.targetFolder) parts.push(`Target folder: ${diagnostics.targetFolder}`);
+  if (diagnostics.targetDirectory) parts.push(`Target directory: ${diagnostics.targetDirectory}`);
+  if (diagnostics.targetDirectoryResult) parts.push(`Directory result: ${diagnostics.targetDirectoryResult}`);
+  if (diagnostics.directoryStatus) parts.push(`Directory status: ${diagnostics.directoryStatus}`);
   if (diagnostics.targetFilePath) parts.push(`Target file path: ${diagnostics.targetFilePath}`);
   if (diagnostics.writeResult) parts.push(`Write result: ${diagnostics.writeResult}`);
   if (diagnostics.viewPath) parts.push(`View path: ${diagnostics.viewPath}`);
@@ -570,18 +578,35 @@ function updateUploadSummary(summary) {
   setText(elements.uploadSummaryWarnings, String(summary.warn));
 }
 
-function renderUploadStatusRows(entries) {
-  if (!elements.uploadStatusBody) {
+function uploadProgressMetrics(state) {
+  const elapsedMilliseconds = Math.max(0, performance.now() - state.startedAt);
+  const elapsedSeconds = elapsedMilliseconds / 1000;
+  const bps = elapsedSeconds > 0 ? Math.round(state.bytesUploaded / elapsedSeconds) : 0;
+  const remainingBytes = Math.max(0, state.totalBytes - state.bytesUploaded);
+  const etaMilliseconds = bps > 0 ? (remainingBytes / bps) * 1000 : NaN;
+  const progressValue = state.totalBytes > 0
+    ? Math.min(100, Math.round((state.bytesUploaded / state.totalBytes) * 100))
+    : 0;
+  return {
+    bps,
+    elapsedMilliseconds,
+    etaMilliseconds,
+    progressValue
+  };
+}
+
+function renderUploadStatusRowsForTarget(target, entries) {
+  if (!target) {
     return;
   }
-  elements.uploadStatusBody.replaceChildren();
+  target.replaceChildren();
   if (!entries.length) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
     cell.colSpan = 3;
     cell.textContent = "No upload files processed yet.";
     row.append(cell);
-    elements.uploadStatusBody.append(row);
+    target.append(row);
     return;
   }
   entries.forEach((entry) => {
@@ -592,8 +617,28 @@ function renderUploadStatusRows(entries) {
       createCell(entry.status),
       createCell(`${entry.path ? `${entry.path} - ` : ""}${entry.message || ""}`)
     );
-    elements.uploadStatusBody.append(row);
+    target.append(row);
   });
+}
+
+function renderUploadStatusRows(entries) {
+  renderUploadStatusRowsForTarget(elements.uploadStatusBody, entries);
+}
+
+function isUploadProgressAssetType(assetType) {
+  return !isReferenceAssetType(assetType) && !MVP_DEFERRED_ADD_ASSET_TYPES.has(assetType);
+}
+
+function updateInlineUploadProgress(state) {
+  if (!state?.assetType) {
+    return;
+  }
+  const container = Array.from(document.querySelectorAll("[data-asset-tool-inline-upload-progress]"))
+    .find((node) => node.dataset.assetToolInlineUploadProgress === state.assetType);
+  if (!container) {
+    return;
+  }
+  populateInlineUploadProgress(container, state);
 }
 
 function updateUploadDialog(state) {
@@ -601,14 +646,7 @@ function updateUploadDialog(state) {
     return;
   }
   elements.uploadDialog.hidden = false;
-  const elapsedMilliseconds = Math.max(0, performance.now() - state.startedAt);
-  const elapsedSeconds = elapsedMilliseconds / 1000;
-  const bps = elapsedSeconds > 0 ? Math.round(state.bytesUploaded / elapsedSeconds) : 0;
-  const remainingBytes = Math.max(0, state.totalBytes - state.bytesUploaded);
-  const etaMilliseconds = bps > 0 ? (remainingBytes / bps) * 1000 : NaN;
-  const progressValue = state.totalBytes > 0
-    ? Math.min(100, Math.round((state.bytesUploaded / state.totalBytes) * 100))
-    : 0;
+  const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
 
   setText(elements.uploadCurrentFile, state.currentFile);
   setText(elements.uploadFileProgress, `${state.fileIndex} / ${state.fileCount}`);
@@ -624,6 +662,110 @@ function updateUploadDialog(state) {
   }
   renderUploadStatusRows(state.entries);
   updateUploadSummary(batchSummaryForEntries(state.entries));
+  updateInlineUploadProgress(state);
+}
+
+function createInlineUploadMetric(labelText, datasetName) {
+  const item = document.createElement("div");
+  item.className = "content-stack content-stack--compact";
+  const label = document.createElement("span");
+  label.textContent = labelText;
+  const value = document.createElement("strong");
+  value.dataset[datasetName] = "true";
+  value.textContent = "N/A";
+  item.append(label, value);
+  return item;
+}
+
+function createInlineUploadProgress(assetType) {
+  const section = document.createElement("section");
+  section.className = "content-stack content-stack--compact";
+  section.dataset.assetToolInlineUploadProgress = assetType;
+  section.setAttribute("aria-live", "polite");
+  section.hidden = !(activeUploadAssetType === assetType && activeUploadState);
+
+  const heading = document.createElement("h4");
+  heading.textContent = "Upload Progress";
+
+  const metrics = document.createElement("div");
+  metrics.className = "content-cluster";
+  metrics.append(
+    createInlineUploadMetric("Phase", "assetToolInlineUploadPhase"),
+    createInlineUploadMetric("Current file", "assetToolInlineUploadCurrentFile"),
+    createInlineUploadMetric("Files", "assetToolInlineUploadFileProgress"),
+    createInlineUploadMetric("Bytes uploaded", "assetToolInlineUploadBytesUploaded"),
+    createInlineUploadMetric("Total bytes", "assetToolInlineUploadTotalBytes"),
+    createInlineUploadMetric("BPS", "assetToolInlineUploadBps"),
+    createInlineUploadMetric("Speed", "assetToolInlineUploadSpeed"),
+    createInlineUploadMetric("ETA", "assetToolInlineUploadEta"),
+    createInlineUploadMetric("Elapsed", "assetToolInlineUploadElapsed")
+  );
+
+  const progress = document.createElement("progress");
+  progress.max = 100;
+  progress.value = 0;
+  progress.dataset.assetToolInlineUploadProgressBar = "true";
+
+  const summary = document.createElement("div");
+  summary.className = "content-cluster";
+  summary.append(
+    createInlineUploadMetric("Written", "assetToolInlineUploadSummaryWritten"),
+    createInlineUploadMetric("Failed", "assetToolInlineUploadSummaryFailed"),
+    createInlineUploadMetric("Skipped", "assetToolInlineUploadSummarySkipped"),
+    createInlineUploadMetric("Warnings", "assetToolInlineUploadSummaryWarnings")
+  );
+
+  const statusTable = document.createElement("table");
+  statusTable.className = "data-table";
+  statusTable.setAttribute("aria-label", `${assetType} upload progress`);
+  const head = document.createElement("thead");
+  const headRow = document.createElement("tr");
+  ["File", "Status", "Message"].forEach((label) => {
+    const headingCell = document.createElement("th");
+    headingCell.scope = "col";
+    headingCell.textContent = label;
+    headRow.append(headingCell);
+  });
+  head.append(headRow);
+  const body = document.createElement("tbody");
+  body.dataset.assetToolInlineUploadStatusBody = "true";
+  statusTable.append(head, body);
+
+  section.append(heading, metrics, progress, summary, statusTable);
+  if (activeUploadAssetType === assetType && activeUploadState) {
+    populateInlineUploadProgress(section, activeUploadState);
+  }
+  return section;
+}
+
+function populateInlineUploadProgress(container, state) {
+  if (!container || !state) {
+    return;
+  }
+  const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
+  const summary = batchSummaryForEntries(state.entries);
+  container.hidden = false;
+  setText(container.querySelector("[data-asset-tool-inline-upload-phase]"), state.phase);
+  setText(container.querySelector("[data-asset-tool-inline-upload-current-file]"), state.currentFile);
+  setText(container.querySelector("[data-asset-tool-inline-upload-file-progress]"), `${state.fileIndex} / ${state.fileCount}`);
+  setText(container.querySelector("[data-asset-tool-inline-upload-bytes-uploaded]"), formatBytes(state.bytesUploaded));
+  setText(container.querySelector("[data-asset-tool-inline-upload-total-bytes]"), formatBytes(state.totalBytes));
+  setText(container.querySelector("[data-asset-tool-inline-upload-bps]"), String(bps));
+  setText(container.querySelector("[data-asset-tool-inline-upload-speed]"), `${formatBytes(bps)}/s`);
+  setText(container.querySelector("[data-asset-tool-inline-upload-eta]"), formatDuration(etaMilliseconds));
+  setText(container.querySelector("[data-asset-tool-inline-upload-elapsed]"), formatDuration(elapsedMilliseconds));
+  setText(container.querySelector("[data-asset-tool-inline-upload-summary-written]"), String(batchWrittenCount(summary)));
+  setText(container.querySelector("[data-asset-tool-inline-upload-summary-failed]"), String(summary.fail));
+  setText(container.querySelector("[data-asset-tool-inline-upload-summary-skipped]"), String(summary.skip));
+  setText(container.querySelector("[data-asset-tool-inline-upload-summary-warnings]"), String(summary.warn));
+  const progress = container.querySelector("[data-asset-tool-inline-upload-progress-bar]");
+  if (progress) {
+    progress.value = progressValue;
+  }
+  renderUploadStatusRowsForTarget(
+    container.querySelector("[data-asset-tool-inline-upload-status-body]"),
+    state.entries
+  );
 }
 
 function renderBatchLog(entries, summary = null) {
@@ -699,6 +841,9 @@ async function saveUploadBatch(row, assetType) {
   hideAccountPrompt();
   const files = selectedUploadFiles(row).length ? selectedUploadFiles(row) : uploadPayloadsForEditRow(row);
   const uploadState = createUploadState(files);
+  uploadState.assetType = assetType;
+  activeUploadAssetType = assetType;
+  activeUploadState = uploadState;
   const seenNames = new Set();
   let globalFailure = false;
 
@@ -1080,6 +1225,9 @@ function createAssetTypeAccordion(assetType, assets, snapshot) {
   actions.append(addButton);
 
   body.append(actions, createAssetTypeTable(assetType, assets, snapshot));
+  if (isUploadProgressAssetType(assetType)) {
+    body.append(createInlineUploadProgress(assetType));
+  }
   details.append(summary, body);
   return details;
 }
@@ -1172,6 +1320,9 @@ function renderMetadata(snapshot) {
   ];
   if (asset.projectId) metadataLines.push(`Project ID: ${asset.projectId}`);
   if (asset.targetFolder) metadataLines.push(`Target folder: ${asset.targetFolder}`);
+  if (asset.targetDirectory) metadataLines.push(`Target directory: ${asset.targetDirectory}`);
+  if (asset.targetDirectoryResult) metadataLines.push(`Directory result: ${asset.targetDirectoryResult}`);
+  if (asset.directoryStatus) metadataLines.push(`Directory status: ${asset.directoryStatus}`);
   if (asset.targetFilePath) metadataLines.push(`Target file path: ${asset.targetFilePath}`);
   if (asset.writeResult) metadataLines.push(`Write result: ${asset.writeResult}`);
   if (assetViewPath(asset)) metadataLines.push(`View path: ${assetViewPath(asset)}`);

@@ -1,4 +1,4 @@
-import { existsSync, mkdirSync, unlinkSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, statSync, unlinkSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { createGameConfigurationMockRepository } from "./game-configuration-mock-repository.js";
@@ -587,6 +587,7 @@ export function createAssetToolMockRepository(options = {}) {
   }
   let selectedAssetId = "";
   let uploadFileWritesEnabled = options.uploadFileWritesEnabled !== false;
+  let unsafeUploadPathForTest = false;
 
   function persistTables() {
     saveMockDbTables(ASSET_DB_OWNER, tables, options);
@@ -612,14 +613,23 @@ export function createAssetToolMockRepository(options = {}) {
     const projectsRoot = path.resolve(repositoryRoot(), PROJECT_ASSET_STORAGE_ROOT);
     const absolutePath = path.resolve(repositoryRoot(), normalizedPath);
     const relativeToProjects = path.relative(projectsRoot, absolutePath);
+    const relativeToProject = normalizedProjectId
+      ? path.relative(path.resolve(projectsRoot, normalizedProjectId), absolutePath)
+      : "";
     const projectPrefix = normalizedProjectId
       ? `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/`
       : `${PROJECT_ASSET_STORAGE_ROOT}/`;
     if (
       !normalizedPath.startsWith(projectPrefix)
+      || normalizedPath.split("/").includes("..")
       || relativeToProjects === ""
       || relativeToProjects.startsWith("..")
       || path.isAbsolute(relativeToProjects)
+      || (normalizedProjectId && (
+        relativeToProject === ""
+        || relativeToProject.startsWith("..")
+        || path.isAbsolute(relativeToProject)
+      ))
     ) {
       return {
         absolutePath: "",
@@ -634,23 +644,134 @@ export function createAssetToolMockRepository(options = {}) {
     };
   }
 
-  function createWriteDiagnostics({ bytesWritten = 0, message = "", ok = false, projectId = "", targetFilePath = "", writeResult = "" } = {}) {
+  function createWriteDiagnostics({
+    bytesWritten = 0,
+    directoryStatus = "",
+    message = "",
+    ok = false,
+    projectId = "",
+    targetDirectory = "",
+    targetDirectoryResult = "",
+    targetFilePath = "",
+    writeResult = ""
+  } = {}) {
     const normalizedFilePath = normalizeProjectRelativePath(targetFilePath);
+    const normalizedTargetDirectory = normalizeProjectRelativePath(
+      targetDirectory || path.posix.dirname(normalizedFilePath || `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}`)
+    );
     return {
       bytesWritten,
+      directoryStatus,
       ok,
       projectId,
+      targetDirectory: normalizedTargetDirectory,
+      targetDirectoryResult,
       targetFilePath: normalizedFilePath,
-      targetFolder: normalizeProjectRelativePath(path.posix.dirname(normalizedFilePath || `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}`)),
+      targetFolder: normalizedTargetDirectory,
       viewPath: normalizedFilePath,
       writeResult,
       message
     };
   }
 
+  function validateProjectTargetDirectory(targetFilePath, projectId = "") {
+    const resolved = resolveProjectRelativeFile(targetFilePath, projectId);
+    const directoryRelativePath = normalizeProjectRelativePath(path.posix.dirname(resolved.relativePath || targetFilePath));
+    if (resolved.error) {
+      return {
+        ...resolved,
+        directoryAbsolutePath: "",
+        directoryRelativePath,
+        directoryStatus: "failed",
+        message: resolved.error
+      };
+    }
+
+    const directoryAbsolutePath = path.dirname(resolved.absolutePath);
+    const normalizedProjectId = normalizeProjectId(projectId);
+    const projectRoot = path.resolve(repositoryRoot(), PROJECT_ASSET_STORAGE_ROOT, normalizedProjectId);
+    const relativeDirectoryToProject = path.relative(projectRoot, directoryAbsolutePath);
+    if (
+      !normalizedProjectId
+      || relativeDirectoryToProject === ""
+      || relativeDirectoryToProject.startsWith("..")
+      || path.isAbsolute(relativeDirectoryToProject)
+    ) {
+      return {
+        ...resolved,
+        directoryAbsolutePath,
+        directoryRelativePath,
+        directoryStatus: "failed",
+        error: "Upload directory validation failed: target directory must stay under /projects/<projectId>/<asset-type>/.",
+        message: "Upload directory validation failed: target directory must stay under /projects/<projectId>/<asset-type>/."
+      };
+    }
+
+    try {
+      if (existsSync(directoryAbsolutePath)) {
+        if (!statSync(directoryAbsolutePath).isDirectory()) {
+          return {
+            ...resolved,
+            directoryAbsolutePath,
+            directoryRelativePath,
+            directoryStatus: "failed",
+            error: "Upload directory validation failed: target path exists but is not a directory.",
+            message: "Upload directory validation failed: target path exists but is not a directory."
+          };
+        }
+        return {
+          ...resolved,
+          directoryAbsolutePath,
+          directoryRelativePath,
+          directoryStatus: "exists",
+          message: `Directory exists: ${directoryRelativePath}.`
+        };
+      }
+
+      mkdirSync(directoryAbsolutePath, { recursive: true });
+      if (!existsSync(directoryAbsolutePath) || !statSync(directoryAbsolutePath).isDirectory()) {
+        return {
+          ...resolved,
+          directoryAbsolutePath,
+          directoryRelativePath,
+          directoryStatus: "failed",
+          error: "Upload directory creation failed: target directory was not created.",
+          message: "Upload directory creation failed: target directory was not created."
+        };
+      }
+
+      return {
+        ...resolved,
+        directoryAbsolutePath,
+        directoryRelativePath,
+        directoryStatus: "created",
+        message: `Directory created: ${directoryRelativePath}.`
+      };
+    } catch (error) {
+      return {
+        ...resolved,
+        directoryAbsolutePath,
+        directoryRelativePath,
+        directoryStatus: "failed",
+        error: `Upload directory creation failed: ${error.message}`,
+        message: `Upload directory creation failed: ${error.message}`
+      };
+    }
+  }
+
+  function catalogUploadTargetPath(projectId, assetRole, fileName) {
+    const targetFilePath = catalogUploadStoredPath(projectId, assetRole, fileName);
+    if (!unsafeUploadPathForTest || !targetFilePath) {
+      return targetFilePath;
+    }
+    const normalizedProjectId = normalizeProjectId(projectId);
+    const role = roleDefinitionForId(assetRole);
+    return `${PROJECT_ASSET_STORAGE_ROOT}/${normalizedProjectId}/${role?.storageFolder || "image"}/../outside/${sanitizeFileName(fileName)}`;
+  }
+
   function writeCatalogUploadFile(input, projectId) {
     const assetRole = catalogAssetRoleForType(input.assetType);
-    const targetFilePath = catalogUploadStoredPath(projectId, assetRole, input.fileName);
+    const targetFilePath = catalogUploadTargetPath(projectId, assetRole, input.fileName);
     if (!uploadFileWritesEnabled) {
       return createWriteDiagnostics({
         message: "Upload file write failed: browser file writes are not supported by this runtime.",
@@ -670,54 +791,67 @@ export function createAssetToolMockRepository(options = {}) {
       });
     }
 
-    const resolved = resolveProjectRelativeFile(targetFilePath, projectId);
-    if (resolved.error) {
+    const directoryValidation = validateProjectTargetDirectory(targetFilePath, projectId);
+    if (directoryValidation.error) {
       return createWriteDiagnostics({
-        message: resolved.error,
+        directoryStatus: directoryValidation.directoryStatus,
+        message: directoryValidation.message || directoryValidation.error,
         ok: false,
         projectId,
-        targetFilePath: resolved.relativePath || targetFilePath,
-        writeResult: "FAIL: Unsafe target path"
+        targetDirectory: directoryValidation.directoryRelativePath,
+        targetDirectoryResult: directoryValidation.message || directoryValidation.error,
+        targetFilePath: directoryValidation.relativePath || targetFilePath,
+        writeResult: "FAIL: Directory validation"
       });
     }
 
     try {
-      const targetFolder = path.dirname(resolved.absolutePath);
       const fileBytes = Buffer.from(input.fileContentBase64, "base64");
-      if (existsSync(resolved.absolutePath)) {
+      if (existsSync(directoryValidation.absolutePath)) {
         return createWriteDiagnostics({
-          message: `Upload file blocked: ${resolved.relativePath} already exists. Rename the file or remove the existing asset before uploading.`,
+          directoryStatus: directoryValidation.directoryStatus,
+          message: `Upload file blocked: ${directoryValidation.relativePath} already exists. Rename the file or remove the existing asset before uploading.`,
           ok: false,
           projectId,
-          targetFilePath: resolved.relativePath,
+          targetDirectory: directoryValidation.directoryRelativePath,
+          targetDirectoryResult: directoryValidation.message,
+          targetFilePath: directoryValidation.relativePath,
           writeResult: "FAIL: Duplicate project path"
         });
       }
-      mkdirSync(targetFolder, { recursive: true });
-      writeFileSync(resolved.absolutePath, fileBytes);
-      if (!existsSync(resolved.absolutePath)) {
+      writeFileSync(directoryValidation.absolutePath, fileBytes);
+      if (!existsSync(directoryValidation.absolutePath)) {
         return createWriteDiagnostics({
+          directoryStatus: directoryValidation.directoryStatus,
           message: "Upload file write failed: target file does not exist after write.",
           ok: false,
           projectId,
-          targetFilePath: resolved.relativePath,
+          targetDirectory: directoryValidation.directoryRelativePath,
+          targetDirectoryResult: directoryValidation.message,
+          targetFilePath: directoryValidation.relativePath,
           writeResult: "FAIL: Missing after write"
         });
       }
       return createWriteDiagnostics({
         bytesWritten: fileBytes.length,
-        message: `Wrote ${input.fileName} to ${resolved.relativePath}.`,
+        directoryStatus: directoryValidation.directoryStatus,
+        message: `Wrote ${input.fileName} to ${directoryValidation.relativePath}.`,
         ok: true,
         projectId,
-        targetFilePath: resolved.relativePath,
+        targetDirectory: directoryValidation.directoryRelativePath,
+        targetDirectoryResult: directoryValidation.message,
+        targetFilePath: directoryValidation.relativePath,
         writeResult: "Written"
       });
     } catch (error) {
       return createWriteDiagnostics({
+        directoryStatus: directoryValidation.directoryStatus,
         message: `Upload file write failed: ${error.message}`,
         ok: false,
         projectId,
-        targetFilePath,
+        targetDirectory: directoryValidation.directoryRelativePath,
+        targetDirectoryResult: directoryValidation.message,
+        targetFilePath: directoryValidation.relativePath || targetFilePath,
         writeResult: "FAIL: Write error"
       });
     }
@@ -1364,7 +1498,10 @@ export function createAssetToolMockRepository(options = {}) {
       storageObjectId: `${id}-storage`,
       tagKeys: input.tagKeys,
       targetFilePath: writeDiagnostics?.targetFilePath || storedPath,
+      targetDirectory: writeDiagnostics?.targetDirectory || writeDiagnostics?.targetFolder || "",
+      targetDirectoryResult: writeDiagnostics?.targetDirectoryResult || "",
       targetFolder: writeDiagnostics?.targetFolder || "",
+      directoryStatus: writeDiagnostics?.directoryStatus || "",
       type: assetType,
       updatedAt: now,
       updatedBy: ownerUserKey,
@@ -1427,7 +1564,10 @@ export function createAssetToolMockRepository(options = {}) {
       status: "Cataloged",
       storedPath: asset.storedPath,
       targetFilePath: asset.targetFilePath,
+      targetDirectory: asset.targetDirectory,
+      targetDirectoryResult: asset.targetDirectoryResult,
       targetFolder: asset.targetFolder,
+      directoryStatus: asset.directoryStatus,
       updatedAt: asset.updatedAt,
       updatedBy: asset.updatedBy,
       viewPath: asset.viewPath,
@@ -1445,6 +1585,9 @@ export function createAssetToolMockRepository(options = {}) {
       status: "Cataloged",
       storedPath: asset.storedPath,
       targetFilePath: asset.targetFilePath,
+      targetDirectory: asset.targetDirectory,
+      targetDirectoryResult: asset.targetDirectoryResult,
+      directoryStatus: asset.directoryStatus,
       type: asset.type,
       updatedAt: asset.updatedAt,
       updatedBy: asset.updatedBy,
@@ -1550,7 +1693,10 @@ export function createAssetToolMockRepository(options = {}) {
     asset.storedPath = nextStoredPath;
     asset.path = nextStoredPath;
     asset.targetFilePath = writeDiagnostics?.targetFilePath || nextStoredPath;
+    asset.targetDirectory = writeDiagnostics?.targetDirectory || writeDiagnostics?.targetFolder || "";
+    asset.targetDirectoryResult = writeDiagnostics?.targetDirectoryResult || "";
     asset.targetFolder = writeDiagnostics?.targetFolder || "";
+    asset.directoryStatus = writeDiagnostics?.directoryStatus || "";
     asset.viewPath = writeDiagnostics?.viewPath || nextStoredPath;
     asset.writeDiagnostics = writeDiagnostics ? { ...writeDiagnostics } : null;
     asset.writeResult = writeDiagnostics?.writeResult || (asset.source === REFERENCE_SOURCE_MODE ? "Reference" : "");
@@ -1563,7 +1709,10 @@ export function createAssetToolMockRepository(options = {}) {
       storageObject.size = asset.size;
       storageObject.storedPath = nextStoredPath;
       storageObject.targetFilePath = asset.targetFilePath;
+      storageObject.targetDirectory = asset.targetDirectory;
+      storageObject.targetDirectoryResult = asset.targetDirectoryResult;
       storageObject.targetFolder = asset.targetFolder;
+      storageObject.directoryStatus = asset.directoryStatus;
       storageObject.updatedAt = now;
       storageObject.updatedBy = asset.updatedBy;
       storageObject.viewPath = asset.viewPath;
@@ -1581,6 +1730,9 @@ export function createAssetToolMockRepository(options = {}) {
       status: "Updated",
       storedPath: asset.storedPath,
       targetFilePath: asset.targetFilePath,
+      targetDirectory: asset.targetDirectory,
+      targetDirectoryResult: asset.targetDirectoryResult,
+      directoryStatus: asset.directoryStatus,
       type: asset.type,
       updatedAt: now,
       updatedBy: asset.updatedBy,
@@ -1833,6 +1985,11 @@ export function createAssetToolMockRepository(options = {}) {
     return getSnapshot();
   }
 
+  function setUnsafeUploadPathForTest(enabled) {
+    unsafeUploadPathForTest = enabled === true;
+    return getSnapshot();
+  }
+
   function getTables() {
     return normalizeMockDbTables(ASSET_DB_OWNER, cloneTables(tables), options);
   }
@@ -1962,6 +2119,7 @@ export function createAssetToolMockRepository(options = {}) {
     seedDemoAssets,
     seedActiveProjectPalette,
     selectAsset,
+    setUnsafeUploadPathForTest,
     setUploadFileWriteSupport,
     updateAsset,
     updateAssetRecord,
