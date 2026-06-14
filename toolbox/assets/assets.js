@@ -44,26 +44,6 @@ const elements = {
   tagOptions: document.querySelector("[data-asset-tool-tag-options]"),
   validationList: document.querySelector("[data-asset-tool-validation-list]"),
   validationOverlay: document.querySelector("[data-asset-tool-validation-overlay]"),
-  uploadBps: document.querySelector("[data-asset-tool-upload-bps]"),
-  uploadBytesUploaded: document.querySelector("[data-asset-tool-upload-bytes-uploaded]"),
-  uploadClose: document.querySelector("[data-asset-tool-upload-close]"),
-  uploadCompactStatus: document.querySelector("[data-asset-tool-upload-compact-status]"),
-  uploadCurrentFile: document.querySelector("[data-asset-tool-upload-current-file]"),
-  uploadDialog: document.querySelector("[data-asset-tool-upload-dialog]"),
-  uploadElapsed: document.querySelector("[data-asset-tool-upload-elapsed]"),
-  uploadEta: document.querySelector("[data-asset-tool-upload-eta]"),
-  uploadFileProgress: document.querySelector("[data-asset-tool-upload-file-progress]"),
-  uploadIssues: document.querySelector("[data-asset-tool-upload-issues]"),
-  uploadPhase: document.querySelector("[data-asset-tool-upload-phase]"),
-  uploadProgress: document.querySelector("[data-asset-tool-upload-progress]"),
-  uploadProgressDetails: document.querySelector("[data-asset-tool-upload-progress-details]"),
-  uploadSpeed: document.querySelector("[data-asset-tool-upload-speed]"),
-  uploadStatusBody: document.querySelector("[data-asset-tool-upload-status-body]"),
-  uploadSummaryFailed: document.querySelector("[data-asset-tool-upload-summary-failed]"),
-  uploadSummarySkipped: document.querySelector("[data-asset-tool-upload-summary-skipped]"),
-  uploadSummaryWarnings: document.querySelector("[data-asset-tool-upload-summary-warnings]"),
-  uploadSummaryWritten: document.querySelector("[data-asset-tool-upload-summary-written]"),
-  uploadTotalBytes: document.querySelector("[data-asset-tool-upload-total-bytes]"),
 };
 
 let editingAssetId = "";
@@ -613,13 +593,6 @@ function batchWrittenCount(summary) {
   return summary.ok + summary.warn;
 }
 
-function updateUploadSummary(summary) {
-  setText(elements.uploadSummaryWritten, String(batchWrittenCount(summary)));
-  setText(elements.uploadSummaryFailed, String(summary.fail));
-  setText(elements.uploadSummarySkipped, String(summary.skip));
-  setText(elements.uploadSummaryWarnings, String(summary.warn));
-}
-
 function uploadProgressMetrics(state) {
   const elapsedMilliseconds = Math.max(0, performance.now() - state.startedAt);
   const elapsedSeconds = elapsedMilliseconds / 1000;
@@ -645,6 +618,10 @@ function uploadIsComplete(state) {
 function compactUploadStatusText(summary) {
   const written = batchWrittenCount(summary);
   return `Upload summary: ${written} written, ${summary.fail} failed, ${summary.skip} skipped, ${summary.warn} warnings.`;
+}
+
+function uploadCompletedSuccessfully(summary) {
+  return summary.fail === 0 && summary.skip === 0 && summary.warn === 0;
 }
 
 function conciseUploadIssueMessage(entry) {
@@ -677,18 +654,18 @@ function conciseUploadIssueMessage(entry) {
   return firstSentence.replace(/projects\/[A-Z0-9/._-]+/g, "project path").slice(0, 140);
 }
 
-function renderUploadIssues(entries) {
-  if (!elements.uploadIssues) {
+function renderUploadIssuesForTarget(target, entries) {
+  if (!target) {
     return;
   }
   const problemEntries = entries.filter((entry) => entry.status !== "OK");
-  elements.uploadIssues.replaceChildren();
-  elements.uploadIssues.hidden = problemEntries.length === 0;
+  target.replaceChildren();
+  target.hidden = problemEntries.length === 0;
   problemEntries.forEach((entry) => {
     const item = document.createElement("li");
     item.dataset.assetToolUploadIssue = entry.status;
     item.textContent = `${entry.status}: ${entry.fileName} - ${conciseUploadIssueMessage(entry)}`;
-    elements.uploadIssues.append(item);
+    target.append(item);
   });
 }
 
@@ -717,10 +694,6 @@ function renderUploadStatusRowsForTarget(target, entries) {
   });
 }
 
-function renderUploadStatusRows(entries) {
-  renderUploadStatusRowsForTarget(elements.uploadStatusBody, entries);
-}
-
 function isUploadProgressAssetType(assetType) {
   return !isReferenceAssetType(assetType) && !MVP_DEFERRED_ADD_ASSET_TYPES.has(assetType);
 }
@@ -737,35 +710,7 @@ function updateInlineUploadProgress(state) {
   populateInlineUploadProgress(container, state);
 }
 
-function updateUploadDialog(state) {
-  if (!elements.uploadDialog) {
-    return;
-  }
-  elements.uploadDialog.hidden = false;
-  elements.uploadDialog.dataset.assetToolUploadWorker = state.workerStatus || "Idle";
-  elements.uploadDialog.dataset.assetToolServerReceiveUpdates = String(state.serverReceiveUpdateCount || 0);
-  const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
-  const summary = batchSummaryForEntries(state.entries);
-
-  setText(elements.uploadCurrentFile, state.currentFile);
-  setText(elements.uploadFileProgress, `${state.fileIndex} / ${state.fileCount}`);
-  setText(elements.uploadBytesUploaded, formatBytes(state.serverBytesReceived));
-  setText(elements.uploadTotalBytes, formatBytes(state.totalBytes));
-  setText(elements.uploadBps, String(bps));
-  setText(elements.uploadSpeed, `${formatBytes(bps)}/s`);
-  setText(elements.uploadEta, formatDuration(etaMilliseconds));
-  setText(elements.uploadElapsed, formatDuration(elapsedMilliseconds));
-  setText(elements.uploadPhase, state.phase);
-  if (elements.uploadProgress) {
-    elements.uploadProgress.value = progressValue;
-  }
-  if (elements.uploadProgressDetails) {
-    elements.uploadProgressDetails.hidden = uploadIsComplete(state);
-  }
-  setText(elements.uploadCompactStatus, compactUploadStatusText(summary));
-  renderUploadStatusRows(state.entries);
-  renderUploadIssues(state.entries);
-  updateUploadSummary(summary);
+function updateUploadProgress(state) {
   updateInlineUploadProgress(state);
 }
 
@@ -790,6 +735,16 @@ function createInlineUploadProgress(assetType) {
 
   const heading = document.createElement("h4");
   heading.textContent = "Upload Progress";
+
+  const compactStatus = document.createElement("p");
+  compactStatus.className = "status";
+  compactStatus.setAttribute("role", "status");
+  compactStatus.dataset.assetToolInlineUploadCompactStatus = "true";
+  compactStatus.textContent = "No upload run yet.";
+
+  const details = document.createElement("div");
+  details.className = "content-stack content-stack--compact";
+  details.dataset.assetToolInlineUploadProgressDetails = "true";
 
   const metrics = document.createElement("div");
   metrics.className = "content-cluster";
@@ -820,6 +775,10 @@ function createInlineUploadProgress(assetType) {
     createInlineUploadMetric("Warnings", "assetToolInlineUploadSummaryWarnings")
   );
 
+  const issues = document.createElement("ul");
+  issues.dataset.assetToolInlineUploadIssues = "true";
+  issues.hidden = true;
+
   const statusTable = document.createElement("table");
   statusTable.className = "data-table";
   statusTable.setAttribute("aria-label", `${assetType} upload progress`);
@@ -836,7 +795,8 @@ function createInlineUploadProgress(assetType) {
   body.dataset.assetToolInlineUploadStatusBody = "true";
   statusTable.append(head, body);
 
-  section.append(heading, metrics, progress, summary, statusTable);
+  details.append(metrics, progress, summary, issues, statusTable);
+  section.append(heading, compactStatus, details);
   if (activeUploadAssetType === assetType && activeUploadState) {
     populateInlineUploadProgress(section, activeUploadState);
   }
@@ -850,9 +810,11 @@ function populateInlineUploadProgress(container, state) {
   const complete = uploadIsComplete(state);
   const { bps, elapsedMilliseconds, etaMilliseconds, progressValue } = uploadProgressMetrics(state);
   const summary = batchSummaryForEntries(state.entries);
+  const successfulComplete = complete && uploadCompletedSuccessfully(summary);
   container.hidden = false;
   container.dataset.assetToolUploadWorker = state.workerStatus || "Idle";
   container.dataset.assetToolServerReceiveUpdates = String(state.serverReceiveUpdateCount || 0);
+  setText(container.querySelector("[data-asset-tool-inline-upload-compact-status]"), compactUploadStatusText(summary));
   setText(container.querySelector("[data-asset-tool-inline-upload-phase]"), state.phase);
   setText(container.querySelector("[data-asset-tool-inline-upload-current-file]"), state.currentFile);
   setText(container.querySelector("[data-asset-tool-inline-upload-file-progress]"), `${state.fileIndex} / ${state.fileCount}`);
@@ -875,7 +837,14 @@ function populateInlineUploadProgress(container, state) {
     container.querySelector("[data-asset-tool-inline-upload-status-body]"),
     state.entries
   );
-  container.hidden = complete;
+  renderUploadIssuesForTarget(
+    container.querySelector("[data-asset-tool-inline-upload-issues]"),
+    state.entries
+  );
+  const details = container.querySelector("[data-asset-tool-inline-upload-progress-details]");
+  if (details) {
+    details.hidden = successfulComplete;
+  }
 }
 
 function renderBatchLog(entries, summary = null) {
@@ -961,7 +930,7 @@ function processUploadFileInWorker(file, uploadState) {
         uploadState.workerStatus = "Active";
         uploadState.currentFile = message.fileName || fileName;
         uploadState.phase = "Uploading";
-        updateUploadDialog(uploadState);
+        updateUploadProgress(uploadState);
         return;
       }
       if (message.type === "progress") {
@@ -976,7 +945,7 @@ function processUploadFileInWorker(file, uploadState) {
         uploadState.workerStatus = "Server Receiving";
         uploadState.currentFile = message.fileName || fileName;
         uploadState.phase = "Receiving";
-        updateUploadDialog(uploadState);
+        updateUploadProgress(uploadState);
         cleanup();
         resolve(message.payload || {});
         return;
@@ -985,7 +954,7 @@ function processUploadFileInWorker(file, uploadState) {
         uploadState.workerStatus = "Failed";
         uploadState.currentFile = message.fileName || fileName;
         uploadState.phase = "Failed";
-        updateUploadDialog(uploadState);
+        updateUploadProgress(uploadState);
         failUpload(message.message || "Upload worker failed.");
       }
     });
@@ -994,7 +963,7 @@ function processUploadFileInWorker(file, uploadState) {
       uploadState.workerStatus = "Failed";
       uploadState.currentFile = fileName;
       uploadState.phase = "Failed";
-      updateUploadDialog(uploadState);
+      updateUploadProgress(uploadState);
       failUpload(error.message || "Upload worker failed.");
     });
 
@@ -1027,14 +996,14 @@ async function receiveFileBytesFromServer(uploadState, startingBytes, fileSize) 
   let fileBytesReceived = 0;
   uploadState.phase = "Receiving";
   uploadState.workerStatus = "Server Receiving";
-  updateUploadDialog(uploadState);
+  updateUploadProgress(uploadState);
 
   while (fileBytesReceived < receiveTargetBeforeWrite) {
     await serverReceiveDelay();
     fileBytesReceived = Math.min(receiveTargetBeforeWrite, fileBytesReceived + SERVER_RECEIVE_CHUNK_SIZE_BYTES);
     uploadState.serverBytesReceived = Math.min(uploadState.totalBytes, startingBytes + fileBytesReceived);
     uploadState.serverReceiveUpdateCount += 1;
-    updateUploadDialog(uploadState);
+    updateUploadProgress(uploadState);
   }
 
   return true;
@@ -1051,10 +1020,7 @@ function addBatchLogEntry(entries, entry, uploadState = null) {
   entries.push(entry);
   renderBatchLog(entries, batchSummaryForEntries(entries));
   if (uploadState) {
-    updateUploadDialog(uploadState);
-  } else {
-    renderUploadStatusRows(entries);
-    updateUploadSummary(batchSummaryForEntries(entries));
+    updateUploadProgress(uploadState);
   }
 }
 
@@ -1080,7 +1046,7 @@ async function saveUploadBatch(row, assetType) {
   const seenNames = new Set();
   let globalFailure = false;
 
-  updateUploadDialog(uploadState);
+  updateUploadProgress(uploadState);
   await uploadDelay();
 
   for (let index = 0; index < files.length; index += 1) {
@@ -1089,7 +1055,7 @@ async function saveUploadBatch(row, assetType) {
     uploadState.currentFile = fileName;
     uploadState.fileIndex = index + 1;
     uploadState.phase = "Uploading";
-    updateUploadDialog(uploadState);
+    updateUploadProgress(uploadState);
     await uploadDelay();
 
     if (globalFailure) {
@@ -1138,7 +1104,7 @@ async function saveUploadBatch(row, assetType) {
     await receiveFileBytesFromServer(uploadState, startingBytes, fileSize);
     uploadState.phase = "Writing";
     uploadState.workerStatus = "Writing";
-    updateUploadDialog(uploadState);
+    updateUploadProgress(uploadState);
 
     const result = repository.addAssetRecord(batchInput);
     if (!result.added) {
@@ -1176,7 +1142,7 @@ async function saveUploadBatch(row, assetType) {
   const summary = batchSummaryForEntries(uploadState.entries);
   uploadState.phase = "Complete";
   uploadState.workerStatus = summary.fail > 0 ? "Failed" : "Complete";
-  updateUploadDialog(uploadState);
+  updateUploadProgress(uploadState);
   if (summary.ok + summary.warn > 0) {
     clearEditState();
   }
@@ -1810,12 +1776,6 @@ elements.reset?.addEventListener("click", () => {
   selectedAssetId = "";
   setText(elements.log, result.message);
   render();
-});
-
-elements.uploadClose?.addEventListener("click", () => {
-  if (elements.uploadDialog) {
-    elements.uploadDialog.hidden = true;
-  }
 });
 
 elements.clearStatusLog?.addEventListener("click", () => {

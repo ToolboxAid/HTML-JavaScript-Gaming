@@ -7,7 +7,7 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(92%) toolbox/assets/assets.js - executed lines 1639/1639; executed functions 135/146
+(93%) toolbox/assets/assets.js - executed lines 1599/1599; executed functions 134/144
 
 Guardrail warnings:
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
