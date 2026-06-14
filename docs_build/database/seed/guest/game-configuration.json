@@ -13,7 +13,7 @@
     {
       "key": "guest-game-configuration-starter",
       "audience": "guest",
-      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
       "groupKey": "game-configuration",
       "label": "Guest Game Configuration starter",
       "loadablePath": "toolbox/game-configuration/index.html",

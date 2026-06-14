@@ -1,0 +1,26 @@
+{
+  "group": "Animations",
+  "groupKey": "animations",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-animations-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "animations",
+      "label": "Guest Animations starter",
+      "loadablePath": "toolbox/animations/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/animations.json",
+      "toolKey": "animations",
+      "toolName": "Animations",
+      "writableByGuest": false
+    }
+  ]
+}

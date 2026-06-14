@@ -1,0 +1,26 @@
+{
+  "group": "Build Game",
+  "groupKey": "build-game",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-build-game-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "build-game",
+      "label": "Guest Build Game starter",
+      "loadablePath": "toolbox/build-game/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/build-game.json",
+      "toolKey": "build-game",
+      "toolName": "Build Game",
+      "writableByGuest": false
+    }
+  ]
+}

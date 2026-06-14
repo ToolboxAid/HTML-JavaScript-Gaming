@@ -115,7 +115,7 @@ test("static sign-in page renders production-safe account actions without API di
     await expect(page.locator("main")).not.toContainText("reseed");
     await expect(page.locator("main")).not.toContainText("Local DB");
     await page.getByRole("button", { name: "Sign In" }).click();
-    await expect(page.locator("[data-login-status]")).toHaveText("Secure account sign-in is not available in this build.");
+    await expect(page.locator("[data-login-status]")).toHaveText("Account features are being connected to the production authentication provider.");
 
     expect(requests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
     expect(requests.filter((request) => request.includes("/api/session/"))).toEqual([]);

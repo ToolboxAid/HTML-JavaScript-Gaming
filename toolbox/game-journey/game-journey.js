@@ -697,6 +697,38 @@ function sessionUserCanWrite() {
   return Boolean(repository.getSessionUser().userKey);
 }
 
+function redirectGuestWriteAction(statusTarget) {
+  if (sessionUserCanWrite()) {
+    return false;
+  }
+  const message = "Sign in before saving Game Journey changes.";
+  if (statusTarget) {
+    statusTarget.textContent = message;
+  }
+  window.location.href = new URL("../../account/sign-in.html", window.location.href).href;
+  return true;
+}
+
+function enableGuestSignInWriteActions(activeGame, canWrite) {
+  if (!activeGame || canWrite) {
+    return;
+  }
+  [
+    addItemButton,
+    updateItemButton,
+    moveUpButton,
+    moveDownButton,
+    indentButton,
+    outdentButton,
+    addNoteButton,
+    addTypeButton,
+  ].forEach((control) => {
+    if (control) {
+      control.disabled = false;
+    }
+  });
+}
+
 function captureSearchSelectionSnapshot() {
   if (!searchSelectionSnapshotTaken) {
     selectedSummaryNoteKeyBeforeSearch = selectedSummaryNoteKey;
@@ -918,6 +950,7 @@ function render() {
   renderSummary(notes);
   renderItemTree(displayNote, editingDisabled);
   renderEditor(editingDisabled, displayNote);
+  enableGuestSignInWriteActions(activeGame, canWrite);
   renderStatScope(selectedStatsNote, notes);
   renderStats(statCounts);
   renderSuggestedTools(displayNote);
@@ -1004,6 +1037,9 @@ itemTree.addEventListener("input", (event) => {
 });
 
 addItemButton.addEventListener("click", () => {
+  if (redirectGuestWriteAction(editorStatus)) {
+    return;
+  }
   const selectedItem = getSelectedItem();
   const addStatus = statusSelectionChanged ? statusInput.value : "not-started";
   const title = newItemTitleInput?.value || (!selectedItem || isUserItem(selectedItem) ? titleInput.value : "");
@@ -1022,6 +1058,9 @@ addItemButton.addEventListener("click", () => {
 
 editorForm.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (redirectGuestWriteAction(editorStatus)) {
+    return;
+  }
   const selectedItem = getSelectedItem();
   if (!selectedItem) {
     return;
@@ -1037,21 +1076,33 @@ editorForm.addEventListener("submit", (event) => {
 });
 
 moveUpButton.addEventListener("click", () => {
+  if (redirectGuestWriteAction(editorStatus)) {
+    return;
+  }
   repository.moveSelectedItem(-1);
   render();
 });
 
 moveDownButton.addEventListener("click", () => {
+  if (redirectGuestWriteAction(editorStatus)) {
+    return;
+  }
   repository.moveSelectedItem(1);
   render();
 });
 
 indentButton.addEventListener("click", () => {
+  if (redirectGuestWriteAction(editorStatus)) {
+    return;
+  }
   repository.changeSelectedIndent(1);
   render();
 });
 
 outdentButton.addEventListener("click", () => {
+  if (redirectGuestWriteAction(editorStatus)) {
+    return;
+  }
   repository.changeSelectedIndent(-1);
   render();
 });
@@ -1070,6 +1121,9 @@ searchInput?.addEventListener("input", () => {
 });
 
 addNoteButton.addEventListener("click", () => {
+  if (redirectGuestWriteAction(noteStatus)) {
+    return;
+  }
   const note = repository.addNote({
     name: newNoteNameInput.value,
     typeKey: newNoteTypeSelect.value,
@@ -1099,6 +1153,9 @@ noteTypeSelect.addEventListener("change", () => {
 });
 
 addTypeButton.addEventListener("click", () => {
+  if (redirectGuestWriteAction(typeStatus)) {
+    return;
+  }
   const result = repository.addNoteType(typeInput.value);
   typeStatus.textContent = result.message;
   if (result.created) {

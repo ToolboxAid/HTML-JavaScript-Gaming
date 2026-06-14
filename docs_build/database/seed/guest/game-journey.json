@@ -16,7 +16,7 @@
     {
       "key": "guest-game-journey-starter",
       "audience": "guest",
-      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
       "groupKey": "game-journey",
       "label": "Guest Game Journey starter",
       "loadablePath": "toolbox/game-journey/index.html",

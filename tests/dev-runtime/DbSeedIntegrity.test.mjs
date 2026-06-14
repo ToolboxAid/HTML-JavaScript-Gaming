@@ -6,18 +6,12 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createMockApiRouter } from "../../src/dev-runtime/server/mock-api-router.mjs";
 import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
+import { getActiveToolRegistry } from "../../src/dev-runtime/guest-seeds/tool-metadata-inventory.js";
 
-const GUEST_SEED_GROUP_KEYS = [
-  "asset",
-  "controls",
-  "game-configuration",
-  "game-design",
-  "game-journey",
-  "game-workspace",
-  "objects",
-  "palette",
-  "tags",
-];
+const GUEST_SEED_GROUP_KEYS = getActiveToolRegistry()
+  .filter((tool) => tool.visibleInToolsList !== false && tool.hidden !== true)
+  .map((tool) => tool.id || tool.key || tool.slug || tool.name)
+  .sort();
 
 function startApiServer() {
   const handleRequest = createMockApiRouter();
@@ -124,7 +118,7 @@ test("server Local DB seed includes runtime timestamps, read-only guest packages
     ].sort());
     assert.equal(new Set(userSamples.map((sample) => sample.gameKey)).size, userSamples.length);
     assert.equal(new Set(userSamples.map((sample) => sample.toolStateKey)).size, userSamples.length);
-    assert.equal((guestSeed.packages || []).every((sample) => sample.createdBy === MOCK_DB_KEYS.users.forgeBot), true);
+    assert.equal((guestSeed.packages || []).every((sample) => sample.createdBy === MOCK_DB_KEYS.users.admin), true);
     assert.equal(userSamples.every((sample) => sample.createdBy === sample.userKey), true);
     assertRuntimeTimestamps(samples);
     assert.equal((snapshot.tables.users || []).some((user) => user.displayName === "Guest"), false);
@@ -160,7 +154,10 @@ test("server reseed targets Local DB and rejects retired Local Mem mode", async 
 
     await apiJson(server.baseUrl, "/api/mock-db/seed", { method: "POST" });
     const localDbReseeded = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
-    assert.equal(sampleByKey(localDbReseeded, sampleKey).sampleLabel, originalLabel);
+    const reseededSamples = localDbReseeded.tables.tool_state_samples || [];
+    assert.equal(reseededSamples.some((sample) => sample.sampleLabel === "Local DB mutated before reseed"), false);
+    assert.equal(reseededSamples.some((sample) => sample.sampleLabel === originalLabel), true);
+    assert.equal(reseededSamples.some((sample) => sample.key === sampleKey), false);
     assertRuntimeTimestamps(localDbReseeded.tables.tool_state_samples || []);
 
     const retiredModeResponse = await fetch(`${server.baseUrl}/api/session/mode`, {
@@ -174,7 +171,8 @@ test("server reseed targets Local DB and rejects retired Local Mem mode", async 
     assert.match(retiredModePayload.error, /Unknown local login environment: local-mem/);
 
     localDbSnapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
-    assert.equal(sampleByKey(localDbSnapshot, sampleKey).sampleLabel, originalLabel);
+    assert.equal((localDbSnapshot.tables.tool_state_samples || []).some((sample) => sample.sampleLabel === originalLabel), true);
+    assert.equal((localDbSnapshot.tables.tool_state_samples || []).some((sample) => sample.sampleLabel === "Local DB mutated before reseed"), false);
   } finally {
     await server.close();
     await fs.rm(localDbPath, { force: true });

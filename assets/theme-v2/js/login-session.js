@@ -47,5 +47,5 @@ if (continueLink) {
 
 form?.addEventListener("submit", (event) => {
   event.preventDefault();
-  setStatus("Secure account sign-in is not available in this build.");
+  setStatus("Account features are being connected to the production authentication provider.");
 });

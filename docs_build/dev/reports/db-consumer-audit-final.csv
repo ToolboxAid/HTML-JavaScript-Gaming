@@ -1,0 +1,105 @@
+file_path,owning_area,consumer_type,current_data_source,migration_status,risk,recommended_next_pr,final_audit_note
+account/sign-in.html,account,auth;users,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+account/achievements.html,account,games,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+account/user-controls.html,account,controls,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+account/user-controls.js,account,controls,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+account/user-controls-page.js,account,controls;auth,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+account/index.html,account,users;settings,Local DB/server API,OK Local DB,low,none,Migrated/verified in stacked PR103-PR109.
+account/profile.html,account,users;settings,Local DB/server API,OK Local DB,low,none,Migrated/verified in stacked PR103-PR109.
+account/preferences.html,account,settings,Local DB/server API,OK Local DB,low,none,Migrated/verified in stacked PR103-PR109.
+account/security.html,account,auth;settings,Local DB/server API,OK Local DB,low,none,Migrated/verified in stacked PR103-PR109.
+assets/theme-v2/js/login-session.js,account,auth;users;roles,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+assets/theme-v2/js/gamefoundry-partials.js,public,auth;users,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+assets/theme-v2/js/account-achievements.js,account,games,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+assets/theme-v2/js/account-controls.js,account,controls;settings,static/page-local data,Needs review,low,PR-account-controls-page-source-review,Classified for future naming/boundary review; no active product-data migration blocker found.
+admin/db-viewer.html,admin,users;roles;other,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+admin/db-viewer.js,admin,users;roles;other,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+admin/tool-votes.html,admin,votes;ordering;tool metadata,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+admin/tool-votes.js,admin,votes;ordering;tool metadata,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+admin/users.html,admin,users;roles,Local DB/server API,OK Local DB,low,none,Migrated/verified in stacked PR103-PR109.
+admin/roles.html,admin,roles,Local DB/server API,OK Local DB,low,none,Migrated/verified in stacked PR103-PR109.
+admin/site-settings.html,admin,settings,Local DB/server API,OK Local DB,low,none,Migrated/verified in stacked PR103-PR109.
+admin/platform-settings.html,admin,settings,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+admin/environments.html,admin,settings,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+admin/branding.html,admin,settings,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+admin/themes.html,admin,settings,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+admin/controls.html,admin,controls;settings,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+admin/ratings.html,admin,other;settings,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+admin/moderation.html,admin,tickets/support;other,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+admin/analytics.html,admin,other,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+admin/game-migration.html,admin,games;assets,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+index.html,public,games;tool metadata,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+games/index.html,public,games,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+marketplace/index.html,public,assets;settings,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+community/index.html,public,tickets/support;other,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+community/assets.html,public,assets,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+community/publish.html,public,games;settings,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+docs/support.html,public,tickets/support,static wireframe/non-product UI copy,Out of scope,low,future product-data source only when feature becomes active,No active add/view/edit/delete product records; controls are disabled or copy-only.
+toolbox/tools-page-accordions.js,toolbox,tool metadata;votes;auth,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+toolbox/tool-registry-api-client.js,toolbox,tool metadata,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+toolbox/toolRegistry.js,toolbox,tool metadata,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-tool-registry-db-source-reduction,Compatibility wrapper; active Toolbox UI uses toolbox/tool-registry-api-client.js and /toolbox/registry/snapshot.
+toolbox/assets/assets-api-client.js,toolbox,assets,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/assets/assets.js,toolbox,assets;auth,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+toolbox/assets/assets-upload-worker.js,toolbox,assets,Local DB/server API,OK Local DB,low,none,Migrated/verified in stacked PR103-PR109.
+toolbox/controls/controls-api-client.js,toolbox,controls,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/controls/controls.js,toolbox,controls,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+toolbox/objects/objects-api-client.js,toolbox,games;other,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/objects/objects.js,toolbox,games;other,Local DB plus page-local templates,Needs review,medium,PR-objects-template-source-review,Classified for future naming/boundary review; no active product-data migration blocker found.
+toolbox/colors/palette-api-client.js,toolbox,assets;settings,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/colors/colors.js,toolbox,assets;settings,Local DB plus page-local editor state,Needs review,medium,PR-colors-page-local-state-review,Classified for future naming/boundary review; no active product-data migration blocker found.
+toolbox/game-workspace/game-workspace-api-client.js,toolbox,games;workspace,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/game-workspace/game-workspace.js,toolbox,games;workspace;auth,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/game-design/game-design-api-client.js,toolbox,game design,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/game-design/game-design.js,toolbox,game design,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/game-configuration/game-configuration-api-client.js,toolbox,games;settings,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/game-configuration/game-configuration.js,toolbox,games;settings,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+toolbox/game-journey/game-journey-api-client.js,toolbox,games;game design;tool metadata,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/game-journey/game-journey.js,toolbox,games;tool metadata,Local DB plus static registry import,Needs review,medium,PR-game-journey-tool-registry-source-review,Classified for future naming/boundary review; no active product-data migration blocker found.
+toolbox/tags/tags-api-client.js,toolbox,assets;other,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+toolbox/tags/tags.js,toolbox,assets;other,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+src/engine/api/server-api-client.js,src,other,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+src/engine/api/session-api-client.js,src,auth;users;roles,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+src/engine/api/toolbox-votes-api-client.js,src,votes;ordering;tool metadata,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+src/engine/api/mock-db-api-client.js,src,other,Local DB,Needs review,low,PR-local-db-api-naming-cleanup,Classified for future naming/boundary review; no active product-data migration blocker found.
+src/engine/api/mock-db-viewer-ui.js,src,users;roles;other,Local DB,Needs review,low,PR-local-db-api-naming-cleanup,Classified for future naming/boundary review; no active product-data migration blocker found.
+src/dev-runtime/server/mock-api-router.mjs,dev-runtime,auth;users;roles;tool metadata;votes;ordering;games;game design;workspace;assets;controls;settings;other,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-runtime-sql-schema-contract-review,Local DB server/API owner; tiny PR109 fix removed static non-user ULIDs.
+src/dev-runtime/persistence/mock-db-store.js,dev-runtime,users;roles;other,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-local-db-store-naming-storage-cleanup,"Local DB adapter/session compatibility; static DEV users only, no active MEM route."
+src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js,dev-runtime,assets,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js,dev-runtime,controls,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js,dev-runtime,games;other,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js,dev-runtime,assets;settings,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js,dev-runtime,assets;other,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js,dev-runtime,games;workspace;users,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js,dev-runtime,game design;games,Local DB,OK Local DB,low,none,Current Local DB/server API path validated or no migration needed.
+src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js,dev-runtime,games;settings,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js,dev-runtime,games;game design,Local DB,OK Local DB,medium,none,Current Local DB/server API path validated or no migration needed.
+src/dev-runtime/persistence/tool-repositories/palette-catalog-config.js,dev-runtime,assets;settings,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-palette-catalog-source-review,Tool config/template source; no active product record persistence ownership.
+src/dev-runtime/guest-seeds/tool-metadata-inventory.js,dev-runtime,tool metadata,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-tool-registry-site-setup-seeds,Server/dev-runtime setup source; future tool registry source reduction remains a naming/ownership cleanup.
+src/dev-runtime/guest-seeds/tool-state-samples.js,dev-runtime,workspace,Local DB/server API,OK Local DB,low,none,Migrated/verified in stacked PR103-PR109.
+src/dev-runtime/guest-seeds/palette-source-mock-db.js,dev-runtime,assets;settings,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-palette-seed-source-review,Dev-runtime seed source only; no browser product-data SSoT.
+src/engine/persistence/BrowserStorageService.js,src,settings;other,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-engine-storage-product-data-boundary,Engine storage utility only; not active product-data SSoT for Local DB route.
+src/engine/persistence/StorageService.js,src,settings;other,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-engine-storage-product-data-boundary,Engine storage utility only; not active product-data SSoT for Local DB route.
+src/engine/persistence/LocalStorageService.js,src,settings;other,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-engine-storage-product-data-boundary,Engine storage utility only; not active product-data SSoT for Local DB route.
+src/engine/persistence/SessionStorageService.js,src,settings;other,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-engine-storage-product-data-boundary,Engine storage utility only; not active product-data SSoT for Local DB route.
+src/engine/persistence/CookieStorageService.js,src,auth;settings,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-engine-storage-product-data-boundary,Engine storage utility only; not active product-data SSoT for Local DB route.
+src/engine/persistence/SaveSlotManager.js,src,games;workspace,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-engine-save-slot-local-db-boundary,Engine save utility review remains future engine boundary work.
+src/engine/release/SettingsSystem.js,src,settings,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-release-settings-storage-boundary,Engine release utility review remains future engine boundary work.
+src/engine/release/CrashRecoveryManager.js,src,other,Local DB/dev-runtime compatibility or engine utility,Needs review,low,PR-crash-recovery-storage-boundary,Engine recovery utility review remains future engine boundary work.
+src/tools/common/WorkspaceDirtyNotifier.js,src,workspace,browser storage,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+src/engine/assets/AssetRegistry.js,src,assets,JSON file,Needs review,medium,PR-runtime-asset-data-source-review,Classified for future naming/boundary review; no active product-data migration blocker found.
+src/engine/assets/AssetLoaderSystem.js,src,assets,JSON file,Needs review,medium,PR-runtime-asset-data-source-review,Classified for future naming/boundary review; no active product-data migration blocker found.
+src/engine/rendering/ObjectVectorRuntimeAssetService.js,src,assets,JSON file,Needs review,medium,PR-runtime-object-vector-asset-source-review,Classified for future naming/boundary review; no active product-data migration blocker found.
+src/engine/runtime/gameImageConvention.js,src,assets,JSON file,Needs review,low,PR-runtime-image-convention-source-review,Classified for future naming/boundary review; no active product-data migration blocker found.
+src/engine/runtime/fullscreenBezel.js,src,assets;settings,JSON file,Needs review,low,PR-runtime-fullscreen-bezel-source-review,Classified for future naming/boundary review; no active product-data migration blocker found.
+tests/dev-runtime/DbSeedIntegrity.test.mjs,tests,users;roles;workspace,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/AdminDbViewer.spec.mjs,tests,users;roles;other,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/LoginSessionMode.spec.mjs,tests,auth;users,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/AssetToolMockRepository.spec.mjs,tests,assets;auth,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/InputMappingV2Tool.spec.mjs,tests,controls;auth,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs,tests,tool metadata;votes,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/ObjectsTool.spec.mjs,tests,games;other,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/PaletteToolMockRepository.spec.mjs,tests,assets;settings,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/TagsTool.spec.mjs,tests,assets;other,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/GameJourneyTool.spec.mjs,tests,games;game design,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/tools/GameConfigurationMockRepository.spec.mjs,tests,games;settings,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.
+tests/playwright/account/AchievementsPage.spec.mjs,tests,games,Local DB,Out of scope,low,none,Current Local DB/server API path validated or no migration needed.

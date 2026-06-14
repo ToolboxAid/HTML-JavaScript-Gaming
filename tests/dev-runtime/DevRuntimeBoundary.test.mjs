@@ -16,13 +16,13 @@ const browserSurfaceRoots = [
 
 const movedDevRuntimeFiles = [
   "src/dev-runtime/guest-seeds/palette-source-mock-db.js",
-  "src/dev-runtime/guest-seeds/tool-state-samples.js",
   "src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js",
   "src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js",
   "src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js",
   "src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js",
   "src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js",
   "src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js",
+  "src/dev-runtime/seed/server-seed-loader.mjs",
 ];
 
 const retiredToolboxDevRuntimeFiles = [
@@ -115,7 +115,7 @@ test("browser and UAT/PROD candidate surfaces do not import src/dev-runtime", ()
 
 test("server Local DB seeds, guest package loading, and reseed use dev-runtime modules", () => {
   const router = read("src/dev-runtime/server/mock-api-router.mjs");
-  assert.match(router, /from "\.\.\/guest-seeds\/tool-state-samples\.js"/);
+  assert.match(router, /from "\.\.\/seed\/server-seed-loader\.mjs"/);
   assert.match(router, /readDocsBuildGuestSeedPackages\(\)/);
   assert.match(router, /createServerSeedTables\(\)/);
   assert.match(router, /parts\[1\] === "mock-db"/);

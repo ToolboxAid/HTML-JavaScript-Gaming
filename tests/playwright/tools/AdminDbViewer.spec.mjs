@@ -9,6 +9,7 @@ import {
   getStandaloneMockDbSeedTables,
   normalizeMockDbTables,
 } from "../../../src/dev-runtime/persistence/mock-db-store.js";
+import { getActiveToolRegistry } from "../../../src/dev-runtime/guest-seeds/tool-metadata-inventory.js";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
@@ -16,17 +17,10 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 const REMOVED_IDENTITY_TABLE = "act" + "ors";
-const GUEST_SEED_GROUP_KEYS = [
-  "asset",
-  "controls",
-  "game-configuration",
-  "game-design",
-  "game-journey",
-  "game-workspace",
-  "objects",
-  "palette",
-  "tags",
-];
+const GUEST_SEED_GROUP_KEYS = getActiveToolRegistry()
+  .filter((tool) => tool.visibleInToolsList !== false && tool.hidden !== true)
+  .map((tool) => tool.id || tool.key || tool.slug || tool.name)
+  .sort();
 const standaloneSeedTables = getStandaloneMockDbSeedTables();
 const standaloneSeedState = {
   cleared: false,
@@ -197,7 +191,7 @@ function expectSeedIntegrity(seedData) {
   ].sort());
   expect(new Set(gameKeys).size).toBe(gameKeys.length);
   expect(new Set(toolStateKeys).size).toBe(toolStateKeys.length);
-  expect(seedData.guestPackages.every((sample) => sample.createdBy === MOCK_DB_KEYS.users.forgeBot)).toBe(true);
+  expect(seedData.guestPackages.every((sample) => sample.createdBy === MOCK_DB_KEYS.users.admin)).toBe(true);
   expect(userSamples.every((sample) => sample.createdBy === sample.userKey)).toBe(true);
   seedData.samples.forEach((sample) => {
     const createdAtMs = Date.parse(sample.createdAt);
@@ -336,11 +330,11 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 2");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 3");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
-    await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
+    await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("guest");
     await expect(page.locator("[data-admin-db-table='roles']")).toContainText("user");
     await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
-    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("system");
+    await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("system");
     await expect(page.locator("[data-admin-db-table='user_roles']")).toContainText("01K2GFSJ0Y");
     const seedData = await seedIntegritySnapshot(page);
     expectSeedIntegrity(seedData);
@@ -459,7 +453,7 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
       details.map((item) => item.dataset.adminDbTable),
     )).toEqual(["users", "user_roles", "roles"]);
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
-    await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
+    await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
 
     await page.getByRole("button", { name: "Tool State Samples" }).click();
@@ -489,12 +483,12 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await page.getByRole("button", { name: "All" }).click();
     await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for All\./);
-    await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
+    await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
     await expect(page.locator("[data-admin-db-table='game_journey_items']")).toContainText("Designer review");
     await page.reload({ waitUntil: "networkidle" });
     await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
-    await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
+    await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -635,8 +629,8 @@ test("Local DB viewer renders live persisted tool records after refresh", async 
     expect(new Set(journeyItemKeys).size).toBe(journeyItemKeys.length);
     await page.getByRole("button", { name: "User Roles" }).click();
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("Guest");
-    await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
-    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("system");
+    await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
+    await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("system");
     await expect(page.locator("[data-admin-db-table='user_roles']")).toContainText("01K2GFSJ0Y");
     await expect(page.locator("[data-admin-db-missing-links]")).toContainText("No missing links detected.");
 
@@ -711,10 +705,10 @@ test("Local DB audit normalization rejects invalid and missing audit users", () 
       displayName: "Seed Repair",
       createdAt: "2026-06-06T09:00:00.000Z",
       updatedAt: "2026-06-06T09:00:00.000Z",
-      createdBy: MOCK_DB_KEYS.users.forgeBot,
-      updatedBy: MOCK_DB_KEYS.users.forgeBot,
+      createdBy: MOCK_DB_KEYS.users.admin,
+      updatedBy: MOCK_DB_KEYS.users.admin,
     }],
   });
-  expect(seedTables.users[0].createdBy).toBe(MOCK_DB_KEYS.users.forgeBot);
-  expect(seedTables.users[0].updatedBy).toBe(MOCK_DB_KEYS.users.forgeBot);
+  expect(seedTables.users[0].createdBy).toBe(MOCK_DB_KEYS.users.admin);
+  expect(seedTables.users[0].updatedBy).toBe(MOCK_DB_KEYS.users.admin);
 });

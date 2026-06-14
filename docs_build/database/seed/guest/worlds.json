@@ -1,0 +1,26 @@
+{
+  "group": "Worlds",
+  "groupKey": "worlds",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-worlds-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "worlds",
+      "label": "Guest Worlds starter",
+      "loadablePath": "toolbox/worlds/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/worlds.json",
+      "toolKey": "worlds",
+      "toolName": "Worlds",
+      "writableByGuest": false
+    }
+  ]
+}

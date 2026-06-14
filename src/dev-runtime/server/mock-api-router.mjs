@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { mkdirSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -74,7 +75,7 @@ import {
   getMockDbToolGroups,
   normalizeMockDbTables,
 } from "../persistence/mock-db-store.js";
-import { createServerSeedTables } from "../guest-seeds/tool-state-samples.js";
+import { createServerSeedTables } from "../seed/server-seed-loader.mjs";
 import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
 
 export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
@@ -401,6 +402,39 @@ function isUlidKey(value) {
   return /^[0-9A-HJKMNP-TV-Z]{26}$/.test(String(value || ""));
 }
 
+const RUNTIME_ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+const RUNTIME_SOURCE_KEYS = new Map();
+
+function encodeRuntimeUlidPart(value, length) {
+  let remaining = BigInt(value);
+  let encoded = "";
+  for (let index = 0; index < length; index += 1) {
+    encoded = RUNTIME_ULID_ALPHABET[Number(remaining % 32n)] + encoded;
+    remaining /= 32n;
+  }
+  return encoded;
+}
+
+function runtimeGeneratedUlid() {
+  const timePart = encodeRuntimeUlidPart(Date.now(), 10);
+  const randomPart = Array.from(randomBytes(16))
+    .map((byte) => RUNTIME_ULID_ALPHABET[byte % 32])
+    .join("")
+    .slice(0, 16);
+  return `${timePart}${randomPart}`;
+}
+
+function runtimeGeneratedKeyForSource(source) {
+  const keySource = String(source || "").trim();
+  if (!keySource) {
+    return runtimeGeneratedUlid();
+  }
+  if (!RUNTIME_SOURCE_KEYS.has(keySource)) {
+    RUNTIME_SOURCE_KEYS.set(keySource, runtimeGeneratedUlid());
+  }
+  return RUNTIME_SOURCE_KEYS.get(keySource);
+}
+
 function localDbStoragePath() {
   return process.env.GAMEFOUNDRY_LOCAL_DB_PATH ||
     path.join(process.cwd(), "tmp", "local-db", "local-db-state.sqlite");
@@ -551,24 +585,15 @@ function normalizeOwnedTables(ownerId, tables) {
   return normalizeMockDbTables(ownerId, tables);
 }
 
-const GAME_WORKSPACE_GAME_KEYS = Object.freeze({
-  "camera-follow-demo": "01K2GFSJ0Y0000000080002104",
-  "collision-demo": "01K2GFSJ0Y0000000080002103",
-  "demo-game": GAME_JOURNEY_KEYS.game,
-  "gravity-demo": "01K2GFSJ0Y0000000080002102",
-});
-
 function gameWorkspaceGameKey(gameId) {
-  return GAME_WORKSPACE_GAME_KEYS[gameId] || gameId || "";
-}
-
-function serverGeneratedUlid(source) {
-  const text = String(source || "");
-  let hash = 0;
-  for (let index = 0; index < text.length; index += 1) {
-    hash = ((hash << 5) - hash + text.charCodeAt(index)) >>> 0;
+  const normalizedGameId = String(gameId || "").trim();
+  if (!normalizedGameId) {
+    return "";
   }
-  return `01K2GFSJ0Y${String(9_000_000_000 + hash).padStart(16, "0")}`;
+  if (isUlidKey(normalizedGameId)) {
+    return normalizedGameId;
+  }
+  return runtimeGeneratedKeyForSource(`game-workspace-game:${normalizedGameId}`);
 }
 
 function votePercent(count, total) {
@@ -600,7 +625,7 @@ function gameWorkspaceTables(repository) {
     game_workspace_games: gameWorkspaceGames,
     game_workspace_progress: activeGame ? [{
       ...snapshotAuditFields(80, MOCK_DB_KEYS.users.user1),
-      key: "01K2GFSJ0Y0000000080001001",
+      key: runtimeGeneratedKeyForSource(`game-workspace-progress:${activeGameKey}`),
       gameKey: activeGameKey,
       currentFocus: progress.currentFocus,
       gameProgress: progress.gameProgress,
@@ -1133,15 +1158,15 @@ class LocalDevMockDataSource {
   }
 
   toolboxVoteKey(toolId, voterKey) {
-    return serverGeneratedUlid(`toolbox-vote:${toolId}:${voterKey}`);
+    return runtimeGeneratedUlid();
   }
 
   toolboxToolMetadataKey(toolId) {
-    return serverGeneratedUlid(`toolbox-tool-metadata:${toolId}`);
+    return runtimeGeneratedKeyForSource(`toolbox-tool-metadata:${toolId}`);
   }
 
   toolboxToolPlanningKey(toolId) {
-    return serverGeneratedUlid(`toolbox-tool-planning:${toolId}`);
+    return runtimeGeneratedKeyForSource(`toolbox-tool-planning:${toolId}`);
   }
 
   defaultToolboxMetadata(tool, index) {

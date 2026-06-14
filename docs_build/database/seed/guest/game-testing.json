@@ -1,0 +1,26 @@
+{
+  "group": "Game Testing",
+  "groupKey": "game-testing",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-game-testing-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "game-testing",
+      "label": "Guest Game Testing starter",
+      "loadablePath": "toolbox/game-testing/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/game-testing.json",
+      "toolKey": "game-testing",
+      "toolName": "Game Testing",
+      "writableByGuest": false
+    }
+  ]
+}

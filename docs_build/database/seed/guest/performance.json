@@ -1,0 +1,26 @@
+{
+  "group": "Performance",
+  "groupKey": "performance",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-performance-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "performance",
+      "label": "Guest Performance starter",
+      "loadablePath": "toolbox/performance/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/performance.json",
+      "toolKey": "performance",
+      "toolName": "Performance",
+      "writableByGuest": false
+    }
+  ]
+}

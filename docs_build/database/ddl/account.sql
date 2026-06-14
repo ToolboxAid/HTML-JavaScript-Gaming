@@ -19,6 +19,10 @@ CREATE TABLE IF NOT EXISTS users (
     CONSTRAINT users_auth_identity_unique UNIQUE ("authProvider", "authProviderUserId")
 );
 
+CREATE INDEX IF NOT EXISTS idx_users_email ON users (email);
+CREATE INDEX IF NOT EXISTS idx_users_createdby ON users ("createdBy");
+CREATE INDEX IF NOT EXISTS idx_users_updatedby ON users ("updatedBy");
+
 CREATE TABLE IF NOT EXISTS roles (
     key text PRIMARY KEY,
     "roleSlug" text NOT NULL UNIQUE,
@@ -32,6 +36,9 @@ CREATE TABLE IF NOT EXISTS roles (
     "updatedBy" text NOT NULL REFERENCES users(key)
 );
 
+CREATE INDEX IF NOT EXISTS idx_roles_createdby ON roles ("createdBy");
+CREATE INDEX IF NOT EXISTS idx_roles_updatedby ON roles ("updatedBy");
+
 CREATE TABLE IF NOT EXISTS user_roles (
     key text PRIMARY KEY,
     "userKey" text NOT NULL REFERENCES users(key) ON DELETE CASCADE,
@@ -42,3 +49,8 @@ CREATE TABLE IF NOT EXISTS user_roles (
     "updatedBy" text NOT NULL REFERENCES users(key),
     CONSTRAINT user_roles_user_role_unique UNIQUE ("userKey", "roleKey")
 );
+
+CREATE INDEX IF NOT EXISTS idx_user_roles_userkey ON user_roles ("userKey");
+CREATE INDEX IF NOT EXISTS idx_user_roles_rolekey ON user_roles ("roleKey");
+CREATE INDEX IF NOT EXISTS idx_user_roles_createdby ON user_roles ("createdBy");
+CREATE INDEX IF NOT EXISTS idx_user_roles_updatedby ON user_roles ("updatedBy");

@@ -9,7 +9,7 @@ function makeMockUlid(sequence) {
 
 export const MOCK_DB_KEYS = Object.freeze({
   users: Object.freeze({
-    forgeBot: makeMockUlid(41),
+    forgeBot: makeMockUlid(54),
     user1: makeMockUlid(51),
     user2: makeMockUlid(52),
     user3: makeMockUlid(53),
@@ -35,12 +35,12 @@ export const MOCK_DB_KEYS = Object.freeze({
 });
 
 export const MOCK_DB_SYSTEM_USER = Object.freeze({
-  id: "forge-bot",
-  label: "forge-bot",
+  id: "davidq-admin",
+  label: "DavidQ admin",
   authenticated: false,
   isAdmin: false,
   userKey: MOCK_DB_KEYS.users.forgeBot,
-  roleSlugs: Object.freeze(["system"]),
+  roleSlugs: Object.freeze(["admin"]),
 });
 
 export const MOCK_DB_SESSION_MODES = Object.freeze([
@@ -239,21 +239,31 @@ function sanitizeState(source = {}) {
     }
   });
   if (Array.isArray(state.tables.users)) {
-    const allowedUserKeys = new Set(Object.values(MOCK_DB_KEYS.users));
+    const allowedUserKeys = new Set([
+      MOCK_DB_KEYS.users.user1,
+      MOCK_DB_KEYS.users.user2,
+      MOCK_DB_KEYS.users.user3,
+      MOCK_DB_KEYS.users.admin,
+    ]);
     state.tables.users = state.tables.users.filter((user) =>
       allowedUserKeys.has(user?.key),
     );
   }
   if (Array.isArray(state.tables.roles)) {
-    const allowedRoleKeys = new Set(Object.values(MOCK_DB_KEYS.roles));
     state.tables.roles = state.tables.roles.filter((role) =>
-      allowedRoleKeys.has(role?.key),
+      isUlidKey(role?.key),
     );
   }
   if (Array.isArray(state.tables.user_roles)) {
-    const allowedJoinKeys = new Set(Object.values(MOCK_DB_KEYS.userRoles));
-    const allowedUserKeys = new Set(Object.values(MOCK_DB_KEYS.users));
-    const allowedRoleKeys = new Set(Object.values(MOCK_DB_KEYS.roles));
+    const allowedJoinKeys = new Set([
+      MOCK_DB_KEYS.userRoles.user1User,
+      MOCK_DB_KEYS.userRoles.user2User,
+      MOCK_DB_KEYS.userRoles.user3User,
+      MOCK_DB_KEYS.userRoles.adminUser,
+      MOCK_DB_KEYS.userRoles.adminAdmin,
+    ]);
+    const allowedUserKeys = new Set((state.tables.users || []).map((user) => user?.key));
+    const allowedRoleKeys = new Set((state.tables.roles || []).map((role) => role?.key));
     state.tables.user_roles = state.tables.user_roles.filter((row) =>
       allowedJoinKeys.has(row?.key) &&
         allowedUserKeys.has(row?.userKey) &&
@@ -680,7 +690,7 @@ export function getStandaloneMockDbSeedTables() {
         key: MOCK_DB_KEYS.users.user1,
         displayName: "User 1",
         email: "user1@example.invalid",
-        authProvider: "mock",
+        authProvider: "dev-static-seed",
         authProviderUserId: "user-1",
         isActive: true,
         ...standaloneAudit(1),
@@ -689,7 +699,7 @@ export function getStandaloneMockDbSeedTables() {
         key: MOCK_DB_KEYS.users.user2,
         displayName: "User 2",
         email: "user2@example.invalid",
-        authProvider: "mock",
+        authProvider: "dev-static-seed",
         authProviderUserId: "user-2",
         isActive: true,
         ...standaloneAudit(2),
@@ -698,26 +708,17 @@ export function getStandaloneMockDbSeedTables() {
         key: MOCK_DB_KEYS.users.user3,
         displayName: "User 3",
         email: "user3@example.invalid",
-        authProvider: "mock",
+        authProvider: "dev-static-seed",
         authProviderUserId: "user-3",
         isActive: true,
         ...standaloneAudit(3),
       },
       {
         key: MOCK_DB_KEYS.users.admin,
-        displayName: "DavidQ",
+        displayName: "DavidQ admin",
         email: "admin@example.invalid",
-        authProvider: "mock",
-        authProviderUserId: "admin",
-        isActive: true,
-        ...standaloneAudit(4),
-      },
-      {
-        key: MOCK_DB_KEYS.users.forgeBot,
-        displayName: "forge-bot",
-        email: "",
-        authProvider: "system",
-        authProviderUserId: "forge-bot",
+        authProvider: "dev-static-seed",
+        authProviderUserId: "davidq-admin",
         isActive: true,
         ...standaloneAudit(5),
       },
@@ -741,33 +742,13 @@ export function getStandaloneMockDbSeedTables() {
         isActive: true,
         ...standaloneAudit(7),
       },
-      {
-        key: MOCK_DB_KEYS.roles.system,
-        roleSlug: "system",
-        name: "system",
-        description: "Internal system user.",
-        isSystemRole: true,
-        isActive: true,
-        ...standaloneAudit(8),
-      },
-      {
-        key: MOCK_DB_KEYS.roles.beta,
-        roleSlug: "beta",
-        name: "beta",
-        description: "Local beta access tester.",
-        isSystemRole: false,
-        isActive: true,
-        ...standaloneAudit(9),
-      },
     ],
     user_roles: [
       { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(10) },
       { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(11) },
-      { key: MOCK_DB_KEYS.userRoles.user2Beta, userKey: MOCK_DB_KEYS.users.user2, roleKey: MOCK_DB_KEYS.roles.beta, ...standaloneAudit(12) },
       { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(13) },
       { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(14) },
       { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...standaloneAudit(15) },
-      { key: MOCK_DB_KEYS.userRoles.forgeBotSystem, userKey: MOCK_DB_KEYS.users.forgeBot, roleKey: MOCK_DB_KEYS.roles.system, ...standaloneAudit(16) },
     ],
   };
 }

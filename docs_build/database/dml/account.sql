@@ -1,88 +1,120 @@
--- TEMPORARY SETUP/REVIEW ARTIFACT
+-- TEMPORARY DEV-ONLY SETUP/REVIEW ARTIFACT
 -- Group: Account
+-- Ownership: docs_build/database/dml/account.sql
 -- DEV review only. Codex may execute DEV database setup only.
 -- UAT and production SQL execution is user-controlled.
 -- Runtime reseed/setup must be called through Admin-owned server-side APIs.
 -- Target DEV database: gamefoundry_dev
--- The inactive setup user exists only to satisfy audit ownership references; it is not login behavior.
+-- Temporary DEV static user ULID exception:
+--   Static ULIDs are allowed only for User 1, User 2, User 3, and DavidQ admin.
+--   Static ULIDs are allowed for user_roles only to bind these DEV users to existing roles.
+--   Non-user records, including roles, must use real server/API-generated keys.
+-- No passwords, password hashes, password reset tokens, or authProvider='mock' records are defined here.
 
-WITH setup_user AS (
-    INSERT INTO users (
-        key,
-        "displayName",
-        email,
-        "authProvider",
-        "authProviderUserId",
-        "isActive",
-        "createdAt",
-        "updatedAt",
-        "createdBy",
-        "updatedBy"
-    )
-    VALUES (
-        'dev-setup-user',
-        'DEV setup user',
-        NULL,
-        NULL,
-        NULL,
-        false,
+INSERT INTO users (
+    key,
+    "displayName",
+    email,
+    "authProvider",
+    "authProviderUserId",
+    "isActive",
+    "createdAt",
+    "updatedAt",
+    "createdBy",
+    "updatedBy"
+)
+VALUES
+    (
+        '01K2GFSJ0Y0000000000000051',
+        'User 1',
+        'user1@example.invalid',
+        'dev-static-seed',
+        'user-1',
+        true,
         now(),
         now(),
-        'dev-setup-user',
-        'dev-setup-user'
+        '01K2GFSJ0Y0000000000000054',
+        '01K2GFSJ0Y0000000000000054'
+    ),
+    (
+        '01K2GFSJ0Y0000000000000052',
+        'User 2',
+        'user2@example.invalid',
+        'dev-static-seed',
+        'user-2',
+        true,
+        now(),
+        now(),
+        '01K2GFSJ0Y0000000000000054',
+        '01K2GFSJ0Y0000000000000054'
+    ),
+    (
+        '01K2GFSJ0Y0000000000000053',
+        'User 3',
+        'user3@example.invalid',
+        'dev-static-seed',
+        'user-3',
+        true,
+        now(),
+        now(),
+        '01K2GFSJ0Y0000000000000054',
+        '01K2GFSJ0Y0000000000000054'
+    ),
+    (
+        '01K2GFSJ0Y0000000000000054',
+        'DavidQ admin',
+        'admin@example.invalid',
+        'dev-static-seed',
+        'davidq-admin',
+        true,
+        now(),
+        now(),
+        '01K2GFSJ0Y0000000000000054',
+        '01K2GFSJ0Y0000000000000054'
     )
-    ON CONFLICT (key) DO UPDATE SET
-        "displayName" = EXCLUDED."displayName",
-        email = EXCLUDED.email,
-        "authProvider" = EXCLUDED."authProvider",
-        "authProviderUserId" = EXCLUDED."authProviderUserId",
-        "isActive" = EXCLUDED."isActive",
-        "updatedAt" = now(),
-        "updatedBy" = EXCLUDED."updatedBy"
-    RETURNING key
-),
-role_seed (key, role_slug, name, description, is_system_role, is_active) AS (
+ON CONFLICT (key) DO UPDATE SET
+    "displayName" = EXCLUDED."displayName",
+    email = EXCLUDED.email,
+    "authProvider" = EXCLUDED."authProvider",
+    "authProviderUserId" = EXCLUDED."authProviderUserId",
+    "isActive" = EXCLUDED."isActive",
+    "updatedAt" = now(),
+    "updatedBy" = EXCLUDED."updatedBy";
+
+DO $$
+DECLARE
+    missing_role_slugs text;
+BEGIN
+    SELECT string_agg(required_roles.role_slug, ', ')
+    INTO missing_role_slugs
+    FROM (
+        VALUES
+            ('user'),
+            ('admin')
+    ) AS required_roles(role_slug)
+    LEFT JOIN roles ON roles."roleSlug" = required_roles.role_slug
+    WHERE roles.key IS NULL;
+
+    IF missing_role_slugs IS NOT NULL THEN
+        RAISE EXCEPTION 'Missing required role rows for DEV user_roles seed: %. Create roles through the server/API seed layer before running account DML.', missing_role_slugs;
+    END IF;
+END $$;
+
+WITH user_role_seed (user_role_key, user_key, role_slug) AS (
     VALUES
-        ('role-admin', 'admin', 'Admin', 'Can manage site configuration and review operational setup.', false, true),
-        ('role-creator', 'creator', 'Creator', 'Can create and manage games, assets, and publishing workflows.', false, true),
-        ('role-user', 'user', 'User', 'Can use signed-in platform features.', false, true),
-        ('role-guest', 'guest', 'Guest', 'Can explore public and guest-safe areas.', false, true)
+        ('01K2GFSJ0Y0000000000000082', '01K2GFSJ0Y0000000000000051', 'user'),
+        ('01K2GFSJ0Y0000000000000083', '01K2GFSJ0Y0000000000000052', 'user'),
+        ('01K2GFSJ0Y0000000000000084', '01K2GFSJ0Y0000000000000053', 'user'),
+        ('01K2GFSJ0Y0000000000000085', '01K2GFSJ0Y0000000000000054', 'user'),
+        ('01K2GFSJ0Y0000000000000086', '01K2GFSJ0Y0000000000000054', 'admin')
 ),
-upsert_roles AS (
-    INSERT INTO roles (
-        key,
-        "roleSlug",
-        name,
-        description,
-        "isSystemRole",
-        "isActive",
-        "createdAt",
-        "updatedAt",
-        "createdBy",
-        "updatedBy"
-    )
+resolved_user_roles AS (
     SELECT
-        role_seed.key,
-        role_seed.role_slug,
-        role_seed.name,
-        role_seed.description,
-        role_seed.is_system_role,
-        role_seed.is_active,
-        now(),
-        now(),
-        setup_user.key,
-        setup_user.key
-    FROM role_seed
-    CROSS JOIN setup_user
-    ON CONFLICT (key) DO UPDATE SET
-        "roleSlug" = EXCLUDED."roleSlug",
-        name = EXCLUDED.name,
-        description = EXCLUDED.description,
-        "isSystemRole" = EXCLUDED."isSystemRole",
-        "isActive" = EXCLUDED."isActive",
-        "updatedAt" = now(),
-        "updatedBy" = EXCLUDED."updatedBy"
-    RETURNING key, "roleSlug"
+        user_role_seed.user_role_key,
+        user_role_seed.user_key,
+        roles.key AS role_key
+    FROM user_role_seed
+    JOIN roles ON roles."roleSlug" = user_role_seed.role_slug
 )
 INSERT INTO user_roles (
     key,
@@ -94,15 +126,14 @@ INSERT INTO user_roles (
     "updatedBy"
 )
 SELECT
-    'dev-setup-user-role-admin',
-    setup_user.key,
-    upsert_roles.key,
+    resolved_user_roles.user_role_key,
+    resolved_user_roles.user_key,
+    resolved_user_roles.role_key,
     now(),
     now(),
-    setup_user.key,
-    setup_user.key
-FROM setup_user
-JOIN upsert_roles ON upsert_roles."roleSlug" = 'admin'
+    '01K2GFSJ0Y0000000000000054',
+    '01K2GFSJ0Y0000000000000054'
+FROM resolved_user_roles
 ON CONFLICT (key) DO UPDATE SET
     "userKey" = EXCLUDED."userKey",
     "roleKey" = EXCLUDED."roleKey",

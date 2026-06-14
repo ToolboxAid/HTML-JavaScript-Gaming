@@ -1,0 +1,26 @@
+{
+  "group": "Sprites",
+  "groupKey": "sprites",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-sprites-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "sprites",
+      "label": "Guest Sprites starter",
+      "loadablePath": "toolbox/sprites/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/sprites.json",
+      "toolKey": "sprites",
+      "toolName": "Sprites",
+      "writableByGuest": false
+    }
+  ]
+}

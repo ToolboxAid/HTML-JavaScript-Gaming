@@ -1,9 +1,48 @@
 # git status --short
-M account/sign-in.html
- M admin/db-viewer.html
- M admin/grouping-colors.html
- M assets/theme-v2/js/gamefoundry-partials.js
+M account/create-account.html
+ M account/lost-password.html
+ M account/sign-in.html
  M assets/theme-v2/js/login-session.js
+ M docs_build/database/ddl/account.sql
+ M docs_build/database/ddl/admin.sql
+ M docs_build/database/ddl/asset.sql
+ M docs_build/database/ddl/controls.sql
+ M docs_build/database/ddl/game-configuration.sql
+ M docs_build/database/ddl/game-design.sql
+ M docs_build/database/ddl/game-journey.sql
+ M docs_build/database/ddl/game-workspace.sql
+ M docs_build/database/ddl/objects.sql
+ M docs_build/database/ddl/palette.sql
+ M docs_build/database/ddl/support-tickets.sql
+ M docs_build/database/ddl/tags.sql
+ M docs_build/database/ddl/tool-metadata.sql
+ M docs_build/database/ddl/tool-planning.sql
+ M docs_build/database/ddl/toolbox-votes.sql
+ M docs_build/database/dml/account.sql
+ M docs_build/database/dml/admin.sql
+ M docs_build/database/dml/asset.sql
+ M docs_build/database/dml/controls.sql
+ M docs_build/database/dml/game-configuration.sql
+ M docs_build/database/dml/game-design.sql
+ M docs_build/database/dml/game-journey.sql
+ M docs_build/database/dml/game-workspace.sql
+ M docs_build/database/dml/objects.sql
+ M docs_build/database/dml/palette.sql
+ M docs_build/database/dml/support-tickets.sql
+ M docs_build/database/dml/tags.sql
+ M docs_build/database/dml/tool-metadata.sql
+ M docs_build/database/dml/tool-planning.sql
+ M docs_build/database/dml/toolbox-votes.sql
+ M docs_build/database/seed/account.json
+ M docs_build/database/seed/guest/asset.json
+ M docs_build/database/seed/guest/controls.json
+ M docs_build/database/seed/guest/game-configuration.json
+ M docs_build/database/seed/guest/game-design.json
+ M docs_build/database/seed/guest/game-journey.json
+ M docs_build/database/seed/guest/game-workspace.json
+ M docs_build/database/seed/guest/objects.json
+ M docs_build/database/seed/guest/palette.json
+ M docs_build/database/seed/guest/tags.json
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
@@ -16,9 +55,12 @@ M account/sign-in.html
  M docs_build/dev/reports/lane_compilation_report.md
  M docs_build/dev/reports/lane_deduplication_report.md
  M docs_build/dev/reports/lane_input_validation_report.md
+ M docs_build/dev/reports/lane_manifests/workspace-contract.json
  M docs_build/dev/reports/lane_runtime_optimization_report.md
  M docs_build/dev/reports/lane_snapshot_report.md
+ M docs_build/dev/reports/lane_snapshots/workspace-contract.json
  M docs_build/dev/reports/lane_warm_start_report.md
+ M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
  M docs_build/dev/reports/monolith_trigger_removal_report.md
  M docs_build/dev/reports/persistent_lane_manifest_report.md
  M docs_build/dev/reports/playwright_discovery_ownership_report.md
@@ -34,61 +76,175 @@ M account/sign-in.html
  M docs_build/dev/reports/testing_lane_execution_report.md
  M docs_build/dev/reports/validation_cache_report.md
  M docs_build/dev/reports/zero_browser_preflight_report.md
+ M src/dev-runtime/guest-seeds/tool-state-samples.js
+ M src/dev-runtime/persistence/mock-db-store.js
+ M src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+ M src/dev-runtime/server/mock-api-router.mjs
+ M tests/dev-runtime/DbSeedIntegrity.test.mjs
+ M tests/dev-runtime/DevRuntimeBoundary.test.mjs
  M tests/playwright/tools/AdminDbViewer.spec.mjs
- M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
- M tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs
  M tests/playwright/tools/LoginSessionMode.spec.mjs
+ M tests/playwright/tools/ObjectsTool.spec.mjs
  M tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs
-?? account/create-account.html
-?? account/lost-password.html
-?? assets/theme-v2/js/admin-db-status-panel.js
-?? docs_build/dev/reports/pr102-production-sign-in-cleanup.md
+ M toolbox/game-journey/game-journey.js
+?? docs_build/database/seed/guest/achievements.json
+?? docs_build/database/seed/guest/ai-assistant.json
+?? docs_build/database/seed/guest/animations.json
+?? docs_build/database/seed/guest/audio.json
+?? docs_build/database/seed/guest/build-game.json
+?? docs_build/database/seed/guest/characters.json
+?? docs_build/database/seed/guest/community.json
+?? docs_build/database/seed/guest/debug.json
+?? docs_build/database/seed/guest/events.json
+?? docs_build/database/seed/guest/fonts.json
+?? docs_build/database/seed/guest/game-testing.json
+?? docs_build/database/seed/guest/hitboxes.json
+?? docs_build/database/seed/guest/languages.json
+?? docs_build/database/seed/guest/learn.json
+?? docs_build/database/seed/guest/marketplace.json
+?? docs_build/database/seed/guest/music.json
+?? docs_build/database/seed/guest/performance.json
+?? docs_build/database/seed/guest/publish.json
+?? docs_build/database/seed/guest/ratings.json
+?? docs_build/database/seed/guest/saved-data.json
+?? docs_build/database/seed/guest/sprites.json
+?? docs_build/database/seed/guest/videos.json
+?? docs_build/database/seed/guest/voices.json
+?? docs_build/database/seed/guest/worlds.json
+?? docs_build/dev/reports/db-consumer-audit-final.csv
+?? docs_build/dev/reports/db-consumer-audit-final.md
+?? docs_build/dev/reports/pr103-pr102-auth-cleanup-fixes.md
+?? docs_build/dev/reports/pr104-complete-grouped-ddl.md
+?? docs_build/dev/reports/pr105-complete-grouped-dml.md
+?? docs_build/dev/reports/pr106-server-side-seed-api.md
+?? docs_build/dev/reports/pr107-guest-seed-data-migration.md
+?? docs_build/dev/reports/pr108-complete-db-consumer-migration.md
+?? docs_build/dev/reports/pr109-final-db-migration-audit.md
+?? src/dev-runtime/seed/
 
 # git ls-files --others --exclude-standard
-account/create-account.html
-account/lost-password.html
-assets/theme-v2/js/admin-db-status-panel.js
-docs_build/dev/reports/pr102-production-sign-in-cleanup.md
+docs_build/database/seed/guest/achievements.json
+docs_build/database/seed/guest/ai-assistant.json
+docs_build/database/seed/guest/animations.json
+docs_build/database/seed/guest/audio.json
+docs_build/database/seed/guest/build-game.json
+docs_build/database/seed/guest/characters.json
+docs_build/database/seed/guest/community.json
+docs_build/database/seed/guest/debug.json
+docs_build/database/seed/guest/events.json
+docs_build/database/seed/guest/fonts.json
+docs_build/database/seed/guest/game-testing.json
+docs_build/database/seed/guest/hitboxes.json
+docs_build/database/seed/guest/languages.json
+docs_build/database/seed/guest/learn.json
+docs_build/database/seed/guest/marketplace.json
+docs_build/database/seed/guest/music.json
+docs_build/database/seed/guest/performance.json
+docs_build/database/seed/guest/publish.json
+docs_build/database/seed/guest/ratings.json
+docs_build/database/seed/guest/saved-data.json
+docs_build/database/seed/guest/sprites.json
+docs_build/database/seed/guest/videos.json
+docs_build/database/seed/guest/voices.json
+docs_build/database/seed/guest/worlds.json
+docs_build/dev/reports/db-consumer-audit-final.csv
+docs_build/dev/reports/db-consumer-audit-final.md
+docs_build/dev/reports/pr103-pr102-auth-cleanup-fixes.md
+docs_build/dev/reports/pr104-complete-grouped-ddl.md
+docs_build/dev/reports/pr105-complete-grouped-dml.md
+docs_build/dev/reports/pr106-server-side-seed-api.md
+docs_build/dev/reports/pr107-guest-seed-data-migration.md
+docs_build/dev/reports/pr108-complete-db-consumer-migration.md
+docs_build/dev/reports/pr109-final-db-migration-audit.md
+src/dev-runtime/seed/server-seed-loader.mjs
 
 # git diff --stat
-account/sign-in.html                               |   63 +-
- admin/db-viewer.html                               |   17 +-
- admin/grouping-colors.html                         |    2 +-
- assets/theme-v2/js/gamefoundry-partials.js         |    8 +-
- assets/theme-v2/js/login-session.js                |  285 +-
- docs_build/dev/reports/codex_changed_files.txt     |  196 +-
- docs_build/dev/reports/codex_review.diff           | 4851 +++++++-------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   12 +-
- docs_build/dev/reports/dependency_gating_report.md |    2 +-
- .../reports/dependency_hydration_reuse_report.md   |   12 +-
- .../dev/reports/execution_graph_reuse_report.md    |   16 +-
- .../dev/reports/failure_fingerprint_report.md      |    2 +-
- .../reports/filesystem_scan_reduction_report.md    |    2 +-
- .../dev/reports/incremental_validation_report.md   |   14 +-
- docs_build/dev/reports/lane_compilation_report.md  |    2 +-
- .../dev/reports/lane_deduplication_report.md       |    2 +-
- .../dev/reports/lane_input_validation_report.md    |    2 +-
- .../reports/lane_runtime_optimization_report.md    |   14 +-
- docs_build/dev/reports/lane_snapshot_report.md     |   12 +-
- docs_build/dev/reports/lane_warm_start_report.md   |   12 +-
- .../dev/reports/monolith_trigger_removal_report.md |    2 +-
- .../dev/reports/persistent_lane_manifest_report.md |   12 +-
- .../playwright_discovery_ownership_report.md       |    2 +-
- .../reports/playwright_discovery_scope_report.md   |    2 +-
- .../dev/reports/playwright_structure_audit.md      |    2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   27 +-
- docs_build/dev/reports/retry_suppression_report.md |    2 +-
- docs_build/dev/reports/slow_path_pruning_report.md |   14 +-
- docs_build/dev/reports/static_validation_report.md |   10 +-
- .../dev/reports/targeted_file_manifest_report.md   |    8 +-
- .../dev/reports/test_cleanup_performance_report.md |   20 +-
- .../dev/reports/test_cleanup_routing_report.md     |    2 +-
- .../dev/reports/testing_lane_execution_report.md   |   50 +-
- docs_build/dev/reports/validation_cache_report.md  |   30 +-
- .../dev/reports/zero_browser_preflight_report.md   |   10 +-
- tests/playwright/tools/AdminDbViewer.spec.mjs      |    6 +
- .../tools/AdminPlatformToolsWireframes.spec.mjs    |   13 +
- .../tools/ApiStaticRouteRecovery.spec.mjs          |   11 +-
- tests/playwright/tools/LoginSessionMode.spec.mjs   |  110 +-
- .../tools/StaticOnlyLoginApiRequired.spec.mjs      |   41 +-
- 40 files changed, 1968 insertions(+), 3932 deletions(-)
+account/create-account.html                        |     4 +-
+ account/lost-password.html                         |     4 +-
+ account/sign-in.html                               |     2 +-
+ assets/theme-v2/js/login-session.js                |     2 +-
+ docs_build/database/ddl/account.sql                |    12 +
+ docs_build/database/ddl/admin.sql                  |     9 +-
+ docs_build/database/ddl/asset.sql                  |   131 +-
+ docs_build/database/ddl/controls.sql               |    93 +-
+ docs_build/database/ddl/game-configuration.sql     |    36 +-
+ docs_build/database/ddl/game-design.sql            |    35 +-
+ docs_build/database/ddl/game-journey.sql           |    95 +-
+ docs_build/database/ddl/game-workspace.sql         |    36 +-
+ docs_build/database/ddl/objects.sql                |    30 +-
+ docs_build/database/ddl/palette.sql                |    78 +-
+ docs_build/database/ddl/support-tickets.sql        |     9 +-
+ docs_build/database/ddl/tags.sql                   |    20 +-
+ docs_build/database/ddl/tool-metadata.sql          |    44 +-
+ docs_build/database/ddl/tool-planning.sql          |    23 +-
+ docs_build/database/ddl/toolbox-votes.sql          |    20 +-
+ docs_build/database/dml/account.sql                |   191 +-
+ docs_build/database/dml/admin.sql                  |     3 +-
+ docs_build/database/dml/asset.sql                  |     3 +-
+ docs_build/database/dml/controls.sql               |     3 +-
+ docs_build/database/dml/game-configuration.sql     |     3 +-
+ docs_build/database/dml/game-design.sql            |     3 +-
+ docs_build/database/dml/game-journey.sql           |     3 +-
+ docs_build/database/dml/game-workspace.sql         |     3 +-
+ docs_build/database/dml/objects.sql                |     3 +-
+ docs_build/database/dml/palette.sql                |     3 +-
+ docs_build/database/dml/support-tickets.sql        |     3 +-
+ docs_build/database/dml/tags.sql                   |     3 +-
+ docs_build/database/dml/tool-metadata.sql          |     3 +-
+ docs_build/database/dml/tool-planning.sql          |     3 +-
+ docs_build/database/dml/toolbox-votes.sql          |     3 +-
+ docs_build/database/seed/account.json              |   197 +-
+ docs_build/database/seed/guest/asset.json          |    10 +-
+ docs_build/database/seed/guest/controls.json       |     2 +-
+ .../database/seed/guest/game-configuration.json    |     2 +-
+ docs_build/database/seed/guest/game-design.json    |     2 +-
+ docs_build/database/seed/guest/game-journey.json   |     2 +-
+ docs_build/database/seed/guest/game-workspace.json |     2 +-
+ docs_build/database/seed/guest/objects.json        |     2 +-
+ docs_build/database/seed/guest/palette.json        |    10 +-
+ docs_build/database/seed/guest/tags.json           |     2 +-
+ docs_build/dev/reports/codex_changed_files.txt     |   256 +-
+ docs_build/dev/reports/codex_review.diff           | 28138 ++++++++++++++++++-
+ .../dev/reports/coverage_changed_js_guardrail.txt  |    17 +-
+ docs_build/dev/reports/dependency_gating_report.md |     2 +-
+ .../reports/dependency_hydration_reuse_report.md   |    12 +-
+ .../dev/reports/execution_graph_reuse_report.md    |    16 +-
+ .../dev/reports/failure_fingerprint_report.md      |     2 +-
+ .../reports/filesystem_scan_reduction_report.md    |     2 +-
+ .../dev/reports/incremental_validation_report.md   |    14 +-
+ docs_build/dev/reports/lane_compilation_report.md  |     2 +-
+ .../dev/reports/lane_deduplication_report.md       |     2 +-
+ .../dev/reports/lane_input_validation_report.md    |     2 +-
+ .../reports/lane_manifests/workspace-contract.json |    12 +-
+ .../reports/lane_runtime_optimization_report.md    |    14 +-
+ docs_build/dev/reports/lane_snapshot_report.md     |    12 +-
+ .../reports/lane_snapshots/workspace-contract.json |    26 +-
+ docs_build/dev/reports/lane_warm_start_report.md   |    12 +-
+ .../lane_warm_starts/workspace-contract.json       |    18 +-
+ .../dev/reports/monolith_trigger_removal_report.md |     2 +-
+ .../dev/reports/persistent_lane_manifest_report.md |    12 +-
+ .../playwright_discovery_ownership_report.md       |     2 +-
+ .../reports/playwright_discovery_scope_report.md   |     2 +-
+ .../dev/reports/playwright_structure_audit.md      |     2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |    53 +-
+ docs_build/dev/reports/retry_suppression_report.md |     2 +-
+ docs_build/dev/reports/slow_path_pruning_report.md |    16 +-
+ docs_build/dev/reports/static_validation_report.md |    12 +-
+ .../dev/reports/targeted_file_manifest_report.md   |     8 +-
+ .../dev/reports/test_cleanup_performance_report.md |    22 +-
+ .../dev/reports/test_cleanup_routing_report.md     |     2 +-
+ .../dev/reports/testing_lane_execution_report.md   |    52 +-
+ docs_build/dev/reports/validation_cache_report.md  |    30 +-
+ .../dev/reports/zero_browser_preflight_report.md   |    10 +-
+ src/dev-runtime/guest-seeds/tool-state-samples.js  |   146 +-
+ src/dev-runtime/persistence/mock-db-store.js       |    71 +-
+ .../tool-repositories/assets-mock-repository.js    |    16 +-
+ src/dev-runtime/server/mock-api-router.mjs         |    67 +-
+ tests/dev-runtime/DbSeedIntegrity.test.mjs         |    26 +-
+ tests/dev-runtime/DevRuntimeBoundary.test.mjs      |     4 +-
+ tests/playwright/tools/AdminDbViewer.spec.mjs      |    40 +-
+ tests/playwright/tools/LoginSessionMode.spec.mjs   |    33 +-
+ tests/playwright/tools/ObjectsTool.spec.mjs        |     5 +-
+ .../tools/StaticOnlyLoginApiRequired.spec.mjs      |     2 +-
+ toolbox/game-journey/game-journey.js               |    57 +
+ 88 files changed, 28051 insertions(+), 2349 deletions(-)

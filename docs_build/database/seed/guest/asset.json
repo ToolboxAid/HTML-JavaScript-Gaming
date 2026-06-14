@@ -14,18 +14,18 @@
   },
   "samplePackages": [
     {
-      "key": "guest-asset-starter",
+      "key": "guest-assets-starter",
       "audience": "guest",
-      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
       "groupKey": "asset",
-      "label": "Guest Asset starter",
+      "label": "Guest Assets starter",
       "loadablePath": "toolbox/assets/index.html",
       "readOnly": true,
       "sampleKind": "toolSeed",
       "signInRedirect": "account/sign-in.html",
       "source": "docs_build/database/seed/guest/asset.json",
-      "toolKey": "asset",
-      "toolName": "Asset",
+      "toolKey": "assets",
+      "toolName": "Assets",
       "writableByGuest": false
     }
   ]

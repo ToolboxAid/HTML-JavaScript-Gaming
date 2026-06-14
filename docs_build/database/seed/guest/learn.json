@@ -1,0 +1,26 @@
+{
+  "group": "Creator Learning",
+  "groupKey": "learn",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-learn-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "learn",
+      "label": "Guest Creator Learning starter",
+      "loadablePath": "learn/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/learn.json",
+      "toolKey": "learn",
+      "toolName": "Creator Learning",
+      "writableByGuest": false
+    }
+  ]
+}

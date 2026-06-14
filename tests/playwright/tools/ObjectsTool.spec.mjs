@@ -543,13 +543,14 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
       const payload = await response.json();
       return payload.data.tables.asset_library_items.find((row) => row.id === "sprite_bolt");
     });
+    const updatedSpritePath = (originalSprite.storedPath || originalSprite.path).replace(/[^/]+$/, "sprite_bolt_reworked.png");
     const updatedSprite = {
       ...originalSprite,
       fileName: "sprite_bolt_reworked.png",
       name: "Bolt Reworked Sprite",
       originalName: "sprite_bolt_reworked.png",
-      path: "projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/sprite/sprite_bolt_reworked.png",
-      storedPath: "projects/01K8M3K0EX7V5A3W9Q2Y6R4T1B/image/sprite/sprite_bolt_reworked.png",
+      path: updatedSpritePath,
+      storedPath: updatedSpritePath,
       updatedAt: new Date().toISOString(),
     };
     await page.route("**/api/toolbox/assets/repositories/*/methods/listAssets", async (route) => {

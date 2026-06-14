@@ -1,0 +1,26 @@
+{
+  "group": "Marketplace",
+  "groupKey": "marketplace",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {},
+  "samplePackages": [
+    {
+      "key": "guest-marketplace-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
+      "groupKey": "marketplace",
+      "label": "Guest Marketplace starter",
+      "loadablePath": "toolbox/marketplace/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/marketplace.json",
+      "toolKey": "marketplace",
+      "toolName": "Marketplace",
+      "writableByGuest": false
+    }
+  ]
+}

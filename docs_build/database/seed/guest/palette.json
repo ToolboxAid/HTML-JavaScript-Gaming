@@ -13,18 +13,18 @@
   },
   "samplePackages": [
     {
-      "key": "guest-palette-starter",
+      "key": "guest-colors-starter",
       "audience": "guest",
-      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "createdBy": "01K2GFSJ0Y0000000000000054",
       "groupKey": "palette",
-      "label": "Guest Palette starter",
+      "label": "Guest Colors starter",
       "loadablePath": "toolbox/colors/index.html",
       "readOnly": true,
       "sampleKind": "toolSeed",
       "signInRedirect": "account/sign-in.html",
       "source": "docs_build/database/seed/guest/palette.json",
-      "toolKey": "palette",
-      "toolName": "Palette",
+      "toolKey": "colors",
+      "toolName": "Colors",
       "writableByGuest": false
     }
   ]
