@@ -8,6 +8,7 @@ Database schema and setup review artifacts are owned outside runtime source.
 - DEV setup or DML review artifacts belong in `docs_build/database/dml/`.
 - DDL must not be placed under `src/` or `docs/`.
 - DML files in this folder are temporary setup/review artifacts unless promoted by a future Admin Site Setup workflow.
+- Identity records use `key` as the primary identifier. Shared audit ownership uses `createdBy` and `updatedBy` references to `users.key`.
 
 ## Execution Boundary
 

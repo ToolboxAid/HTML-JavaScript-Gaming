@@ -2,25 +2,23 @@
 
 ## git status --short
 ```
-M  admin/site-settings.html
-A  docs_build/database/README.md
-A  docs_build/database/ddl/dev-app-identity-schema.sql
-A  docs_build/database/dml/dev-app-identity-temporary-setup-review.sql
-A  docs_build/dev/reports/PR_26164_091-db-ddl-site-setup-governance.md
+M  docs_build/database/README.md
+M  docs_build/database/ddl/dev-app-identity-schema.sql
+M  docs_build/database/dml/dev-app-identity-temporary-setup-review.sql
+A  docs_build/dev/reports/PR_26164_092-fix-db-identity-governance.md
 M  docs_build/dev/reports/codex_changed_files.txt
 M  docs_build/dev/reports/codex_review.diff
 ```
 
 ## git diff --cached --stat
 ```
- admin/site-settings.html                           |    2 +-
- docs_build/database/README.md                      |   18 +
- .../database/ddl/dev-app-identity-schema.sql       |   33 +
- .../dev-app-identity-temporary-setup-review.sql    |   16 +
- .../PR_26164_091-db-ddl-site-setup-governance.md   |   84 +
- docs_build/dev/reports/codex_changed_files.txt     |   89 +-
- docs_build/dev/reports/codex_review.diff           | 2018 ++------------------
- 7 files changed, 331 insertions(+), 1929 deletions(-)
+ docs_build/database/README.md                      |   1 +
+ .../database/ddl/dev-app-identity-schema.sql       |  46 ++-
+ .../dev-app-identity-temporary-setup-review.sql    | 113 +++++-
+ .../PR_26164_092-fix-db-identity-governance.md     | 105 ++++++
+ docs_build/dev/reports/codex_changed_files.txt     |  24 +-
+ docs_build/dev/reports/codex_review.diff           | 398 ++++++++++++++-------
+ 6 files changed, 507 insertions(+), 180 deletions(-)
 ```
 
 ## git diff --stat
