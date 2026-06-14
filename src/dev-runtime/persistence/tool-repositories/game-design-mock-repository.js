@@ -59,7 +59,7 @@ export const GAME_DESIGN_PLAYER_MODES = Object.freeze([
   })
 ]);
 
-const GAME_WORKSPACE_USER_ID = GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY;
+const GAME_WORKSPACE_USER_KEY = GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY;
 const REQUIRED_FIELDS = Object.freeze([
   {
     field: "gameType",
@@ -170,14 +170,14 @@ export function createGameDesignMockRepository(options = {}) {
 
   function listGameContexts() {
     return gameWorkspaceRepository
-      .listGames({ userId: GAME_WORKSPACE_USER_ID })
+      .listGames({ userKey: GAME_WORKSPACE_USER_KEY })
       .slice()
       .sort((a, b) => a.name.localeCompare(b.name));
   }
 
   function listCapabilityDemoGames() {
     return gameWorkspaceRepository
-      .listGames({ userId: GAME_WORKSPACE_USER_ID })
+      .listGames({ userKey: GAME_WORKSPACE_USER_KEY })
       .filter((game) => game.purpose === "Capability Demo")
       .sort((a, b) => a.name.localeCompare(b.name));
   }

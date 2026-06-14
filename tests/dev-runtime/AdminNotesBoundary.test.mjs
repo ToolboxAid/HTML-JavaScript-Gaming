@@ -210,7 +210,7 @@ test("local dev server serves a dedicated Admin Notes header partial only", () =
   );
   assert.equal(relativePath(localHeaderPath), "src/dev-runtime/admin/header-nav.local.html");
   assert.doesNotMatch(source, /data-admin-notes-local-menu/);
-  assert.equal(localAdminNotesHeaderPartialPath(repoRoot, repoPath("login.html")), repoPath("login.html"));
+  assert.equal(localAdminNotesHeaderPartialPath(repoRoot, repoPath("account/sign-in.html")), repoPath("account/sign-in.html"));
 });
 
 test("Admin page left menus are alphabetical UAT/PROD-safe lists", () => {

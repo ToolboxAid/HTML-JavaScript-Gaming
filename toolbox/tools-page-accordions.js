@@ -847,7 +847,7 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
         const loginRequired = document.createElement("span");
         loginRequired.className = "status";
         loginRequired.dataset.toolboxVoteLoginRequired = tool.title;
-        loginRequired.textContent = "Login required to vote.";
+        loginRequired.textContent = "Sign in required to vote.";
         loginRequired.hidden = authenticatedSession;
 
         function voteRecord() {

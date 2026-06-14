@@ -74,17 +74,17 @@ function populateSelect(select, options) {
   });
 }
 
-function currentGameUserId(activeGame) {
+function currentGameUserKey(activeGame) {
   const sessionUserKey = currentSessionUserKey();
-  if (sessionUserKey && (!activeGame || activeGame.members.some((member) => member.userId === sessionUserKey))) {
+  if (sessionUserKey && (!activeGame || activeGame.members.some((member) => member.userKey === sessionUserKey))) {
     return sessionUserKey;
   }
-  return activeGame?.ownerUserId || activeGame?.members.find((member) => member.permission === "Owner")?.userId || "";
+  return activeGame?.ownerKey || activeGame?.members.find((member) => member.permission === "Owner")?.userKey || "";
 }
 
 function currentGameMember(activeGame) {
-  const userId = currentGameUserId(activeGame);
-  return activeGame?.members.find((member) => member.userId === userId) || null;
+  const userKey = currentGameUserKey(activeGame);
+  return activeGame?.members.find((member) => member.userKey === userKey) || null;
 }
 
 function createGameButton(game, isActive) {
@@ -106,8 +106,8 @@ function renderGameList() {
   }
 
   const activeGame = repository.getActiveGame();
-  const gameUserId = currentGameUserId(activeGame);
-  const games = repository.listGames(gameUserId ? { userId: gameUserId } : {});
+  const gameUserKey = currentGameUserKey(activeGame);
+  const games = repository.listGames(gameUserKey ? { userKey: gameUserKey } : {});
 
   elements.gameList.replaceChildren();
 
@@ -157,16 +157,16 @@ function renderMembersTable(activeGame) {
   activeGame.members.forEach((member) => {
     const row = document.createElement("tr");
     const name = document.createElement("td");
-    const userId = document.createElement("td");
+    const userKey = document.createElement("td");
     const role = document.createElement("td");
     const permission = document.createElement("td");
 
     name.textContent = member.displayName;
-    userId.textContent = member.userId;
+    userKey.textContent = member.userKey;
     role.textContent = member.role;
     permission.textContent = member.permission;
 
-    row.append(name, userId, role, permission);
+    row.append(name, userKey, role, permission);
     elements.membersTable.append(row);
   });
 }
@@ -256,7 +256,7 @@ elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
   const game = repository.createGame({
     name: elements.nameInput?.value,
-    ownerUserId: currentGameUserId(repository.getActiveGame()),
+    ownerKey: currentGameUserKey(repository.getActiveGame()),
     purpose: elements.purposeInput?.value,
     status: elements.gameStatusInput?.value,
   });
@@ -326,7 +326,7 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
     return;
   }
 
-  repository.updateGameMemberRole(activeGame.id, currentGameUserId(activeGame), elements.currentUserRoleInput.value);
+  repository.updateGameMemberRole(activeGame.id, currentGameUserKey(activeGame), elements.currentUserRoleInput.value);
   setStatusLog(`Updated current user role to ${elements.currentUserRoleInput.value}.`);
   renderWorkspace();
 });

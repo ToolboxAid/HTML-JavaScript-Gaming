@@ -86,7 +86,7 @@
         publish: "community/publish.html",
         support: "docs/support.html",
         reference: "docs/reference.html",
-        login: "login.html",
+        "sign-in": "account/sign-in.html",
         contact: "company/contact.html",
         vision: "company/vision.html",
         mission: "company/mission.html",
@@ -139,7 +139,7 @@
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
-    const apiBackedLoginDiagnostic = "Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html.";
+    const apiBackedLoginDiagnostic = "Use the API-backed local server for sign-in. Run npm run dev:local-api and open http://127.0.0.1:5501/account/sign-in.html.";
     let navigationAdminMenuCache = null;
 
     function assetUrl(path) {
@@ -348,7 +348,7 @@
         return {
             authenticated: false,
             diagnostic: diagnostic || "Server session API is unavailable. Start the local server API before using protected pages.",
-            displayName: "Login",
+            displayName: "Sign In",
             mode: "missing-api",
             roleSlugs: []
         };
@@ -384,7 +384,7 @@
             return {
                 authenticated: Boolean(session.authenticated),
                 diagnostic: session.diagnostic || "",
-                displayName: session.authenticated ? session.displayName || session.label || "Account" : "Login",
+                displayName: session.authenticated ? session.displayName || session.label || "Account" : "Sign In",
                 mode: session.mode || "local-db",
                 roleSlugs: Array.isArray(session.roleSlugs) ? session.roleSlugs : []
             };
@@ -413,9 +413,9 @@
         const canUseAdmin = loginState.authenticated && loginState.roleSlugs.includes("admin");
 
         if (accountLink) {
-            accountLink.textContent = canUseAccount ? loginState.displayName + " \u25BE" : "Login";
-            accountLink.setAttribute("aria-label", canUseAccount ? "Account menu for " + loginState.displayName : "Login");
-            accountLink.setAttribute("href", canUseAccount ? routeHref("account") : routeHref("login"));
+            accountLink.textContent = canUseAccount ? loginState.displayName + " \u25BE" : "Sign In";
+            accountLink.setAttribute("aria-label", canUseAccount ? "Account menu for " + loginState.displayName : "Sign In");
+            accountLink.setAttribute("href", canUseAccount ? routeHref("account") : routeHref("sign-in"));
         }
         if (accountMenu) {
             accountMenu.hidden = !canUseAccount;
@@ -432,14 +432,17 @@
             return {
                 role: "admin",
                 title: "Admin role required",
-                message: "Log in as Admin to open this Admin page."
+                message: "Sign in as Admin to open this Admin page."
             };
+        }
+        if (pagePath === "account/sign-in.html") {
+            return null;
         }
         if (pagePath.indexOf("account/") === 0) {
             return {
                 role: "user",
-                title: "Login required",
-                message: "Log in as a local user to open Account pages."
+                title: "Sign-in required",
+                message: "Sign in as a local user to open Account pages."
             };
         }
         return null;
@@ -491,12 +494,12 @@
         status.dataset.sessionAccessStatus = "";
         status.textContent = [
             `Blocked ${pagePath}. Current session: ${loginState.displayName}.`,
-            loginState.diagnostic ? `Login/session diagnostic: ${loginState.diagnostic}` : ""
+            loginState.diagnostic ? `Sign-in/session diagnostic: ${loginState.diagnostic}` : ""
         ].filter(Boolean).join(" ");
         const link = document.createElement("a");
         link.className = "btn primary";
-        link.href = routeHref("login") + "?returnTo=" + encodeURIComponent(pagePath);
-        link.textContent = "Open Login";
+        link.href = routeHref("sign-in") + "?returnTo=" + encodeURIComponent(pagePath);
+        link.textContent = "Open Sign In";
         body.append(status, link);
         card.append(body);
         bodyContainer.append(card);

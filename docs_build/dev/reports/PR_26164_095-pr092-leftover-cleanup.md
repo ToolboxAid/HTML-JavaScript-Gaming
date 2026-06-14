@@ -1,0 +1,86 @@
+# PR_26164_095-pr092-leftover-cleanup
+
+## Branch Validation
+
+- PASS: current branch verified as `main` before PR 095 execution.
+
+## PR 092 Leftover Audit
+
+- PASS: reviewed `docs_build/dev/reports/PR_26164_092-fix-db-identity-governance.md`.
+- PASS: reviewed current `docs_build/database/README.md`.
+- PASS: reviewed current `docs_build/database/ddl/dev-app-identity-schema.sql`.
+- PASS: reviewed current `docs_build/database/dml/dev-app-identity-temporary-setup-review.sql`.
+- PASS: reviewed previous PR 092 delta ZIP contents:
+  - `docs_build/database/ddl/dev-app-identity-schema.sql`
+  - `docs_build/database/dml/dev-app-identity-temporary-setup-review.sql`
+  - `docs_build/database/README.md`
+  - PR 092 reports
+- PASS: no leftover PR 092 implementation issue was found, so PR 095 is audit/report only.
+
+## Identity Schema Governance Audit
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| `users` uses key primary identifier | PASS | `users.key text PRIMARY KEY` is present. |
+| `roles` uses key primary identifier | PASS | `roles.key text PRIMARY KEY` is present. |
+| `user_roles` uses key primary identifier | PASS | `user_roles.key text PRIMARY KEY` is present. |
+| `user_roles.userKey` references `users.key` | PASS | `"userKey" text NOT NULL REFERENCES users(key) ON DELETE CASCADE`. |
+| `user_roles.roleKey` references `roles.key` | PASS | `"roleKey" text NOT NULL REFERENCES roles(key) ON DELETE CASCADE`. |
+| Audit fields exist | PASS | `createdAt`, `updatedAt`, `createdBy`, and `updatedBy` exist on all identity tables. |
+| Ownership references `users.key` | PASS | `createdBy` and `updatedBy` reference `users(key)`. |
+| No legacy identity ownership pattern remains | PASS | Scoped scan found no `users.id`, `roles.id`, `user_roles.user_id`, `user_roles.role_id`, `user_id`, or `role_id` patterns in DDL/DML. |
+
+## DDL/DML Location Audit
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| DDL remains under `docs_build/database/ddl/` | PASS | Only identity DDL file is `docs_build/database/ddl/dev-app-identity-schema.sql`. |
+| DML/setup artifacts remain under `docs_build/database/dml/` | PASS | Only setup SQL file is `docs_build/database/dml/dev-app-identity-temporary-setup-review.sql`. |
+| No DDL under `docs/` | PASS | SQL/DDL scan under `docs/` returned no files. |
+| No DDL under `src/` | PASS | SQL/DDL scan under `src/` returned no files. |
+| DML marked temporary DEV/review only | PASS | DML header states `TEMPORARY SETUP/REVIEW ARTIFACT`, `DEV review only`, and Admin -> Site Setup ownership. |
+| UAT/PROD SQL execution remains user-controlled | PASS | DML header and database README both state UAT/production SQL execution is user-controlled. |
+
+## MEM DB Reintroduction Audit
+
+- PASS: scoped database artifact scan found no `MEM DB`, `Local Mem`, `local-mem`, or `MockDbAdapter` references.
+- PASS: PR 095 did not modify runtime code.
+- PASS: PR 095 did not introduce Supabase runtime wiring.
+- PASS: PR 095 did not add fake login behavior.
+- PASS: PR 095 did not add custom password storage tables or password hash/salt fields.
+
+## Requirement Checklist
+
+| Requirement | Status | Evidence |
+| --- | --- | --- |
+| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` | PASS | Read before PR 095 execution. |
+| Verify branch is `main` | PASS | `git branch --show-current` returned `main`. |
+| Review previous PR 092 delta and current repo state | PASS | Report, ZIP contents, README, DDL, and DML were reviewed. |
+| Fix incomplete PR 092 work | PASS | No incomplete PR 092 DDL/DML governance work was found. |
+| Confirm DDL remains under `docs_build/database/ddl/` | PASS | Location audit passed. |
+| Confirm DML remains under `docs_build/database/dml/` | PASS | Location audit passed. |
+| Confirm no DDL exists under `docs/` or `src/` | PASS | `NO_SQL_OR_DDL_UNDER_SRC_OR_DOCS`. |
+| Confirm key-based identity records and audit ownership | PASS | Identity schema audit passed. |
+| Confirm no legacy id ownership patterns remain | PASS | Legacy pattern scan returned no matches. |
+| Confirm temporary DML is DEV/review only until Admin -> Site Setup owns setup | PASS | DML and README both document the temporary boundary. |
+| Do not introduce runtime Supabase wiring | PASS | No runtime files changed. |
+| Do not reintroduce MEM DB | PASS | Scoped database artifact scan returned no MEM/local-mem matches. |
+| Do not add fake login behavior | PASS | No auth/runtime files changed. |
+
+## Validation
+
+- PASS: `git diff --check`
+- PASS: PR 092 ZIP content review
+- PASS: DDL/DML location audit
+- PASS: identity schema governance audit
+- PASS: legacy id ownership pattern scan
+- PASS: MEM DB reintroduction audit
+- PASS: temporary DML/README governance marker audit
+- Playwright impacted: No. PR 095 is database governance audit/report only.
+- Full samples smoke test: skipped because PR 095 is DDL/DML governance audit/report only and does not affect samples.
+
+## Manual Validation Notes
+
+- No code changes were required for PR 095.
+- Current DDL/DML already satisfies the PR 092 key-based identity governance requirements.
+- Current temporary setup SQL remains a DEV/review artifact and is not a permanent seed mechanism.

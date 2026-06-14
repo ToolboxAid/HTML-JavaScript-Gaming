@@ -6,7 +6,7 @@ const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
 
 const localServer = await startLocalApiServer({ host, port });
 
-console.log(`GameFoundry API-backed local server running at ${localServer.baseUrl}/login.html`);
+console.log(`GameFoundry API-backed local server running at ${localServer.baseUrl}/account/sign-in.html`);
 console.log("Press Ctrl+C to stop.");
 
 for (const signal of ["SIGINT", "SIGTERM"]) {

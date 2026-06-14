@@ -133,7 +133,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(guestSavedDataVotes.locator("[data-toolbox-vote='down']")).toHaveText("Down 0");
     await expect(guestSavedDataVotes.locator("[data-toolbox-vote='up']")).toBeDisabled();
     await expect(guestSavedDataVotes.locator("[data-toolbox-vote='down']")).toBeDisabled();
-    await expect(guestSavedDataVotes.locator("[data-toolbox-vote-login-required='Saved Data']")).toHaveText("Login required to vote.");
+    await expect(guestSavedDataVotes.locator("[data-toolbox-vote-login-required='Saved Data']")).toHaveText("Sign in required to vote.");
 
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });

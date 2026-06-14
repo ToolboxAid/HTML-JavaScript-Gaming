@@ -162,7 +162,7 @@ async function openFixedLocalApiLoginPage(page) {
   });
 
   await workspaceV2CoverageReporter.start(page);
-  await page.goto(`${fixedBaseUrl}/login.html`, { waitUntil: "networkidle" });
+  await page.goto(`${fixedBaseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, localDbStoragePath, pageErrors, previousLocalDbStoragePath, server };
 }
 
@@ -255,10 +255,10 @@ async function mockDbSessionSnapshot(page) {
 }
 
 test("Login page uses Local DB only without storing Guest as a user", async ({ page }) => {
-  const failures = await openRepoPage(page, "/login.html");
+  const failures = await openRepoPage(page, "/account/sign-in.html");
 
   try {
-    await expect(page.getByRole("heading", { name: "Login", level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Sign In", level: 1 })).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
     await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
@@ -280,13 +280,13 @@ test("Login page uses Local DB only without storing Guest as a user", async ({ p
       };
     });
     expect(diagnosticsLayout).toEqual({ belowPanel: true, fillsContainer: true });
-    await expect(page.locator("[data-login-status-current-url]")).toContainText(`${failures.server.baseUrl}/login.html`);
+    await expect(page.locator("[data-login-status-current-url]")).toContainText(`${failures.server.baseUrl}/account/sign-in.html`);
     await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local DB)");
     await expect(page.locator("[data-login-status-api]")).toContainText("Available");
     await expect(page.locator("[data-login-status-api]")).toContainText("/api/session/current");
     await expect(page.locator("[data-login-status-disabled-reason]")).toHaveText("Local DB is enabled because the Local API is available.");
     await expect(page.locator("[data-login-status-endpoint]")).toHaveText("/api/session/current");
-    await expect(page.locator("[data-login-status-api-url]")).toHaveText("http://127.0.0.1:5501/login.html");
+    await expect(page.locator("[data-login-status-api-url]")).toHaveText("http://127.0.0.1:5501/account/sign-in.html");
     await expect(page.locator("[data-login-status-command]")).toHaveText("npm run dev:local-api");
     await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local DB");
     await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local DB");
@@ -328,7 +328,7 @@ test("Login page uses Local DB only without storing Guest as a user", async ({ p
     await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
     await expect(page.locator("[data-login-user-controls]")).toBeVisible();
     await expect(page.locator("[data-login-user-status]")).toHaveText("Guest is unauthenticated and is not stored in the users table.");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
 
     let snapshot = await mockDbSessionSnapshot(page);
@@ -359,7 +359,7 @@ test("Login page uses Local DB only without storing Guest as a user", async ({ p
     await page.getByRole("button", { name: "Guest" }).click();
     await expect(page.getByRole("button", { name: "Guest" })).toHaveClass(/primary/);
     await expect(page.locator("[data-login-user-status]")).toHaveText("Guest is unauthenticated and is not stored in the users table.");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -375,8 +375,8 @@ test("Protected pages block direct URL access without the required Local session
   try {
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Sign In.");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
     await expectNoPageFailures(failures);
   } finally {
@@ -391,9 +391,9 @@ test("Protected pages block direct URL access without the required Local session
   try {
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
-    await expect(page.locator("[data-session-access-status]")).toContainText("Login/session diagnostic: Selected Local user key");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Sign In.");
+    await expect(page.locator("[data-session-access-status]")).toContainText("Sign-in/session diagnostic: Selected Local user key");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
     await expectNoPageFailures(failures);
   } finally {
@@ -441,9 +441,9 @@ test("Protected pages block direct URL access without the required Local session
 
   try {
     await expect(page.locator("[data-session-access-blocked='user']")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Login required", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Login.");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.getByRole("heading", { name: "Sign-in required", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Sign In.");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
@@ -451,7 +451,7 @@ test("Protected pages block direct URL access without the required Local session
 });
 
 test("Login reseed shows a visible failure when the seed API fails", async ({ page }) => {
-  const failures = await openRepoPage(page, "/login.html");
+  const failures = await openRepoPage(page, "/account/sign-in.html");
 
   try {
     await page.route("**/api/mock-db/seed", async (route) => {
@@ -522,7 +522,7 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
   const failures = await openFixedLocalApiLoginPage(page);
 
   try {
-    await expect(page).toHaveURL("http://127.0.0.1:5501/login.html");
+    await expect(page).toHaveURL("http://127.0.0.1:5501/account/sign-in.html");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("DavidQ");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
@@ -550,8 +550,8 @@ test("Account logout clears only the current session and blocks protected pages"
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
     await page.locator("[data-account-logout]").click();
     await expect(page.locator("[data-session-access-blocked='user']")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Login required", level: 1 })).toBeVisible();
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.getByRole("heading", { name: "Sign-in required", level: 1 })).toBeVisible();
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
 
@@ -587,7 +587,7 @@ test("Guest can explore allowed Toolbox pages without persistence access", async
   try {
     await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
     await expect(page.getByRole("heading", { name: "Game Journey", level: 1 })).toBeVisible();
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
     await expect(page.locator("[data-journey-diagnostics]")).toContainText("Guest is unauthenticated");
     await expect(page.locator("[data-journey-new-note-name]")).toBeDisabled();
     await expect(page.getByRole("button", { name: "Add Note", exact: true })).toBeDisabled();

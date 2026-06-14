@@ -6,19 +6,19 @@ export const GAME_WORKSPACE_VIEWER_USER_KEY = MOCK_DB_KEYS.users.user3;
 
 const SEED_USERS = Object.freeze([
   {
-    id: GAME_WORKSPACE_ADMIN_USER_KEY,
+    key: GAME_WORKSPACE_ADMIN_USER_KEY,
     displayName: "DavidQ",
     email: "admin@example.test",
     role: "Admin",
   },
   {
-    id: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    key: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     displayName: "User 1",
     email: "creator@example.test",
     role: "Creator",
   },
   {
-    id: GAME_WORKSPACE_VIEWER_USER_KEY,
+    key: GAME_WORKSPACE_VIEWER_USER_KEY,
     displayName: "User 3",
     email: "guest@example.test",
     role: "Guest",
@@ -27,7 +27,7 @@ const SEED_USERS = Object.freeze([
 
 const DEMO_GAME = Object.freeze({
   id: "demo-game",
-  ownerUserId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+  ownerKey: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
   name: "Demo Game",
   purpose: "Game",
   status: "Under Construction",
@@ -36,21 +36,21 @@ const DEMO_GAME = Object.freeze({
 const CAPABILITY_DEMO_GAMES = Object.freeze([
   {
     id: "gravity-demo",
-    ownerUserId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    ownerKey: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     name: "Gravity Demo",
     purpose: "Capability Demo",
     status: "Wireframe",
   },
   {
     id: "collision-demo",
-    ownerUserId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    ownerKey: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     name: "Collision Demo",
     purpose: "Capability Demo",
     status: "Wireframe",
   },
   {
     id: "camera-follow-demo",
-    ownerUserId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    ownerKey: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     name: "Camera Follow Demo",
     purpose: "Capability Demo",
     status: "Wireframe",
@@ -60,19 +60,19 @@ const CAPABILITY_DEMO_GAMES = Object.freeze([
 const DEMO_GAME_MEMBERS = Object.freeze([
   {
     gameId: "demo-game",
-    userId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+    userKey: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
     permission: "Owner",
     role: "Owner",
   },
   {
     gameId: "demo-game",
-    userId: GAME_WORKSPACE_ADMIN_USER_KEY,
+    userKey: GAME_WORKSPACE_ADMIN_USER_KEY,
     permission: "Admin",
     role: "Owner",
   },
   {
     gameId: "demo-game",
-    userId: GAME_WORKSPACE_VIEWER_USER_KEY,
+    userKey: GAME_WORKSPACE_VIEWER_USER_KEY,
     permission: "Viewer",
     role: "Viewer",
   },
@@ -82,19 +82,19 @@ const CAPABILITY_DEMO_GAME_MEMBERS = Object.freeze(
   CAPABILITY_DEMO_GAMES.flatMap((game) => [
     {
       gameId: game.id,
-      userId: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
+      userKey: GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY,
       permission: "Owner",
       role: "Owner",
     },
     {
       gameId: game.id,
-      userId: GAME_WORKSPACE_ADMIN_USER_KEY,
+      userKey: GAME_WORKSPACE_ADMIN_USER_KEY,
       permission: "Admin",
       role: "Owner",
     },
     {
       gameId: game.id,
-      userId: GAME_WORKSPACE_VIEWER_USER_KEY,
+      userKey: GAME_WORKSPACE_VIEWER_USER_KEY,
       permission: "Viewer",
       role: "Viewer",
     },
@@ -151,9 +151,9 @@ export const GAME_WORKSPACE_PERMISSIONS = Object.freeze([
 ]);
 
 export const GAME_WORKSPACE_SCHEMA = Object.freeze({
-  users: Object.freeze(["id", "displayName", "email", "role"]),
-  games: Object.freeze(["id", "ownerUserId", "name", "purpose", "status"]),
-  game_members: Object.freeze(["gameId", "userId", "permission", "role"]),
+  users: Object.freeze(["key", "displayName", "email", "role"]),
+  games: Object.freeze(["id", "ownerKey", "name", "purpose", "status"]),
+  game_members: Object.freeze(["gameId", "userKey", "permission", "role"]),
 });
 
 function cloneRows(rows) {
@@ -190,8 +190,8 @@ export function createGameWorkspaceMockRepository() {
   let activeGameId = DEMO_GAME.id;
   let gameCounter = 1;
 
-  function getUserById(userId) {
-    return tables.users.find((user) => user.id === userId) || null;
+  function getUserByKey(userKey) {
+    return tables.users.find((user) => user.key === userKey) || null;
   }
 
   function getGameById(gameId) {
@@ -200,7 +200,7 @@ export function createGameWorkspaceMockRepository() {
 
   function ensureSeedUsers() {
     SEED_USERS.forEach((seedUser) => {
-      if (!getUserById(seedUser.id)) {
+      if (!getUserByKey(seedUser.key)) {
         tables.users.push({ ...seedUser });
       }
     });
@@ -213,7 +213,7 @@ export function createGameWorkspaceMockRepository() {
         ...member,
         permission: member.permission || member.role || "Viewer",
         role: member.role || member.permission || "Viewer",
-        displayName: getUserById(member.userId)?.displayName || member.userId,
+        displayName: getUserByKey(member.userKey)?.displayName || member.userKey,
       }));
   }
 
@@ -222,12 +222,12 @@ export function createGameWorkspaceMockRepository() {
       return null;
     }
 
-    const owner = getUserById(game.ownerUserId);
+    const owner = getUserByKey(game.ownerKey);
 
     return {
       ...game,
       purpose: game.purpose || "Game",
-      ownerDisplayName: owner?.displayName || game.ownerUserId,
+      ownerDisplayName: owner?.displayName || game.ownerKey,
       members: getGameMembers(game.id),
     };
   }
@@ -237,15 +237,15 @@ export function createGameWorkspaceMockRepository() {
   }
 
   function listGames(options = {}) {
-    const { userId } = options;
+    const { userKey } = options;
 
-    if (!userId) {
+    if (!userKey) {
       return tables.games.map(describeGame);
     }
 
     const gameIds = new Set(
       tables.game_members
-        .filter((member) => member.userId === userId)
+        .filter((member) => member.userKey === userKey)
         .map((member) => member.gameId),
     );
 
@@ -323,7 +323,7 @@ export function createGameWorkspaceMockRepository() {
       const exists = tables.game_members.some(
         (member) =>
           member.gameId === seedMember.gameId &&
-          member.userId === seedMember.userId,
+          member.userKey === seedMember.userKey,
       );
 
       if (!exists) {
@@ -349,7 +349,7 @@ export function createGameWorkspaceMockRepository() {
     ensureSeedUsers();
 
     const name = String(input.name || "").trim() || "Untitled Game";
-    const ownerUserId = input.ownerUserId || GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY;
+    const ownerKey = input.ownerKey || GAME_WORKSPACE_DEFAULT_OWNER_USER_KEY;
     const purpose = GAME_WORKSPACE_GAME_PURPOSES.includes(input.purpose)
       ? input.purpose
       : "Game";
@@ -368,7 +368,7 @@ export function createGameWorkspaceMockRepository() {
 
     const game = {
       id: candidateId,
-      ownerUserId,
+      ownerKey,
       name,
       purpose,
       status,
@@ -377,7 +377,7 @@ export function createGameWorkspaceMockRepository() {
     tables.games.push(game);
     tables.game_members.push({
       gameId: game.id,
-      userId: ownerUserId,
+      userKey: ownerKey,
       permission: "Owner",
       role: "Owner",
     });
@@ -408,13 +408,13 @@ export function createGameWorkspaceMockRepository() {
     return describeGame(game);
   }
 
-  function updateGameMemberRole(gameId, userId, role) {
+  function updateGameMemberRole(gameId, userKey, role) {
     if (!GAME_WORKSPACE_MEMBER_ROLES.includes(role)) {
       return getSnapshot();
     }
 
     const member = tables.game_members.find(
-      (item) => item.gameId === gameId && item.userId === userId,
+      (item) => item.gameId === gameId && item.userKey === userKey,
     );
 
     if (member) {

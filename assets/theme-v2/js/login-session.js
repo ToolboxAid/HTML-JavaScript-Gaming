@@ -24,10 +24,10 @@ const reseedFields = {
   target: document.querySelector("[data-login-reseed-target]"),
 };
 const localApiStartCommand = "npm run dev:local-api";
-const localApiLoginUrl = "http://127.0.0.1:5501/login.html";
+const localApiLoginUrl = "http://127.0.0.1:5501/account/sign-in.html";
 const expectedSessionEndpoint = "/api/session/current";
-const apiBackedLoginDiagnostic = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}.`;
-const staticModeDisabledMessage = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}. Local DB is disabled until the local API server is running.`;
+const apiBackedLoginDiagnostic = `Use the API-backed local server for sign-in. Run ${localApiStartCommand} and open ${localApiLoginUrl}.`;
+const staticModeDisabledMessage = `Use the API-backed local server for sign-in. Run ${localApiStartCommand} and open ${localApiLoginUrl}. Local DB is disabled until the local API server is running.`;
 let reseedConfirmationPending = false;
 let reseedStatusMessage = "";
 const localStatusFields = {
@@ -44,9 +44,22 @@ function currentReturnTo() {
   const params = new URLSearchParams(window.location.search);
   const value = params.get("returnTo") || "";
   if (!value || value.startsWith("/") || value.includes("://") || value.includes("..")) {
-    return "toolbox/index.html";
+    return repoPathHref("toolbox/index.html");
   }
-  return value;
+  return repoPathHref(value);
+}
+
+function repoPathHref(path) {
+  const normalizedPath = String(path || "").replace(/^\/+/, "");
+  return normalizedPath ? rootPrefix() + normalizedPath : "#";
+}
+
+function rootPrefix() {
+  const rootSegments = new Set(["account", "admin", "company", "community", "docs", "games", "learn", "legal", "marketplace", "toolbox"]);
+  const parts = window.location.pathname.split("/").filter(Boolean);
+  const rootIndex = parts.findIndex((part) => rootSegments.has(part));
+  const pageParts = rootIndex >= 0 ? parts.slice(rootIndex) : [parts[parts.length - 1] || "index.html"];
+  return pageParts.length > 1 ? "../".repeat(pageParts.length - 1) : "";
 }
 
 function updateContinueLink() {
@@ -225,7 +238,7 @@ function renderError(error) {
     modeDescription.textContent = "Start the API-backed local server to use Local DB.";
   }
   if (modeStatus) {
-    modeStatus.textContent = `Login/session diagnostic: ${message}`;
+    modeStatus.textContent = `Sign-in/session diagnostic: ${message}`;
   }
   if (modeDisabledMessage) {
     modeDisabledMessage.hidden = message !== apiBackedLoginDiagnostic;

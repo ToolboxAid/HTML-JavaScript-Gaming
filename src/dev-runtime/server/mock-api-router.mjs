@@ -1068,7 +1068,7 @@ class LocalDevMockDataSource {
   toolboxVoteVoterKey() {
     const session = this.currentSession();
     if (!session.userKey) {
-      throw new Error("Login required to record Toolbox votes.");
+      throw new Error("Sign in required to record Toolbox votes.");
     }
     return session.userKey;
   }

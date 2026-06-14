@@ -304,7 +304,7 @@ export function createInputMappingToolMockRepository(options = {}) {
     if (!targetPlayerId) {
       return {
         error: true,
-        message: "Login required to save User Controls profiles.",
+        message: "Sign in required to save User Controls profiles.",
         profiles: [],
         saved: false,
       };
@@ -358,7 +358,7 @@ export function createInputMappingToolMockRepository(options = {}) {
     if (!targetPlayerId) {
       return {
         error: true,
-        message: "Login required to save Selected Device.",
+        message: "Sign in required to save Selected Device.",
         saved: false,
         selectedInputDevice: null,
       };

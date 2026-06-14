@@ -55,7 +55,7 @@ test("login session API routes recover static probes and Local DB mode calls", a
       }
     }
 
-    await page.goto(`${server.baseUrl}/login.html`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
     await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
     await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();

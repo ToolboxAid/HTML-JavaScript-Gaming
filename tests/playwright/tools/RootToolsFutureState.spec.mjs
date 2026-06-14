@@ -5,7 +5,7 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 import { getActiveToolRegistry, getToolRoute } from "../../../toolbox/toolRegistry.js";
 
-const PRIMARY_NAVIGATION_ORDER = ["Games", "Toolbox", "Marketplace", "Learn", "Login"];
+const PRIMARY_NAVIGATION_ORDER = ["Games", "Toolbox", "Marketplace", "Learn", "Sign In"];
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
