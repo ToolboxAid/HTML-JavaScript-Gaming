@@ -232,6 +232,12 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await expect(page.locator("nav.nav-links a[data-route='admin-db-viewer']")).toHaveText("DB Viewer");
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for All\./);
+    await expect(page.locator("[data-admin-db-local-status-card]")).toBeVisible();
+    await expect(page.locator("[data-admin-db-status-current-url]")).toContainText(`${failures.server.baseUrl}/admin/db-viewer.html`);
+    await expect(page.locator("[data-admin-db-status-server-mode]")).toHaveText("PASS: local-db (Local DB).");
+    await expect(page.locator("[data-admin-db-status-api]")).toHaveText("PASS: /api/session/current responded.");
+    await expect(page.locator("[data-admin-db-status-endpoint]")).toHaveText("/api/session/current");
+    await expect(page.locator("[data-admin-db-status-setup-endpoint]")).toHaveText("/api/admin/setup/reseed");
     await expect(page.locator("[data-admin-setup-reseed]")).toHaveText("Reseed Local DB");
     await expect(page.locator("[data-admin-setup-status]")).toHaveText("SKIP: No setup action has been run.");
     await expect(page.locator("[data-admin-db-filter]")).toHaveText([

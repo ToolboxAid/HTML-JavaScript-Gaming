@@ -65,7 +65,7 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-test("static 127.0.0.1:5500 login requires the API-backed local server", async ({ page }) => {
+test("static sign-in page renders production-safe account actions without API diagnostics", async ({ page }) => {
   const server = await startStaticOnlyServer();
   const requests = [];
   const failedRequests = [];
@@ -99,36 +99,23 @@ test("static 127.0.0.1:5500 login requires the API-backed local server", async (
     await workspaceV2CoverageReporter.start(page);
     await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { name: "Sign In", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
+    await expect(page.getByLabel("Email or username")).toBeVisible();
+    await expect(page.getByLabel("Password")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Create Account" })).toHaveAttribute("href", /create-account\.html$/);
+    await expect(page.getByRole("link", { name: "Lost Password" })).toHaveAttribute("href", /lost-password\.html$/);
+    await expect(page.locator("[data-login-mode]")).toHaveCount(0);
     await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
-    await expect(page.locator("[data-login-mode='local-db']")).toBeDisabled();
-    await expect(page.locator("[data-login-mode='local-db']")).not.toHaveClass(/primary/);
-    await expect(page.locator("[data-login-mode-disabled-message]")).toBeVisible();
-    await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("Use the API-backed local server for sign-in.");
-    await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("npm run dev:local-api");
-    await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("http://127.0.0.1:5501/account/sign-in.html");
-    await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("Local DB is disabled");
-    await expect(page.locator("[data-login-mode-title]")).toHaveText("Session API required");
-    await expect(page.locator("[data-login-mode-description]")).toContainText("Start the API-backed local server");
-    await expect(page.locator("[data-login-mode-status]")).toContainText("Sign-in/session diagnostic");
-    await expect(page.locator("[data-login-mode-status]")).toContainText("Use the API-backed local server for sign-in.");
-    await expect(page.locator("[data-login-mode-status]")).toContainText("npm run dev:local-api");
-    await expect(page.locator("[data-login-mode-status]")).toContainText("http://127.0.0.1:5501/account/sign-in.html");
-    await expect(page.locator("main hr")).toHaveCount(1);
-    await expect(page.getByRole("heading", { name: "Local Development Status", level: 2 })).toBeVisible();
-    await expect(page.locator("[data-login-status-current-url]")).toContainText(`${server.baseUrl}/account/sign-in.html`);
-    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("Static-only local server");
-    await expect(page.locator("[data-login-status-api]")).toContainText("Unavailable");
-    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("Local DB is disabled");
-    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("npm run dev:local-api");
-    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("http://127.0.0.1:5501/account/sign-in.html");
-    await expect(page.locator("[data-login-status-endpoint]")).toHaveText("/api/session/current");
-    await expect(page.locator("[data-login-status-api-url]")).toHaveText("http://127.0.0.1:5501/account/sign-in.html");
-    await expect(page.locator("[data-login-status-command]")).toHaveText("npm run dev:local-api");
+    await expect(page.locator("[data-login-local-status]")).toHaveCount(0);
+    await expect(page.locator("[aria-labelledby='login-local-status-title']")).toHaveCount(0);
     await expect(page.locator("[data-login-user]")).toHaveCount(0);
-    await expect(page.locator("[data-login-user-status]")).toContainText("No local users are available until /api/session responds");
+    await expect(page.locator("[data-admin-setup-reseed]")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
+    await expect(page.locator("main")).not.toContainText("reseed");
+    await expect(page.locator("main")).not.toContainText("Local DB");
+    await page.getByRole("button", { name: "Sign In" }).click();
+    await expect(page.locator("[data-login-status]")).toHaveText("Secure account sign-in is not available in this build.");
 
     expect(requests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
     expect(requests.filter((request) => request.includes("/api/session/"))).toEqual([]);

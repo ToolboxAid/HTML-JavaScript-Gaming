@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sign In - GameFoundryStudio</title>
-    <meta name="description" content="Choose a local development session for GameFoundryStudio.">
+    <meta name="description" content="Sign in to your GameFoundryStudio account.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
 </head>
@@ -15,57 +15,36 @@
     <main>
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Session</div>
+                <div class="kicker">Account</div>
                 <h1>Sign In</h1>
-                <p class="lede">Use the Local DB-backed development session for project data.</p>
+                <p class="lede">Access your GameFoundryStudio account.</p>
             </div>
         </section>
         <section class="section">
             <div class="container content-stack">
-                <div class="account-panel">
-                    <aside class="side-menu" aria-label="Session mode">
-                        <button class="btn btn--compact" type="button" data-login-mode="local-db">Local DB</button>
-                        <p class="status" role="status" data-login-mode-disabled-message hidden>Use the API-backed local server for sign-in. Run npm run dev:local-api and open http://127.0.0.1:5501/account/sign-in.html. Local DB is disabled until the local API server is running.</p>
-                    </aside>
-                    <div class="card">
-                        <div class="card-body content-stack">
-                            <div>
-                                <div class="kicker">Mode</div>
-                                <h2 data-login-mode-title>Local DB</h2>
-                                <p class="lede" data-login-mode-description>Uses LocalDbAdapter backed by server SQLite storage.</p>
-                            </div>
-                            <div class="status" role="status" data-login-mode-status>Session mode ready.</div>
-                            <section class="content-stack" aria-labelledby="login-users-title">
-                                <div>
-                                    <div class="kicker">Local Users</div>
-                                    <h2 id="login-users-title">Session User</h2>
-                                </div>
-                                <div class="action-group" role="group" aria-label="Local test users" data-login-user-controls></div>
-                                <div class="status" role="status" data-login-user-status>Choose a local test user.</div>
-                            </section>
+                <div class="card">
+                    <div class="card-body content-stack">
+                        <div>
+                            <div class="kicker">Secure Access</div>
+                            <h2>Welcome Back</h2>
+                        </div>
+                        <form class="content-stack" data-login-form>
+                            <label for="signInIdentity">Email or username</label>
+                            <input id="signInIdentity" name="identity" type="text" autocomplete="username" data-login-identity>
+                            <label for="signInPassword">Password</label>
+                            <input id="signInPassword" name="password" type="password" autocomplete="current-password" data-login-password>
                             <div class="action-group">
-                                <a class="btn primary" href="toolbox/index.html" data-login-continue>Continue</a>
+                                <button class="btn primary" type="submit" data-login-submit>Sign In</button>
+                                <a class="btn" href="create-account.html" data-login-create-account>Create Account</a>
+                                <a class="btn btn--compact" href="lost-password.html" data-login-lost-password>Lost Password</a>
                             </div>
+                            <div class="status" role="status" data-login-status>Secure account sign-in is not available in this build.</div>
+                        </form>
+                        <div class="action-group">
+                            <a class="btn btn--compact" href="toolbox/index.html" data-login-continue>Continue Browsing</a>
                         </div>
                     </div>
                 </div>
-                <section class="card" aria-labelledby="login-local-status-title">
-                    <div class="card-body content-stack">
-                        <div>
-                            <div class="kicker">Diagnostics</div>
-                            <h2 id="login-local-status-title">Local Development Status</h2>
-                        </div>
-                        <div class="content-stack" data-login-local-status>
-                            <p><strong>Current URL:</strong> <span data-login-status-current-url>Checking...</span></p>
-                            <p><strong>Detected server mode:</strong> <span data-login-status-server-mode>Checking...</span></p>
-                            <p><strong>Local API availability:</strong> <span data-login-status-api>Checking...</span></p>
-                            <p><strong>Disabled reason:</strong> <span data-login-status-disabled-reason>Checking...</span></p>
-                            <p><strong>Expected API endpoint:</strong> <span data-login-status-endpoint>/api/session/current</span></p>
-                            <p><strong>Correct local URL:</strong> <span data-login-status-api-url>http://127.0.0.1:5501/account/sign-in.html</span></p>
-                            <p><strong>Startup command:</strong> <span data-login-status-command>npm run dev:local-api</span></p>
-                        </div>
-                    </div>
-                </section>
             </div>
         </section>
     </main>

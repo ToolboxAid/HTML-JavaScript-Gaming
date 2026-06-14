@@ -255,40 +255,43 @@ async function mockDbSessionSnapshot(page) {
   });
 }
 
-test("Login page uses Local DB only without storing Guest as a user", async ({ page }) => {
+test("Sign-in page uses a production-safe account form without public Local DB controls", async ({ page }) => {
   const failures = await openRepoPage(page, "/account/sign-in.html");
 
   try {
     await expect(page.getByRole("heading", { name: "Sign In", level: 1 })).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
+    await expect(page.getByLabel("Email or username")).toBeVisible();
+    await expect(page.getByLabel("Password")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Create Account" })).toHaveAttribute("href", /create-account\.html$/);
+    await expect(page.getByRole("link", { name: "Lost Password" })).toHaveAttribute("href", /lost-password\.html$/);
+    await expect(page.getByRole("link", { name: "Continue Browsing" })).toBeVisible();
+    await expect(page.locator("aside[aria-label='Session mode']")).toHaveCount(0);
+    await expect(page.locator("[aria-labelledby='login-local-status-title']")).toHaveCount(0);
+    await expect(page.locator("[data-login-local-status]")).toHaveCount(0);
+    await expect(page.locator("[data-login-mode]")).toHaveCount(0);
     await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
-    await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
-    await expect(page.locator("main hr")).toHaveCount(0);
-    await expect(page.getByRole("heading", { name: "Local Development Status", level: 2 })).toBeVisible();
-    const diagnosticsLayout = await page.locator("[aria-labelledby='login-local-status-title']").evaluate((statusCard) => {
-      const accountPanel = document.querySelector(".account-panel");
-      const container = statusCard.closest(".container");
-      if (!accountPanel || !container) {
-        return { belowPanel: false, fillsContainer: false };
-      }
-      const statusBox = statusCard.getBoundingClientRect();
-      const panelBox = accountPanel.getBoundingClientRect();
-      const containerBox = container.getBoundingClientRect();
-      return {
-        belowPanel: statusBox.top >= panelBox.bottom - 1,
-        fillsContainer: statusBox.width >= containerBox.width * 0.95
-      };
-    });
-    expect(diagnosticsLayout).toEqual({ belowPanel: true, fillsContainer: true });
-    await expect(page.locator("[data-login-status-current-url]")).toContainText(`${failures.server.baseUrl}/account/sign-in.html`);
-    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local DB)");
-    await expect(page.locator("[data-login-status-api]")).toContainText("Available");
-    await expect(page.locator("[data-login-status-api]")).toContainText("/api/session/current");
-    await expect(page.locator("[data-login-status-disabled-reason]")).toHaveText("Local DB is enabled because the Local API is available.");
-    await expect(page.locator("[data-login-status-endpoint]")).toHaveText("/api/session/current");
-    await expect(page.locator("[data-login-status-api-url]")).toHaveText("http://127.0.0.1:5501/account/sign-in.html");
-    await expect(page.locator("[data-login-status-command]")).toHaveText("npm run dev:local-api");
+    await expect(page.locator("[data-login-user]")).toHaveCount(0);
+    await expect(page.locator("[data-login-user-controls]")).toHaveCount(0);
+    await expect(page.locator("[data-admin-setup-reseed]")).toHaveCount(0);
+    await expect(page.locator("[data-admin-setup-status]")).toHaveCount(0);
+    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveCount(0);
+    await expect(page.locator("[data-login-reseed-target]")).toHaveCount(0);
+    await expect(page.locator("[data-login-reseed-status]")).toHaveCount(0);
+    await expect(page.locator("[data-login-reseed-start]")).toHaveCount(0);
+    await expect(page.locator("[data-login-reseed-confirm]")).toHaveCount(0);
+    await expect(page.locator("[data-login-reseed-cancel]")).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Guest" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "User 1" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "User 2" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "User 3" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "DavidQ" })).toHaveCount(0);
+    await expect(page.locator("a[href='/login.html'], a[href='login.html']")).toHaveCount(0);
+    await expect(page.locator("main")).not.toContainText("fake");
+    await expect(page.locator("main")).not.toContainText("local-mem");
+    await expect(page.locator("main")).not.toContainText("reseed");
+    await expect(page.locator("main")).not.toContainText("Session mode");
     const authContract = await page.evaluate(() => {
       const provider = window.GameFoundryAuthProvider;
       return {
@@ -310,57 +313,32 @@ test("Login page uses Local DB only without storing Guest as a user", async ({ p
       operations: ["getCurrentUser", "signIn", "signOut", "requireRole"],
       providerId: "server-session-api",
     });
-    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveCount(0);
-    await expect(page.locator("[data-login-reseed-target]")).toHaveCount(0);
-    await expect(page.locator("[data-login-reseed-status]")).toHaveCount(0);
-    await expect(page.locator("[data-login-reseed-start]")).toHaveCount(0);
-    await expect(page.locator("[data-login-reseed-confirm]")).toHaveCount(0);
-    await expect(page.locator("[data-login-reseed-cancel]")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "DEV" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
-    await expect(page.locator("[data-login-mode='local-db']")).toHaveClass(/primary/);
-    await expect(page.locator("[data-login-mode-title]")).toHaveText("Local DB");
-    await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses LocalDbAdapter backed by server SQLite storage.");
-    await expect(page.locator("[data-login-mode-status]")).toContainText("Environment: Local DB");
-    await expect(page.locator("[data-login-mode-status]")).toContainText("Persistence: Local DB");
-    await expect(page.locator("[data-login-mode-status]")).not.toContainText("Local DB adapter not configured");
-    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
-    await expect(page.locator("[data-login-user-controls]")).toBeVisible();
-    await expect(page.locator("[data-login-user-status]")).toHaveText("Guest is unauthenticated and is not stored in the users table.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
 
-    let snapshot = await mockDbSessionSnapshot(page);
+    const snapshot = await mockDbSessionSnapshot(page);
     expect(snapshot.mode.id).toBe("local-db");
     expect(snapshot.persistence).toBe("Local DB");
     expect(snapshot.sessionUser.id).toBe("guest");
     expect(snapshot.userNames.sort()).toEqual(["DavidQ", "User 1", "User 2", "User 3", "forge-bot"].sort());
     expect(snapshot.userNames).not.toContain("Guest");
 
-    await page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user2}']`).click();
-    await expect(page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user2}']`)).toHaveClass(/primary/);
-    await expect(page.locator("[data-login-user-status]")).toHaveText("Selected local user: User 2.");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 2");
-    await expect.poll(() => page.evaluate(() => window.GameFoundryAuthProvider.requireRole("user").allowed)).toBe(true);
-    snapshot = await mockDbSessionSnapshot(page);
-    expect(snapshot.mode.id).toBe("local-db");
-    expect(snapshot.persistence).toBe("Local DB");
-    expect(snapshot.sessionUser.id).toBe(MOCK_DB_KEYS.users.user2);
-
-    await page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`).click();
-    await expect(page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`)).toHaveClass(/primary/);
-    await expect(page.locator("[data-login-user-status]")).toHaveText("Selected local user: User 1.");
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
-    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
-    await expect(page.locator("[data-account-logout]")).toBeVisible();
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
-
-    await page.getByRole("button", { name: "Guest" }).click();
-    await expect(page.getByRole("button", { name: "Guest" })).toHaveClass(/primary/);
-    await expect(page.locator("[data-login-user-status]")).toHaveText("Guest is unauthenticated and is not stored in the users table.");
+    await page.getByLabel("Email or username").fill("user@example.invalid");
+    await page.getByLabel("Password").fill("not-stored");
+    await page.getByRole("button", { name: "Sign In" }).click();
+    await expect(page.locator("[data-login-status]")).toHaveText("Secure account sign-in is not available in this build.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
+
+    await page.getByRole("link", { name: "Create Account" }).click();
+    await expect(page).toHaveURL(/\/account\/create-account\.html$/);
+    await expect(page.getByRole("heading", { name: "Create Account", level: 1 })).toBeVisible();
+    await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
+    await page.getByRole("link", { name: "Lost Password" }).click();
+    await expect(page).toHaveURL(/\/account\/lost-password\.html$/);
+    await expect(page.getByRole("heading", { name: "Lost Password", level: 1 })).toBeVisible();
 
     await expectNoPageFailures(failures);
   } finally {

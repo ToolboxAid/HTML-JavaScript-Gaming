@@ -1,0 +1,40 @@
+param(
+    [string]$BaseUrl = "http://127.0.0.1:5501",
+    [string]$OpenPath = "admin/db-viewer.html",
+    [switch]$NoOpen
+)
+
+$ErrorActionPreference = "Stop"
+
+$expectedUserKey = "01K2GFSJ0Y0000000000000054"
+$normalizedBaseUrl = $BaseUrl.TrimEnd("/")
+$sessionModeUri = "$normalizedBaseUrl/api/session/mode"
+$sessionUserUri = "$normalizedBaseUrl/api/session/user"
+$sessionCurrentUri = "$normalizedBaseUrl/api/session/current"
+
+Invoke-RestMethod `
+    -Uri $sessionModeUri `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body '{"modeId":"local-db"}' | Out-Null
+
+$response = Invoke-RestMethod `
+    -Uri $sessionUserUri `
+    -Method Post `
+    -ContentType "application/json" `
+    -Body "{`"userKey`":`"$expectedUserKey`"}"
+
+$currentSession = Invoke-RestMethod -Uri $sessionCurrentUri -Method Get
+if ($currentSession.data.userKey -ne $expectedUserKey) {
+    throw "Login failed. Expected Admin ($expectedUserKey), but server reports '$($currentSession.data.userKey)'."
+}
+
+Write-Host "Signed in as $($currentSession.data.displayName) at $normalizedBaseUrl"
+if (-not $NoOpen) {
+    $targetPath = $OpenPath.TrimStart("/")
+    $targetUrl = "$normalizedBaseUrl/$targetPath"
+    Start-Process $targetUrl
+    Write-Host "Opened $targetUrl. Refresh any already-open browser tab if needed."
+}
+
+$response

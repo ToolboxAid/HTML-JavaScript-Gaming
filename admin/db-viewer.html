@@ -34,8 +34,6 @@
                                 <div class="accordion-body content-stack">
                                     <p data-admin-db-scope-description>Current tool Local DB records are displayed as a read-only human-readable dump.</p>
                                     <p>Use the diagnostics panel to confirm table attribution, relationships, and table bleed checks.</p>
-                                    <button class="btn btn--compact" type="button" data-admin-setup-reseed>Reseed Local DB</button>
-                                    <p class="status" role="status" data-admin-setup-status>SKIP: No setup action has been run.</p>
                                 </div>
                             </details>
                         </div>
@@ -57,6 +55,20 @@
                             <h2>DB Inspector</h2>
                         </div>
                         <div class="accordion-stack">
+                            <details class="vertical-accordion" open data-admin-db-local-status-card>
+                                <summary>Local DB Status</summary>
+                                <div class="accordion-body content-stack">
+                                    <div class="content-stack content-stack--compact" data-admin-db-local-status>
+                                        <p><strong>Current URL:</strong> <span data-admin-db-status-current-url>Checking...</span></p>
+                                        <p><strong>Detected server mode:</strong> <span data-admin-db-status-server-mode>Checking...</span></p>
+                                        <p><strong>Local API availability:</strong> <span data-admin-db-status-api>Checking...</span></p>
+                                        <p><strong>Expected API endpoint:</strong> <span data-admin-db-status-endpoint>/api/session/current</span></p>
+                                        <p><strong>Admin setup endpoint:</strong> <span data-admin-db-status-setup-endpoint>/api/admin/setup/reseed</span></p>
+                                    </div>
+                                    <button class="btn btn--compact" type="button" data-admin-setup-reseed>Reseed Local DB</button>
+                                    <p class="status" role="status" data-admin-setup-status>SKIP: No setup action has been run.</p>
+                                </div>
+                            </details>
                             <details class="vertical-accordion" open>
                                 <summary>Diagnostics</summary>
                                 <div class="accordion-body">
@@ -79,6 +91,7 @@
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
     <script type="module" src="assets/theme-v2/js/admin-setup-actions.js"></script>
+    <script type="module" src="assets/theme-v2/js/admin-db-status-panel.js"></script>
     <script type="module" src="admin/db-viewer.js"></script>
 </body>
 

@@ -56,9 +56,16 @@ test("login session API routes recover static probes and Local DB mode calls", a
     }
 
     await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
+    await expect(page.getByRole("heading", { name: "Sign In", level: 1 })).toBeVisible();
+    await expect(page.getByLabel("Email or username")).toBeVisible();
+    await expect(page.getByLabel("Password")).toBeVisible();
+    await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Create Account" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Lost Password" })).toBeVisible();
+    await expect(page.locator("[data-login-mode]")).toHaveCount(0);
     await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
-    await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
+    await expect(page.locator("[data-login-local-status]")).toHaveCount(0);
+    await expect(page.locator("[data-admin-setup-reseed]")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
     expect(await page.evaluate(() => Object.prototype.hasOwnProperty.call(window, "ActionableCoachmark"))).toBe(false);

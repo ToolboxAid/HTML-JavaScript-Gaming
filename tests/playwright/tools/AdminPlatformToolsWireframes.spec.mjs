@@ -125,6 +125,19 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
   });
 }
 
+test("Grouping Colors uses current group color model copy", async ({ page }) => {
+  const failures = await startAdminPage(page, "/admin/grouping-colors.html");
+
+  try {
+    await expect(page.getByRole("heading", { name: "Tool grouping and color reference.", level: 1 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Group Color Model", level: 2 })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Restored Group Color Model" })).toHaveCount(0);
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
 test("Tool Votes side menu includes Admin platform wireframes", async ({ page }) => {
   const failures = await startAdminPage(page, "/admin/tool-votes.html");
 

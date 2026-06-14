@@ -87,6 +87,8 @@
         support: "docs/support.html",
         reference: "docs/reference.html",
         "sign-in": "account/sign-in.html",
+        "create-account": "account/create-account.html",
+        "lost-password": "account/lost-password.html",
         contact: "company/contact.html",
         vision: "company/vision.html",
         mission: "company/mission.html",
@@ -512,7 +514,11 @@
                 message: "Sign in as Admin to open this Admin page."
             };
         }
-        if (pagePath === "account/sign-in.html") {
+        if ([
+            "account/sign-in.html",
+            "account/create-account.html",
+            "account/lost-password.html"
+        ].includes(pagePath)) {
             return null;
         }
         if (pagePath.indexOf("account/") === 0) {
