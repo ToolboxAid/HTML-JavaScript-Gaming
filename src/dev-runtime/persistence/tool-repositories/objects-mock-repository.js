@@ -9,7 +9,7 @@ export const OBJECTS_TOOL_TABLES = Object.freeze([
 ]);
 
 const OBJECTS_DB_OWNER = "objects";
-const DEFAULT_PROJECT_ID = "demo-project";
+const DEFAULT_GAME_ID = "demo-project";
 const DEFAULT_OBJECTS_USER_KEY = MOCK_DB_KEYS.users.user1;
 
 function cloneRows(rows = []) {
@@ -122,8 +122,12 @@ function initialTables(options = {}) {
 export function createObjectsToolMockRepository(options = {}) {
   let tables = initialTables(options);
 
-  function activeProjectId() {
-    return normalizeText(options.gameWorkspaceRepository?.getActiveGame?.()?.id) || DEFAULT_PROJECT_ID;
+  function activeGameId() {
+    return normalizeText(options.gameWorkspaceRepository?.getActiveGame?.()?.id) || DEFAULT_GAME_ID;
+  }
+
+  function recordGameId(record = {}) {
+    return normalizeText(record.gameId || record.projectId);
   }
 
   function activeUserKey() {
@@ -140,18 +144,18 @@ export function createObjectsToolMockRepository(options = {}) {
     saveMockDbTables(OBJECTS_DB_OWNER, tables, options);
   }
 
-  function listObjects(projectId = "") {
-    const targetProjectId = normalizeText(projectId) || activeProjectId();
+  function listObjects(gameId = "") {
+    const targetGameId = normalizeText(gameId) || activeGameId();
     return sortedObjectRows(tables)
-      .filter((record) => normalizeText(record.projectId) === targetProjectId)
+      .filter((record) => recordGameId(record) === targetGameId)
       .map(objectFromRecord);
   }
 
-  function replaceObjects(objects = [], projectId = "") {
-    const targetProjectId = normalizeText(projectId) || activeProjectId();
+  function replaceObjects(objects = [], gameId = "") {
+    const targetGameId = normalizeText(gameId) || activeGameId();
     const existingRows = new Map(
       (tables.object_definition_records || [])
-        .filter((record) => normalizeText(record.projectId) === targetProjectId)
+        .filter((record) => recordGameId(record) === targetGameId)
         .map((record) => [objectKeyFromText(record.id || record.name), record]),
     );
     const timestamp = new Date().toISOString();
@@ -165,12 +169,12 @@ export function createObjectsToolMockRepository(options = {}) {
         capabilities: parseCapabilityIds(object.traits || object.capabilities),
         createdAt: previous?.createdAt || timestamp,
         createdBy: previous?.createdBy || userKey,
+        gameId: targetGameId,
         id,
         interaction: normalizeText(object.interaction),
         key: previous?.key,
         modelType: normalizeText(object.type),
         name: normalizeText(object.name),
-        projectId: targetProjectId,
         recordOrder: index + 1,
         renderAssetKey: render.assetKey,
         renderPreviewPath: render.previewPath,
@@ -184,22 +188,22 @@ export function createObjectsToolMockRepository(options = {}) {
 
     tables.object_definition_records = [
       ...(tables.object_definition_records || []).filter(
-        (record) => normalizeText(record.projectId) !== targetProjectId,
+        (record) => recordGameId(record) !== targetGameId,
       ),
       ...nextRows,
     ];
     persistTables();
     return {
-      objects: listObjects(targetProjectId),
+      objects: listObjects(targetGameId),
       saved: true,
       snapshot: getSnapshot(),
     };
   }
 
-  function resetObjects(projectId = "") {
-    const targetProjectId = normalizeText(projectId) || activeProjectId();
+  function resetObjects(gameId = "") {
+    const targetGameId = normalizeText(gameId) || activeGameId();
     tables.object_definition_records = (tables.object_definition_records || []).filter(
-      (record) => normalizeText(record.projectId) !== targetProjectId,
+      (record) => recordGameId(record) !== targetGameId,
     );
     persistTables();
     return {

@@ -1,9 +1,9 @@
 import {
-  getSessionCurrent,
+  getCurrentUser,
   getSessionModes,
   getSessionUsers,
+  signIn,
   setSessionMode,
-  setSessionUser,
 } from "../../../src/engine/api/session-api-client.js";
 import { seedMockDb } from "../../../src/engine/api/mock-db-api-client.js";
 
@@ -134,7 +134,7 @@ function updateReseedControls({ apiAvailable, mode, statusMessage }) {
 }
 
 function currentModeForReseed() {
-  const session = getSessionCurrent();
+  const session = getCurrentUser();
   return getSessionModes().find((item) => item.id === session.mode) || {
     id: session.mode,
     label: session.environment || session.mode,
@@ -143,13 +143,13 @@ function currentModeForReseed() {
 
 function dispatchSessionChanged() {
   window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
-    detail: getSessionCurrent(),
+    detail: getCurrentUser(),
   }));
 }
 
 function dispatchModeChanged() {
   window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-mode-changed", {
-    detail: getSessionCurrent(),
+    detail: getCurrentUser(),
   }));
 }
 
@@ -178,7 +178,7 @@ function renderUserButtons(mode) {
   }
 
   userControls.hidden = false;
-  const sessionUser = getSessionCurrent();
+  const sessionUser = getCurrentUser();
   getSessionUsers().forEach((user) => {
     const button = document.createElement("button");
     button.className = "btn btn--compact";
@@ -266,7 +266,7 @@ function render() {
     return;
   }
   try {
-    const session = getSessionCurrent();
+    const session = getCurrentUser();
     const mode = getSessionModes().find((item) => item.id === session.mode) || {
       description: "",
       id: session.mode,
@@ -337,7 +337,7 @@ userControls?.addEventListener("click", (event) => {
     return;
   }
   try {
-    setSessionUser(button.dataset.loginUser || "");
+    signIn({ userKey: button.dataset.loginUser || "" });
     dispatchSessionChanged();
     render();
   } catch (error) {

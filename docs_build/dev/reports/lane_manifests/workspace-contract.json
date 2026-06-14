@@ -1,18 +1,17 @@
 {
-  "commandsHash": "5141d93b4551c125",
+  "commandsHash": "39e16c9d480a1e51",
   "dependencies": [],
-  "dependencyGraphHash": "9a89a70dbb7517d9",
+  "dependencyGraphHash": "fd198ac3bb047eea",
   "fileHashes": {
-    "src/dev-runtime/admin/admin-notes-directory.mjs": "6c5a597772cfd6fa",
-    "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
+    "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+    "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
     "src/dev-runtime/persistence/mock-db-store.js": "7966b6842bb5c02d",
-    "src/dev-runtime/server/mock-api-router.mjs": "dab88c5ac7b90399",
-    "tests/helpers/playwrightRepoServer.mjs": "b2bf14c7d10319ae",
-    "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
-    "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
-    "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1",
-    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "a2cb04de027b8a65",
-    "toolbox/toolRegistry.js": "d10726a2c2ece0d0"
+    "src/dev-runtime/server/mock-api-router.mjs": "d18ad4290391781f",
+    "tests/helpers/playwrightRepoServer.mjs": "21b7159b5ff9df35",
+    "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+    "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+    "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "f3ecd4d89f621969"
   },
   "fixtures": [],
   "helpers": [
@@ -29,18 +28,17 @@
     "tests/helpers/playwrightRepoServer.mjs",
     "tests/helpers/playwrightStorageIsolation.mjs",
     "tests/helpers/playwrightV8CoverageReporter.mjs",
-    "tests/helpers/workspaceV2CoverageReporter.mjs",
-    "toolbox/toolRegistry.js"
+    "tests/helpers/workspaceV2CoverageReporter.mjs"
   ],
-  "inputHash": "4fd28c0e34fec493",
+  "inputHash": "538f3fc2eeee1c15",
   "lane": "workspace-contract",
-  "laneDefinitionHash": "48c5c111705280dc",
-  "manifestHash": "5dff40fa4fee1384",
+  "laneDefinitionHash": "fde48767b345621c",
+  "manifestHash": "de3099947903dc1f",
   "ownership": "tools",
   "tests": [
     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-06-14T03:23:31.493Z",
+  "generatedAt": "2026-06-14T16:45:31.641Z",
   "source": "generated"
 }

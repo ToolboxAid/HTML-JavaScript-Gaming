@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Site Setup - GameFoundryStudio</title>
+    <meta name="description" content="Admin foundation for future controlled setup actions.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body class="meaning-molten-orange">
+    <div data-partial="header-nav"></div>
+    <main data-admin-only="true" data-admin-wireframe="site-setup">
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Admin Wireframe</div>
+                <h1>Site Setup</h1>
+                <p class="lede">Reserve the future setup owner for controlled platform bootstrap actions without executing setup work.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container container--tool-wide">
+                <div class="tool-workspace tool-workspace--wide">
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Admin</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Admin Tools</summary>
+                                <nav class="accordion-body content-stack" aria-label="Admin tool pages" data-admin-tool-menu>
+                                    <a class="btn btn--compact" href="/admin/tool-votes.html">Tool Votes</a>
+                                    <a class="btn btn--compact" href="/admin/environments.html">Environments</a>
+                                    <a class="btn btn--compact" href="/admin/users.html">Users</a>
+                                    <a class="btn btn--compact" href="/admin/game-migration.html">Game Migration</a>
+                                    <a class="btn btn--compact" href="/admin/platform-settings.html">Platform Settings</a>
+                                    <a class="btn btn--compact primary" aria-current="page" href="/admin/site-setup.html">Site Setup</a>
+                                </nav>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Setup Preview</summary>
+                                <div class="accordion-body content-stack">
+                                    <label>Setup Area <select disabled><option>Default roles</option><option>First admin</option><option>Tool metadata bootstrap</option><option>Starter platform settings</option><option>Ticket categories</option></select></label>
+                                    <label>Review Mode <select disabled><option>Foundation only</option><option>Local DB dry run</option><option>Admin approval</option></select></label>
+                                    <button class="btn btn--compact" type="button" disabled>Preview Setup Action</button>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-site-setup" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                    <section class="tool-center-panel content-stack" aria-labelledby="admin-site-setup-title">
+                        <div>
+                            <div class="kicker">Setup Ownership</div>
+                            <h2 id="admin-site-setup-title">Controlled Setup Foundation</h2>
+                        </div>
+                        <p>This foundation page identifies where future setup and seed actions belong. Runtime setup actions are not executable in this PR.</p>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Site setup ownership foundation">
+                                <caption>Future Site Setup Ownership</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Setup Area</th>
+                                        <th scope="col">Future Action</th>
+                                        <th scope="col">Current State</th>
+                                        <th scope="col">Guardrail</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>Default Roles</td><td>Create approved role records</td><td>Foundation</td><td>Local DB contract required</td></tr>
+                                    <tr><td>First Admin</td><td>Assign the initial admin user</td><td>Foundation</td><td>No hidden default user</td></tr>
+                                    <tr><td>Tool Metadata Bootstrap</td><td>Seed active tool metadata</td><td>Foundation</td><td>Shared metadata source required</td></tr>
+                                    <tr><td>Starter Platform Settings</td><td>Create baseline settings records</td><td>Foundation</td><td>Visible diagnostics required</td></tr>
+                                    <tr><td>Ticket/Support Categories</td><td>Prepare support category setup</td><td>Foundation</td><td>Admin approval required</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Status</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status" role="status">Wireframe only. Site setup actions are not read, written, or executed.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>DDL/DML Review</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>DDL remains under docs_build/database/ddl/.</p>
+                                    <p>Temporary DEV setup review DML remains under docs_build/database/dml/ until this page owns executable setup behavior in a later PR.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+</body>
+
+</html>

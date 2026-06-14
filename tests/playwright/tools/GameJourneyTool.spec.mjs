@@ -637,7 +637,8 @@ test("Game Journey supports Guest as the selected shared session user", async ({
 
   try {
     await expect(page.locator("[data-session-user-header]")).toHaveCount(0);
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
+    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).not.toHaveAttribute("href", /login\.html/i);
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
     await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Game Journey filter.");
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: All Notes (0 notes).");

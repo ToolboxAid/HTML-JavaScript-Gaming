@@ -23,28 +23,14 @@
         <section class="section">
             <div class="container account-panel">
                 <div data-partial="account-side-nav" data-partial-replace></div>
-                <div class="card">
-                    <div class="card-body">
-                        <div class="kicker">Status = Planning</div>
-                        <h2>Profile planning</h2>
-                        <div class="grid cols-3">
-                            <article class="callout">
-                                <h3>Purpose</h3>
-                                <p>Define how creators manage display identity, avatar details and public bio text.</p>
-                            </article>
-                            <article class="callout">
-                                <h3>Future Scope</h3>
-                                <p>Add connected identity providers, portfolio presence and creator attribution.</p>
-                            </article>
-                            <article class="callout">
-                                <h3>Planned Sections</h3>
-                                <ul>
-                                    <li>Display identity</li>
-                                    <li>Creator bio</li>
-                                    <li>Public profile preview</li>
-                                </ul>
-                            </article>
+                <div class="card" data-local-db-page="account-profile">
+                    <div class="card-body content-stack">
+                        <div>
+                            <div class="kicker">Local DB</div>
+                            <h2>Profile Identity</h2>
                         </div>
+                        <p class="status" role="status" data-local-db-status>Loading Local DB profile identity.</p>
+                        <div class="content-stack" data-local-db-content></div>
                     </div>
                 </div>
             </div>
@@ -52,6 +38,7 @@
     </main>
     <div data-partial="footer"></div>
     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="../assets/theme-v2/js/local-db-page-data.js"></script>
 </body>
 
 </html>

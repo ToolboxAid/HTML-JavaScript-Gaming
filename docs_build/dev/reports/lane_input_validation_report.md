@@ -1,6 +1,6 @@
 # Lane Input Validation Report
 
-Generated: 2026-06-14T03:23:31.710Z
+Generated: 2026-06-14T16:45:33.214Z
 Status: PASS
 
 ## Input Files
@@ -20,7 +20,6 @@ Status: PASS
 | workspace-contract | import | tests/helpers/playwrightStorageIsolation.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
 | workspace-contract | import | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
 | workspace-contract | import | tests/helpers/workspaceV2CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| workspace-contract | import | toolbox/toolRegistry.js | PASS | Relative import dependency is resolved and recorded in the manifest. |
 
 ## Ownership Validation Failures
 

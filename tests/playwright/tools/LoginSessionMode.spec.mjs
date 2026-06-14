@@ -44,6 +44,7 @@ const UAT_PROD_ADMIN_LABELS = [
   "Ratings",
   "Roles",
   "Site Settings",
+  "Site Setup",
   "Themes",
   "Tool Votes",
   "Users",
@@ -288,6 +289,27 @@ test("Login page uses Local DB only without storing Guest as a user", async ({ p
     await expect(page.locator("[data-login-status-endpoint]")).toHaveText("/api/session/current");
     await expect(page.locator("[data-login-status-api-url]")).toHaveText("http://127.0.0.1:5501/account/sign-in.html");
     await expect(page.locator("[data-login-status-command]")).toHaveText("npm run dev:local-api");
+    const authContract = await page.evaluate(() => {
+      const provider = window.GameFoundryAuthProvider;
+      return {
+        canRequireUser: provider.requireRole("user").allowed,
+        hasGetCurrentUser: typeof provider.getCurrentUser === "function",
+        hasRequireRole: typeof provider.requireRole === "function",
+        hasSignIn: typeof provider.signIn === "function",
+        hasSignOut: typeof provider.signOut === "function",
+        operations: provider.operations,
+        providerId: provider.providerId,
+      };
+    });
+    expect(authContract).toEqual({
+      canRequireUser: false,
+      hasGetCurrentUser: true,
+      hasRequireRole: true,
+      hasSignIn: true,
+      hasSignOut: true,
+      operations: ["getCurrentUser", "signIn", "signOut", "requireRole"],
+      providerId: "server-session-api",
+    });
     await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local DB");
     await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local DB");
     await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local DB.");
@@ -342,6 +364,7 @@ test("Login page uses Local DB only without storing Guest as a user", async ({ p
     await expect(page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user2}']`)).toHaveClass(/primary/);
     await expect(page.locator("[data-login-user-status]")).toHaveText("Selected local user: User 2.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 2");
+    await expect.poll(() => page.evaluate(() => window.GameFoundryAuthProvider.requireRole("user").allowed)).toBe(true);
     snapshot = await mockDbSessionSnapshot(page);
     expect(snapshot.mode.id).toBe("local-db");
     expect(snapshot.persistence).toBe("Local DB");
@@ -515,6 +538,95 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
+  }
+});
+
+test("Admin and Account Local DB pages render identity data or actionable migration diagnostics", async ({ page }) => {
+  const pageChecks = [
+    {
+      assertions: async () => {
+        await expect(page.getByRole("heading", { name: "Users", level: 1 })).toBeVisible();
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded 5 Local DB users from users, roles, and user_roles.");
+        await expect(page.locator("[data-local-db-table='users']")).toContainText("DavidQ");
+        await expect(page.locator("[data-local-db-table='users']")).toContainText(MOCK_DB_KEYS.users.admin);
+        await expect(page.locator("[data-local-db-audit]").first()).toContainText("Audit PASS");
+      },
+      path: "/admin/users.html",
+      sessionUserKey: MOCK_DB_KEYS.users.admin,
+    },
+    {
+      assertions: async () => {
+        await expect(page.getByRole("heading", { name: "Roles", level: 1 })).toBeVisible();
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded 4 Local DB roles and 7 user-role assignments.");
+        await expect(page.locator("[data-local-db-table='roles']")).toContainText("admin");
+        await expect(page.locator("[data-local-db-table='roles']")).toContainText("DavidQ");
+        await expect(page.locator("[data-local-db-audit]").first()).toContainText("Audit PASS");
+      },
+      path: "/admin/roles.html",
+      sessionUserKey: MOCK_DB_KEYS.users.admin,
+    },
+    {
+      assertions: async () => {
+        await expect(page.getByRole("heading", { name: "Site Settings", level: 1 })).toBeVisible();
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Local DB identity records loaded. Site Settings runtime table is not configured yet.");
+        await expect(page.locator("[data-local-db-follow-up='site_settings']")).toContainText("FOLLOW-UP REQUIRED");
+        await expect(page.locator("[data-local-db-follow-up='site_settings']")).toContainText("No site_settings table/schema exists");
+      },
+      path: "/admin/site-settings.html",
+      sessionUserKey: MOCK_DB_KEYS.users.admin,
+    },
+    {
+      assertions: async () => {
+        await expect(page.getByRole("heading", { name: "Account Home", level: 1 })).toBeVisible();
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded account summary from Local DB users, roles, and user_roles.");
+        await expect(page.locator("[data-local-db-table='current-user']")).toContainText("User 1");
+        await expect(page.locator("[data-local-db-table='current-user']")).toContainText(MOCK_DB_KEYS.users.user1);
+      },
+      path: "/account/index.html",
+      sessionUserKey: MOCK_DB_KEYS.users.user1,
+    },
+    {
+      assertions: async () => {
+        await expect(page.getByRole("heading", { name: "Profile", level: 1 })).toBeVisible();
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded profile identity from Local DB users and user_roles.");
+        await expect(page.locator("[data-local-db-table='current-user']")).toContainText("user1@example.invalid");
+      },
+      path: "/account/profile.html",
+      sessionUserKey: MOCK_DB_KEYS.users.user1,
+    },
+    {
+      assertions: async () => {
+        await expect(page.getByRole("heading", { name: "Preferences", level: 1 })).toBeVisible();
+        await expect(page.locator("[data-local-db-status]")).toContainText("Preferences storage requires a future account_preferences table.");
+        await expect(page.locator("[data-local-db-follow-up='account_preferences']")).toContainText("FOLLOW-UP REQUIRED");
+      },
+      path: "/account/preferences.html",
+      sessionUserKey: MOCK_DB_KEYS.users.user1,
+    },
+    {
+      assertions: async () => {
+        await expect(page.getByRole("heading", { name: "Security", level: 1 })).toBeVisible();
+        await expect(page.locator("[data-local-db-status]")).toContainText("Security settings require a future provider-backed account security table.");
+        await expect(page.locator("[data-local-db-follow-up='account_security_settings']")).toContainText("FOLLOW-UP REQUIRED");
+      },
+      path: "/account/security.html",
+      sessionUserKey: MOCK_DB_KEYS.users.user1,
+    },
+  ];
+
+  for (const check of pageChecks) {
+    const failures = await openRepoPage(page, check.path, {
+      seedStandalone: true,
+      sessionUserKey: check.sessionUserKey,
+    });
+
+    try {
+      await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
+      await check.assertions();
+      await expectNoPageFailures(failures);
+    } finally {
+      await closeWithCoverage(page, failures);
+    }
   }
 });
 

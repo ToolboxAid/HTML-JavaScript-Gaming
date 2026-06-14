@@ -1,5 +1,12 @@
 import { safeRequestServerApi } from "./server-api-client.js";
 
+export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
+  "getCurrentUser",
+  "signIn",
+  "signOut",
+  "requireRole",
+]);
+
 function unwrap(response, context) {
   if (!response.ok) {
     throw new Error(response.error);
@@ -12,6 +19,10 @@ function unwrap(response, context) {
 
 export function getSessionCurrent() {
   return unwrap(safeRequestServerApi("/session/current"), "Current session");
+}
+
+export function getCurrentUser() {
+  return getSessionCurrent();
 }
 
 export function getSessionModes() {
@@ -36,6 +47,34 @@ export function setSessionUser(userKey) {
   }), "Session user update");
 }
 
+export function signIn(options = {}) {
+  return setSessionUser(options.userKey || "");
+}
+
 export function logoutSessionUser() {
   return unwrap(safeRequestServerApi("/session/logout", { method: "POST" }), "Session logout");
+}
+
+export function signOut() {
+  return logoutSessionUser();
+}
+
+export function requireRole(role, session = getCurrentUser()) {
+  const requiredRole = String(role || "").trim();
+  if (!requiredRole) {
+    return {
+      allowed: false,
+      diagnostic: "Auth provider role check requires a role.",
+      role: "",
+      session,
+    };
+  }
+  const roleSlugs = Array.isArray(session?.roleSlugs) ? session.roleSlugs : [];
+  const allowed = Boolean(session?.authenticated && roleSlugs.includes(requiredRole));
+  return {
+    allowed,
+    diagnostic: allowed ? "" : `Sign in with the ${requiredRole} role to continue.`,
+    role: requiredRole,
+    session,
+  };
 }

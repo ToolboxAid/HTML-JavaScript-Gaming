@@ -3,7 +3,6 @@ import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-import { getActiveToolRegistry, getToolRoute } from "../../../toolbox/toolRegistry.js";
 
 const PRIMARY_NAVIGATION_ORDER = ["Games", "Toolbox", "Marketplace", "Learn", "Sign In"];
 
@@ -53,6 +52,14 @@ async function setServerSession(server, userKey) {
     headers: { "content-type": "application/json" },
     method: "POST",
   });
+}
+
+async function fetchRegistrySnapshot(server) {
+  const response = await fetch(`${server.baseUrl}/api/toolbox/registry/snapshot`);
+  const payload = await response.json();
+  expect(response.ok, JSON.stringify(payload)).toBe(true);
+  expect(payload.ok, JSON.stringify(payload)).toBe(true);
+  return payload.data;
 }
 
 function normalizeMenuText(text) {
@@ -468,10 +475,6 @@ test("representative active tool pages align center cleanup and registry group c
     "controls",
     "publish"
   ];
-  const activeTools = getActiveToolRegistry()
-    .filter((tool) => representativeToolIds.includes(tool.id))
-    .map((tool) => ({ ...tool, route: getToolRoute(tool) }))
-    .filter((tool) => Boolean(tool.route));
   const legacyHeaderClasses = ["molten-orange", "forge-gold", "electric-blue", "arcade-cyan", "purple", "steel-gray"];
   const legacyGroupClasses = [
     "tool-group-ai-learning",
@@ -502,6 +505,12 @@ test("representative active tool pages align center cleanup and registry group c
   const { failedRequests, pageErrors, server } = await openRepoPage(page, "/toolbox/index.html?view=group");
 
   try {
+    const registrySnapshot = await fetchRegistrySnapshot(server);
+    const activeTools = registrySnapshot.activeTools
+      .filter((tool) => representativeToolIds.includes(tool.id))
+      .map((tool) => ({ ...tool, route: tool.route || tool.path || "" }))
+      .filter((tool) => Boolean(tool.route));
+
     await page.getByRole("button", { name: "Group" }).click();
     const toolboxGroupCardStyles = new Map(await page.locator("main [data-tools-accordion-list] .control-card").evaluateAll((cards) => (
       cards.map((card) => {

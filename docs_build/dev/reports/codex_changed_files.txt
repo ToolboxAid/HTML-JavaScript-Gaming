@@ -1,4 +1,120 @@
-docs_build/dev/reports/db-consumer-audit.csv
-docs_build/dev/reports/db-consumer-audit.md
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
+# git status --short
+M account/index.html
+ M account/preferences.html
+ M account/profile.html
+ M account/security.html
+ M admin/db-viewer.js
+ M admin/roles.html
+ M admin/site-settings.html
+ M admin/users.html
+ M assets/theme-v2/js/gamefoundry-partials.js
+ M assets/theme-v2/js/login-session.js
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/dependency_gating_report.md
+ M docs_build/dev/reports/dependency_hydration_reuse_report.md
+ M docs_build/dev/reports/execution_graph_reuse_report.md
+ M docs_build/dev/reports/failure_fingerprint_report.md
+ M docs_build/dev/reports/filesystem_scan_reduction_report.md
+ M docs_build/dev/reports/incremental_validation_report.md
+ M docs_build/dev/reports/lane_compilation_report.md
+ M docs_build/dev/reports/lane_deduplication_report.md
+ M docs_build/dev/reports/lane_input_validation_report.md
+ M docs_build/dev/reports/lane_manifests/workspace-contract.json
+ M docs_build/dev/reports/lane_runtime_optimization_report.md
+ M docs_build/dev/reports/lane_snapshot_report.md
+ M docs_build/dev/reports/lane_snapshots/workspace-contract.json
+ M docs_build/dev/reports/lane_warm_start_report.md
+ M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+ M docs_build/dev/reports/monolith_trigger_removal_report.md
+ M docs_build/dev/reports/persistent_lane_manifest_report.md
+ M docs_build/dev/reports/playwright_discovery_ownership_report.md
+ M docs_build/dev/reports/playwright_discovery_scope_report.md
+ M docs_build/dev/reports/playwright_structure_audit.md
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M docs_build/dev/reports/retry_suppression_report.md
+ M docs_build/dev/reports/slow_path_pruning_report.md
+ M docs_build/dev/reports/static_validation_report.md
+ M docs_build/dev/reports/targeted_file_manifest_report.md
+ M docs_build/dev/reports/test_cleanup_performance_report.md
+ M docs_build/dev/reports/test_cleanup_routing_report.md
+ M docs_build/dev/reports/testing_lane_execution_report.md
+ M docs_build/dev/reports/validation_cache_report.md
+ M docs_build/dev/reports/zero_browser_preflight_report.md
+ M src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+ M src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
+ M src/dev-runtime/server/mock-api-router.mjs
+ M src/engine/api/session-api-client.js
+ M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+ M tests/playwright/tools/GameJourneyTool.spec.mjs
+ M tests/playwright/tools/LoginSessionMode.spec.mjs
+ M tests/playwright/tools/RootToolsFutureState.spec.mjs
+?? admin/site-setup.html
+?? assets/theme-v2/js/local-db-page-data.js
+?? docs_build/dev/reports/pr097-admin-account-local-db-migration.md
+?? docs_build/dev/reports/pr098-toolbox-local-db-migration.md
+?? docs_build/dev/reports/pr099-site-setup-foundation.md
+?? docs_build/dev/reports/pr100-auth-contract-foundation.md
+
+# git ls-files --others --exclude-standard
+admin/site-setup.html
+assets/theme-v2/js/local-db-page-data.js
+docs_build/dev/reports/pr097-admin-account-local-db-migration.md
+docs_build/dev/reports/pr098-toolbox-local-db-migration.md
+docs_build/dev/reports/pr099-site-setup-foundation.md
+docs_build/dev/reports/pr100-auth-contract-foundation.md
+
+# git diff --stat
+account/index.html                                 |    33 +-
+ account/preferences.html                           |    29 +-
+ account/profile.html                               |    29 +-
+ account/security.html                              |    29 +-
+ admin/db-viewer.js                                 |    18 +-
+ admin/roles.html                                   |     3 +-
+ admin/site-settings.html                           |     3 +-
+ admin/users.html                                   |    28 +-
+ assets/theme-v2/js/gamefoundry-partials.js         |   143 +-
+ assets/theme-v2/js/login-session.js                |    16 +-
+ docs_build/dev/reports/codex_changed_files.txt     |   116 +-
+ docs_build/dev/reports/codex_review.diff           | 10093 ++++++++++++++++++-
+ .../dev/reports/coverage_changed_js_guardrail.txt  |    19 +-
+ docs_build/dev/reports/dependency_gating_report.md |     2 +-
+ .../reports/dependency_hydration_reuse_report.md   |     4 +-
+ .../dev/reports/execution_graph_reuse_report.md    |     4 +-
+ .../dev/reports/failure_fingerprint_report.md      |     2 +-
+ .../reports/filesystem_scan_reduction_report.md    |     2 +-
+ .../dev/reports/incremental_validation_report.md   |     4 +-
+ docs_build/dev/reports/lane_compilation_report.md  |    26 +-
+ .../dev/reports/lane_deduplication_report.md       |     2 +-
+ .../dev/reports/lane_input_validation_report.md    |     3 +-
+ .../reports/lane_manifests/workspace-contract.json |    32 +-
+ .../reports/lane_runtime_optimization_report.md    |     4 +-
+ docs_build/dev/reports/lane_snapshot_report.md     |     4 +-
+ .../reports/lane_snapshots/workspace-contract.json |    80 +-
+ docs_build/dev/reports/lane_warm_start_report.md   |     4 +-
+ .../lane_warm_starts/workspace-contract.json       |    46 +-
+ .../dev/reports/monolith_trigger_removal_report.md |     2 +-
+ .../dev/reports/persistent_lane_manifest_report.md |     6 +-
+ .../playwright_discovery_ownership_report.md       |     2 +-
+ .../reports/playwright_discovery_scope_report.md   |     2 +-
+ .../dev/reports/playwright_structure_audit.md      |     2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |    50 +-
+ docs_build/dev/reports/retry_suppression_report.md |     2 +-
+ docs_build/dev/reports/slow_path_pruning_report.md |    14 +-
+ docs_build/dev/reports/static_validation_report.md |     4 +-
+ .../dev/reports/targeted_file_manifest_report.md   |     4 +-
+ .../dev/reports/test_cleanup_performance_report.md |    16 +-
+ .../dev/reports/test_cleanup_routing_report.md     |     2 +-
+ .../dev/reports/testing_lane_execution_report.md   |    20 +-
+ docs_build/dev/reports/validation_cache_report.md  |    58 +-
+ .../dev/reports/zero_browser_preflight_report.md   |     2 +-
+ .../tool-repositories/assets-mock-repository.js    |    27 +-
+ .../tool-repositories/objects-mock-repository.js   |    34 +-
+ src/dev-runtime/server/mock-api-router.mjs         |     2 +
+ src/engine/api/session-api-client.js               |    39 +
+ .../tools/AdminPlatformToolsWireframes.spec.mjs    |    14 +-
+ tests/playwright/tools/GameJourneyTool.spec.mjs    |     3 +-
+ tests/playwright/tools/LoginSessionMode.spec.mjs   |   112 +
+ .../playwright/tools/RootToolsFutureState.spec.mjs |    19 +-
+ 51 files changed, 10560 insertions(+), 654 deletions(-)

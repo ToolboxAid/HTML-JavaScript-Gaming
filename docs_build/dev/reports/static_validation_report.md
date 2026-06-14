@@ -1,6 +1,6 @@
 # Static Validation Report
 
-Generated: 2026-06-14T03:23:31.699Z
+Generated: 2026-06-14T16:45:33.204Z
 Status: PASS
 Static only: No
 Dry run: No
@@ -22,7 +22,7 @@ Reason: No deterministic static validation failure was found.
 | invalid filename detection | PASS | Covered by Playwright structure audit. |
 | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
 | missing fixture detection | PASS | No missing fixture findings. |
-| targeted file manifests | PASS | workspace-contract:5dff40fa4fee1384 |
+| targeted file manifests | PASS | workspace-contract:de3099947903dc1f |
 | persistent lane manifests | PASS | workspace-contract:INVALIDATED |
 | lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
 | dependency hydration reuse | PASS | workspace-contract:INVALIDATED |

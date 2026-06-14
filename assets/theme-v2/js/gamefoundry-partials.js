@@ -92,8 +92,9 @@
         mission: "company/mission.html",
         roadmap: "company/roadmap.html",
         "release-notes": "company/release-notes.html",
-        admin: "admin/site-settings.html",
+        admin: "admin/site-setup.html",
         "admin-site-settings": "admin/site-settings.html",
+        "admin-site-setup": "admin/site-setup.html",
         "admin-branding": "admin/branding.html",
         "admin-themes": "admin/themes.html",
         "admin-design-system": "admin/design-system.html",
@@ -354,6 +355,103 @@
         };
     }
 
+    const authProviderContractOperations = Object.freeze(["getCurrentUser", "signIn", "signOut", "requireRole"]);
+    let resolvedAuthProvider = null;
+
+    function requestSessionApi(method, url, body) {
+        const request = new XMLHttpRequest();
+        request.open(method, url, false);
+        request.setRequestHeader("Accept", "application/json");
+        if (body !== undefined) {
+            request.setRequestHeader("Content-Type", "application/json");
+        }
+        request.send(body === undefined ? null : JSON.stringify(body));
+        const payload = request.responseText ? JSON.parse(request.responseText) : null;
+        if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
+            if (request.status === 404 || request.status === 405) {
+                throw new Error(localRouteUnavailableDiagnostic(method, url, request.status));
+            }
+            throw new Error(payload?.error || "Session API did not return a valid auth response.");
+        }
+        if (!payload || !Object.prototype.hasOwnProperty.call(payload, "data")) {
+            throw new Error("Session API response did not include auth provider data.");
+        }
+        return payload.data;
+    }
+
+    function authSessionFromApiData(session) {
+        return {
+            authenticated: Boolean(session?.authenticated),
+            diagnostic: session?.diagnostic || "",
+            displayName: session?.authenticated ? session.displayName || session.label || "Account" : "Sign In",
+            mode: session?.mode || "local-db",
+            roleSlugs: Array.isArray(session?.roleSlugs) ? session.roleSlugs : [],
+            userKey: session?.userKey || null
+        };
+    }
+
+    function createServerSessionAuthProvider() {
+        return {
+            operations: authProviderContractOperations.slice(),
+            providerId: "server-session-api",
+            getCurrentUser: function () {
+                if (isStaticLocalEntrypoint()) {
+                    throw new Error(apiBackedLoginDiagnostic);
+                }
+                return authSessionFromApiData(requestSessionApi("GET", "/api/session/current"));
+            },
+            signIn: function (options) {
+                return authSessionFromApiData(requestSessionApi("POST", "/api/session/user", {
+                    userKey: options?.userKey || ""
+                }));
+            },
+            signOut: function () {
+                return authSessionFromApiData(requestSessionApi("POST", "/api/session/logout"));
+            },
+            requireRole: function (role, session) {
+                const requiredRole = String(role || "").trim();
+                if (!requiredRole) {
+                    return {
+                        allowed: false,
+                        diagnostic: "Auth provider role check requires a role.",
+                        role: "",
+                        session
+                    };
+                }
+                const candidateSession = session || this.getCurrentUser();
+                const roleSlugs = Array.isArray(candidateSession?.roleSlugs) ? candidateSession.roleSlugs : [];
+                const allowed = Boolean(candidateSession?.authenticated && roleSlugs.includes(requiredRole));
+                return {
+                    allowed,
+                    diagnostic: allowed ? "" : "Sign in with the " + requiredRole + " role to continue.",
+                    role: requiredRole,
+                    session: candidateSession
+                };
+            }
+        };
+    }
+
+    function authProviderDiagnostic(provider) {
+        const missing = authProviderContractOperations.filter(function (operation) {
+            return typeof provider?.[operation] !== "function";
+        });
+        return missing.length ? "Auth provider contract missing operations: " + missing.join(", ") + "." : "";
+    }
+
+    function authProvider() {
+        if (resolvedAuthProvider) {
+            return resolvedAuthProvider;
+        }
+        const provider = window.GameFoundryAuthProvider || createServerSessionAuthProvider();
+        const diagnostic = authProviderDiagnostic(provider);
+        if (diagnostic) {
+            throw new Error(diagnostic);
+        }
+        window.GameFoundryAuthProvider = provider;
+        resolvedAuthProvider = provider;
+        return resolvedAuthProvider;
+    }
+
     function rewriteRootedPaths(root) {
         root.querySelectorAll("[data-route]").forEach(function (link) {
             link.setAttribute("href", routeHref(link.dataset.route));
@@ -365,29 +463,8 @@
     }
 
     function localDevLoginState() {
-        if (isStaticLocalEntrypoint()) {
-            return missingSessionApiLoginState(apiBackedLoginDiagnostic);
-        }
         try {
-            const request = new XMLHttpRequest();
-            request.open("GET", "/api/session/current", false);
-            request.setRequestHeader("Accept", "application/json");
-            request.send(null);
-            const payload = request.responseText ? JSON.parse(request.responseText) : null;
-            if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
-                if (request.status === 404 || request.status === 405) {
-                    throw new Error(localRouteUnavailableDiagnostic("GET", "/api/session/current", request.status));
-                }
-                throw new Error(payload?.error || "Session API did not return a valid current session.");
-            }
-            const session = payload?.data || {};
-            return {
-                authenticated: Boolean(session.authenticated),
-                diagnostic: session.diagnostic || "",
-                displayName: session.authenticated ? session.displayName || session.label || "Account" : "Sign In",
-                mode: session.mode || "local-db",
-                roleSlugs: Array.isArray(session.roleSlugs) ? session.roleSlugs : []
-            };
+            return authProvider().getCurrentUser();
         } catch (error) {
             return missingSessionApiLoginState(error instanceof Error ? error.message : "");
         }
@@ -452,13 +529,11 @@
         if (!requirement) {
             return true;
         }
-        if (requirement.role === "admin") {
-            return loginState.authenticated && loginState.roleSlugs.includes("admin");
+        try {
+            return authProvider().requireRole(requirement.role, loginState).allowed;
+        } catch {
+            return false;
         }
-        if (requirement.role === "user") {
-            return loginState.authenticated && loginState.roleSlugs.includes("user");
-        }
-        return false;
     }
 
     function createAccessBlockedMain(requirement, pagePath, loginState) {
@@ -616,15 +691,9 @@
     function logoutCurrentSession(event) {
         event.preventDefault();
         try {
-            const request = new XMLHttpRequest();
-            request.open("POST", "/api/session/logout", false);
-            request.setRequestHeader("Accept", "application/json");
-            request.send(null);
+            const session = authProvider().signOut();
             window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
-                detail: {
-                    authenticated: false,
-                    id: "guest"
-                }
+                detail: session
             }));
         } catch {}
         refreshHeaderLoginState();

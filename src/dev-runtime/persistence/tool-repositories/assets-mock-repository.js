@@ -25,6 +25,12 @@ export const ASSET_TOOL_TABLES = Object.freeze([
 const ASSET_DB_OWNER = "asset";
 const ASSET_SYSTEM_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
 const DEFAULT_ASSET_USER_KEY = MOCK_DB_KEYS.users.user1;
+const WORKSPACE_GAME_STORAGE_IDS = Object.freeze({
+  "camera-follow-demo": "01K2GFSJ0Y0000000080002104",
+  "collision-demo": "01K2GFSJ0Y0000000080002103",
+  "demo-game": "01K2GFSJ0Y0000000000000001",
+  "gravity-demo": "01K2GFSJ0Y0000000080002102",
+});
 
 export const ASSET_PICKER_MODES = Object.freeze([
   "file",
@@ -259,6 +265,11 @@ function normalizeAssetTagKeys(values, tagOptions = []) {
 function normalizeProjectId(value) {
   const normalized = normalizeText(value).toUpperCase();
   return ULID_PATTERN.test(normalized) ? normalized : "";
+}
+
+function projectStorageIdForGameId(value) {
+  const rawValue = normalizeText(value);
+  return normalizeProjectId(rawValue) || WORKSPACE_GAME_STORAGE_IDS[rawValue] || "";
 }
 
 function encodeUlidValue(value, length) {
@@ -1098,6 +1109,18 @@ export function createAssetToolMockRepository(options = {}) {
     };
   }
 
+  function workspaceActiveProject() {
+    const activeGame = options.gameWorkspaceRepository?.getActiveGame?.();
+    const projectId = projectStorageIdForGameId(activeGame?.id || "");
+    return projectId
+      ? {
+          ...activeGame,
+          id: projectId,
+          sourceProjectId: activeGame?.id || projectId,
+        }
+      : null;
+  }
+
   function getRoleDiagnostics() {
     return ASSET_ROLE_DEFINITIONS.map((role) => {
       const missing = [];
@@ -1249,7 +1272,7 @@ export function createAssetToolMockRepository(options = {}) {
 
   function importAsset(input = {}) {
     const handoff = getConfigurationHandoff();
-    const project = handoff.activeProject || null;
+    const project = handoff.activeProject?.id ? handoff.activeProject : workspaceActiveProject();
     const projectId = project?.id || "";
     const validation = validateAssetInput(input);
     replaceValidationRows(projectId, validation.findings);
@@ -1351,7 +1374,7 @@ export function createAssetToolMockRepository(options = {}) {
     const objectName = normalizeText(input.objectName || input.name || objectKey);
     const spriteAssetKey = spriteAssetKeyForObjectKey(objectKey);
     const handoff = getConfigurationHandoff();
-    const project = handoff.activeProject || null;
+    const project = handoff.activeProject?.id ? handoff.activeProject : workspaceActiveProject();
     const projectId = project?.id || "";
     const ownerUserKey = activeUserKey();
     const diagnostics = [];

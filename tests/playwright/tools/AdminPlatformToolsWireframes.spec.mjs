@@ -12,11 +12,17 @@ const ADMIN_TOOL_MENU_LABELS = [
   "Platform Settings",
 ];
 
+const SITE_SETUP_TOOL_MENU_LABELS = [
+  ...ADMIN_TOOL_MENU_LABELS,
+  "Site Setup",
+];
+
 const ADMIN_WIREFRAME_PAGES = [
   { heading: "Environments", path: "/admin/environments.html", slug: "environments" },
-  { heading: "Users", path: "/admin/users.html", slug: "users" },
+  { heading: "Users", path: "/admin/users.html", slug: "users", statusText: "Read-only Admin view." },
   { heading: "Game Migration", path: "/admin/game-migration.html", slug: "game-migration" },
   { heading: "Platform Settings", path: "/admin/platform-settings.html", slug: "platform-settings" },
+  { heading: "Site Setup", menuLabels: SITE_SETUP_TOOL_MENU_LABELS, path: "/admin/site-setup.html", slug: "site-setup" },
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -81,11 +87,13 @@ async function expectNoPageFailures(failures) {
 }
 
 async function expectAdminHeaderMenu(page) {
+  await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveAttribute("href", /admin\/site-setup\.html$/);
   const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-environments']")).toHaveText("Environments");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-users']")).toHaveText("Users");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-game-migration']")).toHaveText("Game Migration");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-platform-settings']")).toHaveText("Platform Settings");
+  await expect(adminSubmenu.locator(":scope > a[data-route='admin-site-setup']")).toHaveText("Site Setup");
   const myStuffLabels = await adminSubmenu.locator("[data-admin-my-stuff-submenu] a").allTextContents();
   expect(myStuffLabels).not.toContain("Environments");
   expect(myStuffLabels).not.toContain("Game Migration");
@@ -102,11 +110,11 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
       await expect(page.locator(".tool-workspace.tool-workspace--wide")).toBeVisible();
       await expect(page.locator(".tool-workspace > .tool-column")).toHaveCount(2);
       await expect(page.locator(".tool-center-panel")).toBeVisible();
-      await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(ADMIN_TOOL_MENU_LABELS);
+      await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(adminPage.menuLabels || ADMIN_TOOL_MENU_LABELS);
       await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText(adminPage.heading);
       await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(2);
       await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(2);
-      await expect(page.locator(".tool-column").last().getByText("Wireframe only.")).toBeVisible();
+      await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
       await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
       await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 

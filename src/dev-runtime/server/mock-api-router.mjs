@@ -132,6 +132,7 @@ const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Ratings", path: "admin/ratings.html", route: "admin-ratings" }),
   Object.freeze({ label: "Roles", path: "admin/roles.html", route: "admin-roles" }),
   Object.freeze({ label: "Site Settings", path: "admin/site-settings.html", route: "admin-site-settings" }),
+  Object.freeze({ label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" }),
   Object.freeze({ label: "Themes", path: "admin/themes.html", route: "admin-themes" }),
   Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
   Object.freeze({ label: "Users", path: "admin/users.html", route: "admin-users" }),
@@ -936,6 +937,7 @@ class LocalDevMockDataSource {
     });
     this.assetRepository = createAssetToolMockRepository({
       configurationRepository: this.gameConfigurationRepository,
+      gameWorkspaceRepository: this.gameWorkspaceRepository,
       paletteRepository: this.paletteRepository,
       tagsRepository: this.tagsRepository,
       ...this.sharedOptions,

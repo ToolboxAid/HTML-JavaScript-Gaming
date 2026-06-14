@@ -1,6 +1,6 @@
 # Lane Runtime Optimization Report
 
-Generated: 2026-06-14T03:23:31.708Z
+Generated: 2026-06-14T16:45:33.212Z
 Status: PASS
 
 ## Runtime Cost Summary
@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
 
 | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
 
 ## Runtime Savings Observations
 

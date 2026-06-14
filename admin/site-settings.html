@@ -27,9 +27,10 @@
                     <a href="/admin/themes.html">Themes</a>
                     <a href="/admin/tool-votes.html">Tool Votes</a>
                     <a href="/admin/users.html">Users</a>
-                </aside><div class="card"><div class="card-body content-stack"><div class="kicker">Status = Planning</div><div class="grid cols-3"><article class="callout"><h2>Purpose</h2><p>Move site-level configuration out of Account and into the Admin information architecture.</p></article><article class="callout"><h2>Future Scope</h2><p>Plan maintenance notices, publishing defaults and environment-level feature flags.</p></article><article class="callout"><h2>Planned Sections</h2><ul><li>General settings</li><li>Publishing defaults</li><li>Maintenance notices</li></ul></article></div><div class="grid cols-2"><article class="callout"><h2>Site Setup</h2><p>Admin Site Setup is the planned home for long-term setup behavior, including initial roles and other site-owned defaults.</p></article><article class="callout"><h2>Database Setup</h2><p>Codex may prepare and execute DEV database setup only. UAT and production SQL execution remains user-controlled.</p></article></div></div></div></div></section>
+                </aside><div class="card" data-local-db-page="admin-site-settings"><div class="card-body content-stack"><div><div class="kicker">Local DB</div><h2>Site Settings Contract</h2></div><p class="status" role="status" data-local-db-status>Loading Local DB site settings contract.</p><div class="content-stack" data-local-db-content></div></div></div></div></section>
     </main>
     <div data-partial="footer"></div>
     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script type="module" src="../assets/theme-v2/js/local-db-page-data.js"></script>
 </body>
 </html>
