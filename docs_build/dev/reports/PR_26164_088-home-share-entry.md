@@ -1,0 +1,87 @@
+# PR_26164_088-home-share-entry
+
+## Branch Validation
+
+- Current branch: `main`
+- Expected branch: `main`
+- Local branches found: `* main`
+- Result: PASS
+
+## Scope
+
+- Updated `index.html`.
+- No navigation file changes were required.
+- Required report artifacts updated:
+  - `docs_build/dev/reports/codex_review.diff`
+  - `docs_build/dev/reports/codex_changed_files.txt`
+
+## Routing Decision
+
+- Share destination selected: `marketplace/index.html`
+- Reason: `marketplace/index.html` exists, so it is the current best available share-facing destination requested by the PR.
+- Temporary fallback needed: No.
+
+## Requirement Checklist
+
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution: PASS
+- Verified current branch is `main` before making changes: PASS
+- Scope limited to `index.html` and required reports only: PASS
+- Added third hero entry card for Share: PASS
+- Share entry card uses `Share`, `Share Creations`, and `Publish and Connect`: PASS
+- Share entry card links to `marketplace/index.html`: PASS
+- Added third hero CTA button `Share Creations`: PASS
+- Share CTA links to `marketplace/index.html`: PASS
+- Ran `git diff --check`: PASS
+- Validated home page renders: PASS
+- Validated Build, Play, and Share hero entry cards appear together: PASS
+- Validated all hero CTA and entry-card links resolve: PASS
+- Validated no inline script/style/event handlers were added: PASS
+- Playwright impacted: No. Content/navigation only: PASS
+- Required repo-structured ZIP produced: PASS
+
+## Manual Validation Notes
+
+- Confirmed the existing hero entry cards were Build and Play.
+- Confirmed `marketplace/index.html` exists before choosing it as the Share destination.
+- Confirmed the hero now has three CTA links:
+  - `Start Building` -> `toolbox/index.html`
+  - `Explore Games` -> `games/index.html`
+  - `Share Creations` -> `marketplace/index.html`
+- Confirmed the hero now has three entry cards:
+  - Build -> `toolbox/index.html`
+  - Play -> `games/index.html`
+  - Share -> `marketplace/index.html`
+- No CSS or JavaScript files were changed.
+
+## Validation
+
+- `git diff --check`: PASS
+  - Note: Git reported an LF-to-CRLF working-copy warning for `index.html`; the command exited successfully.
+- Home page render-shell validation: PASS
+- Build / Play / Share hero entry card validation: PASS
+- Hero CTA and entry-card link resolution: PASS
+- Inline HTML restriction check: PASS
+  - No `<style>` blocks.
+  - No inline `<script>` blocks.
+  - No inline event handlers.
+  - No inline `style` attributes.
+
+## Playwright
+
+- Playwright impacted: No.
+- Playwright run: SKIP.
+- Reason: This PR changes static Home page content/navigation only. No runtime behavior, tool workflow, shared engine behavior, or browser interaction changed.
+
+## Samples
+
+- Full samples smoke test: SKIP.
+- Reason: No samples or runtime game surfaces changed.
+
+## Review Artifacts
+
+- `docs_build/dev/reports/codex_review.diff`: PASS
+- `docs_build/dev/reports/codex_changed_files.txt`: PASS
+
+## ZIP
+
+- `tmp/PR_26164_088-home-share-entry_delta.zip`: PASS

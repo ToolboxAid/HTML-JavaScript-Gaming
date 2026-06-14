@@ -1,15 +1,13 @@
 # scoped git status --short
- M company/how-we-build.html
  M index.html
-?? docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md
+?? docs_build/dev/reports/PR_26164_088-home-share-entry.md
 
 # scoped git diff --stat
- company/how-we-build.html | 12 +++++++++
- index.html                | 65 ++++++++++++++++++++++++-----------------------
- 2 files changed, 45 insertions(+), 32 deletions(-)
+ index.html | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 # scoped untracked files included in review diff
-docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md
+docs_build/dev/reports/PR_26164_088-home-share-entry.md
 
 # generated review artifacts
 docs_build/dev/reports/codex_review.diff

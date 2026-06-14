@@ -1,197 +1,29 @@
-diff --git a/company/how-we-build.html b/company/how-we-build.html
-index a51f2dd64..c8d1f79cf 100644
---- a/company/how-we-build.html
-+++ b/company/how-we-build.html
-@@ -33,6 +33,9 @@
-         <section class="section">
-             <div class="container grid cols-2">
-                 <article class="card">
-+                    <div class="card-media">
-+                        <img src="../assets/theme-v2/images/mascots/forgebot.png" alt="ForgeBot guide for Build">
-+                    </div>
-                     <div class="card-body">
-                         <div class="kicker">ForgeBot: Build</div>
-                         <h2>Turn ideas into working game systems.</h2>
-@@ -47,6 +50,9 @@
-                     </div>
-                 </article>
-                 <article class="card">
-+                    <div class="card-media">
-+                        <img src="../assets/theme-v2/images/mascots/pixel-smith.png" alt="Pixel Smith guide for Design">
-+                    </div>
-                     <div class="card-body">
-                         <div class="kicker">Pixel Smith: Design</div>
-                         <h2>Shape the look and feel of the game.</h2>
-@@ -60,6 +66,9 @@
-                     </div>
-                 </article>
-                 <article class="card">
-+                    <div class="card-media">
-+                        <img src="../assets/theme-v2/images/mascots/spark.png" alt="Spark guide for Audio">
-+                    </div>
-                     <div class="card-body">
-                         <div class="kicker">Spark: Audio</div>
-                         <h2>Bring the game to life through sound.</h2>
-@@ -73,6 +82,9 @@
-                     </div>
-                 </article>
-                 <article class="card">
-+                    <div class="card-media">
-+                        <img src="../assets/theme-v2/images/mascots/foundry-bot.png" alt="Foundry Bot guide for help and AI">
-+                    </div>
-                     <div class="card-body">
-                         <div class="kicker">Foundry Bot: Guide</div>
-                         <h2>Learn, explore and keep moving.</h2>
 diff --git a/index.html b/index.html
-index 0029882d4..2330a0bf0 100644
+index 65d07ac0a..aac42f207 100644
 --- a/index.html
 +++ b/index.html
-@@ -18,8 +18,9 @@
-         <div class="hero-copy">
-           <div class="kicker">Browser-native creator platform</div>
-           <h1>Build. Play. Share.</h1>
--          <p class="lede">Create browser games with visual tools, reusable assets, manifest-driven configuration, and
--            publishing workflows that make GameFoundryStudio feel like a destination, not just an engine.</p>
-+          <p class="lede">Game Foundry Studio helps Creators design games, build assets, test ideas, and share playable
-+            open-web experiences with no coding required.</p>
-+          <p>Advanced creators can extend projects later with custom enhancements and scripting.</p>
+@@ -22,12 +22,13 @@
+             open-web experiences with no coding required.</p>
+           <p>Advanced creators can extend projects later with custom enhancements and scripting.</p>
            <div class="hero-cta"><a class="btn primary" href="toolbox/index.html">Start Building</a><a class="btn"
-               href="games/index.html">Explore Games</a></div>
+-              href="games/index.html">Explore Games</a></div>
++              href="games/index.html">Explore Games</a><a class="btn" href="marketplace/index.html">Share Creations</a></div>
            <div class="dual-entry" aria-label="Primary entry points">
-@@ -39,53 +40,50 @@
-       <div class="container">
-         <div class="section-head">
-           <div>
--            <div class="kicker">Most played this week</div>
--            <h2>Trending Games</h2>
-+            <div class="kicker">Featured Experiences</div>
-+            <h2>Featured Experiences</h2>
+             <a class="entry-card" href="toolbox/index.html"><span>Build</span><strong>Create Games</strong><small>Open the
+                 Toolbox</small></a>
+             <a class="entry-card" href="games/index.html"><span>Play</span><strong>Play Games</strong><small>Browse the
+                 Arcade</small></a>
++            <a class="entry-card" href="marketplace/index.html"><span>Share</span><strong>Share Creations</strong><small>Publish and Connect</small></a>
            </div>
--          <p>A top-of-home area that makes the site feel alive: featured games, new releases, seasonal events, and
--            creator challenges.</p>
-+          <p>Explore prototypes, sample games, creator challenges, and future community showcases as Game Foundry
-+            Studio grows.</p>
          </div>
-         <div class="trending-grid">
-           <article class="game-tile featured">
-             <div class="game-art"><img src="/games/assets/images/game-iceberg.svg" alt="King of the Iceberg sample art"></div>
--            <div class="game-meta"><strong>King of the Iceberg</strong><span>Physics party brawler</span><em>12,543
--                players - 4.9</em></div>
-+            <div class="game-meta"><strong>King of the Iceberg</strong><span>Physics party brawler</span><em>Featured Prototype</em></div>
-           </article>
-           <article class="game-tile">
-             <div class="game-art"><img src="/games/assets/images/game-nebula.svg" alt="Nebula Runner sample art"></div>
--            <div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>8,234 players -
--                4.8</em></div>
-+            <div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>Sample Game</em></div>
-           </article>
-           <article class="game-tile">
-             <div class="game-art"><img src="/games/assets/images/game-retrobot.svg" alt="RetroBot Rescue sample art"></div>
--            <div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>6,887 players -
--                4.7</em></div>
-+            <div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>Coming Soon</em>
-+            </div>
-           </article>
-           <article class="game-tile">
-             <div class="game-art"><img src="/games/assets/images/game-forgequest.svg" alt="Forge Quest sample art"></div>
--            <div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>5,921 players -
--                4.6</em></div>
-+            <div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>Creator Challenge</em></div>
-           </article>
-         </div>
-         <div class="section-head">
-           <div>
--            <div class="kicker">Staff Choice</div>
--            <h3>Staff Picks</h3>
-+            <div class="kicker">Creator Highlights</div>
-+            <h3>Creator Highlights</h3>
-           </div>
--          <p>Display-only highlights for editor-selected games, creator showcases, and community-ready releases.</p>
-+          <p>A future-ready area for featured creators, games, templates, and showcases.</p>
-         </div>
--        <div class="trending-grid" aria-label="Staff Picks">
-+        <div class="trending-grid" aria-label="Creator Highlights">
-           <article class="game-tile">
-             <div class="game-art"><img src="/games/assets/images/game-forgequest.svg" alt="Forge Quest staff pick art"></div>
--            <div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>Staff pick</em></div>
-+            <div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>In Development</em></div>
-           </article>
-           <article class="game-tile">
-             <div class="game-art"><img src="/games/assets/images/game-nebula.svg" alt="Nebula Runner staff pick art"></div>
--            <div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>Staff pick</em></div>
-+            <div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>Sample Game</em></div>
-           </article>
-           <article class="game-tile">
-             <div class="game-art"><img src="/games/assets/images/game-retrobot.svg" alt="RetroBot Rescue staff pick art"></div>
--            <div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>Staff pick</em></div>
-+            <div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>Coming Soon</em></div>
-           </article>
-         </div>
-       </div>
-@@ -95,14 +93,17 @@
-         <div>
-           <div class="kicker">What is GameFoundryStudio?</div>
-           <h2>A complete place to create, test, publish, and play.</h2>
--          <p class="lede small">No engine setup. No complicated installs. Create directly in the browser with clear
--            tools, friendly guardrails, and reusable game-building pieces.</p>
-+          <p class="lede small">Game Foundry Studio is a creator destination for building browser games, assets, worlds,
-+            audio, rules, and publishing workflows in one connected place.</p>
-         </div>
-         <div class="check-panel">
-           <div>Visual Editors</div>
-+          <div>Game Design Document (GDD)</div>
-           <div>Asset Creation Tools</div>
-           <div>Tilemaps & Worlds</div>
-           <div>Audio & Music Tools</div>
-+          <div>Testing & Preview</div>
-+          <div>Creator Templates</div>
-           <div>One-Click Publishing</div>
-           <div>Community Sharing</div>
-         </div>
-@@ -115,8 +116,7 @@
-             <div class="kicker">Featured tools</div>
-             <h2>Creator tools with guardrails.</h2>
-           </div>
--          <p>Each tool should use explicit manifest data, show safe empty states, and avoid hidden fallback behavior.
--          </p>
-+          <p>Focused tools help Creators move from idea to playable game one step at a time.</p>
-         </div>
-         <div class="card-grid">
-           <article class="card">
-@@ -145,18 +145,19 @@
-         <div class="image-panel"><img src="assets/theme-v2/images/game-foundry-mascot-sheet.png"
-             alt="ForgeBot mascot"></div>
-         <div>
--          <div class="kicker">Mascot system</div>
--          <h2>ForgeBot, Spark, Pixel Smith, and Foundry Bot.</h2>
--          <p class="lede small">Use these characters for onboarding, tutorials, error states, achievements, learning
--            content, and playful creator moments.</p><a class="btn primary" href="toolbox/index.html">View Tool Images</a>
-+          <div class="kicker">Meet the Foundry Guides</div>
-+          <h2>ForgeBot, Pixel Smith, Spark, and Foundry Bot help Creators.</h2>
-+          <p class="lede small">ForgeBot, Pixel Smith, Spark, and Foundry Bot help Creators build, design, add sound,
-+            and learn their way through the platform.</p><a class="btn primary" href="company/how-we-build.html">See How We Build</a>
-         </div>
-       </div>
-     </section>
-     <section class="section">
-       <div class="container cta">
--        <h2>Forge games for the open web.</h2>
--        <p class="lede small">GameFoundryStudio can grow into Toolbox, Games, Marketplace, Cloud, and Learn without
--          changing the core brand.</p><a class="btn primary" href="admin/branding.html">Open Brand Kit</a>
-+        <h2>Start Creating</h2>
-+        <p class="lede small">Begin with tools, explore playable examples, or learn how the creator journey works.</p>
-+        <div class="hero-cta"><a class="btn primary" href="toolbox/index.html">Start Building</a><a class="btn"
-+            href="games/index.html">Explore Games</a><a class="btn" href="company/how-we-build.html">Learn How It Works</a></div>
-       </div>
-     </section>
-   </main>
-diff --git a/docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md b/docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md
+         <aside class="hero-art" aria-label="GameFoundryStudio logo artwork">
+diff --git a/docs_build/dev/reports/PR_26164_088-home-share-entry.md b/docs_build/dev/reports/PR_26164_088-home-share-entry.md
 new file mode 100644
-index 000000000..44038c3f1
+index 000000000..534e8ae58
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md
-@@ -0,0 +1,107 @@
-+# PR_26164_087-home-and-how-mascots
++++ b/docs_build/dev/reports/PR_26164_088-home-share-entry.md
+@@ -0,0 +1,87 @@
++# PR_26164_088-home-share-entry
 +
 +## Branch Validation
 +
@@ -203,87 +35,67 @@ index 000000000..44038c3f1
 +## Scope
 +
 +- Updated `index.html`.
-+- Updated `company/how-we-build.html`.
-+- No navigation file changes were required because `company/how-we-build.html` already exists in Company footer navigation and the new Home CTAs link directly to that page.
++- No navigation file changes were required.
 +- Required report artifacts updated:
 +  - `docs_build/dev/reports/codex_review.diff`
 +  - `docs_build/dev/reports/codex_changed_files.txt`
++
++## Routing Decision
++
++- Share destination selected: `marketplace/index.html`
++- Reason: `marketplace/index.html` exists, so it is the current best available share-facing destination requested by the PR.
++- Temporary fallback needed: No.
 +
 +## Requirement Checklist
 +
 +- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution: PASS
 +- Verified current branch is `main` before making changes: PASS
-+- Scope limited to `company/how-we-build.html`, `index.html`, required navigation updates if needed, and reports: PASS
-+- Added correct mascot image to each How We Build mascot block: PASS
-+  - ForgeBot for Build: `../assets/theme-v2/images/mascots/forgebot.png`
-+  - Pixel Smith for Design: `../assets/theme-v2/images/mascots/pixel-smith.png`
-+  - Spark for Audio: `../assets/theme-v2/images/mascots/spark.png`
-+  - Foundry Bot for Guide / AI / Help: `../assets/theme-v2/images/mascots/foundry-bot.png`
-+- Used existing Theme V2 card/media classes where possible: PASS
-+- Did not add inline styles, script blocks, style blocks, or page-local CSS: PASS
-+- Home hero uses creator-focused `Build. Play. Share.` copy: PASS
-+- Fake production metrics were removed: PASS
-+- `Trending Games` / `Most played this week` replaced with `Featured Experiences`: PASS
-+- `Staff Picks` replaced with `Creator Highlights`: PASS
-+- What is GameFoundryStudio section updated with creator destination copy and added Game Design Document (GDD), Testing & Preview, and Creator Templates: PASS
-+- Featured Tools public copy no longer uses internal governance language: PASS
-+- Mascot section updated to `Meet the Foundry Guides` with `See How We Build` CTA to `company/how-we-build.html`: PASS
-+- Final CTA updated to `Start Creating` with Start Building, Explore Games, and Learn How It Works buttons: PASS
-+- Playwright impacted: No. Content/navigation/image placement only: PASS
++- Scope limited to `index.html` and required reports only: PASS
++- Added third hero entry card for Share: PASS
++- Share entry card uses `Share`, `Share Creations`, and `Publish and Connect`: PASS
++- Share entry card links to `marketplace/index.html`: PASS
++- Added third hero CTA button `Share Creations`: PASS
++- Share CTA links to `marketplace/index.html`: PASS
++- Ran `git diff --check`: PASS
++- Validated home page renders: PASS
++- Validated Build, Play, and Share hero entry cards appear together: PASS
++- Validated all hero CTA and entry-card links resolve: PASS
++- Validated no inline script/style/event handlers were added: PASS
++- Playwright impacted: No. Content/navigation only: PASS
 +- Required repo-structured ZIP produced: PASS
 +
 +## Manual Validation Notes
 +
-+- Reviewed `index.html` and `company/how-we-build.html` before editing.
-+- Confirmed mascot files exist under `assets/theme-v2/images/mascots/`.
-+- Confirmed `company/how-we-build.html` was already linked from the Company footer navigation, so no navigation file edit was required.
-+- Confirmed changed links resolve:
-+  - `toolbox/index.html`
-+  - `games/index.html`
-+  - `company/how-we-build.html`
-+- Confirmed no CSS or JavaScript files were changed.
++- Confirmed the existing hero entry cards were Build and Play.
++- Confirmed `marketplace/index.html` exists before choosing it as the Share destination.
++- Confirmed the hero now has three CTA links:
++  - `Start Building` -> `toolbox/index.html`
++  - `Explore Games` -> `games/index.html`
++  - `Share Creations` -> `marketplace/index.html`
++- Confirmed the hero now has three entry cards:
++  - Build -> `toolbox/index.html`
++  - Play -> `games/index.html`
++  - Share -> `marketplace/index.html`
++- No CSS or JavaScript files were changed.
 +
 +## Validation
 +
 +- `git diff --check`: PASS
-+  - Note: Git reported LF-to-CRLF working-copy warnings for touched HTML files; the command exited successfully.
-+- Home render-shell validation: PASS
-+- `company/how-we-build.html` render-shell validation: PASS
-+- Mascot image path resolution: PASS
-+- Changed navigation/link resolution: PASS
++  - Note: Git reported an LF-to-CRLF working-copy warning for `index.html`; the command exited successfully.
++- Home page render-shell validation: PASS
++- Build / Play / Share hero entry card validation: PASS
++- Hero CTA and entry-card link resolution: PASS
 +- Inline HTML restriction check: PASS
 +  - No `<style>` blocks.
 +  - No inline `<script>` blocks.
 +  - No inline event handlers.
 +  - No inline `style` attributes.
-+- Retired Home text search: PASS
-+  - No `Most played this week`.
-+  - No `Trending Games`.
-+  - No `Staff Picks`.
-+  - No fake player counts or fake ratings.
-+  - No `Open Brand Kit`.
-+  - No `manifest-driven`.
-+  - No `explicit manifest data`.
-+  - No `hidden fallback`.
-+- Required Home evidence search: PASS
-+  - `Game Foundry Studio helps Creators design games`
-+  - `Advanced creators can extend projects later`
-+  - `Featured Experiences`
-+  - `Creator Highlights`
-+  - `Game Design Document (GDD)`
-+  - `Testing & Preview`
-+  - `Creator Templates`
-+  - `Focused tools help Creators`
-+  - `Meet the Foundry Guides`
-+  - `See How We Build`
-+  - `Start Creating`
-+  - `Learn How It Works`
 +
 +## Playwright
 +
 +- Playwright impacted: No.
 +- Playwright run: SKIP.
-+- Reason: This PR changes static content, links, and image placement only. No runtime behavior, tool workflow, shared engine behavior, or browser interaction changed.
++- Reason: This PR changes static Home page content/navigation only. No runtime behavior, tool workflow, shared engine behavior, or browser interaction changed.
 +
 +## Samples
 +
@@ -297,4 +109,4 @@ index 000000000..44038c3f1
 +
 +## ZIP
 +
-+- `tmp/PR_26164_087-home-and-how-mascots_delta.zip`: PASS
++- `tmp/PR_26164_088-home-share-entry_delta.zip`: PASS
