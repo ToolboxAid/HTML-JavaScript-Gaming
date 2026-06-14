@@ -1,92 +1,314 @@
-diff --git a/docs_build/dev/reports/PR_26164_095-pr092-leftover-cleanup.md b/docs_build/dev/reports/PR_26164_095-pr092-leftover-cleanup.md
+diff --git a/docs_build/dev/reports/db-consumer-audit.csv b/docs_build/dev/reports/db-consumer-audit.csv
 new file mode 100644
-index 000000000..4ee2be4df
+index 000000000..1b67b8080
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26164_095-pr092-leftover-cleanup.md
-@@ -0,0 +1,86 @@
-+# PR_26164_095-pr092-leftover-cleanup
++++ b/docs_build/dev/reports/db-consumer-audit.csv
+@@ -0,0 +1,105 @@
++file_path,owning_area,consumer_type,current_data_source,migration_status,risk,recommended_next_pr
++account/sign-in.html,account,auth;users,Local DB,OK Local DB,low,none
++account/achievements.html,account,games,Local DB,OK Local DB,medium,none
++account/user-controls.html,account,controls,Local DB,OK Local DB,medium,none
++account/user-controls.js,account,controls,Local DB,OK Local DB,medium,none
++account/user-controls-page.js,account,controls;auth,Local DB,OK Local DB,medium,none
++account/index.html,account,users;settings,static/page-local data,Needs migration,medium,PR-account-dashboard-local-db-wire-up
++account/profile.html,account,users;settings,static/page-local data,Needs migration,medium,PR-account-profile-local-db-wire-up
++account/preferences.html,account,settings,static/page-local data,Needs migration,low,PR-account-preferences-local-db-wire-up
++account/security.html,account,auth;settings,static/page-local data,Needs migration,medium,PR-account-security-local-db-wire-up
++assets/theme-v2/js/login-session.js,account,auth;users;roles,Local DB,OK Local DB,low,none
++assets/theme-v2/js/gamefoundry-partials.js,public,auth;users,Local DB,OK Local DB,low,none
++assets/theme-v2/js/account-achievements.js,account,games,Local DB,OK Local DB,medium,none
++assets/theme-v2/js/account-controls.js,account,controls;settings,static/page-local data,Needs review,low,PR-account-controls-page-source-review
++admin/db-viewer.html,admin,users;roles;other,Local DB,OK Local DB,low,none
++admin/db-viewer.js,admin,users;roles;other,Local DB,OK Local DB,low,none
++admin/tool-votes.html,admin,votes;ordering;tool metadata,Local DB,OK Local DB,low,none
++admin/tool-votes.js,admin,votes;ordering;tool metadata,Local DB,OK Local DB,low,none
++admin/users.html,admin,users;roles,static/page-local data,Needs migration,medium,PR-admin-users-local-db-wire-up
++admin/roles.html,admin,roles,static/page-local data,Needs migration,medium,PR-admin-roles-local-db-wire-up
++admin/site-settings.html,admin,settings,static/page-local data,Needs migration,medium,PR-admin-site-setup-runtime
++admin/platform-settings.html,admin,settings,static/page-local data,Needs migration,medium,PR-admin-platform-settings-local-db-wire-up
++admin/environments.html,admin,settings,static/page-local data,Needs migration,medium,PR-admin-environments-local-db-wire-up
++admin/branding.html,admin,settings,static/page-local data,Needs migration,low,PR-admin-branding-local-db-wire-up
++admin/themes.html,admin,settings,static/page-local data,Needs migration,low,PR-admin-themes-local-db-wire-up
++admin/controls.html,admin,controls;settings,static/page-local data,Needs migration,low,PR-admin-controls-local-db-wire-up
++admin/ratings.html,admin,other;settings,static/page-local data,Needs migration,low,PR-admin-ratings-local-db-wire-up
++admin/moderation.html,admin,tickets/support;other,static/page-local data,Needs migration,low,PR-admin-moderation-local-db-wire-up
++admin/analytics.html,admin,other,static/page-local data,Needs migration,low,PR-admin-analytics-local-db-wire-up
++admin/game-migration.html,admin,games;assets,static/page-local data,Needs migration,low,PR-admin-game-migration-local-db-wire-up
++index.html,public,games;tool metadata,static/page-local data,Needs review,medium,PR-home-dynamic-showcase-source
++games/index.html,public,games,static/page-local data,Needs review,medium,PR-games-directory-data-source
++marketplace/index.html,public,assets;settings,static/page-local data,Needs migration,medium,PR-marketplace-local-db-wire-up
++community/index.html,public,tickets/support;other,static/page-local data,Needs review,low,PR-community-data-source-review
++community/assets.html,public,assets,static/page-local data,Needs review,low,PR-community-assets-data-source-review
++community/publish.html,public,games;settings,static/page-local data,Needs review,low,PR-community-publish-data-source-review
++docs/support.html,public,tickets/support,static/page-local data,Needs review,low,PR-support-ticket-source-review
++toolbox/tools-page-accordions.js,toolbox,tool metadata;votes;auth,Local DB,OK Local DB,medium,none
++toolbox/tool-registry-api-client.js,toolbox,tool metadata,Local DB,OK Local DB,medium,none
++toolbox/toolRegistry.js,toolbox,tool metadata,static/page-local data,Needs review,high,PR-tool-registry-db-source-reduction
++toolbox/assets/assets-api-client.js,toolbox,assets,Local DB,OK Local DB,low,none
++toolbox/assets/assets.js,toolbox,assets;auth,Local DB,OK Local DB,medium,none
++toolbox/assets/assets-upload-worker.js,toolbox,assets,Local DB,Needs review,medium,PR-assets-upload-worker-data-boundary-review
++toolbox/controls/controls-api-client.js,toolbox,controls,Local DB,OK Local DB,low,none
++toolbox/controls/controls.js,toolbox,controls,Local DB,OK Local DB,medium,none
++toolbox/objects/objects-api-client.js,toolbox,games;other,Local DB,OK Local DB,low,none
++toolbox/objects/objects.js,toolbox,games;other,Local DB plus page-local templates,Needs review,medium,PR-objects-template-source-review
++toolbox/colors/palette-api-client.js,toolbox,assets;settings,Local DB,OK Local DB,low,none
++toolbox/colors/colors.js,toolbox,assets;settings,Local DB plus page-local editor state,Needs review,medium,PR-colors-page-local-state-review
++toolbox/game-workspace/game-workspace-api-client.js,toolbox,games;workspace,Local DB,OK Local DB,low,none
++toolbox/game-workspace/game-workspace.js,toolbox,games;workspace;auth,Local DB,OK Local DB,low,none
++toolbox/game-design/game-design-api-client.js,toolbox,game design,Local DB,OK Local DB,low,none
++toolbox/game-design/game-design.js,toolbox,game design,Local DB,OK Local DB,low,none
++toolbox/game-configuration/game-configuration-api-client.js,toolbox,games;settings,Local DB,OK Local DB,low,none
++toolbox/game-configuration/game-configuration.js,toolbox,games;settings,Local DB,OK Local DB,medium,none
++toolbox/game-journey/game-journey-api-client.js,toolbox,games;game design;tool metadata,Local DB,OK Local DB,low,none
++toolbox/game-journey/game-journey.js,toolbox,games;tool metadata,Local DB plus static registry import,Needs review,medium,PR-game-journey-tool-registry-source-review
++toolbox/tags/tags-api-client.js,toolbox,assets;other,Local DB,OK Local DB,low,none
++toolbox/tags/tags.js,toolbox,assets;other,Local DB,OK Local DB,medium,none
++src/engine/api/server-api-client.js,src,other,Local DB,OK Local DB,low,none
++src/engine/api/session-api-client.js,src,auth;users;roles,Local DB,OK Local DB,low,none
++src/engine/api/toolbox-votes-api-client.js,src,votes;ordering;tool metadata,Local DB,OK Local DB,low,none
++src/engine/api/mock-db-api-client.js,src,other,Local DB,Needs review,low,PR-local-db-api-naming-cleanup
++src/engine/api/mock-db-viewer-ui.js,src,users;roles;other,Local DB,Needs review,low,PR-local-db-api-naming-cleanup
++src/dev-runtime/server/mock-api-router.mjs,dev-runtime,auth;users;roles;tool metadata;votes;ordering;games;game design;workspace;assets;controls;settings;other,Local DB,Needs review,high,PR-runtime-sql-schema-contract-review
++src/dev-runtime/persistence/mock-db-store.js,dev-runtime,users;roles;other,Local DB plus dormant browser storage code,Needs review,medium,PR-local-db-store-naming-storage-cleanup
++src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js,dev-runtime,assets,Local DB,OK Local DB,medium,none
++src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js,dev-runtime,controls,Local DB,OK Local DB,medium,none
++src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js,dev-runtime,games;other,Local DB,OK Local DB,medium,none
++src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js,dev-runtime,assets;settings,Local DB,OK Local DB,medium,none
++src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js,dev-runtime,assets;other,Local DB,OK Local DB,medium,none
++src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js,dev-runtime,games;workspace;users,Local DB,OK Local DB,low,none
++src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js,dev-runtime,game design;games,Local DB,OK Local DB,low,none
++src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js,dev-runtime,games;settings,Local DB,OK Local DB,medium,none
++src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js,dev-runtime,games;game design,Local DB,OK Local DB,medium,none
++src/dev-runtime/persistence/tool-repositories/palette-catalog-config.js,dev-runtime,assets;settings,static/page-local data,Needs review,low,PR-palette-catalog-source-review
++src/dev-runtime/guest-seeds/tool-metadata-inventory.js,dev-runtime,tool metadata,static/page-local data,Needs review,medium,PR-tool-registry-site-setup-seeds
++src/dev-runtime/guest-seeds/tool-state-samples.js,dev-runtime,workspace,static/page-local data,Needs review,medium,PR-tool-state-samples-site-setup-plan
++src/dev-runtime/guest-seeds/palette-source-mock-db.js,dev-runtime,assets;settings,static/page-local data,Needs review,low,PR-palette-seed-source-review
++src/engine/persistence/BrowserStorageService.js,src,settings;other,browser storage,Needs review,medium,PR-engine-storage-product-data-boundary
++src/engine/persistence/StorageService.js,src,settings;other,browser storage,Needs review,medium,PR-engine-storage-product-data-boundary
++src/engine/persistence/LocalStorageService.js,src,settings;other,browser storage,Needs review,medium,PR-engine-storage-product-data-boundary
++src/engine/persistence/SessionStorageService.js,src,settings;other,browser storage,Needs review,low,PR-engine-storage-product-data-boundary
++src/engine/persistence/CookieStorageService.js,src,auth;settings,browser storage,Needs review,low,PR-engine-storage-product-data-boundary
++src/engine/persistence/SaveSlotManager.js,src,games;workspace,browser storage,Needs review,medium,PR-engine-save-slot-local-db-boundary
++src/engine/release/SettingsSystem.js,src,settings,browser storage,Needs review,medium,PR-release-settings-storage-boundary
++src/engine/release/CrashRecoveryManager.js,src,other,browser storage,Needs review,low,PR-crash-recovery-storage-boundary
++src/tools/common/WorkspaceDirtyNotifier.js,src,workspace,browser storage,Out of scope,low,none
++src/engine/assets/AssetRegistry.js,src,assets,JSON file,Needs review,medium,PR-runtime-asset-data-source-review
++src/engine/assets/AssetLoaderSystem.js,src,assets,JSON file,Needs review,medium,PR-runtime-asset-data-source-review
++src/engine/rendering/ObjectVectorRuntimeAssetService.js,src,assets,JSON file,Needs review,medium,PR-runtime-object-vector-asset-source-review
++src/engine/runtime/gameImageConvention.js,src,assets,JSON file,Needs review,low,PR-runtime-image-convention-source-review
++src/engine/runtime/fullscreenBezel.js,src,assets;settings,JSON file,Needs review,low,PR-runtime-fullscreen-bezel-source-review
++tests/dev-runtime/DbSeedIntegrity.test.mjs,tests,users;roles;workspace,Local DB,Out of scope,low,none
++tests/playwright/tools/AdminDbViewer.spec.mjs,tests,users;roles;other,Local DB,Out of scope,low,none
++tests/playwright/tools/LoginSessionMode.spec.mjs,tests,auth;users,Local DB,Out of scope,low,none
++tests/playwright/tools/AssetToolMockRepository.spec.mjs,tests,assets;auth,Local DB,Out of scope,low,none
++tests/playwright/tools/InputMappingV2Tool.spec.mjs,tests,controls;auth,Local DB,Out of scope,low,none
++tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs,tests,tool metadata;votes,Local DB,Out of scope,low,none
++tests/playwright/tools/ObjectsTool.spec.mjs,tests,games;other,Local DB,Out of scope,low,none
++tests/playwright/tools/PaletteToolMockRepository.spec.mjs,tests,assets;settings,Local DB,Out of scope,low,none
++tests/playwright/tools/TagsTool.spec.mjs,tests,assets;other,Local DB,Out of scope,low,none
++tests/playwright/tools/GameJourneyTool.spec.mjs,tests,games;game design,Local DB,Out of scope,low,none
++tests/playwright/tools/GameConfigurationMockRepository.spec.mjs,tests,games;settings,Local DB,Out of scope,low,none
++tests/playwright/account/AchievementsPage.spec.mjs,tests,games,Local DB,Out of scope,low,none
+
+diff --git a/docs_build/dev/reports/db-consumer-audit.md b/docs_build/dev/reports/db-consumer-audit.md
+new file mode 100644
+index 000000000..8d2fe7023
+--- /dev/null
++++ b/docs_build/dev/reports/db-consumer-audit.md
+@@ -0,0 +1,185 @@
++# PR_26164_096 DB Consumer Audit
 +
 +## Branch Validation
 +
-+- PASS: current branch verified as `main` before PR 095 execution.
++- PASS: Current branch is `main`.
++- Expected branch: `main`.
++- Scope: audit/reporting only.
++- Runtime behavior changed: No.
++- Supabase introduced: No.
++- MEM DB reintroduced: No.
++- Fake login removed: No.
 +
-+## PR 092 Leftover Audit
++## Audit Method
 +
-+- PASS: reviewed `docs_build/dev/reports/PR_26164_092-fix-db-identity-governance.md`.
-+- PASS: reviewed current `docs_build/database/README.md`.
-+- PASS: reviewed current `docs_build/database/ddl/dev-app-identity-schema.sql`.
-+- PASS: reviewed current `docs_build/database/dml/dev-app-identity-temporary-setup-review.sql`.
-+- PASS: reviewed previous PR 092 delta ZIP contents:
-+  - `docs_build/database/ddl/dev-app-identity-schema.sql`
-+  - `docs_build/database/dml/dev-app-identity-temporary-setup-review.sql`
-+  - `docs_build/database/README.md`
-+  - PR 092 reports
-+- PASS: no leftover PR 092 implementation issue was found, so PR 095 is audit/report only.
++Active repo areas were searched for DB, data, auth, API, browser-storage, SQL, and route consumers. Deprecated `archive/v1-v2`, `start_of_day`, generated `tmp`, `node_modules`, test result output, and prior PR reports were excluded unless active code imported them.
 +
-+## Identity Schema Governance Audit
++The CSV at `docs_build/dev/reports/db-consumer-audit.csv` is the row-level inventory. Static HTML pages without forms, API calls, persistence calls, auth links, or product-data ownership were not classified as DB/data/auth consumers.
 +
-+| Requirement | Status | Evidence |
-+| --- | --- | --- |
-+| `users` uses key primary identifier | PASS | `users.key text PRIMARY KEY` is present. |
-+| `roles` uses key primary identifier | PASS | `roles.key text PRIMARY KEY` is present. |
-+| `user_roles` uses key primary identifier | PASS | `user_roles.key text PRIMARY KEY` is present. |
-+| `user_roles.userKey` references `users.key` | PASS | `"userKey" text NOT NULL REFERENCES users(key) ON DELETE CASCADE`. |
-+| `user_roles.roleKey` references `roles.key` | PASS | `"roleKey" text NOT NULL REFERENCES roles(key) ON DELETE CASCADE`. |
-+| Audit fields exist | PASS | `createdAt`, `updatedAt`, `createdBy`, and `updatedBy` exist on all identity tables. |
-+| Ownership references `users.key` | PASS | `createdBy` and `updatedBy` reference `users(key)`. |
-+| No legacy identity ownership pattern remains | PASS | Scoped scan found no `users.id`, `roles.id`, `user_roles.user_id`, `user_roles.role_id`, `user_id`, or `role_id` patterns in DDL/DML. |
++## Summary
 +
-+## DDL/DML Location Audit
++- PASS: PR094 did not migrate all active DB consumers. Current state shows Game Workspace and Game Design are on the Local DB route, but active Assets, Controls, Objects, Palette/Colors, Tags, Game Journey, admin/account placeholders, public showcase pages, engine persistence utilities, legacy-named Local DB clients, and test consumers remain in the audit as OK Local DB, Needs review, or Needs migration depending on current source.
++- PASS: No active MEM DB runtime route was found.
++- PASS: No active `/login.html` reference was found.
++- PASS: No active fake-login reference was found.
++- WARN: Legacy `mock-db` names remain on Local DB-backed clients, routes, store helpers, repositories, and tests. The audit treats these as naming/contract review items, not active MEM DB behavior.
++- WARN: Dynamic SQLite schema creation remains in `src/dev-runtime/server/mock-api-router.mjs`. No `.sql` DDL artifact was found outside `docs_build/database/ddl/`, but runtime DDL-like code should be reviewed against the documented DDL contract.
++- WARN: Browser-storage product-data ownership was not confirmed as the active app source of truth, but engine persistence utilities and dormant browser-storage scaffolding in `mock-db-store.js` need boundary review before production ownership decisions.
 +
-+| Requirement | Status | Evidence |
-+| --- | --- | --- |
-+| DDL remains under `docs_build/database/ddl/` | PASS | Only identity DDL file is `docs_build/database/ddl/dev-app-identity-schema.sql`. |
-+| DML/setup artifacts remain under `docs_build/database/dml/` | PASS | Only setup SQL file is `docs_build/database/dml/dev-app-identity-temporary-setup-review.sql`. |
-+| No DDL under `docs/` | PASS | SQL/DDL scan under `docs/` returned no files. |
-+| No DDL under `src/` | PASS | SQL/DDL scan under `src/` returned no files. |
-+| DML marked temporary DEV/review only | PASS | DML header states `TEMPORARY SETUP/REVIEW ARTIFACT`, `DEV review only`, and Admin -> Site Setup ownership. |
-+| UAT/PROD SQL execution remains user-controlled | PASS | DML header and database README both state UAT/production SQL execution is user-controlled. |
++## Consumer Status Counts
 +
-+## MEM DB Reintroduction Audit
++- OK Local DB: 41
++- Needs migration: 17
++- Needs review: 33
++- Out of scope: 13
 +
-+- PASS: scoped database artifact scan found no `MEM DB`, `Local Mem`, `local-mem`, or `MockDbAdapter` references.
-+- PASS: PR 095 did not modify runtime code.
-+- PASS: PR 095 did not introduce Supabase runtime wiring.
-+- PASS: PR 095 did not add fake login behavior.
-+- PASS: PR 095 did not add custom password storage tables or password hash/salt fields.
++## Required Findings
++
++### PR094 Migration Scope
++
++PASS: The audit confirms PR094 was not a repo-wide DB consumer migration. It appears to have moved the Game Workspace/Game Design path to the key-based Local DB route, while other active consumers still require migration or review. Remaining examples include:
++
++- `toolbox/assets/assets.js`
++- `toolbox/controls/controls.js`
++- `toolbox/objects/objects.js`
++- `toolbox/colors/colors.js`
++- `toolbox/tags/tags.js`
++- `toolbox/game-journey/game-journey.js`
++- `admin/users.html`
++- `admin/roles.html`
++- `account/index.html`
++- `marketplace/index.html`
++- `src/engine/persistence/StorageService.js`
++- `src/dev-runtime/server/mock-api-router.mjs`
++
++### MEM DB References
++
++PASS: No active runtime MEM DB route or import was found.
++
++References found:
++
++- `docs_build/dev/PROJECT_INSTRUCTIONS.md` contains governance text listing MEM DB as a historical/allowed adapter category in a general rule. This is not runtime code.
++
++### local-mem References
++
++PASS with documentation: Remaining `local-mem` references are active tests asserting the retired mode is absent or rejected.
++
++- `tests/dev-runtime/DbSeedIntegrity.test.mjs`
++- `tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs`
++- `tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs`
++- `tests/playwright/tools/LoginSessionMode.spec.mjs`
++
++Migration status: Out of scope for this audit PR. Recommended follow-up only if the test wording is renamed after the runtime route naming cleanup.
++
++### fake-login References
++
++PASS: No active fake-login or "fake login" references were found in active account, admin, asset, src, toolbox, or tests areas searched.
++
++### /login.html References
++
++PASS: No active `/login.html` or `login.html` references were found in the active searched areas.
++
++### Browser-Storage Product-Data Ownership
++
++PASS with WARN: No confirmed active browser-storage product-data source of truth was found for the Local DB-backed DEV route. The following active files still need boundary review because they can read or write browser storage or retain disabled browser-storage scaffolding:
++
++- `src/engine/persistence/BrowserStorageService.js`
++- `src/engine/persistence/StorageService.js`
++- `src/engine/persistence/LocalStorageService.js`
++- `src/engine/persistence/SessionStorageService.js`
++- `src/engine/persistence/CookieStorageService.js`
++- `src/engine/persistence/SaveSlotManager.js`
++- `src/engine/release/SettingsSystem.js`
++- `src/engine/release/CrashRecoveryManager.js`
++- `src/dev-runtime/persistence/mock-db-store.js`
++- `src/tools/common/WorkspaceDirtyNotifier.js` is classified Out of scope because it uses `sessionStorage` for transient workspace coordination, not product-data ownership.
++
++### Page-Local Product-Data Arrays
++
++WARN: Active static/page-local ownership remains and needs targeted migration or review. High-signal examples:
++
++- `toolbox/toolRegistry.js`
++- `src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
++- `src/dev-runtime/guest-seeds/tool-state-samples.js`
++- `src/dev-runtime/guest-seeds/palette-source-mock-db.js`
++- `src/dev-runtime/persistence/tool-repositories/palette-catalog-config.js`
++- `toolbox/objects/objects.js`
++- `toolbox/colors/colors.js`
++- `admin/users.html`
++- `admin/roles.html`
++- `admin/site-settings.html`
++- `account/index.html`
++- `account/profile.html`
++- `index.html`
++- `games/index.html`
++- `marketplace/index.html`
++
++### DDL Location Audit
++
++PASS: DDL artifact found under the approved location:
++
++- `docs_build/database/ddl/dev-app-identity-schema.sql`
++
++PASS: No `.sql` DDL artifact was found under `src/` or `docs/`.
++
++WARN: Runtime DDL-like SQLite table creation exists in:
++
++- `src/dev-runtime/server/mock-api-router.mjs`
++
++This is not a misplaced DDL artifact, but it should be reviewed in a follow-up so runtime Local DB schema creation stays aligned with `docs_build/database/ddl/`.
++
++### DML/Setup Artifact Location Audit
++
++PASS: Temporary setup/review DML artifact found under the approved location:
++
++- `docs_build/database/dml/dev-app-identity-temporary-setup-review.sql`
++
++PASS: No setup `.sql` DML artifact was found outside `docs_build/database/dml/`.
++
++WARN: Runtime DML exists in active router/repository code because active tools read/write Local DB state. This is expected runtime behavior, not a misplaced setup artifact.
 +
 +## Requirement Checklist
 +
-+| Requirement | Status | Evidence |
-+| --- | --- | --- |
-+| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` | PASS | Read before PR 095 execution. |
-+| Verify branch is `main` | PASS | `git branch --show-current` returned `main`. |
-+| Review previous PR 092 delta and current repo state | PASS | Report, ZIP contents, README, DDL, and DML were reviewed. |
-+| Fix incomplete PR 092 work | PASS | No incomplete PR 092 DDL/DML governance work was found. |
-+| Confirm DDL remains under `docs_build/database/ddl/` | PASS | Location audit passed. |
-+| Confirm DML remains under `docs_build/database/dml/` | PASS | Location audit passed. |
-+| Confirm no DDL exists under `docs/` or `src/` | PASS | `NO_SQL_OR_DDL_UNDER_SRC_OR_DOCS`. |
-+| Confirm key-based identity records and audit ownership | PASS | Identity schema audit passed. |
-+| Confirm no legacy id ownership patterns remain | PASS | Legacy pattern scan returned no matches. |
-+| Confirm temporary DML is DEV/review only until Admin -> Site Setup owns setup | PASS | DML and README both document the temporary boundary. |
-+| Do not introduce runtime Supabase wiring | PASS | No runtime files changed. |
-+| Do not reintroduce MEM DB | PASS | Scoped database artifact scan returned no MEM/local-mem matches. |
-+| Do not add fake login behavior | PASS | No auth/runtime files changed. |
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
++- PASS: Verified current branch is `main` before changes.
++- PASS: Scope kept to audit/reporting only.
++- PASS: Did not migrate DB consumers.
++- PASS: Did not change runtime behavior.
++- PASS: Did not introduce Supabase.
++- PASS: Did not reintroduce MEM DB.
++- PASS: Did not remove fake login.
++- PASS: Searched active repo areas for DB/data/auth consumers.
++- PASS: Excluded deprecated `archive/v1-v2` and `start_of_day` areas unless active imports required them.
++- PASS: Produced row-level consumer audit with file path, owning area, consumer type, current data source, migration status, risk, and recommended next PR.
++- PASS: Confirmed PR094 did not migrate all active DB consumers.
++- PASS: Listed remaining MEM DB, local-mem, fake-login, and `/login.html` findings.
++- PASS: Listed browser-storage product-data ownership findings.
++- PASS: Listed page-local product-data findings.
++- PASS: Listed DDL and DML/setup location findings.
++- PASS: Playwright impacted: No. Audit/report-only PR.
 +
-+## Validation
++## Validation Lane Report
 +
-+- PASS: `git diff --check`
-+- PASS: PR 092 ZIP content review
-+- PASS: DDL/DML location audit
-+- PASS: identity schema governance audit
-+- PASS: legacy id ownership pattern scan
-+- PASS: MEM DB reintroduction audit
-+- PASS: temporary DML/README governance marker audit
-+- Playwright impacted: No. PR 095 is database governance audit/report only.
-+- Full samples smoke test: skipped because PR 095 is DDL/DML governance audit/report only and does not affect samples.
++- Impacted lane: reporting/audit only.
++- Playwright impacted: No.
++- Runtime JavaScript changed: No.
++- Samples smoke test: SKIP. Audit/report-only PR; no samples or runtime behavior changed.
 +
 +## Manual Validation Notes
 +
-+- No code changes were required for PR 095.
-+- Current DDL/DML already satisfies the PR 092 key-based identity governance requirements.
-+- Current temporary setup SQL remains a DEV/review artifact and is not a permanent seed mechanism.
++- `git diff --check`: PASS.
++- Audit report exists: PASS.
++- Audit CSV exists: PASS.
++- Runtime files modified: PASS, none modified.
++- MEM DB reintroduced: PASS, no runtime file changes and no active MEM DB runtime route found.
++- `/login.html` references: PASS, no active references found.
++- DDL artifacts under `docs_build/database/ddl/`: PASS.
++- DML/setup artifacts under `docs_build/database/dml/`: PASS.
++
++## Required Outputs
++
++- PASS: `docs_build/dev/reports/db-consumer-audit.md`
++- PASS: `docs_build/dev/reports/db-consumer-audit.csv`
++- PASS: `docs_build/dev/reports/codex_review.diff`
++- PASS: `docs_build/dev/reports/codex_changed_files.txt`
++- PASS: repo-structured ZIP under `tmp/PR_26164_096-db-consumer-audit_delta.zip`
+
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 801d70744..40d1dfbf9 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,3 +1,4 @@
+-docs_build/dev/reports/PR_26164_095-pr092-leftover-cleanup.md
++docs_build/dev/reports/db-consumer-audit.csv
++docs_build/dev/reports/db-consumer-audit.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff

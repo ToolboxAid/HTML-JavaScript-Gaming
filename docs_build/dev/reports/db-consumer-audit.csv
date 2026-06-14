@@ -1,0 +1,105 @@
+file_path,owning_area,consumer_type,current_data_source,migration_status,risk,recommended_next_pr
+account/sign-in.html,account,auth;users,Local DB,OK Local DB,low,none
+account/achievements.html,account,games,Local DB,OK Local DB,medium,none
+account/user-controls.html,account,controls,Local DB,OK Local DB,medium,none
+account/user-controls.js,account,controls,Local DB,OK Local DB,medium,none
+account/user-controls-page.js,account,controls;auth,Local DB,OK Local DB,medium,none
+account/index.html,account,users;settings,static/page-local data,Needs migration,medium,PR-account-dashboard-local-db-wire-up
+account/profile.html,account,users;settings,static/page-local data,Needs migration,medium,PR-account-profile-local-db-wire-up
+account/preferences.html,account,settings,static/page-local data,Needs migration,low,PR-account-preferences-local-db-wire-up
+account/security.html,account,auth;settings,static/page-local data,Needs migration,medium,PR-account-security-local-db-wire-up
+assets/theme-v2/js/login-session.js,account,auth;users;roles,Local DB,OK Local DB,low,none
+assets/theme-v2/js/gamefoundry-partials.js,public,auth;users,Local DB,OK Local DB,low,none
+assets/theme-v2/js/account-achievements.js,account,games,Local DB,OK Local DB,medium,none
+assets/theme-v2/js/account-controls.js,account,controls;settings,static/page-local data,Needs review,low,PR-account-controls-page-source-review
+admin/db-viewer.html,admin,users;roles;other,Local DB,OK Local DB,low,none
+admin/db-viewer.js,admin,users;roles;other,Local DB,OK Local DB,low,none
+admin/tool-votes.html,admin,votes;ordering;tool metadata,Local DB,OK Local DB,low,none
+admin/tool-votes.js,admin,votes;ordering;tool metadata,Local DB,OK Local DB,low,none
+admin/users.html,admin,users;roles,static/page-local data,Needs migration,medium,PR-admin-users-local-db-wire-up
+admin/roles.html,admin,roles,static/page-local data,Needs migration,medium,PR-admin-roles-local-db-wire-up
+admin/site-settings.html,admin,settings,static/page-local data,Needs migration,medium,PR-admin-site-setup-runtime
+admin/platform-settings.html,admin,settings,static/page-local data,Needs migration,medium,PR-admin-platform-settings-local-db-wire-up
+admin/environments.html,admin,settings,static/page-local data,Needs migration,medium,PR-admin-environments-local-db-wire-up
+admin/branding.html,admin,settings,static/page-local data,Needs migration,low,PR-admin-branding-local-db-wire-up
+admin/themes.html,admin,settings,static/page-local data,Needs migration,low,PR-admin-themes-local-db-wire-up
+admin/controls.html,admin,controls;settings,static/page-local data,Needs migration,low,PR-admin-controls-local-db-wire-up
+admin/ratings.html,admin,other;settings,static/page-local data,Needs migration,low,PR-admin-ratings-local-db-wire-up
+admin/moderation.html,admin,tickets/support;other,static/page-local data,Needs migration,low,PR-admin-moderation-local-db-wire-up
+admin/analytics.html,admin,other,static/page-local data,Needs migration,low,PR-admin-analytics-local-db-wire-up
+admin/game-migration.html,admin,games;assets,static/page-local data,Needs migration,low,PR-admin-game-migration-local-db-wire-up
+index.html,public,games;tool metadata,static/page-local data,Needs review,medium,PR-home-dynamic-showcase-source
+games/index.html,public,games,static/page-local data,Needs review,medium,PR-games-directory-data-source
+marketplace/index.html,public,assets;settings,static/page-local data,Needs migration,medium,PR-marketplace-local-db-wire-up
+community/index.html,public,tickets/support;other,static/page-local data,Needs review,low,PR-community-data-source-review
+community/assets.html,public,assets,static/page-local data,Needs review,low,PR-community-assets-data-source-review
+community/publish.html,public,games;settings,static/page-local data,Needs review,low,PR-community-publish-data-source-review
+docs/support.html,public,tickets/support,static/page-local data,Needs review,low,PR-support-ticket-source-review
+toolbox/tools-page-accordions.js,toolbox,tool metadata;votes;auth,Local DB,OK Local DB,medium,none
+toolbox/tool-registry-api-client.js,toolbox,tool metadata,Local DB,OK Local DB,medium,none
+toolbox/toolRegistry.js,toolbox,tool metadata,static/page-local data,Needs review,high,PR-tool-registry-db-source-reduction
+toolbox/assets/assets-api-client.js,toolbox,assets,Local DB,OK Local DB,low,none
+toolbox/assets/assets.js,toolbox,assets;auth,Local DB,OK Local DB,medium,none
+toolbox/assets/assets-upload-worker.js,toolbox,assets,Local DB,Needs review,medium,PR-assets-upload-worker-data-boundary-review
+toolbox/controls/controls-api-client.js,toolbox,controls,Local DB,OK Local DB,low,none
+toolbox/controls/controls.js,toolbox,controls,Local DB,OK Local DB,medium,none
+toolbox/objects/objects-api-client.js,toolbox,games;other,Local DB,OK Local DB,low,none
+toolbox/objects/objects.js,toolbox,games;other,Local DB plus page-local templates,Needs review,medium,PR-objects-template-source-review
+toolbox/colors/palette-api-client.js,toolbox,assets;settings,Local DB,OK Local DB,low,none
+toolbox/colors/colors.js,toolbox,assets;settings,Local DB plus page-local editor state,Needs review,medium,PR-colors-page-local-state-review
+toolbox/game-workspace/game-workspace-api-client.js,toolbox,games;workspace,Local DB,OK Local DB,low,none
+toolbox/game-workspace/game-workspace.js,toolbox,games;workspace;auth,Local DB,OK Local DB,low,none
+toolbox/game-design/game-design-api-client.js,toolbox,game design,Local DB,OK Local DB,low,none
+toolbox/game-design/game-design.js,toolbox,game design,Local DB,OK Local DB,low,none
+toolbox/game-configuration/game-configuration-api-client.js,toolbox,games;settings,Local DB,OK Local DB,low,none
+toolbox/game-configuration/game-configuration.js,toolbox,games;settings,Local DB,OK Local DB,medium,none
+toolbox/game-journey/game-journey-api-client.js,toolbox,games;game design;tool metadata,Local DB,OK Local DB,low,none
+toolbox/game-journey/game-journey.js,toolbox,games;tool metadata,Local DB plus static registry import,Needs review,medium,PR-game-journey-tool-registry-source-review
+toolbox/tags/tags-api-client.js,toolbox,assets;other,Local DB,OK Local DB,low,none
+toolbox/tags/tags.js,toolbox,assets;other,Local DB,OK Local DB,medium,none
+src/engine/api/server-api-client.js,src,other,Local DB,OK Local DB,low,none
+src/engine/api/session-api-client.js,src,auth;users;roles,Local DB,OK Local DB,low,none
+src/engine/api/toolbox-votes-api-client.js,src,votes;ordering;tool metadata,Local DB,OK Local DB,low,none
+src/engine/api/mock-db-api-client.js,src,other,Local DB,Needs review,low,PR-local-db-api-naming-cleanup
+src/engine/api/mock-db-viewer-ui.js,src,users;roles;other,Local DB,Needs review,low,PR-local-db-api-naming-cleanup
+src/dev-runtime/server/mock-api-router.mjs,dev-runtime,auth;users;roles;tool metadata;votes;ordering;games;game design;workspace;assets;controls;settings;other,Local DB,Needs review,high,PR-runtime-sql-schema-contract-review
+src/dev-runtime/persistence/mock-db-store.js,dev-runtime,users;roles;other,Local DB plus dormant browser storage code,Needs review,medium,PR-local-db-store-naming-storage-cleanup
+src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js,dev-runtime,assets,Local DB,OK Local DB,medium,none
+src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js,dev-runtime,controls,Local DB,OK Local DB,medium,none
+src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js,dev-runtime,games;other,Local DB,OK Local DB,medium,none
+src/dev-runtime/persistence/tool-repositories/palette-workspace-repository.js,dev-runtime,assets;settings,Local DB,OK Local DB,medium,none
+src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js,dev-runtime,assets;other,Local DB,OK Local DB,medium,none
+src/dev-runtime/persistence/tool-repositories/game-workspace-mock-repository.js,dev-runtime,games;workspace;users,Local DB,OK Local DB,low,none
+src/dev-runtime/persistence/tool-repositories/game-design-mock-repository.js,dev-runtime,game design;games,Local DB,OK Local DB,low,none
+src/dev-runtime/persistence/tool-repositories/game-configuration-mock-repository.js,dev-runtime,games;settings,Local DB,OK Local DB,medium,none
+src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js,dev-runtime,games;game design,Local DB,OK Local DB,medium,none
+src/dev-runtime/persistence/tool-repositories/palette-catalog-config.js,dev-runtime,assets;settings,static/page-local data,Needs review,low,PR-palette-catalog-source-review
+src/dev-runtime/guest-seeds/tool-metadata-inventory.js,dev-runtime,tool metadata,static/page-local data,Needs review,medium,PR-tool-registry-site-setup-seeds
+src/dev-runtime/guest-seeds/tool-state-samples.js,dev-runtime,workspace,static/page-local data,Needs review,medium,PR-tool-state-samples-site-setup-plan
+src/dev-runtime/guest-seeds/palette-source-mock-db.js,dev-runtime,assets;settings,static/page-local data,Needs review,low,PR-palette-seed-source-review
+src/engine/persistence/BrowserStorageService.js,src,settings;other,browser storage,Needs review,medium,PR-engine-storage-product-data-boundary
+src/engine/persistence/StorageService.js,src,settings;other,browser storage,Needs review,medium,PR-engine-storage-product-data-boundary
+src/engine/persistence/LocalStorageService.js,src,settings;other,browser storage,Needs review,medium,PR-engine-storage-product-data-boundary
+src/engine/persistence/SessionStorageService.js,src,settings;other,browser storage,Needs review,low,PR-engine-storage-product-data-boundary
+src/engine/persistence/CookieStorageService.js,src,auth;settings,browser storage,Needs review,low,PR-engine-storage-product-data-boundary
+src/engine/persistence/SaveSlotManager.js,src,games;workspace,browser storage,Needs review,medium,PR-engine-save-slot-local-db-boundary
+src/engine/release/SettingsSystem.js,src,settings,browser storage,Needs review,medium,PR-release-settings-storage-boundary
+src/engine/release/CrashRecoveryManager.js,src,other,browser storage,Needs review,low,PR-crash-recovery-storage-boundary
+src/tools/common/WorkspaceDirtyNotifier.js,src,workspace,browser storage,Out of scope,low,none
+src/engine/assets/AssetRegistry.js,src,assets,JSON file,Needs review,medium,PR-runtime-asset-data-source-review
+src/engine/assets/AssetLoaderSystem.js,src,assets,JSON file,Needs review,medium,PR-runtime-asset-data-source-review
+src/engine/rendering/ObjectVectorRuntimeAssetService.js,src,assets,JSON file,Needs review,medium,PR-runtime-object-vector-asset-source-review
+src/engine/runtime/gameImageConvention.js,src,assets,JSON file,Needs review,low,PR-runtime-image-convention-source-review
+src/engine/runtime/fullscreenBezel.js,src,assets;settings,JSON file,Needs review,low,PR-runtime-fullscreen-bezel-source-review
+tests/dev-runtime/DbSeedIntegrity.test.mjs,tests,users;roles;workspace,Local DB,Out of scope,low,none
+tests/playwright/tools/AdminDbViewer.spec.mjs,tests,users;roles;other,Local DB,Out of scope,low,none
+tests/playwright/tools/LoginSessionMode.spec.mjs,tests,auth;users,Local DB,Out of scope,low,none
+tests/playwright/tools/AssetToolMockRepository.spec.mjs,tests,assets;auth,Local DB,Out of scope,low,none
+tests/playwright/tools/InputMappingV2Tool.spec.mjs,tests,controls;auth,Local DB,Out of scope,low,none
+tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs,tests,tool metadata;votes,Local DB,Out of scope,low,none
+tests/playwright/tools/ObjectsTool.spec.mjs,tests,games;other,Local DB,Out of scope,low,none
+tests/playwright/tools/PaletteToolMockRepository.spec.mjs,tests,assets;settings,Local DB,Out of scope,low,none
+tests/playwright/tools/TagsTool.spec.mjs,tests,assets;other,Local DB,Out of scope,low,none
+tests/playwright/tools/GameJourneyTool.spec.mjs,tests,games;game design,Local DB,Out of scope,low,none
+tests/playwright/tools/GameConfigurationMockRepository.spec.mjs,tests,games;settings,Local DB,Out of scope,low,none
+tests/playwright/account/AchievementsPage.spec.mjs,tests,games,Local DB,Out of scope,low,none

@@ -1,3 +1,4 @@
-docs_build/dev/reports/PR_26164_095-pr092-leftover-cleanup.md
+docs_build/dev/reports/db-consumer-audit.csv
+docs_build/dev/reports/db-consumer-audit.md
 docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
