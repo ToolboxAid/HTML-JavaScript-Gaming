@@ -1,10 +1,24 @@
-# git status --short
-M company/about.html
-?? docs_build/dev/reports/PR_26164_085-about-page-refresh.md
+# scoped git status --short
+ M assets/theme-v2/partials/footer.html
+ M company/about.html
+ M company/contact.html
+ M company/mission.html
+ M company/release-notes.html
+ M company/roadmap.html
+ M company/vision.html
+?? company/how-we-build.html
+?? docs_build/dev/reports/PR_26164_086-company-pages-creator-story.md
 
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26164_085-about-page-refresh.md
+# scoped git diff --stat
+ assets/theme-v2/partials/footer.html |  1 +
+ company/about.html                   | 68 +++++++++++++++++++++++++++++-----
+ company/contact.html                 | 72 +++++++++++++++++++++++++-----------
+ company/mission.html                 | 47 ++++++++++++++++-------
+ company/release-notes.html           | 58 ++++++++++++++++-------------
+ company/roadmap.html                 | 70 ++++++++++++++++++++++++-----------
+ company/vision.html                  | 67 ++++++++++++++++++++++-----------
+ 7 files changed, 270 insertions(+), 113 deletions(-)
 
-# git diff --stat
-company/about.html | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+# scoped untracked files included in review diff
+company/how-we-build.html
+docs_build/dev/reports/PR_26164_086-company-pages-creator-story.md
