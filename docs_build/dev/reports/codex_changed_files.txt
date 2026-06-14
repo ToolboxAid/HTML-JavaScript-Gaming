@@ -1,18 +1,10 @@
 # git status --short
-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M tests/playwright/tools/AssetToolMockRepository.spec.mjs
- M toolbox/assets/assets.js
- M toolbox/assets/index.html
-?? docs_build/dev/reports/PR_26163_084-assets-fun-factor-and-foundry-bot.md
+M company/about.html
+?? docs_build/dev/reports/PR_26164_085-about-page-refresh.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26163_084-assets-fun-factor-and-foundry-bot.md
+docs_build/dev/reports/PR_26164_085-about-page-refresh.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  5 +--
- .../dev/reports/playwright_v8_coverage_report.txt  |  8 ++--
- .../tools/AssetToolMockRepository.spec.mjs         | 15 +++++++-
- toolbox/assets/assets.js                           | 33 +++++++++--------
- toolbox/assets/index.html                          | 43 +++++++++++++---------
- 5 files changed, 61 insertions(+), 43 deletions(-)
+company/about.html | 27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
