@@ -1,14 +1,14 @@
 # scoped git status --short
- M index.html
-?? docs_build/dev/reports/PR_26164_088-home-share-entry.md
+ M assets/theme-v2/css/layout.css
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+?? docs_build/dev/reports/PR_26164_089-home-entry-card-thirds.md
 
-# scoped git diff --stat
- index.html | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-# scoped untracked files included in review diff
-docs_build/dev/reports/PR_26164_088-home-share-entry.md
-
-# generated review artifacts
+# scoped files included in this PR
+assets/theme-v2/css/layout.css
+docs_build/dev/reports/PR_26164_089-home-entry-card-thirds.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
+
+# notes
+Review diff is scoped to the reusable Theme V2 layout change and the PR report.

@@ -656,7 +656,7 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
 
 .dual-entry {
   display: grid;
-  grid-template-columns: var(--two-columns);
+  grid-template-columns: var(--grid-cols-3);
   gap: var(--space-14);
   margin-top: var(--space-34)
 }

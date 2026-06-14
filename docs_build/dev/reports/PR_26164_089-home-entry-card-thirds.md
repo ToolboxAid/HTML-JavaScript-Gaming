@@ -1,0 +1,83 @@
+# PR_26164_089-home-entry-card-thirds
+
+## Branch Validation
+
+- Current branch: `main`
+- Expected branch: `main`
+- Local branches found: `* main`
+- Result: PASS
+
+## Scope
+
+- Updated reusable Theme V2 home layout styling in `assets/theme-v2/css/layout.css`.
+- No `index.html` content changes were required because the Build, Play, and Share entry cards already exist in the Home hero.
+- Required report artifacts updated:
+  - `docs_build/dev/reports/codex_review.diff`
+  - `docs_build/dev/reports/codex_changed_files.txt`
+
+## Requirement Checklist
+
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution: PASS
+- Verified current branch is `main` before making changes: PASS
+- Scoped PR to Home hero entry-card layout and required reports only: PASS
+- Ensured Build, Play, and Share entry cards stay on one horizontal row on desktop: PASS
+- Reduced individual entry-card width to one third of the available entry-card row: PASS
+- Kept all three cards side by side: PASS
+- Used existing Theme V2 layout tokens first: PASS
+- Added reusable Theme V2 styling only under `assets/theme-v2/css/`: PASS
+- Did not use inline styles, style blocks, script blocks, or inline event handlers: PASS
+- Preserved responsive behavior for smaller screens: PASS
+- Ran `git diff --check`: PASS
+- Validated home page renders: PASS
+- Validated cards remain readable on smaller screens: PASS
+- Playwright impacted: No. Layout/content only: PASS
+- Required repo-structured ZIP produced: PASS
+
+## Manual Validation Notes
+
+- Reviewed the Home hero entry-card markup in `index.html`.
+- Confirmed `index.html` contains the three hero entry cards in order:
+  - Build
+  - Play
+  - Share
+- Reviewed active Theme V2 imports and confirmed `theme.css` imports `layout.css`.
+- Confirmed `.dual-entry` was the active Home hero entry-card row layout rule.
+- Updated `.dual-entry` from `var(--two-columns)` to `var(--grid-cols-3)`, using the existing `repeat(3, 1fr)` Theme V2 token.
+- Confirmed the existing `@media(max-width:620px)` rule still collapses `.dual-entry` to `var(--one-column)` for smaller screens.
+
+## Validation
+
+- `git diff --check`: PASS
+  - Note: Git reported an LF-to-CRLF working-copy warning for `assets/theme-v2/css/layout.css`; the command exited successfully.
+- Home page render-shell validation: PASS
+- Build / Play / Share entry-card content validation: PASS
+- Desktop three-column CSS validation: PASS
+  - `.dual-entry` uses `grid-template-columns: var(--grid-cols-3)`.
+  - `--grid-cols-3` resolves to `repeat(3, 1fr)`.
+- Smaller-screen readability validation: PASS
+  - Existing `@media(max-width:620px)` rule keeps `.dual-entry` at `var(--one-column)`.
+- Inline HTML restriction check: PASS
+  - No `<style>` blocks.
+  - No inline `<script>` blocks.
+  - No inline event handlers.
+  - No inline `style` attributes.
+
+## Playwright
+
+- Playwright impacted: No.
+- Playwright run: SKIP.
+- Reason: This PR changes reusable CSS layout only. No runtime behavior, tool workflow, shared engine behavior, or browser interaction changed.
+
+## Samples
+
+- Full samples smoke test: SKIP.
+- Reason: No samples or runtime game surfaces changed.
+
+## Review Artifacts
+
+- `docs_build/dev/reports/codex_review.diff`: PASS
+- `docs_build/dev/reports/codex_changed_files.txt`: PASS
+
+## ZIP
+
+- `tmp/PR_26164_089-home-entry-card-thirds_delta.zip`: PASS
