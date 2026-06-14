@@ -34,6 +34,8 @@
                                 <div class="accordion-body content-stack">
                                     <p data-admin-db-scope-description>Current tool Local DB records are displayed as a read-only human-readable dump.</p>
                                     <p>Use the diagnostics panel to confirm table attribution, relationships, and table bleed checks.</p>
+                                    <button class="btn btn--compact" type="button" data-admin-setup-reseed>Reseed Local DB</button>
+                                    <p class="status" role="status" data-admin-setup-status>SKIP: No setup action has been run.</p>
                                 </div>
                             </details>
                         </div>
@@ -76,6 +78,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/admin-setup-actions.js"></script>
     <script type="module" src="admin/db-viewer.js"></script>
 </body>
 

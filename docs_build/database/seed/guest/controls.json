@@ -1,0 +1,31 @@
+{
+  "group": "Controls",
+  "groupKey": "controls",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {
+    "game_input_mappings": [],
+    "player_controller_profiles": [],
+    "player_input_device_selections": [],
+    "input_custom_action_records": []
+  },
+  "samplePackages": [
+    {
+      "key": "guest-controls-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "groupKey": "controls",
+      "label": "Guest Controls starter",
+      "loadablePath": "toolbox/controls/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/controls.json",
+      "toolKey": "controls",
+      "toolName": "Controls",
+      "writableByGuest": false
+    }
+  ]
+}

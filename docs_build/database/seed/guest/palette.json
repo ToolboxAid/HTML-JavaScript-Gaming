@@ -1,0 +1,31 @@
+{
+  "group": "Palette",
+  "groupKey": "palette",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {
+    "palette_colors": [],
+    "palette_source_swatches": [],
+    "palette_swatch_usages": [],
+    "project_workspace_palette_globals": []
+  },
+  "samplePackages": [
+    {
+      "key": "guest-palette-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "groupKey": "palette",
+      "label": "Guest Palette starter",
+      "loadablePath": "toolbox/colors/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/palette.json",
+      "toolKey": "palette",
+      "toolName": "Palette",
+      "writableByGuest": false
+    }
+  ]
+}

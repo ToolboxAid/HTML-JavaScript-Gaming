@@ -1,0 +1,11 @@
+{
+  "group": "Tags",
+  "groupKey": "tags",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "workspace_tag_records": []
+  },
+  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+}

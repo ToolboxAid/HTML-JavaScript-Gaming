@@ -1,7 +1,8 @@
 -- Game Foundry Studio DEV database DDL
--- Ownership: docs_build/database/ddl/
+-- Group: Account
+-- Ownership: docs_build/database/ddl/account.sql
 -- Target DEV database: gamefoundry_dev
--- Scope: app identity tables only. No custom password tables are defined here.
+-- Scope: account identity tables only. No custom password tables are defined here.
 -- Identity ownership follows the project key-based governance model.
 
 CREATE TABLE IF NOT EXISTS users (

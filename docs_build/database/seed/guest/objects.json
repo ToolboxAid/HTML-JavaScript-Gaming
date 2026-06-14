@@ -1,0 +1,28 @@
+{
+  "group": "Objects",
+  "groupKey": "objects",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {
+    "object_definition_records": []
+  },
+  "samplePackages": [
+    {
+      "key": "guest-objects-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "groupKey": "objects",
+      "label": "Guest Objects starter",
+      "loadablePath": "toolbox/objects/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/objects.json",
+      "toolKey": "objects",
+      "toolName": "Objects",
+      "writableByGuest": false
+    }
+  ]
+}

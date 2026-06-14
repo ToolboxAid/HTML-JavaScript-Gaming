@@ -1,7 +1,8 @@
 -- TEMPORARY SETUP/REVIEW ARTIFACT
+-- Group: Account
 -- DEV review only. Codex may execute DEV database setup only.
 -- UAT and production SQL execution is user-controlled.
--- Long-term seed behavior belongs in Admin -> Site Setup, not permanent seed SQL.
+-- Runtime reseed/setup must be called through Admin-owned server-side APIs.
 -- Target DEV database: gamefoundry_dev
 -- The inactive setup user exists only to satisfy audit ownership references; it is not login behavior.
 

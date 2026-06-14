@@ -1,0 +1,9 @@
+{
+  "group": "Admin",
+  "groupKey": "admin",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {},
+  "note": "Admin Site Setup owns explicit server-side setup/reseed entry points. No persistent admin table exists in this PR."
+}

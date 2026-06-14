@@ -1,0 +1,11 @@
+{
+  "group": "Tool Metadata",
+  "groupKey": "tool-metadata",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "toolbox_tool_metadata": []
+  },
+  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+}

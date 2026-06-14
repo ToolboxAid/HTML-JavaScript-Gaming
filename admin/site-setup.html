@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Admin Wireframe</div>
                 <h1>Site Setup</h1>
-                <p class="lede">Reserve the future setup owner for controlled platform bootstrap actions without executing setup work.</p>
+                <p class="lede">Admin-owned setup actions for controlled Local DB bootstrap and review.</p>
             </div>
         </section>
         <section class="section">
@@ -41,11 +41,12 @@
                                 </nav>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Setup Preview</summary>
+                                <summary>Setup Actions</summary>
                                 <div class="accordion-body content-stack">
                                     <label>Setup Area <select disabled><option>Default roles</option><option>First admin</option><option>Tool metadata bootstrap</option><option>Starter platform settings</option><option>Ticket categories</option></select></label>
                                     <label>Review Mode <select disabled><option>Foundation only</option><option>Local DB dry run</option><option>Admin approval</option></select></label>
-                                    <button class="btn btn--compact" type="button" disabled>Preview Setup Action</button>
+                                    <button class="btn btn--compact" type="button" data-admin-setup-reseed>Reseed Local DB</button>
+                                    <p class="status" role="status" data-admin-setup-status>SKIP: No setup action has been run.</p>
                                 </div>
                             </details>
                         </div>
@@ -56,7 +57,7 @@
                             <div class="kicker">Setup Ownership</div>
                             <h2 id="admin-site-setup-title">Controlled Setup Foundation</h2>
                         </div>
-                        <p>This foundation page identifies where future setup and seed actions belong. Runtime setup actions are not executable in this PR.</p>
+                        <p>This page owns controlled Local DB setup entry points. Reseed actions call admin-gated server APIs and report visible PASS/FAIL/WARN/SKIP status.</p>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Site setup ownership foundation">
                                 <caption>Future Site Setup Ownership</caption>
@@ -86,14 +87,14 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" role="status">Wireframe only. Site setup actions are not read, written, or executed.</p>
+                                    <p class="status" role="status" data-admin-setup-status>SKIP: No setup action has been run.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
                                 <summary>DDL/DML Review</summary>
                                 <div class="accordion-body content-stack">
                                     <p>DDL remains under docs_build/database/ddl/.</p>
-                                    <p>Temporary DEV setup review DML remains under docs_build/database/dml/ until this page owns executable setup behavior in a later PR.</p>
+                                    <p>Temporary DEV setup review DML is grouped under docs_build/database/dml/. Local DB reseed runs through the server API.</p>
                                 </div>
                             </details>
                         </div>
@@ -105,6 +106,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/admin-setup-actions.js"></script>
 </body>
 
 </html>

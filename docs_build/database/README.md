@@ -1,19 +1,22 @@
 # Database Artifact Ownership
 
-Database schema and setup review artifacts are owned outside runtime source.
+Database schema, DML review, and seed artifacts are grouped under `docs_build/database/`.
 
 ## Ownership
 
 - DEV database DDL belongs in `docs_build/database/ddl/`.
 - DEV setup or DML review artifacts belong in `docs_build/database/dml/`.
-- DDL must not be placed under `src/` or `docs/`.
-- DML files in this folder are temporary setup/review artifacts unless promoted by a future Admin Site Setup workflow.
+- Seed artifacts belong in `docs_build/database/seed/`.
+- Guest seed artifacts belong in `docs_build/database/seed/guest/` and are read-only.
+- DDL/DML/seed artifacts must not be placed under `src/` or `docs/`.
 - Identity records use `key` as the primary identifier. Shared audit ownership uses `createdBy` and `updatedBy` references to `users.key`.
+
+## Grouping
+
+Each product area/tool owns one grouped file in `ddl/`, `dml/`, and `seed/`. Account tables stay in `account.sql` / `account.json`; tool metadata, planning, and votes remain separate grouped files.
 
 ## Execution Boundary
 
-Codex may execute DEV database setup only.
+Runtime DEV setup and reseed actions must call server-side APIs. Browser pages must not directly seed authoritative DB records or generate authoritative DB keys.
 
-UAT and production SQL execution is user-controlled. Codex may prepare review artifacts, but it must not execute UAT or production SQL.
-
-Long-term seed behavior belongs in Admin -> Site Setup, not permanent seed SQL. Temporary DML files may document review setup data while the Admin Site Setup workflow is planned.
+Codex may execute DEV database setup only. UAT and production SQL execution is user-controlled. Codex may prepare review artifacts, but it must not execute UAT or production SQL.

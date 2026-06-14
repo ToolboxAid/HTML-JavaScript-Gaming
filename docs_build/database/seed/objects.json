@@ -1,0 +1,11 @@
+{
+  "group": "Objects",
+  "groupKey": "objects",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "object_definition_records": []
+  },
+  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+}

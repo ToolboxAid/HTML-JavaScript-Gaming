@@ -1,0 +1,9 @@
+{
+  "group": "Support Tickets",
+  "groupKey": "support-tickets",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {},
+  "note": "Support ticket tables are not active in the Local DB adapter yet."
+}

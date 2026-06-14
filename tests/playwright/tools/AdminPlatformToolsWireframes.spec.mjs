@@ -22,7 +22,7 @@ const ADMIN_WIREFRAME_PAGES = [
   { heading: "Users", path: "/admin/users.html", slug: "users", statusText: "Read-only Admin view." },
   { heading: "Game Migration", path: "/admin/game-migration.html", slug: "game-migration" },
   { heading: "Platform Settings", path: "/admin/platform-settings.html", slug: "platform-settings" },
-  { heading: "Site Setup", menuLabels: SITE_SETUP_TOOL_MENU_LABELS, path: "/admin/site-setup.html", slug: "site-setup" },
+  { heading: "Site Setup", menuLabels: SITE_SETUP_TOOL_MENU_LABELS, path: "/admin/site-setup.html", slug: "site-setup", statusText: "SKIP: No setup action has been run." },
 ];
 
 test.beforeEach(async ({ page }) => {

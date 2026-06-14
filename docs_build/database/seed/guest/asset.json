@@ -1,0 +1,32 @@
+{
+  "group": "Asset",
+  "groupKey": "asset",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {
+    "asset_role_definitions": [],
+    "asset_library_items": [],
+    "asset_storage_objects": [],
+    "asset_import_events": [],
+    "asset_validation_items": []
+  },
+  "samplePackages": [
+    {
+      "key": "guest-asset-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "groupKey": "asset",
+      "label": "Guest Asset starter",
+      "loadablePath": "toolbox/assets/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/asset.json",
+      "toolKey": "asset",
+      "toolName": "Asset",
+      "writableByGuest": false
+    }
+  ]
+}

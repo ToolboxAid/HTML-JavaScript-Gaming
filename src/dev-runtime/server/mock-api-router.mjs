@@ -1,4 +1,4 @@
-import { mkdirSync } from "node:fs";
+import { mkdirSync, readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { DatabaseSync } from "node:sqlite";
@@ -81,7 +81,6 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
 const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
-const TOOL_ORDER = ["game-workspace", "game-design", "game-configuration", "objects", "controls", "game-journey", "palette", "tags", "asset"];
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
 const TOOLBOX_PLANNING_FIELDS = Object.freeze([
@@ -101,6 +100,22 @@ const DB_VIEWER_STANDALONE_LABELS = Object.freeze({
   tool_state_samples: "Tool State Samples",
   user_roles: "User Roles",
 });
+const DB_VIEWER_GROUP_ORDER = Object.freeze([
+  Object.freeze({ id: "asset", label: "Asset", ownerId: "asset", type: "tool" }),
+  Object.freeze({ id: "controls", label: "Controls", ownerId: "controls", type: "tool" }),
+  Object.freeze({ id: "game-configuration", label: "Game Configuration", ownerId: "game-configuration", type: "tool" }),
+  Object.freeze({ id: "game-design", label: "Game Design", ownerId: "game-design", type: "tool" }),
+  Object.freeze({ id: "game-journey", label: "Game Journey", ownerId: "game-journey", type: "tool" }),
+  Object.freeze({ id: "game-workspace", label: "Game Workspace", ownerId: "game-workspace", type: "tool" }),
+  Object.freeze({ id: "objects", label: "Objects", ownerId: "objects", type: "tool" }),
+  Object.freeze({ id: "palette", label: "Palette", ownerId: "palette", type: "tool" }),
+  Object.freeze({ id: "tags", label: "Tags", ownerId: "tags", type: "tool" }),
+  Object.freeze({ id: "toolbox_tool_metadata", label: "Tool Metadata", tableNames: Object.freeze(["toolbox_tool_metadata"]), type: "table" }),
+  Object.freeze({ id: "toolbox_tool_planning", label: "Tool Planning", tableNames: Object.freeze(["toolbox_tool_planning"]), type: "table" }),
+  Object.freeze({ id: "tool_state_samples", label: "Tool State Samples", tableNames: Object.freeze(["tool_state_samples"]), type: "table" }),
+  Object.freeze({ id: "toolbox_votes", label: "Toolbox Votes", tableNames: DB_VIEWER_TOOLBOX_VOTE_TABLES, type: "table" }),
+  Object.freeze({ id: "user_roles", label: "User Roles", tableNames: DB_VIEWER_IDENTITY_TABLES, type: "table" }),
+]);
 const TOOLBOX_DEFAULT_RELEASE_CHANNELS = Object.freeze(["wireframe", "beta", "complete"]);
 const BUILD_PATH_DEFAULT_RELEASE_CHANNELS = Object.freeze(["complete"]);
 const TOOLBOX_RELEASE_CHANNEL_SWATCHES = Object.freeze({
@@ -179,6 +194,29 @@ function clone(value) {
   return JSON.parse(JSON.stringify(value));
 }
 
+function readDocsBuildGuestSeedPackages() {
+  const guestSeedDir = path.join(process.cwd(), "docs_build", "database", "seed", "guest");
+  try {
+    return readdirSync(guestSeedDir)
+      .filter((fileName) => fileName.endsWith(".json"))
+      .sort()
+      .flatMap((fileName) => {
+        const filePath = path.join(guestSeedDir, fileName);
+        const seed = JSON.parse(readFileSync(filePath, "utf8"));
+        return (seed.samplePackages || []).map((sample) => ({
+          ...sample,
+          group: seed.group,
+          groupKey: seed.groupKey,
+          readOnly: true,
+          source: `docs_build/database/seed/guest/${fileName}`,
+          writableByGuest: false,
+        }));
+      });
+  } catch (error) {
+    return [];
+  }
+}
+
 function orderedUniqueValues(rows, valueSelector) {
   const values = [];
   rows
@@ -243,23 +281,35 @@ function dbViewerStandaloneTableLabel(tableName) {
   return DB_VIEWER_STANDALONE_LABELS[tableName] || tableName;
 }
 
-function dbViewerGroupsForSnapshot(tables, owners, toolGroups) {
+function dbViewerGroupsForSnapshot(tables, owners) {
   const tableNames = Object.keys(tables).sort();
   const tableNamesForOwner = (ownerId) => tableNames
     .filter((tableName) => owners[tableName] === ownerId)
     .sort();
-  const toolGroupIds = TOOL_ORDER.filter((id) => tableNamesForOwner(id).length > 0);
-  const toolOwnedTables = new Set(toolGroupIds.flatMap(tableNamesForOwner));
-  const identityTables = DB_VIEWER_IDENTITY_TABLES.filter((tableName) => tableNames.includes(tableName));
-  const toolboxVoteTables = DB_VIEWER_TOOLBOX_VOTE_TABLES.filter((tableName) => tableNames.includes(tableName));
-  const groupedStandaloneTables = new Set([
-    ...identityTables,
-    ...toolboxVoteTables,
-  ]);
-  const standaloneTableNames = tableNames
-    .filter((tableName) => !toolOwnedTables.has(tableName))
-    .filter((tableName) => !groupedStandaloneTables.has(tableName))
-    .sort();
+  const groupedTables = new Set();
+  const orderedGroups = DB_VIEWER_GROUP_ORDER
+    .map((group) => {
+      const groupTableNames = group.ownerId
+        ? tableNamesForOwner(group.ownerId)
+        : (group.tableNames || []).filter((tableName) => tableNames.includes(tableName));
+      groupTableNames.forEach((tableName) => groupedTables.add(tableName));
+      return {
+        id: group.id,
+        label: group.label,
+        tableNames: groupTableNames,
+        type: group.type,
+      };
+    })
+    .filter((group) => group.tableNames.length > 0);
+  const ungroupedStandaloneGroups = tableNames
+    .filter((tableName) => !groupedTables.has(tableName))
+    .map((tableName) => ({
+      id: tableName,
+      label: dbViewerStandaloneTableLabel(tableName),
+      tableNames: [tableName],
+      type: "table",
+    }))
+    .sort((left, right) => left.label.localeCompare(right.label));
 
   return [
     {
@@ -268,30 +318,8 @@ function dbViewerGroupsForSnapshot(tables, owners, toolGroups) {
       tableNames,
       type: "all",
     },
-    ...toolGroupIds.map((id) => ({
-      id,
-      label: toolGroups[id]?.label || id,
-      tableNames: tableNamesForOwner(id),
-      type: "tool",
-    })),
-    ...(identityTables.length ? [{
-      id: "user_roles",
-      label: dbViewerStandaloneTableLabel("user_roles"),
-      tableNames: identityTables,
-      type: "table",
-    }] : []),
-    ...standaloneTableNames.map((tableName) => ({
-      id: tableName,
-      label: dbViewerStandaloneTableLabel(tableName),
-      tableNames: [tableName],
-      type: "table",
-    })),
-    ...(toolboxVoteTables.length ? [{
-      id: "toolbox_votes",
-      label: dbViewerStandaloneTableLabel("toolbox_votes"),
-      tableNames: toolboxVoteTables,
-      type: "table",
-    }] : []),
+    ...orderedGroups,
+    ...ungroupedStandaloneGroups,
   ];
 }
 
@@ -902,6 +930,10 @@ class LocalDevMockDataSource {
       ? state.tables
       : createServerSeedTables();
     this.standaloneTables = clone(sourceTables);
+    if (Array.isArray(this.standaloneTables.tool_state_samples)) {
+      this.standaloneTables.tool_state_samples = this.standaloneTables.tool_state_samples
+        .filter((sample) => sample?.audience !== "guest");
+    }
     IDENTITY_TABLES.forEach((tableName) => {
       if (!Array.isArray(this.standaloneTables[tableName])) {
         this.standaloneTables[tableName] = [];
@@ -973,6 +1005,31 @@ class LocalDevMockDataSource {
     });
     this.persistCurrentAdapterState(action);
     return this.snapshot();
+  }
+
+  adminReseed() {
+    const session = this.currentSession();
+    if (!session.isAdmin || !session.userKey) {
+      throw new Error("Admin role required to run Local DB setup reseed.");
+    }
+    const snapshot = this.seed();
+    return {
+      message: "Local DB reseed completed through Admin setup.",
+      snapshot,
+      status: "PASS",
+    };
+  }
+
+  guestSeedPackages() {
+    const packages = readDocsBuildGuestSeedPackages();
+    return {
+      readOnly: true,
+      route: "/api/guest/seed",
+      source: "docs_build/database/seed/guest/",
+      packages,
+      status: packages.length ? "PASS" : "WARN",
+      warning: packages.length ? "" : "No docs_build guest seed packages were found.",
+    };
   }
 
   clear() {
@@ -1639,7 +1696,7 @@ class LocalDevMockDataSource {
         schemas,
         tables,
         toolGroups,
-        viewerGroups: dbViewerGroupsForSnapshot(tables, owners, toolGroups),
+        viewerGroups: dbViewerGroupsForSnapshot(tables, owners),
         version: 3,
       };
     }
@@ -1669,7 +1726,7 @@ class LocalDevMockDataSource {
       schemas,
       tables,
       toolGroups,
-      viewerGroups: dbViewerGroupsForSnapshot(tables, owners, toolGroups),
+      viewerGroups: dbViewerGroupsForSnapshot(tables, owners),
       version: 3,
     };
   }
@@ -1739,6 +1796,16 @@ export function createMockApiRouter() {
           ok(response, dataSource.snapshot());
           return true;
         }
+      }
+
+      if (parts[1] === "admin" && parts[2] === "setup" && request.method === "POST" && parts[3] === "reseed") {
+        ok(response, dataSource.adminReseed());
+        return true;
+      }
+
+      if (parts[1] === "guest" && parts[2] === "seed" && request.method === "GET") {
+        ok(response, dataSource.guestSeedPackages());
+        return true;
       }
 
       if (parts[1] === "data-source" && request.method === "GET" && parts[2] === "adapter-contract") {

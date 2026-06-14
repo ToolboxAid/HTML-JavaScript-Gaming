@@ -1,0 +1,28 @@
+{
+  "group": "Tags",
+  "groupKey": "tags",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {
+    "workspace_tag_records": []
+  },
+  "samplePackages": [
+    {
+      "key": "guest-tags-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "groupKey": "tags",
+      "label": "Guest Tags starter",
+      "loadablePath": "toolbox/tags/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/tags.json",
+      "toolKey": "tags",
+      "toolName": "Tags",
+      "writableByGuest": false
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "group": "Game Design",
+  "groupKey": "game-design",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "game_design_documents": [],
+    "game_design_validation_items": []
+  },
+  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+}

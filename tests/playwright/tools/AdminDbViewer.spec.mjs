@@ -16,6 +16,17 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 
 const ULID_PATTERN = /^[0-9A-HJKMNP-TV-Z]{26}$/;
 const REMOVED_IDENTITY_TABLE = "act" + "ors";
+const GUEST_SEED_GROUP_KEYS = [
+  "asset",
+  "controls",
+  "game-configuration",
+  "game-design",
+  "game-journey",
+  "game-workspace",
+  "objects",
+  "palette",
+  "tags",
+];
 const standaloneSeedTables = getStandaloneMockDbSeedTables();
 const standaloneSeedState = {
   cleared: false,
@@ -156,29 +167,28 @@ function expectDbShapedRows(tables, tableNames) {
 
 async function seedIntegritySnapshot(page) {
   return page.evaluate(async () => {
-    const [snapshot, registry] = await Promise.all([
+    const [snapshot, guestSeed] = await Promise.all([
       fetch("/api/mock-db/snapshot").then((response) => response.json()),
-      fetch("/api/toolbox/registry/snapshot").then((response) => response.json()),
+      fetch("/api/guest/seed").then((response) => response.json()),
     ]);
     return {
-      activeToolKeys: (registry.data.activeTools || [])
-        .map((tool) => tool.id || tool.key || tool.slug || tool.name)
-        .filter(Boolean)
-        .sort(),
+      guestPackages: guestSeed.data.packages || [],
       samples: snapshot.data.tables.tool_state_samples || [],
     };
   });
 }
 
 function expectSeedIntegrity(seedData) {
-  const guestSamples = seedData.samples.filter((sample) => sample.audience === "guest");
   const userSamples = seedData.samples.filter((sample) => sample.audience === "user");
-  const guestToolKeys = [...new Set(guestSamples.map((sample) => sample.toolKey))].sort();
+  const guestToolKeys = [...new Set(seedData.guestPackages.map((sample) => sample.toolKey))].sort();
   const userKeys = userSamples.map((sample) => sample.userKey).sort();
   const gameKeys = userSamples.map((sample) => sample.gameKey);
   const toolStateKeys = userSamples.map((sample) => sample.toolStateKey);
 
-  expect(guestToolKeys).toEqual(seedData.activeToolKeys);
+  expect(guestToolKeys).toEqual(GUEST_SEED_GROUP_KEYS);
+  expect(seedData.samples.some((sample) => sample.audience === "guest")).toBe(false);
+  expect(seedData.guestPackages.every((sample) => sample.readOnly === true && sample.writableByGuest === false)).toBe(true);
+  expect(seedData.guestPackages.every((sample) => sample.source.startsWith("docs_build/database/seed/guest/"))).toBe(true);
   expect(userKeys).toEqual([
     MOCK_DB_KEYS.users.admin,
     MOCK_DB_KEYS.users.user1,
@@ -187,7 +197,7 @@ function expectSeedIntegrity(seedData) {
   ].sort());
   expect(new Set(gameKeys).size).toBe(gameKeys.length);
   expect(new Set(toolStateKeys).size).toBe(toolStateKeys.length);
-  expect(guestSamples.every((sample) => sample.createdBy === MOCK_DB_KEYS.users.forgeBot)).toBe(true);
+  expect(seedData.guestPackages.every((sample) => sample.createdBy === MOCK_DB_KEYS.users.forgeBot)).toBe(true);
   expect(userSamples.every((sample) => sample.createdBy === sample.userKey)).toBe(true);
   seedData.samples.forEach((sample) => {
     const createdAtMs = Date.parse(sample.createdAt);
@@ -222,22 +232,24 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await expect(page.locator("nav.nav-links a[data-route='admin-db-viewer']")).toHaveText("DB Viewer");
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for All\./);
+    await expect(page.locator("[data-admin-setup-reseed]")).toHaveText("Reseed Local DB");
+    await expect(page.locator("[data-admin-setup-status]")).toHaveText("SKIP: No setup action has been run.");
     await expect(page.locator("[data-admin-db-filter]")).toHaveText([
       "All",
-      "Game Workspace",
-      "Game Design",
-      "Game Configuration",
-      "Objects",
+      "Asset",
       "Controls",
+      "Game Configuration",
+      "Game Design",
       "Game Journey",
+      "Game Workspace",
+      "Objects",
       "Palette",
       "Tags",
-      "Asset",
-      "User Roles",
-      "Tool State Samples",
       "Tool Metadata",
       "Tool Planning",
+      "Tool State Samples",
       "Toolbox Votes",
+      "User Roles",
     ]);
     await expect(page.locator("[data-admin-db-filter='all']")).toHaveClass(/primary/);
     await expect(page.locator("[data-admin-db-filter='all']")).toHaveAttribute("aria-pressed", "true");
@@ -328,12 +340,12 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     expectSeedIntegrity(seedData);
     const sampleTable = page.locator("[data-admin-db-table='tool_state_samples']");
     await expect(sampleTable.locator("thead")).toContainText("toolStatePayload");
-    await expect(sampleTable).toContainText("Guest");
+    await expect(sampleTable).not.toContainText("Guest");
     await expect(sampleTable).toContainText("User 1");
     await expect(sampleTable).toContainText("User 2");
     await expect(sampleTable).toContainText("User 3");
     await expect(sampleTable).toContainText("DavidQ");
-    await expect(sampleTable).toContainText("Guest Game Journey starter");
+    await expect(sampleTable).not.toContainText("Guest Game Journey starter");
     await expect(sampleTable).toContainText("local-seeds/user-3/");
     await expect(sampleTable).toContainText(seedData.samples[0].createdAt);
     await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("Colors");
@@ -447,7 +459,7 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await page.getByRole("button", { name: "Tool State Samples" }).click();
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Tool State Samples\./);
     await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toBeVisible();
-    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("Guest Game Journey starter");
+    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).not.toContainText("Guest Game Journey starter");
     await expect(page.locator("[data-admin-db-table='users']")).toHaveCount(0);
 
     await page.getByRole("button", { name: "Tool Metadata" }).click();
@@ -496,20 +508,20 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
     await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for All\./);
     await expect(page.locator("[data-admin-db-filter]")).toHaveText([
       "All",
-      "Game Workspace",
-      "Game Design",
-      "Game Configuration",
-      "Objects",
+      "Asset",
       "Controls",
+      "Game Configuration",
+      "Game Design",
       "Game Journey",
+      "Game Workspace",
+      "Objects",
       "Palette",
       "Tags",
-      "Asset",
-      "User Roles",
-      "Tool State Samples",
       "Tool Metadata",
       "Tool Planning",
+      "Tool State Samples",
       "Toolbox Votes",
+      "User Roles",
     ]);
     await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);
@@ -520,7 +532,7 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
     await expect(page.locator("[data-admin-db-table='asset_library_items'] thead")).toContainText("storageObjectId");
     const localDbSeedData = await seedIntegritySnapshot(page);
     expectSeedIntegrity(localDbSeedData);
-    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("Guest Game Journey starter");
+    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).not.toContainText("Guest Game Journey starter");
     await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText(localDbSeedData.samples[0].createdAt);
     await expect(page.locator("[data-admin-db-audit-findings]")).toContainText(
       "All current Local DB tables include createdAt, updatedAt, createdBy, and updatedBy."

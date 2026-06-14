@@ -1,0 +1,12 @@
+{
+  "group": "Game Configuration",
+  "groupKey": "game-configuration",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "game_configuration_records": [],
+    "game_configuration_validation_items": []
+  },
+  "note": "Seed records for this group are intentionally empty until an Admin-owned server API seeds them."
+}

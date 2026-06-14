@@ -1,0 +1,29 @@
+{
+  "group": "Game Configuration",
+  "groupKey": "game-configuration",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {
+    "game_configuration_records": [],
+    "game_configuration_validation_items": []
+  },
+  "samplePackages": [
+    {
+      "key": "guest-game-configuration-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "groupKey": "game-configuration",
+      "label": "Guest Game Configuration starter",
+      "loadablePath": "toolbox/game-configuration/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/game-configuration.json",
+      "toolKey": "game-configuration",
+      "toolName": "Game Configuration",
+      "writableByGuest": false
+    }
+  ]
+}

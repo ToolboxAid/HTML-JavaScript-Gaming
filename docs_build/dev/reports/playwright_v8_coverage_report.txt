@@ -12,45 +12,63 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(0%) Toolbox Index - not exercised by this Playwright run
+(76%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(57%) Theme V2 Shared JS - exercised 2 runtime JS files
+(71%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
-(0%) admin/db-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) assets/theme-v2/js/local-db-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(8%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 1/12
-(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 716/716; executed functions 36/64
-(57%) assets/theme-v2/js/login-session.js - executed lines 368/368; executed functions 16/28
+(0%) src/engine/api/session-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(33%) src/engine/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
+(40%) assets/theme-v2/js/admin-setup-actions.js - executed lines 38/38; executed functions 2/5
+(67%) admin/db-viewer.js - executed lines 49/49; executed functions 4/6
+(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 716/716; executed functions 51/68
 
 Files with executed line/function counts where available:
-(7%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 1/14
-(8%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 1/12
-(20%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 1/5
-(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 716/716; executed functions 36/64
-(57%) assets/theme-v2/js/login-session.js - executed lines 368/368; executed functions 16/28
+(33%) src/engine/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
+(40%) assets/theme-v2/js/admin-setup-actions.js - executed lines 38/38; executed functions 2/5
+(58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
+(60%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 3/5
+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+(67%) admin/db-viewer.js - executed lines 49/49; executed functions 4/6
+(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 716/716; executed functions 51/68
+(75%) toolbox/game-journey/game-journey.js - executed lines 1002/1002; executed functions 74/99
+(79%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 22/28
+(90%) src/engine/api/mock-db-viewer-ui.js - executed lines 479/479; executed functions 82/91
+(100%) toolbox/game-journey/game-journey-api-client.js - executed lines 13/13; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) admin/db-viewer.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) assets/theme-v2/js/local-db-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) assets/theme-v2/js/login-session.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(8%) src/engine/api/session-api-client.js - WARNING: advisory low coverage; executed lines 68/68
+(0%) src/engine/api/session-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+(33%) src/engine/api/admin-setup-api-client.js - WARNING: advisory low coverage; executed lines 13/13
+(40%) assets/theme-v2/js/admin-setup-actions.js - WARNING: advisory low coverage; executed lines 38/38
 
 Changed JS files considered:
-(0%) admin/db-viewer.js - changed JS file not collected as browser runtime coverage
 (0%) assets/theme-v2/js/local-db-page-data.js - changed JS file not collected as browser runtime coverage
+(0%) assets/theme-v2/js/login-session.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/engine/api/session-api-client.js - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/DbSeedIntegrity.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
-(8%) src/engine/api/session-api-client.js - changed JS file with browser V8 coverage
-(56%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(57%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
+(33%) src/engine/api/admin-setup-api-client.js - changed JS file with browser V8 coverage
+(40%) assets/theme-v2/js/admin-setup-actions.js - changed JS file with browser V8 coverage
+(67%) admin/db-viewer.js - changed JS file with browser V8 coverage
+(75%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage

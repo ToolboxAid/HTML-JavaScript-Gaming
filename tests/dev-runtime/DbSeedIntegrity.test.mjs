@@ -7,6 +7,18 @@ import assert from "node:assert/strict";
 import { createMockApiRouter } from "../../src/dev-runtime/server/mock-api-router.mjs";
 import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
 
+const GUEST_SEED_GROUP_KEYS = [
+  "asset",
+  "controls",
+  "game-configuration",
+  "game-design",
+  "game-journey",
+  "game-workspace",
+  "objects",
+  "palette",
+  "tags",
+];
+
 function startApiServer() {
   const handleRequest = createMockApiRouter();
   const server = http.createServer((request, response) => {
@@ -82,29 +94,28 @@ async function replaceSampleLabel(baseUrl, sampleKey, sampleLabel) {
   });
 }
 
-test("server Local DB seed includes runtime timestamps, guest samples, and unique user-owned samples", async () => {
+test("server Local DB seed includes runtime timestamps, read-only guest packages, and unique user-owned samples", async () => {
   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
   const localDbPath = path.join(process.cwd(), "tmp", "local-db", `db-seed-integrity-${process.pid}.sqlite`);
   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
   const server = await startApiServer();
   try {
-    const registry = await apiJson(server.baseUrl, "/api/toolbox/registry/snapshot");
     await apiJson(server.baseUrl, "/api/session/mode", {
       body: JSON.stringify({ modeId: "local-db" }),
       method: "POST",
     });
     const snapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    const guestSeed = await apiJson(server.baseUrl, "/api/guest/seed");
     const samples = snapshot.tables.tool_state_samples || [];
-    const guestSamples = samples.filter((sample) => sample.audience === "guest");
     const userSamples = samples.filter((sample) => sample.audience === "user");
-    const activeToolKeys = (registry.activeTools || [])
-      .map((tool) => tool.id || tool.key || tool.slug || tool.name)
-      .filter(Boolean)
-      .sort();
-    const guestToolKeys = [...new Set(guestSamples.map((sample) => sample.toolKey))].sort();
+    const guestToolKeys = [...new Set((guestSeed.packages || []).map((sample) => sample.toolKey))].sort();
 
-    assert.deepEqual(guestToolKeys, activeToolKeys, "guest seed data should include every active tool");
-    assert.equal(guestSamples.every((sample) => sample.loadablePath && sample.sampleKind === "toolState"), true);
+    assert.deepEqual(guestToolKeys, GUEST_SEED_GROUP_KEYS, "guest seed data should include every required grouped seed file");
+    assert.equal(guestSeed.readOnly, true);
+    assert.equal(guestSeed.source, "docs_build/database/seed/guest/");
+    assert.equal((guestSeed.packages || []).every((sample) => sample.loadablePath && sample.sampleKind === "toolSeed"), true);
+    assert.equal((guestSeed.packages || []).every((sample) => sample.readOnly === true && sample.writableByGuest === false), true);
+    assert.equal(samples.some((sample) => sample.audience === "guest"), false);
     assert.deepEqual(userSamples.map((sample) => sample.userKey).sort(), [
       MOCK_DB_KEYS.users.admin,
       MOCK_DB_KEYS.users.user1,
@@ -113,7 +124,7 @@ test("server Local DB seed includes runtime timestamps, guest samples, and uniqu
     ].sort());
     assert.equal(new Set(userSamples.map((sample) => sample.gameKey)).size, userSamples.length);
     assert.equal(new Set(userSamples.map((sample) => sample.toolStateKey)).size, userSamples.length);
-    assert.equal(guestSamples.every((sample) => sample.createdBy === MOCK_DB_KEYS.users.forgeBot), true);
+    assert.equal((guestSeed.packages || []).every((sample) => sample.createdBy === MOCK_DB_KEYS.users.forgeBot), true);
     assert.equal(userSamples.every((sample) => sample.createdBy === sample.userKey), true);
     assertRuntimeTimestamps(samples);
     assert.equal((snapshot.tables.users || []).some((user) => user.displayName === "Guest"), false);

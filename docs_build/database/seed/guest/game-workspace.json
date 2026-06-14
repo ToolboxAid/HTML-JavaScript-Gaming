@@ -1,0 +1,29 @@
+{
+  "group": "Game Workspace",
+  "groupKey": "game-workspace",
+  "owner": "docs_build/database/seed/guest",
+  "readOnly": true,
+  "writableByGuest": false,
+  "signInRedirect": "account/sign-in.html",
+  "tables": {
+    "game_workspace_games": [],
+    "game_workspace_progress": []
+  },
+  "samplePackages": [
+    {
+      "key": "guest-game-workspace-starter",
+      "audience": "guest",
+      "createdBy": "01K2GFSJ0Y0000000000000041",
+      "groupKey": "game-workspace",
+      "label": "Guest Game Workspace starter",
+      "loadablePath": "toolbox/game-workspace/index.html",
+      "readOnly": true,
+      "sampleKind": "toolSeed",
+      "signInRedirect": "account/sign-in.html",
+      "source": "docs_build/database/seed/guest/game-workspace.json",
+      "toolKey": "game-workspace",
+      "toolName": "Game Workspace",
+      "writableByGuest": false
+    }
+  ]
+}

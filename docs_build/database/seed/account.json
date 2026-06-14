@@ -1,0 +1,187 @@
+{
+  "group": "Account",
+  "groupKey": "account",
+  "owner": "docs_build/database/seed",
+  "serverSideSeedRequired": true,
+  "browserAuthoritativeKeyGenerationAllowed": false,
+  "tables": {
+    "users": [
+      {
+        "key": "01K2GFSJ0Y0000000000000051",
+        "displayName": "User 1",
+        "email": "user1@example.invalid",
+        "authProvider": "mock",
+        "authProviderUserId": "user-1",
+        "isActive": true,
+        "createdAt": "2026-06-14T17:27:11.663Z",
+        "updatedAt": "2026-06-14T17:27:11.663Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000052",
+        "displayName": "User 2",
+        "email": "user2@example.invalid",
+        "authProvider": "mock",
+        "authProviderUserId": "user-2",
+        "isActive": true,
+        "createdAt": "2026-06-14T17:28:11.665Z",
+        "updatedAt": "2026-06-14T17:28:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000053",
+        "displayName": "User 3",
+        "email": "user3@example.invalid",
+        "authProvider": "mock",
+        "authProviderUserId": "user-3",
+        "isActive": true,
+        "createdAt": "2026-06-14T17:29:11.665Z",
+        "updatedAt": "2026-06-14T17:29:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000054",
+        "displayName": "DavidQ",
+        "email": "admin@example.invalid",
+        "authProvider": "mock",
+        "authProviderUserId": "admin",
+        "isActive": true,
+        "createdAt": "2026-06-14T17:30:11.665Z",
+        "updatedAt": "2026-06-14T17:30:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000041",
+        "displayName": "forge-bot",
+        "email": "",
+        "authProvider": "system",
+        "authProviderUserId": "forge-bot",
+        "isActive": true,
+        "createdAt": "2026-06-14T17:31:11.665Z",
+        "updatedAt": "2026-06-14T17:31:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      }
+    ],
+    "roles": [
+      {
+        "key": "01K2GFSJ0Y0000000000000072",
+        "roleSlug": "user",
+        "name": "user",
+        "description": "Standard creator user.",
+        "isSystemRole": false,
+        "isActive": true,
+        "createdAt": "2026-06-14T17:32:11.665Z",
+        "updatedAt": "2026-06-14T17:32:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000073",
+        "roleSlug": "admin",
+        "name": "admin",
+        "description": "Administrative user.",
+        "isSystemRole": false,
+        "isActive": true,
+        "createdAt": "2026-06-14T17:33:11.665Z",
+        "updatedAt": "2026-06-14T17:33:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000074",
+        "roleSlug": "system",
+        "name": "system",
+        "description": "Internal system user.",
+        "isSystemRole": true,
+        "isActive": true,
+        "createdAt": "2026-06-14T17:34:11.665Z",
+        "updatedAt": "2026-06-14T17:34:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000075",
+        "roleSlug": "beta",
+        "name": "beta",
+        "description": "Local beta access tester.",
+        "isSystemRole": false,
+        "isActive": true,
+        "createdAt": "2026-06-14T17:35:11.665Z",
+        "updatedAt": "2026-06-14T17:35:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      }
+    ],
+    "user_roles": [
+      {
+        "key": "01K2GFSJ0Y0000000000000082",
+        "userKey": "01K2GFSJ0Y0000000000000051",
+        "roleKey": "01K2GFSJ0Y0000000000000072",
+        "createdAt": "2026-06-14T17:36:11.665Z",
+        "updatedAt": "2026-06-14T17:36:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000083",
+        "userKey": "01K2GFSJ0Y0000000000000052",
+        "roleKey": "01K2GFSJ0Y0000000000000072",
+        "createdAt": "2026-06-14T17:37:11.665Z",
+        "updatedAt": "2026-06-14T17:37:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000088",
+        "userKey": "01K2GFSJ0Y0000000000000052",
+        "roleKey": "01K2GFSJ0Y0000000000000075",
+        "createdAt": "2026-06-14T17:38:11.665Z",
+        "updatedAt": "2026-06-14T17:38:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000084",
+        "userKey": "01K2GFSJ0Y0000000000000053",
+        "roleKey": "01K2GFSJ0Y0000000000000072",
+        "createdAt": "2026-06-14T17:39:11.665Z",
+        "updatedAt": "2026-06-14T17:39:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000085",
+        "userKey": "01K2GFSJ0Y0000000000000054",
+        "roleKey": "01K2GFSJ0Y0000000000000072",
+        "createdAt": "2026-06-14T17:40:11.665Z",
+        "updatedAt": "2026-06-14T17:40:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000086",
+        "userKey": "01K2GFSJ0Y0000000000000054",
+        "roleKey": "01K2GFSJ0Y0000000000000073",
+        "createdAt": "2026-06-14T17:41:11.665Z",
+        "updatedAt": "2026-06-14T17:41:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      },
+      {
+        "key": "01K2GFSJ0Y0000000000000087",
+        "userKey": "01K2GFSJ0Y0000000000000041",
+        "roleKey": "01K2GFSJ0Y0000000000000074",
+        "createdAt": "2026-06-14T17:42:11.665Z",
+        "updatedAt": "2026-06-14T17:42:11.665Z",
+        "createdBy": "01K2GFSJ0Y0000000000000041",
+        "updatedBy": "01K2GFSJ0Y0000000000000041"
+      }
+    ]
+  },
+  "note": "Account seed records are grouped here for review. Runtime DEV reseed uses server-side APIs and the Local DB adapter."
+}

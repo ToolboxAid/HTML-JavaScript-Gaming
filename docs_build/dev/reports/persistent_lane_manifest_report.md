@@ -1,6 +1,6 @@
 # Persistent Lane Manifest Report
 
-Generated: 2026-06-14T16:45:33.214Z
+Generated: 2026-06-14T17:39:57.779Z
 Status: PASS
 Manifest directory: docs_build/dev/reports/lane_manifests
 
@@ -15,13 +15,13 @@ Prevented discovery scans: 0
 
 | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
 | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 538f3fc2eeee1c15 | de3099947903dc1f | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 338f03b0ac9777b4 | 59a46ad2b7040a5e | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
 
 ## Persisted Manifest Files
 
 | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
 | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | fd198ac3bb047eea | de3099947903dc1f |
+| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 6af41f0f443ed5cd | 59a46ad2b7040a5e |
 
 ## Fast-Fail Enforcement
 

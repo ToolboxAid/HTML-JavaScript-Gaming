@@ -6,19 +6,25 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) admin/db-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) assets/theme-v2/js/local-db-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(8%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 1/12
-(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 716/716; executed functions 36/64
-(57%) assets/theme-v2/js/login-session.js - executed lines 368/368; executed functions 16/28
+(0%) src/engine/api/session-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(33%) src/engine/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
+(40%) assets/theme-v2/js/admin-setup-actions.js - executed lines 38/38; executed functions 2/5
+(67%) admin/db-viewer.js - executed lines 49/49; executed functions 4/6
+(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 716/716; executed functions 51/68
 
 Guardrail warnings:
-(0%) admin/db-viewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) assets/theme-v2/js/local-db-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/guest-seeds/tool-state-samples.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-(8%) src/engine/api/session-api-client.js - WARNING: advisory low coverage below 50%; executed lines 68/68; executed functions 1/12
+(0%) src/engine/api/session-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(33%) src/engine/api/admin-setup-api-client.js - WARNING: advisory low coverage below 50%; executed lines 13/13; executed functions 1/3
+(40%) assets/theme-v2/js/admin-setup-actions.js - WARNING: advisory low coverage below 50%; executed lines 38/38; executed functions 2/5

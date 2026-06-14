@@ -41,30 +41,6 @@ function serverSeedAuditFields(offsetMinutes = 0, userKey = MOCK_DB_KEYS.users.f
   };
 }
 
-function guestToolStateSampleRows() {
-  return activeToolSamplesByKey().map((tool, index) => ({
-    key: serverSeedUlid(7_001 + index),
-    audience: "guest",
-    userKey: "",
-    displayName: "Guest",
-    toolKey: tool.toolKey,
-    toolName: tool.toolName,
-    route: tool.route,
-    gameKey: "",
-    toolStateKey: serverSeedUlid(7_501 + index),
-    manifestPath: "",
-    sampleLabel: `Guest ${tool.toolName} starter`,
-    sampleKind: "toolState",
-    loadablePath: tool.route,
-    toolStatePayload: {
-      audience: "guest",
-      loadable: true,
-      toolKey: tool.toolKey,
-    },
-    ...serverSeedAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
-  }));
-}
-
 function humanToolStateSampleRows() {
   const availableTools = activeToolSamplesByKey();
   const toolSamples = new Map(availableTools.map((tool) => [tool.toolKey, tool]));
@@ -164,9 +140,6 @@ export function createServerSeedTables() {
   tables.toolbox_tool_metadata = toolboxToolMetadataRows();
   tables.toolbox_tool_planning = toolboxToolPlanningRows();
   tables.toolbox_votes = [];
-  tables.tool_state_samples = [
-    ...guestToolStateSampleRows(),
-    ...humanToolStateSampleRows(),
-  ];
+  tables.tool_state_samples = humanToolStateSampleRows();
   return tables;
 }
