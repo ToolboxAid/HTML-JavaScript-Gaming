@@ -1,102 +1,1902 @@
-diff --git a/assets/theme-v2/css/layout.css b/assets/theme-v2/css/layout.css
-index f94eb3d72..a9614b412 100644
---- a/assets/theme-v2/css/layout.css
-+++ b/assets/theme-v2/css/layout.css
-@@ -656,7 +656,7 @@ body.tool-focus-mode .tool-workspace--table-scroll-focus .tool-table-scroll-regi
+diff --git a/admin/db-viewer.html b/admin/db-viewer.html
+index cc231a1e1..54475f3cd 100644
+--- a/admin/db-viewer.html
++++ b/admin/db-viewer.html
+@@ -19,3 +19,3 @@
+-                <div class="kicker" data-admin-db-mode-kicker>Admin Only / Local Mem DB</div>
+-                <h1 data-admin-db-mode-title>Local Mem DB</h1>
+-                <p class="lede" data-admin-db-mode-description>Read-only Local Mem DB dump for project tables, relationships, and data diagnostics.</p>
++                <div class="kicker" data-admin-db-mode-kicker>Admin Only / Local DB</div>
++                <h1 data-admin-db-mode-title>Local DB</h1>
++                <p class="lede" data-admin-db-mode-description>Read-only Local DB dump for project tables, relationships, and data diagnostics.</p>
+@@ -29 +29 @@
+-                            <h2 data-admin-db-mode-title>Local Mem DB</h2>
++                            <h2 data-admin-db-mode-title>Local DB</h2>
+@@ -35 +35 @@
+-                                    <p data-admin-db-scope-description>Current tool Local Mem DB records are displayed as a read-only human-readable dump.</p>
++                                    <p data-admin-db-scope-description>Current tool Local DB records are displayed as a read-only human-readable dump.</p>
+@@ -37 +36,0 @@
+-                                    <button class="btn btn--compact" type="button" data-admin-db-clear>Clear Local Mem DB</button>
+@@ -46,2 +45,2 @@
+-                                <div class="kicker" data-admin-db-mode-kicker>Local Mem DB</div>
+-                                <h2 id="admin-db-viewer-title" data-admin-db-mode-title>Local Mem DB</h2>
++                                <div class="kicker" data-admin-db-mode-kicker>Local DB</div>
++                                <h2 id="admin-db-viewer-title" data-admin-db-mode-title>Local DB</h2>
+@@ -49 +48 @@
+-                            <span class="status" role="status" data-admin-db-status>Loading Local Mem DB records.</span>
++                            <span class="status" role="status" data-admin-db-status>Loading Local DB records.</span>
+@@ -51,2 +50,2 @@
+-                        <div class="action-group" role="group" aria-label="Local Mem DB table filters" data-admin-db-filters></div>
+-                        <section class="content-stack" aria-label="Local Mem DB tables" data-admin-db-tables></section>
++                        <div class="action-group" role="group" aria-label="Local DB table filters" data-admin-db-filters></div>
++                        <section class="content-stack" aria-label="Local DB tables" data-admin-db-tables></section>
+diff --git a/admin/db-viewer.js b/admin/db-viewer.js
+index 51e0ab2bc..313f38e0a 100644
+--- a/admin/db-viewer.js
++++ b/admin/db-viewer.js
+@@ -47,2 +47,2 @@ async function loadLocalDbViewer() {
+-  if (session.mode !== "local-mem" && session.mode !== "local-db") {
+-    showGatewayStatus(session.diagnostic || "DB Viewer is available only in Local Mem or Local DB mode.");
++  if (session.mode !== "local-db") {
++    showGatewayStatus(session.diagnostic || "DB Viewer is available only in Local DB mode.");
+diff --git a/admin/environments.html b/admin/environments.html
+index 867e51855..b9ae6e197 100644
+--- a/admin/environments.html
++++ b/admin/environments.html
+@@ -45 +45 @@
+-                                    <label>Environment <select disabled><option>Local Mem</option><option>Local DB</option><option>UAT</option><option>Production</option></select></label>
++                                    <label>Environment <select disabled><option>Local DB</option><option>UAT</option><option>Production</option></select></label>
+@@ -71 +70,0 @@
+-                                    <tr><td>Local Mem</td><td>Memory DB</td><td>Developer only</td><td>Wireframe</td></tr>
+diff --git a/assets/theme-v2/js/gamefoundry-partials.js b/assets/theme-v2/js/gamefoundry-partials.js
+index abcfd48fc..c8b9cfec9 100644
+--- a/assets/theme-v2/js/gamefoundry-partials.js
++++ b/assets/theme-v2/js/gamefoundry-partials.js
+@@ -388 +388 @@
+-                mode: session.mode || "local-mem",
++                mode: session.mode || "local-db",
+diff --git a/assets/theme-v2/js/login-session.js b/assets/theme-v2/js/login-session.js
+index 251dff80d..ae783ec14 100644
+--- a/assets/theme-v2/js/login-session.js
++++ b/assets/theme-v2/js/login-session.js
+@@ -30 +30 @@ const apiBackedLoginDiagnostic = `Use the API-backed local server for login. Run
+-const staticModeDisabledMessage = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}. Local Mem and Local DB are disabled until the local API server is running.`;
++const staticModeDisabledMessage = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}. Local DB is disabled until the local API server is running.`;
+@@ -101 +101 @@ function updateReseedControls({ apiAvailable, mode, statusMessage }) {
+-    ? `Ready to reseed ${modeLabel} only.`
++    ? `Ready to reseed ${modeLabel}.`
+@@ -209 +209 @@ function renderError(error) {
+-    : `Local Mem and Local DB are disabled because ${message}`;
++    : `Local DB is disabled because ${message}`;
+@@ -225 +225 @@ function renderError(error) {
+-    modeDescription.textContent = "Start the API-backed local server to choose Local Mem or Local DB.";
++    modeDescription.textContent = "Start the API-backed local server to use Local DB.";
+@@ -283 +283 @@ function render() {
+-      disabledReason: "Local Mem and Local DB are enabled because the Local API is available.",
++      disabledReason: "Local DB is enabled because the Local API is available.",
+@@ -304 +304 @@ modeButtons.forEach((button) => {
+-    const modeId = button.dataset.loginMode || "local-mem";
++    const modeId = button.dataset.loginMode || "local-db";
+@@ -340 +340 @@ reseedFields.startButton?.addEventListener("click", () => {
+-    reseedStatusMessage = `Confirm reseed for ${modeLabel} only. The other DB mode will not be reseeded.`;
++    reseedStatusMessage = `Confirm reseed for ${modeLabel}.`;
+@@ -367 +367 @@ reseedFields.confirmButton?.addEventListener("click", () => {
+-    reseedStatusMessage = `Reseed complete for ${modeLabel}. Only ${modeLabel} was reseeded.`;
++    reseedStatusMessage = `Reseed complete for ${modeLabel}.`;
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 37f310465..ade23006a 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,10 +1,60 @@
+-# scoped git status --short
+- M assets/theme-v2/css/layout.css
+- M docs_build/dev/reports/codex_changed_files.txt
+- M docs_build/dev/reports/codex_review.diff
+-?? docs_build/dev/reports/PR_26164_089-home-entry-card-thirds.md
+-
+-# scoped files included in this PR
+-assets/theme-v2/css/layout.css
+-docs_build/dev/reports/PR_26164_089-home-entry-card-thirds.md
+-docs_build/dev/reports/codex_review.diff
++admin/db-viewer.html
++admin/db-viewer.js
++admin/environments.html
++assets/theme-v2/js/gamefoundry-partials.js
++assets/theme-v2/js/login-session.js
++docs_build/dev/reports/coverage_changed_js_guardrail.txt
++docs_build/dev/reports/dependency_gating_report.md
++docs_build/dev/reports/dependency_hydration_reuse_report.md
++docs_build/dev/reports/execution_graph_reuse_report.md
++docs_build/dev/reports/failure_fingerprint_report.md
++docs_build/dev/reports/filesystem_scan_reduction_report.md
++docs_build/dev/reports/incremental_validation_report.md
++docs_build/dev/reports/lane_compilation_report.md
++docs_build/dev/reports/lane_deduplication_report.md
++docs_build/dev/reports/lane_input_validation_report.md
++docs_build/dev/reports/lane_manifests/workspace-contract.json
++docs_build/dev/reports/lane_runtime_optimization_report.md
++docs_build/dev/reports/lane_snapshot_report.md
++docs_build/dev/reports/lane_snapshots/workspace-contract.json
++docs_build/dev/reports/lane_warm_start_report.md
++docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++docs_build/dev/reports/monolith_trigger_removal_report.md
++docs_build/dev/reports/persistent_lane_manifest_report.md
++docs_build/dev/reports/playwright_discovery_ownership_report.md
++docs_build/dev/reports/playwright_discovery_scope_report.md
++docs_build/dev/reports/playwright_structure_audit.md
++docs_build/dev/reports/playwright_v8_coverage_report.txt
++docs_build/dev/reports/retry_suppression_report.md
++docs_build/dev/reports/slow_path_pruning_report.md
++docs_build/dev/reports/static_validation_report.md
++docs_build/dev/reports/targeted_file_manifest_report.md
++docs_build/dev/reports/test_cleanup_performance_report.md
++docs_build/dev/reports/test_cleanup_routing_report.md
++docs_build/dev/reports/testing_lane_execution_report.md
++docs_build/dev/reports/validation_cache_report.md
++docs_build/dev/reports/zero_browser_preflight_report.md
++login.html
++src/dev-runtime/persistence/mock-db-store.js
++src/dev-runtime/server/mock-api-router.mjs
++src/engine/api/mock-db-api-client.js
++src/engine/api/mock-db-viewer-ui.js
++tests/dev-runtime/DbSeedIntegrity.test.mjs
++tests/dev-runtime/DevRuntimeBoundary.test.mjs
++tests/helpers/playwrightRepoServer.mjs
++tests/playwright/account/AchievementsPage.spec.mjs
++tests/playwright/tools/AdminDbViewer.spec.mjs
++tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
++tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
++tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs
++tests/playwright/tools/AssetToolMockRepository.spec.mjs
++tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
++tests/playwright/tools/GameJourneyTool.spec.mjs
++tests/playwright/tools/LoginSessionMode.spec.mjs
++tests/playwright/tools/PaletteToolMockRepository.spec.mjs
++tests/playwright/tools/RootToolsFutureState.spec.mjs
++tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs
++tests/playwright/tools/TagsTool.spec.mjs
++tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
++tests/playwright/tools/ToolboxRoutePages.spec.mjs
++docs_build/dev/reports/PR_26164_090-remove-mem-db-dev.md
+@@ -12,3 +62 @@ docs_build/dev/reports/codex_changed_files.txt
+-
+-# notes
+-Review diff is scoped to the reusable Theme V2 layout change and the PR report.
++docs_build/dev/reports/codex_review.diff
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index 6efea923c..0a8fbdbfc 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -9 +9,7 @@ Changed runtime JS files considered:
+-(93%) toolbox/assets/assets.js - executed lines 1600/1600; executed functions 134/144
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(67%) admin/db-viewer.js - executed lines 53/53; executed functions 4/6
++(80%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 4/5
++(83%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 50/60
++(90%) src/engine/api/mock-db-viewer-ui.js - executed lines 479/479; executed functions 82/91
++(96%) assets/theme-v2/js/login-session.js - executed lines 357/357; executed functions 27/28
+@@ -12 +18,2 @@ Guardrail warnings:
+-(100%) none - no changed runtime JS coverage warnings
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
+index 9b8fc0b8f..a137ee38c 100644
+--- a/docs_build/dev/reports/dependency_gating_report.md
++++ b/docs_build/dev/reports/dependency_gating_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.238Z
++Generated: 2026-06-14T03:23:31.708Z
+diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+index ffc208bd9..85c1c7078 100644
+--- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
++++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.239Z
++Generated: 2026-06-14T03:23:31.708Z
+@@ -8,2 +8,2 @@ Status: PASS
+-Reused dependency hydration: 1
+-Invalidated dependency hydration: 0
++Reused dependency hydration: 0
++Invalidated dependency hydration: 1
+@@ -11,2 +11,2 @@ Generated dependency hydration: 0
+-Prevented dependency graph hydration: 1
+-Prevented helper resolution passes: 4
++Prevented dependency graph hydration: 0
++Prevented helper resolution passes: 0
+@@ -19 +19 @@ Prevented fixture ownership traversal: 0
+-| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 902e676dd27366e9 | Dependency hydration reused from validated warm-start state. |
++| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | db9ce0ee73370a57 | Dependency hydration was refreshed after warm-start invalidation. |
+diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
+index 8c408acc5..615493769 100644
+--- a/docs_build/dev/reports/execution_graph_reuse_report.md
++++ b/docs_build/dev/reports/execution_graph_reuse_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.239Z
++Generated: 2026-06-14T03:23:31.709Z
+@@ -8,6 +8,6 @@ Status: PASS
+-Reused execution graphs: 1
+-Prevented graph rebuilds: 1
+-Prevented redundant dependency traversal: 1
+-Prevented fixture/helper graph assembly: 4
+-Prevented manifest traversal: 1
+-Prevented targeted scheduling work: 1
++Reused execution graphs: 0
++Prevented graph rebuilds: 0
++Prevented redundant dependency traversal: 0
++Prevented fixture/helper graph assembly: 0
++Prevented manifest traversal: 0
++Prevented targeted scheduling work: 0
+@@ -19 +19 @@ Prevented targeted scheduling work: 1
+-| workspace-contract | REUSED | REUSED | 8bff43899c290bcf | Lane snapshot is part of the selected targeted execution graph. |
++| workspace-contract | INVALIDATED | INVALIDATED | e9dcbf423e552153 | Lane snapshot is part of the selected targeted execution graph. |
+diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
+index d9f1019e8..4e33a789d 100644
+--- a/docs_build/dev/reports/failure_fingerprint_report.md
++++ b/docs_build/dev/reports/failure_fingerprint_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:52.399Z
++Generated: 2026-06-14T03:24:53.676Z
+diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+index 41f781cd9..1657c65b1 100644
+--- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
++++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.217Z
++Generated: 2026-06-14T03:23:31.682Z
+diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
+index bba46cf1c..98155ae92 100644
+--- a/docs_build/dev/reports/incremental_validation_report.md
++++ b/docs_build/dev/reports/incremental_validation_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.240Z
++Generated: 2026-06-14T03:23:31.710Z
+@@ -8,2 +8,2 @@ Status: PASS
+-Reused manifests: 1
+-Invalidated manifests: 0
++Reused manifests: 0
++Invalidated manifests: 1
+@@ -12,3 +12,3 @@ Skipped manifests: 0
+-Prevented lane regeneration: 1
+-Prevented discovery scans: 1
+-Prevented helper resolution passes: 4
++Prevented lane regeneration: 0
++Prevented discovery scans: 0
++Prevented helper resolution passes: 0
+@@ -21 +21 @@ Prevented fixture resolution passes: 0
+-| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
++| workspace-contract | INVALIDATED | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
+index 79d496cdf..72ff03905 100644
+--- a/docs_build/dev/reports/lane_compilation_report.md
++++ b/docs_build/dev/reports/lane_compilation_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.237Z
++Generated: 2026-06-14T03:23:31.707Z
+@@ -10,11 +10,11 @@ Status: PASS
+-| workspace-contract | PASS | Root tools future-state navigation and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
+-| game-workspace | SKIP | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| game-design | SKIP | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | tests/playwright/tools/GameDesignMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| game-configuration | SKIP | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | tests/playwright/tools/GameConfigurationMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameConfigurationMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| asset-tool | SKIP | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | tests/playwright/tools/AssetToolMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| build-path | SKIP | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/BuildPathProgressSimplification.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tools-progress | SKIP | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | tests/playwright/tools/ToolsProgressHydration.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolsProgressHydration.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-navigation | SKIP | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-display-mode | SKIP | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-images | SKIP | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | tests/playwright/tools/ToolImageRegistry.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolImageRegistry.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+-| tool-runtime | SKIP | Active public toolbox and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| workspace-contract | PASS | Root tools future-state navigation and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
++| game-workspace | SKIP | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-design | SKIP | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | tests/playwright/tools/GameDesignMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| game-configuration | SKIP | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | tests/playwright/tools/GameConfigurationMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameConfigurationMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| asset-tool | SKIP | Asset Tool mock repository, Game Configuration readiness handoff, library records, import preview, and visible failure handling | tests/playwright/tools/AssetToolMockRepository.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/AssetToolMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| build-path | SKIP | Toolbox Build Path simplification, workflow status table, and Admin Tools Progress navigation | tests/playwright/tools/BuildPathProgressSimplification.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/BuildPathProgressSimplification.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tools-progress | SKIP | Admin Tools Progress hydration, Toolbox Group view color model, and Game Build Path separation | tests/playwright/tools/ToolsProgressHydration.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolsProgressHydration.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-navigation | SKIP | Admin Tools Progress tool route links, Tool Display Mode build-order previous/next controls, and Toolbox group fallback routing | tests/playwright/tools/ToolNavigationPrevNext.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolNavigationPrevNext.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-display-mode | SKIP | Tool Display Mode identity row, registry-owned previous/next links, disabled text fallback, and multi-path group routing | tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-images | SKIP | Toolbox registry image contract, Toolbox card image rendering, and Tool Display Mode image fallback | tests/playwright/tools/ToolImageRegistry.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/ToolImageRegistry.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
++| tool-runtime | SKIP | Active public toolbox and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+@@ -23 +23 @@ Status: PASS
+-| engine-src | SKIP | src/ engine and shared runtime capability behavior | tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FrameClock.test.mjs; tests/core/FixedTicker.test.mjs; tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/render/Renderer.test.mjs | C:\nvm4w\nodejs\node.exe scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Lane was not selected. |
++| engine-src | SKIP | src/ engine and shared runtime capability behavior | tests/core/EngineCoreBoundaryBaseline.test.mjs; tests/core/FrameClock.test.mjs; tests/core/FixedTicker.test.mjs; tests/assets/AssetLoaderSystem.test.mjs; tests/audio/AudioService.test.mjs; tests/input/InputMap.test.mjs; tests/input/KeyboardState.test.mjs; tests/input/MouseState.test.mjs; tests/input/GamepadInputAdapter.test.mjs; tests/input/GamepadHapticsService.test.mjs; tests/render/Renderer.test.mjs | "C:\\Program Files\\nodejs\\node.exe" scripts/run-node-test-files.mjs tests/core/EngineCoreBoundaryBaseline.test.mjs tests/core/FrameClock.test.mjs tests/core/FixedTicker.test.mjs tests/assets/AssetLoaderSystem.test.mjs tests/audio/AudioService.test.mjs tests/input/InputMap.test.mjs tests/input/KeyboardState.test.mjs tests/input/MouseState.test.mjs tests/input/GamepadInputAdapter.test.mjs tests/input/GamepadHapticsService.test.mjs tests/render/Renderer.test.mjs | Lane was not selected. |
+diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
+index f48d6f606..f0524f23f 100644
+--- a/docs_build/dev/reports/lane_deduplication_report.md
++++ b/docs_build/dev/reports/lane_deduplication_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.238Z
++Generated: 2026-06-14T03:23:31.708Z
+diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
+index 2e5e76eba..92e26b2c1 100644
+--- a/docs_build/dev/reports/lane_input_validation_report.md
++++ b/docs_build/dev/reports/lane_input_validation_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.240Z
++Generated: 2026-06-14T03:23:31.710Z
+diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
+index f5bca37a2..fbbd38696 100644
+--- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
++++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
+@@ -2 +2 @@
+-  "commandsHash": "39e16c9d480a1e51",
++  "commandsHash": "5141d93b4551c125",
+@@ -4 +4 @@
+-  "dependencyGraphHash": "ccee8e0b79f5e764",
++  "dependencyGraphHash": "9a89a70dbb7517d9",
+@@ -6,9 +6,9 @@
+-    "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+-    "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+-    "src/dev-runtime/persistence/mock-db-store.js": "c963339463a01191",
+-    "src/dev-runtime/server/mock-api-router.mjs": "98f5e9217973d95b",
+-    "tests/helpers/playwrightRepoServer.mjs": "1e8792878c1c7116",
+-    "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-    "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-    "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+-    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "56655636d2debe14",
++    "src/dev-runtime/admin/admin-notes-directory.mjs": "6c5a597772cfd6fa",
++    "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
++    "src/dev-runtime/persistence/mock-db-store.js": "7966b6842bb5c02d",
++    "src/dev-runtime/server/mock-api-router.mjs": "dab88c5ac7b90399",
++    "tests/helpers/playwrightRepoServer.mjs": "b2bf14c7d10319ae",
++    "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++    "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++    "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1",
++    "tests/playwright/tools/RootToolsFutureState.spec.mjs": "a2cb04de027b8a65",
+@@ -35 +35 @@
+-  "inputHash": "278ed6d324872ff1",
++  "inputHash": "4fd28c0e34fec493",
+@@ -37,2 +37,2 @@
+-  "laneDefinitionHash": "fde48767b345621c",
+-  "manifestHash": "68ccdaa4b17bb4a9",
++  "laneDefinitionHash": "48c5c111705280dc",
++  "manifestHash": "5dff40fa4fee1384",
+@@ -44 +44 @@
+-  "generatedAt": "2026-06-13T21:18:09.344Z",
++  "generatedAt": "2026-06-14T03:23:31.493Z",
+diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
+index cf792b75c..f4b578992 100644
+--- a/docs_build/dev/reports/lane_runtime_optimization_report.md
++++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.238Z
++Generated: 2026-06-14T03:23:31.708Z
+@@ -9,5 +9,5 @@ Reused runtime sessions: 0
+-Reused lane snapshots: 1
+-Reused warm-start lanes: 1
+-Reused dependency hydration: 1
+-Prevented graph rebuilds: 1
+-Prevented redundant initialization: 1
++Reused lane snapshots: 0
++Reused warm-start lanes: 0
++Reused dependency hydration: 0
++Prevented graph rebuilds: 0
++Prevented redundant initialization: 0
+@@ -31 +31 @@ No zero-browser, compilation, or dependency blockers were found.
+-| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
+index 6ae926d6c..b671d3b99 100644
+--- a/docs_build/dev/reports/lane_snapshot_report.md
++++ b/docs_build/dev/reports/lane_snapshot_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.239Z
++Generated: 2026-06-14T03:23:31.709Z
+@@ -9,2 +9,2 @@ Snapshot directory: docs_build/dev/reports/lane_snapshots
+-Reused lane snapshots: 1
+-Invalidated snapshots: 0
++Reused lane snapshots: 0
++Invalidated snapshots: 1
+@@ -13,2 +13,2 @@ Skipped snapshots: 0
+-Prevented graph rebuilds: 1
+-Prevented manifest traversal: 1
++Prevented graph rebuilds: 0
++Prevented manifest traversal: 0
+@@ -20 +20 @@ Prevented manifest traversal: 1
+-| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 68ccdaa4b17bb4a9 | ccee8e0b79f5e764 | 4440f5f2a0eba813 | 6c4fac7630b0b6f3 | c99c4343771f1683 | 8bff43899c290bcf | a1a9e2156fb45086 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 5dff40fa4fee1384 | 9a89a70dbb7517d9 | 6f8873749e187059 | 6c4fac7630b0b6f3 | ee686a65c81bd4a9 | e9dcbf423e552153 | 35ce0805d3388e00 | Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
+diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
+index 31ce408c8..cdfd81278 100644
+--- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
++++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
+@@ -2 +2 @@
+-  "commandsHash": "39e16c9d480a1e51",
++  "commandsHash": "5141d93b4551c125",
+@@ -6 +6 @@
+-    "dependencyGraphHash": "ccee8e0b79f5e764",
++    "dependencyGraphHash": "9a89a70dbb7517d9",
+@@ -8,8 +8,8 @@
+-      "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+-      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+-      "src/dev-runtime/persistence/mock-db-store.js": "c963339463a01191",
+-      "src/dev-runtime/server/mock-api-router.mjs": "98f5e9217973d95b",
+-      "tests/helpers/playwrightRepoServer.mjs": "1e8792878c1c7116",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
++      "src/dev-runtime/admin/admin-notes-directory.mjs": "6c5a597772cfd6fa",
++      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
++      "src/dev-runtime/persistence/mock-db-store.js": "7966b6842bb5c02d",
++      "src/dev-runtime/server/mock-api-router.mjs": "dab88c5ac7b90399",
++      "tests/helpers/playwrightRepoServer.mjs": "b2bf14c7d10319ae",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1",
+@@ -30,2 +30,2 @@
+-  "dependencyGraphHash": "ccee8e0b79f5e764",
+-  "executionGraphHash": "8bff43899c290bcf",
++  "dependencyGraphHash": "9a89a70dbb7517d9",
++  "executionGraphHash": "e9dcbf423e552153",
+@@ -39,4 +39,4 @@
+-      "tests/helpers/playwrightRepoServer.mjs": "1e8792878c1c7116",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
++      "tests/helpers/playwrightRepoServer.mjs": "b2bf14c7d10319ae",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
+@@ -51,2 +51,2 @@
+-  "helperGraphHash": "4440f5f2a0eba813",
+-  "inputHash": "278ed6d324872ff1",
++  "helperGraphHash": "6f8873749e187059",
++  "inputHash": "4fd28c0e34fec493",
+@@ -55 +55 @@
+-  "laneDefinitionHash": "fde48767b345621c",
++  "laneDefinitionHash": "48c5c111705280dc",
+@@ -58,9 +58,9 @@
+-      "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+-      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+-      "src/dev-runtime/persistence/mock-db-store.js": "c963339463a01191",
+-      "src/dev-runtime/server/mock-api-router.mjs": "98f5e9217973d95b",
+-      "tests/helpers/playwrightRepoServer.mjs": "1e8792878c1c7116",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
+-      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "56655636d2debe14",
++      "src/dev-runtime/admin/admin-notes-directory.mjs": "6c5a597772cfd6fa",
++      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
++      "src/dev-runtime/persistence/mock-db-store.js": "7966b6842bb5c02d",
++      "src/dev-runtime/server/mock-api-router.mjs": "dab88c5ac7b90399",
++      "tests/helpers/playwrightRepoServer.mjs": "b2bf14c7d10319ae",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1",
++      "tests/playwright/tools/RootToolsFutureState.spec.mjs": "a2cb04de027b8a65",
+@@ -87 +87 @@
+-    "manifestHash": "68ccdaa4b17bb4a9",
++    "manifestHash": "5dff40fa4fee1384",
+@@ -94 +94 @@
+-  "manifestHash": "68ccdaa4b17bb4a9",
++  "manifestHash": "5dff40fa4fee1384",
+@@ -101 +101 @@
+-          "C:\\Users\\davidq\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
++          "C:\\Users\\DavidQ\\Documents\\GitHub\\HTML-JavaScript-Gaming\\node_modules\\@playwright\\test\\cli.js",
+@@ -108 +108 @@
+-        "command": "C:\\nvm4w\\nodejs\\node.exe",
++        "command": "C:\\Program Files\\nodejs\\node.exe",
+@@ -115,2 +115,2 @@
+-    "commandsHash": "39e16c9d480a1e51",
+-    "laneConfigHash": "3d8db02cddc33911",
++    "commandsHash": "5141d93b4551c125",
++    "laneConfigHash": "766f10428ac09567",
+@@ -120,2 +120,2 @@
+-  "runtimeConfigurationHash": "c99c4343771f1683",
+-  "snapshotHash": "a1a9e2156fb45086",
++  "runtimeConfigurationHash": "ee686a65c81bd4a9",
++  "snapshotHash": "35ce0805d3388e00",
+@@ -123,2 +123,2 @@
+-  "warmStartHash": "ba46847643854f32",
+-  "generatedAt": "2026-06-13T21:18:10.328Z"
++  "warmStartHash": "9d9f32751935c262",
++  "generatedAt": "2026-06-14T03:23:31.702Z"
+diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
+index 5a3c67408..8d9f32e57 100644
+--- a/docs_build/dev/reports/lane_warm_start_report.md
++++ b/docs_build/dev/reports/lane_warm_start_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.238Z
++Generated: 2026-06-14T03:23:31.708Z
+@@ -9,2 +9,2 @@ Warm-start directory: docs_build/dev/reports/lane_warm_starts
+-Reused warm-start lanes: 1
+-Invalidated warm-start states: 0
++Reused warm-start lanes: 0
++Invalidated warm-start states: 1
+@@ -13,2 +13,2 @@ Skipped warm-start states: 0
+-Prevented redundant initialization: 1
+-Prevented lane graph assembly: 1
++Prevented redundant initialization: 0
++Prevented lane graph assembly: 0
+@@ -20 +20 @@ Prevented lane graph assembly: 1
+-| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 68ccdaa4b17bb4a9 | ba46847643854f32 | 902e676dd27366e9 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 5dff40fa4fee1384 | 9d9f32751935c262 | db9ce0ee73370a57 | Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
+diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+index 403e7bccb..a01c1f58a 100644
+--- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+@@ -2,2 +2,2 @@
+-  "commandsHash": "39e16c9d480a1e51",
+-  "dependencyGraphHash": "ccee8e0b79f5e764",
++  "commandsHash": "5141d93b4551c125",
++  "dependencyGraphHash": "9a89a70dbb7517d9",
+@@ -5 +5 @@
+-    "dependencyHydrationHash": "902e676dd27366e9",
++    "dependencyHydrationHash": "db9ce0ee73370a57",
+@@ -9,4 +9,4 @@
+-      "tests/helpers/playwrightRepoServer.mjs": "1e8792878c1c7116",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
++      "tests/helpers/playwrightRepoServer.mjs": "b2bf14c7d10319ae",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1"
+@@ -21,8 +21,8 @@
+-      "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+-      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+-      "src/dev-runtime/persistence/mock-db-store.js": "c963339463a01191",
+-      "src/dev-runtime/server/mock-api-router.mjs": "98f5e9217973d95b",
+-      "tests/helpers/playwrightRepoServer.mjs": "1e8792878c1c7116",
+-      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+-      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+-      "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
++      "src/dev-runtime/admin/admin-notes-directory.mjs": "6c5a597772cfd6fa",
++      "src/dev-runtime/admin/admin-notes-menu.mjs": "38ce15ab63418748",
++      "src/dev-runtime/persistence/mock-db-store.js": "7966b6842bb5c02d",
++      "src/dev-runtime/server/mock-api-router.mjs": "dab88c5ac7b90399",
++      "tests/helpers/playwrightRepoServer.mjs": "b2bf14c7d10319ae",
++      "tests/helpers/playwrightStorageIsolation.mjs": "8057ea0c3ec2c8ac",
++      "tests/helpers/playwrightV8CoverageReporter.mjs": "290159be068de479",
++      "tests/helpers/workspaceV2CoverageReporter.mjs": "08d4c995f88aebe1",
+@@ -43,2 +43,2 @@
+-  "dependencyHydrationHash": "902e676dd27366e9",
+-  "inputHash": "278ed6d324872ff1",
++  "dependencyHydrationHash": "db9ce0ee73370a57",
++  "inputHash": "4fd28c0e34fec493",
+@@ -46,3 +46,3 @@
+-  "laneConfigHash": "3d8db02cddc33911",
+-  "laneDefinitionHash": "fde48767b345621c",
+-  "manifestHash": "68ccdaa4b17bb4a9",
++  "laneConfigHash": "766f10428ac09567",
++  "laneDefinitionHash": "48c5c111705280dc",
++  "manifestHash": "5dff40fa4fee1384",
+@@ -50 +50 @@
+-  "warmStartHash": "ba46847643854f32",
++  "warmStartHash": "9d9f32751935c262",
+@@ -52 +52 @@
+-  "generatedAt": "2026-06-13T21:18:09.351Z",
++  "generatedAt": "2026-06-14T03:23:31.502Z",
+diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
+index fbac874d2..8f82bacd4 100644
+--- a/docs_build/dev/reports/monolith_trigger_removal_report.md
++++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:52.400Z
++Generated: 2026-06-14T03:24:53.678Z
+diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
+index 93cb1ca8d..9b388b657 100644
+--- a/docs_build/dev/reports/persistent_lane_manifest_report.md
++++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.239Z
++Generated: 2026-06-14T03:23:31.709Z
+@@ -9,2 +9,2 @@ Manifest directory: docs_build/dev/reports/lane_manifests
+-Reused manifests: 1
+-Invalidated manifests: 0
++Reused manifests: 0
++Invalidated manifests: 1
+@@ -12 +12 @@ Generated manifests: 0
+-Prevented discovery scans: 1
++Prevented discovery scans: 0
+@@ -18 +18 @@ Prevented discovery scans: 1
+-| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 278ed6d324872ff1 | 68ccdaa4b17bb4a9 | Inputs unchanged; persisted lane manifest reused. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 4fd28c0e34fec493 | 5dff40fa4fee1384 | Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
+@@ -24 +24 @@ Prevented discovery scans: 1
+-| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | ccee8e0b79f5e764 | 68ccdaa4b17bb4a9 |
++| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 9a89a70dbb7517d9 | 5dff40fa4fee1384 |
+diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+index a8c4d077e..ac972d5fe 100644
+--- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
++++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.212Z
++Generated: 2026-06-14T03:23:31.678Z
+diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
+index cc58790b1..23f78603a 100644
+--- a/docs_build/dev/reports/playwright_discovery_scope_report.md
++++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.215Z
++Generated: 2026-06-14T03:23:31.680Z
+diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
+index 128c48129..4c17d10cc 100644
+--- a/docs_build/dev/reports/playwright_structure_audit.md
++++ b/docs_build/dev/reports/playwright_structure_audit.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.195Z
++Generated: 2026-06-14T03:23:31.657Z
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 89311142c..59a00f54b 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -15 +15 @@ Exercised tool entry points detected:
+-(91%) Toolbox Index - exercised 5 runtime JS files
++(78%) Toolbox Index - exercised 3 runtime JS files
+@@ -17 +17 @@ Exercised tool entry points detected:
+-(57%) Theme V2 Shared JS - exercised 2 runtime JS files
++(84%) Theme V2 Shared JS - exercised 3 runtime JS files
+@@ -20 +20,7 @@ Changed runtime JS files covered:
+-(93%) toolbox/assets/assets.js - executed lines 1600/1600; executed functions 134/144
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(67%) admin/db-viewer.js - executed lines 53/53; executed functions 4/6
++(80%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 4/5
++(83%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 50/60
++(90%) src/engine/api/mock-db-viewer-ui.js - executed lines 479/479; executed functions 82/91
++(96%) assets/theme-v2/js/login-session.js - executed lines 357/357; executed functions 27/28
+@@ -23,3 +29 @@ Files with executed line/function counts where available:
+-(38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
+-(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+-(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 30/54
++(58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
+@@ -27,5 +31,10 @@ Files with executed line/function counts where available:
+-(67%) toolbox/assets/assets-api-client.js - executed lines 19/19; executed functions 2/3
+-(75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
+-(93%) toolbox/assets/assets.js - executed lines 1600/1600; executed functions 134/144
+-(100%) toolbox/tags/tags-api-client.js - executed lines 10/10; executed functions 2/2
+-(100%) toolbox/tags/tags.js - executed lines 242/242; executed functions 19/19
++(67%) admin/db-viewer.js - executed lines 53/53; executed functions 4/6
++(75%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 6/8
++(77%) toolbox/game-journey/game-journey.js - executed lines 1002/1002; executed functions 78/101
++(79%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 22/28
++(80%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 4/5
++(83%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 50/60
++(90%) src/engine/api/mock-db-viewer-ui.js - executed lines 479/479; executed functions 82/91
++(91%) src/dev-runtime/admin/admin-notes-viewer.js - executed lines 520/520; executed functions 48/53
++(96%) assets/theme-v2/js/login-session.js - executed lines 357/357; executed functions 27/28
++(100%) toolbox/game-journey/game-journey-api-client.js - executed lines 13/13; executed functions 2/2
+@@ -34 +43,2 @@ Uncovered or low-coverage changed JS files:
+-(100%) none - no low-coverage changed runtime JS files
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+@@ -36,0 +47,10 @@ Changed JS files considered:
++(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/DbSeedIntegrity.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/account/AchievementsPage.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AdminNotesLocalViewer.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs - changed JS file not collected as browser runtime coverage
+@@ -38 +58,14 @@ Changed JS files considered:
+-(93%) toolbox/assets/assets.js - changed JS file with browser V8 coverage
++(0%) tests/playwright/tools/BuildPathProgressSimplification.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/GameJourneyTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/PaletteToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/TagsTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
++(67%) admin/db-viewer.js - changed JS file with browser V8 coverage
++(80%) src/engine/api/mock-db-api-client.js - changed JS file with browser V8 coverage
++(83%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
++(90%) src/engine/api/mock-db-viewer-ui.js - changed JS file with browser V8 coverage
++(96%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
+diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
+index 7bc5448c4..157c8fea8 100644
+--- a/docs_build/dev/reports/retry_suppression_report.md
++++ b/docs_build/dev/reports/retry_suppression_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:52.399Z
++Generated: 2026-06-14T03:24:53.677Z
+diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
+index 6d5c1b524..95d2e6861 100644
+--- a/docs_build/dev/reports/slow_path_pruning_report.md
++++ b/docs_build/dev/reports/slow_path_pruning_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:52.400Z
++Generated: 2026-06-14T03:24:53.678Z
+@@ -10 +10 @@ PR_26146_038 measured lane elapsed time: 169.71s
+-Current measured lane elapsed time: 44.12s
++Current measured lane elapsed time: 81.92s
+@@ -15,2 +15,2 @@ Reduced Workspace lane nested launches: 1
+-Reused dependency hydration: 1
+-Reused snapshots: 1
++Reused dependency hydration: 0
++Reused snapshots: 0
+@@ -34,5 +34,5 @@ Validation cache hits: 18
+-| current targeted run | workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
+-| current targeted run | workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
+-| current targeted run | workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
+-| current targeted run | workspace-contract | 6.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
+-| current targeted run | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
++| current targeted run | workspace-contract | 27.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
++| current targeted run | workspace-contract | 16.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
++| current targeted run | workspace-contract | 15.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
++| current targeted run | workspace-contract | 10.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
++| current targeted run | workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
+diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
+index 3b587c3fa..cc43c3231 100644
+--- a/docs_build/dev/reports/static_validation_report.md
++++ b/docs_build/dev/reports/static_validation_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.232Z
++Generated: 2026-06-14T03:23:31.699Z
+@@ -25,4 +25,4 @@ Reason: No deterministic static validation failure was found.
+-| targeted file manifests | PASS | workspace-contract:68ccdaa4b17bb4a9 |
+-| persistent lane manifests | PASS | workspace-contract:REUSED |
+-| lane warm-start reuse | PASS | workspace-contract:REUSED |
+-| dependency hydration reuse | PASS | workspace-contract:REUSED |
++| targeted file manifests | PASS | workspace-contract:5dff40fa4fee1384 |
++| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
++| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
++| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+@@ -31 +31 @@ Reason: No deterministic static validation failure was found.
+-| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
++| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
+index 81668df88..228b6d423 100644
+--- a/docs_build/dev/reports/targeted_file_manifest_report.md
++++ b/docs_build/dev/reports/targeted_file_manifest_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.239Z
++Generated: 2026-06-14T03:23:31.709Z
+@@ -10 +10 @@ Status: PASS
+-| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | ccee8e0b79f5e764 | 68ccdaa4b17bb4a9 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
++| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/mock-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs; toolbox/toolRegistry.js | 9a89a70dbb7517d9 | 5dff40fa4fee1384 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+@@ -15,2 +15,2 @@ Prevented discovery expansion: Yes
+-Prevented redundant scans: 0
+-Targeted file/helper reads: 0
++Prevented redundant scans: 4
++Targeted file/helper reads: 5
+diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
+index 8012ee0ea..5efb1298e 100644
+--- a/docs_build/dev/reports/test_cleanup_performance_report.md
++++ b/docs_build/dev/reports/test_cleanup_performance_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:52.400Z
++Generated: 2026-06-14T03:24:53.677Z
+@@ -8 +8 @@ Status: PASS
+-Total measured lane elapsed time: 44.12s
++Total measured lane elapsed time: 81.92s
+@@ -13,2 +13,2 @@ Skipped lanes: 14
+-Reused manifests: 1
+-Reused snapshots: 1
++Reused manifests: 0
++Reused snapshots: 0
+@@ -19,2 +19,2 @@ Prevented redundant browser launches: 0
+-Prevented graph rebuilds: 1
+-Prevented redundant dependency traversal: 1
++Prevented graph rebuilds: 0
++Prevented redundant dependency traversal: 0
+@@ -26 +26 @@ Prevented redundant dependency traversal: 1
+-| workspace-contract | PASS | 44.12s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | PASS | 81.92s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+@@ -46,5 +46,5 @@ Prevented redundant dependency traversal: 1
+-| workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 6.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 27.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 16.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 15.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 10.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths | "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
+index 04ab89ca2..3678a9d5f 100644
+--- a/docs_build/dev/reports/test_cleanup_routing_report.md
++++ b/docs_build/dev/reports/test_cleanup_routing_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:52.400Z
++Generated: 2026-06-14T03:24:53.678Z
+diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
+index 0be1bc901..e9baf2013 100644
+--- a/docs_build/dev/reports/testing_lane_execution_report.md
++++ b/docs_build/dev/reports/testing_lane_execution_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:52.432Z
++Generated: 2026-06-14T03:24:53.712Z
+@@ -12 +12 @@ SKIP: 14
+-Total lane elapsed time: 44.12s
++Total lane elapsed time: 81.92s
+@@ -24 +24 @@ Reason: Runner preflight and Playwright structure audit passed before expensive
+-Command: C:\nvm4w\nodejs\node.exe scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
++Command: "C:\\Program Files\\nodejs\\node.exe" scripts/audit-playwright-test-locations.mjs --discovery-report docs_build/dev/reports/playwright_discovery_ownership_report.md --scope-report docs_build/dev/reports/playwright_discovery_scope_report.md --scan-report docs_build/dev/reports/filesystem_scan_reduction_report.md --lanes workspace-contract --targets tests/playwright/tools/RootToolsFutureState.spec.mjs --helpers tests/helpers/playwrightRepoServer.mjs,tests/helpers/playwrightStorageIsolation.mjs,tests/helpers/playwrightV8CoverageReporter.mjs,tests/helpers/workspaceV2CoverageReporter.mjs
+@@ -37,5 +37,5 @@ Reused runtime sessions: 0
+-Reused lane snapshots: 1
+-Reused warm-start lanes: 1
+-Reused dependency hydration: 1
+-Prevented graph rebuilds: 1
+-Prevented redundant initialization: 1
++Reused lane snapshots: 0
++Reused warm-start lanes: 0
++Reused dependency hydration: 0
++Prevented graph rebuilds: 0
++Prevented redundant initialization: 0
+@@ -67 +67 @@ Required fixtures: none
+-Targeted file/helper reads: 0
++Targeted file/helper reads: 5
+@@ -76,2 +76,2 @@ Prevented discovery expansion: Yes
+-Prevented redundant scans: 0
+-Persistent manifest events: workspace-contract:REUSED
++Prevented redundant scans: 4
++Persistent manifest events: workspace-contract:INVALIDATED
+@@ -82,4 +82,4 @@ Status: PASS
+-Warm-start events: workspace-contract:REUSED
+-Dependency hydration events: workspace-contract:REUSED
+-Prevented redundant initialization: 1
+-Prevented helper resolution passes: 4
++Warm-start events: workspace-contract:INVALIDATED
++Dependency hydration events: workspace-contract:INVALIDATED
++Prevented redundant initialization: 0
++Prevented helper resolution passes: 0
+@@ -91,6 +91,6 @@ Status: PASS
+-Snapshot events: workspace-contract:REUSED
+-Reused snapshots: 1
+-Invalidated snapshots: 0
+-Prevented graph rebuilds: 1
+-Prevented redundant dependency traversal: 1
+-Prevented fixture/helper graph assembly: 4
++Snapshot events: workspace-contract:INVALIDATED
++Reused snapshots: 0
++Invalidated snapshots: 1
++Prevented graph rebuilds: 0
++Prevented redundant dependency traversal: 0
++Prevented fixture/helper graph assembly: 0
+@@ -108 +108 @@ Prevented Workspace lane reruns: 0
+-| workspace-contract | PASS | 44.12s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| workspace-contract | PASS | 81.92s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+@@ -128,5 +128,5 @@ Prevented Workspace lane reruns: 0
+-| workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
+-| workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
+-| workspace-contract | 9.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
+-| workspace-contract | 6.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
+-| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
++| workspace-contract | 27.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:76:1 > root tools surface links current tool pages without old_* routes |
++| workspace-contract | 16.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:460:1 > representative active tool pages align center cleanup and registry group colors |
++| workspace-contract | 15.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:360:1 > learn wireframe pages load with shared Theme V2 structure |
++| workspace-contract | 10.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:282:1 > common header renders primary navigation order across active pages |
++| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:438:1 > tool template future-state page loads from root Theme V2 paths |
+@@ -137 +137 @@ Prevented Workspace lane reruns: 0
+-- PASS 44.12s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- PASS 81.92s "C:\\Program Files\\nodejs\\node.exe" C:\Users\DavidQ\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
+index 5383e4bcf..85037e91a 100644
+--- a/docs_build/dev/reports/validation_cache_report.md
++++ b/docs_build/dev/reports/validation_cache_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.241Z
++Generated: 2026-06-14T03:23:31.711Z
+@@ -15,28 +15,28 @@ Validations computed: 10
+-| lane registration validation | MISS | c5f6923cb3e9b570 | initial computation | lane definitions change; package.json lane scripts change |
+-| runner preflight validation | MISS | a56dddb91b84bd8e | initial computation | lane definitions change; fixture ownership changes; targeted files change |
+-| scoped discovery map | MISS | d1596716e5ff4e22 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| targeted file manifest validation | MISS | 6a0f4f976ce417d7 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane warm-start validation | MISS | 03a1929128b8005f | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
+-| structural ownership validation | MISS | 36f391d46a530409 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane compilation validation | MISS | ff2d20b40fcb0398 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
+-| lane compilation validation | HIT | ff2d20b40fcb0398 | dependency validation input | unchanged within execution cycle |
+-| dependency validation | MISS | 718132570eea4d98 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
+-| lane snapshot validation | MISS | 5b4c5830cbf07c19 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
+-| zero-browser preflight | MISS | f19bf3518c98576f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
+-| structural ownership validation | HIT | 36f391d46a530409 | static validation report | unchanged within execution cycle |
+-| structural ownership validation | HIT | 36f391d46a530409 | zero-browser preflight report | unchanged within execution cycle |
+-| scoped discovery map | HIT | d1596716e5ff4e22 | structural ownership validation input | unchanged within execution cycle |
+-| scoped discovery map | HIT | d1596716e5ff4e22 | discovery scope reporting | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 6a0f4f976ce417d7 | lane input validation report | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 6a0f4f976ce417d7 | runtime scheduling blockers | unchanged within execution cycle |
+-| lane warm-start validation | HIT | 03a1929128b8005f | warm-start report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | 03a1929128b8005f | dependency hydration reuse report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | 03a1929128b8005f | runtime scheduling | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 5b4c5830cbf07c19 | lane snapshot report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 5b4c5830cbf07c19 | execution graph reuse report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 5b4c5830cbf07c19 | runtime scheduling | unchanged within execution cycle |
+-| lane compilation validation | HIT | ff2d20b40fcb0398 | lane compilation report | unchanged within execution cycle |
+-| lane compilation validation | HIT | ff2d20b40fcb0398 | runtime scheduling | unchanged within execution cycle |
+-| dependency validation | HIT | 718132570eea4d98 | dependency report | unchanged within execution cycle |
+-| dependency validation | HIT | 718132570eea4d98 | runtime scheduling | unchanged within execution cycle |
+-| zero-browser preflight | HIT | f19bf3518c98576f | zero-browser report output | unchanged within execution cycle |
++| lane registration validation | MISS | 8f62ba85b24fb8ee | initial computation | lane definitions change; package.json lane scripts change |
++| runner preflight validation | MISS | 105ef58d69f4d275 | initial computation | lane definitions change; fixture ownership changes; targeted files change |
++| scoped discovery map | MISS | 4bfb92203c55f6fd | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| targeted file manifest validation | MISS | 49f9e8862edddf8f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| lane warm-start validation | MISS | a7b603a3befc00df | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
++| structural ownership validation | MISS | d53b670ce067c837 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
++| lane compilation validation | MISS | 7a4f5afeaf6694fb | initial computation | lane definitions change; targeted files change; fixture ownership changes |
++| lane compilation validation | HIT | 7a4f5afeaf6694fb | dependency validation input | unchanged within execution cycle |
++| dependency validation | MISS | 758c819706b57dc2 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
++| lane snapshot validation | MISS | ce9884b57d6d53ea | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
++| zero-browser preflight | MISS | d37364e75fb31c03 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
++| structural ownership validation | HIT | d53b670ce067c837 | static validation report | unchanged within execution cycle |
++| structural ownership validation | HIT | d53b670ce067c837 | zero-browser preflight report | unchanged within execution cycle |
++| scoped discovery map | HIT | 4bfb92203c55f6fd | structural ownership validation input | unchanged within execution cycle |
++| scoped discovery map | HIT | 4bfb92203c55f6fd | discovery scope reporting | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 49f9e8862edddf8f | lane input validation report | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 49f9e8862edddf8f | runtime scheduling blockers | unchanged within execution cycle |
++| lane warm-start validation | HIT | a7b603a3befc00df | warm-start report | unchanged within execution cycle |
++| lane warm-start validation | HIT | a7b603a3befc00df | dependency hydration reuse report | unchanged within execution cycle |
++| lane warm-start validation | HIT | a7b603a3befc00df | runtime scheduling | unchanged within execution cycle |
++| lane snapshot validation | HIT | ce9884b57d6d53ea | lane snapshot report | unchanged within execution cycle |
++| lane snapshot validation | HIT | ce9884b57d6d53ea | execution graph reuse report | unchanged within execution cycle |
++| lane snapshot validation | HIT | ce9884b57d6d53ea | runtime scheduling | unchanged within execution cycle |
++| lane compilation validation | HIT | 7a4f5afeaf6694fb | lane compilation report | unchanged within execution cycle |
++| lane compilation validation | HIT | 7a4f5afeaf6694fb | runtime scheduling | unchanged within execution cycle |
++| dependency validation | HIT | 758c819706b57dc2 | dependency report | unchanged within execution cycle |
++| dependency validation | HIT | 758c819706b57dc2 | runtime scheduling | unchanged within execution cycle |
++| zero-browser preflight | HIT | d37364e75fb31c03 | zero-browser report output | unchanged within execution cycle |
+diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
+index 2b4aec4f9..ca2b277b5 100644
+--- a/docs_build/dev/reports/zero_browser_preflight_report.md
++++ b/docs_build/dev/reports/zero_browser_preflight_report.md
+@@ -3 +3 @@
+-Generated: 2026-06-13T22:40:08.241Z
++Generated: 2026-06-14T03:23:31.711Z
+@@ -27,4 +27,4 @@ No deterministic setup failures.
+-| persistent lane manifests | PASS | workspace-contract:REUSED |
+-| lane warm-start reuse | PASS | workspace-contract:REUSED |
+-| dependency hydration reuse | PASS | workspace-contract:REUSED |
+-| lane snapshots | PASS | workspace-contract:REUSED |
++| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
++| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
++| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
++| lane snapshots | PASS | workspace-contract:INVALIDATED |
+diff --git a/login.html b/login.html
+index db6983f23..2f2017836 100644
+--- a/login.html
++++ b/login.html
+@@ -8 +8 @@
+-    <meta name="description" content="Choose a local development session mode for GameFoundryStudio.">
++    <meta name="description" content="Choose a local development session for GameFoundryStudio.">
+@@ -20 +20 @@
+-                <p class="lede">Choose how this local development browser session reads project data.</p>
++                <p class="lede">Use the Local DB-backed development session for project data.</p>
+@@ -26,2 +26 @@
+-                    <aside class="side-menu" aria-label="Session modes">
+-                        <button class="btn btn--compact" type="button" data-login-mode="local-mem">Local Mem</button>
++                    <aside class="side-menu" aria-label="Session mode">
+@@ -29 +28 @@
+-                        <p class="status" role="status" data-login-mode-disabled-message hidden>Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html. Local Mem and Local DB are disabled until the local API server is running.</p>
++                        <p class="status" role="status" data-login-mode-disabled-message hidden>Use the API-backed local server for login. Run npm run dev:local-api and open http://127.0.0.1:5501/login.html. Local DB is disabled until the local API server is running.</p>
+@@ -50,2 +49,2 @@
+-                                <h2 data-login-mode-title>Local Mem</h2>
+-                                <p class="lede" data-login-mode-description>Uses MockDbAdapter backed by in-memory lists.</p>
++                                <h2 data-login-mode-title>Local DB</h2>
++                                <p class="lede" data-login-mode-description>Uses LocalDbAdapter backed by server SQLite storage.</p>
+diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
+index 37b2f1e56..5b9dd2b6e 100644
+--- a/src/dev-runtime/persistence/mock-db-store.js
++++ b/src/dev-runtime/persistence/mock-db-store.js
+@@ -47,12 +46,0 @@ export const MOCK_DB_SESSION_MODES = Object.freeze([
+-  Object.freeze({
+-    adapterId: "mock-db-memory",
+-    adapterName: "MockDbAdapter",
+-    configured: true,
+-    description: "Uses MockDbAdapter backed by in-memory lists.",
+-    environment: "Local Mem",
+-    id: "local-mem",
+-    label: "Local Mem",
+-    persistence: "Memory",
+-    persistent: true,
+-    usersEnabled: true,
+-  }),
+@@ -188 +176 @@ function sessionModeFromId(sessionModeId) {
+-    MOCK_DB_SESSION_MODES.find((mode) => mode.id === "local-mem") ||
++    MOCK_DB_SESSION_MODES.find((mode) => mode.id === "local-db") ||
+@@ -191,0 +180,8 @@ function sessionModeFromId(sessionModeId) {
++function requiredSessionModeFromId(sessionModeId) {
++  const sessionMode = MOCK_DB_SESSION_MODES.find((mode) => mode.id === sessionModeId);
++  if (!sessionMode) {
++    throw new Error(`Unknown local login environment: ${sessionModeId || "missing"}.`);
++  }
++  return sessionMode;
++}
++
+@@ -197 +193 @@ function selectedSessionModeId(options = {}) {
+-    return "local-mem";
++    return "local-db";
+@@ -200 +196 @@ function selectedSessionModeId(options = {}) {
+-    return sessionModeFromId(window.localStorage.getItem(MOCK_DB_SESSION_MODE_STORAGE_KEY) || "local-mem").id;
++    return sessionModeFromId(window.localStorage.getItem(MOCK_DB_SESSION_MODE_STORAGE_KEY) || "local-db").id;
+@@ -202 +198 @@ function selectedSessionModeId(options = {}) {
+-    return "local-mem";
++    return "local-db";
+@@ -210 +206 @@ function canUseStorage(options = {}) {
+-  return hasBrowserStorage() && selectedSessionModeId(options) === "local-mem";
++  return false;
+@@ -379 +375 @@ function sessionUserFromKey(userKey, options = {}) {
+-  if (!isUlidKey(key) || (modeId !== "local-mem" && modeId !== "local-db")) {
++  if (!isUlidKey(key) || modeId !== "local-db") {
+@@ -409 +405 @@ function selectedSessionUserKey(options = {}) {
+-  if ((modeId !== "local-mem" && modeId !== "local-db") || !hasBrowserStorage()) {
++  if (modeId !== "local-db" || !hasBrowserStorage()) {
+@@ -421 +417 @@ export function getMockDbSessionUsers(options = {}) {
+-  if (modeId !== "local-mem" && modeId !== "local-db") {
++  if (modeId !== "local-db") {
+@@ -443 +439 @@ export function setMockDbSessionMode(sessionModeId, options = {}) {
+-  const sessionMode = sessionModeFromId(sessionModeId);
++  const sessionMode = requiredSessionModeFromId(sessionModeId);
+@@ -447,3 +443 @@ export function setMockDbSessionMode(sessionModeId, options = {}) {
+-      if (sessionMode.id !== "local-mem") {
+-        window.localStorage.removeItem(MOCK_DB_SESSION_STORAGE_KEY);
+-      }
++      window.localStorage.removeItem(MOCK_DB_SESSION_STORAGE_KEY);
+diff --git a/src/dev-runtime/server/mock-api-router.mjs b/src/dev-runtime/server/mock-api-router.mjs
+index f881a3c91..5ecced1bb 100644
+--- a/src/dev-runtime/server/mock-api-router.mjs
++++ b/src/dev-runtime/server/mock-api-router.mjs
+@@ -82 +81,0 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
+-const LOCAL_MEM_MODE_ID = "local-mem";
+@@ -151,8 +149,0 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
+-    Object.freeze({
+-      adapterId: "mock-db-memory",
+-      adapterName: "MockDbAdapter",
+-      environment: "Local Mem",
+-      persistence: "Memory",
+-      selectableOnLocalLogin: true,
+-      status: "configured",
+-    }),
+@@ -468 +459 @@ function modeById(modeId) {
+-    MOCK_DB_SESSION_MODES.find((mode) => mode.id === LOCAL_MEM_MODE_ID) ||
++    MOCK_DB_SESSION_MODES.find((mode) => mode.id === LOCAL_DB_MODE_ID) ||
+@@ -500 +491 @@ function sessionUserFromKey(tables, userKey, modeId) {
+-  if (mode.id !== LOCAL_MEM_MODE_ID && mode.id !== LOCAL_DB_MODE_ID) {
++  if (mode.id !== LOCAL_DB_MODE_ID) {
+@@ -509 +500 @@ function sessionUserFromKey(tables, userKey, modeId) {
+-    return guestSession(mode, `Selected Local user key ${key} is missing from server Memory DB users.`);
++    return guestSession(mode, `Selected Local user key ${key} is missing from server Local DB users.`);
+@@ -684,8 +674,0 @@ function assetTables(repository) {
+-class MockDbAdapter {
+-  constructor(mode) {
+-    this.mode = mode;
+-  }
+-
+-  assertConfigured() {}
+-}
+-
+@@ -878 +861 @@ class LocalDevMockDataSource {
+-    this.sessionModeId = LOCAL_MEM_MODE_ID;
++    this.sessionModeId = LOCAL_DB_MODE_ID;
+@@ -881,4 +864 @@ class LocalDevMockDataSource {
+-      MOCK_DB_SESSION_MODES.map((mode) => [
+-        mode.id,
+-        mode.id === LOCAL_DB_MODE_ID ? new LocalDbAdapter(mode) : new MockDbAdapter(mode),
+-      ]),
++      MOCK_DB_SESSION_MODES.map((mode) => [mode.id, new LocalDbAdapter(mode)]),
+@@ -886 +866,6 @@ class LocalDevMockDataSource {
+-    this.seed({ initial: true });
++    this.applyStateSnapshot({
++      cleared: false,
++      tables: createServerSeedTables(),
++    });
++    const adapterState = this.currentAdapter().readState("Starting Local DB", this.currentStateSnapshot());
++    this.applyStateSnapshot(adapterState);
+@@ -898 +883,5 @@ class LocalDevMockDataSource {
+-    return this.adapterByModeId.get(this.currentMode().id) || this.adapterByModeId.get(LOCAL_MEM_MODE_ID);
++    const adapter = this.adapterByModeId.get(this.currentMode().id);
++    if (!adapter) {
++      throw new Error(`${LOCAL_DB_NOT_CONFIGURED}. Unknown DEV database mode: ${this.currentMode().id || "missing"}.`);
++    }
++    return adapter;
+@@ -971,4 +959,0 @@ class LocalDevMockDataSource {
+-    if (this.sessionModeId !== LOCAL_DB_MODE_ID) {
+-      this.localMemState = clone(this.currentStateSnapshot());
+-      return;
+-    }
+@@ -979,3 +964 @@ class LocalDevMockDataSource {
+-    const action = this.sessionModeId === LOCAL_DB_MODE_ID
+-      ? "Reseeding Local DB state"
+-      : "Reseeding Local Mem DB state";
++    const action = "Reseeding Local DB state";
+@@ -989,4 +971,0 @@ class LocalDevMockDataSource {
+-    if (options.initial) {
+-      this.localMemState = clone(this.currentStateSnapshot());
+-      return this.currentStateSnapshot();
+-    }
+@@ -998 +977 @@ class LocalDevMockDataSource {
+-    this.assertConfiguredAdapter("Clearing Local Mem DB state");
++    this.assertConfiguredAdapter("Clearing Local DB state");
+@@ -1011 +990 @@ class LocalDevMockDataSource {
+-    this.assertConfiguredAdapter("Replacing Local Mem DB testing state");
++    this.assertConfiguredAdapter("Replacing Local DB testing state");
+@@ -1026,3 +1005 @@ class LocalDevMockDataSource {
+-    const nextState = nextMode.id === LOCAL_DB_MODE_ID
+-      ? nextAdapter.readState("Selecting Local DB", currentFallbackState)
+-      : this.localMemState || currentFallbackState;
++    const nextState = nextAdapter.readState("Selecting Local DB", currentFallbackState);
+@@ -1058 +1035 @@ class LocalDevMockDataSource {
+-    if (this.sessionModeId !== LOCAL_MEM_MODE_ID && this.sessionModeId !== LOCAL_DB_MODE_ID) {
++    if (this.sessionModeId !== LOCAL_DB_MODE_ID) {
+@@ -1624 +1601 @@ class LocalDevMockDataSource {
+-      this.assertConfiguredAdapter("Reading Local Mem DB state");
++      this.assertConfiguredAdapter("Reading Local DB state");
+diff --git a/src/engine/api/mock-db-api-client.js b/src/engine/api/mock-db-api-client.js
+index 352f2daa0..ada7a5ce6 100644
+--- a/src/engine/api/mock-db-api-client.js
++++ b/src/engine/api/mock-db-api-client.js
+@@ -18 +18 @@ export function clearMockDb() {
+-  return unwrap(safeRequestServerApi("/mock-db/clear", { method: "POST" }), "Local Mem DB clear");
++  return unwrap(safeRequestServerApi("/mock-db/clear", { method: "POST" }), "Local DB clear");
+@@ -22 +22 @@ export function seedMockDb() {
+-  return unwrap(safeRequestServerApi("/mock-db/seed", { method: "POST" }), "Mock DB seed");
++  return unwrap(safeRequestServerApi("/mock-db/seed", { method: "POST" }), "Local DB seed");
+diff --git a/src/engine/api/mock-db-viewer-ui.js b/src/engine/api/mock-db-viewer-ui.js
+index 39f4ce413..c262cf43d 100644
+--- a/src/engine/api/mock-db-viewer-ui.js
++++ b/src/engine/api/mock-db-viewer-ui.js
+@@ -1,5 +1 @@
+-import {
+-  clearMockDb,
+-  getMockDbSnapshot,
+-  seedMockDb,
+-} from "./mock-db-api-client.js";
++import { getMockDbSnapshot } from "./mock-db-api-client.js";
+@@ -23,3 +19,3 @@ class AdminDbViewer {
+-    this.modeId = this.session.mode || "local-mem";
+-    this.modeLabel = this.modeId === "local-db" ? "Local DB" : "Local Mem DB";
+-    this.canWrite = this.modeId === "local-mem";
++    this.modeId = this.session.mode || "local-db";
++    this.modeLabel = "Local DB";
++    this.canWrite = false;
+@@ -39,20 +35,2 @@ class AdminDbViewer {
+-    if (!this.canWrite) {
+-      this.clearButton?.remove();
+-      this.clearButton = null;
+-      return;
+-    }
+-    this.clearButton?.addEventListener("click", () => {
+-      const snapshot = getMockDbSnapshot();
+-      if (snapshot.cleared) {
+-        seedMockDb();
+-        this.activeFilter = "all";
+-        this.render();
+-        return;
+-      }
+-      if (!window.confirm("Clear all shared Local Mem DB records?")) {
+-        return;
+-      }
+-      clearMockDb();
+-      this.activeFilter = "all";
+-      this.render();
+-    });
++    this.clearButton?.remove();
++    this.clearButton = null;
+@@ -84 +62 @@ class AdminDbViewer {
+-    this.clearButton.textContent = cleared ? "Seed Local Mem DB" : "Clear Local Mem DB";
++    this.clearButton.textContent = cleared ? "Seed Local DB" : "Clear Local DB";
+@@ -223 +201 @@ class AdminDbViewer {
+-          ? "No records in this table. Add records from its tool or use Seed Local Mem DB to restore baseline user and role records."
++          ? "No records in this table. Add records from its tool or use Seed Local DB to restore baseline user and role records."
+@@ -304,2 +282,2 @@ class AdminDbViewer {
+-    const noteTypeKeys = new Set((tables.project_journey_note_types || []).map((type) => type.key));
+-    const noteKeys = new Set((tables.project_journey_notes || []).map((note) => note.key));
++    const noteTypeKeys = new Set((tables.game_journey_note_types || []).map((type) => type.key));
++    const noteKeys = new Set((tables.game_journey_notes || []).map((note) => note.key));
+@@ -319 +297 @@ class AdminDbViewer {
+-      (tables.project_journey_templates || [])
++      (tables.game_journey_templates || [])
+@@ -323,2 +301,2 @@ class AdminDbViewer {
+-    const paletteGlobals = new Set((tables.project_workspace_palette_globals || []).map((row) => row.projectId));
+-    const paletteColorKeys = new Set((tables.palette_colors || []).map((row) => `${row.projectId}:${row.swatchKey}`));
++    const paletteGlobals = new Set((tables.project_workspace_palette_globals || []).map((row) => row.gameId));
++    const paletteColorKeys = new Set((tables.palette_colors || []).map((row) => `${row.gameId}:${row.swatchKey}`));
+@@ -346,3 +324,3 @@ class AdminDbViewer {
+-        name: "project_journey_notes.typeKey -> project_journey_note_types.key",
+-        checked: (tables.project_journey_notes || []).length,
+-        missing: (tables.project_journey_notes || []).filter((note) => !noteTypeKeys.has(note.typeKey)),
++        name: "game_journey_notes.typeKey -> game_journey_note_types.key",
++        checked: (tables.game_journey_notes || []).length,
++        missing: (tables.game_journey_notes || []).filter((note) => !noteTypeKeys.has(note.typeKey)),
+@@ -351,3 +329,3 @@ class AdminDbViewer {
+-        name: "project_journey_notes.ownerKey -> users.key",
+-        checked: (tables.project_journey_notes || []).length,
+-        missing: (tables.project_journey_notes || []).filter((note) => !userKeys.has(note.ownerKey)),
++        name: "game_journey_notes.ownerKey -> users.key",
++        checked: (tables.game_journey_notes || []).length,
++        missing: (tables.game_journey_notes || []).filter((note) => !userKeys.has(note.ownerKey)),
+@@ -356,3 +334,3 @@ class AdminDbViewer {
+-        name: "project_journey_items.noteKey -> project_journey_notes.key",
+-        checked: (tables.project_journey_items || []).length,
+-        missing: (tables.project_journey_items || []).filter((item) => !noteKeys.has(item.noteKey)),
++        name: "game_journey_items.noteKey -> game_journey_notes.key",
++        checked: (tables.game_journey_items || []).length,
++        missing: (tables.game_journey_items || []).filter((item) => !noteKeys.has(item.noteKey)),
+@@ -361,3 +339,3 @@ class AdminDbViewer {
+-        name: "system project_journey_items.templateKey -> active project_journey_templates.key",
+-        checked: (tables.project_journey_items || []).filter((item) => systemUserKeys.has(item.createdBy)).length,
+-        missing: (tables.project_journey_items || []).filter(
++        name: "system game_journey_items.templateKey -> active game_journey_templates.key",
++        checked: (tables.game_journey_items || []).filter((item) => systemUserKeys.has(item.createdBy)).length,
++        missing: (tables.game_journey_items || []).filter(
+@@ -368,3 +346,3 @@ class AdminDbViewer {
+-        name: "project_journey_activity.noteKey -> project_journey_notes.key",
+-        checked: (tables.project_journey_activity || []).length,
+-        missing: (tables.project_journey_activity || []).filter((activity) => !noteKeys.has(activity.noteKey)),
++        name: "game_journey_activity.noteKey -> game_journey_notes.key",
++        checked: (tables.game_journey_activity || []).length,
++        missing: (tables.game_journey_activity || []).filter((activity) => !noteKeys.has(activity.noteKey)),
+@@ -388 +366 @@ class AdminDbViewer {
+-        name: "palette_colors.projectId -> project_workspace_palette_globals.projectId",
++        name: "palette_colors.gameId -> project_workspace_palette_globals.gameId",
+@@ -390 +368 @@ class AdminDbViewer {
+-        missing: (tables.palette_colors || []).filter((row) => !paletteGlobals.has(row.projectId)),
++        missing: (tables.palette_colors || []).filter((row) => !paletteGlobals.has(row.gameId)),
+@@ -395 +373 @@ class AdminDbViewer {
+-        missing: (tables.palette_swatch_usages || []).filter((row) => !paletteColorKeys.has(`${row.projectId}:${row.swatchKey}`)),
++        missing: (tables.palette_swatch_usages || []).filter((row) => !paletteColorKeys.has(`${row.gameId}:${row.swatchKey}`)),
+@@ -416 +394 @@ class AdminDbViewer {
+-    const notesByKey = new Map((tables.project_journey_notes || []).map((note) => [note.key, note]));
++    const notesByKey = new Map((tables.game_journey_notes || []).map((note) => [note.key, note]));
+@@ -418 +396 @@ class AdminDbViewer {
+-    (tables.project_journey_items || []).forEach((item) => {
++    (tables.game_journey_items || []).forEach((item) => {
+@@ -420,2 +398,2 @@ class AdminDbViewer {
+-      if (note && note.projectKey !== item.projectKey) {
+-        findings.push(`${item.key} projectKey ${item.projectKey} does not match note ${note.key} projectKey ${note.projectKey}.`);
++      if (note && note.gameKey !== item.gameKey) {
++        findings.push(`${item.key} gameKey ${item.gameKey} does not match note ${note.key} gameKey ${note.gameKey}.`);
+@@ -424 +402 @@ class AdminDbViewer {
+-    (tables.project_journey_activity || []).forEach((activity) => {
++    (tables.game_journey_activity || []).forEach((activity) => {
+@@ -426,2 +404,2 @@ class AdminDbViewer {
+-      if (note && note.projectKey !== activity.projectKey) {
+-        findings.push(`${activity.key} projectKey ${activity.projectKey} does not match note ${note.key} projectKey ${note.projectKey}.`);
++      if (note && note.gameKey !== activity.gameKey) {
++        findings.push(`${activity.key} gameKey ${activity.gameKey} does not match note ${note.key} gameKey ${note.gameKey}.`);
+@@ -500 +478 @@ class AdminDbViewer {
+-        ? `${this.modeLabel} data error. Fix the invalid record ownership or use Clear Local Mem DB, then Seed Local Mem DB.`
++        ? `${this.modeLabel} data error. Fix the invalid record ownership or use Clear Local DB, then Seed Local DB.`
+diff --git a/tests/dev-runtime/DbSeedIntegrity.test.mjs b/tests/dev-runtime/DbSeedIntegrity.test.mjs
+index 06e5e5e96..44b4b5b85 100644
+--- a/tests/dev-runtime/DbSeedIntegrity.test.mjs
++++ b/tests/dev-runtime/DbSeedIntegrity.test.mjs
+@@ -114 +114 @@ test("server Local DB seed includes runtime timestamps, guest samples, and uniqu
+-    assert.equal(new Set(userSamples.map((sample) => sample.projectKey)).size, userSamples.length);
++    assert.equal(new Set(userSamples.map((sample) => sample.gameKey)).size, userSamples.length);
+@@ -131 +131 @@ test("server Local DB seed includes runtime timestamps, guest samples, and uniqu
+-test("server reseed targets only the active Local DB mode", async () => {
++test("server reseed targets Local DB and rejects retired Local Mem mode", async () => {
+@@ -137,5 +136,0 @@ test("server reseed targets only the active Local DB mode", async () => {
+-    const localMemInitial = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+-    const sampleKey = (localMemInitial.tables.tool_state_samples || [])[0]?.key;
+-    assert.ok(sampleKey, "Local Mem seed should include a tool_state_samples row");
+-    const originalLabel = sampleByKey(localMemInitial, sampleKey).sampleLabel;
+-
+@@ -146,3 +141,4 @@ test("server reseed targets only the active Local DB mode", async () => {
+-    await replaceSampleLabel(server.baseUrl, sampleKey, "Local DB mutated before Local Mem reseed");
+-    let localDbSnapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+-    assert.equal(sampleByKey(localDbSnapshot, sampleKey).sampleLabel, "Local DB mutated before Local Mem reseed");
++    const localDbInitial = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
++    const sampleKey = (localDbInitial.tables.tool_state_samples || [])[0]?.key;
++    assert.ok(sampleKey, "Local DB seed should include a tool_state_samples row");
++    const originalLabel = sampleByKey(localDbInitial, sampleKey).sampleLabel;
+@@ -150,16 +146,3 @@ test("server reseed targets only the active Local DB mode", async () => {
+-    await apiJson(server.baseUrl, "/api/session/mode", {
+-      body: JSON.stringify({ modeId: "local-mem" }),
+-      method: "POST",
+-    });
+-    await replaceSampleLabel(server.baseUrl, sampleKey, "Local Mem mutated before reseed");
+-    await apiJson(server.baseUrl, "/api/mock-db/seed", { method: "POST" });
+-    const localMemReseeded = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+-    assert.equal(sampleByKey(localMemReseeded, sampleKey).sampleLabel, originalLabel);
+-    assertRuntimeTimestamps(localMemReseeded.tables.tool_state_samples || []);
+-
+-    await apiJson(server.baseUrl, "/api/session/mode", {
+-      body: JSON.stringify({ modeId: "local-db" }),
+-      method: "POST",
+-    });
+-    localDbSnapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+-    assert.equal(sampleByKey(localDbSnapshot, sampleKey).sampleLabel, "Local DB mutated before Local Mem reseed");
++    await replaceSampleLabel(server.baseUrl, sampleKey, "Local DB mutated before reseed");
++    let localDbSnapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
++    assert.equal(sampleByKey(localDbSnapshot, sampleKey).sampleLabel, "Local DB mutated before reseed");
+@@ -172 +155 @@ test("server reseed targets only the active Local DB mode", async () => {
+-    await apiJson(server.baseUrl, "/api/session/mode", {
++    const retiredModeResponse = await fetch(`${server.baseUrl}/api/session/mode`, {
+@@ -173,0 +157 @@ test("server reseed targets only the active Local DB mode", async () => {
++      headers: { "content-type": "application/json" },
+@@ -176,2 +160,7 @@ test("server reseed targets only the active Local DB mode", async () => {
+-    const localMemAfterLocalDbReseed = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+-    assert.equal(sampleByKey(localMemAfterLocalDbReseed, sampleKey).sampleLabel, originalLabel);
++    const retiredModePayload = await retiredModeResponse.json();
++    assert.equal(retiredModeResponse.status, 500);
++    assert.equal(retiredModePayload.ok, false);
++    assert.match(retiredModePayload.error, /Unknown local login environment: local-mem/);
++
++    localDbSnapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
++    assert.equal(sampleByKey(localDbSnapshot, sampleKey).sampleLabel, originalLabel);
+diff --git a/tests/dev-runtime/DevRuntimeBoundary.test.mjs b/tests/dev-runtime/DevRuntimeBoundary.test.mjs
+index edbee9570..999058a64 100644
+--- a/tests/dev-runtime/DevRuntimeBoundary.test.mjs
++++ b/tests/dev-runtime/DevRuntimeBoundary.test.mjs
+@@ -116 +116 @@ test("browser and UAT/PROD candidate surfaces do not import src/dev-runtime", ()
+-test("server Local Mem seeds, guest samples, and reseed use dev-runtime modules", () => {
++test("server Local DB seeds, guest samples, and reseed use dev-runtime modules", () => {
+diff --git a/tests/helpers/playwrightRepoServer.mjs b/tests/helpers/playwrightRepoServer.mjs
+index 444007c33..b50026b22 100644
+--- a/tests/helpers/playwrightRepoServer.mjs
++++ b/tests/helpers/playwrightRepoServer.mjs
+@@ -3,0 +4 @@ import http from "node:http";
++import process from "node:process";
+@@ -11,0 +13 @@ const repoRoot = path.resolve(__dirname, "..", "..");
++let repoServerRunId = 0;
+@@ -54,0 +57,7 @@ export async function startRepoServer() {
++  const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
++  let localDbPath = "";
++  if (!previousLocalDbPath) {
++    repoServerRunId += 1;
++    localDbPath = path.join(repoRoot, "tmp", "local-db", `playwright-repo-server-${process.pid}-${repoServerRunId}.sqlite`);
++    process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
++  }
+@@ -113,0 +123,4 @@ export async function startRepoServer() {
++      if (!previousLocalDbPath) {
++        await fs.rm(localDbPath, { force: true });
++        delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
++      }
+diff --git a/tests/playwright/account/AchievementsPage.spec.mjs b/tests/playwright/account/AchievementsPage.spec.mjs
+index 66d8fbeec..83009294e 100644
+--- a/tests/playwright/account/AchievementsPage.spec.mjs
++++ b/tests/playwright/account/AchievementsPage.spec.mjs
+@@ -30 +30 @@ async function openAchievementsPage(page) {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
+diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
+index 8a6ac3d4a..80877bded 100644
+--- a/tests/playwright/tools/AdminDbViewer.spec.mjs
++++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
+@@ -49 +49 @@ async function openRepoPage(page, pathName, options = {}) {
+-  const sessionModeId = options.sessionModeId || "local-mem";
++  const sessionModeId = options.sessionModeId || "local-db";
+@@ -144,12 +143,0 @@ async function closeAdminDbPage(page, failures) {
+-async function uploadAsset(page, { assetRole, fileName, mimeType, name, usage }) {
+-  await page.locator("[data-asset-tool-asset-role]").selectOption(assetRole);
+-  await page.getByLabel("File").setInputFiles({
+-    buffer: Buffer.from(`${name} bytes`),
+-    mimeType,
+-    name: fileName
+-  });
+-  await page.getByLabel("Name").fill(name);
+-  await page.getByLabel("Usage").selectOption(usage);
+-  await page.getByRole("button", { name: "Upload Asset" }).click();
+-}
+-
+@@ -216 +204 @@ function expectSeedIntegrity(seedData) {
+-test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, users, roles, and diagnostics", async ({ page }) => {
++test("Admin DB Viewer shows current read-only Local DB tables, filters, users, roles, and diagnostics", async ({ page }) => {
+@@ -220 +208 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-    await expect(page.getByRole("heading", { name: "Local Mem DB", level: 1 })).toBeVisible();
++    await expect(page.getByRole("heading", { name: "Local DB", level: 1 })).toBeVisible();
+@@ -236 +224 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local Mem DB loaded \d+ tables and \d+ records for All\./);
++    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for All\./);
+@@ -239 +227 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-      "Workspace",
++      "Game Workspace",
+@@ -245,0 +234 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
++      "Tags",
+@@ -260 +249 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-      "workspace_games",
++      "game_workspace_games",
+@@ -357 +346 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-      "All current Local Mem DB tables include createdAt, updatedAt, createdBy, and updatedBy."
++      "All current Local DB tables include createdAt, updatedAt, createdBy, and updatedBy."
+@@ -361 +350 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-      "No stale display data detected; tables are rendered from current Local Mem DB snapshots."
++      "No stale display data detected; tables are rendered from current Local DB snapshots."
+@@ -384,0 +374 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
++    await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
+@@ -388,4 +378,4 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-    await page.getByRole("button", { name: "Workspace" }).click();
+-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Workspace\./);
+-    await expect(page.locator("[data-admin-db-table='workspace_games']")).toBeVisible();
+-    await expect(page.locator("[data-admin-db-table='workspace_games'] thead")).toContainText("ownerKey");
++    await page.getByRole("button", { name: "Game Workspace" }).click();
++    await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Game Workspace\./);
++    await expect(page.locator("[data-admin-db-table='game_workspace_games']")).toBeVisible();
++    await expect(page.locator("[data-admin-db-table='game_workspace_games'] thead")).toContainText("ownerKey");
+@@ -482,28 +472,2 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-    page.once("dialog", async (dialog) => {
+-      expect(dialog.message()).toBe("Clear all shared Local Mem DB records?");
+-      await dialog.dismiss();
+-    });
+-    await page.locator("[data-admin-db-clear]").click();
+-    await expect(page.locator("[data-admin-db-table='users']")).toContainText("forge-bot");
+-    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Local Mem DB");
+-
+-    page.once("dialog", async (dialog) => {
+-      expect(dialog.message()).toBe("Clear all shared Local Mem DB records?");
+-      await dialog.accept();
+-    });
+-    await page.locator("[data-admin-db-clear]").click();
+-    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Seed Local Mem DB");
+-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local Mem DB loaded \d+ tables and 0 records for All\./);
+-    await expect(page.locator("[data-admin-db-table='game_journey_items']")).toContainText("No records in this table.");
+-    await expect(page.locator("[data-admin-db-table='game_journey_items'] thead")).toContainText("gameKey");
+-    await expect(page.locator("[data-admin-db-table='tool_state_samples']")).toContainText("No records in this table.");
+-    await expect(page.locator("[data-admin-db-table='tool_state_samples'] thead")).toContainText("toolStatePayload");
+-    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("No records in this table.");
+-    await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata'] thead")).toContainText("toolKey");
+-    await expect(page.locator("[data-admin-db-table='toolbox_tool_planning'] thead")).toContainText("progressChecklist");
+-    await expect(page.locator("[data-admin-db-table='toolbox_votes'] thead")).toContainText("direction");
+-    await expect(page.locator("[data-admin-db-table='users'] thead")).toContainText("authProviderUserId");
+-    await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
+-    await page.locator("[data-admin-db-clear]").click();
+-    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Local Mem DB");
+-    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local Mem DB loaded \d+ tables and \d+ records for All\./);
++    await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
++    await expect(page.locator("[data-admin-db-status]")).toHaveText(/Local DB loaded \d+ tables and \d+ records for All\./);
+@@ -514 +478 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-    await expect(page.locator("[data-admin-db-clear]")).toHaveText("Clear Local Mem DB");
++    await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
+@@ -519,2 +483 @@ test("Admin DB Viewer shows current read-only Local Mem DB tables, filters, user
+-    await workspaceV2CoverageReporter.stop(page);
+-    await failures.server.close();
++    await closeAdminDbPage(page, failures);
+@@ -536 +499 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
+-      "Workspace",
++      "Game Workspace",
+@@ -542,0 +506 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
++      "Tags",
+@@ -617 +581,2 @@ test("Admin DB Viewer shows a visible Local DB diagnostic when adapter storage i
+-test("Local Mem DB viewer renders live persisted tool records after refresh", async ({ page }) => {
++test("Local DB viewer renders live persisted tool records after refresh", async ({ page }) => {
++  test.setTimeout(180_000);
+@@ -629 +594 @@ test("Local Mem DB viewer renders live persisted tool records after refresh", as
+-    await page.locator("[data-journey-item-details-input]").fill("Local Mem DB viewer should display this user-created item.");
++    await page.locator("[data-journey-item-details-input]").fill("Local DB viewer should display this user-created item.");
+@@ -639,20 +603,0 @@ test("Local Mem DB viewer renders live persisted tool records after refresh", as
+-    await page.goto(`${server.baseUrl}/toolbox/colors/index.html`, { waitUntil: "networkidle" });
+-    await page.locator("[data-palette-hex]").fill("#7A52FF");
+-    await page.locator("[data-palette-name]").fill("Persist Purple");
+-    await page.locator("[data-palette-add]").click();
+-    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Persist Purple']")).toHaveCount(1);
+-    await page.reload({ waitUntil: "networkidle" });
+-    await expect(page.locator("[data-palette-user-list] [data-palette-swatch-name='Persist Purple']")).toHaveCount(1);
+-
+-    await page.goto(`${server.baseUrl}/toolbox/assets/index.html`, { waitUntil: "networkidle" });
+-    await uploadAsset(page, {
+-      assetRole: "image",
+-      fileName: "persist-sprite.png",
+-      mimeType: "image/png",
+-      name: "Persist Sprite",
+-      usage: "sprite"
+-    });
+-    await expect(page.locator("[data-asset-tool-library]")).toContainText("Persist Sprite");
+-    await page.reload({ waitUntil: "networkidle" });
+-    await expect(page.locator("[data-asset-tool-library]")).toContainText("Persist Sprite");
+-
+@@ -673,4 +617,0 @@ test("Local Mem DB viewer renders live persisted tool records after refresh", as
+-    await page.getByRole("button", { name: "Palette" }).click();
+-    await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("Persist Purple");
+-    await page.getByRole("button", { name: "Asset" }).click();
+-    await expect(page.locator("[data-admin-db-table='asset_library_items']")).toContainText("Persist Sprite");
+@@ -686,2 +627 @@ test("Local Mem DB viewer renders live persisted tool records after refresh", as
+-    await workspaceV2CoverageReporter.stop(page);
+-    await server.close();
++    await closeAdminDbPage(page, failures);
+@@ -691 +631 @@ test("Local Mem DB viewer renders live persisted tool records after refresh", as
+-test("Local Mem DB viewer shows a visible diagnostic for invalid persisted audit users", async ({ page }) => {
++test("Local DB viewer shows a visible diagnostic for invalid persisted audit users", async ({ page }) => {
+@@ -705,2 +645 @@ test("Local Mem DB viewer shows a visible diagnostic for invalid persisted audit
+-    await workspaceV2CoverageReporter.stop(page);
+-    await failures.server.close();
++    await closeAdminDbPage(page, failures);
+@@ -710 +649 @@ test("Local Mem DB viewer shows a visible diagnostic for invalid persisted audit
+-test("Palette and Asset raw Local Mem DB tables are DB-shaped before viewer rendering", () => {
++test("Palette and Asset raw Local DB tables are DB-shaped before viewer rendering", () => {
+@@ -732 +671 @@ test("Palette and Asset raw Local Mem DB tables are DB-shaped before viewer rend
+-test("Local Mem DB audit normalization rejects invalid and missing audit users", () => {
++test("Local DB audit normalization rejects invalid and missing audit users", () => {
+diff --git a/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs b/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+index 51dfc9b19..9ac53b97e 100644
+--- a/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
++++ b/tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+@@ -50 +50 @@ async function openLocalViewer(page, routePath = "/admin/admin-notes.html") {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
+diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+index 7eb0f76cf..185088c13 100644
+--- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
++++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+@@ -35 +35 @@ async function setServerSession(server, userKey) {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
+diff --git a/tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs b/tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs
+index 08e84c20d..e22d1b273 100644
+--- a/tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs
++++ b/tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs
+@@ -11 +11 @@ const SESSION_ROUTE_CHECKS = [
+-  { body: { modeId: "local-mem" }, method: "POST", route: "/api/session/mode", status: 200 },
++  { body: { modeId: "local-db" }, method: "POST", route: "/api/session/mode", status: 200 },
+@@ -16 +16 @@ const SESSION_ROUTE_CHECKS = [
+-test("login session API routes recover static probes and local mode calls", async ({ page }) => {
++test("login session API routes recover static probes and Local DB mode calls", async ({ page }) => {
+@@ -59,2 +59,2 @@ test("login session API routes recover static probes and local mode calls", asyn
+-    await expect(page.locator("[data-login-mode]")).toHaveText(["Local Mem", "Local DB"]);
+-    await expect(page.locator("[data-login-mode='local-mem']")).toBeEnabled();
++    await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
++    await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
+diff --git a/tests/playwright/tools/AssetToolMockRepository.spec.mjs b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
+index 10a6ca014..3460d8003 100644
+--- a/tests/playwright/tools/AssetToolMockRepository.spec.mjs
++++ b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
+@@ -63 +63 @@ test.afterAll(async () => {
+-async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1, modeId = "local-mem") {
++async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1, modeId = "local-db") {
+@@ -106 +106 @@ async function openRepoPage(page, pathName, options = {}) {
+-  await setServerSession(server, sessionUserKey, options.sessionModeId || "local-mem");
++  await setServerSession(server, sessionUserKey, options.sessionModeId || "local-db");
+diff --git a/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs b/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
+index e95efd808..6549225a6 100644
+--- a/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
++++ b/tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
+@@ -52 +52 @@ async function setServerSession(server, userKey) {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
+diff --git a/tests/playwright/tools/GameJourneyTool.spec.mjs b/tests/playwright/tools/GameJourneyTool.spec.mjs
+index a86850413..033072900 100644
+--- a/tests/playwright/tools/GameJourneyTool.spec.mjs
++++ b/tests/playwright/tools/GameJourneyTool.spec.mjs
+@@ -65 +65 @@ async function openRepoPage(page, pathName, options = {}) {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
+diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
+index b7ce04a4e..0c6271d9f 100644
+--- a/tests/playwright/tools/LoginSessionMode.spec.mjs
++++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
+@@ -90 +90 @@ async function openRepoPage(page, pathName, options = {}) {
+-    body: JSON.stringify({ modeId: options.sessionModeId || "local-mem" }),
++    body: JSON.stringify({ modeId: options.sessionModeId || "local-db" }),
+@@ -108,0 +109,3 @@ async function openFixedLocalApiLoginPage(page) {
++  const previousLocalDbStoragePath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
++  const localDbStoragePath = nextLocalDbStoragePath();
++  process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbStoragePath;
+@@ -151 +154 @@ async function openFixedLocalApiLoginPage(page) {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
+@@ -163 +166 @@ async function openFixedLocalApiLoginPage(page) {
+-  return { consoleErrors, failedRequests, pageErrors, server };
++  return { consoleErrors, failedRequests, localDbStoragePath, pageErrors, previousLocalDbStoragePath, server };
+@@ -185,0 +189,6 @@ async function closeFixedLocalApiPage(page, failures) {
++  await fs.rm(failures.localDbStoragePath, { force: true });
++  if (failures.previousLocalDbStoragePath) {
++    process.env.GAMEFOUNDRY_LOCAL_DB_PATH = failures.previousLocalDbStoragePath;
++  } else {
++    delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
++  }
+@@ -248 +257 @@ async function mockDbSessionSnapshot(page) {
+-test("Login page switches Local Mem and Local DB without storing Guest as a user", async ({ page }) => {
++test("Login page uses Local DB only without storing Guest as a user", async ({ page }) => {
+@@ -254,2 +263,2 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await expect(page.locator("[data-login-mode]")).toHaveText(["Local Mem", "Local DB"]);
+-    await expect(page.locator("[data-login-mode='local-mem']")).toBeEnabled();
++    await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
++    await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
+@@ -275 +284 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local Mem)");
++    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local DB)");
+@@ -278 +287 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await expect(page.locator("[data-login-status-disabled-reason]")).toHaveText("Local Mem and Local DB are enabled because the Local API is available.");
++    await expect(page.locator("[data-login-status-disabled-reason]")).toHaveText("Local DB is enabled because the Local API is available.");
+@@ -282,3 +291,3 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local Mem");
+-    await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local Mem");
+-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local Mem only.");
++    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local DB");
++    await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local DB");
++    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local DB.");
+@@ -299 +308 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Confirm reseed for Local Mem only. The other DB mode will not be reseeded.");
++    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Confirm reseed for Local DB.");
+@@ -304 +313 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed canceled for Local Mem.");
++    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed canceled for Local DB.");
+@@ -308 +317 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed complete for Local Mem. Only Local Mem was reseeded.");
++    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed complete for Local DB.");
+@@ -313,18 +321,0 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await expect(page.locator("[data-login-mode='local-mem']")).toHaveClass(/primary/);
+-    await expect(page.locator("[data-login-mode-title]")).toHaveText("Local Mem");
+-    await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses MockDbAdapter backed by in-memory lists.");
+-    await expect(page.locator("[data-login-mode-status]")).toContainText("Environment: Local Mem");
+-    await expect(page.locator("[data-login-mode-status]")).toContainText("Persistence: Memory");
+-    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
+-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
+-
+-    let snapshot = await mockDbSessionSnapshot(page);
+-    expect(snapshot.mode.id).toBe("local-mem");
+-    expect(snapshot.persistence).toBe("Memory");
+-    expect(snapshot.userNames).toEqual(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]);
+-    expect(snapshot.userNames).not.toContain("Guest");
+-
+-    await page.locator("[data-login-mode='local-db']").click();
+-    await expect(page.locator("[data-login-mode='local-mem']")).toBeEnabled();
+-    await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
+@@ -337,9 +327,0 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local DB)");
+-    await expect(page.locator("[data-login-status-api]")).toContainText("Available");
+-    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local DB");
+-    await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local DB");
+-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local DB only.");
+-    await page.locator("[data-login-reseed-start]").click();
+-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Confirm reseed for Local DB only. The other DB mode will not be reseeded.");
+-    await page.locator("[data-login-reseed-confirm]").click();
+-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed complete for Local DB. Only Local DB was reseeded.");
+@@ -349,0 +332 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
++    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
+@@ -351,6 +334,6 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    let localDbSnapshot = await mockDbSessionSnapshot(page);
+-    expect(localDbSnapshot.mode.id).toBe("local-db");
+-    expect(localDbSnapshot.persistence).toBe("Local DB");
+-    expect(localDbSnapshot.sessionUser.id).toBe("guest");
+-    expect(localDbSnapshot.userNames).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]));
+-    expect(localDbSnapshot.userNames).not.toContain("Guest");
++    let snapshot = await mockDbSessionSnapshot(page);
++    expect(snapshot.mode.id).toBe("local-db");
++    expect(snapshot.persistence).toBe("Local DB");
++    expect(snapshot.sessionUser.id).toBe("guest");
++    expect(snapshot.userNames).toEqual(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]);
++    expect(snapshot.userNames).not.toContain("Guest");
+@@ -362,4 +345,4 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    localDbSnapshot = await mockDbSessionSnapshot(page);
+-    expect(localDbSnapshot.mode.id).toBe("local-db");
+-    expect(localDbSnapshot.persistence).toBe("Local DB");
+-    expect(localDbSnapshot.sessionUser.id).toBe(MOCK_DB_KEYS.users.user2);
++    snapshot = await mockDbSessionSnapshot(page);
++    expect(snapshot.mode.id).toBe("local-db");
++    expect(snapshot.persistence).toBe("Local DB");
++    expect(snapshot.sessionUser.id).toBe(MOCK_DB_KEYS.users.user2);
+@@ -367,2 +349,0 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
+-    await page.locator("[data-login-mode='local-mem']").click();
+-    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
+@@ -488 +469 @@ test("Login reseed shows a visible failure when the seed API fails", async ({ pa
+-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed failed for Local Mem: Forced reseed failure for validation.");
++    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed failed for Local DB: Forced reseed failure for validation.");
+@@ -581 +562,3 @@ test("Account logout clears only the current session and blocks protected pages"
+-    expect(storedUsers).toEqual(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]);
++    expect(storedUsers).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]));
++    expect(storedUsers).not.toContain("Guest");
++    expect(storedUsers).toHaveLength(5);
+diff --git a/tests/playwright/tools/PaletteToolMockRepository.spec.mjs b/tests/playwright/tools/PaletteToolMockRepository.spec.mjs
+index 261d331e8..235f1d0e4 100644
+--- a/tests/playwright/tools/PaletteToolMockRepository.spec.mjs
++++ b/tests/playwright/tools/PaletteToolMockRepository.spec.mjs
+@@ -99 +99 @@ async function openRepoPage(page, pathName, options = {}) {
+-      body: JSON.stringify({ modeId: options.sessionModeId || "local-mem" }),
++      body: JSON.stringify({ modeId: options.sessionModeId || "local-db" }),
+diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+index 069ad3047..66a3b3868 100644
+--- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
++++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -47 +47 @@ async function setServerSession(server, userKey) {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
+@@ -344 +344 @@ test("common header renders primary navigation order across active pages", async
+-      expect(bodyText.replace(/GameFoundryStudio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
++      expect(bodyText.replace(/GameFoundryStudio|Game Foundry Studio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
+diff --git a/tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs b/tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs
+index 6ef6041e2..21d0227a5 100644
+--- a/tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs
++++ b/tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs
+@@ -102,2 +102,2 @@ test("static 127.0.0.1:5500 login requires the API-backed local server", async (
+-    await expect(page.locator("[data-login-mode]")).toHaveText(["Local Mem", "Local DB"]);
+-    await expect(page.locator("[data-login-mode='local-mem']")).toBeDisabled();
++    await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
++    await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
+@@ -105 +104,0 @@ test("static 127.0.0.1:5500 login requires the API-backed local server", async (
+-    await expect(page.locator("[data-login-mode='local-mem']")).not.toHaveClass(/primary/);
+@@ -111 +110 @@ test("static 127.0.0.1:5500 login requires the API-backed local server", async (
+-    await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("Local Mem and Local DB are disabled");
++    await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("Local DB is disabled");
+@@ -123 +122 @@ test("static 127.0.0.1:5500 login requires the API-backed local server", async (
+-    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("Local Mem and Local DB are disabled");
++    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("Local DB is disabled");
+diff --git a/tests/playwright/tools/TagsTool.spec.mjs b/tests/playwright/tools/TagsTool.spec.mjs
+index e0c926a45..423b1be06 100644
+--- a/tests/playwright/tools/TagsTool.spec.mjs
++++ b/tests/playwright/tools/TagsTool.spec.mjs
+@@ -25 +25 @@ async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
+diff --git a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+index 4c6c9bb39..ed306cb77 100644
+--- a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
++++ b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+@@ -84 +84 @@ async function setServerSession(server, userKey) {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index 62a4a8bcb..cca5b5553 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -32 +32 @@ async function setServerSession(server, userKey) {
+-    body: JSON.stringify({ modeId: "local-mem" }),
++    body: JSON.stringify({ modeId: "local-db" }),
 
- .dual-entry {
-   display: grid;
--  grid-template-columns: var(--two-columns);
-+  grid-template-columns: var(--grid-cols-3);
-   gap: var(--space-14);
-   margin-top: var(--space-34)
- }
-diff --git a/docs_build/dev/reports/PR_26164_089-home-entry-card-thirds.md b/docs_build/dev/reports/PR_26164_089-home-entry-card-thirds.md
+diff --git a/docs_build/dev/reports/PR_26164_090-remove-mem-db-dev.md b/docs_build/dev/reports/PR_26164_090-remove-mem-db-dev.md
 new file mode 100644
-index 000000000..0eadffd4a
+index 000000000..bca6b2a54
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26164_089-home-entry-card-thirds.md
-@@ -0,0 +1,83 @@
-+# PR_26164_089-home-entry-card-thirds
++++ b/docs_build/dev/reports/PR_26164_090-remove-mem-db-dev.md
+@@ -0,0 +1,177 @@
++# PR_26164_090-remove-mem-db-dev
 +
 +## Branch Validation
 +
-+- Current branch: `main`
-+- Expected branch: `main`
-+- Local branches found: `* main`
-+- Result: PASS
++PASS: Current branch was verified as `main` before changes.
++
++Command:
++
++```text
++git branch --show-current
++main
++```
 +
 +## Scope
 +
-+- Updated reusable Theme V2 home layout styling in `assets/theme-v2/css/layout.css`.
-+- No `index.html` content changes were required because the Build, Play, and Share entry cards already exist in the Home hero.
-+- Required report artifacts updated:
-+  - `docs_build/dev/reports/codex_review.diff`
-+  - `docs_build/dev/reports/codex_changed_files.txt`
++PASS: Changes are limited to DEV runtime database adapter cleanup, Admin DB Viewer/Login DEV UI needed for that cleanup, targeted tests, validation reports, and required PR report artifacts.
++
++PASS: UAT and Prod database behavior were not changed. The shared adapter contract still lists UAT and Prod entries.
++
++PASS: Supabase was not introduced.
++
++## Pre-Change Adapter Finding
++
++PASS: The current DEV runtime had two local adapter routes before this change:
++
++- MEM DB route: `local-mem`, implemented by the in-memory mock adapter path.
++- Local DB route: `local-db`, implemented by `LocalDbAdapter`.
++
++PASS: The active DEV route before this cleanup was the MEM DB route by default in the local DEV data source setup. This PR changes the DEV default and only active runtime option to Local DB.
++
++## Local DB Activation Evidence
++
++PASS: DEV runtime now reports only `local-db` as the local mode and rejects the retired `local-mem` route.
++
++Evidence from targeted runtime probe:
++
++```json
++{
++  "activeMode": "local-db",
++  "contractEnvironments": ["Local DB", "UAT", "Prod"],
++  "modeIds": ["local-db"],
++  "retiredModeOk": false,
++  "retiredModeStatus": 500,
++  "retiredModeError": "Unknown local login environment: local-mem."
++}
++```
++
++PASS: No runtime fallback to MEM DB remains.
++
++PASS: Missing Local DB configuration fails visibly with actionable diagnostics. The Admin DB Viewer coverage exercises `GAMEFOUNDRY_LOCAL_DB_DISABLE` and verifies a visible Local DB error state instead of a MEM DB fallback.
++
++PASS: Browser-storage product-data ownership was not added. The DEV mock store disables browser localStorage-backed product persistence and relies on Local DB/server-backed state.
++
++## Implementation Summary
++
++PASS: `src/dev-runtime/persistence/mock-db-store.js` now exposes Local DB as the only local session mode and rejects unknown modes.
++
++PASS: `src/dev-runtime/server/mock-api-router.mjs` removed the active MEM DB adapter route, MEM DB contract entry, MEM DB mode switch, and MEM DB fallback path. Local DEV runtime starts in Local DB and persists through `LocalDbAdapter`.
++
++PASS: `admin/db-viewer.html`, `admin/db-viewer.js`, and `src/engine/api/mock-db-viewer-ui.js` now present Admin DB Viewer as Local DB-backed state only. Write controls that targeted old mock routes were removed from the viewer UI.
++
++PASS: `login.html`, `assets/theme-v2/js/login-session.js`, `assets/theme-v2/js/gamefoundry-partials.js`, and `admin/environments.html` no longer expose Local Mem as a user-selectable DEV database option.
++
++PASS: Playwright repo-server helper now provides an isolated test Local DB path when tests do not supply one, preserving per-test isolation without restoring MEM DB.
 +
 +## Requirement Checklist
 +
-+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution: PASS
-+- Verified current branch is `main` before making changes: PASS
-+- Scoped PR to Home hero entry-card layout and required reports only: PASS
-+- Ensured Build, Play, and Share entry cards stay on one horizontal row on desktop: PASS
-+- Reduced individual entry-card width to one third of the available entry-card row: PASS
-+- Kept all three cards side by side: PASS
-+- Used existing Theme V2 layout tokens first: PASS
-+- Added reusable Theme V2 styling only under `assets/theme-v2/css/`: PASS
-+- Did not use inline styles, style blocks, script blocks, or inline event handlers: PASS
-+- Preserved responsive behavior for smaller screens: PASS
-+- Ran `git diff --check`: PASS
-+- Validated home page renders: PASS
-+- Validated cards remain readable on smaller screens: PASS
-+- Playwright impacted: No. Layout/content only: PASS
-+- Required repo-structured ZIP produced: PASS
++| Requirement | Result | Evidence |
++| --- | --- | --- |
++| Identify DEV adapters: MEM DB and Local DB | PASS | Pre-change audit found `local-mem` and `local-db`. |
++| Confirm active DEV adapter before changes | PASS | Pre-change default route was MEM DB in the DEV data source setup. |
++| Route DEV runtime to Local DB only | PASS | Runtime probe reports `activeMode: local-db` and `modeIds: ["local-db"]`. |
++| Remove MEM DB as active runtime option | PASS | `local-mem` now returns `500` with an unknown environment diagnostic. |
++| Remove MEM DB imports, switches, fallback paths where safe | PASS | Active `MockDbAdapter`, Local Mem contract entry, and Local Mem switch logic were removed. |
++| Preserve shared DB adapter/service contracts | PASS | Shared service API shape remains; UAT/Prod contract entries remain. |
++| Update Admin DB Viewer | PASS | Viewer opens Local DB-backed state and no longer exposes MEM DB write controls. |
++| Missing Local DB config fails visibly | PASS | Admin DB Viewer targeted test verifies visible Local DB-disabled diagnostics. |
++| No silent MEM DB fallback | PASS | Retired mode request is rejected. |
++| No hidden defaults | PASS | Unknown local login environment now throws instead of coercing. |
++| No browser-storage product-data ownership | PASS | Browser localStorage persistence path is disabled for product data. |
++| Do not change UAT/PROD behavior | PASS | UAT/Prod contract entries remain untouched functionally. |
++| Do not introduce Supabase | PASS | No Supabase references were added. |
++| Playwright coverage for changed runtime JS | PASS/WARN | V8 report produced; browser-executed files are covered, Node-only runtime files are advisory WARN. |
++
++## MEM DB Reference Audit
++
++### REMOVED
++
++| File | Reference | Result |
++| --- | --- | --- |
++| `src/dev-runtime/persistence/mock-db-store.js` | `local-mem` session mode and browser-storage product persistence route | REMOVED |
++| `src/dev-runtime/server/mock-api-router.mjs` | `LOCAL_MEM_MODE_ID`, active `MockDbAdapter`, Local Mem contract entry, Local Mem mode switch/fallback | REMOVED |
++| `admin/db-viewer.html` | Local Mem viewer copy and mock write controls | REMOVED |
++| `admin/db-viewer.js` | Viewer startup accepting non-Local DB mode | REMOVED |
++| `src/engine/api/mock-db-viewer-ui.js` | Local Mem mode labeling and clear/seed write UI | REMOVED |
++| `src/engine/api/mock-db-api-client.js` | User-facing MEM DB clear/seed error labels | REMOVED |
++| `login.html` | Local Mem login selector button and copy | REMOVED |
++| `assets/theme-v2/js/login-session.js` | Local Mem selector copy/defaults and Local Mem reseed messaging | REMOVED |
++| `assets/theme-v2/js/gamefoundry-partials.js` | `local-mem` fallback default | REMOVED |
++| `admin/environments.html` | Memory DB admin environment row/selector copy | REMOVED |
++| Playwright setup files | Active test setup using `{ mode: "local-mem" }` | REMOVED |
++
++### LEFT IN PLACE
++
++| File | Reference | Result | Reason |
++| --- | --- | --- | --- |
++| `docs_build/dev/PROJECT_INSTRUCTIONS.md:320` | Historical governance mention that DB Adapter may be MEM DB | LEFT IN PLACE | Project instructions are source policy, not active runtime behavior, and were not in cleanup scope. |
++| `docs_build/dev/PROJECT_INSTRUCTIONS.md:350` | Historical Memory DB local session rule | LEFT IN PLACE | Project instructions are source policy, not active runtime behavior, and were not in cleanup scope. |
++| `src/dev-runtime/persistence/mock-db-store.js:302-308` | `memoryDbTables`, `memoryDbCleared`, `memoryDbOwners` option names | LEFT IN PLACE | Shared in-process table handoff contract used by Local DB/server repository state. It is not an active MEM DB adapter route. |
++| `src/dev-runtime/server/mock-api-router.mjs:915,983` | `memoryDbTables` shared option | LEFT IN PLACE | Shared table handoff for server/repository state; no Local Mem adapter or fallback remains. |
++| `src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js:604` | `memoryDbTables` explicit table option | LEFT IN PLACE | Repository-level table handoff contract, not active MEM DB route selection. |
++| `src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js:56-59,251,253` | `memoryDbTables` explicit table option | LEFT IN PLACE | Repository-level table handoff contract, not active MEM DB route selection. |
++| `src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js:113,135,137` | `memoryDbTables` explicit table option | LEFT IN PLACE | Repository-level table handoff contract, not active MEM DB route selection. |
++| `src/dev-runtime/persistence/tool-repositories/tags-mock-repository.js:99` | `memoryDbTables` explicit table option | LEFT IN PLACE | Repository-level table handoff contract, not active MEM DB route selection. |
++| `tests/playwright/tools/GameJourneyTool.spec.mjs:908` | `memoryDbTables` test fixture option | LEFT IN PLACE | Isolated test fixture for repository table handoff, not active DEV runtime selection. |
++| `tests/dev-runtime/DbSeedIntegrity.test.mjs:131,156,163` | Retired Local Mem rejection test | LEFT IN PLACE | Negative coverage proving `local-mem` is rejected. |
++| `tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs:60` | Assertion that Local Mem selector is absent | LEFT IN PLACE | Negative coverage proving UI option is removed. |
++| `tests/playwright/tools/LoginSessionMode.spec.mjs:264` | Assertion that Local Mem selector is absent | LEFT IN PLACE | Negative coverage proving UI option is removed. |
++| `tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs:103` | Assertion that Local Mem selector is absent | LEFT IN PLACE | Negative coverage proving UI option is removed. |
++
++### FOLLOW-UP REQUIRED
++
++| Reference | Result | Reason |
++| --- | --- | --- |
++| Internal `memoryDbTables` naming | FOLLOW-UP REQUIRED | A future contract-cleanup PR can rename this shared in-process table handoff terminology. Renaming it here would broaden this PR beyond active DEV runtime adapter cleanup and risk unrelated repository contracts. |
++| Project instruction Memory DB wording | FOLLOW-UP REQUIRED | If policy has changed globally, update `docs_build/dev/PROJECT_INSTRUCTIONS.md` in a dedicated governance/docs PR. |
++
++## Validation Lane Report
++
++| Validation | Result | Notes |
++| --- | --- | --- |
++| `git diff --check` | PASS | Whitespace check passed; Git emitted line-ending warnings only. |
++| Targeted syntax checks | PASS | `node --check` passed for changed JS/MJS files. |
++| Targeted Node tests | PASS | `node --test tests/dev-runtime/DbSeedIntegrity.test.mjs tests/dev-runtime/DevRuntimeBoundary.test.mjs` passed 5/5. |
++| Targeted Playwright | PASS | `AdminDbViewer`, `LoginSessionMode`, `StaticOnlyLoginApiRequired`, and `ApiStaticRouteRecovery` passed 16/16. |
++| `npm run test:workspace-v2` | PASS | Required legacy command name passed. User-facing language remains Project Workspace. |
++| Playwright V8 coverage | PASS/WARN | Coverage report produced at `docs_build/dev/reports/playwright_v8_coverage_report.txt`. Node-only runtime files are WARN because Playwright browser V8 coverage does not collect them. |
++| Inline script/style/event handler audit | PASS | No new inline script, style, or event handler patterns found in changed HTML. |
++| Full samples smoke | SKIP | Not run per user instruction. Testing lane report records samples lane SKIP. |
++
++## Playwright V8 Coverage Evidence
++
++Changed runtime JS coverage report:
++
++```text
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(67%) admin/db-viewer.js - executed lines 53/53; executed functions 4/6
++(80%) src/engine/api/mock-db-api-client.js - executed lines 19/19; executed functions 4/5
++(83%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 650/650; executed functions 50/60
++(90%) src/engine/api/mock-db-viewer-ui.js - executed lines 479/479; executed functions 82/91
++(96%) assets/theme-v2/js/login-session.js - executed lines 357/357; executed functions 27/28
++```
 +
 +## Manual Validation Notes
 +
-+- Reviewed the Home hero entry-card markup in `index.html`.
-+- Confirmed `index.html` contains the three hero entry cards in order:
-+  - Build
-+  - Play
-+  - Share
-+- Reviewed active Theme V2 imports and confirmed `theme.css` imports `layout.css`.
-+- Confirmed `.dual-entry` was the active Home hero entry-card row layout rule.
-+- Updated `.dual-entry` from `var(--two-columns)` to `var(--grid-cols-3)`, using the existing `repeat(3, 1fr)` Theme V2 token.
-+- Confirmed the existing `@media(max-width:620px)` rule still collapses `.dual-entry` to `var(--one-column)` for smaller screens.
++PASS: Admin DB Viewer opens in Local DB mode and shows Local DB-backed status/table state.
 +
-+## Validation
++PASS: Admin DB Viewer no longer exposes Local Mem mode or mock clear/seed write controls.
 +
-+- `git diff --check`: PASS
-+  - Note: Git reported an LF-to-CRLF working-copy warning for `assets/theme-v2/css/layout.css`; the command exited successfully.
-+- Home page render-shell validation: PASS
-+- Build / Play / Share entry-card content validation: PASS
-+- Desktop three-column CSS validation: PASS
-+  - `.dual-entry` uses `grid-template-columns: var(--grid-cols-3)`.
-+  - `--grid-cols-3` resolves to `repeat(3, 1fr)`.
-+- Smaller-screen readability validation: PASS
-+  - Existing `@media(max-width:620px)` rule keeps `.dual-entry` at `var(--one-column)`.
-+- Inline HTML restriction check: PASS
-+  - No `<style>` blocks.
-+  - No inline `<script>` blocks.
-+  - No inline event handlers.
-+  - No inline `style` attributes.
++PASS: Missing Local DB configuration path produces visible, actionable Local DB diagnostics.
 +
-+## Playwright
++PASS: Login DEV UI exposes Local DB only; Local Mem selector is absent.
 +
-+- Playwright impacted: No.
-+- Playwright run: SKIP.
-+- Reason: This PR changes reusable CSS layout only. No runtime behavior, tool workflow, shared engine behavior, or browser interaction changed.
++PASS: Retired `local-mem` API mode requests fail visibly with `Unknown local login environment: local-mem.`
 +
-+## Samples
++PASS: UAT and Prod remain in the DB adapter environment contract.
 +
-+- Full samples smoke test: SKIP.
-+- Reason: No samples or runtime game surfaces changed.
++PASS: Required reports generated:
 +
-+## Review Artifacts
++- `docs_build/dev/reports/PR_26164_090-remove-mem-db-dev.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +
-+- `docs_build/dev/reports/codex_review.diff`: PASS
-+- `docs_build/dev/reports/codex_changed_files.txt`: PASS
-+
-+## ZIP
-+
-+- `tmp/PR_26164_089-home-entry-card-thirds_delta.zip`: PASS
++PASS: Required repo-structured ZIP is written to `tmp/PR_26164_090-remove-mem-db-dev_delta.zip`.

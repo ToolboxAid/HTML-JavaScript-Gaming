@@ -113,7 +113,7 @@ test("browser and UAT/PROD candidate surfaces do not import src/dev-runtime", ()
   );
 });
 
-test("server Local Mem seeds, guest samples, and reseed use dev-runtime modules", () => {
+test("server Local DB seeds, guest samples, and reseed use dev-runtime modules", () => {
   const router = read("src/dev-runtime/server/mock-api-router.mjs");
   assert.match(router, /from "\.\.\/guest-seeds\/tool-state-samples\.js"/);
   assert.match(router, /createServerSeedTables\(\)/);

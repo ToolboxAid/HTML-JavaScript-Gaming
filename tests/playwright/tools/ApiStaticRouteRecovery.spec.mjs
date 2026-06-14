@@ -8,12 +8,12 @@ const SESSION_ROUTE_CHECKS = [
   { method: "GET", route: "/api/session/current", status: 200 },
   { method: "GET", route: "/api/session/modes", status: 200 },
   { method: "GET", route: "/api/session/users", status: 200 },
-  { body: { modeId: "local-mem" }, method: "POST", route: "/api/session/mode", status: 200 },
+  { body: { modeId: "local-db" }, method: "POST", route: "/api/session/mode", status: 200 },
   { body: { userKey: "" }, method: "POST", route: "/api/session/user", status: 200 },
   { body: {}, method: "POST", route: "/api/session/logout", status: 200 },
 ];
 
-test("login session API routes recover static probes and local mode calls", async ({ page }) => {
+test("login session API routes recover static probes and Local DB mode calls", async ({ page }) => {
   const server = await startRepoServer();
   const failedRequests = [];
   const pageErrors = [];
@@ -56,8 +56,8 @@ test("login session API routes recover static probes and local mode calls", asyn
     }
 
     await page.goto(`${server.baseUrl}/login.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-login-mode]")).toHaveText(["Local Mem", "Local DB"]);
-    await expect(page.locator("[data-login-mode='local-mem']")).toBeEnabled();
+    await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
+    await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
     await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);

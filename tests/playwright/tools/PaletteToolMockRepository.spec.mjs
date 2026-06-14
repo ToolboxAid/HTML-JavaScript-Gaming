@@ -96,7 +96,7 @@ async function openRepoPage(page, pathName, options = {}) {
 
   if (options.sessionUserKey !== undefined) {
     await fetch(`${server.baseUrl}/api/session/mode`, {
-      body: JSON.stringify({ modeId: options.sessionModeId || "local-mem" }),
+      body: JSON.stringify({ modeId: options.sessionModeId || "local-db" }),
       headers: { "content-type": "application/json" },
       method: "POST"
     });

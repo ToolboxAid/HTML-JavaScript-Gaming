@@ -27,7 +27,7 @@ const localApiStartCommand = "npm run dev:local-api";
 const localApiLoginUrl = "http://127.0.0.1:5501/login.html";
 const expectedSessionEndpoint = "/api/session/current";
 const apiBackedLoginDiagnostic = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}.`;
-const staticModeDisabledMessage = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}. Local Mem and Local DB are disabled until the local API server is running.`;
+const staticModeDisabledMessage = `Use the API-backed local server for login. Run ${localApiStartCommand} and open ${localApiLoginUrl}. Local DB is disabled until the local API server is running.`;
 let reseedConfirmationPending = false;
 let reseedStatusMessage = "";
 const localStatusFields = {
@@ -98,7 +98,7 @@ function reseedModeLabel(mode) {
 function updateReseedControls({ apiAvailable, mode, statusMessage }) {
   const modeLabel = apiAvailable ? reseedModeLabel(mode) : "Unavailable";
   const message = statusMessage || (apiAvailable
-    ? `Ready to reseed ${modeLabel} only.`
+    ? `Ready to reseed ${modeLabel}.`
     : "Reseed unavailable until the Local API is available.");
   if (reseedFields.activeMode) {
     reseedFields.activeMode.textContent = modeLabel;
@@ -206,7 +206,7 @@ function renderError(error) {
     : "Local server without session API";
   const disabledReason = message === apiBackedLoginDiagnostic
     ? staticModeDisabledMessage
-    : `Local Mem and Local DB are disabled because ${message}`;
+    : `Local DB is disabled because ${message}`;
   reseedConfirmationPending = false;
   reseedStatusMessage = "Reseed unavailable until the Local API is available.";
   modeButtons.forEach((button) => {
@@ -222,7 +222,7 @@ function renderError(error) {
     modeTitle.textContent = "Session API required";
   }
   if (modeDescription) {
-    modeDescription.textContent = "Start the API-backed local server to choose Local Mem or Local DB.";
+    modeDescription.textContent = "Start the API-backed local server to use Local DB.";
   }
   if (modeStatus) {
     modeStatus.textContent = `Login/session diagnostic: ${message}`;
@@ -280,7 +280,7 @@ function render() {
     }
     updateLocalDevelopmentStatus({
       apiAvailability: `Available: ${expectedSessionEndpoint} responded through the local API server.`,
-      disabledReason: "Local Mem and Local DB are enabled because the Local API is available.",
+      disabledReason: "Local DB is enabled because the Local API is available.",
       serverMode: `API-backed local server (${mode.label || session.mode})`,
     });
     updateReseedControls({
@@ -301,7 +301,7 @@ function render() {
 
 modeButtons.forEach((button) => {
   button.addEventListener("click", () => {
-    const modeId = button.dataset.loginMode || "local-mem";
+    const modeId = button.dataset.loginMode || "local-db";
     if (isStaticLocalEntrypoint()) {
       renderError(new Error(apiBackedLoginDiagnostic));
       return;
@@ -337,7 +337,7 @@ reseedFields.startButton?.addEventListener("click", () => {
     const mode = currentModeForReseed();
     const modeLabel = reseedModeLabel(mode);
     reseedConfirmationPending = true;
-    reseedStatusMessage = `Confirm reseed for ${modeLabel} only. The other DB mode will not be reseeded.`;
+    reseedStatusMessage = `Confirm reseed for ${modeLabel}.`;
     render();
   } catch (error) {
     reseedConfirmationPending = false;
@@ -364,7 +364,7 @@ reseedFields.confirmButton?.addEventListener("click", () => {
     const modeLabel = reseedModeLabel(currentModeForReseed());
     seedMockDb();
     reseedConfirmationPending = false;
-    reseedStatusMessage = `Reseed complete for ${modeLabel}. Only ${modeLabel} was reseeded.`;
+    reseedStatusMessage = `Reseed complete for ${modeLabel}.`;
     dispatchModeChanged();
     render();
   } catch (error) {

@@ -87,7 +87,7 @@ async function openRepoPage(page, pathName, options = {}) {
     await fetch(`${server.baseUrl}/api/mock-db/clear`, { method: "POST" });
   }
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: options.sessionModeId || "local-mem" }),
+    body: JSON.stringify({ modeId: options.sessionModeId || "local-db" }),
     headers: { "content-type": "application/json" },
     method: "POST",
   });
@@ -106,6 +106,9 @@ async function openRepoPage(page, pathName, options = {}) {
 
 async function openFixedLocalApiLoginPage(page) {
   const fixedBaseUrl = "http://127.0.0.1:5501";
+  const previousLocalDbStoragePath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+  const localDbStoragePath = nextLocalDbStoragePath();
+  process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbStoragePath;
   let server;
   try {
     server = await startLocalApiServer({ host: "127.0.0.1", port: 5501 });
@@ -148,7 +151,7 @@ async function openFixedLocalApiLoginPage(page) {
 
   await fetch(`${server.baseUrl}/api/mock-db/seed`, { method: "POST" });
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: "local-mem" }),
+    body: JSON.stringify({ modeId: "local-db" }),
     headers: { "content-type": "application/json" },
     method: "POST",
   });
@@ -160,7 +163,7 @@ async function openFixedLocalApiLoginPage(page) {
 
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${fixedBaseUrl}/login.html`, { waitUntil: "networkidle" });
-  return { consoleErrors, failedRequests, pageErrors, server };
+  return { consoleErrors, failedRequests, localDbStoragePath, pageErrors, previousLocalDbStoragePath, server };
 }
 
 function expectNoPageFailures(failures) {
@@ -183,6 +186,12 @@ async function closeWithCoverage(page, failures) {
 async function closeFixedLocalApiPage(page, failures) {
   await workspaceV2CoverageReporter.stop(page);
   await failures.server.close();
+  await fs.rm(failures.localDbStoragePath, { force: true });
+  if (failures.previousLocalDbStoragePath) {
+    process.env.GAMEFOUNDRY_LOCAL_DB_PATH = failures.previousLocalDbStoragePath;
+  } else {
+    delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+  }
 }
 
 async function expectLocalAdminMyStuffMenu(page) {
@@ -245,14 +254,14 @@ async function mockDbSessionSnapshot(page) {
   });
 }
 
-test("Login page switches Local Mem and Local DB without storing Guest as a user", async ({ page }) => {
+test("Login page uses Local DB only without storing Guest as a user", async ({ page }) => {
   const failures = await openRepoPage(page, "/login.html");
 
   try {
     await expect(page.getByRole("heading", { name: "Login", level: 1 })).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.locator("[data-login-mode]")).toHaveText(["Local Mem", "Local DB"]);
-    await expect(page.locator("[data-login-mode='local-mem']")).toBeEnabled();
+    await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
+    await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
     await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
     await expect(page.locator("main hr")).toHaveCount(1);
     await expect(page.getByRole("heading", { name: "Local Development Status", level: 2 })).toBeVisible();
@@ -272,16 +281,16 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     });
     expect(diagnosticsLayout).toEqual({ belowPanel: true, fillsContainer: true });
     await expect(page.locator("[data-login-status-current-url]")).toContainText(`${failures.server.baseUrl}/login.html`);
-    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local Mem)");
+    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local DB)");
     await expect(page.locator("[data-login-status-api]")).toContainText("Available");
     await expect(page.locator("[data-login-status-api]")).toContainText("/api/session/current");
-    await expect(page.locator("[data-login-status-disabled-reason]")).toHaveText("Local Mem and Local DB are enabled because the Local API is available.");
+    await expect(page.locator("[data-login-status-disabled-reason]")).toHaveText("Local DB is enabled because the Local API is available.");
     await expect(page.locator("[data-login-status-endpoint]")).toHaveText("/api/session/current");
     await expect(page.locator("[data-login-status-api-url]")).toHaveText("http://127.0.0.1:5501/login.html");
     await expect(page.locator("[data-login-status-command]")).toHaveText("npm run dev:local-api");
-    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local Mem");
-    await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local Mem");
-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local Mem only.");
+    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local DB");
+    await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local DB");
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local DB.");
     const reseedPlacement = await page.locator("aside.side-menu").evaluate((sideMenu) => {
       const visibleChildren = Array.from(sideMenu.children).filter((child) => {
         return !child.hasAttribute("hidden");
@@ -296,76 +305,48 @@ test("Login page switches Local Mem and Local DB without storing Guest as a user
     await expect(page.locator("[data-login-reseed-confirm]")).toBeHidden();
     await expect(page.locator("[data-login-reseed-cancel]")).toBeHidden();
     await page.locator("[data-login-reseed-start]").click();
-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Confirm reseed for Local Mem only. The other DB mode will not be reseeded.");
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Confirm reseed for Local DB.");
     await expect(page.locator("[data-login-reseed-start]")).toBeDisabled();
     await expect(page.locator("[data-login-reseed-confirm]")).toBeVisible();
     await expect(page.locator("[data-login-reseed-cancel]")).toBeVisible();
     await page.locator("[data-login-reseed-cancel]").click();
-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed canceled for Local Mem.");
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed canceled for Local DB.");
     await expect(page.locator("[data-login-reseed-start]")).toBeEnabled();
     await page.locator("[data-login-reseed-start]").click();
     await page.locator("[data-login-reseed-confirm]").click();
-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed complete for Local Mem. Only Local Mem was reseeded.");
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed complete for Local DB.");
     await expect(page.locator("[data-login-reseed-start]")).toBeEnabled();
     await expect(page.getByRole("button", { name: "DEV" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
-    await expect(page.locator("[data-login-mode='local-mem']")).toHaveClass(/primary/);
-    await expect(page.locator("[data-login-mode-title]")).toHaveText("Local Mem");
-    await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses MockDbAdapter backed by in-memory lists.");
-    await expect(page.locator("[data-login-mode-status]")).toContainText("Environment: Local Mem");
-    await expect(page.locator("[data-login-mode-status]")).toContainText("Persistence: Memory");
-    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
-
-    let snapshot = await mockDbSessionSnapshot(page);
-    expect(snapshot.mode.id).toBe("local-mem");
-    expect(snapshot.persistence).toBe("Memory");
-    expect(snapshot.userNames).toEqual(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]);
-    expect(snapshot.userNames).not.toContain("Guest");
-
-    await page.locator("[data-login-mode='local-db']").click();
-    await expect(page.locator("[data-login-mode='local-mem']")).toBeEnabled();
-    await expect(page.locator("[data-login-mode='local-db']")).toBeEnabled();
     await expect(page.locator("[data-login-mode='local-db']")).toHaveClass(/primary/);
     await expect(page.locator("[data-login-mode-title]")).toHaveText("Local DB");
     await expect(page.locator("[data-login-mode-description]")).toHaveText("Uses LocalDbAdapter backed by server SQLite storage.");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Environment: Local DB");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Persistence: Local DB");
     await expect(page.locator("[data-login-mode-status]")).not.toContainText("Local DB adapter not configured");
-    await expect(page.locator("[data-login-status-server-mode]")).toHaveText("API-backed local server (Local DB)");
-    await expect(page.locator("[data-login-status-api]")).toContainText("Available");
-    await expect(page.locator("[data-login-reseed-active-mode]")).toHaveText("Local DB");
-    await expect(page.locator("[data-login-reseed-target]")).toHaveText("Local DB");
-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Ready to reseed Local DB only.");
-    await page.locator("[data-login-reseed-start]").click();
-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Confirm reseed for Local DB only. The other DB mode will not be reseeded.");
-    await page.locator("[data-login-reseed-confirm]").click();
-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed complete for Local DB. Only Local DB was reseeded.");
     await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
     await expect(page.locator("[data-login-user-controls]")).toBeVisible();
     await expect(page.locator("[data-login-user-status]")).toHaveText("Guest is unauthenticated and is not stored in the users table.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Login");
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
 
-    let localDbSnapshot = await mockDbSessionSnapshot(page);
-    expect(localDbSnapshot.mode.id).toBe("local-db");
-    expect(localDbSnapshot.persistence).toBe("Local DB");
-    expect(localDbSnapshot.sessionUser.id).toBe("guest");
-    expect(localDbSnapshot.userNames).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]));
-    expect(localDbSnapshot.userNames).not.toContain("Guest");
+    let snapshot = await mockDbSessionSnapshot(page);
+    expect(snapshot.mode.id).toBe("local-db");
+    expect(snapshot.persistence).toBe("Local DB");
+    expect(snapshot.sessionUser.id).toBe("guest");
+    expect(snapshot.userNames).toEqual(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]);
+    expect(snapshot.userNames).not.toContain("Guest");
 
     await page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user2}']`).click();
     await expect(page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user2}']`)).toHaveClass(/primary/);
     await expect(page.locator("[data-login-user-status]")).toHaveText("Selected local user: User 2.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 2");
-    localDbSnapshot = await mockDbSessionSnapshot(page);
-    expect(localDbSnapshot.mode.id).toBe("local-db");
-    expect(localDbSnapshot.persistence).toBe("Local DB");
-    expect(localDbSnapshot.sessionUser.id).toBe(MOCK_DB_KEYS.users.user2);
+    snapshot = await mockDbSessionSnapshot(page);
+    expect(snapshot.mode.id).toBe("local-db");
+    expect(snapshot.persistence).toBe("Local DB");
+    expect(snapshot.sessionUser.id).toBe(MOCK_DB_KEYS.users.user2);
 
-    await page.locator("[data-login-mode='local-mem']").click();
-    await expect(page.locator("[data-login-user]")).toHaveText(["Guest", "User 1", "User 2", "User 3", "DavidQ"]);
     await page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`).click();
     await expect(page.locator(`[data-login-user='${MOCK_DB_KEYS.users.user1}']`)).toHaveClass(/primary/);
     await expect(page.locator("[data-login-user-status]")).toHaveText("Selected local user: User 1.");
@@ -485,7 +466,7 @@ test("Login reseed shows a visible failure when the seed API fails", async ({ pa
     });
     await page.locator("[data-login-reseed-start]").click();
     await page.locator("[data-login-reseed-confirm]").click();
-    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed failed for Local Mem: Forced reseed failure for validation.");
+    await expect(page.locator("[data-login-reseed-status]")).toHaveText("Reseed failed for Local DB: Forced reseed failure for validation.");
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
@@ -578,7 +559,9 @@ test("Account logout clears only the current session and blocks protected pages"
       const snapshot = await fetch("/api/mock-db/snapshot").then((response) => response.json());
       return (snapshot.data.tables.users || []).map((user) => user.displayName);
     });
-    expect(storedUsers).toEqual(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]);
+    expect(storedUsers).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ", "forge-bot"]));
+    expect(storedUsers).not.toContain("Guest");
+    expect(storedUsers).toHaveLength(5);
 
     const directPage = await page.context().newPage();
     try {

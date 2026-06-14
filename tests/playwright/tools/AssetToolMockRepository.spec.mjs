@@ -60,7 +60,7 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1, modeId = "local-mem") {
+async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1, modeId = "local-db") {
   await fetch(`${server.baseUrl}/api/session/mode`, {
     body: JSON.stringify({ modeId }),
     headers: { "Content-Type": "application/json" },
@@ -103,7 +103,7 @@ async function openRepoPage(page, pathName, options = {}) {
   const sessionUserKey = Object.prototype.hasOwnProperty.call(options, "sessionUserKey")
     ? options.sessionUserKey
     : MOCK_DB_KEYS.users.user1;
-  await setServerSession(server, sessionUserKey, options.sessionModeId || "local-mem");
+  await setServerSession(server, sessionUserKey, options.sessionModeId || "local-db");
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, pageErrors, server };

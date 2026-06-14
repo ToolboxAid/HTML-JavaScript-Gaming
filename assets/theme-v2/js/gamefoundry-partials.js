@@ -385,7 +385,7 @@
                 authenticated: Boolean(session.authenticated),
                 diagnostic: session.diagnostic || "",
                 displayName: session.authenticated ? session.displayName || session.label || "Account" : "Login",
-                mode: session.mode || "local-mem",
+                mode: session.mode || "local-db",
                 roleSlugs: Array.isArray(session.roleSlugs) ? session.roleSlugs : []
             };
         } catch (error) {

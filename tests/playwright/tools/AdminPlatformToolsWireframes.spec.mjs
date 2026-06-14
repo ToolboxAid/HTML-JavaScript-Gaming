@@ -32,7 +32,7 @@ test.afterEach(async ({ page }) => {
 
 async function setServerSession(server, userKey) {
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: "local-mem" }),
+    body: JSON.stringify({ modeId: "local-db" }),
     headers: { "content-type": "application/json" },
     method: "POST",
   });

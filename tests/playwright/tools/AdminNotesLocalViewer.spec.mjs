@@ -47,7 +47,7 @@ async function openLocalViewer(page, routePath = "/admin/admin-notes.html") {
   });
 
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: "local-mem" }),
+    body: JSON.stringify({ modeId: "local-db" }),
     headers: { "content-type": "application/json" },
     method: "POST",
   });

@@ -1,14 +1,62 @@
-# scoped git status --short
- M assets/theme-v2/css/layout.css
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
-?? docs_build/dev/reports/PR_26164_089-home-entry-card-thirds.md
-
-# scoped files included in this PR
-assets/theme-v2/css/layout.css
-docs_build/dev/reports/PR_26164_089-home-entry-card-thirds.md
-docs_build/dev/reports/codex_review.diff
+admin/db-viewer.html
+admin/db-viewer.js
+admin/environments.html
+assets/theme-v2/js/gamefoundry-partials.js
+assets/theme-v2/js/login-session.js
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/dependency_gating_report.md
+docs_build/dev/reports/dependency_hydration_reuse_report.md
+docs_build/dev/reports/execution_graph_reuse_report.md
+docs_build/dev/reports/failure_fingerprint_report.md
+docs_build/dev/reports/filesystem_scan_reduction_report.md
+docs_build/dev/reports/incremental_validation_report.md
+docs_build/dev/reports/lane_compilation_report.md
+docs_build/dev/reports/lane_deduplication_report.md
+docs_build/dev/reports/lane_input_validation_report.md
+docs_build/dev/reports/lane_manifests/workspace-contract.json
+docs_build/dev/reports/lane_runtime_optimization_report.md
+docs_build/dev/reports/lane_snapshot_report.md
+docs_build/dev/reports/lane_snapshots/workspace-contract.json
+docs_build/dev/reports/lane_warm_start_report.md
+docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+docs_build/dev/reports/monolith_trigger_removal_report.md
+docs_build/dev/reports/persistent_lane_manifest_report.md
+docs_build/dev/reports/playwright_discovery_ownership_report.md
+docs_build/dev/reports/playwright_discovery_scope_report.md
+docs_build/dev/reports/playwright_structure_audit.md
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/retry_suppression_report.md
+docs_build/dev/reports/slow_path_pruning_report.md
+docs_build/dev/reports/static_validation_report.md
+docs_build/dev/reports/targeted_file_manifest_report.md
+docs_build/dev/reports/test_cleanup_performance_report.md
+docs_build/dev/reports/test_cleanup_routing_report.md
+docs_build/dev/reports/testing_lane_execution_report.md
+docs_build/dev/reports/validation_cache_report.md
+docs_build/dev/reports/zero_browser_preflight_report.md
+login.html
+src/dev-runtime/persistence/mock-db-store.js
+src/dev-runtime/server/mock-api-router.mjs
+src/engine/api/mock-db-api-client.js
+src/engine/api/mock-db-viewer-ui.js
+tests/dev-runtime/DbSeedIntegrity.test.mjs
+tests/dev-runtime/DevRuntimeBoundary.test.mjs
+tests/helpers/playwrightRepoServer.mjs
+tests/playwright/account/AchievementsPage.spec.mjs
+tests/playwright/tools/AdminDbViewer.spec.mjs
+tests/playwright/tools/AdminNotesLocalViewer.spec.mjs
+tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs
+tests/playwright/tools/AssetToolMockRepository.spec.mjs
+tests/playwright/tools/BuildPathProgressSimplification.spec.mjs
+tests/playwright/tools/GameJourneyTool.spec.mjs
+tests/playwright/tools/LoginSessionMode.spec.mjs
+tests/playwright/tools/PaletteToolMockRepository.spec.mjs
+tests/playwright/tools/RootToolsFutureState.spec.mjs
+tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs
+tests/playwright/tools/TagsTool.spec.mjs
+tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+tests/playwright/tools/ToolboxRoutePages.spec.mjs
+docs_build/dev/reports/PR_26164_090-remove-mem-db-dev.md
 docs_build/dev/reports/codex_changed_files.txt
-
-# notes
-Review diff is scoped to the reusable Theme V2 layout change and the PR report.
+docs_build/dev/reports/codex_review.diff

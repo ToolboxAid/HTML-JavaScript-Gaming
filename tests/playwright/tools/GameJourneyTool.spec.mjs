@@ -62,7 +62,7 @@ async function openRepoPage(page, pathName, options = {}) {
     await workspaceV2CoverageReporter.start(page);
   }
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: "local-mem" }),
+    body: JSON.stringify({ modeId: "local-db" }),
     headers: { "content-type": "application/json" },
     method: "POST",
   });

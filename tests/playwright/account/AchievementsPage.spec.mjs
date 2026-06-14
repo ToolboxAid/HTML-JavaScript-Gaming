@@ -27,7 +27,7 @@ async function openAchievementsPage(page) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: "local-mem" }),
+    body: JSON.stringify({ modeId: "local-db" }),
     headers: { "content-type": "application/json" },
     method: "POST",
   });

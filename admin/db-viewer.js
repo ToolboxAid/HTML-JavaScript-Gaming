@@ -44,8 +44,8 @@ async function loadLocalDbViewer() {
     return;
   }
   const session = currentSession();
-  if (session.mode !== "local-mem" && session.mode !== "local-db") {
-    showGatewayStatus(session.diagnostic || "DB Viewer is available only in Local Mem or Local DB mode.");
+  if (session.mode !== "local-db") {
+    showGatewayStatus(session.diagnostic || "DB Viewer is available only in Local DB mode.");
     return;
   }
   const module = await import("../src/engine/api/mock-db-viewer-ui.js");

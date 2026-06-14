@@ -44,7 +44,7 @@ async function openRepoPage(page, pathName) {
 
 async function setServerSession(server, userKey) {
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: "local-mem" }),
+    body: JSON.stringify({ modeId: "local-db" }),
     headers: { "content-type": "application/json" },
     method: "POST",
   });
@@ -341,7 +341,7 @@ test("common header renders primary navigation order across active pages", async
       await expect(page.locator("[data-toolbox-menu]").getByText("Admin", { exact: true })).toHaveCount(0);
 
       const bodyText = await page.locator("body").innerText();
-      expect(bodyText.replace(/GameFoundryStudio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
+      expect(bodyText.replace(/GameFoundryStudio|Game Foundry Studio/g, "").match(/\bStudio\b/g) || []).toEqual([]);
 
       if (pagePath === "/toolbox/index.html") {
         await expect(page.locator("[data-tools-count]")).toBeVisible();

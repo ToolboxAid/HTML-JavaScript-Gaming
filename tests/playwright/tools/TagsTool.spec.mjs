@@ -22,7 +22,7 @@ test.afterAll(async () => {
 
 async function setServerSession(server, userKey = MOCK_DB_KEYS.users.user1) {
   await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: "local-mem" }),
+    body: JSON.stringify({ modeId: "local-db" }),
     headers: { "Content-Type": "application/json" },
     method: "POST"
   });

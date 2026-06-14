@@ -99,16 +99,15 @@ test("static 127.0.0.1:5500 login requires the API-backed local server", async (
     await workspaceV2CoverageReporter.start(page);
     await page.goto(`${server.baseUrl}/login.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { name: "Login", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-login-mode]")).toHaveText(["Local Mem", "Local DB"]);
-    await expect(page.locator("[data-login-mode='local-mem']")).toBeDisabled();
+    await expect(page.locator("[data-login-mode]")).toHaveText(["Local DB"]);
+    await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
     await expect(page.locator("[data-login-mode='local-db']")).toBeDisabled();
-    await expect(page.locator("[data-login-mode='local-mem']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-login-mode='local-db']")).not.toHaveClass(/primary/);
     await expect(page.locator("[data-login-mode-disabled-message]")).toBeVisible();
     await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("Use the API-backed local server for login.");
     await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("npm run dev:local-api");
     await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("http://127.0.0.1:5501/login.html");
-    await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("Local Mem and Local DB are disabled");
+    await expect(page.locator("[data-login-mode-disabled-message]")).toContainText("Local DB is disabled");
     await expect(page.locator("[data-login-mode-title]")).toHaveText("Session API required");
     await expect(page.locator("[data-login-mode-description]")).toContainText("Start the API-backed local server");
     await expect(page.locator("[data-login-mode-status]")).toContainText("Login/session diagnostic");
@@ -120,7 +119,7 @@ test("static 127.0.0.1:5500 login requires the API-backed local server", async (
     await expect(page.locator("[data-login-status-current-url]")).toContainText(`${server.baseUrl}/login.html`);
     await expect(page.locator("[data-login-status-server-mode]")).toHaveText("Static-only local server");
     await expect(page.locator("[data-login-status-api]")).toContainText("Unavailable");
-    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("Local Mem and Local DB are disabled");
+    await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("Local DB is disabled");
     await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("npm run dev:local-api");
     await expect(page.locator("[data-login-status-disabled-reason]")).toContainText("http://127.0.0.1:5501/login.html");
     await expect(page.locator("[data-login-status-endpoint]")).toHaveText("/api/session/current");

@@ -1,8 +1,4 @@
-import {
-  clearMockDb,
-  getMockDbSnapshot,
-  seedMockDb,
-} from "./mock-db-api-client.js";
+import { getMockDbSnapshot } from "./mock-db-api-client.js";
 
 const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
 const DEPRECATED_TABLE_NOTES = Object.freeze({
@@ -20,9 +16,9 @@ class AdminDbViewer {
     this.relationships = documentRef.querySelector("[data-admin-db-relationships]");
     this.tablesRoot = documentRef.querySelector("[data-admin-db-tables]");
     this.session = options.session || {};
-    this.modeId = this.session.mode || "local-mem";
-    this.modeLabel = this.modeId === "local-db" ? "Local DB" : "Local Mem DB";
-    this.canWrite = this.modeId === "local-mem";
+    this.modeId = this.session.mode || "local-db";
+    this.modeLabel = "Local DB";
+    this.canWrite = false;
   }
 
   start() {
@@ -36,26 +32,8 @@ class AdminDbViewer {
       this.activeFilter = button.dataset.adminDbFilter || "all";
       this.render();
     });
-    if (!this.canWrite) {
-      this.clearButton?.remove();
-      this.clearButton = null;
-      return;
-    }
-    this.clearButton?.addEventListener("click", () => {
-      const snapshot = getMockDbSnapshot();
-      if (snapshot.cleared) {
-        seedMockDb();
-        this.activeFilter = "all";
-        this.render();
-        return;
-      }
-      if (!window.confirm("Clear all shared Local Mem DB records?")) {
-        return;
-      }
-      clearMockDb();
-      this.activeFilter = "all";
-      this.render();
-    });
+    this.clearButton?.remove();
+    this.clearButton = null;
   }
 
   renderModeChrome() {
@@ -81,7 +59,7 @@ class AdminDbViewer {
     if (!this.clearButton || !this.canWrite) {
       return;
     }
-    this.clearButton.textContent = cleared ? "Seed Local Mem DB" : "Clear Local Mem DB";
+    this.clearButton.textContent = cleared ? "Seed Local DB" : "Clear Local DB";
     this.clearButton.dataset.adminDbClearMode = cleared ? "seed" : "clear";
   }
 
@@ -220,7 +198,7 @@ class AdminDbViewer {
       const row = this.createElement("tr");
       const cell = this.createElement("td", {
         text: this.canWrite
-          ? "No records in this table. Add records from its tool or use Seed Local Mem DB to restore baseline user and role records."
+          ? "No records in this table. Add records from its tool or use Seed Local DB to restore baseline user and role records."
           : `No records in this table. ${this.modeLabel} read-only inspection still shows schema headers.`,
       });
       cell.colSpan = Math.max(1, fields.length + 1);
@@ -301,8 +279,8 @@ class AdminDbViewer {
   }
 
   relationshipsForTables(tables) {
-    const noteTypeKeys = new Set((tables.project_journey_note_types || []).map((type) => type.key));
-    const noteKeys = new Set((tables.project_journey_notes || []).map((note) => note.key));
+    const noteTypeKeys = new Set((tables.game_journey_note_types || []).map((type) => type.key));
+    const noteKeys = new Set((tables.game_journey_notes || []).map((note) => note.key));
     const userKeys = new Set((tables.users || []).map((user) => user.key));
     const roleKeys = new Set((tables.roles || []).map((role) => role.key));
     const systemRoleKeys = new Set(
@@ -316,12 +294,12 @@ class AdminDbViewer {
         .map((row) => row.userKey),
     );
     const activeTemplateKeys = new Set(
-      (tables.project_journey_templates || [])
+      (tables.game_journey_templates || [])
         .filter((template) => template.isActive)
         .map((template) => template.key),
     );
-    const paletteGlobals = new Set((tables.project_workspace_palette_globals || []).map((row) => row.projectId));
-    const paletteColorKeys = new Set((tables.palette_colors || []).map((row) => `${row.projectId}:${row.swatchKey}`));
+    const paletteGlobals = new Set((tables.project_workspace_palette_globals || []).map((row) => row.gameId));
+    const paletteColorKeys = new Set((tables.palette_colors || []).map((row) => `${row.gameId}:${row.swatchKey}`));
     const assetIds = new Set((tables.asset_library_items || []).map((asset) => asset.id));
     const assetStorageIds = new Set((tables.asset_storage_objects || []).map((object) => object.id));
     const userOwnedToolStateSamples = (tables.tool_state_samples || []).filter((sample) => sample.userKey);
@@ -343,31 +321,31 @@ class AdminDbViewer {
         missing: allRecords.filter((record) => !userKeys.has(record.updatedBy)),
       },
       {
-        name: "project_journey_notes.typeKey -> project_journey_note_types.key",
-        checked: (tables.project_journey_notes || []).length,
-        missing: (tables.project_journey_notes || []).filter((note) => !noteTypeKeys.has(note.typeKey)),
+        name: "game_journey_notes.typeKey -> game_journey_note_types.key",
+        checked: (tables.game_journey_notes || []).length,
+        missing: (tables.game_journey_notes || []).filter((note) => !noteTypeKeys.has(note.typeKey)),
       },
       {
-        name: "project_journey_notes.ownerKey -> users.key",
-        checked: (tables.project_journey_notes || []).length,
-        missing: (tables.project_journey_notes || []).filter((note) => !userKeys.has(note.ownerKey)),
+        name: "game_journey_notes.ownerKey -> users.key",
+        checked: (tables.game_journey_notes || []).length,
+        missing: (tables.game_journey_notes || []).filter((note) => !userKeys.has(note.ownerKey)),
       },
       {
-        name: "project_journey_items.noteKey -> project_journey_notes.key",
-        checked: (tables.project_journey_items || []).length,
-        missing: (tables.project_journey_items || []).filter((item) => !noteKeys.has(item.noteKey)),
+        name: "game_journey_items.noteKey -> game_journey_notes.key",
+        checked: (tables.game_journey_items || []).length,
+        missing: (tables.game_journey_items || []).filter((item) => !noteKeys.has(item.noteKey)),
       },
       {
-        name: "system project_journey_items.templateKey -> active project_journey_templates.key",
-        checked: (tables.project_journey_items || []).filter((item) => systemUserKeys.has(item.createdBy)).length,
-        missing: (tables.project_journey_items || []).filter(
+        name: "system game_journey_items.templateKey -> active game_journey_templates.key",
+        checked: (tables.game_journey_items || []).filter((item) => systemUserKeys.has(item.createdBy)).length,
+        missing: (tables.game_journey_items || []).filter(
           (item) => systemUserKeys.has(item.createdBy) && !activeTemplateKeys.has(item.templateKey),
         ),
       },
       {
-        name: "project_journey_activity.noteKey -> project_journey_notes.key",
-        checked: (tables.project_journey_activity || []).length,
-        missing: (tables.project_journey_activity || []).filter((activity) => !noteKeys.has(activity.noteKey)),
+        name: "game_journey_activity.noteKey -> game_journey_notes.key",
+        checked: (tables.game_journey_activity || []).length,
+        missing: (tables.game_journey_activity || []).filter((activity) => !noteKeys.has(activity.noteKey)),
       },
       {
         name: "user_roles.userKey -> users.key",
@@ -385,14 +363,14 @@ class AdminDbViewer {
         missing: userOwnedToolStateSamples.filter((sample) => !userKeys.has(sample.userKey)),
       },
       {
-        name: "palette_colors.projectId -> project_workspace_palette_globals.projectId",
+        name: "palette_colors.gameId -> project_workspace_palette_globals.gameId",
         checked: (tables.palette_colors || []).length,
-        missing: (tables.palette_colors || []).filter((row) => !paletteGlobals.has(row.projectId)),
+        missing: (tables.palette_colors || []).filter((row) => !paletteGlobals.has(row.gameId)),
       },
       {
         name: "palette_swatch_usages.swatchKey -> palette_colors.swatchKey",
         checked: (tables.palette_swatch_usages || []).length,
-        missing: (tables.palette_swatch_usages || []).filter((row) => !paletteColorKeys.has(`${row.projectId}:${row.swatchKey}`)),
+        missing: (tables.palette_swatch_usages || []).filter((row) => !paletteColorKeys.has(`${row.gameId}:${row.swatchKey}`)),
       },
       {
         name: "palette_swatch_usages.assetId -> asset_library_items.id",
@@ -413,18 +391,18 @@ class AdminDbViewer {
   }
 
   tableBleedFindings(tables) {
-    const notesByKey = new Map((tables.project_journey_notes || []).map((note) => [note.key, note]));
+    const notesByKey = new Map((tables.game_journey_notes || []).map((note) => [note.key, note]));
     const findings = [];
-    (tables.project_journey_items || []).forEach((item) => {
+    (tables.game_journey_items || []).forEach((item) => {
       const note = notesByKey.get(item.noteKey);
-      if (note && note.projectKey !== item.projectKey) {
-        findings.push(`${item.key} projectKey ${item.projectKey} does not match note ${note.key} projectKey ${note.projectKey}.`);
+      if (note && note.gameKey !== item.gameKey) {
+        findings.push(`${item.key} gameKey ${item.gameKey} does not match note ${note.key} gameKey ${note.gameKey}.`);
       }
     });
-    (tables.project_journey_activity || []).forEach((activity) => {
+    (tables.game_journey_activity || []).forEach((activity) => {
       const note = notesByKey.get(activity.noteKey);
-      if (note && note.projectKey !== activity.projectKey) {
-        findings.push(`${activity.key} projectKey ${activity.projectKey} does not match note ${note.key} projectKey ${note.projectKey}.`);
+      if (note && note.gameKey !== activity.gameKey) {
+        findings.push(`${activity.key} gameKey ${activity.gameKey} does not match note ${note.key} gameKey ${note.gameKey}.`);
       }
     });
     return findings;
@@ -497,7 +475,7 @@ class AdminDbViewer {
     this.tablesRoot?.replaceChildren();
     if (this.status) {
       this.status.textContent = this.canWrite
-        ? `${this.modeLabel} data error. Fix the invalid record ownership or use Clear Local Mem DB, then Seed Local Mem DB.`
+        ? `${this.modeLabel} data error. Fix the invalid record ownership or use Clear Local DB, then Seed Local DB.`
         : `${this.modeLabel} data error. Fix the local DB storage or adapter configuration, then reload DB Viewer.`;
     }
   }

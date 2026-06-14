@@ -45,18 +45,6 @@ export const MOCK_DB_SYSTEM_USER = Object.freeze({
 
 export const MOCK_DB_SESSION_MODES = Object.freeze([
   Object.freeze({
-    adapterId: "mock-db-memory",
-    adapterName: "MockDbAdapter",
-    configured: true,
-    description: "Uses MockDbAdapter backed by in-memory lists.",
-    environment: "Local Mem",
-    id: "local-mem",
-    label: "Local Mem",
-    persistence: "Memory",
-    persistent: true,
-    usersEnabled: true,
-  }),
-  Object.freeze({
     adapterId: "local-db",
     adapterName: "LocalDbAdapter",
     configured: true,
@@ -185,8 +173,16 @@ function hasBrowserStorage() {
 
 function sessionModeFromId(sessionModeId) {
   return MOCK_DB_SESSION_MODES.find((mode) => mode.id === sessionModeId) ||
-    MOCK_DB_SESSION_MODES.find((mode) => mode.id === "local-mem") ||
+    MOCK_DB_SESSION_MODES.find((mode) => mode.id === "local-db") ||
     MOCK_DB_SESSION_MODES[0];
+}
+
+function requiredSessionModeFromId(sessionModeId) {
+  const sessionMode = MOCK_DB_SESSION_MODES.find((mode) => mode.id === sessionModeId);
+  if (!sessionMode) {
+    throw new Error(`Unknown local login environment: ${sessionModeId || "missing"}.`);
+  }
+  return sessionMode;
 }
 
 function selectedSessionModeId(options = {}) {
@@ -194,12 +190,12 @@ function selectedSessionModeId(options = {}) {
     return sessionModeFromId(options.sessionMode).id;
   }
   if (!hasBrowserStorage()) {
-    return "local-mem";
+    return "local-db";
   }
   try {
-    return sessionModeFromId(window.localStorage.getItem(MOCK_DB_SESSION_MODE_STORAGE_KEY) || "local-mem").id;
+    return sessionModeFromId(window.localStorage.getItem(MOCK_DB_SESSION_MODE_STORAGE_KEY) || "local-db").id;
   } catch {
-    return "local-mem";
+    return "local-db";
   }
 }
 
@@ -207,7 +203,7 @@ function canUseStorage(options = {}) {
   if (options.persist === false) {
     return false;
   }
-  return hasBrowserStorage() && selectedSessionModeId(options) === "local-mem";
+  return false;
 }
 
 export function mockDbPersistenceEnabled(options = {}) {
@@ -376,7 +372,7 @@ function roleSlugsForUserKey(state, userKey) {
 function sessionUserFromKey(userKey, options = {}) {
   const key = String(userKey || "");
   const modeId = selectedSessionModeId(options);
-  if (!isUlidKey(key) || (modeId !== "local-mem" && modeId !== "local-db")) {
+  if (!isUlidKey(key) || modeId !== "local-db") {
     return guestSessionUser();
   }
   const state = readMockDbState(options);
@@ -406,7 +402,7 @@ function selectedSessionUserKey(options = {}) {
     return options.userKey;
   }
   const modeId = selectedSessionModeId(options);
-  if ((modeId !== "local-mem" && modeId !== "local-db") || !hasBrowserStorage()) {
+  if (modeId !== "local-db" || !hasBrowserStorage()) {
     return "";
   }
   try {
@@ -418,7 +414,7 @@ function selectedSessionUserKey(options = {}) {
 
 export function getMockDbSessionUsers(options = {}) {
   const modeId = selectedSessionModeId(options);
-  if (modeId !== "local-mem" && modeId !== "local-db") {
+  if (modeId !== "local-db") {
     return [guestSessionUser()];
   }
   const state = readMockDbState(options);
@@ -440,13 +436,11 @@ export function getMockDbSessionMode(options = {}) {
 }
 
 export function setMockDbSessionMode(sessionModeId, options = {}) {
-  const sessionMode = sessionModeFromId(sessionModeId);
+  const sessionMode = requiredSessionModeFromId(sessionModeId);
   if (hasBrowserStorage() && options.persist !== false) {
     try {
       window.localStorage.setItem(MOCK_DB_SESSION_MODE_STORAGE_KEY, sessionMode.id);
-      if (sessionMode.id !== "local-mem") {
-        window.localStorage.removeItem(MOCK_DB_SESSION_STORAGE_KEY);
-      }
+      window.localStorage.removeItem(MOCK_DB_SESSION_STORAGE_KEY);
       window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-mode-changed", {
         detail: clone(sessionMode),
       }));

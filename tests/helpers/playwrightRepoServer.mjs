@@ -1,6 +1,7 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import http from "node:http";
+import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { handleAdminNotesDirectoryRequest } from "../../src/dev-runtime/admin/admin-notes-directory.mjs";
 import { localAdminNotesHeaderPartialPath } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
@@ -9,6 +10,7 @@ import { createMockApiRouter } from "../../src/dev-runtime/server/mock-api-route
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
+let repoServerRunId = 0;
 
 function contentTypeForPath(filePath) {
   const extension = path.extname(filePath).toLowerCase();
@@ -52,6 +54,13 @@ function resolveBrowserRoutePath(decodedPath) {
 }
 
 export async function startRepoServer() {
+  const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+  let localDbPath = "";
+  if (!previousLocalDbPath) {
+    repoServerRunId += 1;
+    localDbPath = path.join(repoRoot, "tmp", "local-db", `playwright-repo-server-${process.pid}-${repoServerRunId}.sqlite`);
+    process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
+  }
   const handleMockApiRequest = createMockApiRouter();
   const server = http.createServer(async (request, response) => {
     try {
@@ -111,6 +120,10 @@ export async function startRepoServer() {
         });
         server.closeIdleConnections?.();
       });
+      if (!previousLocalDbPath) {
+        await fs.rm(localDbPath, { force: true });
+        delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+      }
     }
   };
 }
