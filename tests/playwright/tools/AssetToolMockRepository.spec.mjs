@@ -388,7 +388,7 @@ test("Assets source controls require real upload filenames and valid references"
     await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Reference"]);
     await expect(editRow.getByLabel("Reference")).toBeVisible();
     await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
-    await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText("Reference-only");
+    await expect(editRow.locator("[data-asset-tool-source-help]")).toContainText("Connect sprites to artwork you already added.");
     await editRow.getByRole("button", { name: "Cancel" }).click();
 
     await page.getByRole("button", { name: "Add Palette References" }).click();
@@ -397,7 +397,7 @@ test("Assets source controls require real upload filenames and valid references"
     await expect(editRow.getByLabel("Source").locator("option")).toHaveText(["Reference"]);
     await expect(editRow.getByLabel("Reference")).toBeVisible();
     await expect(editRow.getByLabel("Upload File")).toHaveCount(0);
-    await expect(editRow).toContainText("No valid reference source exists.");
+    await expect(editRow).toContainText("Add an asset first, then connect it here.");
     await editRow.getByRole("button", { name: "Save" }).click();
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Choose a reference source before saving.");
 
@@ -1020,6 +1020,17 @@ test("Assets launches as asset-type accordions with table row add, edit, delete,
     await expect(page.getByRole("heading", { level: 1, name: "Assets" })).toBeVisible();
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("[data-asset-tool-project-path]")).toHaveText("Path: No project path yet");
+    const foundryBot = page.locator("[data-asset-tool-foundry-bot]");
+    await expect(foundryBot).toContainText("Hi! I'm Foundry Bot.");
+    await expect(foundryBot).toContainText("Upload artwork, sounds, and fonts for your game.");
+    await expect(foundryBot).toContainText("You can connect assets to characters, enemies, worlds, and other game features.");
+    await expect(foundryBot).toContainText("Need ideas? Start by describing your game in Game Design.");
+    const renderedAssetsText = await page.locator("body").innerText();
+    expect(renderedAssetsText).not.toMatch(/\bGDD\b/i);
+    expect(renderedAssetsText).not.toMatch(/\bmanifest\b/i);
+    expect(renderedAssetsText).not.toMatch(/\btool state\b/i);
+    expect(renderedAssetsText).not.toMatch(/\bworkspace\b/i);
+    expect(renderedAssetsText).not.toMatch(/catalog record/i);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     const runtimeReferences = await page.locator("script[src], link[href]").evaluateAll((nodes) =>
       nodes.map((node) => node.getAttribute("src") || node.getAttribute("href") || "")

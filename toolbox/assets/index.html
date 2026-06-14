@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Assets - GameFoundryStudio</title>
-    <meta name="description" content="Assets Toolbox runtime for owner-scoped asset catalog records and shared tag references.">
+    <meta name="description" content="Assets Toolbox helps you add artwork, sounds, music, fonts, and other resources to your game.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Toolbox / Assets</div>
                 <h1>Assets</h1>
-                <p class="lede">Catalog owner-scoped game assets by type, usage, and shared workspace tags.</p>
+                <p class="lede">Add artwork, sounds, music, fonts, and other resources to your game.</p>
             </div>
         </section>
         <section class="section">
@@ -29,13 +29,22 @@
                             <h2>Assets</h2>
                         </div>
                         <div class="accordion-stack">
-                            <details class="vertical-accordion" open>
-                                <summary>Shared Tags</summary>
+                            <details class="vertical-accordion" open data-asset-tool-foundry-bot>
+                                <summary>Foundry Bot</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Asset Tags must come from the shared Tags tool list.</p>
+                                    <p>Hi! I'm Foundry Bot.</p>
+                                    <p>Upload artwork, sounds, and fonts for your game.</p>
+                                    <p>You can connect assets to characters, enemies, worlds, and other game features.</p>
+                                    <p>Need ideas? Start by describing your game in Game Design.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Game Tags</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Use Tags to organize artwork, sounds, characters, enemies, worlds, and game features.</p>
                                     <a class="btn" href="toolbox/tags/index.html">Open Tags</a>
                                     <ul data-asset-tool-shared-tags>
-                                        <li>No workspace tags added yet.</li>
+                                        <li>No game tags added yet.</li>
                                     </ul>
                                 </div>
                             </details>
@@ -49,9 +58,9 @@
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="assets" data-tool-icon-src="assets/theme-v2/images/badges/assets.png" data-tool-character-src="assets/theme-v2/images/tools/assets.png"></div>
                     <section class="tool-center-panel">
-                        <h2>Asset Library Catalog</h2>
-                        <p>Each asset type owns an editable table of owner-scoped catalog records.</p>
-                        <div class="grid cols-3" aria-label="Asset catalog summary">
+                        <h2>Asset Library</h2>
+                        <p>Add files for artwork, sounds, music, fonts, and other parts of your game.</p>
+                        <div class="grid cols-3" aria-label="Asset library summary">
                             <article class="mini-stat"><strong data-asset-tool-library-status>Needs Input</strong>Library Status</article>
                             <article class="mini-stat"><strong data-asset-tool-count>0</strong>Assets</article>
                             <article class="mini-stat"><strong data-asset-tool-tag-count>0</strong>Tags</article>
@@ -68,9 +77,9 @@
                             <details class="vertical-accordion" open>
                                 <summary>Output</summary>
                                 <div class="accordion-body content-stack" data-asset-tool-output>
-                                    <p>Library Summary: <span data-asset-tool-output-summary>No user assets added yet.</span></p>
-                                    <p>Validation Status: <span data-asset-tool-output-validation>Needs Input</span></p>
-                                    <p>Missing Items: <span data-asset-tool-output-missing>Add at least one user asset.</span></p>
+                                    <p>Asset Library Summary: <span data-asset-tool-output-summary>No assets added yet.</span></p>
+                                    <p>Library Status: <span data-asset-tool-output-validation>Needs Input</span></p>
+                                    <p>Next Step: <span data-asset-tool-output-missing>Add at least one asset.</span></p>
                                     <p>Selected Asset: <span data-asset-tool-selected>None</span></p>
                                 </div>
                             </details>
@@ -78,7 +87,7 @@
                                 <summary>Selected Asset</summary>
                                 <div class="accordion-body content-stack">
                                     <ul data-asset-tool-metadata>
-                                        <li>No selected asset metadata.</li>
+                                        <li>No selected asset details.</li>
                                     </ul>
                                 </div>
                             </details>
@@ -97,15 +106,15 @@
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Repository Tables</summary>
+                                <summary>Status Details</summary>
                                 <div class="accordion-body">
                                     <div class="table-wrapper">
-                                        <table class="data-table" aria-label="Asset repository table counts">
+                                        <table class="data-table" aria-label="Asset library status details">
                                             <thead>
-                                                <tr><th scope="col">Table</th><th scope="col">Rows</th></tr>
+                                                <tr><th scope="col">Area</th><th scope="col">Count</th></tr>
                                             </thead>
                                             <tbody data-asset-tool-table-counts>
-                                                <tr><td>asset_library_items</td><td>0</td></tr>
+                                                <tr><td>Assets</td><td>0</td></tr>
                                             </tbody>
                                         </table>
                                     </div>
@@ -117,7 +126,7 @@
                                     <div class="action-group">
                                         <button class="btn btn--compact" type="button" data-asset-tool-clear-status-log>Clear</button>
                                     </div>
-                                    <div class="status" role="status" data-asset-tool-log>Asset catalog ready.</div>
+                                    <div class="status" role="status" data-asset-tool-log>Asset Library ready.</div>
                                     <article class="card" role="dialog" aria-labelledby="asset-tool-account-prompt-title" data-asset-tool-account-prompt hidden>
                                         <div class="card-body content-stack">
                                             <div>

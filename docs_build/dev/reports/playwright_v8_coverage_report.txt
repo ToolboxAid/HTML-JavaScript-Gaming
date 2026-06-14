@@ -17,8 +17,7 @@ Exercised tool entry points detected:
 (57%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(93%) toolbox/assets/assets.js - executed lines 1599/1599; executed functions 134/144
+(93%) toolbox/assets/assets.js - executed lines 1600/1600; executed functions 134/144
 
 Files with executed line/function counts where available:
 (38%) src/engine/api/session-api-client.js - executed lines 34/34; executed functions 3/8
@@ -27,14 +26,13 @@ Files with executed line/function counts where available:
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (67%) toolbox/assets/assets-api-client.js - executed lines 19/19; executed functions 2/3
 (75%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 21/28
-(93%) toolbox/assets/assets.js - executed lines 1599/1599; executed functions 134/144
+(93%) toolbox/assets/assets.js - executed lines 1600/1600; executed functions 134/144
 (100%) toolbox/tags/tags-api-client.js - executed lines 10/10; executed functions 2/2
 (100%) toolbox/tags/tags.js - executed lines 242/242; executed functions 19/19
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none - no low-coverage changed runtime JS files
 
 Changed JS files considered:
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (93%) toolbox/assets/assets.js - changed JS file with browser V8 coverage

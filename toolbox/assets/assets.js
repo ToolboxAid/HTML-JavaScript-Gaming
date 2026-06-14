@@ -93,13 +93,13 @@ const UPLOAD_PROGRESS_STEP_MS = devUploadProgressStepMs();
 const UPLOAD_CHUNK_SIZE_BYTES = devUploadChunkSizeBytes();
 const SERVER_RECEIVE_CHUNK_SIZE_BYTES = devServerReceiveChunkSizeBytes();
 const SOURCE_HELP_BY_ASSET_TYPE = Object.freeze({
-  Audio: "Audio can upload a sound file or reference an existing audio source.",
-  Data: "Data can upload .json, .csv, or .txt files, or reference an existing data source.",
-  Fonts: "Fonts upload font files; Reference appears when a font source exists.",
-  Images: "Images can upload an image file or reference an existing image source.",
-  "Palette References": "Palette References must reference a palette swatch.",
-  Sprites: "Sprites are Reference-only for MVP.",
-  Vectors: "Vectors are Reference-only for MVP."
+  Audio: "Upload music, voices, or sound effects for your game.",
+  Data: "Upload .json, .csv, or .txt files for game features.",
+  Fonts: "Upload fonts for menus, signs, and other text in your game.",
+  Images: "Upload artwork for characters, enemies, worlds, icons, and menus.",
+  "Palette References": "Connect this to a color palette swatch.",
+  Sprites: "Connect sprites to artwork you already added.",
+  Vectors: "Vector artwork is planned for a later update."
 });
 
 function devUploadChunkSizeBytes() {
@@ -445,7 +445,7 @@ function createReferenceSelect(referenceOptions, selectedReference) {
   } else {
     const option = document.createElement("option");
     option.value = "";
-    option.textContent = "No reference sources available";
+    option.textContent = "No matching assets yet";
     select.append(option);
     select.value = "";
   }
@@ -453,7 +453,7 @@ function createReferenceSelect(referenceOptions, selectedReference) {
   wrapper.append(select);
   if (!referenceOptions.length) {
     const message = document.createElement("span");
-    message.textContent = "No valid reference source exists.";
+    message.textContent = "Add an asset first, then connect it here.";
     wrapper.append(message);
   }
   return wrapper;
@@ -1446,7 +1446,7 @@ function renderTagOptions(tags) {
   elements.sharedTags.replaceChildren();
   if (!tags.length) {
     const item = document.createElement("li");
-    item.textContent = "No workspace tags added yet.";
+    item.textContent = "No game tags added yet.";
     elements.sharedTags.append(item);
     return;
   }
@@ -1489,7 +1489,8 @@ function renderTables(snapshot) {
   elements.tableCounts.replaceChildren();
   snapshot.tableCounts.forEach((count) => {
     const row = document.createElement("tr");
-    row.append(createCell(count.table), createCell(String(count.rows)));
+    const area = count.table === "asset_library_items" ? "Assets" : String(count.table || "Assets").replaceAll("_", " ");
+    row.append(createCell(area), createCell(String(count.rows)));
     elements.tableCounts.append(row);
   });
 }
@@ -1505,7 +1506,7 @@ function renderMetadata(snapshot) {
     || null;
   if (!asset) {
     const item = document.createElement("li");
-    item.textContent = "No selected asset metadata.";
+    item.textContent = "No selected asset details.";
     elements.metadata.append(item);
     setText(elements.selected, "None");
     return;
@@ -1553,10 +1554,10 @@ function renderOutput(snapshot) {
   setText(elements.libraryStatus, assetCount > 0 ? "Ready" : "Needs Input");
   setText(
     elements.outputSummary,
-    assetCount === 1 ? "1 user asset catalog record ready." : `${assetCount} user asset catalog records ready.`
+    assetCount === 1 ? "1 asset ready for your game." : `${assetCount} assets ready for your game.`
   );
   setText(elements.outputValidation, snapshot.validation.status);
-  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Add at least one user asset."));
+  setText(elements.outputMissing, missing || (assetCount > 0 ? "None" : "Add at least one asset."));
 }
 
 function render() {
@@ -1638,7 +1639,7 @@ elements.accordions?.addEventListener("click", async (event) => {
   if (view) {
     selectedAssetId = view.dataset.assetToolView;
     repository.selectAsset(selectedAssetId);
-    setText(elements.log, "Viewing asset catalog record.");
+    setText(elements.log, "Viewing asset.");
     render();
     return;
   }
@@ -1649,7 +1650,7 @@ elements.accordions?.addEventListener("click", async (event) => {
     editingAssetType = row?.dataset.assetToolAssetType || "";
     selectedAssetId = editingAssetId;
     repository.selectAsset(editingAssetId);
-    setText(elements.log, "Editing asset catalog record.");
+    setText(elements.log, "Editing asset.");
     render();
     return;
   }

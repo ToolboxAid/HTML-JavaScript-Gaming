@@ -1,22 +1,18 @@
 # git status --short
-M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M tests/playwright/tools/AssetToolMockRepository.spec.mjs
  M toolbox/assets/assets.js
  M toolbox/assets/index.html
-?? docs_build/dev/reports/PR_26163_083-assets-upload-cleanup-fixes.md
+?? docs_build/dev/reports/PR_26163_084-assets-fun-factor-and-foundry-bot.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26163_083-assets-upload-cleanup-fixes.md
+docs_build/dev/reports/PR_26163_084-assets-fun-factor-and-foundry-bot.md
 
 # git diff --stat
-docs_build/dev/reports/codex_changed_files.txt     |   65 +-
- docs_build/dev/reports/codex_review.diff           | 1786 ++++++--------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |    2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |    8 +-
- .../tools/AssetToolMockRepository.spec.mjs         |  127 +-
- toolbox/assets/assets.js                           |  134 +-
- toolbox/assets/index.html                          |   48 -
- 7 files changed, 669 insertions(+), 1501 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  |  5 +--
+ .../dev/reports/playwright_v8_coverage_report.txt  |  8 ++--
+ .../tools/AssetToolMockRepository.spec.mjs         | 15 +++++++-
+ toolbox/assets/assets.js                           | 33 +++++++++--------
+ toolbox/assets/index.html                          | 43 +++++++++++++---------
+ 5 files changed, 61 insertions(+), 43 deletions(-)
