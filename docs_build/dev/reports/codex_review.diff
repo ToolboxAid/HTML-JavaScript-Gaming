@@ -1,758 +1,197 @@
-diff --git a/assets/theme-v2/partials/footer.html b/assets/theme-v2/partials/footer.html
-index 0d61363b9..49637a279 100644
---- a/assets/theme-v2/partials/footer.html
-+++ b/assets/theme-v2/partials/footer.html
-@@ -51,6 +51,7 @@
-         <div class="footer__links">
-           <a data-route="about" href="company/about.html">About</a>
-           <a data-route="contact" href="company/contact.html">Contact</a>
-+          <a href="/company/how-we-build.html">How We Build</a>
-           <a data-route="mission" href="company/mission.html">Mission</a>
-           <a data-route="release-notes" href="company/release-notes.html">Release Notes</a>
-           <a data-route="roadmap" href="company/roadmap.html">Roadmap</a>
-diff --git a/company/about.html b/company/about.html
-index b90fcc977..d0bdd438d 100644
---- a/company/about.html
-+++ b/company/about.html
-@@ -5,7 +5,7 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>About - Game Foundry Studio</title>
--    <meta name="description" content="Game Foundry Studio is a configuration-driven creator destination where game ideas move from a Game Design Document (GDD) to structured game data and ultimately to playable experiences.">
-+    <meta name="description" content="Game Foundry Studio is a creator destination where game ideas become structured game data and playable open-web experiences.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
- </head>
-@@ -20,7 +20,7 @@
-                 <p class="lede">Game Foundry Studio is a configuration-driven creator destination where game ideas move
-                     from a Game Design Document (GDD) to structured game data and ultimately to playable experiences.
-                     Creators build content, rules, worlds, characters, assets, audio, and publishing workflows through
--                    visual tools and configuration, with no coding required. Advanced creators can extend projects with
-+                    visual tools and configuration, with no coding required. Advanced Creators can extend projects with
-                     custom enhancements and scripting when additional flexibility or control is needed.</p>
-             </div>
-         </section>
-@@ -29,22 +29,21 @@
-                 <article class="card">
-                     <div class="card-body">
-                         <h2>Build</h2>
--                        <p>Create games through configuration, content and composition: scenes, sprites, rules, inputs,
--                            objectives and templates that the engine can understand.</p>
-+                        <p>Create games through approachable tools for scenes, characters, worlds, rules, goals,
-+                            assets and templates.</p>
-                     </div>
-                 </article>
-                 <article class="card">
-                     <div class="card-body">
-                         <h2>Play</h2>
--                        <p>Test, preview, run, discover and enjoy games and examples in the browser while the same
--                            configuration-driven foundation powers each experience.</p>
-+                        <p>Test, preview, discover and enjoy open-web experiences as ideas move from design to play.</p>
-                     </div>
-                 </article>
-                 <article class="card">
-                     <div class="card-body">
-                         <h2>Share</h2>
--                        <p>Publish games, assets, templates, tutorials, ratings and community knowledge so every
--                            useful pattern can help the next creator move faster.</p>
-+                        <p>Publish games, assets, templates, tutorials and Creator knowledge so each useful pattern can
-+                            help the next Creator move faster.</p>
-                     </div>
-                 </article>
-             </div>
-@@ -52,15 +51,64 @@
-         <section class="section">
-             <div class="container card">
-                 <div class="card-body">
--                    <div class="kicker">Game Design Document (GDD) &rarr; Game Data &rarr; Playable Experiences</div>
-+                    <div class="kicker">Game Design Document (GDD) &rarr; Structured Game Data &rarr; Playable Experiences</div>
-                     <h2>A configuration-driven studio for anyone with a game idea.</h2>
-                     <p class="lede">Creators can shape gameplay, presentation, content, and publishing plans through
-                         visual tools and configuration, with no coding required.</p>
--                    <p>Advanced creators can extend projects with custom enhancements and scripting when additional
-+                    <p>Advanced Creators can extend projects with custom enhancements and scripting when additional
-                         flexibility or control is needed.</p>
-                 </div>
-             </div>
-         </section>
-+        <section class="section">
-+            <div class="container card">
-+                <div class="card-body">
-+                    <div class="kicker">What Can You Build?</div>
-+                    <h2>Start with the kind of creation you want to make.</h2>
-+                    <div class="grid cols-3">
-+                        <article class="callout">
-+                            <h3>Arcade Games</h3>
-+                            <p>Fast, replayable challenges built for quick sessions.</p>
-+                        </article>
-+                        <article class="callout">
-+                            <h3>Platformers</h3>
-+                            <p>Side-scrolling worlds with movement, obstacles and goals.</p>
-+                        </article>
-+                        <article class="callout">
-+                            <h3>Puzzle Games</h3>
-+                            <p>Logic, pattern and problem-solving experiences.</p>
-+                        </article>
-+                        <article class="callout">
-+                            <h3>Educational Games</h3>
-+                            <p>Interactive lessons, practice loops and learning activities.</p>
-+                        </article>
-+                        <article class="callout">
-+                            <h3>Interactive Stories</h3>
-+                            <p>Branching moments, characters and worlds shaped by player choice.</p>
-+                        </article>
-+                        <article class="callout">
-+                            <h3>Asset Packs</h3>
-+                            <p>Artwork, audio, templates and reusable resources for other Creators.</p>
-+                        </article>
-+                        <article class="callout">
-+                            <h3>Templates</h3>
-+                            <p>Starting points Creators can remix into new games and learning paths.</p>
-+                        </article>
-+                    </div>
-+                </div>
-+            </div>
-+        </section>
-+        <section class="section">
-+            <div class="container card">
-+                <div class="card-body">
-+                    <div class="kicker">One Creator Ecosystem</div>
-+                    <h2>Everything connects back to making and sharing games.</h2>
-+                    <p class="lede">Creators can build games, create assets, design worlds, learn game design, publish
-+                        creations, share knowledge and discover other Creators.</p>
-+                    <p>Build &middot; Play &middot; Share</p>
-+                </div>
-+            </div>
-+        </section>
-     </main>
-     <div data-partial="footer"></div>
-     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-diff --git a/company/contact.html b/company/contact.html
-index 0cd00eda6..cc9bbded8 100644
---- a/company/contact.html
-+++ b/company/contact.html
-@@ -5,7 +5,7 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Contact - Game Foundry Studio</title>
--    <meta name="description" content="Plan contact options for Game Foundry Studio.">
-+    <meta name="description" content="Contact paths for Game Foundry Studio support, feature requests, bug reports, partnerships and press.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
- </head>
-@@ -17,34 +17,64 @@
-             <div class="container">
-                 <div class="kicker">Company</div>
-                 <h1>Contact</h1>
--                <p class="lede">A planning page for future company, partner and support contact paths.</p>
-+                <p class="lede">The future support path for Creators, partners and press.</p>
-             </div>
-         </section>
-         <section class="section">
-             <div class="container card">
-                 <div class="card-body">
--                    <div class="kicker">Status = Planning</div>
--                    <div class="grid cols-3">
--                        <article class="callout">
--                            <h2>Purpose</h2>
--                            <p>Provide a footer destination for contact information without adding live forms.</p>
--                        </article>
--                        <article class="callout">
--                            <h2>Future Scope</h2>
--                            <p>Add routing for partnerships, press, support and creator program requests.</p>
--                        </article>
--                        <article class="callout">
--                            <h2>Planned Sections</h2>
--                            <ul>
--                                <li>Contact categories</li>
--                                <li>Response expectations</li>
--                                <li>Partner inquiries</li>
--                            </ul>
--                        </article>
--                    </div>
-+                    <div class="kicker">Creator Support</div>
-+                    <h2>Support should be ticket-driven, organized and easy to follow.</h2>
-+                    <p class="lede">Game Foundry Studio is preparing for an account-based support portal where Creators
-+                        can open a support ticket, track requests and get help through the right channel.</p>
-                 </div>
-             </div>
-         </section>
-+        <section class="section">
-+            <div class="container grid cols-3">
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Support</h2>
-+                        <p>Open a support ticket for help with accounts, creator tools, publishing, learning resources
-+                            or general platform questions.</p>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Feature Requests</h2>
-+                        <p>Open a support ticket to suggest tools, workflow improvements, creator features or
-+                            community ideas.</p>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Bug Reports</h2>
-+                        <p>Open a support ticket with the page, steps, expected result and what actually happened.</p>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Partnerships</h2>
-+                        <p>Future partnership routing will support schools, creators, communities, platforms and
-+                            organizations interested in game creation.</p>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Press</h2>
-+                        <p>Future press routing will provide official background, product updates and media contact
-+                            handling without publishing personal contact details.</p>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Creator Support Portal</h2>
-+                        <p>The planned portal will connect support tickets to creator accounts, request history and
-+                            clearer response expectations.</p>
-+                    </div>
-+                </article>
-+            </div>
-+        </section>
-     </main>
-     <div data-partial="footer"></div>
-     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-diff --git a/company/mission.html b/company/mission.html
-index cd8b1912c..682155178 100644
---- a/company/mission.html
-+++ b/company/mission.html
-@@ -5,7 +5,7 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Mission - Game Foundry Studio</title>
--    <meta name="description" content="Game Foundry Studio mission: help anyone create open-web games through no-code configuration and manifests.">
-+    <meta name="description" content="Game Foundry Studio exists to make game creation accessible to everyone through approachable tools, guided workflows, learning resources and creator collaboration.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
- </head>
-@@ -16,26 +16,32 @@
-         <section class="page-title">
-             <div class="container">
-                 <div class="kicker">Company</div>
--                <h1>Mission</h1>
--                <p class="lede">The practical creator promise behind Build, Play and Share: make open-web game creation possible without writing code.</p>
-+                <h1>Our Mission</h1>
-+                <p class="lede">We exist to make game creation accessible to everyone.</p>
-             </div>
-         </section>
-         <section class="section">
-             <div class="container card">
-                 <div class="card-body">
--                    <div class="kicker">No-code creator mission</div>
-+                    <div class="kicker">Why We Exist</div>
-+                    <h2>Great game ideas should not require a studio-sized starting line.</h2>
-+                    <p class="lede">Game Foundry Studio helps Creators bring ideas to life through approachable tools,
-+                        guided workflows, learning resources and community collaboration.</p>
-                     <div class="grid cols-3">
-                         <article class="callout">
--                            <h2>Build</h2>
--                            <p>Give creators clear configuration, content and composition tools so a game idea can become structured data the engine can run.</p>
-+                            <h3>No programming knowledge required</h3>
-+                            <p>Creators should be able to start with a concept, learn by doing and shape their first
-+                                playable experience without needing to become programmers first.</p>
-                         </article>
-                         <article class="callout">
--                            <h2>Play</h2>
--                            <p>Make testing, previewing, running, discovering and enjoying games part of the same workflow, from first prototype to published example.</p>
-+                            <h3>No expensive software required</h3>
-+                            <p>Creation should be reachable from the open web, with tools that lower cost and setup
-+                                barriers for new makers.</p>
-                         </article>
-                         <article class="callout">
--                            <h2>Share</h2>
--                            <p>Support publishing for games, assets, templates, tutorials, ratings and community knowledge so creators can learn from each other.</p>
-+                            <h3>No large team required</h3>
-+                            <p>Small teams, classrooms, solo Creators and curious beginners should all have a path from
-+                                idea to something they can test and share.</p>
-                         </article>
-                     </div>
-                 </div>
-@@ -44,10 +50,23 @@
-         <section class="section">
-             <div class="container card">
-                 <div class="card-body">
--                    <div class="kicker">GDD &rarr; Manifest &rarr; Engine</div>
--                    <h2>Turn design intent into playable behavior.</h2>
--                    <p class="lede">The long-term mission is to let anyone describe a game in plain terms, refine it into a manifest and run it through a config-driven engine.</p>
--                    <p>Game Foundry Studio is aiming for zero user code. Creators should configure systems, compose content and choose templates while the engine handles behavior from manifest data.</p>
-+                    <div class="kicker">Build &middot; Play &middot; Share</div>
-+                    <div class="grid cols-3">
-+                        <article class="callout">
-+                            <h2>Build</h2>
-+                            <p>Give Creators friendly tools for content, rules, worlds, characters, assets and learning
-+                                paths.</p>
-+                        </article>
-+                        <article class="callout">
-+                            <h2>Play</h2>
-+                            <p>Make testing and discovery part of creation, so ideas can become playable and improve
-+                                through feedback.</p>
-+                        </article>
-+                        <article class="callout">
-+                            <h2>Share</h2>
-+                            <p>Help Creators publish games, share knowledge and learn from the community around them.</p>
-+                        </article>
-+                    </div>
-                 </div>
-             </div>
-         </section>
-diff --git a/company/release-notes.html b/company/release-notes.html
-index 8060a3241..2f0b88922 100644
---- a/company/release-notes.html
-+++ b/company/release-notes.html
-@@ -5,7 +5,7 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Release Notes - Game Foundry Studio</title>
--    <meta name="description" content="Platform status, milestone progression and release notes for the no-code Game Foundry Studio engine direction.">
-+    <meta name="description" content="Platform status and release notes for Game Foundry Studio across Build, Play, Share and Platform updates.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
- </head>
-@@ -17,7 +17,7 @@
-             <div class="container">
-                 <div class="kicker">Company</div>
-                 <h1>Release Notes</h1>
--                <p class="lede">Platform status and milestone notes for the Build, Play and Share no-code engine direction.</p>
-+                <p class="lede">What changed across Build, Play, Share and the platform foundation.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -25,8 +25,10 @@
-                 <article class="release-intro">
-                     <div class="kicker">Build &middot; Play &middot; Share</div>
-                     <h2>The platform is in Developer Preview.</h2>
--                    <p class="lede">Game Foundry Studio is shaping the connected loop between configuration tools, playable games, tutorials, assets, templates, ratings and community discovery.</p>
--                    <p>These notes track platform-level milestones and public-facing direction toward GDD &rarr; Manifest &rarr; Engine. They are informational planning markers, not software build numbers or compatibility promises.</p>
-+                    <p class="lede">Game Foundry Studio is shaping the connected loop between creator tools, playable
-+                        games, learning resources, assets, templates and community discovery.</p>
-+                    <p>These notes track platform-level milestones and public-facing direction. They are informational
-+                        planning markers, not software build numbers or compatibility promises.</p>
-                 </article>
-                 <div class="release-stat-grid" aria-label="Current platform status">
-                     <article class="release-stat">
-@@ -47,21 +49,31 @@
-         <section class="section">
-             <div class="container card">
-                 <div class="card-body">
--                    <div class="kicker">No-code engine direction</div>
--                    <h2>Zero user code, all config and manifest-driven behavior.</h2>
--                    <p class="lede">The long-term mission is to enable anyone to create games for the open web without writing code.</p>
--                    <div class="grid cols-3">
-+                    <div class="kicker">Latest Updates</div>
-+                    <h2>Recent platform notes.</h2>
-+                    <div class="grid cols-2">
-                         <article class="callout">
--                            <h3>Build</h3>
--                            <p>Create games through configuration, content and composition.</p>
-+                            <div class="kicker">2026-06-14: Build</div>
-+                            <h3>Creator tools language refresh</h3>
-+                            <p>Company pages now focus on Creators, approachable workflows and clearer game-making
-+                                outcomes.</p>
-                         </article>
-                         <article class="callout">
--                            <h3>Play</h3>
--                            <p>Test, preview, run, discover and enjoy games and examples.</p>
-+                            <div class="kicker">2026-06-14: Play</div>
-+                            <h3>Playable experiences remain the goal</h3>
-+                            <p>Public messaging now connects game design, structured game data and playable results
-+                                without making technical terms the headline.</p>
-                         </article>
-                         <article class="callout">
--                            <h3>Share</h3>
--                            <p>Publish games, assets, templates, tutorials, ratings and community knowledge.</p>
-+                            <div class="kicker">2026-06-14: Share</div>
-+                            <h3>Creator ecosystem framing</h3>
-+                            <p>Publishing, asset sharing, learning resources and creator discovery are grouped under a
-+                                clearer Share story.</p>
-+                        </article>
-+                        <article class="callout">
-+                            <div class="kicker">2026-06-14: Platform</div>
-+                            <h3>Release notes structure prepared</h3>
-+                            <p>The page now has category-based space for future public updates and milestones.</p>
-                         </article>
-                     </div>
-                 </div>
-@@ -90,17 +102,17 @@
-                     <li class="release-stage is-current" aria-current="step">
-                         <span>Current Stage</span>
-                         <strong>Developer Preview</strong>
--                        <p>Workspace integration, creator flow polish and platform IA.</p>
-+                        <p>Creator flow polish, public page clarity and platform information architecture.</p>
-                     </li>
-                     <li class="release-stage">
-                         <span>Next Stage</span>
-                         <strong>Public Preview</strong>
--                        <p>Public-facing onboarding, community entry points and release notes.</p>
-+                        <p>Public-facing onboarding, community entry points and active release communication.</p>
-                     </li>
-                     <li class="release-stage">
-                         <span>Stage 5</span>
-                         <strong>v1 Launch</strong>
--                        <p>Launch-ready creator destination with mature loops.</p>
-+                        <p>Launch-ready creator destination with mature Build, Play and Share loops.</p>
-                     </li>
-                 </ol>
-             </div>
-@@ -112,7 +124,8 @@
-                         <div class="kicker">Platform Version History</div>
-                         <h2>Milestones, not software build numbers.</h2>
-                     </div>
--                    <p>Version labels describe product milestones across Build, Play and Share, including the path from game design documents to manifests to the engine. They do not map to internal code builds.</p>
-+                    <p>Version labels describe product milestones across Build, Play and Share. They do not map to
-+                        internal code builds.</p>
-                 </div>
-                 <div class="version-columns">
-                     <section aria-labelledby="released-platform-versions">
-@@ -128,7 +141,7 @@
-                             </li>
-                             <li class="version-item is-current">
-                                 <span>v0.3</span>
--                                <strong>Workspace Integration</strong>
-+                                <strong>Creator Flow</strong>
-                             </li>
-                         </ol>
-                     </section>
-@@ -168,13 +181,6 @@
-                 </div>
-             </div>
-         </section>
--        <section class="section">
--            <div class="container timeline-placeholder">
--                <div class="kicker">Release Notes Timeline</div>
--                <h2>Future entries will live here.</h2>
--                <p>This space is reserved for dated platform updates, shipped milestone summaries and preview notes as the public release cadence matures.</p>
--            </div>
--        </section>
-     </main>
-     <div data-partial="footer"></div>
-     <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-diff --git a/company/roadmap.html b/company/roadmap.html
-index 6b223dd1f..f94dff872 100644
---- a/company/roadmap.html
-+++ b/company/roadmap.html
-@@ -5,7 +5,7 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Roadmap - Game Foundry Studio</title>
--    <meta name="description" content="Game Foundry Studio roadmap for Build, Play, Share and no-code manifest-driven game creation.">
-+    <meta name="description" content="A creator-focused Game Foundry Studio roadmap organized around tools, publishing, community, marketplace, collaboration and cloud publishing outcomes.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
- </head>
-@@ -17,37 +17,65 @@
-             <div class="container">
-                 <div class="kicker">Company</div>
-                 <h1>Roadmap</h1>
--                <p class="lede">A roadmap for moving from creator tools toward a zero-code, manifest-driven engine for open-web games.</p>
-+                <p class="lede">What comes next for Creators, players and the shared Game Foundry Studio ecosystem.</p>
-             </div>
-         </section>
-         <section class="section">
-             <div class="container card">
-                 <div class="card-body">
--                    <div class="kicker">Platform direction</div>
--                    <div class="grid cols-3">
--                        <article class="callout">
--                            <h2>Build</h2>
--                            <p>Grow the authoring path around configuration, content and composition so creators can assemble game systems without code.</p>
--                        </article>
--                        <article class="callout">
--                            <h2>Play</h2>
--                            <p>Improve testing, previewing, running and discovery so games and examples become the fastest way to understand what the platform can make.</p>
--                        </article>
--                        <article class="callout">
--                            <h2>Share</h2>
--                            <p>Expand publishing paths for games, assets, templates, tutorials, ratings and community knowledge as the creator loop matures.</p>
--                        </article>
--                    </div>
-+                    <div class="kicker">Roadmap Direction</div>
-+                    <h2>Creator value comes first.</h2>
-+                    <p class="lede">The roadmap is organized around outcomes Creators can feel: better tools, smoother
-+                        publishing, stronger community features and easier ways to collaborate and share.</p>
-                 </div>
-             </div>
-         </section>
-+        <section class="section">
-+            <div class="container grid cols-3">
-+                <article class="card">
-+                    <div class="card-body">
-+                        <div class="kicker">Near Term</div>
-+                        <h2>Make creation smoother.</h2>
-+                        <ul>
-+                            <li>Complete creator tools</li>
-+                            <li>Improve publishing</li>
-+                            <li>Improve creator workflow</li>
-+                        </ul>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <div class="kicker">Mid Term</div>
-+                        <h2>Grow the creator ecosystem.</h2>
-+                        <ul>
-+                            <li>Community</li>
-+                            <li>Marketplace</li>
-+                            <li>Creator profiles</li>
-+                            <li>Ratings and reviews</li>
-+                        </ul>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <div class="kicker">Long Term</div>
-+                        <h2>Open up bigger possibilities.</h2>
-+                        <ul>
-+                            <li>AI-assisted creation</li>
-+                            <li>Collaboration</li>
-+                            <li>Cloud publishing</li>
-+                            <li>Mobile support</li>
-+                        </ul>
-+                    </div>
-+                </article>
-+            </div>
-+        </section>
-         <section class="section">
-             <div class="container card">
-                 <div class="card-body">
--                    <div class="kicker">GDD &rarr; Manifest &rarr; Engine</div>
--                    <h2>The roadmap is organized around manifest-driven creation.</h2>
--                    <p class="lede">The long-term path is to move from plain-English game design documents into structured manifests that the engine can execute.</p>
--                    <p>Future roadmap themes should push toward zero user code: game behavior, content rules, presentation, progression and sharing metadata all expressed through configuration instead of custom scripts.</p>
-+                    <div class="kicker">Build &middot; Play &middot; Share</div>
-+                    <h2>Every milestone should help Creators move forward.</h2>
-+                    <p class="lede">Build improves the tools and learning path. Play improves testing and discovery.
-+                        Share improves publishing, community and support for the work Creators make.</p>
-                 </div>
-             </div>
-         </section>
-diff --git a/company/vision.html b/company/vision.html
-index ad6d61fb9..01333d891 100644
---- a/company/vision.html
-+++ b/company/vision.html
-@@ -5,7 +5,7 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Vision - Game Foundry Studio</title>
--    <meta name="description" content="The Game Foundry Studio vision for Build, Play and Share as a no-code open-web game platform.">
-+    <meta name="description" content="The Game Foundry Studio vision for a future where creating games is as accessible as creating documents, websites and videos.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
- </head>
-@@ -17,37 +17,62 @@
-             <div class="container">
-                 <div class="kicker">Company</div>
-                 <h1>Vision</h1>
--                <p class="lede">The long-range direction for a no-code, config-driven game platform built around Build, Play and Share.</p>
-+                <p class="lede">A future where creating a game is as accessible as creating a document, a website or a
-+                    video.</p>
-             </div>
-         </section>
-         <section class="section">
-             <div class="container card">
-                 <div class="card-body">
--                    <div class="kicker">Build &middot; Play &middot; Share</div>
--                    <div class="grid cols-3">
--                        <article class="callout">
--                            <h2>Build</h2>
--                            <p>Build means creating games through configuration, content and composition. A creator should be able to describe rules, scenes, assets and goals without writing code.</p>
--                        </article>
--                        <article class="callout">
--                            <h2>Play</h2>
--                            <p>Play means testing, previewing, running, discovering and enjoying games and examples in the same open-web platform loop.</p>
--                        </article>
--                        <article class="callout">
--                            <h2>Share</h2>
--                            <p>Share means publishing games, assets, templates, tutorials, ratings and community knowledge so the platform improves with every creator contribution.</p>
--                        </article>
--                    </div>
-+                    <div class="kicker">Where We Are Going</div>
-+                    <h2>Game creation should feel open, learnable and shareable.</h2>
-+                    <p class="lede">Game Foundry Studio is growing toward a creator ecosystem where ideas can become
-+                        playable experiences through visual tools, learning support and community feedback.</p>
-+                    <p>ForgeBot, Pixel Smith, Spark and Foundry Bot help represent that future: building, designing,
-+                        sounding out and guiding each step of the creator journey.</p>
-                 </div>
-             </div>
-         </section>
-+        <section class="section">
-+            <div class="container grid cols-2">
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Creators build games.</h2>
-+                        <p>New makers, classrooms and small teams should be able to turn rough ideas into worlds,
-+                            characters, rules, assets and playable moments.</p>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Players discover experiences.</h2>
-+                        <p>Playable games should become the fastest way to explore what Creators are making and what
-+                            the platform can support.</p>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Educators teach game design.</h2>
-+                        <p>Lessons, examples and templates should make game design easier to explain, practice and
-+                            remix.</p>
-+                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <h2>Communities share knowledge.</h2>
-+                        <p>Creators should be able to share assets, tutorials, templates, feedback and discoveries that
-+                            help the next project move faster.</p>
-+                    </div>
-+                </article>
-+            </div>
-+        </section>
-         <section class="section">
-             <div class="container card">
-                 <div class="card-body">
--                    <div class="kicker">GDD &rarr; Manifest &rarr; Engine</div>
--                    <h2>The vision is zero-code game creation for the open web.</h2>
--                    <p class="lede">A game design document should become a structured manifest, and that manifest should give the engine everything it needs to run the game.</p>
--                    <p>The engine goal is zero user code. Behavior, progression, interactions, presentation and publishing metadata should be expressed through configuration, reusable templates and manifest-driven rules.</p>
-+                    <div class="kicker">Build &middot; Play &middot; Share</div>
-+                    <h2>The destination is a living creator loop.</h2>
-+                    <p class="lede">Build means approachable creation. Play means immediate testing and discovery.
-+                        Share means publishing, learning and community participation.</p>
-+                    <p>Together, they describe a future where game creation belongs to more people.</p>
-                 </div>
-             </div>
-         </section>
 diff --git a/company/how-we-build.html b/company/how-we-build.html
-new file mode 100644
-index 000000000..a51f2dd64
---- /dev/null
+index a51f2dd64..c8d1f79cf 100644
+--- a/company/how-we-build.html
 +++ b/company/how-we-build.html
-@@ -0,0 +1,106 @@
-+<!doctype html>
-+<html lang="en">
-+
-+<head>
-+    <meta charset="utf-8">
-+    <meta name="viewport" content="width=device-width, initial-scale=1">
-+    <title>How We Build - Game Foundry Studio</title>
-+    <meta name="description" content="How Game Foundry Studio helps Creators move from an idea to a Game Design Document (GDD), structured game data and playable experiences.">
-+    <link rel="icon" href="/favicon.svg">
-+    <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
-+</head>
-+
-+<body>
-+    <div data-partial="header-nav"></div>
-+    <main>
-+        <section class="page-title">
-+            <div class="container">
-+                <div class="kicker">How We Build</div>
-+                <h1>How We Build</h1>
-+                <p class="lede">Build &middot; Play &middot; Share</p>
-+            </div>
-+        </section>
-+        <section class="section">
-+            <div class="container card">
-+                <div class="card-body">
-+                    <div class="kicker">Creator Flow</div>
-+                    <h2>A Creator starts with an idea.</h2>
-+                    <p class="lede">That idea becomes a Game Design Document (GDD). The platform then helps transform
-+                        that idea into structured game data and a playable experience.</p>
-+                </div>
-+            </div>
-+        </section>
-+        <section class="section">
-+            <div class="container grid cols-2">
-+                <article class="card">
-+                    <div class="card-body">
-+                        <div class="kicker">ForgeBot: Build</div>
-+                        <h2>Turn ideas into working game systems.</h2>
-+                        <p class="lede">ForgeBot helps Creators turn ideas into working game systems.</p>
-+                        <ul>
-+                            <li>Gameplay</li>
-+                            <li>Systems</li>
-+                            <li>Objects</li>
-+                            <li>Rules</li>
-+                            <li>Configuration</li>
-+                        </ul>
+@@ -33,6 +33,9 @@
+         <section class="section">
+             <div class="container grid cols-2">
+                 <article class="card">
++                    <div class="card-media">
++                        <img src="../assets/theme-v2/images/mascots/forgebot.png" alt="ForgeBot guide for Build">
 +                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <div class="kicker">Pixel Smith: Design</div>
-+                        <h2>Shape the look and feel of the game.</h2>
-+                        <p class="lede">Pixel Smith helps Creators shape the look and feel of their games.</p>
-+                        <ul>
-+                            <li>Art</li>
-+                            <li>Worlds</li>
-+                            <li>Sprites</li>
-+                            <li>Visual identity</li>
-+                        </ul>
+                     <div class="card-body">
+                         <div class="kicker">ForgeBot: Build</div>
+                         <h2>Turn ideas into working game systems.</h2>
+@@ -47,6 +50,9 @@
+                     </div>
+                 </article>
+                 <article class="card">
++                    <div class="card-media">
++                        <img src="../assets/theme-v2/images/mascots/pixel-smith.png" alt="Pixel Smith guide for Design">
 +                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <div class="kicker">Spark: Audio</div>
-+                        <h2>Bring the game to life through sound.</h2>
-+                        <p class="lede">Spark helps Creators bring games to life through sound.</p>
-+                        <ul>
-+                            <li>Music</li>
-+                            <li>Sound effects</li>
-+                            <li>Voice</li>
-+                            <li>Atmosphere</li>
-+                        </ul>
+                     <div class="card-body">
+                         <div class="kicker">Pixel Smith: Design</div>
+                         <h2>Shape the look and feel of the game.</h2>
+@@ -60,6 +66,9 @@
+                     </div>
+                 </article>
+                 <article class="card">
++                    <div class="card-media">
++                        <img src="../assets/theme-v2/images/mascots/spark.png" alt="Spark guide for Audio">
 +                    </div>
-+                </article>
-+                <article class="card">
-+                    <div class="card-body">
-+                        <div class="kicker">Foundry Bot: Guide</div>
-+                        <h2>Learn, explore and keep moving.</h2>
-+                        <p class="lede">Foundry Bot helps Creators learn, explore tools and overcome challenges.</p>
-+                        <ul>
-+                            <li>Learning</li>
-+                            <li>Discovery</li>
-+                            <li>AI assistance</li>
-+                            <li>Creator guidance</li>
-+                        </ul>
+                     <div class="card-body">
+                         <div class="kicker">Spark: Audio</div>
+                         <h2>Bring the game to life through sound.</h2>
+@@ -73,6 +82,9 @@
+                     </div>
+                 </article>
+                 <article class="card">
++                    <div class="card-media">
++                        <img src="../assets/theme-v2/images/mascots/foundry-bot.png" alt="Foundry Bot guide for help and AI">
 +                    </div>
-+                </article>
+                     <div class="card-body">
+                         <div class="kicker">Foundry Bot: Guide</div>
+                         <h2>Learn, explore and keep moving.</h2>
+diff --git a/index.html b/index.html
+index 0029882d4..2330a0bf0 100644
+--- a/index.html
++++ b/index.html
+@@ -18,8 +18,9 @@
+         <div class="hero-copy">
+           <div class="kicker">Browser-native creator platform</div>
+           <h1>Build. Play. Share.</h1>
+-          <p class="lede">Create browser games with visual tools, reusable assets, manifest-driven configuration, and
+-            publishing workflows that make GameFoundryStudio feel like a destination, not just an engine.</p>
++          <p class="lede">Game Foundry Studio helps Creators design games, build assets, test ideas, and share playable
++            open-web experiences with no coding required.</p>
++          <p>Advanced creators can extend projects later with custom enhancements and scripting.</p>
+           <div class="hero-cta"><a class="btn primary" href="toolbox/index.html">Start Building</a><a class="btn"
+               href="games/index.html">Explore Games</a></div>
+           <div class="dual-entry" aria-label="Primary entry points">
+@@ -39,53 +40,50 @@
+       <div class="container">
+         <div class="section-head">
+           <div>
+-            <div class="kicker">Most played this week</div>
+-            <h2>Trending Games</h2>
++            <div class="kicker">Featured Experiences</div>
++            <h2>Featured Experiences</h2>
+           </div>
+-          <p>A top-of-home area that makes the site feel alive: featured games, new releases, seasonal events, and
+-            creator challenges.</p>
++          <p>Explore prototypes, sample games, creator challenges, and future community showcases as Game Foundry
++            Studio grows.</p>
+         </div>
+         <div class="trending-grid">
+           <article class="game-tile featured">
+             <div class="game-art"><img src="/games/assets/images/game-iceberg.svg" alt="King of the Iceberg sample art"></div>
+-            <div class="game-meta"><strong>King of the Iceberg</strong><span>Physics party brawler</span><em>12,543
+-                players - 4.9</em></div>
++            <div class="game-meta"><strong>King of the Iceberg</strong><span>Physics party brawler</span><em>Featured Prototype</em></div>
+           </article>
+           <article class="game-tile">
+             <div class="game-art"><img src="/games/assets/images/game-nebula.svg" alt="Nebula Runner sample art"></div>
+-            <div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>8,234 players -
+-                4.8</em></div>
++            <div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>Sample Game</em></div>
+           </article>
+           <article class="game-tile">
+             <div class="game-art"><img src="/games/assets/images/game-retrobot.svg" alt="RetroBot Rescue sample art"></div>
+-            <div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>6,887 players -
+-                4.7</em></div>
++            <div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>Coming Soon</em>
 +            </div>
-+        </section>
-+        <section class="section">
-+            <div class="container card">
-+                <div class="card-body">
-+                    <div class="kicker">Creators Start Here</div>
-+                    <h2>Build. Play. Share.</h2>
-+                    <p class="lede">No coding required.</p>
-+                    <p>Advanced Creators may extend projects with custom enhancements and scripting when additional
-+                        flexibility or control is needed.</p>
-+                </div>
-+            </div>
-+        </section>
-+    </main>
-+    <div data-partial="footer"></div>
-+    <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-+</body>
-+
-+</html>
-diff --git a/docs_build/dev/reports/PR_26164_086-company-pages-creator-story.md b/docs_build/dev/reports/PR_26164_086-company-pages-creator-story.md
+           </article>
+           <article class="game-tile">
+             <div class="game-art"><img src="/games/assets/images/game-forgequest.svg" alt="Forge Quest sample art"></div>
+-            <div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>5,921 players -
+-                4.6</em></div>
++            <div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>Creator Challenge</em></div>
+           </article>
+         </div>
+         <div class="section-head">
+           <div>
+-            <div class="kicker">Staff Choice</div>
+-            <h3>Staff Picks</h3>
++            <div class="kicker">Creator Highlights</div>
++            <h3>Creator Highlights</h3>
+           </div>
+-          <p>Display-only highlights for editor-selected games, creator showcases, and community-ready releases.</p>
++          <p>A future-ready area for featured creators, games, templates, and showcases.</p>
+         </div>
+-        <div class="trending-grid" aria-label="Staff Picks">
++        <div class="trending-grid" aria-label="Creator Highlights">
+           <article class="game-tile">
+             <div class="game-art"><img src="/games/assets/images/game-forgequest.svg" alt="Forge Quest staff pick art"></div>
+-            <div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>Staff pick</em></div>
++            <div class="game-meta"><strong>Forge Quest</strong><span>Creator challenge</span><em>In Development</em></div>
+           </article>
+           <article class="game-tile">
+             <div class="game-art"><img src="/games/assets/images/game-nebula.svg" alt="Nebula Runner staff pick art"></div>
+-            <div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>Staff pick</em></div>
++            <div class="game-meta"><strong>Nebula Runner</strong><span>Arcade survival</span><em>Sample Game</em></div>
+           </article>
+           <article class="game-tile">
+             <div class="game-art"><img src="/games/assets/images/game-retrobot.svg" alt="RetroBot Rescue staff pick art"></div>
+-            <div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>Staff pick</em></div>
++            <div class="game-meta"><strong>RetroBot Rescue</strong><span>Pixel platformer</span><em>Coming Soon</em></div>
+           </article>
+         </div>
+       </div>
+@@ -95,14 +93,17 @@
+         <div>
+           <div class="kicker">What is GameFoundryStudio?</div>
+           <h2>A complete place to create, test, publish, and play.</h2>
+-          <p class="lede small">No engine setup. No complicated installs. Create directly in the browser with clear
+-            tools, friendly guardrails, and reusable game-building pieces.</p>
++          <p class="lede small">Game Foundry Studio is a creator destination for building browser games, assets, worlds,
++            audio, rules, and publishing workflows in one connected place.</p>
+         </div>
+         <div class="check-panel">
+           <div>Visual Editors</div>
++          <div>Game Design Document (GDD)</div>
+           <div>Asset Creation Tools</div>
+           <div>Tilemaps & Worlds</div>
+           <div>Audio & Music Tools</div>
++          <div>Testing & Preview</div>
++          <div>Creator Templates</div>
+           <div>One-Click Publishing</div>
+           <div>Community Sharing</div>
+         </div>
+@@ -115,8 +116,7 @@
+             <div class="kicker">Featured tools</div>
+             <h2>Creator tools with guardrails.</h2>
+           </div>
+-          <p>Each tool should use explicit manifest data, show safe empty states, and avoid hidden fallback behavior.
+-          </p>
++          <p>Focused tools help Creators move from idea to playable game one step at a time.</p>
+         </div>
+         <div class="card-grid">
+           <article class="card">
+@@ -145,18 +145,19 @@
+         <div class="image-panel"><img src="assets/theme-v2/images/game-foundry-mascot-sheet.png"
+             alt="ForgeBot mascot"></div>
+         <div>
+-          <div class="kicker">Mascot system</div>
+-          <h2>ForgeBot, Spark, Pixel Smith, and Foundry Bot.</h2>
+-          <p class="lede small">Use these characters for onboarding, tutorials, error states, achievements, learning
+-            content, and playful creator moments.</p><a class="btn primary" href="toolbox/index.html">View Tool Images</a>
++          <div class="kicker">Meet the Foundry Guides</div>
++          <h2>ForgeBot, Pixel Smith, Spark, and Foundry Bot help Creators.</h2>
++          <p class="lede small">ForgeBot, Pixel Smith, Spark, and Foundry Bot help Creators build, design, add sound,
++            and learn their way through the platform.</p><a class="btn primary" href="company/how-we-build.html">See How We Build</a>
+         </div>
+       </div>
+     </section>
+     <section class="section">
+       <div class="container cta">
+-        <h2>Forge games for the open web.</h2>
+-        <p class="lede small">GameFoundryStudio can grow into Toolbox, Games, Marketplace, Cloud, and Learn without
+-          changing the core brand.</p><a class="btn primary" href="admin/branding.html">Open Brand Kit</a>
++        <h2>Start Creating</h2>
++        <p class="lede small">Begin with tools, explore playable examples, or learn how the creator journey works.</p>
++        <div class="hero-cta"><a class="btn primary" href="toolbox/index.html">Start Building</a><a class="btn"
++            href="games/index.html">Explore Games</a><a class="btn" href="company/how-we-build.html">Learn How It Works</a></div>
+       </div>
+     </section>
+   </main>
+diff --git a/docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md b/docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md
 new file mode 100644
-index 000000000..bdf656b93
+index 000000000..44038c3f1
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26164_086-company-pages-creator-story.md
-@@ -0,0 +1,116 @@
-+# PR_26164_086-company-pages-creator-story
++++ b/docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md
+@@ -0,0 +1,107 @@
++# PR_26164_087-home-and-how-mascots
 +
 +## Branch Validation
 +
@@ -763,97 +202,88 @@ index 000000000..bdf656b93
 +
 +## Scope
 +
-+- Updated company page content and company footer navigation only.
-+- Added `company/how-we-build.html`.
-+- Updated `assets/theme-v2/partials/footer.html` only to add the new Company navigation link.
++- Updated `index.html`.
++- Updated `company/how-we-build.html`.
++- No navigation file changes were required because `company/how-we-build.html` already exists in Company footer navigation and the new Home CTAs link directly to that page.
 +- Required report artifacts updated:
 +  - `docs_build/dev/reports/codex_review.diff`
 +  - `docs_build/dev/reports/codex_changed_files.txt`
-+- Unrelated existing untracked file left untouched:
-+  - `assets/theme-v2/images/game-foundry-tools-poster=2.png`
 +
 +## Requirement Checklist
 +
 +- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution: PASS
 +- Verified current branch is `main` before making changes: PASS
-+- Scope limited to company pages and required reports, with footer Company navigation support: PASS
-+- Reframed company pages around creator-focused messaging: PASS
-+- Kept technical messaging as secondary/supporting content: PASS
-+- About page retains current improvements and adds `What Can You Build?`: PASS
-+- About page adds `One Creator Ecosystem` and closes with `Build &middot; Play &middot; Share`: PASS
-+- Mission page rewritten as timeless WHY page with no mascot usage: PASS
-+- Added `company/how-we-build.html` as HOW page with ForgeBot, Pixel Smith, Spark and Foundry Bot guidance: PASS
-+- Vision page rewritten around the future destination with light mascot usage: PASS
-+- Roadmap page rewritten around creator outcomes: PASS
-+- Release Notes page keeps platform status and adds `Latest Updates` with Build, Play, Share and Platform categories: PASS
-+- Contact page removes planning-language framing and direct-email strategy, replacing it with ticket-driven support categories: PASS
-+- Added How We Build to Company navigation: PASS
-+- Playwright impacted: No. Content/navigation only: PASS
++- Scope limited to `company/how-we-build.html`, `index.html`, required navigation updates if needed, and reports: PASS
++- Added correct mascot image to each How We Build mascot block: PASS
++  - ForgeBot for Build: `../assets/theme-v2/images/mascots/forgebot.png`
++  - Pixel Smith for Design: `../assets/theme-v2/images/mascots/pixel-smith.png`
++  - Spark for Audio: `../assets/theme-v2/images/mascots/spark.png`
++  - Foundry Bot for Guide / AI / Help: `../assets/theme-v2/images/mascots/foundry-bot.png`
++- Used existing Theme V2 card/media classes where possible: PASS
++- Did not add inline styles, script blocks, style blocks, or page-local CSS: PASS
++- Home hero uses creator-focused `Build. Play. Share.` copy: PASS
++- Fake production metrics were removed: PASS
++- `Trending Games` / `Most played this week` replaced with `Featured Experiences`: PASS
++- `Staff Picks` replaced with `Creator Highlights`: PASS
++- What is GameFoundryStudio section updated with creator destination copy and added Game Design Document (GDD), Testing & Preview, and Creator Templates: PASS
++- Featured Tools public copy no longer uses internal governance language: PASS
++- Mascot section updated to `Meet the Foundry Guides` with `See How We Build` CTA to `company/how-we-build.html`: PASS
++- Final CTA updated to `Start Creating` with Start Building, Explore Games, and Learn How It Works buttons: PASS
++- Playwright impacted: No. Content/navigation/image placement only: PASS
 +- Required repo-structured ZIP produced: PASS
 +
 +## Manual Validation Notes
 +
-+- Reviewed all existing files under `company/`.
-+- Reviewed `assets/theme-v2/partials/footer.html` because the BUILD requested adding the new page to Company navigation.
-+- Did not modify `assets/theme-v2/js/gamefoundry-partials.js`; the new footer link is root-relative and resolved by static link validation.
-+- Did not add CSS, page-local styles, inline scripts or inline event handlers.
-+- The public Company Roadmap page was rewritten per this BUILD request. The repo roadmap governance file was not touched.
-+- No direct email addresses were introduced.
++- Reviewed `index.html` and `company/how-we-build.html` before editing.
++- Confirmed mascot files exist under `assets/theme-v2/images/mascots/`.
++- Confirmed `company/how-we-build.html` was already linked from the Company footer navigation, so no navigation file edit was required.
++- Confirmed changed links resolve:
++  - `toolbox/index.html`
++  - `games/index.html`
++  - `company/how-we-build.html`
++- Confirmed no CSS or JavaScript files were changed.
 +
 +## Validation
 +
 +- `git diff --check`: PASS
-+  - Note: Git reported LF-to-CRLF working-copy warnings for touched HTML/report files; the command exited successfully.
++  - Note: Git reported LF-to-CRLF working-copy warnings for touched HTML files; the command exited successfully.
++- Home render-shell validation: PASS
++- `company/how-we-build.html` render-shell validation: PASS
++- Mascot image path resolution: PASS
++- Changed navigation/link resolution: PASS
 +- Inline HTML restriction check: PASS
 +  - No `<style>` blocks.
 +  - No inline `<script>` blocks.
 +  - No inline event handlers.
 +  - No inline `style` attributes.
-+- Company page render-shell check: PASS
-+  - `company/about.html`
-+  - `company/mission.html`
-+  - `company/how-we-build.html`
-+  - `company/vision.html`
-+  - `company/roadmap.html`
-+  - `company/release-notes.html`
-+  - `company/contact.html`
-+- Company navigation link resolution: PASS
-+  - About
-+  - Contact
-+  - How We Build
-+  - Mission
-+  - Release Notes
-+  - Roadmap
-+  - Vision
-+- Retired language search: PASS
-+  - No `manifest`.
-+  - No `Manifest`.
-+  - No `engine`.
-+  - No `Engine`.
-+  - No `config-driven`.
-+  - No `no-code`.
-+  - No `zero user code`.
-+  - No `custom user code`.
-+  - No `without writing code`.
-+  - No `email` or `@` in changed company content.
-+- Evidence search: PASS
-+  - `Game Design Document (GDD) &rarr; Structured Game Data &rarr; Playable Experiences`
-+  - `Build &middot; Play &middot; Share`
-+  - `ForgeBot`
-+  - `Pixel Smith`
-+  - `Spark`
-+  - `Foundry Bot`
-+  - `Open a support ticket`
-+  - `Latest Updates`
-+  - `Near Term`
-+  - `Mid Term`
-+  - `Long Term`
++- Retired Home text search: PASS
++  - No `Most played this week`.
++  - No `Trending Games`.
++  - No `Staff Picks`.
++  - No fake player counts or fake ratings.
++  - No `Open Brand Kit`.
++  - No `manifest-driven`.
++  - No `explicit manifest data`.
++  - No `hidden fallback`.
++- Required Home evidence search: PASS
++  - `Game Foundry Studio helps Creators design games`
++  - `Advanced creators can extend projects later`
++  - `Featured Experiences`
++  - `Creator Highlights`
++  - `Game Design Document (GDD)`
++  - `Testing & Preview`
++  - `Creator Templates`
++  - `Focused tools help Creators`
++  - `Meet the Foundry Guides`
++  - `See How We Build`
++  - `Start Creating`
++  - `Learn How It Works`
 +
 +## Playwright
 +
 +- Playwright impacted: No.
 +- Playwright run: SKIP.
-+- Reason: This PR changes static company page content and one footer Company navigation link only. No runtime behavior, tool workflow, shared engine behavior, or browser interaction changed.
++- Reason: This PR changes static content, links, and image placement only. No runtime behavior, tool workflow, shared engine behavior, or browser interaction changed.
 +
 +## Samples
 +
@@ -867,4 +297,4 @@ index 000000000..bdf656b93
 +
 +## ZIP
 +
-+- `tmp/PR_26164_086-company-pages-creator-story_delta.zip`: PASS
++- `tmp/PR_26164_087-home-and-how-mascots_delta.zip`: PASS

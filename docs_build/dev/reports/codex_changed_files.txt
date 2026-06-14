@@ -1,24 +1,16 @@
 # scoped git status --short
- M assets/theme-v2/partials/footer.html
- M company/about.html
- M company/contact.html
- M company/mission.html
- M company/release-notes.html
- M company/roadmap.html
- M company/vision.html
-?? company/how-we-build.html
-?? docs_build/dev/reports/PR_26164_086-company-pages-creator-story.md
+ M company/how-we-build.html
+ M index.html
+?? docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md
 
 # scoped git diff --stat
- assets/theme-v2/partials/footer.html |  1 +
- company/about.html                   | 68 +++++++++++++++++++++++++++++-----
- company/contact.html                 | 72 +++++++++++++++++++++++++-----------
- company/mission.html                 | 47 ++++++++++++++++-------
- company/release-notes.html           | 58 ++++++++++++++++-------------
- company/roadmap.html                 | 70 ++++++++++++++++++++++++-----------
- company/vision.html                  | 67 ++++++++++++++++++++++-----------
- 7 files changed, 270 insertions(+), 113 deletions(-)
+ company/how-we-build.html | 12 +++++++++
+ index.html                | 65 ++++++++++++++++++++++++-----------------------
+ 2 files changed, 45 insertions(+), 32 deletions(-)
 
 # scoped untracked files included in review diff
-company/how-we-build.html
-docs_build/dev/reports/PR_26164_086-company-pages-creator-story.md
+docs_build/dev/reports/PR_26164_087-home-and-how-mascots.md
+
+# generated review artifacts
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/codex_changed_files.txt
