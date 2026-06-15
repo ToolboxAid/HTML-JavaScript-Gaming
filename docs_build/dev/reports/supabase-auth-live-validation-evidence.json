@@ -1,0 +1,122 @@
+{
+  "authProvider": "supabase-auth",
+  "dbProvider": "local-db",
+  "checks": [
+    {
+      "id": "env-GAMEFOUNDRY_AUTH_PROVIDER",
+      "status": "PASS",
+      "summary": "GAMEFOUNDRY_AUTH_PROVIDER is present."
+    },
+    {
+      "id": "env-GAMEFOUNDRY_DB_PROVIDER",
+      "status": "PASS",
+      "summary": "GAMEFOUNDRY_DB_PROVIDER is present."
+    },
+    {
+      "id": "env-GAMEFOUNDRY_SUPABASE_URL",
+      "status": "PASS",
+      "summary": "GAMEFOUNDRY_SUPABASE_URL is present."
+    },
+    {
+      "id": "env-GAMEFOUNDRY_SUPABASE_ANON_KEY",
+      "status": "PASS",
+      "summary": "GAMEFOUNDRY_SUPABASE_ANON_KEY is present."
+    },
+    {
+      "id": "env-GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+      "status": "PASS",
+      "summary": "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY is present."
+    },
+    {
+      "id": "supabase-url-shape",
+      "status": "PASS",
+      "summary": "Supabase URL shape is parseable without exposing host.",
+      "protocol": "https:",
+      "hostnamePresent": true
+    },
+    {
+      "id": "backend-provider-selection",
+      "status": "PASS",
+      "summary": "Backend status selects Supabase Auth with Local DB product data.",
+      "ready": true,
+      "browserMessage": "Account service is available.",
+      "operatorStatus": "ready"
+    },
+    {
+      "id": "browser-safe-status-message",
+      "status": "PASS",
+      "summary": "Auth status browser message is production-safe."
+    },
+    {
+      "id": "live-auth-health",
+      "status": "FAIL",
+      "summary": "Live Supabase Auth health request failed.",
+      "error": "fetch failed"
+    },
+    {
+      "id": "live-users-lookup",
+      "status": "FAIL",
+      "summary": "Live users lookup request failed.",
+      "error": "fetch failed"
+    },
+    {
+      "id": "live-roles-lookup",
+      "status": "FAIL",
+      "summary": "Live roles lookup request failed.",
+      "error": "fetch failed"
+    },
+    {
+      "id": "live-user-roles-lookup",
+      "status": "FAIL",
+      "summary": "Live user_roles lookup request failed.",
+      "error": "fetch failed"
+    },
+    {
+      "id": "backend-session-resolution",
+      "status": "FAIL",
+      "summary": "No active live identity user was available for backend session resolution."
+    },
+    {
+      "id": "live-temp-auth-user-create",
+      "status": "FAIL",
+      "summary": "Temporary Supabase Auth user creation request failed.",
+      "error": "fetch failed"
+    },
+    {
+      "id": "backend-create-account-live",
+      "status": "FAIL",
+      "summary": "Backend Create Account did not complete through live Supabase Auth.",
+      "httpStatus": 500,
+      "error": "fetch failed"
+    },
+    {
+      "id": "backend-password-reset-live",
+      "status": "FAIL",
+      "summary": "Backend Password Reset did not complete through live Supabase Auth.",
+      "httpStatus": 500,
+      "error": "fetch failed"
+    },
+    {
+      "id": "missing-config-visible-failure",
+      "status": "PASS",
+      "summary": "Missing Supabase config reports generic site-unavailable browser message."
+    }
+  ],
+  "envPresence": {
+    "GAMEFOUNDRY_AUTH_PROVIDER": "PRESENT",
+    "GAMEFOUNDRY_DB_PROVIDER": "PRESENT",
+    "GAMEFOUNDRY_SUPABASE_URL": "PRESENT",
+    "GAMEFOUNDRY_SUPABASE_ANON_KEY": "PRESENT",
+    "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY": "PRESENT"
+  },
+  "failed": 8,
+  "passed": 9,
+  "skipped": 0,
+  "status": "FAIL",
+  "liveConnectivityDiagnostic": {
+    "status": "FAIL",
+    "error": "fetch failed",
+    "causeCode": "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+    "causeMessage": "unable to verify the first certificate"
+  }
+}

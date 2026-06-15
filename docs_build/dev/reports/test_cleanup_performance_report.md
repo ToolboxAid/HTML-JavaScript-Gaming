@@ -1,29 +1,29 @@
 # Test Cleanup Performance Report
 
-Generated: 2026-06-15T18:04:01.546Z
+Generated: 2026-06-15T18:16:21.988Z
 Status: PASS
 
 ## Cost Summary
 
-Total measured lane elapsed time: 52.87s
+Total measured lane elapsed time: 53.75s
 Actual browser launch count: 1
 Scheduled browser launch count: 1
 Baseline browser launch count: 1
 Skipped lanes: 14
-Reused manifests: 0
-Reused snapshots: 0
+Reused manifests: 1
+Reused snapshots: 1
 Cached validations reused: 18
 Prevented broad execution: 2
 Prevented reruns: 0
 Prevented redundant browser launches: 0
-Prevented graph rebuilds: 0
-Prevented redundant dependency traversal: 0
+Prevented graph rebuilds: 1
+Prevented redundant dependency traversal: 1
 
 ## Lane Elapsed Time
 
 | Lane | Status | Elapsed | Browser Launches | Reason |
 | --- | --- | --- | --- | --- |
-| workspace-contract | PASS | 52.87s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+| workspace-contract | PASS | 53.75s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
 | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
@@ -43,10 +43,10 @@ Prevented redundant dependency traversal: 0
 
 | Lane | Duration | Test | Command |
 | --- | --- | --- | --- |
-| workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 11.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 10.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-| workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 13.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 10.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+| workspace-contract | 8.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
 | workspace-contract | 2.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
 
 ## Prevented Broad Execution

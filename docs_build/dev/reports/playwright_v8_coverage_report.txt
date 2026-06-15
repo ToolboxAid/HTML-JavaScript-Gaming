@@ -1,14 +1,11 @@
 ﻿Playwright V8 Coverage Report
 
-PR: PR_26166_146-supabase-auth-default-provider
-Coverage source: Node V8 coverage from targeted auth/provider validation plus Playwright workspace-v2 validation.
+PR: PR_26166_147-supabase-auth-live-validation
+Coverage source: Not collected for changed runtime JavaScript because this PR does not change runtime JavaScript.
 Playwright impacted: Yes; npm run test:workspace-v2 passed.
-Runtime JavaScript changed: src/dev-runtime/auth/provider-contract-stubs.mjs.
-Targeted coverage command: NODE_V8_COVERAGE=<temp> node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-
-Coverage JSON files: 1
+Runtime JavaScript changed: none.
 
 Changed runtime JS files covered:
-PASS src/dev-runtime/auth/provider-contract-stubs.mjs
+N/A - validation/report-only PR.
 
-Result: PASS - targeted auth/provider runtime tests executed successfully and emitted V8 coverage artifacts.
+Result: PASS - no changed runtime JavaScript required V8 coverage. Live Supabase validation evidence is in docs_build/dev/reports/supabase-auth-live-validation-evidence.json.
