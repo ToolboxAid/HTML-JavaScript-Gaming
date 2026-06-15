@@ -4,7 +4,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { handleAdminNotesDirectoryRequest } from "../admin/admin-notes-directory.mjs";
 import { localAdminNotesHeaderPartialPath } from "../admin/admin-notes-menu.mjs";
-import { createMockApiRouter } from "./mock-api-router.mjs";
+import { createLocalApiRouter } from "./local-api-router.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -55,11 +55,11 @@ export async function startLocalApiServer({
   host = "127.0.0.1",
   port = 5501,
 } = {}) {
-  const handleMockApiRequest = createMockApiRouter();
+  const handleLocalApiRequest = createLocalApiRouter();
   const server = http.createServer(async (request, response) => {
     try {
       const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);
-      if (await handleMockApiRequest(request, response, requestUrl)) {
+      if (await handleLocalApiRequest(request, response, requestUrl)) {
         return;
       }
       if (await handleAdminNotesDirectoryRequest(requestUrl, response, { repoRoot })) {

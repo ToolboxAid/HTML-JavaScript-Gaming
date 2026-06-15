@@ -4,7 +4,7 @@ import path from "node:path";
 import process from "node:process";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { createMockApiRouter } from "../../src/dev-runtime/server/mock-api-router.mjs";
+import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
 import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
 import { getActiveToolRegistry } from "../../src/dev-runtime/guest-seeds/tool-metadata-inventory.js";
 
@@ -14,7 +14,7 @@ const GUEST_SEED_GROUP_KEYS = getActiveToolRegistry()
   .sort();
 
 function startApiServer() {
-  const handleRequest = createMockApiRouter();
+  const handleRequest = createLocalApiRouter();
   const server = http.createServer((request, response) => {
     const address = server.address();
     const port = address && typeof address !== "string" ? address.port : 0;
@@ -78,7 +78,7 @@ function sampleByKey(snapshot, sampleKey) {
 }
 
 async function replaceSampleLabel(baseUrl, sampleKey, sampleLabel) {
-  const snapshot = await apiJson(baseUrl, "/api/mock-db/snapshot");
+  const snapshot = await apiJson(baseUrl, "/api/local-db/snapshot");
   const nextState = clone(snapshot);
   const sample = sampleByKey(nextState, sampleKey);
   sample.sampleLabel = sampleLabel;
@@ -98,7 +98,7 @@ test("server Local DB seed includes runtime timestamps, read-only guest packages
       body: JSON.stringify({ modeId: "local-db" }),
       method: "POST",
     });
-    const snapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    const snapshot = await apiJson(server.baseUrl, "/api/local-db/snapshot");
     const guestSeed = await apiJson(server.baseUrl, "/api/guest/seed");
     const samples = snapshot.tables.tool_state_samples || [];
     const userSamples = samples.filter((sample) => sample.audience === "user");
@@ -143,17 +143,17 @@ test("server reseed targets Local DB and rejects retired Local Mem mode", async 
       body: JSON.stringify({ modeId: "local-db" }),
       method: "POST",
     });
-    const localDbInitial = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    const localDbInitial = await apiJson(server.baseUrl, "/api/local-db/snapshot");
     const sampleKey = (localDbInitial.tables.tool_state_samples || [])[0]?.key;
     assert.ok(sampleKey, "Local DB seed should include a tool_state_samples row");
     const originalLabel = sampleByKey(localDbInitial, sampleKey).sampleLabel;
 
     await replaceSampleLabel(server.baseUrl, sampleKey, "Local DB mutated before reseed");
-    let localDbSnapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    let localDbSnapshot = await apiJson(server.baseUrl, "/api/local-db/snapshot");
     assert.equal(sampleByKey(localDbSnapshot, sampleKey).sampleLabel, "Local DB mutated before reseed");
 
-    await apiJson(server.baseUrl, "/api/mock-db/seed", { method: "POST" });
-    const localDbReseeded = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    await apiJson(server.baseUrl, "/api/local-db/seed", { method: "POST" });
+    const localDbReseeded = await apiJson(server.baseUrl, "/api/local-db/snapshot");
     const reseededSamples = localDbReseeded.tables.tool_state_samples || [];
     assert.equal(reseededSamples.some((sample) => sample.sampleLabel === "Local DB mutated before reseed"), false);
     assert.equal(reseededSamples.some((sample) => sample.sampleLabel === originalLabel), true);
@@ -170,7 +170,7 @@ test("server reseed targets Local DB and rejects retired Local Mem mode", async 
     assert.equal(retiredModePayload.ok, false);
     assert.match(retiredModePayload.error, /Unknown local login environment: local-mem/);
 
-    localDbSnapshot = await apiJson(server.baseUrl, "/api/mock-db/snapshot");
+    localDbSnapshot = await apiJson(server.baseUrl, "/api/local-db/snapshot");
     assert.equal((localDbSnapshot.tables.tool_state_samples || []).some((sample) => sample.sampleLabel === originalLabel), true);
     assert.equal((localDbSnapshot.tables.tool_state_samples || []).some((sample) => sample.sampleLabel === "Local DB mutated before reseed"), false);
   } finally {

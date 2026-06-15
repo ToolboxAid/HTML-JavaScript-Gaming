@@ -656,7 +656,7 @@ test("Game Journey supports Guest as the selected shared session user", async ({
     await expect(page.locator("[data-journey-stat-scope]")).toHaveText("Statistics for filtered result set: My Notes (0 notes).");
     await expect(page.locator("[data-journey-summary-body]")).toContainText("No notes match the current Game Journey filter.");
 
-    await fetch(`${failures.server.baseUrl}/api/mock-db/seed`, { method: "POST" });
+    await fetch(`${failures.server.baseUrl}/api/local-db/seed`, { method: "POST" });
     await fetch(`${failures.server.baseUrl}/api/session/user`, {
       body: JSON.stringify({ userKey: MOCK_DB_KEYS.users.admin }),
       headers: { "content-type": "application/json" },
@@ -676,7 +676,7 @@ test("Game Journey supports Guest as the selected shared session user", async ({
       method: "POST",
     });
     const user3TableReferences = await page.evaluate(async (user3Key) => {
-      const snapshot = await fetch("/api/mock-db/snapshot").then((response) => response.json());
+      const snapshot = await fetch("/api/local-db/snapshot").then((response) => response.json());
       return Object.entries(snapshot.data.tables || {})
         .filter(([, rows]) => Array.isArray(rows) && rows.some((record) =>
           Object.values(record).includes(user3Key),

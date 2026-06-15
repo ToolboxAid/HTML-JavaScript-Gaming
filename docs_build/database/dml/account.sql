@@ -2,6 +2,7 @@
 -- Group: Account
 -- Ownership: docs_build/database/dml/account.sql
 -- DEV review only. Codex may execute DEV database setup only.
+-- DML status: SQL-executable DEV static user seed.
 -- UAT and production SQL execution is user-controlled.
 -- Runtime reseed/setup must be called through Admin-owned server-side APIs.
 -- Target DEV database: gamefoundry_dev

@@ -1,6 +1,6 @@
 # Lane Input Validation Report
 
-Generated: 2026-06-14T21:15:44.877Z
+Generated: 2026-06-14T22:54:58.424Z
 Status: PASS
 
 ## Input Files
@@ -15,7 +15,7 @@ Status: PASS
 | workspace-contract | import | src/dev-runtime/admin/admin-notes-directory.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
 | workspace-contract | import | src/dev-runtime/admin/admin-notes-menu.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
 | workspace-contract | import | src/dev-runtime/persistence/mock-db-store.js | PASS | Relative import dependency is resolved and recorded in the manifest. |
-| workspace-contract | import | src/dev-runtime/server/mock-api-router.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
+| workspace-contract | import | src/dev-runtime/server/local-api-router.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
 | workspace-contract | import | tests/helpers/playwrightRepoServer.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
 | workspace-contract | import | tests/helpers/playwrightStorageIsolation.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |
 | workspace-contract | import | tests/helpers/playwrightV8CoverageReporter.mjs | PASS | Relative import dependency is resolved and recorded in the manifest. |

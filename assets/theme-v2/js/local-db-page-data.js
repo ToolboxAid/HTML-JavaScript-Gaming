@@ -1,4 +1,4 @@
-import { getMockDbSnapshot } from "../../../src/engine/api/mock-db-api-client.js";
+import { getLocalDbSnapshot } from "../../../src/engine/api/local-db-api-client.js";
 import { getSessionCurrent } from "../../../src/engine/api/session-api-client.js";
 
 const LOCAL_DB_START_ACTION = "Start the API-backed local server with npm run dev:local-api, then reload this page.";
@@ -317,7 +317,7 @@ function renderRoot(root) {
     return;
   }
   try {
-    const snapshot = getMockDbSnapshot();
+    const snapshot = getLocalDbSnapshot();
     const session = getSessionCurrent();
     renderer(root, snapshot, session);
   } catch (error) {

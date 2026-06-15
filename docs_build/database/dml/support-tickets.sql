@@ -7,4 +7,9 @@
 -- Owned tables: none active
 -- Note: Support ticket tables are not active in the Local DB adapter yet.
 
--- Empty/setup note: No executable DML is added for this group in PR_26164_105 because this group has no allowed static DEV user seed rows. Non-user setup records must be generated through the server/API seed layer so authoritative keys are real server/API-generated ULIDs.
+-- DML status: Future/not-yet-owned.
+-- No setup is performed for this group yet because there are no active Local DB support ticket tables.
+-- Browser pages must not seed authoritative records.
+-- The server/API layer generates all non-user keys.
+-- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
+-- Direct SQL setup and server-side seed ownership remain deferred until a later support-ticket persistence PR explicitly owns them.

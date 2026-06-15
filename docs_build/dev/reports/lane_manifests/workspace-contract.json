@@ -1,13 +1,13 @@
 {
   "commandsHash": "39e16c9d480a1e51",
   "dependencies": [],
-  "dependencyGraphHash": "7bef3c04c4283806",
+  "dependencyGraphHash": "67dae69a0c164baa",
   "fileHashes": {
     "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
     "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
     "src/dev-runtime/persistence/mock-db-store.js": "6f443e375874342a",
-    "src/dev-runtime/server/mock-api-router.mjs": "9521f1a51331d34d",
-    "tests/helpers/playwrightRepoServer.mjs": "21b7159b5ff9df35",
+    "src/dev-runtime/server/local-api-router.mjs": "986df5077307f84c",
+    "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
     "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
     "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85",
@@ -24,21 +24,21 @@
     "src/dev-runtime/admin/admin-notes-directory.mjs",
     "src/dev-runtime/admin/admin-notes-menu.mjs",
     "src/dev-runtime/persistence/mock-db-store.js",
-    "src/dev-runtime/server/mock-api-router.mjs",
+    "src/dev-runtime/server/local-api-router.mjs",
     "tests/helpers/playwrightRepoServer.mjs",
     "tests/helpers/playwrightStorageIsolation.mjs",
     "tests/helpers/playwrightV8CoverageReporter.mjs",
     "tests/helpers/workspaceV2CoverageReporter.mjs"
   ],
-  "inputHash": "2e61ae84b1b4b01e",
+  "inputHash": "6580e121ea97a44b",
   "lane": "workspace-contract",
   "laneDefinitionHash": "fde48767b345621c",
-  "manifestHash": "45e537d64219008c",
+  "manifestHash": "55406127df7121fc",
   "ownership": "tools",
   "tests": [
     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-06-14T21:15:43.934Z",
+  "generatedAt": "2026-06-14T22:54:57.379Z",
   "source": "generated"
 }

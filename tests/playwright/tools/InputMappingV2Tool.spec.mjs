@@ -119,7 +119,7 @@ async function expectNoPageFailures(failures) {
 
 async function inputMappingRecords(page) {
   return page.evaluate(async () => {
-    const response = await fetch("/api/mock-db/snapshot");
+    const response = await fetch("/api/local-db/snapshot");
     const payload = await response.json();
     return payload.data.tables.game_input_mappings || [];
   });
@@ -127,7 +127,7 @@ async function inputMappingRecords(page) {
 
 async function controllerProfileRecords(page) {
   return page.evaluate(async () => {
-    const response = await fetch("/api/mock-db/snapshot");
+    const response = await fetch("/api/local-db/snapshot");
     const payload = await response.json();
     return payload.data.tables.player_controller_profiles || [];
   });
@@ -135,7 +135,7 @@ async function controllerProfileRecords(page) {
 
 async function selectedInputDeviceRecords(page) {
   return page.evaluate(async () => {
-    const response = await fetch("/api/mock-db/snapshot");
+    const response = await fetch("/api/local-db/snapshot");
     const payload = await response.json();
     return payload.data.tables.player_input_device_selections || [];
   });

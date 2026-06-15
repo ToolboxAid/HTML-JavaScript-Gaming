@@ -6,4 +6,9 @@
 -- Browser pages must not directly seed authoritative DB records.
 -- Owned tables: toolbox_tool_metadata
 
--- Empty/setup note: No executable DML is added for this group in PR_26164_105 because this group has no allowed static DEV user seed rows. Non-user setup records must be generated through the server/API seed layer so authoritative keys are real server/API-generated ULIDs.
+-- DML status: Server-seed-owned.
+-- Setup is performed through the Admin-owned server-side seed API.
+-- Browser pages must not seed authoritative records.
+-- The server/API layer generates all non-user keys.
+-- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
+-- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.

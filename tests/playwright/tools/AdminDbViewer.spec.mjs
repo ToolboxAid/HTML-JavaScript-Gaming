@@ -162,7 +162,7 @@ function expectDbShapedRows(tables, tableNames) {
 async function seedIntegritySnapshot(page) {
   return page.evaluate(async () => {
     const [snapshot, guestSeed] = await Promise.all([
-      fetch("/api/mock-db/snapshot").then((response) => response.json()),
+      fetch("/api/local-db/snapshot").then((response) => response.json()),
       fetch("/api/guest/seed").then((response) => response.json()),
     ]);
     return {
@@ -541,7 +541,7 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
       "No stale display data detected; tables are rendered from current Local DB snapshots."
     );
 
-    const snapshotResponse = await fetch(`${server.baseUrl}/api/mock-db/snapshot`);
+    const snapshotResponse = await fetch(`${server.baseUrl}/api/local-db/snapshot`);
     const snapshotPayload = await snapshotResponse.json();
     expect(snapshotResponse.status).toBe(200);
     const nextState = snapshotPayload.data;
@@ -582,7 +582,7 @@ test("Admin DB Viewer shows a visible Local DB diagnostic when adapter storage i
       "Relationships could not be checked until the Local DB data error is fixed."
     );
     await expect(page.locator("[data-admin-db-table]")).toHaveCount(0);
-    expect(failures.failedRequests.some((failure) => failure.includes("/api/mock-db/snapshot"))).toBe(true);
+    expect(failures.failedRequests.some((failure) => failure.includes("/api/local-db/snapshot"))).toBe(true);
     expect(failures.pageErrors).toEqual([]);
     expect(failures.consoleErrors.filter((failure) => !failure.includes("Failed to load resource"))).toEqual([]);
   } finally {

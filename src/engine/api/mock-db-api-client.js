@@ -1,23 +1,26 @@
-import { safeRequestServerApi } from "./server-api-client.js";
+import {
+  clearLocalDb,
+  getLocalDbSnapshot,
+  seedLocalDb,
+} from "./local-db-api-client.js";
 
-function unwrap(response, context) {
-  if (!response.ok) {
-    throw new Error(response.error);
-  }
-  if (!response.payload || !Object.prototype.hasOwnProperty.call(response.payload, "data")) {
-    throw new Error(`${context} did not return server data. Restore the server-backed DB Viewer API.`);
-  }
-  return response.payload.data;
-}
-
+/**
+ * @deprecated Use getLocalDbSnapshot from local-db-api-client.js.
+ */
 export function getMockDbSnapshot() {
-  return unwrap(safeRequestServerApi("/mock-db/snapshot"), "DB Viewer snapshot");
+  return getLocalDbSnapshot();
 }
 
+/**
+ * @deprecated Use clearLocalDb from local-db-api-client.js.
+ */
 export function clearMockDb() {
-  return unwrap(safeRequestServerApi("/mock-db/clear", { method: "POST" }), "Local DB clear");
+  return clearLocalDb();
 }
 
+/**
+ * @deprecated Use seedLocalDb from local-db-api-client.js.
+ */
 export function seedMockDb() {
-  return unwrap(safeRequestServerApi("/mock-db/seed", { method: "POST" }), "Local DB seed");
+  return seedLocalDb();
 }

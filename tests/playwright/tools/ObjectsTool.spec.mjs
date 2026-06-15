@@ -105,7 +105,7 @@ async function fillActiveRow(page, { name, renderType = "None", type, state = "A
 
 async function objectDefinitionRecords(page) {
   return page.evaluate(async () => {
-    const response = await fetch("/api/mock-db/snapshot");
+    const response = await fetch("/api/local-db/snapshot");
     const payload = await response.json();
     return payload.data.tables.object_definition_records || [];
   });
@@ -539,7 +539,7 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
     );
 
     const originalSprite = await page.evaluate(async () => {
-      const response = await fetch("/api/mock-db/snapshot");
+      const response = await fetch("/api/local-db/snapshot");
       const payload = await response.json();
       return payload.data.tables.asset_library_items.find((row) => row.id === "sprite_bolt");
     });
@@ -594,7 +594,7 @@ test("Objects table save preserves linked sprite asset create and resolve behavi
     await expect(page.locator("[data-objects-log]")).toContainText("Resolved existing sprite asset sprite_bolt for Bolt.");
 
     const spriteRows = await page.evaluate(async () => {
-      const response = await fetch("/api/mock-db/snapshot");
+      const response = await fetch("/api/local-db/snapshot");
       const payload = await response.json();
       return payload.data.tables.asset_library_items.filter((asset) => asset.id === "sprite_bolt");
     });

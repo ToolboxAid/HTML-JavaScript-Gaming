@@ -538,7 +538,7 @@ test("toolbox status kickers, filters, card order, and voting controls work from
 
     await expect(page.locator("[data-route='admin-tool-votes']")).toHaveCount(1);
     const mockDbToolboxTables = await page.evaluate(async () => {
-      const response = await fetch("/api/mock-db/snapshot");
+      const response = await fetch("/api/local-db/snapshot");
       const payload = await response.json();
       return {
         metadata: payload.data.tables.toolbox_tool_metadata,

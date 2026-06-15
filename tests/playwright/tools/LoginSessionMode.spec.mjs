@@ -85,7 +85,7 @@ async function openRepoPage(page, pathName, options = {}) {
   });
 
   if (options.clearDb) {
-    await fetch(`${server.baseUrl}/api/mock-db/clear`, { method: "POST" });
+    await fetch(`${server.baseUrl}/api/local-db/clear`, { method: "POST" });
   }
   await fetch(`${server.baseUrl}/api/session/mode`, {
     body: JSON.stringify({ modeId: options.sessionModeId || "local-db" }),
@@ -150,7 +150,7 @@ async function openFixedLocalApiLoginPage(page) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
-  await fetch(`${server.baseUrl}/api/mock-db/seed`, { method: "POST" });
+  await fetch(`${server.baseUrl}/api/local-db/seed`, { method: "POST" });
   await fetch(`${server.baseUrl}/api/session/mode`, {
     body: JSON.stringify({ modeId: "local-db" }),
     headers: { "content-type": "application/json" },
@@ -244,7 +244,7 @@ async function mockDbSessionSnapshot(page) {
   return page.evaluate(async () => {
     const [session, db] = await Promise.all([
       fetch("/api/session/current").then((response) => response.json()),
-      fetch("/api/mock-db/snapshot").then((response) => response.json()),
+      fetch("/api/local-db/snapshot").then((response) => response.json()),
     ]);
     return {
       mode: { id: session.data.mode },
@@ -641,7 +641,7 @@ test("Account logout clears only the current session and blocks protected pages"
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
 
     const storedUsers = await page.evaluate(async () => {
-      const snapshot = await fetch("/api/mock-db/snapshot").then((response) => response.json());
+      const snapshot = await fetch("/api/local-db/snapshot").then((response) => response.json());
       return (snapshot.data.tables.users || []).map((user) => user.displayName);
     });
     expect(storedUsers).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ admin"]));

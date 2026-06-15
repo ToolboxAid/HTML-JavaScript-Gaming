@@ -42,7 +42,7 @@ async function openRepoPage(page, pathName) {
   });
 
   await workspaceV2CoverageReporter.start(page);
-  await fetch(`${server.baseUrl}/api/mock-db/seed`, { method: "POST" });
+  await fetch(`${server.baseUrl}/api/local-db/seed`, { method: "POST" });
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, pageErrors, server };
 }

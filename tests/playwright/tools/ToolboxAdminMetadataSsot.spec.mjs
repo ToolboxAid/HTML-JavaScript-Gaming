@@ -162,7 +162,7 @@ test("Toolbox and Admin Tool Votes share the same DB-backed metadata and plannin
   try {
     const snapshot = await fetchApiData(server, "/api/toolbox/votes/snapshot");
     const registrySnapshot = await fetchApiData(server, "/api/toolbox/registry/snapshot");
-    const mockDbSnapshot = await fetchApiData(server, "/api/mock-db/snapshot");
+    const mockDbSnapshot = await fetchApiData(server, "/api/local-db/snapshot");
     expect(snapshot.rows).toHaveLength(EXPECTED_TOOL_COUNT);
     expect(registrySnapshot.activeTools).toHaveLength(EXPECTED_TOOL_COUNT);
     expect(registrySnapshot.toolboxContract).toEqual(expect.objectContaining({

@@ -44,8 +44,8 @@ async function loadLocalDbViewer() {
     showGatewayStatus(session.diagnostic || "DB Viewer is available only in Local DB mode.");
     return;
   }
-  const module = await import("../src/engine/api/mock-db-viewer-ui.js");
-  module.startMockDbViewer(document, { session });
+  const module = await import("../src/engine/api/local-db-viewer-ui.js");
+  module.startLocalDbViewer(document, { session });
 }
 
 loadLocalDbViewer().catch((error) => {
