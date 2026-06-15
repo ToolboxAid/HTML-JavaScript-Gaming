@@ -710,6 +710,9 @@ export function createProviderContractSnapshot(env = process.env) {
     }),
   ].filter(Boolean);
   const selectedProvidersReady = providerFailures.length === 0;
+  const identityOwnerProviderId = supabaseAuthSelected ? SUPABASE_AUTH_PROVIDER_ID : LOCAL_AUTH_PROVIDER_ID;
+  const identityReaderProviderId = supabaseAuthSelected ? SUPABASE_POSTGRES_PROVIDER_ID : LOCAL_DATABASE_PROVIDER_ID;
+  const identityConfigured = supabaseAuthSelected ? supabasePostgresReady : auth.id === LOCAL_AUTH_PROVIDER_ID;
   const supabasePreflight = createSupabasePreflight({
     auth,
     database,
@@ -756,6 +759,23 @@ export function createProviderContractSnapshot(env = process.env) {
       automaticFallbackAllowed: false,
       providerChainingAllowed: false,
       selectedProviderAuthoritative: true,
+    },
+    identityOwnership: {
+      auditFields: ["createdAt", "updatedAt", "createdBy", "updatedBy"],
+      browserAuthoritativeKeysAllowed: false,
+      dataMigrationActive: false,
+      identityConfigured,
+      ownerProviderId: identityOwnerProviderId,
+      ownershipFields: ["key", "createdAt", "updatedAt", "createdBy", "updatedBy"],
+      productDatabaseProviderId: database.id,
+      readerProviderId: identityReaderProviderId,
+      selectedAuthProviderId: auth.id,
+      selectedDatabaseProviderId: database.id,
+      serverApiOwnsKeyGeneration: true,
+      staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ admin only.",
+      tables: SUPABASE_POSTGRES_TABLES.slice(),
+      temporaryDevOnlyException: "Static ULIDs are allowed only for the four seeded DEV user records and required user_roles references.",
+      userKeyAuthority: "users.key",
     },
     providerDiagnostics: {
       activeProvider: {

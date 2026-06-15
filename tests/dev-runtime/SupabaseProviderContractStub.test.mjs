@@ -60,7 +60,10 @@ function startApiServer() {
       }
       resolve({
         baseUrl: `http://127.0.0.1:${address.port}`,
-        close: () => new Promise((closeResolve) => server.close(closeResolve)),
+        close: () => new Promise((closeResolve) => {
+          server.closeAllConnections?.();
+          server.close(closeResolve);
+        }),
       });
     });
   });
@@ -69,6 +72,7 @@ function startApiServer() {
 function startFakeSupabaseAuthServer(options = {}) {
   const expectedApiKey = options.expectedApiKey || "";
   const rejectWrongApiKey = options.rejectWrongApiKey === true;
+  const identityTables = options.identityTables || {};
   const calls = [];
   const server = http.createServer(async (request, response) => {
     const chunks = [];
@@ -88,6 +92,13 @@ function startFakeSupabaseAuthServer(options = {}) {
       response.statusCode = 401;
       response.setHeader("Content-Type", "application/json; charset=utf-8");
       response.end(JSON.stringify({ message: "Invalid API key" }));
+      return;
+    }
+    if (requestUrl.pathname.startsWith("/rest/v1/")) {
+      const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
+      response.statusCode = 200;
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.end(JSON.stringify(identityTables[tableName] || []));
       return;
     }
     if (requestUrl.pathname === "/auth/v1/health") {
@@ -123,7 +134,10 @@ function startFakeSupabaseAuthServer(options = {}) {
       resolve({
         baseUrl: `http://127.0.0.1:${address.port}`,
         calls,
-        close: () => new Promise((closeResolve) => server.close(closeResolve)),
+        close: () => new Promise((closeResolve) => {
+          server.closeAllConnections?.();
+          server.close(closeResolve);
+        }),
       });
     });
   });
@@ -156,6 +170,72 @@ function preflightCheck(snapshot, checkId) {
   return snapshot.supabasePreflight.checks.find((check) => check.id === checkId);
 }
 
+function fakeSupabaseIdentityTables(overrides = {}) {
+  const timestamp = "2026-06-15T00:00:00.000Z";
+  const audit = {
+    createdAt: timestamp,
+    createdBy: MOCK_DB_KEYS.users.admin,
+    updatedAt: timestamp,
+    updatedBy: MOCK_DB_KEYS.users.admin,
+  };
+  return {
+    roles: overrides.roles || [
+      {
+        key: MOCK_DB_KEYS.roles.user,
+        roleSlug: "user",
+        name: "User",
+        description: "Creator account.",
+        isActive: true,
+        isSystemRole: false,
+        ...audit,
+      },
+      {
+        key: MOCK_DB_KEYS.roles.admin,
+        roleSlug: "admin",
+        name: "Admin",
+        description: "Administrative account.",
+        isActive: true,
+        isSystemRole: false,
+        ...audit,
+      },
+    ],
+    user_roles: overrides.user_roles || [
+      {
+        key: MOCK_DB_KEYS.userRoles.user1User,
+        userKey: MOCK_DB_KEYS.users.user1,
+        roleKey: MOCK_DB_KEYS.roles.user,
+        ...audit,
+      },
+      {
+        key: MOCK_DB_KEYS.userRoles.adminAdmin,
+        userKey: MOCK_DB_KEYS.users.admin,
+        roleKey: MOCK_DB_KEYS.roles.admin,
+        ...audit,
+      },
+    ],
+    users: overrides.users || [
+      {
+        key: MOCK_DB_KEYS.users.user1,
+        displayName: "User 1",
+        email: "user1@example.invalid",
+        authProvider: "supabase-auth",
+        authProviderUserId: "supabase-user-1",
+        isActive: true,
+        ...audit,
+      },
+      {
+        key: MOCK_DB_KEYS.users.admin,
+        displayName: "DavidQ admin",
+        email: "admin@example.invalid",
+        authProvider: "supabase-auth",
+        authProviderUserId: "supabase-admin",
+        isActive: true,
+        ...audit,
+      },
+    ],
+  };
+}
+
 test("Supabase provider contract stubs keep explicitly selected Local DB active", () => {
   const snapshot = createProviderContractSnapshot({
     GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
@@ -175,6 +255,16 @@ test("Supabase provider contract stubs keep explicitly selected Local DB active"
   assert.equal(snapshot.failureContract.selectedProviderAuthoritative, true);
   assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
   assert.equal(snapshot.failureContract.providerChainingAllowed, false);
+  assert.deepEqual(snapshot.identityOwnership.ownershipFields, ["key", "createdAt", "updatedAt", "createdBy", "updatedBy"]);
+  assert.equal(snapshot.identityOwnership.ownerProviderId, "local-db");
+  assert.equal(snapshot.identityOwnership.productDatabaseProviderId, "local-db");
+  assert.equal(snapshot.identityOwnership.readerProviderId, "local-db");
+  assert.equal(snapshot.identityOwnership.userKeyAuthority, "users.key");
+  assert.equal(snapshot.identityOwnership.browserAuthoritativeKeysAllowed, false);
+  assert.equal(snapshot.identityOwnership.serverApiOwnsKeyGeneration, true);
+  assert.match(snapshot.identityOwnership.staticDevUserUlidException, /User 1, User 2, User 3, and DavidQ admin only/);
+  assert.match(snapshot.identityOwnership.temporaryDevOnlyException, /Static ULIDs are allowed only/);
+  assert.deepEqual(snapshot.identityOwnership.tables, ["users", "roles", "user_roles"]);
   assert.equal(snapshot.supabaseAuth.status, "adapter-inactive");
   assert.equal(snapshot.supabaseAuth.adapter.activeByDefault, false);
   assert.equal(snapshot.supabaseAuth.adapter.passwordStorage, "external-provider");
@@ -300,6 +390,35 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
   ]);
 });
 
+test("Provider contract assigns users roles and user_roles ownership to Supabase Auth while product data stays Local DB", () => {
+  const snapshot = createProviderContractSnapshot({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-safe-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "server-only-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test",
+  });
+
+  assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
+  assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
+  assert.equal(snapshot.activeProviders.status, "ready");
+  assert.equal(snapshot.supabasePostgres.dataMigrationActive, false);
+  assert.equal(snapshot.identityOwnership.ownerProviderId, "supabase-auth");
+  assert.equal(snapshot.identityOwnership.readerProviderId, "supabase-postgres");
+  assert.equal(snapshot.identityOwnership.productDatabaseProviderId, "local-db");
+  assert.equal(snapshot.identityOwnership.identityConfigured, true);
+  assert.equal(snapshot.identityOwnership.dataMigrationActive, false);
+  assert.equal(snapshot.identityOwnership.userKeyAuthority, "users.key");
+  assert.equal(snapshot.identityOwnership.browserAuthoritativeKeysAllowed, false);
+  assert.deepEqual(snapshot.identityOwnership.ownershipFields, ["key", "createdAt", "updatedAt", "createdBy", "updatedBy"]);
+  assert.deepEqual(snapshot.identityOwnership.tables, ["users", "roles", "user_roles"]);
+  assert.match(snapshot.identityOwnership.staticDevUserUlidException, /DavidQ admin only/);
+  assert.equal(snapshot.runtimeActivation.supabaseAuthSelected, true);
+  assert.equal(snapshot.runtimeActivation.supabasePostgresSelected, false);
+  assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
+  assert.equal(JSON.stringify(snapshot).includes("server-only-service-role-key"), false);
+});
+
 test("Auth status distinguishes configured Supabase when Local DB auth remains selected", async () => {
   const fakeSupabase = await startFakeSupabaseAuthServer();
   await withEnv({
@@ -414,7 +533,7 @@ test("Supabase Auth selection keeps Local DB product data active and fails auth 
       assert.equal(session.status, 200);
       assert.equal(session.payload.ok, true);
       assert.equal(session.payload.data.authenticated, false);
-      assert.match(session.payload.data.diagnostic, /Supabase Auth does not create a Local DB product-data session/);
+      assert.match(session.payload.data.diagnostic, /Supabase Auth provider selected but not configured/);
 
       const snapshot = await apiPayload(server.baseUrl, "/api/local-db/snapshot");
       assert.equal(snapshot.status, 200);
@@ -501,6 +620,140 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
         "/auth/v1/recover",
       ]);
       assert.equal(fakeSupabase.calls.every((call) => call.headers.apikey === "test-anon-key"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Supabase Auth selected path reads users roles and user_roles through the provider contract while product data stays Local DB", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: fakeSupabaseIdentityTables(),
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const contract = await apiJson(server.baseUrl, "/api/providers/contract");
+      assert.equal(contract.activeProviders.authProviderId, "supabase-auth");
+      assert.equal(contract.activeProviders.databaseProviderId, "local-db");
+      assert.equal(contract.identityOwnership.ownerProviderId, "supabase-auth");
+      assert.equal(contract.identityOwnership.readerProviderId, "supabase-postgres");
+      assert.equal(contract.identityOwnership.productDatabaseProviderId, "local-db");
+      assert.equal(contract.identityOwnership.userKeyAuthority, "users.key");
+      assert.deepEqual(contract.identityOwnership.tables, ["users", "roles", "user_roles"]);
+
+      const users = await apiJson(server.baseUrl, "/api/session/users");
+      assert.equal(users.some((user) => user.displayName === "User 1" && user.roleSlugs.includes("user")), true);
+      assert.equal(users.some((user) => user.displayName === "DavidQ admin" && user.isAdmin), true);
+
+      const signIn = await postApiPayload(server.baseUrl, "/api/session/user", {
+        userKey: MOCK_DB_KEYS.users.user1,
+      });
+      assert.equal(signIn.status, 200);
+      assert.equal(signIn.payload.ok, true);
+      assert.equal(signIn.payload.data.authenticated, true);
+      assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
+      assert.equal(signIn.payload.data.displayName, "User 1");
+      assert.deepEqual(signIn.payload.data.roleSlugs, ["user"]);
+
+      const current = await apiJson(server.baseUrl, "/api/session/current");
+      assert.equal(current.authenticated, true);
+      assert.equal(current.userKey, MOCK_DB_KEYS.users.user1);
+
+      const snapshot = await apiJson(server.baseUrl, "/api/local-db/snapshot");
+      assert.equal(Array.isArray(snapshot.tables.asset_library_items), true);
+      assert.equal(Array.isArray(snapshot.tables.game_input_mappings), true);
+
+      const restCalls = fakeSupabase.calls
+        .filter((call) => call.path.startsWith("/rest/v1/"))
+        .map((call) => call.path);
+      assert.deepEqual(restCalls, [
+        "/rest/v1/users?select=*",
+        "/rest/v1/roles?select=*",
+        "/rest/v1/user_roles?select=*",
+        "/rest/v1/users?select=*",
+        "/rest/v1/roles?select=*",
+        "/rest/v1/user_roles?select=*",
+        "/rest/v1/users?select=*",
+        "/rest/v1/roles?select=*",
+        "/rest/v1/user_roles?select=*",
+      ]);
+      assert.equal(fakeSupabase.calls
+        .filter((call) => call.path.startsWith("/rest/v1/"))
+        .every((call) => call.headers.apikey === "test-service-role-key"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Supabase identity session lookup fails visibly when the selected user is missing", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: fakeSupabaseIdentityTables(),
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const response = await postApiPayload(server.baseUrl, "/api/session/user", {
+        userKey: "01K2GFSJ0Y0000000000000099",
+      });
+      assert.equal(response.status, 200);
+      assert.equal(response.payload.ok, true);
+      assert.equal(response.payload.data.authenticated, false);
+      assert.match(response.payload.data.diagnostic, /Selected Supabase identity user key .* is missing from users/);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Supabase identity session lookup fails visibly when user_roles references a missing role", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: fakeSupabaseIdentityTables({
+      user_roles: [
+        {
+          key: MOCK_DB_KEYS.userRoles.user1User,
+          userKey: MOCK_DB_KEYS.users.user1,
+          roleKey: "01K2GFSJ0Y0000000000000199",
+          createdAt: "2026-06-15T00:00:00.000Z",
+          createdBy: MOCK_DB_KEYS.users.admin,
+          updatedAt: "2026-06-15T00:00:00.000Z",
+          updatedBy: MOCK_DB_KEYS.users.admin,
+        },
+      ],
+    }),
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const response = await postApiPayload(server.baseUrl, "/api/session/user", {
+        userKey: MOCK_DB_KEYS.users.user1,
+      });
+      assert.equal(response.status, 200);
+      assert.equal(response.payload.ok, true);
+      assert.equal(response.payload.data.authenticated, false);
+      assert.match(response.payload.data.diagnostic, /references missing role key/);
     } finally {
       await server.close();
     }

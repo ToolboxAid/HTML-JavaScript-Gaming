@@ -539,6 +539,24 @@ function roleSlugsForUserKey(tables, userKey) {
     .filter(Boolean);
 }
 
+function roleSlugsAndDiagnosticsForUserKey(tables, userKey) {
+  const roleByKey = new Map((tables.roles || [])
+    .filter((role) => role.isActive !== false)
+    .map((role) => [role.key, role.roleSlug || role.slug || role.name]));
+  const roleRows = (tables.user_roles || []).filter((row) => row.userKey === userKey);
+  const missingRoleKeys = roleRows
+    .map((row) => row.roleKey)
+    .filter((roleKey) => roleKey && !roleByKey.has(roleKey));
+  return {
+    missingRoleKeys,
+    roleRows,
+    roleSlugs: roleRows
+      .filter((row) => roleByKey.has(row.roleKey))
+      .map((row) => roleByKey.get(row.roleKey))
+      .filter(Boolean),
+  };
+}
+
 function modeById(modeId) {
   return MOCK_DB_SESSION_MODES.find((mode) => mode.id === modeId) ||
     MOCK_DB_SESSION_MODES.find((mode) => mode.id === LOCAL_DB_MODE_ID) ||
@@ -567,6 +585,45 @@ function guestSession(mode, diagnostic = "") {
     label: "Guest",
     roleSlugs: [],
     userKey: null,
+  };
+}
+
+function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
+  const mode = modeById(modeId);
+  const key = String(userKey || "");
+  if (mode.id !== LOCAL_DB_MODE_ID) {
+    return guestSession(mode, mode.diagnostic || LOCAL_DB_NOT_CONFIGURED);
+  }
+  if (!isUlidKey(key)) {
+    return guestSession(mode);
+  }
+
+  const user = (tables.users || []).find((record) => record.key === key && record.isActive !== false);
+  if (!user) {
+    return guestSession(mode, `Selected ${providerLabel} user key ${key} is missing from users.`);
+  }
+
+  const { missingRoleKeys, roleRows, roleSlugs } = roleSlugsAndDiagnosticsForUserKey(tables, key);
+  if (missingRoleKeys.length) {
+    return guestSession(mode, `Selected ${providerLabel} user ${user.displayName || key} references missing role key(s): ${missingRoleKeys.join(", ")}.`);
+  }
+  if (!roleRows.length) {
+    return guestSession(mode, `Selected ${providerLabel} user ${user.displayName || key} has no user_roles assignment.`);
+  }
+  if (!roleSlugs.length || roleSlugs.includes("system")) {
+    return guestSession(mode, `Selected ${providerLabel} user ${user.displayName || key} has no human login role.`);
+  }
+
+  return {
+    ...sessionModeMetadata(mode),
+    authenticated: true,
+    diagnostic: "",
+    displayName: user.displayName || key,
+    id: key,
+    isAdmin: roleSlugs.includes("admin"),
+    label: user.displayName || key,
+    roleSlugs,
+    userKey: key,
   };
 }
 
@@ -957,6 +1014,7 @@ class LocalDevDataSource {
     this.repositoryById = new Map();
     this.sessionModeId = LOCAL_DB_MODE_ID;
     this.sessionUserKey = "";
+    this.identityTablesCache = null;
     this.adapterByModeId = new Map(
       MOCK_DB_SESSION_MODES.map((mode) => [mode.id, new LocalDbAdapter(mode)]),
     );
@@ -1011,6 +1069,111 @@ class LocalDevDataSource {
   localAuthSession(action) {
     this.assertLocalAuthProvider(action);
     return sessionUserFromKey(this.standaloneTables, this.sessionUserKey, this.sessionModeId);
+  }
+
+  async readSupabaseIdentityTables(action) {
+    this.assertLocalDatabaseProvider(action);
+    const authStatus = this.authStatus();
+    if (!authStatus.ready) {
+      const error = new Error(AUTH_UNAVAILABLE_MESSAGE);
+      error.statusCode = 503;
+      error.operatorDiagnostic = `${action} requires configured Supabase Auth identity ownership. ${authStatus.operatorDiagnostic || authStatus.status}`;
+      throw error;
+    }
+    const adapter = new SupabasePostgresProviderAdapter();
+    const [users, roles, userRoles] = await Promise.all([
+      adapter.getUsers(),
+      adapter.getRoles(),
+      adapter.getUserRoles(),
+    ]);
+    this.identityTablesCache = {
+      providerId: SUPABASE_AUTH_PROVIDER_ID,
+      readerProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+      tables: {
+        roles: Array.isArray(roles) ? roles : [],
+        user_roles: Array.isArray(userRoles) ? userRoles : [],
+        users: Array.isArray(users) ? users : [],
+      },
+    };
+    return this.identityTablesCache.tables;
+  }
+
+  cachedSupabaseIdentitySession() {
+    if (!this.identityTablesCache?.tables) {
+      return guestSession(this.currentMode(), "Supabase identity tables have not been loaded through the server API yet.");
+    }
+    return sessionUserFromIdentityTables(
+      this.identityTablesCache.tables,
+      this.sessionUserKey,
+      this.sessionModeId,
+      "Supabase identity",
+    );
+  }
+
+  async currentSessionForRoute() {
+    this.assertLocalDatabaseProvider("Reading current session");
+    const providerId = this.providerContract().activeProviders.authProviderId;
+    if (providerId === LOCAL_AUTH_PROVIDER_ID) {
+      return this.localAuthSession("Reading current session");
+    }
+    if (providerId === SUPABASE_AUTH_PROVIDER_ID) {
+      const status = this.authStatus();
+      if (!status.ready) {
+        return guestSession(this.currentMode(), status.operatorDiagnostic || AUTH_UNAVAILABLE_MESSAGE);
+      }
+      if (!this.sessionUserKey) {
+        return guestSession(this.currentMode());
+      }
+      const tables = await this.readSupabaseIdentityTables("Reading current session");
+      return sessionUserFromIdentityTables(tables, this.sessionUserKey, this.sessionModeId, "Supabase identity");
+    }
+    return guestSession(this.currentMode(), `Selected auth provider is ${providerId}; no session provider contract is available.`);
+  }
+
+  async sessionUsersForRoute() {
+    this.assertLocalDatabaseProvider("Reading session users");
+    const providerId = this.providerContract().activeProviders.authProviderId;
+    if (providerId === LOCAL_AUTH_PROVIDER_ID) {
+      return this.sessionUsers();
+    }
+    if (providerId !== SUPABASE_AUTH_PROVIDER_ID) {
+      return [guestSession(this.currentMode(), `Selected auth provider is ${providerId}; no session user provider contract is available.`)];
+    }
+    if (this.sessionModeId !== LOCAL_DB_MODE_ID) {
+      return [guestSession(this.currentMode(), this.currentMode().diagnostic || LOCAL_DB_NOT_CONFIGURED)];
+    }
+    const tables = await this.readSupabaseIdentityTables("Reading session users");
+    const guest = sessionUserFromIdentityTables(tables, "", this.sessionModeId, "Supabase identity");
+    return [
+      guest,
+      ...(tables.users || [])
+        .map((user) => sessionUserFromIdentityTables(tables, user.key, this.sessionModeId, "Supabase identity"))
+        .filter((user) => user.authenticated && !user.roleSlugs.includes("system")),
+    ];
+  }
+
+  async setUserForRoute(userKey) {
+    this.assertLocalDatabaseProvider("Selecting a session user");
+    const providerId = this.providerContract().activeProviders.authProviderId;
+    if (providerId === LOCAL_AUTH_PROVIDER_ID) {
+      return this.setUser(userKey);
+    }
+    this.sessionUserKey = String(userKey || "");
+    this.sharedOptions.sessionMode = this.sessionModeId;
+    this.sharedOptions.sessionUserKey = this.sessionUserKey;
+    return this.currentSessionForRoute();
+  }
+
+  async clearSessionUserForRoute() {
+    this.assertLocalDatabaseProvider("Clearing a session user");
+    const providerId = this.providerContract().activeProviders.authProviderId;
+    if (providerId === LOCAL_AUTH_PROVIDER_ID) {
+      return this.clearSessionUser();
+    }
+    this.sessionUserKey = "";
+    this.sharedOptions.sessionMode = this.sessionModeId;
+    this.sharedOptions.sessionUserKey = this.sessionUserKey;
+    return this.currentSessionForRoute();
   }
 
   currentAdapter() {
@@ -1466,11 +1629,11 @@ class LocalDevDataSource {
     this.assertLocalDatabaseProvider("Reading current session");
     const providerContract = this.providerContract();
     const providerId = providerContract.activeProviders.authProviderId;
+    if (providerId === SUPABASE_AUTH_PROVIDER_ID) {
+      return this.cachedSupabaseIdentitySession();
+    }
     if (providerId !== LOCAL_AUTH_PROVIDER_ID) {
-      return guestSession(
-        this.currentMode(),
-        `Selected auth provider is ${providerId}. Supabase Auth does not create a Local DB product-data session through this auth-only path.`,
-      );
+      return guestSession(this.currentMode(), `Selected auth provider is ${providerId}; no session provider contract is available.`);
     }
     return this.localAuthSession("Reading current session");
   }
@@ -2151,7 +2314,7 @@ export function createLocalApiRouter() {
           return true;
         }
         if (request.method === "GET" && parts[2] === "current") {
-          ok(response, dataSource.currentSession());
+          ok(response, await dataSource.currentSessionForRoute());
           return true;
         }
         if (request.method === "GET" && parts[2] === "modes") {
@@ -2159,7 +2322,7 @@ export function createLocalApiRouter() {
           return true;
         }
         if (request.method === "GET" && parts[2] === "users") {
-          ok(response, dataSource.sessionUsers());
+          ok(response, await dataSource.sessionUsersForRoute());
           return true;
         }
         if (request.method === "GET" && parts[2] === "provider-contract") {
@@ -2170,17 +2333,17 @@ export function createLocalApiRouter() {
           const body = await readRequestJson(request);
           ok(response, {
             mode: dataSource.setMode(body.modeId),
-            sessionUser: dataSource.currentSession(),
+            sessionUser: await dataSource.currentSessionForRoute(),
           });
           return true;
         }
         if (request.method === "POST" && parts[2] === "user") {
           const body = await readRequestJson(request);
-          ok(response, dataSource.setUser(body.userKey));
+          ok(response, await dataSource.setUserForRoute(body.userKey));
           return true;
         }
         if (request.method === "POST" && parts[2] === "logout") {
-          ok(response, dataSource.clearSessionUser());
+          ok(response, await dataSource.clearSessionUserForRoute());
           return true;
         }
       }
