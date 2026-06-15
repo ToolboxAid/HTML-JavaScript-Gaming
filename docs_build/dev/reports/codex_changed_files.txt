@@ -1,12 +1,16 @@
 # git status --short
 M package.json
-?? docs_build/dev/reports/PR_26166_154-supabase-dev-tls-identity-readiness.md
-?? scripts/validate-supabase-dev.mjs
+ M scripts/validate-supabase-dev.mjs
+?? docs_build/database/ddl/account/
+?? docs_build/database/seed/account/
+?? docs_build/dev/reports/PR_26166_155-supabase-identity-tables-bootstrap.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26166_154-supabase-dev-tls-identity-readiness.md
-scripts/validate-supabase-dev.mjs
+docs_build/database/ddl/account/supabase-identity-tables.sql
+docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
+docs_build/dev/reports/PR_26166_155-supabase-identity-tables-bootstrap.md
 
 # git diff --stat
-package.json | 1 +
- 1 file changed, 1 insertion(+)
+package.json                      |  2 +-
+ scripts/validate-supabase-dev.mjs | 63 +++++++++++++++++++++++++++++++++------
+ 2 files changed, 55 insertions(+), 10 deletions(-)

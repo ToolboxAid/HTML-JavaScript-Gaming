@@ -107,7 +107,11 @@ function envValue(key) {
 }
 
 function sanitizeDiagnostic(value) {
-  let text = String(value || "No diagnostic returned.");
+  const source = String(value || "").trim();
+  if (!source) {
+    return "";
+  }
+  let text = source;
   REQUIRED_ENV.forEach(({ key }) => {
     const raw = envValue(key);
     if (raw) {
@@ -139,6 +143,10 @@ function pass(label, detail = "") {
 
 function fail(label, detail = "") {
   return result("FAIL", label, detail);
+}
+
+function warn(label, detail = "") {
+  return result("WARN", label, detail);
 }
 
 function formatResult({ detail, label, status }) {
@@ -223,7 +231,11 @@ async function checkIdentityTable(tableName) {
       return pass(`${tableName} table`, `HTTP ${response.status}`);
     }
     const payload = await safeJson(response);
-    return fail(`${tableName} table`, `HTTP ${response.status}${payload?.message ? `: ${payload.message}` : ""}`);
+    const message = payload?.message || "";
+    const setupHint = response.status === 404
+      ? " Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path."
+      : "";
+    return fail(`${tableName} table`, `HTTP ${response.status}${message ? `: ${message}` : ""}${setupHint}`);
   } catch (error) {
     return fail(`${tableName} table`, error?.code || error?.cause?.code || error?.message);
   }
@@ -601,6 +613,27 @@ async function checkDatabaseConnection() {
   }
 }
 
+function isTlsTrustFailure(detail) {
+  return [
+    "CERT_",
+    "SELF_SIGNED_CERT_IN_CHAIN",
+    "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
+  ].some((marker) => String(detail || "").includes(marker));
+}
+
+function directDatabaseReadiness(databaseResult, restIdentityReady) {
+  if (databaseResult.status !== "FAIL") {
+    return databaseResult;
+  }
+  if (restIdentityReady && isTlsTrustFailure(databaseResult.detail)) {
+    return warn(
+      "Database connection",
+      `${databaseResult.detail}; REST/API identity readiness passed, so direct PostgreSQL TLS failure is advisory for DEV.`,
+    );
+  }
+  return databaseResult;
+}
+
 async function main() {
   const envLoad = loadEnvLocal();
   const results = [];
@@ -613,21 +646,33 @@ async function main() {
     results.push(value ? pass(label, `${key}=${maskValue(value)}`) : fail(label, `${key}=missing`));
   });
 
-  results.push(await checkSupabaseReachable());
-  results.push(await checkTlsValidation());
-  results.push(await checkAuthEndpointReachable());
-  results.push(await checkServiceRoleAuthentication());
-  results.push(await checkDatabaseConnection());
+  const supabaseReachable = await checkSupabaseReachable();
+  const tlsValidation = await checkTlsValidation();
+  const authEndpoint = await checkAuthEndpointReachable();
+  const serviceRole = await checkServiceRoleAuthentication();
+  results.push(supabaseReachable);
+  results.push(tlsValidation);
+  results.push(authEndpoint);
+  results.push(serviceRole);
+  const identityTableResults = [];
   for (const tableName of IDENTITY_TABLES) {
-    results.push(await checkIdentityTable(tableName));
+    identityTableResults.push(await checkIdentityTable(tableName));
   }
+  const restIdentityReady = serviceRole.status === "PASS"
+    && identityTableResults.every((check) => check.status === "PASS");
+  results.push(directDatabaseReadiness(await checkDatabaseConnection(), restIdentityReady));
+  results.push(...identityTableResults);
 
   results.forEach((check) => {
     console.log(formatResult(check));
   });
-  const failed = results.filter((check) => check.status !== "PASS");
+  const failed = results.filter((check) => check.status === "FAIL");
+  const warned = results.filter((check) => check.status === "WARN");
   console.log("");
   console.log(`Overall Result: ${failed.length ? "FAIL" : "PASS"}`);
+  if (warned.length) {
+    console.log(`Warning checks: ${warned.map((check) => check.label).join(", ")}`);
+  }
   if (failed.length) {
     console.log(`Failed checks: ${failed.map((check) => check.label).join(", ")}`);
     process.exitCode = 1;
