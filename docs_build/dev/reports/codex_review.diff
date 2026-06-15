@@ -1,131 +1,814 @@
-diff --git a/docs_build/dev/reports/pr125-supabase-dev-provider-prep.md b/docs_build/dev/reports/pr125-supabase-dev-provider-prep.md
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 240fdf6cb..dbebf52d8 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -30,7 +30,7 @@ Files with executed line/function counts where available:
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+ (67%) admin/db-viewer.js - executed lines 49/49; executed functions 4/6
+ (76%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 722/722; executed functions 52/68
+-(85%) src/engine/api/local-db-viewer-ui.js - executed lines 479/479; executed functions 77/91
++(86%) src/engine/api/local-db-viewer-ui.js - executed lines 479/479; executed functions 78/91
+ (100%) assets/theme-v2/js/admin-db-status-panel.js - executed lines 30/30; executed functions 3/3
+ (100%) assets/theme-v2/js/login-session.js - executed lines 45/45; executed functions 7/7
+
+diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
+index b2f44e5c8..1297151a5 100644
+--- a/src/dev-runtime/auth/provider-contract-stubs.mjs
++++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
+@@ -1,3 +1,5 @@
++import { randomBytes } from "node:crypto";
++
+ export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
+   "getCurrentUser",
+   "signIn",
+@@ -32,6 +34,16 @@ const SERVER_ONLY_SUPABASE_SECRET_KEYS = Object.freeze([
+   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+   "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
+ ]);
++const SUPABASE_POSTGRES_CONFIG_KEYS = Object.freeze([
++  "GAMEFOUNDRY_SUPABASE_URL",
++  "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
++]);
++const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
++  ...SUPABASE_POSTGRES_CONFIG_KEYS,
++  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
++]);
++const SUPABASE_POSTGRES_TABLES = Object.freeze(["users", "roles", "user_roles"]);
++const RUNTIME_ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+
+ export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
+   browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS,
+@@ -65,14 +77,14 @@ export function supabaseAuthDiagnostic(env = process.env) {
+   const missing = missingEnvKeys(env, BROWSER_SAFE_SUPABASE_ENV_KEYS);
+   return missing.length
+     ? `Supabase Auth provider selected but not configured. Missing browser-safe environment variables: ${missing.join(", ")}.`
+-    : "Supabase Auth provider stub is configured but not active until a dedicated adapter PR.";
++    : "Supabase Auth provider adapter is configured and ready only when the auth provider selector is switched.";
+ }
+
+ export function supabasePostgresDiagnostic(env = process.env) {
+-  const missing = missingEnvKeys(env, SERVER_ONLY_SUPABASE_SECRET_KEYS);
++  const missing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
+   return missing.length
+-    ? `Supabase Postgres provider selected but not configured. Missing server-only environment variables are required but not exposed through browser APIs.`
+-    : "Supabase Postgres provider stub is configured but not active until a dedicated adapter PR.";
++    ? "Supabase Postgres provider selected but not configured. Add the Supabase URL and server-only database credentials on the server; server-only details are not exposed through browser APIs."
++    : "Supabase Postgres provider adapter is configured and ready only when the database provider selector is switched.";
+ }
+
+ function supabaseUrl(env) {
+@@ -83,6 +95,10 @@ function supabaseAnonKey(env) {
+   return envValue(env, "GAMEFOUNDRY_SUPABASE_ANON_KEY");
+ }
+
++function supabaseServiceRoleKey(env) {
++  return envValue(env, "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY");
++}
++
+ function authHeaders(env, accessToken = "") {
+   const anonKey = supabaseAnonKey(env);
+   const headers = {
+@@ -93,6 +109,16 @@ function authHeaders(env, accessToken = "") {
+   return headers;
+ }
+
++function postgresHeaders(env) {
++  const serviceRoleKey = supabaseServiceRoleKey(env);
++  return {
++    apikey: serviceRoleKey,
++    authorization: `Bearer ${serviceRoleKey}`,
++    "content-type": "application/json",
++    prefer: "return=representation",
++  };
++}
++
+ function requireString(value, label) {
+   const normalized = String(value || "").trim();
+   if (!normalized) {
+@@ -101,6 +127,14 @@ function requireString(value, label) {
+   return normalized;
+ }
+
++function requireTableName(tableName) {
++  const normalized = String(tableName || "").trim();
++  if (!SUPABASE_POSTGRES_TABLES.includes(normalized)) {
++    throw new Error(`Supabase Postgres provider only supports ${SUPABASE_POSTGRES_TABLES.join(", ")} in this adapter surface.`);
++  }
++  return normalized;
++}
++
+ async function readResponseJson(response) {
+   try {
+     return await response.json();
+@@ -109,13 +143,23 @@ async function readResponseJson(response) {
+   }
+ }
+
++function createRuntimeUlid(now = Date.now()) {
++  let remaining = BigInt(now);
++  let encoded = "";
++  for (let index = 0; index < 10; index += 1) {
++    encoded = RUNTIME_ULID_ALPHABET[Number(remaining % 32n)] + encoded;
++    remaining /= 32n;
++  }
++  return encoded + Array.from(randomBytes(16), (byte) => RUNTIME_ULID_ALPHABET[byte % 32]).join("").slice(0, 16);
++}
++
+ function futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing) {
+   const warnings = [];
+   if (supabaseAuthMissing.length) {
+     warnings.push(`Supabase Auth future provider is not configured. Missing browser-safe environment variables: ${supabaseAuthMissing.join(", ")}.`);
+   }
+   if (supabasePostgresMissing.length) {
+-    warnings.push("Supabase Postgres future provider is not configured. Missing server-only environment variables are required but not exposed through browser APIs.");
++    warnings.push("Supabase Postgres future provider is not configured. Missing browser-safe URL or server-only credentials are required; server-only details are not exposed through browser APIs.");
+   }
+   return warnings;
+ }
+@@ -131,6 +175,35 @@ function configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing) {
+   };
+ }
+
++export function createSupabasePostgresReadiness(env = process.env) {
++  const adapterMissing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
++  const siteSetupMissing = missingEnvKeys(env, SUPABASE_POSTGRES_SITE_SETUP_KEYS);
++  const configured = adapterMissing.length === 0;
++  const siteSetupReady = siteSetupMissing.length === 0;
++  const blockers = [];
++  if (!configured) {
++    blockers.push("Add Supabase URL and server-only credentials before selecting Supabase Postgres.");
++  }
++  if (!siteSetupReady) {
++    blockers.push("Add server-only direct SQL configuration before Admin Site Setup can run Supabase setup.");
++  }
++  return {
++    configured,
++    dbViewerReady: configured,
++    providerId: SUPABASE_POSTGRES_PROVIDER_ID,
++    records: {
++      roles: configured,
++      user_roles: configured,
++      users: configured,
++    },
++    serverApiOwnsKeyGeneration: true,
++    siteSetupReady,
++    staticDevSeedUserUlidsOnly: true,
++    status: configured ? "ready-when-selected" : "not-configured",
++    blockers,
++  };
++}
++
+ export class SupabaseAuthProviderAdapter {
+   constructor({ env = process.env, fetchImpl = globalThis.fetch } = {}) {
+     this.env = env;
+@@ -228,9 +301,11 @@ export class SupabaseAuthProviderAdapter {
+
+ export const SupabaseAuthProviderStub = SupabaseAuthProviderAdapter;
+
+-export class SupabasePostgresProviderStub {
+-  constructor({ env = process.env } = {}) {
++export class SupabasePostgresProviderAdapter {
++  constructor({ env = process.env, fetchImpl = globalThis.fetch, keyFactory = createRuntimeUlid } = {}) {
+     this.env = env;
++    this.fetchImpl = fetchImpl;
++    this.keyFactory = keyFactory;
+     this.providerId = SUPABASE_POSTGRES_PROVIDER_ID;
+   }
+
+@@ -238,40 +313,109 @@ export class SupabasePostgresProviderStub {
+     return supabasePostgresDiagnostic(this.env);
+   }
+
++  readiness() {
++    return createSupabasePostgresReadiness(this.env);
++  }
++
++  assertConfigured() {
++    const readiness = this.readiness();
++    if (!readiness.configured) {
++      throw new Error(this.diagnostic());
++    }
++    if (typeof this.fetchImpl !== "function") {
++      throw new Error("Supabase Postgres provider requires a server fetch implementation.");
++    }
++  }
++
++  createRecordKey() {
++    return this.keyFactory();
++  }
++
+   connect() {
+-    throw new Error(this.diagnostic());
++    this.assertConfigured();
++    return {
++      boundary: PROVIDER_DATA_BOUNDARY_RULE,
++      providerId: this.providerId,
++      ready: true,
++    };
++  }
++
++  async requestTable(tableName, { body = null, method = "GET", query = "select=*" } = {}) {
++    this.assertConfigured();
++    const table = requireTableName(tableName);
++    const response = await this.fetchImpl(`${supabaseUrl(this.env)}/rest/v1/${encodeURIComponent(table)}?${query}`, {
++      body: body === null ? undefined : JSON.stringify(body),
++      headers: postgresHeaders(this.env),
++      method,
++    });
++    const payload = await readResponseJson(response);
++    if (!response.ok) {
++      const message = payload?.message || payload?.hint || "No Supabase Postgres error message returned.";
++      throw new Error(`Supabase Postgres ${table} request failed with HTTP ${response.status}: ${message}`);
++    }
++    return payload;
+   }
+
+   getUsers() {
+-    throw new Error(this.diagnostic());
++    return this.requestTable("users");
+   }
+
+   getRoles() {
+-    throw new Error(this.diagnostic());
++    return this.requestTable("roles");
+   }
+
+   getUserRoles() {
+-    throw new Error(this.diagnostic());
++    return this.requestTable("user_roles");
+   }
+
+   runSiteSetup() {
+-    throw new Error(this.diagnostic());
++    this.assertConfigured();
++    const readiness = this.readiness();
++    if (!readiness.siteSetupReady) {
++      throw new Error("Supabase Postgres Site Setup requires server-only direct SQL configuration before setup can run.");
++    }
++    return {
++      executed: false,
++      owner: "Admin -> Site Setup",
++      providerId: this.providerId,
++      ready: true,
++    };
+   }
+
+-  getDbViewerSnapshot() {
+-    throw new Error(this.diagnostic());
++  async getDbViewerSnapshot() {
++    this.assertConfigured();
++    const [users, roles, userRoles] = await Promise.all([
++      this.getUsers(),
++      this.getRoles(),
++      this.getUserRoles(),
++    ]);
++    return {
++      boundary: PROVIDER_DATA_BOUNDARY_RULE,
++      providerId: this.providerId,
++      readiness: this.readiness(),
++      tables: {
++        roles,
++        user_roles: userRoles,
++        users,
++      },
++    };
+   }
+ }
+
++export const SupabasePostgresProviderStub = SupabasePostgresProviderAdapter;
++
+ export function createProviderContractSnapshot(env = process.env) {
+   const auth = requestedProvider(env, "GAMEFOUNDRY_AUTH_PROVIDER", LOCAL_AUTH_PROVIDER_ID, SUPPORTED_AUTH_PROVIDERS);
+   const database = requestedProvider(env, "GAMEFOUNDRY_DB_PROVIDER", LOCAL_DATABASE_PROVIDER_ID, SUPPORTED_DATABASE_PROVIDERS);
+   const diagnostics = [auth.diagnostic, database.diagnostic].filter(Boolean);
+   const supabaseAuthMissing = missingEnvKeys(env, BROWSER_SAFE_SUPABASE_ENV_KEYS);
+-  const supabasePostgresMissing = missingEnvKeys(env, SERVER_ONLY_SUPABASE_SECRET_KEYS);
++  const supabasePostgresMissing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
++  const supabasePostgresReadiness = createSupabasePostgresReadiness(env);
+   const supabaseAuthSelected = auth.id === SUPABASE_AUTH_PROVIDER_ID;
+   const supabasePostgresSelected = database.id === SUPABASE_POSTGRES_PROVIDER_ID;
+   const missingConfigWarnings = futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing);
++  const supabaseAuthReady = supabaseAuthMissing.length === 0;
++  const supabasePostgresReady = supabasePostgresReadiness.configured;
+
+   if (supabaseAuthSelected) {
+     diagnostics.push(supabaseAuthDiagnostic(env));
+@@ -284,7 +428,19 @@ export function createProviderContractSnapshot(env = process.env) {
+     activeProviders: {
+       authProviderId: LOCAL_AUTH_PROVIDER_ID,
+       databaseProviderId: LOCAL_DATABASE_PROVIDER_ID,
+-      diagnostic: "Local DB provider remains active until a dedicated Supabase adapter PR.",
++      diagnostic: "Local DB provider remains active by default. Supabase providers require explicit provider selectors and complete configuration.",
++    },
++    activationReadiness: {
++      blockers: [
++        ...supabaseAuthMissing.map((key) => `Add browser-safe ${key} before selecting Supabase Auth.`),
++        ...supabasePostgresReadiness.blockers,
++      ],
++      localDbActiveByDefault: true,
++      readyBeforeActivation: supabaseAuthReady && supabasePostgresReady,
++      rollback: "Set GAMEFOUNDRY_AUTH_PROVIDER=local-db and GAMEFOUNDRY_DB_PROVIDER=local-db.",
++      siteSetupReady: supabasePostgresReadiness.siteSetupReady,
++      supabaseAuthReady,
++      supabasePostgresReady,
+     },
+     boundary: PROVIDER_DATA_BOUNDARY_RULE,
+     diagnostics,
+@@ -333,8 +489,15 @@ export function createProviderContractSnapshot(env = process.env) {
+     },
+     supabasePostgres: {
+       configured: supabasePostgresMissing.length === 0,
++      adapter: {
++        activeByDefault: false,
++        implementation: "config-gated Supabase Postgres REST adapter",
++        keyGenerationOwner: "server-api",
++        staticUlidsAllowedOnlyForDevSeedUsers: true,
++      },
+       dataMigrationActive: false,
+-      diagnostic: supabasePostgresSelected ? supabasePostgresDiagnostic(env) : "Supabase Postgres provider stub is inactive.",
++      diagnostic: supabasePostgresSelected ? supabasePostgresDiagnostic(env) : "Supabase Postgres provider adapter is inactive.",
++      readiness: supabasePostgresReadiness,
+       executionOwnership: {
+         dev: "Codex may execute DEV setup/migration only after a dedicated Supabase DEV PR.",
+         prod: "User-controlled reviewed SQL/setup execution.",
+@@ -349,7 +512,11 @@ export function createProviderContractSnapshot(env = process.env) {
+       providerId: SUPABASE_POSTGRES_PROVIDER_ID,
+       serverOnlySecretsExposed: false,
+       serverOnlySecretNamesExposed: false,
+-      status: supabasePostgresSelected && supabasePostgresMissing.length ? "not-configured" : "stub",
++      status: supabasePostgresSelected && supabasePostgresMissing.length
++        ? "not-configured"
++        : supabasePostgresMissing.length
++          ? "adapter-inactive"
++          : "adapter-ready",
+     },
+   };
+ }
+diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+index ade92ebe0..d657d1f99 100644
+--- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
++++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
+ import {
+   SupabaseAuthProviderAdapter,
+   SupabaseAuthProviderStub,
++  SupabasePostgresProviderAdapter,
+   SupabasePostgresProviderStub,
+   createProviderContractSnapshot,
+ } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
+@@ -75,6 +76,10 @@ test("Supabase provider contract stubs keep Local DB active by default", () => {
+   const snapshot = createProviderContractSnapshot({});
+   assert.equal(snapshot.activeProviders.authProviderId, "local-db");
+   assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
++  assert.equal(snapshot.activationReadiness.localDbActiveByDefault, true);
++  assert.equal(snapshot.activationReadiness.readyBeforeActivation, false);
++  assert.equal(snapshot.activationReadiness.supabaseAuthReady, false);
++  assert.equal(snapshot.activationReadiness.supabasePostgresReady, false);
+   assert.equal(snapshot.requestedProviders.authProviderId, "local-db");
+   assert.equal(snapshot.requestedProviders.databaseProviderId, "local-db");
+   assert.equal(snapshot.boundary, "Browser -> API/Service Contract -> Database");
+@@ -99,6 +104,14 @@ test("Supabase provider contract stubs keep Local DB active by default", () => {
+   assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
+   assert.equal(snapshot.supabasePostgres.serverOnlySecretsExposed, false);
+   assert.equal(snapshot.supabasePostgres.serverOnlySecretNamesExposed, false);
++  assert.equal(snapshot.supabasePostgres.status, "adapter-inactive");
++  assert.equal(snapshot.supabasePostgres.adapter.activeByDefault, false);
++  assert.equal(snapshot.supabasePostgres.adapter.implementation, "config-gated Supabase Postgres REST adapter");
++  assert.equal(snapshot.supabasePostgres.adapter.keyGenerationOwner, "server-api");
++  assert.equal(snapshot.supabasePostgres.adapter.staticUlidsAllowedOnlyForDevSeedUsers, true);
++  assert.equal(snapshot.supabasePostgres.readiness.dbViewerReady, false);
++  assert.equal(snapshot.supabasePostgres.readiness.serverApiOwnsKeyGeneration, true);
++  assert.equal(snapshot.supabasePostgres.readiness.siteSetupReady, false);
+   assert.deepEqual(snapshot.supabasePostgres.operations, [
+     "connect",
+     "getUsers",
+@@ -130,6 +143,8 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
+   assert.equal(snapshot.requestedProviders.databaseProviderId, "supabase-postgres");
+   assert.equal(snapshot.supabaseAuth.status, "not-configured");
+   assert.equal(snapshot.supabasePostgres.status, "not-configured");
++  assert.equal(snapshot.activationReadiness.readyBeforeActivation, false);
++  assert.equal(snapshot.activationReadiness.blockers.length > 0, true);
+   assert.match(snapshot.supabaseAuth.diagnostic, /Supabase Auth provider selected but not configured/);
+   assert.match(snapshot.supabasePostgres.diagnostic, /Supabase Postgres provider selected but not configured/);
+   assert.deepEqual(snapshot.supabaseAuth.missingBrowserSafeEnvironmentVariables, [
+@@ -220,14 +235,85 @@ test("Supabase Auth adapter uses browser-safe env config without service-role va
+   assert.equal(calls[4].options.headers.authorization, "Bearer user-access-token");
+ });
+
+-test("Supabase Postgres provider class remains stub only and does not implement database access", () => {
++test("Supabase Postgres adapter fails visibly when selected without configuration", async () => {
+   const database = new SupabasePostgresProviderStub({ env: { GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres" } });
+   assert.throws(() => database.connect(), /Supabase Postgres provider selected but not configured/);
+-  assert.throws(() => database.getUsers(), /Supabase Postgres provider selected but not configured/);
+-  assert.throws(() => database.getRoles(), /Supabase Postgres provider selected but not configured/);
+-  assert.throws(() => database.getUserRoles(), /Supabase Postgres provider selected but not configured/);
++  await assert.rejects(() => database.getUsers(), /Supabase Postgres provider selected but not configured/);
++  await assert.rejects(() => database.getRoles(), /Supabase Postgres provider selected but not configured/);
++  await assert.rejects(() => database.getUserRoles(), /Supabase Postgres provider selected but not configured/);
+   assert.throws(() => database.runSiteSetup(), /Supabase Postgres provider selected but not configured/);
+-  assert.throws(() => database.getDbViewerSnapshot(), /Supabase Postgres provider selected but not configured/);
++  await assert.rejects(() => database.getDbViewerSnapshot(), /Supabase Postgres provider selected but not configured/);
++});
++
++test("Supabase Postgres adapter supports identity tables and readiness when configured", async () => {
++  const calls = [];
++  const database = new SupabasePostgresProviderAdapter({
++    env: {
++      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
++      GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
++      GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
++    },
++    fetchImpl: async (url, options) => {
++      calls.push({ options, url });
++      const tableName = new URL(url).pathname.split("/").pop();
++      return {
++        json: async () => [{ key: `${tableName}-row` }],
++        ok: true,
++        status: 200,
++      };
++    },
++    keyFactory: () => "01J00000000000000000000000",
++  });
++
++  assert.equal(database.createRecordKey(), "01J00000000000000000000000");
++  assert.deepEqual(database.connect(), {
++    boundary: "Browser -> API/Service Contract -> Database",
++    providerId: "supabase-postgres",
++    ready: true,
++  });
++  assert.equal(database.readiness().dbViewerReady, true);
++  assert.equal(database.readiness().siteSetupReady, true);
++  assert.equal(database.readiness().serverApiOwnsKeyGeneration, true);
++  assert.deepEqual(database.runSiteSetup(), {
++    executed: false,
++    owner: "Admin -> Site Setup",
++    providerId: "supabase-postgres",
++    ready: true,
++  });
++
++  const snapshot = await database.getDbViewerSnapshot();
++  assert.deepEqual(Object.keys(snapshot.tables).sort(), ["roles", "user_roles", "users"]);
++  assert.deepEqual(calls.map((call) => call.url), [
++    "https://supabase-dev.example.test/rest/v1/users?select=*",
++    "https://supabase-dev.example.test/rest/v1/roles?select=*",
++    "https://supabase-dev.example.test/rest/v1/user_roles?select=*",
++  ]);
++  assert.equal(calls.every((call) => call.options.headers.apikey === "not-a-real-service-role-test-value"), true);
++});
++
++test("Supabase activation diagnostics report readiness without changing active providers", () => {
++  const snapshot = createProviderContractSnapshot({
++    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
++    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
++    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
++    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
++    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
++    GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
++  });
++
++  assert.equal(snapshot.activeProviders.authProviderId, "local-db");
++  assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
++  assert.equal(snapshot.activationReadiness.localDbActiveByDefault, true);
++  assert.equal(snapshot.activationReadiness.readyBeforeActivation, true);
++  assert.equal(snapshot.activationReadiness.siteSetupReady, true);
++  assert.equal(snapshot.activationReadiness.supabaseAuthReady, true);
++  assert.equal(snapshot.activationReadiness.supabasePostgresReady, true);
++  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, ["local-db", "supabase-auth"]);
++  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, ["local-db", "supabase-postgres"]);
++  assert.equal(snapshot.supabaseAuth.status, "adapter-ready");
++  assert.equal(snapshot.supabasePostgres.status, "adapter-ready");
++  assert.equal(JSON.stringify(snapshot).includes("not-a-real-service-role-test-value"), false);
++  assert.equal(JSON.stringify(snapshot).includes("server-only-database-url-placeholder"), false);
+ });
+
+ test(".env.example documents future Supabase DEV variables without values", async () => {
+diff --git a/docs_build/dev/reports/pr126-supabase-auth-provider-adapter.md b/docs_build/dev/reports/pr126-supabase-auth-provider-adapter.md
 new file mode 100644
-index 000000000..000000000
+index 000000000..8f811b91a
 --- /dev/null
-+++ b/docs_build/dev/reports/pr125-supabase-dev-provider-prep.md
-@@ -0,0 +1,125 @@
-+# PR_26166_125 Supabase DEV Provider Prep
++++ b/docs_build/dev/reports/pr126-supabase-auth-provider-adapter.md
+@@ -0,0 +1,100 @@
++# PR_26166_126 Supabase Auth Provider Adapter
 +
 +## Branch Validation
 +
 +- PASS: Current branch is `main`.
 +- Expected branch: `main`.
-+- Worktree before PR125 report creation: clean.
++- Starting HEAD: `76c481568 Add config-gated Supabase Auth and Postgres providers with DEV activation checklist - PR_26166_126-128-supabase-provider-implementation`.
 +
-+## DB Lane Continuity Report
++## Scope Notes
 +
-+- PASS: Current active DB/Auth lane head is PR123, `docs_build/dev/reports/pr123-supabase-dev-postgres-stub.md`.
-+- PASS: PR118 established the external auth readiness plan and keeps Local DB as the DEV bridge until Supabase DEV is explicitly introduced.
-+- PASS: PR119 established the Supabase environment checklist and secrets-handling rules.
-+- PASS: PR120 added provider contract stubs without activating Supabase.
-+- PASS: PR121 added `.env.example` placeholders and provider diagnostics while keeping Local DB active.
-+- PASS: PR122 added the Supabase Auth stub readiness contract without changing sign-in behavior.
-+- PASS: PR123 added the Supabase Postgres stub without migrating active data.
-+- PASS: PR124, `PR_26166_124-ai-platform-command-center`, is documented here as out-of-lane for this DB migration sequence.
-+- PASS: DB migration continues with PR125.
-+- PASS: Local DB remains the active auth provider and active database provider.
-+- PASS: Supabase remains inactive until configured and activated by a dedicated future PR.
++- PASS: Stayed in the DB/Auth migration lane.
++- PASS: Started from `docs_build/dev/reports/pr125-supabase-dev-provider-prep.md`.
++- PASS: Supabase Auth remains config-gated and inactive by default.
++- PASS: Local DB remains the active DEV auth path by default.
++- PASS: No production sign-in behavior was activated for Supabase.
++- PASS: No secrets or password tables were added.
 +
-+## Supabase Provider Prep Audit
++## Supabase Auth Adapter Audit
 +
-+- PASS: `.env.example` exists and keeps provider selection on Local DB:
-+  - `GAMEFOUNDRY_AUTH_PROVIDER=local-db`
-+  - `GAMEFOUNDRY_DB_PROVIDER=local-db`
-+- PASS: `.env.example` documents browser-safe future Supabase placeholders without values:
-+  - `GAMEFOUNDRY_SUPABASE_URL=`
-+  - `GAMEFOUNDRY_SUPABASE_ANON_KEY=`
-+- PASS: `.env.example` documents server-only future Supabase placeholders without values:
-+  - `GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=`
-+  - `GAMEFOUNDRY_SUPABASE_DATABASE_URL=`
-+- PASS: Provider diagnostics expose active provider state.
-+- PASS: Provider diagnostics expose configured providers.
-+- PASS: Provider diagnostics expose missing config warnings.
-+- PASS: Provider diagnostics do not expose secret values.
-+- PASS: Provider diagnostics do not expose server-only variable names through browser/API payloads.
-+- PASS: Browser/API payloads never receive service role key values.
-+- PASS: Missing Supabase config remains diagnostic only; it does not block Local DB.
-+- PASS: Current sign-in route remains `account/sign-in.html`.
-+- PASS: DB Viewer remains Local DB-backed.
-+- PASS: Supabase is not activated and no Supabase connection occurs.
++- PASS: Existing provider contract exposes future Auth operations:
++  - `getCurrentUser`
++  - `signIn`
++  - `signOut`
++  - `createAccount`
++  - `requestPasswordReset`
++  - `requireRole`
++- PASS: `SupabaseAuthProviderAdapter` uses browser-safe Supabase environment config only:
++  - `GAMEFOUNDRY_SUPABASE_URL`
++  - `GAMEFOUNDRY_SUPABASE_ANON_KEY`
++- PASS: Service-role values are not used by the Auth adapter.
++- PASS: Missing Auth config fails visibly with actionable diagnostics.
++- PASS: Auth user mapping remains server-owned:
++  - external auth user id maps to `users.key`
++  - browser-owned authoritative user keys are not allowed
++- PASS: Local DB placeholder sign-in remains unchanged unless the auth provider selector is explicitly switched.
 +
 +## Secrets Audit
 +
-+- PASS: No real Supabase URL was added.
-+- PASS: No real anon key was added.
-+- PASS: No real service-role key was added.
-+- PASS: No real database URL was added.
++- PASS: No real Supabase URL was committed.
++- PASS: No real Supabase anon key was committed.
++- PASS: No real Supabase service-role key was committed.
++- PASS: No real database URL was committed.
 +- PASS: No package dependency was added.
-+- PASS: No password table was added.
-+- PASS: No password, password hash, reset secret, or verification secret was added to app tables.
-+- PASS: Server-only placeholder names remain in `.env.example` and tests/reports only; API validation confirms names and values are not exposed in provider payloads.
++- PASS: No custom password table or app-owned password storage was added.
++- PASS: Test-only sentinel strings are not real keys and are asserted not to appear in API provider diagnostics.
 +
-+## Out-of-Lane PR Guard Audit
++## Local DB Default Audit
 +
-+- PASS: PR125 does not continue AI Platform Command Center work.
-+- PASS: PR125 does not modify AI Platform files.
-+- PASS: `git status --short` / changed-file guard for PR125 contains no AI Command Center/toolbox AI page files.
-+- PASS: PR124 is treated as accidental/out-of-lane for this DB/Auth migration continuity report.
-+- PASS: PR125 changed scope is report-only.
++- PASS: `/api/providers/contract` reports active auth provider `local-db`.
++- PASS: `/api/session/current` remains Local DB-backed through the current local session flow.
++- PASS: `account/sign-in.html` opens successfully through the Local API route.
++- PASS: Supabase Auth reports `adapter-inactive` without DEV Supabase config.
 +
 +## Requirement Checklist
 +
 +- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
-+- PASS: Verified current branch is `main` before making changes.
-+- PASS: Stayed in the DB migration/Auth lane.
-+- PASS: Did not continue AI Platform Command Center work.
-+- PASS: Treated PR124 as accidental/out-of-lane for this DB migration sequence.
-+- PASS: Started from available reports PR118 through PR123.
-+- PASS: Scoped this PR to Supabase DEV provider preparation only.
-+- PASS: Did not activate Supabase.
-+- PASS: Did not connect to Supabase.
-+- PASS: Did not add real secrets.
++- PASS: Verified current branch is `main`.
++- PASS: Stayed in DB/Auth migration lane.
++- PASS: Started from PR125 report.
++- PASS: Scoped PR126 to Supabase Auth provider adapter validation.
++- PASS: Did not make Supabase active by default.
++- PASS: Did not add secrets.
 +- PASS: Did not store passwords in app tables.
-+- PASS: Kept Local DB active.
-+- PASS: Confirmed the current active DB/Auth lane head.
-+- PASS: Produced DB lane continuity evidence.
-+- PASS: Verified `.env.example` Supabase placeholders.
-+- PASS: Verified provider diagnostics show active provider, configured providers, missing config warnings, and no secret values.
-+- PASS: Verified browser/API payloads never receive service role keys.
-+- PASS: Verified current sign-in behavior remains unchanged.
-+- PASS: Verified DB Viewer still uses Local DB.
-+- PASS: Did not change AI Platform files.
-+- PASS: Playwright impacted: No runtime provider diagnostics code changed in PR125.
++- PASS: Kept Local DB active by default.
++- PASS: Supported future Auth operations through the provider contract.
++- PASS: Used environment config only.
++- PASS: Confirmed browser/API payloads never receive service-role secrets.
++- PASS: Missing Supabase config produces visible actionable diagnostics.
++- PASS: Local DB sign-in placeholder/local flow remains unchanged unless provider is explicitly switched.
 +
 +## Validation Lane Report
 +
-+- Impacted lane: DB/Auth continuity and provider diagnostics audit.
-+- Runtime code changed: No.
-+- Playwright impacted: No, because PR125 did not change runtime provider diagnostics code.
-+- Playwright run: SKIP.
-+- Broad lanes skipped: full samples smoke, broad engine, broad toolbox, broad Playwright.
-+- Samples decision: SKIP because this PR does not change samples, sample JSON, game runtime, or sample loaders.
++- Impacted lane: DB/Auth provider contract and local sign-in route.
++- Runtime JavaScript changed in this session: Yes, shared provider diagnostics were updated during the PR127/PR128 continuation.
++- Playwright impacted: Yes.
++- Broad lanes skipped: full samples smoke, full engine, broad toolbox, full Playwright.
++- Skip reason: this sequence changes only provider contract diagnostics and targeted DB/Auth adapter surfaces.
++- Samples decision: SKIP because no sample JSON, sample loader, or game runtime file changed.
++- Legacy command note: `npm run test:workspace-v2` was not used because targeted provider and route validation existed; the command name remains legacy while user-facing language is Project Workspace.
 +
 +## Commands Run
 +
 +- PASS: `git branch --show-current` returned `main`.
-+- PASS: `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
-+- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS: `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- PASS: `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs` passed 5/5 tests.
-+- PASS: `npm run dev:local-api` startup validated on `127.0.0.1:5535` with `GAMEFOUNDRY_LOCAL_API_PORT=5535`.
-+- PASS: Local API `/api/providers/contract` returned active auth/database provider `local-db/local-db`.
-+- PASS: Local API `/api/providers/contract` returned configured auth/database providers as `local-db`.
-+- PASS: Local API `/api/providers/contract` returned two missing Supabase config warnings.
-+- PASS: Local API provider diagnostics did not expose secret values or server-only variable names.
-+- PASS: Local API `/api/session/current` returned mode `local-db`.
-+- PASS: Local API `account/sign-in.html` returned HTTP 200 and existing Sign In content.
-+- PASS: Local API `admin/db-viewer.html` returned HTTP 200 and Local DB content.
-+- PASS: Local API process on port `5535` was stopped after validation.
-+- PASS: `git status --short` before report creation returned clean.
-+- PASS: `git diff --name-only` AI Platform file guard returned no matches for PR125 changes.
-+- PASS: `git diff --check` completed successfully; Git reported only a CRLF working-copy notice for `codex_review.diff`.
-+- PASS: Secret-pattern review found only placeholders/test sentinel strings in existing tests/reports and no real committed keys.
-+- PASS: Existing active-source scan showed retired `local-mem` and `/login.html` strings only in negative tests or historical reports, not PR125 additions.
++- PASS: `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`.
++- PASS: `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`.
++- PASS: `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs` passed 9/9 tests.
++- PASS: `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs tests/playwright/tools/AdminDbViewer.spec.mjs -g "Sign-in page uses a production-safe account form without public Local DB controls|Protected pages block direct URL access without the required Local session role|Admin DB Viewer shows current read-only Local DB tables, filters, users, roles, and diagnostics" --project=playwright --workers=1 --reporter=list` passed 3/3 tests.
++- PASS: `npm run dev:local-api` started through `npm.cmd` on port `5537`.
++- PASS: Local API route probes returned:
++  - `/api/providers/contract`: active auth/database providers `local-db/local-db`
++  - `/account/sign-in.html`: HTTP 200
++  - `/admin/db-viewer.html`: HTTP 200
++- PASS: `git diff --check`.
 +
 +## Manual Validation Notes
 +
-+- `.env.example` was verified and did not need edits.
-+- Provider stubs were verified without activating or connecting Supabase.
-+- Local DB remained active through the Local API validation.
-+- The first Node `spawn` wrapper and a PowerShell `Invoke-WebRequest` HTML fetch hit local wrapper/tooling issues, so successful validation used PowerShell `Start-Process` for the required `npm run dev:local-api` startup and Node `fetch` for HTTP probes.
-+- No AI Platform files were modified by PR125.
++- The first Local API start attempt used `npm` directly and Windows rejected it as not a Win32 executable. The same package script passed through `npm.cmd`.
++- Playwright V8 coverage was refreshed at `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
++- The changed dev-runtime provider file is server-side and is listed as advisory WARN in V8 coverage; direct Node contract coverage passed.
++- Repo-structured ZIP path: `tmp/PR_26166_126-supabase-auth-provider-adapter_delta.zip`.
+diff --git a/docs_build/dev/reports/pr127-supabase-postgres-provider-adapter.md b/docs_build/dev/reports/pr127-supabase-postgres-provider-adapter.md
+new file mode 100644
+index 000000000..49494776c
+--- /dev/null
++++ b/docs_build/dev/reports/pr127-supabase-postgres-provider-adapter.md
+@@ -0,0 +1,102 @@
++# PR_26166_127 Supabase Postgres Provider Adapter
++
++## Branch Validation
++
++- PASS: Current branch is `main`.
++- Expected branch: `main`.
++
++## Scope Notes
++
++- PASS: Scoped this PR to the Supabase Postgres provider adapter surface.
++- PASS: Did not activate Supabase Postgres by default.
++- PASS: Did not migrate data.
++- PASS: Did not add secrets.
++- PASS: Kept Local DB active.
++- PASS: Preserved `Browser -> API/Service Contract -> Database`.
++
++## Supabase Postgres Adapter Audit
++
++- PASS: Added `SupabasePostgresProviderAdapter` behind the existing provider contract.
++- PASS: Preserved `SupabasePostgresProviderStub` as a compatibility alias to the adapter.
++- PASS: Missing Supabase Postgres config fails visibly with actionable diagnostics.
++- PASS: Adapter stays inactive unless explicitly selected/configured.
++- PASS: Initial provider surface supports:
++  - `connect`
++  - `getUsers`
++  - `getRoles`
++  - `getUserRoles`
++  - `runSiteSetup`
++  - `getDbViewerSnapshot`
++- PASS: Adapter restricts table access to key-based identity tables:
++  - `users`
++  - `roles`
++  - `user_roles`
++- PASS: DB Viewer readiness is exposed through provider diagnostics.
++- PASS: Site Setup readiness is exposed through provider diagnostics.
++- PASS: Data migration remains inactive.
++- PASS: Server/API owns key generation through adapter-side ULID creation.
++- PASS: Static ULID exception remains documented as DEV seed users only.
++
++## Secrets Audit
++
++- PASS: Browser/API diagnostics do not expose server-only secret values.
++- PASS: Browser/API diagnostics do not expose server-only variable names.
++- PASS: No real Supabase key, URL, service-role key, or database URL was committed.
++- PASS: No Supabase package dependency was added.
++- PASS: No password table or password storage was added.
++
++## Local DB Default Audit
++
++- PASS: Provider snapshot keeps active auth provider as `local-db`.
++- PASS: Provider snapshot keeps active database provider as `local-db`.
++- PASS: DB Viewer route returned HTTP 200 while Local DB remained active.
++- PASS: Supabase Postgres reports `adapter-inactive` without DEV Supabase config.
++
++## Requirement Checklist
++
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
++- PASS: Verified current branch is `main`.
++- PASS: Scoped to Supabase Postgres provider adapter only.
++- PASS: Did not activate Supabase Postgres by default.
++- PASS: Did not migrate data.
++- PASS: Did not add secrets.
++- PASS: Kept Local DB active.
++- PASS: Implemented config-gated Supabase Postgres provider behind the DB provider contract.
++- PASS: Initial provider surface supports users, roles, user_roles, provider diagnostics, Site Setup readiness checks, and DB Viewer readiness checks.
++- PASS: Preserved Browser -> API/Service Contract -> Database.
++- PASS: Server/API owns key generation.
++- PASS: Static ULID exception remains DEV seed users only.
++- PASS: Missing Supabase config fails visibly with actionable diagnostics.
++
++## Validation Lane Report
++
++- Impacted lane: DB/Auth provider contract and Admin DB Viewer route.
++- Runtime JavaScript changed: Yes.
++- Playwright impacted: Yes.
++- Broad lanes skipped: full samples smoke, full engine, broad toolbox, full Playwright.
++- Skip reason: targeted Node and Playwright coverage exercised the changed provider contract, sign-in route, and DB Viewer route.
++- Samples decision: SKIP because this PR does not change samples or game runtime.
++- V8 coverage: `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
++- V8 coverage note: `(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only`.
++
++## Commands Run
++
++- PASS: `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`.
++- PASS: `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`.
++- PASS: `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs` passed 9/9 tests.
++- PASS: Targeted Playwright passed 3/3 tests for DB Viewer and sign-in/session routes.
++- PASS: `npm run dev:local-api` started through `npm.cmd` on port `5537`.
++- PASS: Local API provider diagnostics confirmed:
++  - active auth provider `local-db`
++  - active database provider `local-db`
++  - Supabase Postgres status `adapter-inactive`
++  - DB Viewer readiness `false` before Supabase config
++  - secret values exposed `false`
++  - server-only names exposed `false`
++- PASS: `git diff --check`.
++
++## Manual Validation Notes
++
++- The adapter uses Supabase REST table endpoints only when configured/invoked and is not wired as the active DB provider.
++- Test-only sentinel values are used to prove server-only values are not emitted in API diagnostics; they are not real secrets.
++- Repo-structured ZIP path: `tmp/PR_26166_127-supabase-postgres-provider-adapter_delta.zip`.
+diff --git a/docs_build/dev/reports/pr128-supabase-dev-activation-checklist.md b/docs_build/dev/reports/pr128-supabase-dev-activation-checklist.md
+new file mode 100644
+index 000000000..66de41bd3
+--- /dev/null
++++ b/docs_build/dev/reports/pr128-supabase-dev-activation-checklist.md
+@@ -0,0 +1,110 @@
++# PR_26166_128 Supabase DEV Activation Checklist
++
++## Branch Validation
++
++- PASS: Current branch is `main`.
++- Expected branch: `main`.
++
++## Scope Notes
++
++- PASS: Scoped this PR to DEV activation checklist and diagnostics.
++- PASS: Did not activate Supabase automatically.
++- PASS: Did not add secrets.
++- PASS: Local DB remains active by default.
++
++## DEV Activation Checklist
++
++1. Create the reviewed Supabase DEV project outside the repo.
++2. Add local-only environment values outside source control:
++   - `GAMEFOUNDRY_SUPABASE_URL`
++   - `GAMEFOUNDRY_SUPABASE_ANON_KEY`
++   - `GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY`
++   - `GAMEFOUNDRY_SUPABASE_DATABASE_URL`
++3. Confirm `/api/providers/contract` reports:
++   - `activationReadiness.supabaseAuthReady = true`
++   - `activationReadiness.supabasePostgresReady = true`
++   - `activationReadiness.siteSetupReady = true`
++   - `activationReadiness.readyBeforeActivation = true`
++4. Switch the auth provider only after diagnostics are ready:
++   - `GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth`
++5. Switch the DB provider only after diagnostics are ready:
++   - `GAMEFOUNDRY_DB_PROVIDER=supabase-postgres`
++6. Run Admin -> Site Setup readiness checks before setup execution.
++7. Migrate or map users and roles through reviewed Admin Site Setup behavior:
++   - Supabase auth user id -> `users.key`
++   - `roles.key`
++   - `user_roles.userKey`
++   - `user_roles.roleKey`
++8. Validate DB Viewer readiness and Local API provider diagnostics.
++9. Recommend the next PR only after the user creates the Supabase DEV project and local env vars.
++
++## Expected Diagnostics
++
++- PASS: Missing Supabase Auth config reports missing browser-safe variables.
++- PASS: Missing Supabase Postgres config reports missing URL/server-only credentials without exposing server-only names or values.
++- PASS: `activationReadiness.readyBeforeActivation` is `false` until both Auth and Postgres are configured.
++- PASS: `activationReadiness.readyBeforeActivation` is `true` when the required Auth and Postgres config exists.
++- PASS: `activationReadiness.rollback` states how to return to Local DB.
++- PASS: Active providers remain `local-db/local-db` until a future activation PR explicitly changes behavior.
++
++## Rollback Checklist
++
++1. Set `GAMEFOUNDRY_AUTH_PROVIDER=local-db`.
++2. Set `GAMEFOUNDRY_DB_PROVIDER=local-db`.
++3. Restart the Local API.
++4. Confirm `/api/providers/contract` reports active providers `local-db/local-db`.
++5. Confirm `account/sign-in.html` opens.
++6. Confirm `admin/db-viewer.html` opens and remains Local DB-backed.
++
++## Requirement Checklist
++
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
++- PASS: Verified current branch is `main`.
++- PASS: Scoped to activation checklist and diagnostics only.
++- PASS: Did not activate Supabase automatically.
++- PASS: Did not add secrets.
++- PASS: Added clear DEV activation checklist.
++- PASS: Included required env vars.
++- PASS: Included auth provider switch.
++- PASS: Included DB provider switch.
++- PASS: Included expected diagnostics.
++- PASS: Included rollback to Local DB.
++- PASS: Included Admin Site Setup steps.
++- PASS: Included user/role migration steps.
++- PASS: Added diagnostics that confirm whether Supabase Auth and Postgres are ready before activation.
++- PASS: Recommended next PR only after the user creates Supabase DEV project and env vars.
++
++## Validation Lane Report
++
++- Impacted lane: DB/Auth provider diagnostics.
++- Runtime JavaScript changed: Yes, because activation readiness diagnostics were added to provider contract output.
++- Playwright impacted: Yes.
++- Broad lanes skipped: full samples smoke, full engine, broad toolbox, full Playwright.
++- Skip reason: targeted provider contract, sign-in, and DB Viewer validation covered the affected route/runtime surface.
++- Samples decision: SKIP because samples are not in scope.
++- V8 coverage: `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
++- V8 coverage note: changed server-side dev-runtime JS is advisory WARN in browser V8 coverage and covered by Node tests.
++
++## Commands Run
++
++- PASS: `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`.
++- PASS: `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`.
++- PASS: `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs` passed 9/9 tests.
++- PASS: Targeted Playwright passed 3/3 tests for DB Viewer and sign-in/session routes.
++- PASS: `npm run dev:local-api` started through `npm.cmd` on port `5537`.
++- PASS: Local API provider diagnostics confirmed:
++  - `activationReadiness.readyBeforeActivation = false` before Supabase config
++  - active providers `local-db/local-db`
++  - Supabase Auth status `adapter-inactive`
++  - Supabase Postgres status `adapter-inactive`
++  - secret values exposed `false`
++  - server-only names exposed `false`
++- PASS: `git diff --check`.
++
++## Manual Validation Notes
++
++- No Supabase runtime is active by default after this PR.
++- No UAT/PROD auth behavior changed.
++- No package dependency was added.
++- No secrets were committed.
++- Repo-structured ZIP path: `tmp/PR_26166_128-supabase-dev-activation-checklist_delta.zip`.

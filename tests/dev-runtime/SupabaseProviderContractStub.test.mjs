@@ -5,6 +5,7 @@ import { readFile } from "node:fs/promises";
 import {
   SupabaseAuthProviderAdapter,
   SupabaseAuthProviderStub,
+  SupabasePostgresProviderAdapter,
   SupabasePostgresProviderStub,
   createProviderContractSnapshot,
 } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
@@ -75,6 +76,10 @@ test("Supabase provider contract stubs keep Local DB active by default", () => {
   const snapshot = createProviderContractSnapshot({});
   assert.equal(snapshot.activeProviders.authProviderId, "local-db");
   assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
+  assert.equal(snapshot.activationReadiness.localDbActiveByDefault, true);
+  assert.equal(snapshot.activationReadiness.readyBeforeActivation, false);
+  assert.equal(snapshot.activationReadiness.supabaseAuthReady, false);
+  assert.equal(snapshot.activationReadiness.supabasePostgresReady, false);
   assert.equal(snapshot.requestedProviders.authProviderId, "local-db");
   assert.equal(snapshot.requestedProviders.databaseProviderId, "local-db");
   assert.equal(snapshot.boundary, "Browser -> API/Service Contract -> Database");
@@ -99,6 +104,14 @@ test("Supabase provider contract stubs keep Local DB active by default", () => {
   assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
   assert.equal(snapshot.supabasePostgres.serverOnlySecretsExposed, false);
   assert.equal(snapshot.supabasePostgres.serverOnlySecretNamesExposed, false);
+  assert.equal(snapshot.supabasePostgres.status, "adapter-inactive");
+  assert.equal(snapshot.supabasePostgres.adapter.activeByDefault, false);
+  assert.equal(snapshot.supabasePostgres.adapter.implementation, "config-gated Supabase Postgres REST adapter");
+  assert.equal(snapshot.supabasePostgres.adapter.keyGenerationOwner, "server-api");
+  assert.equal(snapshot.supabasePostgres.adapter.staticUlidsAllowedOnlyForDevSeedUsers, true);
+  assert.equal(snapshot.supabasePostgres.readiness.dbViewerReady, false);
+  assert.equal(snapshot.supabasePostgres.readiness.serverApiOwnsKeyGeneration, true);
+  assert.equal(snapshot.supabasePostgres.readiness.siteSetupReady, false);
   assert.deepEqual(snapshot.supabasePostgres.operations, [
     "connect",
     "getUsers",
@@ -130,6 +143,8 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
   assert.equal(snapshot.requestedProviders.databaseProviderId, "supabase-postgres");
   assert.equal(snapshot.supabaseAuth.status, "not-configured");
   assert.equal(snapshot.supabasePostgres.status, "not-configured");
+  assert.equal(snapshot.activationReadiness.readyBeforeActivation, false);
+  assert.equal(snapshot.activationReadiness.blockers.length > 0, true);
   assert.match(snapshot.supabaseAuth.diagnostic, /Supabase Auth provider selected but not configured/);
   assert.match(snapshot.supabasePostgres.diagnostic, /Supabase Postgres provider selected but not configured/);
   assert.deepEqual(snapshot.supabaseAuth.missingBrowserSafeEnvironmentVariables, [
@@ -220,14 +235,85 @@ test("Supabase Auth adapter uses browser-safe env config without service-role va
   assert.equal(calls[4].options.headers.authorization, "Bearer user-access-token");
 });
 
-test("Supabase Postgres provider class remains stub only and does not implement database access", () => {
+test("Supabase Postgres adapter fails visibly when selected without configuration", async () => {
   const database = new SupabasePostgresProviderStub({ env: { GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres" } });
   assert.throws(() => database.connect(), /Supabase Postgres provider selected but not configured/);
-  assert.throws(() => database.getUsers(), /Supabase Postgres provider selected but not configured/);
-  assert.throws(() => database.getRoles(), /Supabase Postgres provider selected but not configured/);
-  assert.throws(() => database.getUserRoles(), /Supabase Postgres provider selected but not configured/);
+  await assert.rejects(() => database.getUsers(), /Supabase Postgres provider selected but not configured/);
+  await assert.rejects(() => database.getRoles(), /Supabase Postgres provider selected but not configured/);
+  await assert.rejects(() => database.getUserRoles(), /Supabase Postgres provider selected but not configured/);
   assert.throws(() => database.runSiteSetup(), /Supabase Postgres provider selected but not configured/);
-  assert.throws(() => database.getDbViewerSnapshot(), /Supabase Postgres provider selected but not configured/);
+  await assert.rejects(() => database.getDbViewerSnapshot(), /Supabase Postgres provider selected but not configured/);
+});
+
+test("Supabase Postgres adapter supports identity tables and readiness when configured", async () => {
+  const calls = [];
+  const database = new SupabasePostgresProviderAdapter({
+    env: {
+      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+      GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+      GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+    },
+    fetchImpl: async (url, options) => {
+      calls.push({ options, url });
+      const tableName = new URL(url).pathname.split("/").pop();
+      return {
+        json: async () => [{ key: `${tableName}-row` }],
+        ok: true,
+        status: 200,
+      };
+    },
+    keyFactory: () => "01J00000000000000000000000",
+  });
+
+  assert.equal(database.createRecordKey(), "01J00000000000000000000000");
+  assert.deepEqual(database.connect(), {
+    boundary: "Browser -> API/Service Contract -> Database",
+    providerId: "supabase-postgres",
+    ready: true,
+  });
+  assert.equal(database.readiness().dbViewerReady, true);
+  assert.equal(database.readiness().siteSetupReady, true);
+  assert.equal(database.readiness().serverApiOwnsKeyGeneration, true);
+  assert.deepEqual(database.runSiteSetup(), {
+    executed: false,
+    owner: "Admin -> Site Setup",
+    providerId: "supabase-postgres",
+    ready: true,
+  });
+
+  const snapshot = await database.getDbViewerSnapshot();
+  assert.deepEqual(Object.keys(snapshot.tables).sort(), ["roles", "user_roles", "users"]);
+  assert.deepEqual(calls.map((call) => call.url), [
+    "https://supabase-dev.example.test/rest/v1/users?select=*",
+    "https://supabase-dev.example.test/rest/v1/roles?select=*",
+    "https://supabase-dev.example.test/rest/v1/user_roles?select=*",
+  ]);
+  assert.equal(calls.every((call) => call.options.headers.apikey === "not-a-real-service-role-test-value"), true);
+});
+
+test("Supabase activation diagnostics report readiness without changing active providers", () => {
+  const snapshot = createProviderContractSnapshot({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+    GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+  });
+
+  assert.equal(snapshot.activeProviders.authProviderId, "local-db");
+  assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
+  assert.equal(snapshot.activationReadiness.localDbActiveByDefault, true);
+  assert.equal(snapshot.activationReadiness.readyBeforeActivation, true);
+  assert.equal(snapshot.activationReadiness.siteSetupReady, true);
+  assert.equal(snapshot.activationReadiness.supabaseAuthReady, true);
+  assert.equal(snapshot.activationReadiness.supabasePostgresReady, true);
+  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, ["local-db", "supabase-auth"]);
+  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, ["local-db", "supabase-postgres"]);
+  assert.equal(snapshot.supabaseAuth.status, "adapter-ready");
+  assert.equal(snapshot.supabasePostgres.status, "adapter-ready");
+  assert.equal(JSON.stringify(snapshot).includes("not-a-real-service-role-test-value"), false);
+  assert.equal(JSON.stringify(snapshot).includes("server-only-database-url-placeholder"), false);
 });
 
 test(".env.example documents future Supabase DEV variables without values", async () => {

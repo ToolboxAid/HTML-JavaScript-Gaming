@@ -1,7 +1,22 @@
-# PR_26166_125-supabase-dev-provider-prep changed files
+# git status --short
 M docs_build/dev/reports/codex_changed_files.txt
-M docs_build/dev/reports/codex_review.diff
-A docs_build/dev/reports/pr125-supabase-dev-provider-prep.md
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/auth/provider-contract-stubs.mjs
+ M tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+?? docs_build/dev/reports/pr126-supabase-auth-provider-adapter.md
+?? docs_build/dev/reports/pr127-supabase-postgres-provider-adapter.md
+?? docs_build/dev/reports/pr128-supabase-dev-activation-checklist.md
 
-# Scope note
-Report-only DB/Auth lane continuity PR. No runtime, AI Platform, DB schema, or dependency files changed.
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/pr126-supabase-auth-provider-adapter.md
+docs_build/dev/reports/pr127-supabase-postgres-provider-adapter.md
+docs_build/dev/reports/pr128-supabase-dev-activation-checklist.md
+
+# git diff --stat
+docs_build/dev/reports/codex_changed_files.txt     |  23 +-
+ docs_build/dev/reports/codex_review.diff           | 889 ++++++++++++++++++---
+ .../dev/reports/playwright_v8_coverage_report.txt  |   2 +-
+ src/dev-runtime/auth/provider-contract-stubs.mjs   | 203 ++++-
+ .../SupabaseProviderContractStub.test.mjs          |  96 ++-
+ 5 files changed, 1080 insertions(+), 133 deletions(-)
