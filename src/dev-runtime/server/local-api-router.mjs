@@ -77,7 +77,13 @@ import {
 } from "../persistence/mock-db-store.js";
 import { createServerSeedTables } from "../seed/server-seed-loader.mjs";
 import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
-import { createProviderContractSnapshot } from "../auth/provider-contract-stubs.mjs";
+import {
+  LOCAL_AUTH_PROVIDER_ID,
+  LOCAL_DATABASE_PROVIDER_ID,
+  SUPABASE_POSTGRES_PROVIDER_ID,
+  SupabasePostgresProviderAdapter,
+  createProviderContractSnapshot,
+} from "../auth/provider-contract-stubs.mjs";
 
 export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
@@ -194,6 +200,15 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function providerFailureMessage(providerContract, providerId) {
+  const failure = providerContract.providerDiagnostics.providerFailures
+    .find((candidate) => candidate.providerId === providerId);
+  if (failure?.remediation) {
+    return failure.remediation;
+  }
+  return `Selected provider ${providerId} is not available for this Local API route yet.`;
 }
 
 function readDocsBuildGuestSeedPackages() {
@@ -922,7 +937,11 @@ class LocalDevDataSource {
       cleared: false,
       tables: createServerSeedTables(),
     });
-    const adapterState = this.currentAdapter().readState("Starting Local DB", this.currentStateSnapshot());
+    const startupAdapter = this.adapterByModeId.get(this.currentMode().id);
+    if (!startupAdapter) {
+      throw new Error(`${LOCAL_DB_NOT_CONFIGURED}. Unknown DEV database mode: ${this.currentMode().id || "missing"}.`);
+    }
+    const adapterState = startupAdapter.readState("Starting Local DB", this.currentStateSnapshot());
     this.applyStateSnapshot(adapterState);
   }
 
@@ -941,7 +960,34 @@ class LocalDevDataSource {
     return createProviderContractSnapshot();
   }
 
+  assertLocalAuthProvider(action) {
+    const providerContract = this.providerContract();
+    const providerId = providerContract.activeProviders.authProviderId;
+    if (providerId !== LOCAL_AUTH_PROVIDER_ID) {
+      throw new Error(`${action} requires the Local DB auth provider. Selected auth provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
+    }
+  }
+
+  assertLocalDatabaseProvider(action) {
+    const providerContract = this.providerContract();
+    const providerId = providerContract.activeProviders.databaseProviderId;
+    if (providerId !== LOCAL_DATABASE_PROVIDER_ID) {
+      throw new Error(`${action} requires the Local DB database provider. Selected database provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
+    }
+  }
+
+  assertLocalRuntimeProviders(action) {
+    this.assertLocalAuthProvider(action);
+    this.assertLocalDatabaseProvider(action);
+  }
+
+  localAuthSession(action) {
+    this.assertLocalAuthProvider(action);
+    return sessionUserFromKey(this.standaloneTables, this.sessionUserKey, this.sessionModeId);
+  }
+
   currentAdapter() {
+    this.assertLocalDatabaseProvider("Opening Local DB adapter");
     const adapter = this.adapterByModeId.get(this.currentMode().id);
     if (!adapter) {
       throw new Error(`${LOCAL_DB_NOT_CONFIGURED}. Unknown DEV database mode: ${this.currentMode().id || "missing"}.`);
@@ -1053,6 +1099,90 @@ class LocalDevDataSource {
     };
   }
 
+  adminInitializeIdentity(body = {}) {
+    const providerContract = this.providerContract();
+    const providerId = providerContract.activeProviders.databaseProviderId;
+    if (providerId !== SUPABASE_POSTGRES_PROVIDER_ID) {
+      throw new Error(`Admin identity setup requires selected database provider ${SUPABASE_POSTGRES_PROVIDER_ID}. Selected database provider is ${providerId}.`);
+    }
+    const database = new SupabasePostgresProviderAdapter();
+    return database.initializeIdentity(body);
+  }
+
+  adminSetupStatus() {
+    const snapshot = this.snapshot();
+    const tables = snapshot.tables || {};
+    const users = tables.users || [];
+    const roles = tables.roles || [];
+    const userRoles = tables.user_roles || [];
+    const roleSlugs = new Set(roles.map((role) => role.roleSlug).filter(Boolean));
+    const missingDefaultRoles = ["admin", "creator", "guest", "user"].filter((roleSlug) => !roleSlugs.has(roleSlug));
+    const adminRoleKeys = new Set(roles
+      .filter((role) => role.roleSlug === "admin")
+      .map((role) => role.key));
+    const adminUserKeys = new Set(userRoles
+      .filter((row) => adminRoleKeys.has(row.roleKey))
+      .map((row) => row.userKey));
+    const firstAdminReady = users.some((user) => adminUserKeys.has(user.key) && user.isActive !== false);
+    const toolMetadataCount = (tables.toolbox_tool_metadata || []).length;
+    const areas = [
+      {
+        action: "Assign the initial admin user",
+        id: "first-admin",
+        label: "First Admin",
+        status: firstAdminReady ? "PASS" : "FAIL",
+        message: firstAdminReady
+          ? "At least one active user has the admin role through user_roles."
+          : "Create or assign the first admin through Admin -> Site Setup before promotion.",
+      },
+      {
+        action: "Create approved role records",
+        id: "default-roles",
+        label: "Default Roles",
+        status: missingDefaultRoles.length ? "WARN" : "PASS",
+        message: missingDefaultRoles.length
+          ? `Missing default role slug(s): ${missingDefaultRoles.join(", ")}.`
+          : "Default role slugs are present.",
+      },
+      {
+        action: "Seed active tool metadata",
+        id: "tool-metadata-bootstrap",
+        label: "Tool Metadata Bootstrap",
+        status: toolMetadataCount ? "PASS" : "FAIL",
+        message: toolMetadataCount
+          ? `${toolMetadataCount} tool metadata rows are available through the Local API.`
+          : "Tool metadata rows are missing from the Local API setup state.",
+      },
+      {
+        action: "Create baseline settings records",
+        id: "starter-platform-settings",
+        label: "Starter Platform Settings",
+        status: "SKIP",
+        message: "No active platform settings table exists yet; Site Setup owns this future bootstrap area.",
+      },
+      {
+        action: "Prepare support category setup",
+        id: "support-categories",
+        label: "Support Categories",
+        status: "SKIP",
+        message: "No active support category table exists yet; Site Setup owns this future bootstrap area.",
+      },
+    ];
+    const statusCounts = areas.reduce((counts, area) => {
+      counts[area.status] = (counts[area.status] || 0) + 1;
+      return counts;
+    }, {});
+    const status = statusCounts.FAIL ? "FAIL" : (statusCounts.WARN || statusCounts.SKIP ? "WARN" : "PASS");
+    return {
+      areas,
+      message: `Site Setup status checked ${areas.length} setup areas.`,
+      ownership: "Admin -> Site Setup",
+      provider: this.providerContract().activeProviders,
+      status,
+      statusCounts,
+    };
+  }
+
   guestSeedPackages() {
     const packages = readDocsBuildGuestSeedPackages();
     return {
@@ -1087,6 +1217,7 @@ class LocalDevDataSource {
   }
 
   setMode(modeId) {
+    this.assertLocalRuntimeProviders("Selecting a local session mode");
     const nextMode = MOCK_DB_SESSION_MODES.find((mode) => mode.id === modeId);
     if (!nextMode) {
       throw new Error(`Unknown local login environment: ${modeId || "missing"}.`);
@@ -1101,7 +1232,7 @@ class LocalDevDataSource {
   }
 
   setUser(userKey) {
-    this.assertConfiguredAdapter("Selecting a session user");
+    this.assertLocalRuntimeProviders("Selecting a session user");
     this.sessionUserKey = String(userKey || "");
     this.sharedOptions.sessionMode = this.sessionModeId;
     this.sharedOptions.sessionUserKey = this.sessionUserKey;
@@ -1109,6 +1240,7 @@ class LocalDevDataSource {
   }
 
   clearSessionUser() {
+    this.assertLocalRuntimeProviders("Clearing a session user");
     this.sessionUserKey = "";
     this.sharedOptions.sessionMode = this.sessionModeId;
     this.sharedOptions.sessionUserKey = this.sessionUserKey;
@@ -1116,14 +1248,17 @@ class LocalDevDataSource {
   }
 
   currentSession() {
-    return sessionUserFromKey(this.standaloneTables, this.sessionUserKey, this.sessionModeId);
+    this.assertLocalDatabaseProvider("Reading current session");
+    return this.localAuthSession("Reading current session");
   }
 
   sessionModes() {
+    this.assertLocalRuntimeProviders("Reading session modes");
     return clone(MOCK_DB_SESSION_MODES);
   }
 
   sessionUsers() {
+    this.assertLocalRuntimeProviders("Reading session users");
     if (this.sessionModeId !== LOCAL_DB_MODE_ID) {
       return [sessionUserFromKey(this.standaloneTables, "", this.sessionModeId)];
     }
@@ -1837,6 +1972,17 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "admin" && parts[2] === "setup" && request.method === "POST" && parts[3] === "reseed") {
         ok(response, dataSource.adminReseed());
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "setup" && request.method === "GET" && parts[3] === "status") {
+        ok(response, dataSource.adminSetupStatus());
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "setup" && request.method === "POST" && parts[3] === "identity") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.adminInitializeIdentity(body));
         return true;
       }
 

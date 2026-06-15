@@ -1,12 +1,17 @@
-# git status --short
-M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
-?? docs_build/dev/reports/pr129-local-db-migration-audit.md
-
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/pr129-local-db-migration-audit.md
-
-# git diff --stat
-docs_build/dev/reports/codex_changed_files.txt |   20 +-
- docs_build/dev/reports/codex_review.diff       | 1001 +++++-------------------
- 2 files changed, 215 insertions(+), 806 deletions(-)
+.env.example
+admin/site-setup.html
+assets/theme-v2/js/admin-setup-actions.js
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/pr130-provider-failure-contract.md
+docs_build/dev/reports/pr131-supabase-dev-activation-runtime.md
+docs_build/dev/reports/pr132-supabase-users-roles-migration.md
+docs_build/dev/reports/pr133-site-setup-productionization.md
+docs_build/dev/reports/pr134-db-migration-finish-line-audit.md
+src/dev-runtime/auth/provider-contract-stubs.mjs
+src/dev-runtime/server/local-api-router.mjs
+src/engine/api/admin-setup-api-client.js
+tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+tests/playwright/tools/LoginSessionMode.spec.mjs

@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { MOCK_DB_KEYS } from "../persistence/mock-db-store.js";
 
 export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "getCurrentUser",
@@ -14,6 +15,7 @@ export const POSTGRES_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "getUsers",
   "getRoles",
   "getUserRoles",
+  "initializeIdentity",
   "runSiteSetup",
   "getDbViewerSnapshot",
 ]);
@@ -44,6 +46,12 @@ const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
 ]);
 const SUPABASE_POSTGRES_TABLES = Object.freeze(["users", "roles", "user_roles"]);
 const RUNTIME_ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
+const DEV_STATIC_USER_KEYS = Object.freeze([
+  MOCK_DB_KEYS.users.user1,
+  MOCK_DB_KEYS.users.user2,
+  MOCK_DB_KEYS.users.user3,
+  MOCK_DB_KEYS.users.admin,
+]);
 
 export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
   browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS,
@@ -53,6 +61,17 @@ export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
 
 const SUPPORTED_AUTH_PROVIDERS = Object.freeze([LOCAL_AUTH_PROVIDER_ID, SUPABASE_AUTH_PROVIDER_ID]);
 const SUPPORTED_DATABASE_PROVIDERS = Object.freeze([LOCAL_DATABASE_PROVIDER_ID, SUPABASE_POSTGRES_PROVIDER_ID]);
+
+export const PROVIDER_SELECTION_CONTROLS = Object.freeze({
+  auth: Object.freeze({
+    environmentVariable: "GAMEFOUNDRY_AUTH_PROVIDER",
+    supportedProviders: SUPPORTED_AUTH_PROVIDERS,
+  }),
+  database: Object.freeze({
+    environmentVariable: "GAMEFOUNDRY_DB_PROVIDER",
+    supportedProviders: SUPPORTED_DATABASE_PROVIDERS,
+  }),
+});
 
 function envValue(env, key) {
   return String(env?.[key] || "").trim();
@@ -67,7 +86,7 @@ function requestedProvider(env, key, fallback, supportedValues) {
   const supported = supportedValues.includes(requested);
   return {
     diagnostic: supported ? "" : `${key}=${requested} is not a supported provider. Use ${supportedValues.join(" or ")}.`,
-    id: supported ? requested : fallback,
+    id: requested,
     requested,
     supported,
   };
@@ -109,13 +128,13 @@ function authHeaders(env, accessToken = "") {
   return headers;
 }
 
-function postgresHeaders(env) {
+function postgresHeaders(env, prefer = "return=representation") {
   const serviceRoleKey = supabaseServiceRoleKey(env);
   return {
     apikey: serviceRoleKey,
     authorization: `Bearer ${serviceRoleKey}`,
     "content-type": "application/json",
-    prefer: "return=representation",
+    prefer,
   };
 }
 
@@ -125,6 +144,27 @@ function requireString(value, label) {
     throw new Error(`Supabase Auth ${label} is required.`);
   }
   return normalized;
+}
+
+function requireIdentityString(value, label) {
+  const normalized = String(value || "").trim();
+  if (!normalized) {
+    throw new Error(`Supabase Postgres identity ${label} is required.`);
+  }
+  return normalized;
+}
+
+function optionalString(value) {
+  return String(value || "").trim();
+}
+
+function normalizeAuditFields(source, actorKey, timestamp) {
+  return {
+    createdAt: optionalString(source.createdAt) || timestamp,
+    updatedAt: optionalString(source.updatedAt) || timestamp,
+    createdBy: optionalString(source.createdBy) || actorKey,
+    updatedBy: optionalString(source.updatedBy) || actorKey,
+  };
 }
 
 function requireTableName(tableName) {
@@ -173,6 +213,26 @@ function configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing) {
       ? [LOCAL_DATABASE_PROVIDER_ID, SUPABASE_POSTGRES_PROVIDER_ID]
       : [LOCAL_DATABASE_PROVIDER_ID],
   };
+}
+
+function providerFailure({ configDiagnostic, missingConfig, providerId, selection, supabaseProviderId }) {
+  if (!selection.supported) {
+    return {
+      providerId: selection.requested,
+      reason: "unsupported-provider",
+      remediation: selection.diagnostic,
+      selectedProviderAuthoritative: true,
+    };
+  }
+  if (providerId === supabaseProviderId && missingConfig) {
+    return {
+      providerId,
+      reason: "missing-configuration",
+      remediation: configDiagnostic,
+      selectedProviderAuthoritative: true,
+    };
+  }
+  return null;
 }
 
 export function createSupabasePostgresReadiness(env = process.env) {
@@ -331,6 +391,47 @@ export class SupabasePostgresProviderAdapter {
     return this.keyFactory();
   }
 
+  createIdentityKey(sourceKey = "") {
+    const key = optionalString(sourceKey);
+    return key || this.createRecordKey();
+  }
+
+  normalizeUserRecord(user = {}, actorKey, timestamp) {
+    const key = this.createIdentityKey(user.key);
+    return {
+      key,
+      displayName: optionalString(user.displayName) || "Creator",
+      email: optionalString(user.email) || null,
+      authProvider: optionalString(user.authProvider) || null,
+      authProviderUserId: optionalString(user.authProviderUserId) || null,
+      isActive: user.isActive !== false,
+      ...normalizeAuditFields(user, actorKey, timestamp),
+    };
+  }
+
+  normalizeRoleRecord(role = {}, actorKey, timestamp) {
+    const roleSlug = requireIdentityString(role.roleSlug || role.slug, "roleSlug");
+    return {
+      key: this.createIdentityKey(role.key),
+      roleSlug,
+      name: optionalString(role.name) || roleSlug,
+      description: optionalString(role.description),
+      isSystemRole: role.isSystemRole === true,
+      isActive: role.isActive !== false,
+      ...normalizeAuditFields(role, actorKey, timestamp),
+    };
+  }
+
+  normalizeUserRoleRecord(userRole = {}, roleKeyBySlug, actorKey, timestamp) {
+    const roleKey = optionalString(userRole.roleKey) || roleKeyBySlug.get(optionalString(userRole.roleSlug || userRole.slug));
+    return {
+      key: this.createIdentityKey(userRole.key),
+      userKey: requireIdentityString(userRole.userKey, "userKey"),
+      roleKey: requireIdentityString(roleKey, "roleKey"),
+      ...normalizeAuditFields(userRole, actorKey, timestamp),
+    };
+  }
+
   connect() {
     this.assertConfigured();
     return {
@@ -340,12 +441,12 @@ export class SupabasePostgresProviderAdapter {
     };
   }
 
-  async requestTable(tableName, { body = null, method = "GET", query = "select=*" } = {}) {
+  async requestTable(tableName, { body = null, method = "GET", prefer = "return=representation", query = "select=*" } = {}) {
     this.assertConfigured();
     const table = requireTableName(tableName);
     const response = await this.fetchImpl(`${supabaseUrl(this.env)}/rest/v1/${encodeURIComponent(table)}?${query}`, {
       body: body === null ? undefined : JSON.stringify(body),
-      headers: postgresHeaders(this.env),
+      headers: postgresHeaders(this.env, prefer),
       method,
     });
     const payload = await readResponseJson(response);
@@ -354,6 +455,18 @@ export class SupabasePostgresProviderAdapter {
       throw new Error(`Supabase Postgres ${table} request failed with HTTP ${response.status}: ${message}`);
     }
     return payload;
+  }
+
+  upsertTable(tableName, rows) {
+    if (!rows.length) {
+      return [];
+    }
+    return this.requestTable(tableName, {
+      body: rows,
+      method: "POST",
+      prefer: "resolution=merge-duplicates,return=representation",
+      query: "on_conflict=key",
+    });
   }
 
   getUsers() {
@@ -366,6 +479,51 @@ export class SupabasePostgresProviderAdapter {
 
   getUserRoles() {
     return this.requestTable("user_roles");
+  }
+
+  async initializeIdentity({ actorKey = "", roles = [], userRoles = [], users = [] } = {}) {
+    this.assertConfigured();
+    const timestamp = new Date().toISOString();
+    const normalizedUsers = users.map((user) => this.normalizeUserRecord(user, optionalString(actorKey) || optionalString(user.key), timestamp));
+    const setupActorKey = optionalString(actorKey) || optionalString(normalizedUsers[0]?.key);
+    if (!setupActorKey) {
+      throw new Error("Supabase identity initialization requires actorKey or at least one user row.");
+    }
+    const finalizedUsers = normalizedUsers.map((user) => ({
+      ...user,
+      createdBy: optionalString(user.createdBy) || setupActorKey,
+      updatedBy: optionalString(user.updatedBy) || setupActorKey,
+    }));
+    const normalizedRoles = roles.map((role) => this.normalizeRoleRecord(role, setupActorKey, timestamp));
+    const roleKeyBySlug = new Map(normalizedRoles.map((role) => [role.roleSlug, role.key]));
+    const normalizedUserRoles = userRoles.map((userRole) => this.normalizeUserRoleRecord(userRole, roleKeyBySlug, setupActorKey, timestamp));
+
+    const writtenUsers = await this.upsertTable("users", finalizedUsers);
+    const writtenRoles = await this.upsertTable("roles", normalizedRoles);
+    const writtenUserRoles = await this.upsertTable("user_roles", normalizedUserRoles);
+
+    return {
+      boundary: PROVIDER_DATA_BOUNDARY_RULE,
+      identityKeyModel: {
+        roleKeyField: "roles.key",
+        userKeyField: "users.key",
+        userRoleRoleKeyField: "user_roles.roleKey",
+        userRoleUserKeyField: "user_roles.userKey",
+      },
+      initialized: {
+        roles: normalizedRoles.length,
+        user_roles: normalizedUserRoles.length,
+        users: finalizedUsers.length,
+      },
+      providerId: this.providerId,
+      serverApiOwnsKeyGeneration: true,
+      staticDevUserUlidExceptionUsed: finalizedUsers.some((user) => DEV_STATIC_USER_KEYS.includes(user.key)),
+      written: {
+        roles: Array.isArray(writtenRoles) ? writtenRoles.length : normalizedRoles.length,
+        user_roles: Array.isArray(writtenUserRoles) ? writtenUserRoles.length : normalizedUserRoles.length,
+        users: Array.isArray(writtenUsers) ? writtenUsers.length : finalizedUsers.length,
+      },
+    };
   }
 
   runSiteSetup() {
@@ -416,6 +574,23 @@ export function createProviderContractSnapshot(env = process.env) {
   const missingConfigWarnings = futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing);
   const supabaseAuthReady = supabaseAuthMissing.length === 0;
   const supabasePostgresReady = supabasePostgresReadiness.configured;
+  const providerFailures = [
+    providerFailure({
+      configDiagnostic: supabaseAuthDiagnostic(env),
+      missingConfig: supabaseAuthMissing.length > 0,
+      providerId: auth.id,
+      selection: auth,
+      supabaseProviderId: SUPABASE_AUTH_PROVIDER_ID,
+    }),
+    providerFailure({
+      configDiagnostic: supabasePostgresDiagnostic(env),
+      missingConfig: supabasePostgresMissing.length > 0,
+      providerId: database.id,
+      selection: database,
+      supabaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+    }),
+  ].filter(Boolean);
+  const selectedProvidersReady = providerFailures.length === 0;
 
   if (supabaseAuthSelected) {
     diagnostics.push(supabaseAuthDiagnostic(env));
@@ -426,31 +601,50 @@ export function createProviderContractSnapshot(env = process.env) {
 
   return {
     activeProviders: {
-      authProviderId: LOCAL_AUTH_PROVIDER_ID,
-      databaseProviderId: LOCAL_DATABASE_PROVIDER_ID,
-      diagnostic: "Local DB provider remains active by default. Supabase providers require explicit provider selectors and complete configuration.",
+      authProviderId: auth.id,
+      databaseProviderId: database.id,
+      diagnostic: "Selected providers are authoritative. Missing or unsupported selected providers fail visibly; no automatic Local DB fallback is used.",
+      status: selectedProvidersReady ? "ready" : "failed",
     },
     activationReadiness: {
       blockers: [
         ...supabaseAuthMissing.map((key) => `Add browser-safe ${key} before selecting Supabase Auth.`),
         ...supabasePostgresReadiness.blockers,
       ],
-      localDbActiveByDefault: true,
+      localDbSelected: auth.id === LOCAL_AUTH_PROVIDER_ID && database.id === LOCAL_DATABASE_PROVIDER_ID,
       readyBeforeActivation: supabaseAuthReady && supabasePostgresReady,
-      rollback: "Set GAMEFOUNDRY_AUTH_PROVIDER=local-db and GAMEFOUNDRY_DB_PROVIDER=local-db.",
+      selectedProvidersReady,
       siteSetupReady: supabasePostgresReadiness.siteSetupReady,
       supabaseAuthReady,
       supabasePostgresReady,
     },
     boundary: PROVIDER_DATA_BOUNDARY_RULE,
     diagnostics,
+    failureContract: {
+      automaticFallbackAllowed: false,
+      providerChainingAllowed: false,
+      selectedProviderAuthoritative: true,
+    },
     providerDiagnostics: {
       activeProvider: {
-        authProviderId: LOCAL_AUTH_PROVIDER_ID,
-        databaseProviderId: LOCAL_DATABASE_PROVIDER_ID,
+        authProviderId: auth.id,
+        databaseProviderId: database.id,
       },
       configuredProviders: configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing),
       missingConfigWarnings,
+      providerFailures,
+      selectionControls: {
+        auth: {
+          environmentVariable: PROVIDER_SELECTION_CONTROLS.auth.environmentVariable,
+          selectedProviderId: auth.id,
+          supportedProviders: PROVIDER_SELECTION_CONTROLS.auth.supportedProviders.slice(),
+        },
+        database: {
+          environmentVariable: PROVIDER_SELECTION_CONTROLS.database.environmentVariable,
+          selectedProviderId: database.id,
+          supportedProviders: PROVIDER_SELECTION_CONTROLS.database.supportedProviders.slice(),
+        },
+      },
       requiredEnvironmentVariables: {
         browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS.slice(),
         selectors: PROVIDER_ENVIRONMENT_VARIABLES.selectors.slice(),
@@ -462,6 +656,15 @@ export function createProviderContractSnapshot(env = process.env) {
     requestedProviders: {
       authProviderId: auth.requested,
       databaseProviderId: database.requested,
+    },
+    runtimeActivation: {
+      apiBoundary: PROVIDER_DATA_BOUNDARY_RULE,
+      browserReceivesServiceRoleSecrets: false,
+      localDbSelected: auth.id === LOCAL_AUTH_PROVIDER_ID && database.id === LOCAL_DATABASE_PROVIDER_ID,
+      selectedProvidersCanServeRuntime: selectedProvidersReady,
+      selectedProvidersFailed: !selectedProvidersReady,
+      supabaseAuthSelected,
+      supabasePostgresSelected,
     },
     supabaseAuth: {
       configured: supabaseAuthMissing.length === 0,
@@ -502,6 +705,13 @@ export function createProviderContractSnapshot(env = process.env) {
         dev: "Codex may execute DEV setup/migration only after a dedicated Supabase DEV PR.",
         prod: "User-controlled reviewed SQL/setup execution.",
         uat: "User-controlled reviewed SQL/setup execution.",
+      },
+      identityMigration: {
+        activeByDefault: false,
+        auditFields: ["createdAt", "updatedAt", "createdBy", "updatedBy"],
+        serverApiOwnsKeyGeneration: true,
+        staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ admin only.",
+        tables: SUPABASE_POSTGRES_TABLES.slice(),
       },
       migrationSequence: [
         "Supabase Auth",

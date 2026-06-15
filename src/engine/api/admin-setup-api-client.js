@@ -13,3 +13,7 @@ function unwrap(response, context) {
 export function reseedAdminSetup() {
   return unwrap(safeRequestServerApi("/admin/setup/reseed", { method: "POST" }), "Admin setup reseed");
 }
+
+export function readAdminSetupStatus() {
+  return unwrap(safeRequestServerApi("/admin/setup/status"), "Admin setup status");
+}

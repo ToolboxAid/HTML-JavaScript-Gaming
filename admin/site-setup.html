@@ -46,6 +46,7 @@
                                     <label>Setup Area <select disabled><option>Default roles</option><option>First admin</option><option>Tool metadata bootstrap</option><option>Starter platform settings</option><option>Ticket categories</option></select></label>
                                     <label>Review Mode <select disabled><option>Foundation only</option><option>Local DB dry run</option><option>Admin approval</option></select></label>
                                     <button class="btn btn--compact" type="button" data-admin-setup-reseed>Reseed Local DB</button>
+                                    <button class="btn btn--compact" type="button" data-admin-setup-refresh>Refresh Setup Status</button>
                                     <p class="status" role="status" data-admin-setup-status>SKIP: No setup action has been run.</p>
                                 </div>
                             </details>
@@ -69,12 +70,12 @@
                                         <th scope="col">Guardrail</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr><td>Default Roles</td><td>Create approved role records</td><td>Foundation</td><td>Local DB contract required</td></tr>
-                                    <tr><td>First Admin</td><td>Assign the initial admin user</td><td>Foundation</td><td>No hidden default user</td></tr>
-                                    <tr><td>Tool Metadata Bootstrap</td><td>Seed active tool metadata</td><td>Foundation</td><td>Shared metadata source required</td></tr>
-                                    <tr><td>Starter Platform Settings</td><td>Create baseline settings records</td><td>Foundation</td><td>Visible diagnostics required</td></tr>
-                                    <tr><td>Ticket/Support Categories</td><td>Prepare support category setup</td><td>Foundation</td><td>Admin approval required</td></tr>
+                                <tbody data-admin-setup-status-rows>
+                                    <tr><td>Default Roles</td><td>Create approved role records</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
+                                    <tr><td>First Admin</td><td>Assign the initial admin user</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
+                                    <tr><td>Tool Metadata Bootstrap</td><td>Seed active tool metadata</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
+                                    <tr><td>Starter Platform Settings</td><td>Create baseline settings records</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
+                                    <tr><td>Support Categories</td><td>Prepare support category setup</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
                                 </tbody>
                             </table>
                         </div>

@@ -445,6 +445,26 @@ test("Admin Site Setup reseed uses the admin-owned server setup API", async ({ p
   }
 });
 
+test("Admin Site Setup status reads server-owned setup diagnostics", async ({ page }) => {
+  const failures = await openRepoPage(page, "/admin/site-setup.html", {
+    sessionUserKey: MOCK_DB_KEYS.users.admin,
+  });
+
+  try {
+    await page.locator("[data-admin-setup-refresh]").click();
+    await expect(page.locator("[data-admin-setup-status]").first()).toHaveText("WARN: Site Setup status checked 5 setup areas.");
+    await expect(page.locator("[data-admin-setup-status-rows] tr")).toHaveCount(5);
+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("First Admin");
+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("Tool Metadata Bootstrap");
+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("PASS");
+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("WARN");
+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("SKIP");
+    await expectNoPageFailures(failures);
+  } finally {
+    await closeWithCoverage(page, failures);
+  }
+});
+
 test("Admin Site Setup reseed shows a visible failure when the setup API fails", async ({ page }) => {
   const failures = await openRepoPage(page, "/admin/site-setup.html", {
     sessionUserKey: MOCK_DB_KEYS.users.admin,
