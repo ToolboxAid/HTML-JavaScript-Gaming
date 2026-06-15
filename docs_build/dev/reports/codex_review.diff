@@ -1,1543 +1,747 @@
-diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
-index 674ac8299..d407c180c 100644
---- a/docs_build/dev/reports/dependency_gating_report.md
-+++ b/docs_build/dev/reports/dependency_gating_report.md
-@@ -1,6 +1,6 @@
- # Dependency Gating Report
-
--Generated: 2026-06-15T18:46:25.863Z
-+Generated: 2026-06-15T19:24:56.323Z
- Status: PASS
-
- ## Gate Order
-diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-index b19d13720..280b3240d 100644
---- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
-+++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-@@ -1,22 +1,22 @@
- # Dependency Hydration Reuse Report
-
--Generated: 2026-06-15T18:46:25.864Z
-+Generated: 2026-06-15T19:24:56.323Z
- Status: PASS
-
- ## Summary
-
--Reused dependency hydration: 1
--Invalidated dependency hydration: 0
-+Reused dependency hydration: 0
-+Invalidated dependency hydration: 1
- Generated dependency hydration: 0
--Prevented dependency graph hydration: 1
--Prevented helper resolution passes: 4
-+Prevented dependency graph hydration: 0
-+Prevented helper resolution passes: 0
- Prevented fixture ownership traversal: 0
-
- ## Hydration Decisions
-
- | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | d5237340d5ed2aab | Dependency hydration reused from validated warm-start state. |
-+| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 41fe44a6067dd507 | Dependency hydration was refreshed after warm-start invalidation. |
-
- ## Safeguards
-
-diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
-index 6cf95306f..5298b2f33 100644
---- a/docs_build/dev/reports/execution_graph_reuse_report.md
-+++ b/docs_build/dev/reports/execution_graph_reuse_report.md
-@@ -1,22 +1,22 @@
- # Execution Graph Reuse Report
-
--Generated: 2026-06-15T18:46:25.864Z
-+Generated: 2026-06-15T19:24:56.324Z
- Status: PASS
-
- ## Summary
-
--Reused execution graphs: 1
--Prevented graph rebuilds: 1
--Prevented redundant dependency traversal: 1
--Prevented fixture/helper graph assembly: 4
--Prevented manifest traversal: 1
--Prevented targeted scheduling work: 1
-+Reused execution graphs: 0
-+Prevented graph rebuilds: 0
-+Prevented redundant dependency traversal: 0
-+Prevented fixture/helper graph assembly: 0
-+Prevented manifest traversal: 0
-+Prevented targeted scheduling work: 0
-
- ## Execution Graph Decisions
-
- | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | REUSED | 127250115636772e | Lane snapshot is part of the selected targeted execution graph. |
-+| workspace-contract | INVALIDATED | INVALIDATED | a4b3166da7138622 | Lane snapshot is part of the selected targeted execution graph. |
-
- ## Safeguards
-
-diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
-index 1984977f0..dbf87e883 100644
---- a/docs_build/dev/reports/failure_fingerprint_report.md
-+++ b/docs_build/dev/reports/failure_fingerprint_report.md
-@@ -1,6 +1,6 @@
- # Failure Fingerprint Report
-
--Generated: 2026-06-15T18:47:18.901Z
-+Generated: 2026-06-15T19:25:47.113Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-index 410e93f67..a901014b1 100644
---- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
-+++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-@@ -1,6 +1,6 @@
- # Filesystem Scan Reduction Report
-
--Generated: 2026-06-15T18:46:25.860Z
-+Generated: 2026-06-15T19:24:56.300Z
- Status: PASS
-
- ## Scan Enforcement
-diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
-index cbb5b7802..74b07f63b 100644
---- a/docs_build/dev/reports/incremental_validation_report.md
-+++ b/docs_build/dev/reports/incremental_validation_report.md
-@@ -1,24 +1,24 @@
- # Incremental Validation Report
-
--Generated: 2026-06-15T18:46:25.865Z
-+Generated: 2026-06-15T19:24:56.325Z
- Status: PASS
-
- ## Reuse Summary
-
--Reused manifests: 1
--Invalidated manifests: 0
-+Reused manifests: 0
-+Invalidated manifests: 1
- Generated manifests: 0
- Skipped manifests: 0
--Prevented lane regeneration: 1
--Prevented discovery scans: 1
--Prevented helper resolution passes: 4
-+Prevented lane regeneration: 0
-+Prevented discovery scans: 0
-+Prevented helper resolution passes: 0
- Prevented fixture resolution passes: 0
-
- ## Incremental Decisions
-
- | Lane | Decision | Invalidated By | Runtime Savings Observation |
- | --- | --- | --- | --- |
--| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
-+| workspace-contract | INVALIDATED | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
-
- ## Invalidation Rules
-
-diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
-index 4b52922c4..21519e0c7 100644
---- a/docs_build/dev/reports/lane_compilation_report.md
-+++ b/docs_build/dev/reports/lane_compilation_report.md
-@@ -1,6 +1,6 @@
- # Lane Compilation Report
-
--Generated: 2026-06-15T18:46:25.863Z
-+Generated: 2026-06-15T19:24:56.322Z
- Status: PASS
-
- ## Lane Graph
-diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
-index b56ab7fc5..9bda65e6b 100644
---- a/docs_build/dev/reports/lane_deduplication_report.md
-+++ b/docs_build/dev/reports/lane_deduplication_report.md
-@@ -1,6 +1,6 @@
- # Lane Deduplication Report
-
--Generated: 2026-06-15T18:46:25.864Z
-+Generated: 2026-06-15T19:24:56.323Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
-index 41a6402fa..c15725dc9 100644
---- a/docs_build/dev/reports/lane_input_validation_report.md
-+++ b/docs_build/dev/reports/lane_input_validation_report.md
-@@ -1,6 +1,6 @@
- # Lane Input Validation Report
-
--Generated: 2026-06-15T18:46:25.865Z
-+Generated: 2026-06-15T19:24:56.325Z
- Status: PASS
-
- ## Input Files
-diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-index 3269e723a..6ac7f4b2c 100644
---- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-@@ -1,12 +1,12 @@
- {
-   "commandsHash": "39e16c9d480a1e51",
-   "dependencies": [],
--  "dependencyGraphHash": "478ac7df58f44251",
-+  "dependencyGraphHash": "ca72ac519bd2ecca",
-   "fileHashes": {
-     "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
-     "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
-     "src/dev-runtime/persistence/mock-db-store.js": "fac0d9d7d550522c",
--    "src/dev-runtime/server/local-api-router.mjs": "bacf56054feae20c",
-+    "src/dev-runtime/server/local-api-router.mjs": "a782f1f9338c146a",
-     "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
-     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-     "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-@@ -30,15 +30,15 @@
-     "tests/helpers/playwrightV8CoverageReporter.mjs",
-     "tests/helpers/workspaceV2CoverageReporter.mjs"
-   ],
--  "inputHash": "4466d3a37260601e",
-+  "inputHash": "f17446808b0d6869",
-   "lane": "workspace-contract",
-   "laneDefinitionHash": "fde48767b345621c",
--  "manifestHash": "170a5f12570e6a93",
-+  "manifestHash": "81fa5ddb22824738",
-   "ownership": "tools",
-   "tests": [
-     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-   ],
-   "version": 1,
--  "generatedAt": "2026-06-15T18:39:55.558Z",
-+  "generatedAt": "2026-06-15T19:24:55.387Z",
-   "source": "generated"
- }
-diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
-index 0d463bf25..8496c7892 100644
---- a/docs_build/dev/reports/lane_runtime_optimization_report.md
-+++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
-@@ -1,16 +1,16 @@
- # Lane Runtime Optimization Report
-
--Generated: 2026-06-15T18:46:25.864Z
-+Generated: 2026-06-15T19:24:56.323Z
- Status: PASS
-
- ## Runtime Cost Summary
-
- Reused runtime sessions: 0
--Reused lane snapshots: 1
--Reused warm-start lanes: 1
--Reused dependency hydration: 1
--Prevented graph rebuilds: 1
--Prevented redundant initialization: 1
-+Reused lane snapshots: 0
-+Reused warm-start lanes: 0
-+Reused dependency hydration: 0
-+Prevented graph rebuilds: 0
-+Prevented redundant initialization: 0
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
- Baseline Playwright/browser launches: 1
-@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
-
- | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-
- ## Runtime Savings Observations
-
-diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
-index dbb2b62ea..98ae60fe9 100644
---- a/docs_build/dev/reports/lane_snapshot_report.md
-+++ b/docs_build/dev/reports/lane_snapshot_report.md
-@@ -1,23 +1,23 @@
- # Lane Snapshot Report
-
--Generated: 2026-06-15T18:46:25.864Z
-+Generated: 2026-06-15T19:24:56.324Z
- Status: PASS
- Snapshot directory: docs_build/dev/reports/lane_snapshots
-
- ## Summary
-
--Reused lane snapshots: 1
--Invalidated snapshots: 0
-+Reused lane snapshots: 0
-+Invalidated snapshots: 1
- Generated snapshots: 0
- Skipped snapshots: 0
--Prevented graph rebuilds: 1
--Prevented manifest traversal: 1
-+Prevented graph rebuilds: 0
-+Prevented manifest traversal: 0
-
- ## Snapshot Decisions
-
- | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 170a5f12570e6a93 | 478ac7df58f44251 | 3d02a6f75a00133f | 6c4fac7630b0b6f3 | c99c4343771f1683 | 127250115636772e | 092cb7a23bbbda67 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 81fa5ddb22824738 | ca72ac519bd2ecca | 3d02a6f75a00133f | 6c4fac7630b0b6f3 | c99c4343771f1683 | a4b3166da7138622 | b0f9be98d819cc1f | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
-
- ## Snapshot Validation Findings
-
-diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-index 411ee327f..815ccadbd 100644
---- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-@@ -3,12 +3,12 @@
-   "dependencyGateStatus": "PASS",
-   "dependencyGraph": {
-     "dependencies": [],
--    "dependencyGraphHash": "478ac7df58f44251",
-+    "dependencyGraphHash": "ca72ac519bd2ecca",
-     "importHashes": {
-       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
-       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
-       "src/dev-runtime/persistence/mock-db-store.js": "fac0d9d7d550522c",
--      "src/dev-runtime/server/local-api-router.mjs": "bacf56054feae20c",
-+      "src/dev-runtime/server/local-api-router.mjs": "a782f1f9338c146a",
-       "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
-       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-@@ -25,8 +25,8 @@
-       "tests/helpers/workspaceV2CoverageReporter.mjs"
-     ]
-   },
--  "dependencyGraphHash": "478ac7df58f44251",
--  "executionGraphHash": "127250115636772e",
-+  "dependencyGraphHash": "ca72ac519bd2ecca",
-+  "executionGraphHash": "a4b3166da7138622",
-   "fixtureGraph": {
-     "fixtureHashes": {},
-     "fixtures": []
-@@ -47,7 +47,7 @@
-     ]
-   },
-   "helperGraphHash": "3d02a6f75a00133f",
--  "inputHash": "4466d3a37260601e",
-+  "inputHash": "f17446808b0d6869",
-   "lane": "workspace-contract",
-   "laneCompilationStatus": "PASS",
-   "laneDefinitionHash": "fde48767b345621c",
-@@ -56,7 +56,7 @@
-       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
-       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
-       "src/dev-runtime/persistence/mock-db-store.js": "fac0d9d7d550522c",
--      "src/dev-runtime/server/local-api-router.mjs": "bacf56054feae20c",
-+      "src/dev-runtime/server/local-api-router.mjs": "a782f1f9338c146a",
-       "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
-       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-@@ -80,14 +80,14 @@
-       "tests/helpers/playwrightV8CoverageReporter.mjs",
-       "tests/helpers/workspaceV2CoverageReporter.mjs"
-     ],
--    "manifestHash": "170a5f12570e6a93",
-+    "manifestHash": "81fa5ddb22824738",
-     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-     "source": "generated",
-     "tests": [
-       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
-     ]
-   },
--  "manifestHash": "170a5f12570e6a93",
-+  "manifestHash": "81fa5ddb22824738",
-   "ownership": "tools",
-   "runtimeConfiguration": {
-     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
-@@ -114,8 +114,8 @@
-     "requiresSamplesFlag": false
-   },
-   "runtimeConfigurationHash": "c99c4343771f1683",
--  "snapshotHash": "092cb7a23bbbda67",
-+  "snapshotHash": "b0f9be98d819cc1f",
-   "version": 1,
--  "warmStartHash": "5ae4516d2f8a546a",
--  "generatedAt": "2026-06-15T18:39:56.473Z"
-+  "warmStartHash": "43094feedb9b3da3",
-+  "generatedAt": "2026-06-15T19:24:56.317Z"
- }
-diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
-index 94a3fb771..ce20aefe6 100644
---- a/docs_build/dev/reports/lane_warm_start_report.md
-+++ b/docs_build/dev/reports/lane_warm_start_report.md
-@@ -1,23 +1,23 @@
- # Lane Warm-Start Report
-
--Generated: 2026-06-15T18:46:25.864Z
-+Generated: 2026-06-15T19:24:56.323Z
- Status: PASS
- Warm-start directory: docs_build/dev/reports/lane_warm_starts
-
- ## Summary
-
--Reused warm-start lanes: 1
--Invalidated warm-start states: 0
-+Reused warm-start lanes: 0
-+Invalidated warm-start states: 1
- Generated warm-start states: 0
- Skipped warm-start states: 0
--Prevented redundant initialization: 1
--Prevented lane graph assembly: 1
-+Prevented redundant initialization: 0
-+Prevented lane graph assembly: 0
-
- ## Warm-Start Decisions
-
- | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 170a5f12570e6a93 | 5ae4516d2f8a546a | d5237340d5ed2aab | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 81fa5ddb22824738 | 43094feedb9b3da3 | 41fe44a6067dd507 | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
-
- ## Fast-Fail Safeguards
-
-diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-index 20cc05a99..233e291b0 100644
---- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-+++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-@@ -1,8 +1,8 @@
- {
-   "commandsHash": "39e16c9d480a1e51",
--  "dependencyGraphHash": "478ac7df58f44251",
-+  "dependencyGraphHash": "ca72ac519bd2ecca",
-   "dependencyHydration": {
--    "dependencyHydrationHash": "d5237340d5ed2aab",
-+    "dependencyHydrationHash": "41fe44a6067dd507",
-     "fixtureHashes": {},
-     "fixtures": [],
-     "helperHashes": {
-@@ -21,7 +21,7 @@
-       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
-       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
-       "src/dev-runtime/persistence/mock-db-store.js": "fac0d9d7d550522c",
--      "src/dev-runtime/server/local-api-router.mjs": "bacf56054feae20c",
-+      "src/dev-runtime/server/local-api-router.mjs": "a782f1f9338c146a",
-       "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
-       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
-       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
-@@ -38,16 +38,16 @@
-       "tests/helpers/workspaceV2CoverageReporter.mjs"
-     ]
-   },
--  "dependencyHydrationHash": "d5237340d5ed2aab",
--  "inputHash": "4466d3a37260601e",
-+  "dependencyHydrationHash": "41fe44a6067dd507",
-+  "inputHash": "f17446808b0d6869",
-   "lane": "workspace-contract",
-   "laneConfigHash": "3d8db02cddc33911",
-   "laneDefinitionHash": "fde48767b345621c",
--  "manifestHash": "170a5f12570e6a93",
-+  "manifestHash": "81fa5ddb22824738",
-   "ownership": "tools",
--  "warmStartHash": "5ae4516d2f8a546a",
-+  "warmStartHash": "43094feedb9b3da3",
-   "version": 1,
--  "generatedAt": "2026-06-15T18:39:55.565Z",
-+  "generatedAt": "2026-06-15T19:24:55.393Z",
-   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
-   "sourceManifest": "generated"
- }
-diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
-index 7cbd615d7..f6fd1f147 100644
---- a/docs_build/dev/reports/monolith_trigger_removal_report.md
-+++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
-@@ -1,6 +1,6 @@
- # Monolith Trigger Removal Report
-
--Generated: 2026-06-15T18:47:18.903Z
-+Generated: 2026-06-15T19:25:47.114Z
- Status: PASS
-
- ## Removed Broad Execution Triggers
-diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
-index 4a90bc384..935cf5429 100644
---- a/docs_build/dev/reports/persistent_lane_manifest_report.md
-+++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
-@@ -1,27 +1,27 @@
- # Persistent Lane Manifest Report
-
--Generated: 2026-06-15T18:46:25.865Z
-+Generated: 2026-06-15T19:24:56.324Z
- Status: PASS
- Manifest directory: docs_build/dev/reports/lane_manifests
-
- ## Summary
-
--Reused manifests: 1
--Invalidated manifests: 0
-+Reused manifests: 0
-+Invalidated manifests: 1
- Generated manifests: 0
--Prevented discovery scans: 1
-+Prevented discovery scans: 0
-
- ## Manifest Events
-
- | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 4466d3a37260601e | 170a5f12570e6a93 | Inputs unchanged; persisted lane manifest reused. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | f17446808b0d6869 | 81fa5ddb22824738 | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
-
- ## Persisted Manifest Files
-
- | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 478ac7df58f44251 | 170a5f12570e6a93 |
-+| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | ca72ac519bd2ecca | 81fa5ddb22824738 |
-
- ## Fast-Fail Enforcement
-
-diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-index 34fc0918c..0b02ab857 100644
---- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Ownership Report
-
--Generated: 2026-06-15T18:46:25.855Z
-+Generated: 2026-06-15T19:24:56.295Z
- Status: PASS
-
- ## Discovery-Time Ownership
-diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
-index b2e9393d8..3f8c387dc 100644
---- a/docs_build/dev/reports/playwright_discovery_scope_report.md
-+++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
-@@ -1,6 +1,6 @@
- # Playwright Discovery Scope Report
-
--Generated: 2026-06-15T18:46:25.858Z
-+Generated: 2026-06-15T19:24:56.298Z
- Status: PASS
- Scoped discovery: Yes
-
-diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
-index f92921d7a..1851b51a3 100644
---- a/docs_build/dev/reports/playwright_structure_audit.md
-+++ b/docs_build/dev/reports/playwright_structure_audit.md
-@@ -1,6 +1,6 @@
- # Playwright Structure Audit
-
--Generated: 2026-06-15T18:46:25.834Z
-+Generated: 2026-06-15T19:24:56.276Z
- Status: PASS
-
- ## Lane Directories
-diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
-index d1e1587e8..f7a4d5262 100644
---- a/docs_build/dev/reports/retry_suppression_report.md
-+++ b/docs_build/dev/reports/retry_suppression_report.md
-@@ -1,6 +1,6 @@
- # Retry Suppression Report
-
--Generated: 2026-06-15T18:47:18.902Z
-+Generated: 2026-06-15T19:25:47.113Z
- Status: PASS
-
- ## Summary
-diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
-index 6060454d5..58cd4f154 100644
---- a/docs_build/dev/reports/slow_path_pruning_report.md
-+++ b/docs_build/dev/reports/slow_path_pruning_report.md
-@@ -1,19 +1,19 @@
- # Slow Path Pruning Report
-
--Generated: 2026-06-15T18:47:18.903Z
-+Generated: 2026-06-15T19:25:47.114Z
- Status: PASS
- Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
-
- ## Before / After Runtime Observations
-
- PR_26146_038 measured lane elapsed time: 169.71s
--Current measured lane elapsed time: 53.00s
-+Current measured lane elapsed time: 50.75s
- PR_26146_038 actual browser launches: 4
- Current actual browser launches: 1
- Accidental no-argument browser launches prevented: 5
- Reduced Workspace lane nested launches: 1
--Reused dependency hydration: 1
--Reused snapshots: 1
-+Reused dependency hydration: 0
-+Reused snapshots: 0
- Validation cache hits: 18
-
- ## Slow Paths Optimized
-@@ -31,11 +31,11 @@ Validation cache hits: 18
- | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
- | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
- | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
--| current targeted run | workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
--| current targeted run | workspace-contract | 11.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
-+| current targeted run | workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
-+| current targeted run | workspace-contract | 10.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
- | current targeted run | workspace-contract | 10.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
--| current targeted run | workspace-contract | 8.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
--| current targeted run | workspace-contract | 2.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
-+| current targeted run | workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
-+| current targeted run | workspace-contract | 1.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
-
- ## Guardrails
-
-diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
-index 47e2085e8..5c7fc80a5 100644
---- a/docs_build/dev/reports/static_validation_report.md
-+++ b/docs_build/dev/reports/static_validation_report.md
-@@ -1,6 +1,6 @@
- # Static Validation Report
-
--Generated: 2026-06-15T18:46:25.858Z
-+Generated: 2026-06-15T19:24:56.315Z
- Status: PASS
- Static only: No
- Dry run: No
-@@ -22,13 +22,13 @@ Reason: No deterministic static validation failure was found.
- | invalid filename detection | PASS | Covered by Playwright structure audit. |
- | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
- | missing fixture detection | PASS | No missing fixture findings. |
--| targeted file manifests | PASS | workspace-contract:170a5f12570e6a93 |
--| persistent lane manifests | PASS | workspace-contract:REUSED |
--| lane warm-start reuse | PASS | workspace-contract:REUSED |
--| dependency hydration reuse | PASS | workspace-contract:REUSED |
-+| targeted file manifests | PASS | workspace-contract:81fa5ddb22824738 |
-+| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
-+| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
-+| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
- | lane input graph expansion | PASS | No inputs escaped manifest scope. |
- | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
--| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
-+| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
- | invalid lane target detection | PASS | No invalid lane target findings. |
- | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
- | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
-diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
-index 497eaa267..9b2afd299 100644
---- a/docs_build/dev/reports/targeted_file_manifest_report.md
-+++ b/docs_build/dev/reports/targeted_file_manifest_report.md
-@@ -1,19 +1,19 @@
- # Targeted File Manifest Report
-
--Generated: 2026-06-15T18:46:25.865Z
-+Generated: 2026-06-15T19:24:56.324Z
- Status: PASS
-
- ## Manifest-Generated Lane Inputs
-
- | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 478ac7df58f44251 | 170a5f12570e6a93 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-+| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | ca72ac519bd2ecca | 81fa5ddb22824738 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-
- ## Discovery Expansion Control
-
- Prevented discovery expansion: Yes
--Prevented redundant scans: 0
--Targeted file/helper reads: 0
-+Prevented redundant scans: 4
-+Targeted file/helper reads: 5
-
- ## Runtime Savings Observations
-
-diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
-index 88234ba3d..68aac7431 100644
---- a/docs_build/dev/reports/test_cleanup_performance_report.md
-+++ b/docs_build/dev/reports/test_cleanup_performance_report.md
-@@ -1,29 +1,29 @@
- # Test Cleanup Performance Report
-
--Generated: 2026-06-15T18:47:18.902Z
-+Generated: 2026-06-15T19:25:47.113Z
- Status: PASS
-
- ## Cost Summary
-
--Total measured lane elapsed time: 53.00s
-+Total measured lane elapsed time: 50.75s
- Actual browser launch count: 1
- Scheduled browser launch count: 1
- Baseline browser launch count: 1
- Skipped lanes: 14
--Reused manifests: 1
--Reused snapshots: 1
-+Reused manifests: 0
-+Reused snapshots: 0
- Cached validations reused: 18
- Prevented broad execution: 2
- Prevented reruns: 0
- Prevented redundant browser launches: 0
--Prevented graph rebuilds: 1
--Prevented redundant dependency traversal: 1
-+Prevented graph rebuilds: 0
-+Prevented redundant dependency traversal: 0
-
- ## Lane Elapsed Time
-
- | Lane | Status | Elapsed | Browser Launches | Reason |
- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 53.00s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | PASS | 50.75s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
-@@ -43,11 +43,11 @@ Prevented redundant dependency traversal: 1
-
- | Lane | Duration | Test | Command |
- | --- | --- | --- | --- |
--| workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 11.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 10.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
- | workspace-contract | 10.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 8.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 2.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 1.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-
- ## Prevented Broad Execution
-
-diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
-index d96f9f1b2..8e90abf36 100644
---- a/docs_build/dev/reports/test_cleanup_routing_report.md
-+++ b/docs_build/dev/reports/test_cleanup_routing_report.md
-@@ -1,6 +1,6 @@
- # Test Cleanup Routing Report
-
--Generated: 2026-06-15T18:47:18.903Z
-+Generated: 2026-06-15T19:25:47.114Z
- Status: PASS
-
- ## Representative Routing Cases
-diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
-index 66bf909bc..34ce53c2f 100644
---- a/docs_build/dev/reports/testing_lane_execution_report.md
-+++ b/docs_build/dev/reports/testing_lane_execution_report.md
-@@ -1,6 +1,6 @@
- # Testing Lane Execution Report
-
--Generated: 2026-06-15T18:47:18.932Z
-+Generated: 2026-06-15T19:25:47.135Z
- Dry run: No
-
- ## Summary
-@@ -9,7 +9,7 @@ PASS: 1
- WARN: 0
- FAIL: 0
- SKIP: 14
--Total lane elapsed time: 53.00s
-+Total lane elapsed time: 50.75s
- Actual browser launches: 1
-
- ## Full Samples Smoke
-@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
- Status: PASS
- Scheduled lane order: workspace-contract
- Reused runtime sessions: 0
--Reused lane snapshots: 1
--Reused warm-start lanes: 1
--Reused dependency hydration: 1
--Prevented graph rebuilds: 1
--Prevented redundant initialization: 1
-+Reused lane snapshots: 0
-+Reused warm-start lanes: 0
-+Reused dependency hydration: 0
-+Prevented graph rebuilds: 0
-+Prevented redundant initialization: 0
- Prevented redundant browser launches: 0
- Prevented redundant lane execution: 14
-
-@@ -64,7 +64,7 @@ Status: PASS
- Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
- Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
- Required fixtures: none
--Targeted file/helper reads: 0
-+Targeted file/helper reads: 5
- Cached discovery reuse: Yes
- Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
-
-@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
- Status: PASS
- Generated manifests: workspace-contract:PASS
- Prevented discovery expansion: Yes
--Prevented redundant scans: 0
--Persistent manifest events: workspace-contract:REUSED
-+Prevented redundant scans: 4
-+Persistent manifest events: workspace-contract:INVALIDATED
-
- ## Warm-Start Reuse
-
- Status: PASS
--Warm-start events: workspace-contract:REUSED
--Dependency hydration events: workspace-contract:REUSED
--Prevented redundant initialization: 1
--Prevented helper resolution passes: 4
-+Warm-start events: workspace-contract:INVALIDATED
-+Dependency hydration events: workspace-contract:INVALIDATED
-+Prevented redundant initialization: 0
-+Prevented helper resolution passes: 0
- Prevented fixture ownership traversal: 0
-
- ## Lane Snapshots
-
- Status: PASS
--Snapshot events: workspace-contract:REUSED
--Reused snapshots: 1
--Invalidated snapshots: 0
--Prevented graph rebuilds: 1
--Prevented redundant dependency traversal: 1
--Prevented fixture/helper graph assembly: 4
-+Snapshot events: workspace-contract:INVALIDATED
-+Reused snapshots: 0
-+Invalidated snapshots: 1
-+Prevented graph rebuilds: 0
-+Prevented redundant dependency traversal: 0
-+Prevented fixture/helper graph assembly: 0
-
- ## Lane Deduplication
-
-@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
-
- | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 53.00s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-+| workspace-contract | PASS | 50.75s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
- | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
- | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
- | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
-@@ -125,16 +125,16 @@ Prevented Workspace lane reruns: 0
-
- | Lane | Duration | Test |
- | --- | --- | --- |
--| workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
--| workspace-contract | 11.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
-+| workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
-+| workspace-contract | 10.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
- | workspace-contract | 10.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
--| workspace-contract | 8.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
--| workspace-contract | 2.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
-+| workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
-+| workspace-contract | 1.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
-
- ## Commands
-
- ### workspace-contract
--- PASS 53.00s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-+- PASS 50.75s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-
- ### game-workspace
- - SKIP
-diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
-index 2a22f380b..d5f506601 100644
---- a/docs_build/dev/reports/validation_cache_report.md
-+++ b/docs_build/dev/reports/validation_cache_report.md
-@@ -1,6 +1,6 @@
- # Validation Cache Report
-
--Generated: 2026-06-15T18:46:25.866Z
-+Generated: 2026-06-15T19:24:56.326Z
- Status: PASS
-
- ## Cache Summary
-@@ -15,26 +15,26 @@ Validations computed: 10
- | lane registration validation | MISS | c5f6923cb3e9b570 | initial computation | lane definitions change; package.json lane scripts change |
- | runner preflight validation | MISS | a56dddb91b84bd8e | initial computation | lane definitions change; fixture ownership changes; targeted files change |
- | scoped discovery map | MISS | d1596716e5ff4e22 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| targeted file manifest validation | MISS | 1f17d49825adc35c | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| lane warm-start validation | MISS | f390285599f01db3 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
--| structural ownership validation | MISS | dd68dc0a644a2af3 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
-+| targeted file manifest validation | MISS | 4258db23797b4ae6 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| lane warm-start validation | MISS | 9de105415e82bb0d | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-+| structural ownership validation | MISS | c03c8eddd1a831a4 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
- | lane compilation validation | MISS | ff2d20b40fcb0398 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
- | lane compilation validation | HIT | ff2d20b40fcb0398 | dependency validation input | unchanged within execution cycle |
- | dependency validation | MISS | 718132570eea4d98 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
--| lane snapshot validation | MISS | cc386e7ad3f7282a | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
-+| lane snapshot validation | MISS | a55a66d9256b4c36 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
- | zero-browser preflight | MISS | f19bf3518c98576f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
--| structural ownership validation | HIT | dd68dc0a644a2af3 | static validation report | unchanged within execution cycle |
--| structural ownership validation | HIT | dd68dc0a644a2af3 | zero-browser preflight report | unchanged within execution cycle |
-+| structural ownership validation | HIT | c03c8eddd1a831a4 | static validation report | unchanged within execution cycle |
-+| structural ownership validation | HIT | c03c8eddd1a831a4 | zero-browser preflight report | unchanged within execution cycle |
- | scoped discovery map | HIT | d1596716e5ff4e22 | structural ownership validation input | unchanged within execution cycle |
- | scoped discovery map | HIT | d1596716e5ff4e22 | discovery scope reporting | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 1f17d49825adc35c | lane input validation report | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 1f17d49825adc35c | runtime scheduling blockers | unchanged within execution cycle |
--| lane warm-start validation | HIT | f390285599f01db3 | warm-start report | unchanged within execution cycle |
--| lane warm-start validation | HIT | f390285599f01db3 | dependency hydration reuse report | unchanged within execution cycle |
--| lane warm-start validation | HIT | f390285599f01db3 | runtime scheduling | unchanged within execution cycle |
--| lane snapshot validation | HIT | cc386e7ad3f7282a | lane snapshot report | unchanged within execution cycle |
--| lane snapshot validation | HIT | cc386e7ad3f7282a | execution graph reuse report | unchanged within execution cycle |
--| lane snapshot validation | HIT | cc386e7ad3f7282a | runtime scheduling | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 4258db23797b4ae6 | lane input validation report | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | 4258db23797b4ae6 | runtime scheduling blockers | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 9de105415e82bb0d | warm-start report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 9de105415e82bb0d | dependency hydration reuse report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 9de105415e82bb0d | runtime scheduling | unchanged within execution cycle |
-+| lane snapshot validation | HIT | a55a66d9256b4c36 | lane snapshot report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | a55a66d9256b4c36 | execution graph reuse report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | a55a66d9256b4c36 | runtime scheduling | unchanged within execution cycle |
- | lane compilation validation | HIT | ff2d20b40fcb0398 | lane compilation report | unchanged within execution cycle |
- | lane compilation validation | HIT | ff2d20b40fcb0398 | runtime scheduling | unchanged within execution cycle |
- | dependency validation | HIT | 718132570eea4d98 | dependency report | unchanged within execution cycle |
-diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
-index dee9b4cb8..5e5e865d1 100644
---- a/docs_build/dev/reports/zero_browser_preflight_report.md
-+++ b/docs_build/dev/reports/zero_browser_preflight_report.md
-@@ -1,6 +1,6 @@
- # Zero-Browser Preflight Report
-
--Generated: 2026-06-15T18:46:25.866Z
-+Generated: 2026-06-15T19:24:56.326Z
- Status: PASS
-
- ## Prevented Browser Launches
-@@ -24,10 +24,10 @@ No deterministic setup failures.
- | unresolved fixtures | PASS | No unresolved fixture findings. |
- | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
- | targeted file manifests | PASS | workspace-contract:PASS |
--| persistent lane manifests | PASS | workspace-contract:REUSED |
--| lane warm-start reuse | PASS | workspace-contract:REUSED |
--| dependency hydration reuse | PASS | workspace-contract:REUSED |
--| lane snapshots | PASS | workspace-contract:REUSED |
-+| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
-+| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
-+| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
-+| lane snapshots | PASS | workspace-contract:INVALIDATED |
- | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
- | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
- | invalid grep patterns | PASS | No invalid grep patterns. |
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index a63126fcd..75b5959e5 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -93,6 +93,12 @@ const LOCAL_DB_MODE_ID = "local-db";
- const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
- const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
- const AUTH_READY_MESSAGE = "Account service is available.";
-+const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
-+  description: "Default creator/player account role.",
-+  isSystemRole: false,
-+  name: "User",
-+  roleSlug: "user",
-+});
- const IDENTITY_TABLES = ["users", "roles", "user_roles"];
- const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
- const TOOLBOX_PLANNING_FIELDS = Object.freeze([
-@@ -664,11 +670,17 @@ function normalizedAuthEmail(value) {
-   return String(value || "").trim();
- }
-
-+function displayNameFromEmail(email) {
-+  const localPart = String(email || "").split("@")[0].trim();
-+  return localPart || "Creator";
-+}
-+
- function sanitizedAuthErrorDiagnostic(error) {
-   const message = String(error?.message || error || "").trim();
-   const statusMatch = message.match(/HTTP\s+(\d+)/);
-+  const code = error?.code || error?.cause?.code || "";
-   return {
--    code: error?.code || "",
-+    code,
-     httpStatus: statusMatch ? Number(statusMatch[1]) : 0,
-     message: statusMatch
-       ? `Supabase Auth request failed with HTTP ${statusMatch[1]}.`
-@@ -678,6 +690,14 @@ function sanitizedAuthErrorDiagnostic(error) {
-   };
- }
-
-+function identityTableCounts(tables = {}) {
-+  return {
-+    roles: Array.isArray(tables.roles) ? tables.roles.length : 0,
-+    user_roles: Array.isArray(tables.user_roles) ? tables.user_roles.length : 0,
-+    users: Array.isArray(tables.users) ? tables.users.length : 0,
-+  };
-+}
-+
- function authUnavailableError(action, diagnostic = "") {
-   const error = new Error(AUTH_UNAVAILABLE_MESSAGE);
-   error.statusCode = 503;
-@@ -1096,12 +1116,8 @@ class LocalDevDataSource {
-     return sessionUserFromKey(this.standaloneTables, this.sessionUserKey, this.sessionModeId);
-   }
-
--  async readSupabaseIdentityTables(action) {
-+  async readSupabaseIdentityTablesUnchecked(action) {
-     this.assertLocalDatabaseProvider(action);
--    const authStatus = await this.authStatusForRoute();
--    if (!authStatus.ready) {
--      throw authUnavailableError(action, `Supabase Auth identity ownership is not ready. ${authStatus.operatorDiagnostic || authStatus.status}`);
--    }
-     const adapter = new SupabasePostgresProviderAdapter();
-     const [users, roles, userRoles] = await Promise.all([
-       adapter.getUsers(),
-@@ -1120,6 +1136,41 @@ class LocalDevDataSource {
-     return this.identityTablesCache.tables;
-   }
-
-+  async readSupabaseIdentityTables(action) {
-+    this.assertLocalDatabaseProvider(action);
-+    const authStatus = await this.authStatusForRoute();
-+    if (!authStatus.ready) {
-+      throw authUnavailableError(action, `Supabase Auth identity ownership is not ready. ${authStatus.operatorDiagnostic || authStatus.status}`);
-+    }
-+    return this.readSupabaseIdentityTablesUnchecked(action);
-+  }
-+
-+  async supabaseIdentityReadinessCheck() {
-+    try {
-+      const tables = await this.readSupabaseIdentityTablesUnchecked("Validating Supabase identity tables");
-+      return {
-+        diagnostic: "Supabase identity tables are reachable through the server-side provider contract.",
-+        identityBootstrapReady: true,
-+        identityTableRecords: identityTableCounts(tables),
-+        identityTablesReady: true,
-+      };
-+    } catch (error) {
-+      const diagnostic = sanitizedAuthErrorDiagnostic(error);
-+      return {
-+        diagnostic: diagnostic.httpStatus
-+          ? diagnostic.message
-+          : "Supabase identity table validation failed before an HTTP status was available.",
-+        identityBootstrapReady: false,
-+        identityTableRecords: {
-+          roles: 0,
-+          user_roles: 0,
-+          users: 0,
-+        },
-+        identityTablesReady: false,
-+      };
-+    }
-+  }
-+
-   cachedSupabaseIdentitySession() {
-     if (!this.identityTablesCache?.tables) {
-       return guestSession(this.currentMode(), "Supabase identity tables have not been loaded through the server API yet.");
-@@ -1578,11 +1629,31 @@ class LocalDevDataSource {
-         supabaseConnectivityStatus: connectivity.connectivityStatus,
-       };
-     }
-+    const identity = await this.supabaseIdentityReadinessCheck();
-+    if (!identity.identityTablesReady) {
-+      return {
-+        ...status,
-+        actionRequired: AUTH_UNAVAILABLE_MESSAGE,
-+        connectivityHealthy: true,
-+        connectivityStatus: "healthy",
-+        identityBootstrapReady: false,
-+        identityTableRecords: identity.identityTableRecords,
-+        identityTablesReady: false,
-+        message: AUTH_UNAVAILABLE_MESSAGE,
-+        operatorDiagnostic: `Supabase Auth is reachable, but identity table readiness could not be proven. ${identity.diagnostic}`,
-+        ready: false,
-+        status: "unavailable",
-+        supabaseConnectivityStatus: "healthy",
-+      };
-+    }
-     return {
-       ...status,
-       connectivityHealthy: true,
-       connectivityStatus: "healthy",
--      operatorDiagnostic: "Supabase Auth is selected, configured, reachable, and ready. Product data remains Local DB.",
-+      identityBootstrapReady: true,
-+      identityTableRecords: identity.identityTableRecords,
-+      identityTablesReady: true,
-+      operatorDiagnostic: "Supabase Auth is selected, configured, reachable, identity tables are available, and product data remains Local DB.",
-       ready: true,
-       status: "ready",
-       supabaseConnectivityStatus: "healthy",
-@@ -1622,6 +1693,24 @@ class LocalDevDataSource {
-       status: connectivity.connectivityStatus === "healthy" ? "PASS" : status.supabaseConfigPresent ? "FAIL" : "SKIP",
-       summary: connectivity.diagnostic,
-     });
-+    const identity = connectivity.connectivityStatus === "healthy"
-+      ? await this.supabaseIdentityReadinessCheck()
-+      : {
-+        diagnostic: "Supabase identity table validation requires healthy Supabase Auth connectivity first.",
-+        identityTableRecords: {
-+          roles: 0,
-+          user_roles: 0,
-+          users: 0,
-+        },
-+        identityTablesReady: false,
-+      };
-+
-+    checks.push({
-+      id: "supabase-identity-tables",
-+      records: identity.identityTableRecords,
-+      status: identity.identityTablesReady ? "PASS" : connectivity.connectivityStatus === "healthy" ? "FAIL" : "SKIP",
-+      summary: identity.diagnostic,
-+    });
-
-     return {
-       authProviderId: status.authProviderId,
-@@ -1632,6 +1721,8 @@ class LocalDevDataSource {
-       connectivityStatus: connectivity.connectivityStatus,
-       databaseProviderId: status.databaseProviderId,
-       localDbProductDataActive: status.localDbProductDataActive,
-+      identityTableRecords: identity.identityTableRecords,
-+      identityTablesReady: identity.identityTablesReady,
-       noAutomaticFallback: true,
-       operatorDiagnostic: status.operatorDiagnostic,
-       operatorOnly: true,
-@@ -1680,6 +1771,84 @@ class LocalDevDataSource {
-     return session;
-   }
-
-+  async provisionSupabaseIdentityForAuthPayload(action, email, payload = {}) {
-+    const authUser = payload.user && typeof payload.user === "object" ? payload.user : {};
-+    const authUserId = String(authUser.id || "").trim();
-+    const authEmail = normalizedAuthEmail(authUser.email || email);
-+    if (!authUserId || !authEmail) {
-+      throw authUnavailableError(action, "Supabase Auth did not return the user id and email required for identity provisioning.");
-+    }
-+
-+    const adapter = new SupabasePostgresProviderAdapter();
-+    const tables = await this.readSupabaseIdentityTablesUnchecked(`${action} identity provisioning`);
-+    const users = tables.users || [];
-+    const roles = tables.roles || [];
-+    const userRoles = tables.user_roles || [];
-+    const matchingByProviderId = users.find((user) => user.authProvider === SUPABASE_AUTH_PROVIDER_ID &&
-+      String(user.authProviderUserId || "") === authUserId);
-+    const matchingByEmail = users.find((user) => normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
-+    if (matchingByProviderId && matchingByEmail && matchingByProviderId.key !== matchingByEmail.key) {
-+      throw authUnavailableError(action, "Supabase Auth identity maps to conflicting users records.");
-+    }
-+    const matchingUser = matchingByProviderId || matchingByEmail || null;
-+    if (matchingUser?.authProvider && matchingUser.authProvider !== SUPABASE_AUTH_PROVIDER_ID) {
-+      throw authUnavailableError(action, "Existing users record is owned by a different auth provider.");
-+    }
-+    if (matchingUser?.authProviderUserId && String(matchingUser.authProviderUserId) !== authUserId) {
-+      throw authUnavailableError(action, "Existing users record is linked to a different Supabase Auth user.");
-+    }
-+
-+    const timestamp = new Date().toISOString();
-+    const userKey = matchingUser?.key || adapter.createRecordKey();
-+    const userRecord = adapter.normalizeUserRecord({
-+      ...matchingUser,
-+      authProvider: SUPABASE_AUTH_PROVIDER_ID,
-+      authProviderUserId: authUserId,
-+      displayName: matchingUser?.displayName || displayNameFromEmail(authEmail),
-+      email: authEmail,
-+      key: userKey,
-+    }, userKey, timestamp);
-+    await adapter.upsertTable("users", [userRecord]);
-+
-+    let roleRecord = roles.find((role) => role.roleSlug === DEFAULT_SUPABASE_ACCOUNT_ROLE.roleSlug && role.isActive !== false);
-+    let roleCreated = false;
-+    if (!roleRecord) {
-+      roleRecord = adapter.normalizeRoleRecord({
-+        ...DEFAULT_SUPABASE_ACCOUNT_ROLE,
-+        key: adapter.createRecordKey(),
-+      }, userKey, timestamp);
-+      await adapter.upsertTable("roles", [roleRecord]);
-+      roleCreated = true;
-+    }
-+
-+    const existingUserRole = userRoles.find((row) => row.userKey === userKey && row.roleKey === roleRecord.key);
-+    let userRoleCreated = false;
-+    if (!existingUserRole) {
-+      const userRoleRecord = adapter.normalizeUserRoleRecord({
-+        key: adapter.createRecordKey(),
-+        roleKey: roleRecord.key,
-+        userKey,
-+      }, new Map(), userKey, timestamp);
-+      await adapter.upsertTable("user_roles", [userRoleRecord]);
-+      userRoleCreated = true;
-+    }
-+
-+    const refreshedTables = await this.readSupabaseIdentityTablesUnchecked(`${action} identity provisioning result`);
-+    const session = sessionUserFromIdentityTables(refreshedTables, userKey, this.sessionModeId, "Supabase identity");
-+    if (!session.authenticated) {
-+      throw authUnavailableError(action, session.diagnostic || "Provisioned Supabase identity session could not be validated.");
-+    }
-+
-+    return {
-+      identityProvisioned: true,
-+      identityTableRecords: identityTableCounts(refreshedTables),
-+      roleCreated,
-+      roleSlugs: session.roleSlugs,
-+      userKey,
-+      userRoleCreated,
-+    };
-+  }
-+
-   async authSignIn(body = {}) {
-     const adapter = await this.authAdapterForAction("Sign in");
-     const email = normalizedAuthEmail(body.email || body.identity);
-@@ -1707,7 +1876,17 @@ class LocalDevDataSource {
-         email,
-         password: body.password,
-       });
--      return sanitizedSupabaseAuthActionResult("create-account", email, payload);
-+      const identity = await this.provisionSupabaseIdentityForAuthPayload("Create account", email, payload);
-+      return {
-+        ...sanitizedSupabaseAuthActionResult("create-account", email, payload),
-+        identityProvisioned: identity.identityProvisioned,
-+        identityTableRecords: identity.identityTableRecords,
-+        message: "Account created. You can sign in after confirming your email.",
-+        roleCreated: identity.roleCreated,
-+        roleSlugs: identity.roleSlugs,
-+        userKey: identity.userKey,
-+        userRoleCreated: identity.userRoleCreated,
-+      };
-     } catch (error) {
-       if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
-         throw error;
-diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-index 627d51d51..038931180 100644
---- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-+++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-@@ -72,7 +72,24 @@ function startApiServer() {
- function startFakeSupabaseAuthServer(options = {}) {
-   const expectedApiKey = options.expectedApiKey || "";
-   const rejectWrongApiKey = options.rejectWrongApiKey === true;
--  const identityTables = options.identityTables || {};
-+  const identityTables = {
-+    roles: [...(options.identityTables?.roles || [])],
-+    user_roles: [...(options.identityTables?.user_roles || [])],
-+    users: [...(options.identityTables?.users || [])],
-+  };
-+  const authUserIdForEmail = (email) => {
-+    const normalizedEmail = String(email || "creator@example.test").trim();
-+    if (options.userIdByEmail?.[normalizedEmail]) {
-+      return options.userIdByEmail[normalizedEmail];
-+    }
-+    if (options.authUserId) {
-+      return options.authUserId;
-+    }
-+    if (normalizedEmail === "user1@example.invalid") {
-+      return "supabase-user-1";
-+    }
-+    return `supabase-${normalizedEmail.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
-+  };
-   const calls = [];
-   const server = http.createServer(async (request, response) => {
-     const chunks = [];
-@@ -96,6 +113,25 @@ function startFakeSupabaseAuthServer(options = {}) {
-     }
-     if (requestUrl.pathname.startsWith("/rest/v1/")) {
-       const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
-+      if (request.method === "POST") {
-+        const rows = Array.isArray(body) ? body : [body];
-+        identityTables[tableName] = identityTables[tableName] || [];
-+        rows.forEach((row) => {
-+          const index = identityTables[tableName].findIndex((existing) => existing.key === row.key);
-+          if (index >= 0) {
-+            identityTables[tableName][index] = {
-+              ...identityTables[tableName][index],
-+              ...row,
-+            };
-+          } else {
-+            identityTables[tableName].push(row);
-+          }
-+        });
-+        response.statusCode = 200;
-+        response.setHeader("Content-Type", "application/json; charset=utf-8");
-+        response.end(JSON.stringify(rows));
-+        return;
-+      }
-       response.statusCode = 200;
-       response.setHeader("Content-Type", "application/json; charset=utf-8");
-       response.end(JSON.stringify(identityTables[tableName] || []));
-@@ -119,7 +155,7 @@ function startFakeSupabaseAuthServer(options = {}) {
-       token_type: "bearer",
-       user: {
-         email: body.email || "creator@example.test",
--        id: options.authUserId || "supabase-user-1",
-+        id: authUserIdForEmail(body.email),
-       },
-     }));
-   });
-@@ -666,7 +702,10 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
-       });
-       assert.equal(createAccount.status, 200);
-       assert.equal(createAccount.payload.data.action, "create-account");
-+      assert.equal(createAccount.payload.data.identityProvisioned, true);
-       assert.equal(createAccount.payload.data.localDbSessionCreated, false);
-+      assert.deepEqual(createAccount.payload.data.roleSlugs, ["user"]);
-+      assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
-
-       const reset = await postApiPayload(server.baseUrl, "/api/auth/password-reset", {
-         email: "reset@example.test",
-@@ -696,6 +735,118 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
-   await fakeSupabase.close();
- });
-
-+test("Create account provisions Supabase identity user default role and user_roles before sign-in", async () => {
-+  const fakeSupabase = await startFakeSupabaseAuthServer({
-+    identityTables: {
-+      roles: [],
-+      user_roles: [],
-+      users: [],
-+    },
-+  });
-+  await withEnv({
-+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
-+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
-+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
-+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
-+  }, async () => {
-+    const server = await startApiServer();
-+    try {
-+      const status = await apiJson(server.baseUrl, "/api/auth/status");
-+      assert.equal(status.ready, true);
-+      assert.equal(status.identityTablesReady, true);
-+      assert.deepEqual(status.identityTableRecords, {
-+        roles: 0,
-+        user_roles: 0,
-+        users: 0,
-+      });
-+
-+      const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
-+        email: "new.creator@example.test",
-+        password: "not-stored-locally",
-+      });
-+      assert.equal(createAccount.status, 200);
-+      assert.equal(createAccount.payload.ok, true);
-+      assert.equal(createAccount.payload.data.identityProvisioned, true);
-+      assert.equal(createAccount.payload.data.roleCreated, true);
-+      assert.equal(createAccount.payload.data.userRoleCreated, true);
-+      assert.deepEqual(createAccount.payload.data.roleSlugs, ["user"]);
-+      assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
-+      assert.equal(Object.values(MOCK_DB_KEYS.users).includes(createAccount.payload.data.userKey), false);
-+      assert.deepEqual(createAccount.payload.data.identityTableRecords, {
-+        roles: 1,
-+        user_roles: 1,
-+        users: 1,
-+      });
-+
-+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
-+        email: "new.creator@example.test",
-+        password: "not-stored-locally",
-+      });
-+      assert.equal(signIn.status, 200);
-+      assert.equal(signIn.payload.data.sessionResolved, true);
-+      assert.equal(signIn.payload.data.userKey, createAccount.payload.data.userKey);
-+      assert.deepEqual(signIn.payload.data.roleSlugs, ["user"]);
-+
-+      const current = await apiJson(server.baseUrl, "/api/session/current");
-+      assert.equal(current.authenticated, true);
-+      assert.equal(current.userKey, createAccount.payload.data.userKey);
-+      assert.deepEqual(current.roleSlugs, ["user"]);
-+
-+      const restPosts = fakeSupabase.calls
-+        .filter((call) => call.method === "POST" && call.path.startsWith("/rest/v1/"))
-+        .map((call) => call.path);
-+      assert.deepEqual(restPosts, [
-+        "/rest/v1/users?on_conflict=key",
-+        "/rest/v1/roles?on_conflict=key",
-+        "/rest/v1/user_roles?on_conflict=key",
-+      ]);
-+      assert.equal(fakeSupabase.calls
-+        .filter((call) => call.path.startsWith("/rest/v1/"))
-+        .every((call) => call.headers.apikey === "test-service-role-key"), true);
-+    } finally {
-+      await server.close();
-+    }
-+  });
-+  await fakeSupabase.close();
-+});
-+
-+test("Supabase sign in fails visibly when the Auth user has no app identity row", async () => {
-+  const fakeSupabase = await startFakeSupabaseAuthServer({
-+    identityTables: {
-+      roles: [],
-+      user_roles: [],
-+      users: [],
-+    },
-+  });
-+  await withEnv({
-+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
-+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
-+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
-+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
-+  }, async () => {
-+    const server = await startApiServer();
-+    try {
-+      const status = await apiJson(server.baseUrl, "/api/auth/status");
-+      assert.equal(status.ready, true);
-+      assert.equal(status.identityTablesReady, true);
-+
-+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
-+        email: "missing.identity@example.test",
-+        password: "not-stored-locally",
-+      });
-+      assert.equal(signIn.status, 503);
-+      assert.equal(signIn.payload.ok, false);
-+      assert.equal(signIn.payload.error, "The site is currently unavailable. Please try again later.");
-+      assert.equal(JSON.stringify(signIn.payload).includes("missing.identity@example.test"), false);
-+    } finally {
-+      await server.close();
-+    }
-+  });
-+  await fakeSupabase.close();
-+});
-+
- test("Default Supabase Auth routes sign in create account and password reset through external auth", async () => {
-   const fakeSupabase = await startFakeSupabaseAuthServer({
-     identityTables: fakeSupabaseIdentityTables(),
-@@ -811,17 +962,10 @@ test("Supabase Auth selected path reads users roles and user_roles through the p
-       const restCalls = fakeSupabase.calls
-         .filter((call) => call.path.startsWith("/rest/v1/"))
-         .map((call) => call.path);
--      assert.deepEqual(restCalls, [
--        "/rest/v1/users?select=*",
--        "/rest/v1/roles?select=*",
--        "/rest/v1/user_roles?select=*",
--        "/rest/v1/users?select=*",
--        "/rest/v1/roles?select=*",
--        "/rest/v1/user_roles?select=*",
--        "/rest/v1/users?select=*",
--        "/rest/v1/roles?select=*",
--        "/rest/v1/user_roles?select=*",
--      ]);
-+      assert.equal(restCalls.includes("/rest/v1/users?select=*"), true);
-+      assert.equal(restCalls.includes("/rest/v1/roles?select=*"), true);
-+      assert.equal(restCalls.includes("/rest/v1/user_roles?select=*"), true);
-+      assert.equal(restCalls.length >= 9, true);
-       assert.equal(fakeSupabase.calls
-         .filter((call) => call.path.startsWith("/rest/v1/"))
-         .every((call) => call.headers.apikey === "test-service-role-key"), true);
-diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
-index c4ccaa78d..3ae0db465 100644
---- a/tests/playwright/tools/LoginSessionMode.spec.mjs
-+++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
-@@ -81,7 +81,24 @@ async function withSupabaseEnv(nextEnv, callback) {
-
- async function startFakeSupabaseAuthServer(options = {}) {
-   const calls = [];
--  const identityTables = options.identityTables || {};
-+  const identityTables = {
-+    roles: [...(options.identityTables?.roles || [])],
-+    user_roles: [...(options.identityTables?.user_roles || [])],
-+    users: [...(options.identityTables?.users || [])],
-+  };
-+  const authUserIdForEmail = (email) => {
-+    const normalizedEmail = String(email || "creator@example.test").trim();
-+    if (options.userIdByEmail?.[normalizedEmail]) {
-+      return options.userIdByEmail[normalizedEmail];
-+    }
-+    if (options.authUserId) {
-+      return options.authUserId;
-+    }
-+    if (normalizedEmail === "user1@example.invalid") {
-+      return "supabase-user-1";
-+    }
-+    return `supabase-${normalizedEmail.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
-+  };
-   const server = http.createServer(async (request, response) => {
-     const chunks = [];
-     for await (const chunk of request) {
-@@ -100,6 +117,23 @@ async function startFakeSupabaseAuthServer(options = {}) {
-     response.setHeader("Content-Type", "application/json; charset=utf-8");
-     if (requestUrl.pathname.startsWith("/rest/v1/")) {
-       const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
-+      if (request.method === "POST") {
-+        const rows = Array.isArray(body) ? body : [body];
-+        identityTables[tableName] = identityTables[tableName] || [];
-+        rows.forEach((row) => {
-+          const index = identityTables[tableName].findIndex((existing) => existing.key === row.key);
-+          if (index >= 0) {
-+            identityTables[tableName][index] = {
-+              ...identityTables[tableName][index],
-+              ...row,
-+            };
-+          } else {
-+            identityTables[tableName].push(row);
-+          }
-+        });
-+        response.end(JSON.stringify(rows));
-+        return;
-+      }
-       response.end(JSON.stringify(identityTables[tableName] || []));
-       return;
-     }
-@@ -116,7 +150,7 @@ async function startFakeSupabaseAuthServer(options = {}) {
-       refresh_token: "browser-test-refresh-token",
-       user: {
-         email: body.email || "creator@example.test",
--        id: options.authUserId || "supabase-user-1",
-+        id: authUserIdForEmail(body.email),
-       },
-     }));
-   });
-@@ -500,7 +534,7 @@ test("Configured account auth actions use external Auth and resolve the app sess
-       await page.getByLabel("Email").fill("new@example.test");
-       await page.getByLabel("Password").fill("not-stored-locally");
-       await page.getByRole("button", { name: "Create Account" }).click();
--      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account authentication completed through the configured account provider.");
-+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account created. You can sign in after confirming your email.");
-
-       await page.goto(`${failures.server.baseUrl}/account/password-reset.html`, { waitUntil: "networkidle" });
-       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
-diff --git a/docs_build/dev/reports/PR_26166_153-supabase-identity-bootstrap-and-provisioning.md b/docs_build/dev/reports/PR_26166_153-supabase-identity-bootstrap-and-provisioning.md
+diff --git a/package.json b/package.json
+index 00fdf96d2..f14e8b790 100644
+--- a/package.json
++++ b/package.json
+@@ -24,6 +24,7 @@
+     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
+     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
+     "dev:local-api": "node ./scripts/start-local-api-server.mjs",
++    "validate:supabase-dev": "node ./scripts/validate-supabase-dev.mjs",
+     "check:shared-extraction-guard": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
+     "check:phase24-closeout-guard": "node docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs",
+     "check:style-system-guard": "node docs_build/dev/toolbox/checkStyleSystemGuard.mjs",
+warning: in the working copy of 'package.json', LF will be replaced by CRLF the next time Git touches it
+
+diff --git a/docs_build/dev/reports/PR_26166_154-supabase-dev-tls-identity-readiness.md b/docs_build/dev/reports/PR_26166_154-supabase-dev-tls-identity-readiness.md
 new file mode 100644
-index 000000000..592d70970
+index 000000000..e29a94246
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26166_153-supabase-identity-bootstrap-and-provisioning.md
-@@ -0,0 +1,61 @@
-+# PR_26166_153-supabase-identity-bootstrap-and-provisioning
++++ b/docs_build/dev/reports/PR_26166_154-supabase-dev-tls-identity-readiness.md
+@@ -0,0 +1,82 @@
++# PR_26166_154-supabase-dev-tls-identity-readiness
 +
 +## Branch Validation
-+- PASS: current branch `main`.
++- PASS: Current branch is `main`.
 +- Expected branch: `main`.
 +
 +## Requirement Checklist
 +- PASS: `docs_build/dev/PROJECT_INSTRUCTIONS.md` was read before implementation.
-+- PASS: `GAMEFOUNDRY_DB_PROVIDER=local-db` is preserved; product data remains Local DB.
-+- PASS: Supabase identity table validation was added for `users`, `roles`, and `user_roles`.
-+- PASS: `/api/auth/status` now requires Supabase Auth connectivity and identity table reachability before `ready=true`.
-+- PASS: Create Account creates the Supabase Auth user through the backend API and provisions matching app identity records server-side.
-+- PASS: Provisioning creates/updates `users`, ensures the default `user` role, and inserts `user_roles` with server-generated keys.
-+- PASS: Sign In resolves session/user/roles from Supabase identity records.
-+- PASS: Password Reset remains Supabase Auth only.
++- PASS: Created standalone Supabase DEV validation script at `scripts/validate-supabase-dev.mjs`.
++- PASS: Added `npm run validate:supabase-dev`.
++- PASS: Script loads `.env.local` without printing secret values.
++- PASS: Script checks required variables:
++  - `GAMEFOUNDRY_SUPABASE_URL`
++  - `GAMEFOUNDRY_SUPABASE_ANON_KEY`
++  - `GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY`
++  - `GAMEFOUNDRY_SUPABASE_DATABASE_URL`
++- PASS: Script masks configured values using first 6 and last 4 characters only.
++- PASS: Script checks Supabase URL reachability.
++- PASS: Script checks Supabase Auth endpoint reachability.
++- PASS: Script checks service role authentication through Supabase Auth admin API.
++- PASS: Script checks TLS certificate validation without disabling TLS verification.
++- PASS: Script checks the database URL through a TLS PostgreSQL connection handshake.
++- PASS: Script checks `users`, `roles`, and `user_roles` table existence through server-side service role REST access.
++- PASS: Script outputs clear `PASS`/`FAIL` diagnostics and `Overall Result`.
++- PASS: No `NODE_TLS_REJECT_UNAUTHORIZED=0` usage was added.
++- PASS: No `rejectUnauthorized: false` usage was added.
 +- PASS: No secrets or `.env.local` files were committed or modified.
-+- PASS: Browser pages continue to use backend API contracts only; no browser-owned auth/provider/data logic was added.
-+- PASS: No silent fallback was added.
-+- FAIL: Real configured Supabase DEV readiness could not be validated as `ready=true` from this machine because the live connectivity check fails before HTTP with `UNABLE_TO_VERIFY_LEAF_SIGNATURE`.
 +
 +## Validation Lane Report
-+- PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS: `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- PASS: `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
-+- PASS: `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- PASS: `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --grep "Sign-in page uses|Configured account auth actions" --reporter=list`
-+- PASS: `npm run test:workspace-v2`
-+- FAIL: Real DEV `/api/auth/status` readiness probe with local `.env.local` values present:
-+  - `selected=true`
-+  - `configured=true`
-+  - `localDbProductDataActive=true`
-+  - `connectivityStatus=failed`
-+  - `identityTablesReady=false`
-+  - `ready=false`
-+  - operator preflight: `Supabase Auth request failed before an HTTP status was available. (UNABLE_TO_VERIFY_LEAF_SIGNATURE)`
++- Impacted lane: targeted operator auth/provider validation tooling.
++- Playwright impacted: No. This PR adds standalone validation tooling and an npm script only.
++- Samples validation: SKIP. No sample files, sample manifests, or sample runtime behavior changed.
 +
-+## Playwright Impact
-+- Playwright impacted: Yes.
-+- Coverage report: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- Coverage WARN: Node server runtime JS is not collected by browser V8 coverage; browser account auth JS remains covered by the focused auth Playwright run.
++## Validation Performed
++- PASS: `node --check scripts/validate-supabase-dev.mjs`
++- PASS: `node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json OK')"`
++- PASS: TLS bypass guard search found no matches for `NODE_TLS_REJECT_UNAUTHORIZED`, `rejectUnauthorized: false`, or `strictSSL=false`.
++- PASS: `git diff --check`
++- FAIL: `npm run validate:supabase-dev` completed with expected diagnostic failure because this machine does not trust the current Supabase TLS certificate chain.
++
++## validate:supabase-dev Output
++
++```text
++> html-javascript-gaming@1.0.0 validate:supabase-dev
++> node ./scripts/validate-supabase-dev.mjs
++
++PASS - .env.local loaded (6 key(s) loaded)
++PASS - URL configured (GAMEFOUNDRY_SUPABASE_URL=https:.../v1/)
++PASS - Publishable key configured (GAMEFOUNDRY_SUPABASE_ANON_KEY=sb_pub...V2Zj)
++PASS - Service role key configured (GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=sb_sec...KRU6)
++PASS - Database URL configured (GAMEFOUNDRY_SUPABASE_DATABASE_URL=postgr...gres)
++FAIL - Supabase reachable (UNABLE_TO_VERIFY_LEAF_SIGNATURE)
++FAIL - TLS validation (UNABLE_TO_VERIFY_LEAF_SIGNATURE)
++FAIL - Auth endpoint reachable (UNABLE_TO_VERIFY_LEAF_SIGNATURE)
++FAIL - Service role authentication (UNABLE_TO_VERIFY_LEAF_SIGNATURE)
++FAIL - Database connection (SELF_SIGNED_CERT_IN_CHAIN)
++FAIL - users table (UNABLE_TO_VERIFY_LEAF_SIGNATURE)
++FAIL - roles table (UNABLE_TO_VERIFY_LEAF_SIGNATURE)
++FAIL - user_roles table (UNABLE_TO_VERIFY_LEAF_SIGNATURE)
++
++Overall Result: FAIL
++Failed checks: Supabase reachable, TLS validation, Auth endpoint reachable, Service role authentication, Database connection, users table, roles table, user_roles table
++```
 +
 +## Manual Validation Notes
-+- Fake Supabase provider validation proves:
-+  - `/api/auth/status` returns `ready=true` when Auth connectivity and identity tables are reachable.
-+  - Create Account provisions one app `users` row, one default `roles` row when needed, and one `user_roles` row.
-+  - Sign In resolves a session using the provisioned identity record and role.
-+  - Missing identity rows fail with the generic production-safe browser message.
-+- Real DEV validation is blocked by local Node TLS trust, not by missing environment values. Required env presence was verified without printing secret values.
-+
-+## Skipped Lanes
-+- Full samples smoke: SKIP. Auth identity bootstrap/provisioning does not touch samples or sample manifests.
++- `.env.local` was detected and loaded by the script.
++- Required Supabase values were present and masked in output.
++- The validator did not print raw secrets.
++- TLS verification remains enabled for HTTPS and PostgreSQL checks.
++- Current failure is environment trust related:
++  - HTTPS/Supabase REST/Auth: `UNABLE_TO_VERIFY_LEAF_SIGNATURE`
++  - PostgreSQL TLS: `SELF_SIGNED_CERT_IN_CHAIN`
++- The script correctly refuses to treat these connections as valid rather than disabling TLS or falling back.
 +
 +## Changed Files
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- `tests/playwright/tools/LoginSessionMode.spec.mjs`
-+- Validation/report artifacts under `docs_build/dev/reports/`
++- `package.json`
++- `scripts/validate-supabase-dev.mjs`
++- `docs_build/dev/reports/PR_26166_154-supabase-dev-tls-identity-readiness.md`
 +
 +## Review Artifacts
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
+
+diff --git a/scripts/validate-supabase-dev.mjs b/scripts/validate-supabase-dev.mjs
+new file mode 100644
+index 000000000..546395dea
+--- /dev/null
++++ b/scripts/validate-supabase-dev.mjs
+@@ -0,0 +1,637 @@
++#!/usr/bin/env node
++import crypto from "node:crypto";
++import fs from "node:fs";
++import net from "node:net";
++import path from "node:path";
++import process from "node:process";
++import tls from "node:tls";
++import { URL } from "node:url";
++
++const ENV_FILE = ".env.local";
++const REQUIRED_ENV = Object.freeze([
++  {
++    key: "GAMEFOUNDRY_SUPABASE_URL",
++    label: "URL configured",
++  },
++  {
++    key: "GAMEFOUNDRY_SUPABASE_ANON_KEY",
++    label: "Publishable key configured",
++  },
++  {
++    key: "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
++    label: "Service role key configured",
++  },
++  {
++    key: "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
++    label: "Database URL configured",
++  },
++]);
++
++const IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
++const REQUEST_TIMEOUT_MS = 15000;
++const POSTGRES_PROTOCOL_VERSION = 196608;
++const POSTGRES_SSL_REQUEST_CODE = 80877103;
++
++function int32(value) {
++  const buffer = Buffer.alloc(4);
++  buffer.writeInt32BE(value, 0);
++  return buffer;
++}
++
++function maskValue(value) {
++  const normalized = String(value || "").trim();
++  if (!normalized) {
++    return "missing";
++  }
++  if (normalized.length <= 10) {
++    return `${normalized.slice(0, Math.min(6, normalized.length))}...`;
++  }
++  return `${normalized.slice(0, 6)}...${normalized.slice(-4)}`;
++}
++
++function parseEnvValue(value) {
++  const trimmed = value.trim();
++  const quote = trimmed[0];
++  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
++    return trimmed.slice(1, -1);
++  }
++  const commentIndex = trimmed.indexOf(" #");
++  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
++}
++
++function parseEnvLocal(contents) {
++  const values = new Map();
++  contents.split(/\r?\n/).forEach((line) => {
++    const trimmed = line.trim();
++    if (!trimmed || trimmed.startsWith("#")) {
++      return;
++    }
++    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
++    const separatorIndex = normalized.indexOf("=");
++    if (separatorIndex <= 0) {
++      return;
++    }
++    const key = normalized.slice(0, separatorIndex).trim();
++    const value = parseEnvValue(normalized.slice(separatorIndex + 1));
++    if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
++      values.set(key, value);
++    }
++  });
++  return values;
++}
++
++function loadEnvLocal() {
++  const envPath = path.resolve(process.cwd(), ENV_FILE);
++  if (!fs.existsSync(envPath)) {
++    return {
++      loaded: false,
++      loadedKeys: [],
++      path: envPath,
++    };
++  }
++  const values = parseEnvLocal(fs.readFileSync(envPath, "utf8"));
++  values.forEach((value, key) => {
++    if (!String(process.env[key] || "").trim()) {
++      process.env[key] = value;
++    }
++  });
++  return {
++    loaded: true,
++    loadedKeys: Array.from(values.keys()).sort(),
++    path: envPath,
++  };
++}
++
++function envValue(key) {
++  return String(process.env[key] || "").trim();
++}
++
++function sanitizeDiagnostic(value) {
++  let text = String(value || "No diagnostic returned.");
++  REQUIRED_ENV.forEach(({ key }) => {
++    const raw = envValue(key);
++    if (raw) {
++      text = text.split(raw).join(maskValue(raw));
++    }
++  });
++  try {
++    const databaseUrl = new URL(envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL"));
++    if (databaseUrl.password) {
++      text = text.split(databaseUrl.password).join(maskValue(databaseUrl.password));
++    }
++  } catch {
++    // Ignore malformed or missing database URLs while sanitizing diagnostics.
++  }
++  return text;
++}
++
++function result(status, label, detail = "") {
++  return {
++    detail: sanitizeDiagnostic(detail),
++    label,
++    status,
++  };
++}
++
++function pass(label, detail = "") {
++  return result("PASS", label, detail);
++}
++
++function fail(label, detail = "") {
++  return result("FAIL", label, detail);
++}
++
++function formatResult({ detail, label, status }) {
++  return detail ? `${status} - ${label} (${detail})` : `${status} - ${label}`;
++}
++
++function supabaseApiUrl(route) {
++  const base = envValue("GAMEFOUNDRY_SUPABASE_URL").replace(/\/+$/, "");
++  if (!base) {
++    throw new Error("GAMEFOUNDRY_SUPABASE_URL is missing.");
++  }
++  return `${base}${route}`;
++}
++
++async function fetchWithTimeout(url, options = {}) {
++  const controller = new AbortController();
++  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
++  try {
++    return await fetch(url, {
++      ...options,
++      signal: controller.signal,
++    });
++  } finally {
++    clearTimeout(timeout);
++  }
++}
++
++async function checkSupabaseReachable() {
++  try {
++    const response = await fetchWithTimeout(supabaseApiUrl("/"));
++    return pass("Supabase reachable", `HTTP ${response.status}`);
++  } catch (error) {
++    return fail("Supabase reachable", error?.code || error?.cause?.code || error?.message);
++  }
++}
++
++async function checkAuthEndpointReachable() {
++  try {
++    const anonKey = envValue("GAMEFOUNDRY_SUPABASE_ANON_KEY");
++    const response = await fetchWithTimeout(supabaseApiUrl("/auth/v1/settings"), {
++      headers: {
++        apikey: anonKey,
++        authorization: `Bearer ${anonKey}`,
++      },
++    });
++    return response.status < 500
++      ? pass("Auth endpoint reachable", `HTTP ${response.status}`)
++      : fail("Auth endpoint reachable", `HTTP ${response.status}`);
++  } catch (error) {
++    return fail("Auth endpoint reachable", error?.code || error?.cause?.code || error?.message);
++  }
++}
++
++async function checkServiceRoleAuthentication() {
++  try {
++    const serviceRoleKey = envValue("GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY");
++    const response = await fetchWithTimeout(supabaseApiUrl("/auth/v1/admin/users?page=1&per_page=1"), {
++      headers: {
++        apikey: serviceRoleKey,
++        authorization: `Bearer ${serviceRoleKey}`,
++      },
++    });
++    if (response.ok) {
++      return pass("Service role authentication", `HTTP ${response.status}`);
++    }
++    return fail("Service role authentication", `HTTP ${response.status}`);
++  } catch (error) {
++    return fail("Service role authentication", error?.code || error?.cause?.code || error?.message);
++  }
++}
++
++async function checkIdentityTable(tableName) {
++  try {
++    const serviceRoleKey = envValue("GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY");
++    const response = await fetchWithTimeout(supabaseApiUrl(`/rest/v1/${encodeURIComponent(tableName)}?select=key&limit=1`), {
++      headers: {
++        apikey: serviceRoleKey,
++        authorization: `Bearer ${serviceRoleKey}`,
++      },
++    });
++    if (response.ok) {
++      return pass(`${tableName} table`, `HTTP ${response.status}`);
++    }
++    const payload = await safeJson(response);
++    return fail(`${tableName} table`, `HTTP ${response.status}${payload?.message ? `: ${payload.message}` : ""}`);
++  } catch (error) {
++    return fail(`${tableName} table`, error?.code || error?.cause?.code || error?.message);
++  }
++}
++
++async function safeJson(response) {
++  try {
++    return await response.json();
++  } catch {
++    return {};
++  }
++}
++
++async function checkTlsValidation() {
++  try {
++    const { hostname } = new URL(envValue("GAMEFOUNDRY_SUPABASE_URL"));
++    await new Promise((resolve, reject) => {
++      const socket = tls.connect({
++        host: hostname,
++        port: 443,
++        rejectUnauthorized: true,
++        servername: hostname,
++        timeout: REQUEST_TIMEOUT_MS,
++      });
++      socket.once("secureConnect", () => {
++        if (socket.authorized) {
++          socket.end();
++          resolve();
++          return;
++        }
++        const reason = socket.authorizationError || "TLS certificate was not authorized.";
++        socket.destroy();
++        reject(new Error(reason));
++      });
++      socket.once("timeout", () => {
++        socket.destroy();
++        reject(new Error("TLS validation timed out."));
++      });
++      socket.once("error", reject);
++    });
++    return pass("TLS validation");
++  } catch (error) {
++    return fail("TLS validation", error?.code || error?.message);
++  }
++}
++
++function parseDatabaseUrl() {
++  const databaseUrl = new URL(envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL"));
++  if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
++    throw new Error("Database URL must use postgres:// or postgresql://.");
++  }
++  return {
++    database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
++    host: databaseUrl.hostname,
++    password: decodeURIComponent(databaseUrl.password || ""),
++    port: Number(databaseUrl.port || 5432),
++    user: decodeURIComponent(databaseUrl.username || ""),
++  };
++}
++
++function createReader(socket) {
++  let buffer = Buffer.alloc(0);
++  const waiters = [];
++  let closedError = null;
++
++  function flush() {
++    while (waiters.length && (closedError || buffer.length >= waiters[0].size)) {
++      const waiter = waiters.shift();
++      clearTimeout(waiter.timeout);
++      if (closedError) {
++        waiter.reject(closedError);
++        continue;
++      }
++      const chunk = buffer.subarray(0, waiter.size);
++      buffer = buffer.subarray(waiter.size);
++      waiter.resolve(chunk);
++    }
++  }
++
++  socket.on("data", (chunk) => {
++    buffer = Buffer.concat([buffer, chunk]);
++    flush();
++  });
++  socket.once("error", (error) => {
++    closedError = error;
++    flush();
++  });
++  socket.once("close", () => {
++    if (!closedError) {
++      closedError = new Error("Connection closed before the expected response was received.");
++      flush();
++    }
++  });
++
++  return {
++    read(size, timeoutMs = REQUEST_TIMEOUT_MS) {
++      if (closedError) {
++        return Promise.reject(closedError);
++      }
++      if (buffer.length >= size) {
++        const chunk = buffer.subarray(0, size);
++        buffer = buffer.subarray(size);
++        return Promise.resolve(chunk);
++      }
++      return new Promise((resolve, reject) => {
++        const timeout = setTimeout(() => {
++          const index = waiters.findIndex((waiter) => waiter.resolve === resolve);
++          if (index !== -1) {
++            waiters.splice(index, 1);
++          }
++          reject(new Error("Timed out waiting for PostgreSQL response."));
++        }, timeoutMs);
++        waiters.push({
++          reject,
++          resolve,
++          size,
++          timeout,
++        });
++      });
++    },
++  };
++}
++
++async function readPgMessage(reader) {
++  const type = (await reader.read(1)).toString("utf8");
++  const length = (await reader.read(4)).readInt32BE(0);
++  const payload = length > 4 ? await reader.read(length - 4) : Buffer.alloc(0);
++  return {
++    payload,
++    type,
++  };
++}
++
++function pgCString(value) {
++  return Buffer.from(`${value}\0`, "utf8");
++}
++
++function pgStartupMessage({ database, user }) {
++  const params = Buffer.concat([
++    pgCString("user"),
++    pgCString(user),
++    pgCString("database"),
++    pgCString(database),
++    pgCString("client_encoding"),
++    pgCString("UTF8"),
++    pgCString("application_name"),
++    pgCString("gamefoundry-dev-validator"),
++    Buffer.from([0]),
++  ]);
++  const payload = Buffer.concat([int32(POSTGRES_PROTOCOL_VERSION), params]);
++  return Buffer.concat([int32(payload.length + 4), payload]);
++}
++
++function pgPasswordMessage(content) {
++  const payload = Buffer.isBuffer(content) ? content : pgCString(content);
++  return Buffer.concat([Buffer.from("p"), int32(payload.length + 4), payload]);
++}
++
++function parseCStringList(payload, offset = 0) {
++  const values = [];
++  let start = offset;
++  for (let index = offset; index < payload.length; index += 1) {
++    if (payload[index] !== 0) {
++      continue;
++    }
++    if (index === start) {
++      break;
++    }
++    values.push(payload.subarray(start, index).toString("utf8"));
++    start = index + 1;
++  }
++  return values;
++}
++
++function parsePgError(payload) {
++  const fields = {};
++  let index = 0;
++  while (index < payload.length && payload[index] !== 0) {
++    const code = String.fromCharCode(payload[index]);
++    index += 1;
++    const end = payload.indexOf(0, index);
++    if (end === -1) {
++      break;
++    }
++    fields[code] = payload.subarray(index, end).toString("utf8");
++    index = end + 1;
++  }
++  return fields.M || fields.C || "PostgreSQL returned an error response.";
++}
++
++function md5PostgresPassword(password, user, salt) {
++  const inner = crypto.createHash("md5").update(password + user).digest("hex");
++  return `md5${crypto.createHash("md5").update(Buffer.concat([Buffer.from(inner), salt])).digest("hex")}`;
++}
++
++function saslName(value) {
++  return String(value).replace(/=/g, "=3D").replace(/,/g, "=2C");
++}
++
++function xorBuffers(left, right) {
++  const output = Buffer.alloc(left.length);
++  for (let index = 0; index < left.length; index += 1) {
++    output[index] = left[index] ^ right[index];
++  }
++  return output;
++}
++
++function parseScramAttributes(message) {
++  const attributes = new Map();
++  message.split(",").forEach((part) => {
++    const key = part.slice(0, 1);
++    attributes.set(key, part.slice(2));
++  });
++  return attributes;
++}
++
++function createScramClient(user, password) {
++  const nonce = crypto.randomBytes(18).toString("base64").replace(/=+$/u, "");
++  const clientFirstBare = `n=${saslName(user)},r=${nonce}`;
++  const clientFirstMessage = `n,,${clientFirstBare}`;
++  let expectedServerSignature = "";
++
++  return {
++    clientFirstMessage,
++    createFinalMessage(serverFirstMessage) {
++      const attributes = parseScramAttributes(serverFirstMessage);
++      const serverNonce = attributes.get("r") || "";
++      const salt = Buffer.from(attributes.get("s") || "", "base64");
++      const iterations = Number(attributes.get("i") || 0);
++      if (!serverNonce.startsWith(nonce) || !salt.length || !iterations) {
++        throw new Error("PostgreSQL SCRAM authentication returned an invalid challenge.");
++      }
++      const clientFinalWithoutProof = `c=${Buffer.from("n,,").toString("base64")},r=${serverNonce}`;
++      const authMessage = `${clientFirstBare},${serverFirstMessage},${clientFinalWithoutProof}`;
++      const saltedPassword = crypto.pbkdf2Sync(password, salt, iterations, 32, "sha256");
++      const clientKey = crypto.createHmac("sha256", saltedPassword).update("Client Key").digest();
++      const storedKey = crypto.createHash("sha256").update(clientKey).digest();
++      const clientSignature = crypto.createHmac("sha256", storedKey).update(authMessage).digest();
++      const clientProof = xorBuffers(clientKey, clientSignature).toString("base64");
++      const serverKey = crypto.createHmac("sha256", saltedPassword).update("Server Key").digest();
++      expectedServerSignature = crypto.createHmac("sha256", serverKey).update(authMessage).digest("base64");
++      return `${clientFinalWithoutProof},p=${clientProof}`;
++    },
++    verifyServerFinal(serverFinalMessage) {
++      const attributes = parseScramAttributes(serverFinalMessage);
++      const signature = attributes.get("v");
++      if (expectedServerSignature && signature && signature !== expectedServerSignature) {
++        throw new Error("PostgreSQL SCRAM server signature did not match.");
++      }
++    },
++  };
++}
++
++async function openPostgresTlsConnection({ host, port }) {
++  const socket = net.connect({
++    host,
++    port,
++    timeout: REQUEST_TIMEOUT_MS,
++  });
++  await new Promise((resolve, reject) => {
++    socket.once("connect", resolve);
++    socket.once("timeout", () => {
++      socket.destroy();
++      reject(new Error("PostgreSQL TCP connection timed out."));
++    });
++    socket.once("error", reject);
++  });
++  socket.write(Buffer.concat([int32(8), int32(POSTGRES_SSL_REQUEST_CODE)]));
++  const sslResponse = await new Promise((resolve, reject) => {
++    socket.once("data", (chunk) => resolve(chunk.subarray(0, 1).toString("utf8")));
++    socket.once("error", reject);
++    socket.once("timeout", () => {
++      socket.destroy();
++      reject(new Error("Timed out waiting for PostgreSQL SSL response."));
++    });
++  });
++  if (sslResponse !== "S") {
++    socket.destroy();
++    throw new Error("PostgreSQL server did not accept TLS negotiation.");
++  }
++  return new Promise((resolve, reject) => {
++    const secureSocket = tls.connect({
++      rejectUnauthorized: true,
++      servername: host,
++      socket,
++    });
++    secureSocket.once("secureConnect", () => {
++      if (secureSocket.authorized) {
++        resolve(secureSocket);
++        return;
++      }
++      const reason = secureSocket.authorizationError || "PostgreSQL TLS certificate was not authorized.";
++      secureSocket.destroy();
++      reject(new Error(reason));
++    });
++    secureSocket.once("error", reject);
++  });
++}
++
++async function checkDatabaseConnection() {
++  let secureSocket = null;
++  try {
++    const config = parseDatabaseUrl();
++    if (!config.user || !config.password) {
++      throw new Error("Database URL must include username and password.");
++    }
++    secureSocket = await openPostgresTlsConnection(config);
++    const reader = createReader(secureSocket);
++    secureSocket.write(pgStartupMessage(config));
++
++    let scramClient = null;
++    let authenticated = false;
++    while (true) {
++      const message = await readPgMessage(reader);
++      if (message.type === "R") {
++        const authCode = message.payload.readInt32BE(0);
++        if (authCode === 0) {
++          authenticated = true;
++          continue;
++        }
++        if (authCode === 3) {
++          secureSocket.write(pgPasswordMessage(config.password));
++          continue;
++        }
++        if (authCode === 5) {
++          secureSocket.write(pgPasswordMessage(md5PostgresPassword(config.password, config.user, message.payload.subarray(4, 8))));
++          continue;
++        }
++        if (authCode === 10) {
++          const mechanisms = parseCStringList(message.payload, 4);
++          if (!mechanisms.includes("SCRAM-SHA-256")) {
++            throw new Error(`PostgreSQL requested unsupported authentication mechanism: ${mechanisms.join(", ") || "unknown"}.`);
++          }
++          scramClient = createScramClient(config.user, config.password);
++          const initialResponse = Buffer.from(scramClient.clientFirstMessage, "utf8");
++          secureSocket.write(pgPasswordMessage(Buffer.concat([
++            pgCString("SCRAM-SHA-256"),
++            int32(initialResponse.length),
++            initialResponse,
++          ])));
++          continue;
++        }
++        if (authCode === 11) {
++          if (!scramClient) {
++            throw new Error("PostgreSQL SCRAM challenge arrived before client setup.");
++          }
++          const finalMessage = scramClient.createFinalMessage(message.payload.subarray(4).toString("utf8"));
++          secureSocket.write(pgPasswordMessage(Buffer.from(finalMessage, "utf8")));
++          continue;
++        }
++        if (authCode === 12) {
++          if (scramClient) {
++            scramClient.verifyServerFinal(message.payload.subarray(4).toString("utf8"));
++          }
++          continue;
++        }
++        throw new Error(`PostgreSQL requested unsupported authentication code ${authCode}.`);
++      }
++      if (message.type === "E") {
++        throw new Error(parsePgError(message.payload));
++      }
++      if (message.type === "Z") {
++        if (!authenticated) {
++          throw new Error("PostgreSQL reached ready state before authentication completed.");
++        }
++        return pass("Database connection");
++      }
++    }
++  } catch (error) {
++    return fail("Database connection", error?.code || error?.message);
++  } finally {
++    if (secureSocket) {
++      secureSocket.end();
++    }
++  }
++}
++
++async function main() {
++  const envLoad = loadEnvLocal();
++  const results = [];
++  results.push(envLoad.loaded
++    ? pass(".env.local loaded", `${envLoad.loadedKeys.length} key(s) loaded`)
++    : fail(".env.local loaded", `${ENV_FILE} was not found`));
++
++  REQUIRED_ENV.forEach(({ key, label }) => {
++    const value = envValue(key);
++    results.push(value ? pass(label, `${key}=${maskValue(value)}`) : fail(label, `${key}=missing`));
++  });
++
++  results.push(await checkSupabaseReachable());
++  results.push(await checkTlsValidation());
++  results.push(await checkAuthEndpointReachable());
++  results.push(await checkServiceRoleAuthentication());
++  results.push(await checkDatabaseConnection());
++  for (const tableName of IDENTITY_TABLES) {
++    results.push(await checkIdentityTable(tableName));
++  }
++
++  results.forEach((check) => {
++    console.log(formatResult(check));
++  });
++  const failed = results.filter((check) => check.status !== "PASS");
++  console.log("");
++  console.log(`Overall Result: ${failed.length ? "FAIL" : "PASS"}`);
++  if (failed.length) {
++    console.log(`Failed checks: ${failed.map((check) => check.label).join(", ")}`);
++    process.exitCode = 1;
++  }
++}
++
++await main();
+warning: in the working copy of 'scripts/validate-supabase-dev.mjs', LF will be replaced by CRLF the next time Git touches it

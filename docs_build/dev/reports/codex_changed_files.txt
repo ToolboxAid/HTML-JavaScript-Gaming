@@ -1,72 +1,12 @@
 # git status --short
-M docs_build/dev/reports/dependency_gating_report.md
- M docs_build/dev/reports/dependency_hydration_reuse_report.md
- M docs_build/dev/reports/execution_graph_reuse_report.md
- M docs_build/dev/reports/failure_fingerprint_report.md
- M docs_build/dev/reports/filesystem_scan_reduction_report.md
- M docs_build/dev/reports/incremental_validation_report.md
- M docs_build/dev/reports/lane_compilation_report.md
- M docs_build/dev/reports/lane_deduplication_report.md
- M docs_build/dev/reports/lane_input_validation_report.md
- M docs_build/dev/reports/lane_manifests/workspace-contract.json
- M docs_build/dev/reports/lane_runtime_optimization_report.md
- M docs_build/dev/reports/lane_snapshot_report.md
- M docs_build/dev/reports/lane_snapshots/workspace-contract.json
- M docs_build/dev/reports/lane_warm_start_report.md
- M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
- M docs_build/dev/reports/monolith_trigger_removal_report.md
- M docs_build/dev/reports/persistent_lane_manifest_report.md
- M docs_build/dev/reports/playwright_discovery_ownership_report.md
- M docs_build/dev/reports/playwright_discovery_scope_report.md
- M docs_build/dev/reports/playwright_structure_audit.md
- M docs_build/dev/reports/retry_suppression_report.md
- M docs_build/dev/reports/slow_path_pruning_report.md
- M docs_build/dev/reports/static_validation_report.md
- M docs_build/dev/reports/targeted_file_manifest_report.md
- M docs_build/dev/reports/test_cleanup_performance_report.md
- M docs_build/dev/reports/test_cleanup_routing_report.md
- M docs_build/dev/reports/testing_lane_execution_report.md
- M docs_build/dev/reports/validation_cache_report.md
- M docs_build/dev/reports/zero_browser_preflight_report.md
- M src/dev-runtime/server/local-api-router.mjs
- M tests/dev-runtime/SupabaseProviderContractStub.test.mjs
- M tests/playwright/tools/LoginSessionMode.spec.mjs
-?? docs_build/dev/reports/PR_26166_153-supabase-identity-bootstrap-and-provisioning.md
+M package.json
+?? docs_build/dev/reports/PR_26166_154-supabase-dev-tls-identity-readiness.md
+?? scripts/validate-supabase-dev.mjs
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26166_153-supabase-identity-bootstrap-and-provisioning.md
+docs_build/dev/reports/PR_26166_154-supabase-dev-tls-identity-readiness.md
+scripts/validate-supabase-dev.mjs
 
 # git diff --stat
-docs_build/dev/reports/dependency_gating_report.md |   2 +-
- .../reports/dependency_hydration_reuse_report.md   |  12 +-
- .../dev/reports/execution_graph_reuse_report.md    |  16 +-
- .../dev/reports/failure_fingerprint_report.md      |   2 +-
- .../reports/filesystem_scan_reduction_report.md    |   2 +-
- .../dev/reports/incremental_validation_report.md   |  14 +-
- docs_build/dev/reports/lane_compilation_report.md  |   2 +-
- .../dev/reports/lane_deduplication_report.md       |   2 +-
- .../dev/reports/lane_input_validation_report.md    |   2 +-
- .../reports/lane_manifests/workspace-contract.json |  10 +-
- .../reports/lane_runtime_optimization_report.md    |  14 +-
- docs_build/dev/reports/lane_snapshot_report.md     |  12 +-
- .../reports/lane_snapshots/workspace-contract.json |  22 +--
- docs_build/dev/reports/lane_warm_start_report.md   |  12 +-
- .../lane_warm_starts/workspace-contract.json       |  16 +-
- .../dev/reports/monolith_trigger_removal_report.md |   2 +-
- .../dev/reports/persistent_lane_manifest_report.md |  12 +-
- .../playwright_discovery_ownership_report.md       |   2 +-
- .../reports/playwright_discovery_scope_report.md   |   2 +-
- .../dev/reports/playwright_structure_audit.md      |   2 +-
- docs_build/dev/reports/retry_suppression_report.md |   2 +-
- docs_build/dev/reports/slow_path_pruning_report.md |  16 +-
- docs_build/dev/reports/static_validation_report.md |  12 +-
- .../dev/reports/targeted_file_manifest_report.md   |   8 +-
- .../dev/reports/test_cleanup_performance_report.md |  22 +--
- .../dev/reports/test_cleanup_routing_report.md     |   2 +-
- .../dev/reports/testing_lane_execution_report.md   |  52 +++---
- docs_build/dev/reports/validation_cache_report.md  |  30 ++--
- .../dev/reports/zero_browser_preflight_report.md   |  10 +-
- src/dev-runtime/server/local-api-router.mjs        | 195 ++++++++++++++++++++-
- .../SupabaseProviderContractStub.test.mjs          | 170 ++++++++++++++++--
- tests/playwright/tools/LoginSessionMode.spec.mjs   |  40 ++++-
- 32 files changed, 538 insertions(+), 181 deletions(-)
+package.json | 1 +
+ 1 file changed, 1 insertion(+)
