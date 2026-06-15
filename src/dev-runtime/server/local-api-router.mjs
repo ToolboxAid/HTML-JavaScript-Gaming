@@ -93,6 +93,12 @@ const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
 const AUTH_READY_MESSAGE = "Account service is available.";
+const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
+  description: "Default creator/player account role.",
+  isSystemRole: false,
+  name: "User",
+  roleSlug: "user",
+});
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
 const TOOLBOX_PLANNING_FIELDS = Object.freeze([
@@ -664,17 +670,31 @@ function normalizedAuthEmail(value) {
   return String(value || "").trim();
 }
 
+function displayNameFromEmail(email) {
+  const localPart = String(email || "").split("@")[0].trim();
+  return localPart || "Creator";
+}
+
 function sanitizedAuthErrorDiagnostic(error) {
   const message = String(error?.message || error || "").trim();
   const statusMatch = message.match(/HTTP\s+(\d+)/);
+  const code = error?.code || error?.cause?.code || "";
   return {
-    code: error?.code || "",
+    code,
     httpStatus: statusMatch ? Number(statusMatch[1]) : 0,
     message: statusMatch
       ? `Supabase Auth request failed with HTTP ${statusMatch[1]}.`
       : message
         ? "Supabase Auth request failed before an HTTP status was available."
         : "Supabase Auth request failed.",
+  };
+}
+
+function identityTableCounts(tables = {}) {
+  return {
+    roles: Array.isArray(tables.roles) ? tables.roles.length : 0,
+    user_roles: Array.isArray(tables.user_roles) ? tables.user_roles.length : 0,
+    users: Array.isArray(tables.users) ? tables.users.length : 0,
   };
 }
 
@@ -1096,12 +1116,8 @@ class LocalDevDataSource {
     return sessionUserFromKey(this.standaloneTables, this.sessionUserKey, this.sessionModeId);
   }
 
-  async readSupabaseIdentityTables(action) {
+  async readSupabaseIdentityTablesUnchecked(action) {
     this.assertLocalDatabaseProvider(action);
-    const authStatus = await this.authStatusForRoute();
-    if (!authStatus.ready) {
-      throw authUnavailableError(action, `Supabase Auth identity ownership is not ready. ${authStatus.operatorDiagnostic || authStatus.status}`);
-    }
     const adapter = new SupabasePostgresProviderAdapter();
     const [users, roles, userRoles] = await Promise.all([
       adapter.getUsers(),
@@ -1118,6 +1134,41 @@ class LocalDevDataSource {
       },
     };
     return this.identityTablesCache.tables;
+  }
+
+  async readSupabaseIdentityTables(action) {
+    this.assertLocalDatabaseProvider(action);
+    const authStatus = await this.authStatusForRoute();
+    if (!authStatus.ready) {
+      throw authUnavailableError(action, `Supabase Auth identity ownership is not ready. ${authStatus.operatorDiagnostic || authStatus.status}`);
+    }
+    return this.readSupabaseIdentityTablesUnchecked(action);
+  }
+
+  async supabaseIdentityReadinessCheck() {
+    try {
+      const tables = await this.readSupabaseIdentityTablesUnchecked("Validating Supabase identity tables");
+      return {
+        diagnostic: "Supabase identity tables are reachable through the server-side provider contract.",
+        identityBootstrapReady: true,
+        identityTableRecords: identityTableCounts(tables),
+        identityTablesReady: true,
+      };
+    } catch (error) {
+      const diagnostic = sanitizedAuthErrorDiagnostic(error);
+      return {
+        diagnostic: diagnostic.httpStatus
+          ? diagnostic.message
+          : "Supabase identity table validation failed before an HTTP status was available.",
+        identityBootstrapReady: false,
+        identityTableRecords: {
+          roles: 0,
+          user_roles: 0,
+          users: 0,
+        },
+        identityTablesReady: false,
+      };
+    }
   }
 
   cachedSupabaseIdentitySession() {
@@ -1578,11 +1629,31 @@ class LocalDevDataSource {
         supabaseConnectivityStatus: connectivity.connectivityStatus,
       };
     }
+    const identity = await this.supabaseIdentityReadinessCheck();
+    if (!identity.identityTablesReady) {
+      return {
+        ...status,
+        actionRequired: AUTH_UNAVAILABLE_MESSAGE,
+        connectivityHealthy: true,
+        connectivityStatus: "healthy",
+        identityBootstrapReady: false,
+        identityTableRecords: identity.identityTableRecords,
+        identityTablesReady: false,
+        message: AUTH_UNAVAILABLE_MESSAGE,
+        operatorDiagnostic: `Supabase Auth is reachable, but identity table readiness could not be proven. ${identity.diagnostic}`,
+        ready: false,
+        status: "unavailable",
+        supabaseConnectivityStatus: "healthy",
+      };
+    }
     return {
       ...status,
       connectivityHealthy: true,
       connectivityStatus: "healthy",
-      operatorDiagnostic: "Supabase Auth is selected, configured, reachable, and ready. Product data remains Local DB.",
+      identityBootstrapReady: true,
+      identityTableRecords: identity.identityTableRecords,
+      identityTablesReady: true,
+      operatorDiagnostic: "Supabase Auth is selected, configured, reachable, identity tables are available, and product data remains Local DB.",
       ready: true,
       status: "ready",
       supabaseConnectivityStatus: "healthy",
@@ -1622,6 +1693,24 @@ class LocalDevDataSource {
       status: connectivity.connectivityStatus === "healthy" ? "PASS" : status.supabaseConfigPresent ? "FAIL" : "SKIP",
       summary: connectivity.diagnostic,
     });
+    const identity = connectivity.connectivityStatus === "healthy"
+      ? await this.supabaseIdentityReadinessCheck()
+      : {
+        diagnostic: "Supabase identity table validation requires healthy Supabase Auth connectivity first.",
+        identityTableRecords: {
+          roles: 0,
+          user_roles: 0,
+          users: 0,
+        },
+        identityTablesReady: false,
+      };
+
+    checks.push({
+      id: "supabase-identity-tables",
+      records: identity.identityTableRecords,
+      status: identity.identityTablesReady ? "PASS" : connectivity.connectivityStatus === "healthy" ? "FAIL" : "SKIP",
+      summary: identity.diagnostic,
+    });
 
     return {
       authProviderId: status.authProviderId,
@@ -1632,6 +1721,8 @@ class LocalDevDataSource {
       connectivityStatus: connectivity.connectivityStatus,
       databaseProviderId: status.databaseProviderId,
       localDbProductDataActive: status.localDbProductDataActive,
+      identityTableRecords: identity.identityTableRecords,
+      identityTablesReady: identity.identityTablesReady,
       noAutomaticFallback: true,
       operatorDiagnostic: status.operatorDiagnostic,
       operatorOnly: true,
@@ -1680,6 +1771,84 @@ class LocalDevDataSource {
     return session;
   }
 
+  async provisionSupabaseIdentityForAuthPayload(action, email, payload = {}) {
+    const authUser = payload.user && typeof payload.user === "object" ? payload.user : {};
+    const authUserId = String(authUser.id || "").trim();
+    const authEmail = normalizedAuthEmail(authUser.email || email);
+    if (!authUserId || !authEmail) {
+      throw authUnavailableError(action, "Supabase Auth did not return the user id and email required for identity provisioning.");
+    }
+
+    const adapter = new SupabasePostgresProviderAdapter();
+    const tables = await this.readSupabaseIdentityTablesUnchecked(`${action} identity provisioning`);
+    const users = tables.users || [];
+    const roles = tables.roles || [];
+    const userRoles = tables.user_roles || [];
+    const matchingByProviderId = users.find((user) => user.authProvider === SUPABASE_AUTH_PROVIDER_ID &&
+      String(user.authProviderUserId || "") === authUserId);
+    const matchingByEmail = users.find((user) => normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
+    if (matchingByProviderId && matchingByEmail && matchingByProviderId.key !== matchingByEmail.key) {
+      throw authUnavailableError(action, "Supabase Auth identity maps to conflicting users records.");
+    }
+    const matchingUser = matchingByProviderId || matchingByEmail || null;
+    if (matchingUser?.authProvider && matchingUser.authProvider !== SUPABASE_AUTH_PROVIDER_ID) {
+      throw authUnavailableError(action, "Existing users record is owned by a different auth provider.");
+    }
+    if (matchingUser?.authProviderUserId && String(matchingUser.authProviderUserId) !== authUserId) {
+      throw authUnavailableError(action, "Existing users record is linked to a different Supabase Auth user.");
+    }
+
+    const timestamp = new Date().toISOString();
+    const userKey = matchingUser?.key || adapter.createRecordKey();
+    const userRecord = adapter.normalizeUserRecord({
+      ...matchingUser,
+      authProvider: SUPABASE_AUTH_PROVIDER_ID,
+      authProviderUserId: authUserId,
+      displayName: matchingUser?.displayName || displayNameFromEmail(authEmail),
+      email: authEmail,
+      key: userKey,
+    }, userKey, timestamp);
+    await adapter.upsertTable("users", [userRecord]);
+
+    let roleRecord = roles.find((role) => role.roleSlug === DEFAULT_SUPABASE_ACCOUNT_ROLE.roleSlug && role.isActive !== false);
+    let roleCreated = false;
+    if (!roleRecord) {
+      roleRecord = adapter.normalizeRoleRecord({
+        ...DEFAULT_SUPABASE_ACCOUNT_ROLE,
+        key: adapter.createRecordKey(),
+      }, userKey, timestamp);
+      await adapter.upsertTable("roles", [roleRecord]);
+      roleCreated = true;
+    }
+
+    const existingUserRole = userRoles.find((row) => row.userKey === userKey && row.roleKey === roleRecord.key);
+    let userRoleCreated = false;
+    if (!existingUserRole) {
+      const userRoleRecord = adapter.normalizeUserRoleRecord({
+        key: adapter.createRecordKey(),
+        roleKey: roleRecord.key,
+        userKey,
+      }, new Map(), userKey, timestamp);
+      await adapter.upsertTable("user_roles", [userRoleRecord]);
+      userRoleCreated = true;
+    }
+
+    const refreshedTables = await this.readSupabaseIdentityTablesUnchecked(`${action} identity provisioning result`);
+    const session = sessionUserFromIdentityTables(refreshedTables, userKey, this.sessionModeId, "Supabase identity");
+    if (!session.authenticated) {
+      throw authUnavailableError(action, session.diagnostic || "Provisioned Supabase identity session could not be validated.");
+    }
+
+    return {
+      identityProvisioned: true,
+      identityTableRecords: identityTableCounts(refreshedTables),
+      roleCreated,
+      roleSlugs: session.roleSlugs,
+      userKey,
+      userRoleCreated,
+    };
+  }
+
   async authSignIn(body = {}) {
     const adapter = await this.authAdapterForAction("Sign in");
     const email = normalizedAuthEmail(body.email || body.identity);
@@ -1707,7 +1876,17 @@ class LocalDevDataSource {
         email,
         password: body.password,
       });
-      return sanitizedSupabaseAuthActionResult("create-account", email, payload);
+      const identity = await this.provisionSupabaseIdentityForAuthPayload("Create account", email, payload);
+      return {
+        ...sanitizedSupabaseAuthActionResult("create-account", email, payload),
+        identityProvisioned: identity.identityProvisioned,
+        identityTableRecords: identity.identityTableRecords,
+        message: "Account created. You can sign in after confirming your email.",
+        roleCreated: identity.roleCreated,
+        roleSlugs: identity.roleSlugs,
+        userKey: identity.userKey,
+        userRoleCreated: identity.userRoleCreated,
+      };
     } catch (error) {
       if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
         throw error;

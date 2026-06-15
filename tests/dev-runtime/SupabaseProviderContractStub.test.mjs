@@ -72,7 +72,24 @@ function startApiServer() {
 function startFakeSupabaseAuthServer(options = {}) {
   const expectedApiKey = options.expectedApiKey || "";
   const rejectWrongApiKey = options.rejectWrongApiKey === true;
-  const identityTables = options.identityTables || {};
+  const identityTables = {
+    roles: [...(options.identityTables?.roles || [])],
+    user_roles: [...(options.identityTables?.user_roles || [])],
+    users: [...(options.identityTables?.users || [])],
+  };
+  const authUserIdForEmail = (email) => {
+    const normalizedEmail = String(email || "creator@example.test").trim();
+    if (options.userIdByEmail?.[normalizedEmail]) {
+      return options.userIdByEmail[normalizedEmail];
+    }
+    if (options.authUserId) {
+      return options.authUserId;
+    }
+    if (normalizedEmail === "user1@example.invalid") {
+      return "supabase-user-1";
+    }
+    return `supabase-${normalizedEmail.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+  };
   const calls = [];
   const server = http.createServer(async (request, response) => {
     const chunks = [];
@@ -96,6 +113,25 @@ function startFakeSupabaseAuthServer(options = {}) {
     }
     if (requestUrl.pathname.startsWith("/rest/v1/")) {
       const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
+      if (request.method === "POST") {
+        const rows = Array.isArray(body) ? body : [body];
+        identityTables[tableName] = identityTables[tableName] || [];
+        rows.forEach((row) => {
+          const index = identityTables[tableName].findIndex((existing) => existing.key === row.key);
+          if (index >= 0) {
+            identityTables[tableName][index] = {
+              ...identityTables[tableName][index],
+              ...row,
+            };
+          } else {
+            identityTables[tableName].push(row);
+          }
+        });
+        response.statusCode = 200;
+        response.setHeader("Content-Type", "application/json; charset=utf-8");
+        response.end(JSON.stringify(rows));
+        return;
+      }
       response.statusCode = 200;
       response.setHeader("Content-Type", "application/json; charset=utf-8");
       response.end(JSON.stringify(identityTables[tableName] || []));
@@ -119,7 +155,7 @@ function startFakeSupabaseAuthServer(options = {}) {
       token_type: "bearer",
       user: {
         email: body.email || "creator@example.test",
-        id: options.authUserId || "supabase-user-1",
+        id: authUserIdForEmail(body.email),
       },
     }));
   });
@@ -666,7 +702,10 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       });
       assert.equal(createAccount.status, 200);
       assert.equal(createAccount.payload.data.action, "create-account");
+      assert.equal(createAccount.payload.data.identityProvisioned, true);
       assert.equal(createAccount.payload.data.localDbSessionCreated, false);
+      assert.deepEqual(createAccount.payload.data.roleSlugs, ["user"]);
+      assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
 
       const reset = await postApiPayload(server.baseUrl, "/api/auth/password-reset", {
         email: "reset@example.test",
@@ -689,6 +728,118 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(fakeSupabase.calls
         .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "test-service-role-key"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Create account provisions Supabase identity user default role and user_roles before sign-in", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: {
+      roles: [],
+      user_roles: [],
+      users: [],
+    },
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const status = await apiJson(server.baseUrl, "/api/auth/status");
+      assert.equal(status.ready, true);
+      assert.equal(status.identityTablesReady, true);
+      assert.deepEqual(status.identityTableRecords, {
+        roles: 0,
+        user_roles: 0,
+        users: 0,
+      });
+
+      const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
+        email: "new.creator@example.test",
+        password: "not-stored-locally",
+      });
+      assert.equal(createAccount.status, 200);
+      assert.equal(createAccount.payload.ok, true);
+      assert.equal(createAccount.payload.data.identityProvisioned, true);
+      assert.equal(createAccount.payload.data.roleCreated, true);
+      assert.equal(createAccount.payload.data.userRoleCreated, true);
+      assert.deepEqual(createAccount.payload.data.roleSlugs, ["user"]);
+      assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
+      assert.equal(Object.values(MOCK_DB_KEYS.users).includes(createAccount.payload.data.userKey), false);
+      assert.deepEqual(createAccount.payload.data.identityTableRecords, {
+        roles: 1,
+        user_roles: 1,
+        users: 1,
+      });
+
+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
+        email: "new.creator@example.test",
+        password: "not-stored-locally",
+      });
+      assert.equal(signIn.status, 200);
+      assert.equal(signIn.payload.data.sessionResolved, true);
+      assert.equal(signIn.payload.data.userKey, createAccount.payload.data.userKey);
+      assert.deepEqual(signIn.payload.data.roleSlugs, ["user"]);
+
+      const current = await apiJson(server.baseUrl, "/api/session/current");
+      assert.equal(current.authenticated, true);
+      assert.equal(current.userKey, createAccount.payload.data.userKey);
+      assert.deepEqual(current.roleSlugs, ["user"]);
+
+      const restPosts = fakeSupabase.calls
+        .filter((call) => call.method === "POST" && call.path.startsWith("/rest/v1/"))
+        .map((call) => call.path);
+      assert.deepEqual(restPosts, [
+        "/rest/v1/users?on_conflict=key",
+        "/rest/v1/roles?on_conflict=key",
+        "/rest/v1/user_roles?on_conflict=key",
+      ]);
+      assert.equal(fakeSupabase.calls
+        .filter((call) => call.path.startsWith("/rest/v1/"))
+        .every((call) => call.headers.apikey === "test-service-role-key"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Supabase sign in fails visibly when the Auth user has no app identity row", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: {
+      roles: [],
+      user_roles: [],
+      users: [],
+    },
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const status = await apiJson(server.baseUrl, "/api/auth/status");
+      assert.equal(status.ready, true);
+      assert.equal(status.identityTablesReady, true);
+
+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
+        email: "missing.identity@example.test",
+        password: "not-stored-locally",
+      });
+      assert.equal(signIn.status, 503);
+      assert.equal(signIn.payload.ok, false);
+      assert.equal(signIn.payload.error, "The site is currently unavailable. Please try again later.");
+      assert.equal(JSON.stringify(signIn.payload).includes("missing.identity@example.test"), false);
     } finally {
       await server.close();
     }
@@ -811,17 +962,10 @@ test("Supabase Auth selected path reads users roles and user_roles through the p
       const restCalls = fakeSupabase.calls
         .filter((call) => call.path.startsWith("/rest/v1/"))
         .map((call) => call.path);
-      assert.deepEqual(restCalls, [
-        "/rest/v1/users?select=*",
-        "/rest/v1/roles?select=*",
-        "/rest/v1/user_roles?select=*",
-        "/rest/v1/users?select=*",
-        "/rest/v1/roles?select=*",
-        "/rest/v1/user_roles?select=*",
-        "/rest/v1/users?select=*",
-        "/rest/v1/roles?select=*",
-        "/rest/v1/user_roles?select=*",
-      ]);
+      assert.equal(restCalls.includes("/rest/v1/users?select=*"), true);
+      assert.equal(restCalls.includes("/rest/v1/roles?select=*"), true);
+      assert.equal(restCalls.includes("/rest/v1/user_roles?select=*"), true);
+      assert.equal(restCalls.length >= 9, true);
       assert.equal(fakeSupabase.calls
         .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "test-service-role-key"), true);

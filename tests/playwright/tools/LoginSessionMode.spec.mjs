@@ -81,7 +81,24 @@ async function withSupabaseEnv(nextEnv, callback) {
 
 async function startFakeSupabaseAuthServer(options = {}) {
   const calls = [];
-  const identityTables = options.identityTables || {};
+  const identityTables = {
+    roles: [...(options.identityTables?.roles || [])],
+    user_roles: [...(options.identityTables?.user_roles || [])],
+    users: [...(options.identityTables?.users || [])],
+  };
+  const authUserIdForEmail = (email) => {
+    const normalizedEmail = String(email || "creator@example.test").trim();
+    if (options.userIdByEmail?.[normalizedEmail]) {
+      return options.userIdByEmail[normalizedEmail];
+    }
+    if (options.authUserId) {
+      return options.authUserId;
+    }
+    if (normalizedEmail === "user1@example.invalid") {
+      return "supabase-user-1";
+    }
+    return `supabase-${normalizedEmail.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "")}`;
+  };
   const server = http.createServer(async (request, response) => {
     const chunks = [];
     for await (const chunk of request) {
@@ -100,6 +117,23 @@ async function startFakeSupabaseAuthServer(options = {}) {
     response.setHeader("Content-Type", "application/json; charset=utf-8");
     if (requestUrl.pathname.startsWith("/rest/v1/")) {
       const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
+      if (request.method === "POST") {
+        const rows = Array.isArray(body) ? body : [body];
+        identityTables[tableName] = identityTables[tableName] || [];
+        rows.forEach((row) => {
+          const index = identityTables[tableName].findIndex((existing) => existing.key === row.key);
+          if (index >= 0) {
+            identityTables[tableName][index] = {
+              ...identityTables[tableName][index],
+              ...row,
+            };
+          } else {
+            identityTables[tableName].push(row);
+          }
+        });
+        response.end(JSON.stringify(rows));
+        return;
+      }
       response.end(JSON.stringify(identityTables[tableName] || []));
       return;
     }
@@ -116,7 +150,7 @@ async function startFakeSupabaseAuthServer(options = {}) {
       refresh_token: "browser-test-refresh-token",
       user: {
         email: body.email || "creator@example.test",
-        id: options.authUserId || "supabase-user-1",
+        id: authUserIdForEmail(body.email),
       },
     }));
   });
@@ -500,7 +534,7 @@ test("Configured account auth actions use external Auth and resolve the app sess
       await page.getByLabel("Email").fill("new@example.test");
       await page.getByLabel("Password").fill("not-stored-locally");
       await page.getByRole("button", { name: "Create Account" }).click();
-      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account authentication completed through the configured account provider.");
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account created. You can sign in after confirming your email.");
 
       await page.goto(`${failures.server.baseUrl}/account/password-reset.html`, { waitUntil: "networkidle" });
       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
