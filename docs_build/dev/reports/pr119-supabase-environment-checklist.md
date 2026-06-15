@@ -1,0 +1,321 @@
+# PR_26164_119 Supabase Environment Checklist
+
+## Branch Validation
+
+- PASS: Current branch is `main`.
+- Expected branch: `main`.
+- Worktree before changes: clean.
+
+## Scope
+
+- PASS: Planning/report-only PR.
+- PASS: Started from `docs_build/dev/reports/pr118-external-auth-readiness-plan.md`.
+- PASS: Supabase runtime code was not implemented.
+- PASS: Supabase dependencies were not added.
+- PASS: Sign-in runtime behavior was not changed.
+- PASS: Password tables were not added.
+- PASS: Secrets were not stored in the repo.
+
+## Source Position From PR118
+
+PR118 establishes that:
+
+- Current Local DB behavior remains the DEV bridge until a later PR explicitly introduces external-auth DEV behavior.
+- Recommended target is Supabase Auth plus Supabase Postgres.
+- DEV setup/migration may be run by Codex only for Local DB until Supabase DEV is explicitly introduced.
+- UAT and PROD SQL/setup execution is user-controlled.
+- Create Account and Lost Password remain production-safe placeholders until external auth exists.
+- Admin -> Site Setup owns long-term setup and seed behavior.
+- App identity remains key-based with external provider users mapped to `users.key`.
+- Passwords, reset secrets, and verification secrets must remain provider-owned.
+
+## Project Naming Recommendation
+
+Use one Supabase project per environment.
+
+- DEV: `gamefoundry-dev`
+- UAT: `gamefoundry-uat`
+- PROD: `gamefoundry-prod`
+
+If multiple organizations or forks share Supabase access, prefix names with the organization or repository owner, for example:
+
+- `<owner>-gamefoundry-dev`
+- `<owner>-gamefoundry-uat`
+- `<owner>-gamefoundry-prod`
+
+Project naming rules:
+
+- Include the environment in the project name.
+- Do not reuse DEV projects for UAT or PROD.
+- Do not use personal names as production project names.
+- Keep project display names free of secrets, keys, database passwords, or internal ticket numbers.
+
+## Required Environment Variables
+
+These are planned variable names only. Do not commit actual values.
+
+Shared non-secret selectors:
+
+- `GAMEFOUNDRY_ENV`: `development`, `uat`, or `production`.
+- `GAMEFOUNDRY_AUTH_PROVIDER`: `local-db` or `supabase`.
+- `GAMEFOUNDRY_DB_PROVIDER`: `local-db` or `supabase-postgres`.
+
+Supabase browser-safe values:
+
+- `GAMEFOUNDRY_SUPABASE_URL`
+- `GAMEFOUNDRY_SUPABASE_ANON_KEY`
+
+Server-only Supabase values:
+
+- `GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY`
+- `GAMEFOUNDRY_SUPABASE_DATABASE_URL`
+
+Optional deployment values:
+
+- `GAMEFOUNDRY_SITE_URL`
+- `GAMEFOUNDRY_AUTH_REDIRECT_URL`
+- `GAMEFOUNDRY_PASSWORD_RESET_REDIRECT_URL`
+
+Rules:
+
+- Browser-safe values may be used only by approved client auth code after the Supabase adapter PR exists.
+- Server-only values must never be sent to browser JavaScript, HTML, reports, screenshots, or static assets.
+- `.env` files with actual values must remain untracked.
+- Reports may name variables but must not include actual values.
+
+## Redirect and Callback URLs
+
+Use exact deployed origins for UAT and PROD. Do not rely on wildcard redirects unless a later security review approves them.
+
+DEV placeholders:
+
+- Site URL: `http://localhost:<port>/`
+- Sign-in redirect: `http://localhost:<port>/account/sign-in.html`
+- Create-account redirect: `http://localhost:<port>/account/create-account.html`
+- Password-reset redirect: `http://localhost:<port>/account/password-reset.html`
+
+UAT placeholders:
+
+- Site URL: `https://<uat-host>/`
+- Sign-in redirect: `https://<uat-host>/account/sign-in.html`
+- Create-account redirect: `https://<uat-host>/account/create-account.html`
+- Password-reset redirect: `https://<uat-host>/account/password-reset.html`
+
+PROD placeholders:
+
+- Site URL: `https://<prod-host>/`
+- Sign-in redirect: `https://<prod-host>/account/sign-in.html`
+- Create-account redirect: `https://<prod-host>/account/create-account.html`
+- Password-reset redirect: `https://<prod-host>/account/password-reset.html`
+
+Checklist:
+
+- DEV redirects use local development origins only.
+- UAT redirects use only the UAT origin.
+- PROD redirects use only the production origin.
+- Password reset redirects return to the account password-reset page.
+- Redirects are reviewed again before OAuth provider enablement.
+
+## Email and Password Auth Settings
+
+Planned baseline:
+
+- Email/password auth enabled only when the Supabase auth adapter PR is ready to consume it.
+- Email confirmation policy documented per environment before UAT.
+- Password reset enabled through Supabase Auth, not app-owned tables.
+- Rate limit and abuse protection settings reviewed before UAT.
+- Email templates reviewed before UAT.
+- Sender/domain configuration reviewed before PROD.
+
+Environment notes:
+
+- DEV may use development-safe email behavior and test accounts.
+- UAT should mirror PROD email confirmation and password reset behavior as closely as practical.
+- PROD must use reviewed sender/domain settings and production-safe templates.
+
+## Future OAuth Provider Placeholders
+
+OAuth providers are out of scope for this PR and should remain disabled until a dedicated provider PR.
+
+Future placeholders:
+
+- Google
+- GitHub
+- Microsoft
+- Discord
+
+Provider enablement checklist for a future PR:
+
+- Provider owner approved.
+- Provider client id and secret stored outside the repo.
+- Redirect/callback URLs reviewed for each environment.
+- Account-linking behavior documented.
+- Provider-specific user metadata mapping reviewed.
+- Role assignment remains app-owned through `users`, `roles`, and `user_roles`.
+
+## Required Postgres Schema Ownership
+
+Supabase-owned schemas:
+
+- Supabase Auth owns auth provider tables and password behavior.
+- The app must not add custom password tables.
+- The app must not write password hashes, reset tokens, or verification secrets into app tables.
+
+App-owned schema:
+
+- App tables remain key-based.
+- `users.key` is the app-owned identity key.
+- `roles.key` is the app-owned role key.
+- `user_roles.userKey` references `users.key`.
+- `user_roles.roleKey` references `roles.key`.
+- Audit fields remain `createdAt`, `updatedAt`, `createdBy`, and `updatedBy`.
+- Audit ownership fields reference `users.key`.
+
+Future schema mapping requirement:
+
+- Store the Supabase auth user id as provider identity metadata mapped to `users.key`.
+- Do not replace `users.key` with the Supabase auth user id in product records.
+- Do not let browser code create authoritative user keys.
+- All non-user app records must use server/API-generated real ULIDs.
+
+## RLS Review Requirements
+
+Before Supabase DEV is accepted:
+
+- Identify every app-owned table.
+- Decide whether each table is server-only, authenticated-user visible, owner visible, role-gated, or public read.
+- Enable and review RLS policy behavior for every table that browser-authenticated code can touch.
+- Keep server-only write operations behind server/API code.
+- Verify no anon/browser policy grants broad product-data writes.
+
+Before UAT:
+
+- Review all table policies with expected user roles.
+- Validate admin-only operations are role-gated.
+- Validate creator-owned records cannot be read or written by unrelated users unless explicitly public.
+- Validate public records expose only approved fields.
+- Validate service-role use is server-only.
+
+Before PROD:
+
+- Re-run the UAT policy review against production settings.
+- Confirm no debug, seed, or test-only policy remains enabled.
+- Confirm backup/restore and audit expectations are documented.
+
+## App User Mapping
+
+Required mapping:
+
+- Supabase Auth user id maps to `users.key`.
+- `users.key` remains stable for app records.
+- If an authenticated Supabase user has no app `users` row, the server/API bootstrap flow creates or finds one.
+- User bootstrap must be idempotent.
+- User bootstrap must log visible actionable diagnostics on failure.
+
+Mapping must not:
+
+- Store passwords in app tables.
+- Trust browser-provided user keys.
+- Use static DEV user keys outside the PR118 local script exception.
+- Give role access without checking `roles` and `user_roles`.
+
+## Admin Bootstrap Notes
+
+Initial admin setup belongs to Admin -> Site Setup.
+
+Checklist:
+
+- First admin assignment is explicit and reviewed.
+- Admin bootstrap requires authenticated provider identity.
+- Admin bootstrap maps the provider user to `users.key`.
+- Role assignment writes `user_roles.userKey` and `user_roles.roleKey`.
+- Bootstrap actions are logged with audit fields.
+- Re-running bootstrap is idempotent and visibly reports existing state.
+- UAT and PROD bootstrap SQL/setup is user-executed, not Codex-executed.
+
+## Site Setup Ownership Notes
+
+Admin -> Site Setup owns long-term setup/seed behavior.
+
+Rules:
+
+- Setup is a visible user/admin action.
+- Seed behavior is not a hidden runtime default.
+- Setup reports each table/action as PASS, WARN, FAIL, or SKIP.
+- Setup failures identify the exact operation and next action.
+- UAT/PROD setup remains reviewed and user-run.
+- DEV may keep Local DB bridge behavior until a Supabase DEV PR explicitly changes it.
+
+## UAT and PROD SQL Promotion Notes
+
+UAT:
+
+- Codex may prepare reviewed SQL/setup artifacts.
+- User executes UAT SQL/setup.
+- User confirms UAT SQL/setup execution in the PR/apply notes.
+- UAT SQL must use reviewed schema and RLS policy changes.
+- UAT must not depend on Local DB bridge behavior after Supabase UAT promotion.
+
+PROD:
+
+- Codex may prepare reviewed SQL/setup artifacts.
+- User executes PROD SQL/setup.
+- User confirms PROD SQL/setup execution in the PR/apply notes.
+- PROD SQL must use reviewed schema and RLS policy changes.
+- PROD must not depend on Local DB bridge behavior.
+- PROD rollback and incident-response notes must exist before promotion.
+
+## Secrets Handling Rules
+
+- Do not commit Supabase URLs, anon keys, service role keys, database URLs, JWT secrets, OAuth client secrets, or database passwords.
+- Do not include real secrets in reports, screenshots, ZIPs, test fixtures, or HTML.
+- Keep server-only secrets out of browser bundles.
+- Use environment variables or deployment secret storage for real values.
+- Use placeholder names in docs and examples.
+- Rotate any secret that is accidentally pasted into the repo or chat.
+- Treat service role keys as highly privileged.
+- Do not print secrets in validation logs.
+
+## Requirement Checklist
+
+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
+- PASS: Verified current branch is `main` before making changes.
+- PASS: Started from `docs_build/dev/reports/pr118-external-auth-readiness-plan.md`.
+- PASS: Scoped this PR to Supabase environment setup checklist only.
+- PASS: Did not implement Supabase runtime code.
+- PASS: Did not add Supabase dependencies.
+- PASS: Did not change sign-in runtime behavior.
+- PASS: Did not add password tables.
+- PASS: Did not store secrets in the repo.
+- PASS: Created a Supabase setup checklist for DEV, UAT, and PROD.
+- PASS: Included Supabase project naming recommendation.
+- PASS: Included required environment variables.
+- PASS: Included redirect/callback URLs.
+- PASS: Included email/password auth settings.
+- PASS: Included future OAuth provider placeholders.
+- PASS: Included required Postgres schema ownership.
+- PASS: Included RLS review requirements.
+- PASS: Included app user mapping from Supabase auth user id to `users.key`.
+- PASS: Included Admin bootstrap notes.
+- PASS: Included Site Setup ownership notes.
+- PASS: Included UAT/PROD user-executed SQL promotion notes.
+- PASS: Included secrets handling rules.
+- PASS: Playwright impacted: No.
+
+## Manual Validation Notes
+
+- `git diff --check`: PASS.
+- Runtime files changed: PASS, none.
+- Dependencies added: PASS, none.
+- Secrets or real keys committed: PASS, none found in added PR119 diff.
+- Password tables added: PASS, none.
+- Sign-in runtime behavior changed: PASS, no runtime files changed.
+- Playwright: SKIP, planning/report-only PR.
+- Samples smoke test: SKIP, planning/report-only PR with no runtime or samples changes.
+
+## Required Outputs
+
+- PASS: `docs_build/dev/reports/pr119-supabase-environment-checklist.md`
+- PASS: `docs_build/dev/reports/codex_review.diff`
+- PASS: `docs_build/dev/reports/codex_changed_files.txt`
+- PASS: `tmp/PR_26164_119-supabase-environment-checklist_delta.zip`
