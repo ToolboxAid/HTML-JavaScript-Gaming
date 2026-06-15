@@ -12,39 +12,28 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(72%) Toolbox Index - exercised 10 runtime JS files
+(0%) Toolbox Index - not exercised by this Playwright run
 (0%) Tool Template V2 - not exercised by this Playwright run
-(58%) Theme V2 Shared JS - exercised 3 runtime JS files
+(72%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Files with executed line/function counts where available:
-(10%) assets/theme-v2/js/local-db-page-data.js - executed lines 299/299; executed functions 3/29
-(20%) src/engine/api/local-db-api-client.js - executed lines 19/19; executed functions 1/5
 (25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
-(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
-(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-(56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
-(58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
-(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-(66%) toolbox/controls/controls.js - executed lines 617/617; executed functions 41/62
-(68%) toolbox/game-workspace/game-workspace.js - executed lines 281/281; executed functions 19/28
-(76%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 52/68
-(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
-(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
-(91%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 103/113
-(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
-(100%) toolbox/controls/controls-api-client.js - executed lines 33/33; executed functions 5/5
-(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
-(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
+(37%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 7/19
+(61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 39/64
+(85%) assets/theme-v2/js/account-auth-actions.js - executed lines 115/115; executed functions 11/13
+(87%) assets/theme-v2/js/account-achievements.js - executed lines 117/117; executed functions 13/15
+(88%) assets/theme-v2/js/login-session.js - executed lines 150/150; executed functions 15/17
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/account/SupabaseSignInSession.spec.mjs - changed JS file not collected as browser runtime coverage

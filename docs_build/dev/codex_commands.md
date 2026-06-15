@@ -1234,6 +1234,35 @@ Required reports:
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
 
+## PR_26166_164-live-sign-in-runtime-fix
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Kept `GAMEFOUNDRY_DB_PROVIDER=local-db` and product data on Local DB.
+- Added safe structured operator diagnostics for `POST /api/auth/sign-in`.
+- Reused the resolved auth readiness status for sign-in and create-account auth adapter checks.
+- Kept Sign In owned by the server API and Supabase Auth provider.
+- Added targeted account Playwright validation for Create Account -> Sign In -> `/api/session/current`.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check tests/playwright/account/SupabaseSignInSession.spec.mjs`
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `npx playwright test tests/playwright/account/SupabaseSignInSession.spec.mjs --project=playwright --workers=1 --reporter=list`
+- `npm run validate:supabase-dev`
+- `npm run dev:local-api`
+- Manual live validation through `/account/create-account.html` and `/account/sign-in.html`.
+- `/api/session/current` authenticated user and `user` role check.
+- `git diff --check`
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_164-live-sign-in-runtime-fix_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
 
 ## PR_26161_008
 

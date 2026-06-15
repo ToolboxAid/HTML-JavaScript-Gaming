@@ -723,7 +723,7 @@ function operatorYesNo(value) {
   return "unknown";
 }
 
-function createAccountUpstreamStatusCode(payload, error) {
+function authActionUpstreamStatusCode(payload, error) {
   const fromPayload = Number(payload?.__operator?.upstreamStatusCode || 0);
   if (fromPayload) {
     return String(fromPayload);
@@ -736,10 +736,11 @@ function createAccountUpstreamStatusCode(payload, error) {
   return diagnostic?.httpStatus ? String(diagnostic.httpStatus) : "none";
 }
 
-function logCreateAccountOperatorDiagnostic({
+function logAuthActionOperatorDiagnostic({
   error = null,
   phase,
   payload = null,
+  route,
   safeErrorCode = "",
   safeMessage = "",
   status = {},
@@ -751,11 +752,11 @@ function logCreateAccountOperatorDiagnostic({
     `dbProvider=${safeOperatorDiagnosticValue(status.databaseProviderId || "unknown")}`,
     `supabaseConfigured=${operatorYesNo(status.configured ?? status.supabaseConfigPresent)}`,
     `identityTablesReady=${operatorYesNo(status.identityTablesReady)}`,
-    `upstreamStatusCode=${createAccountUpstreamStatusCode(payload, error)}`,
+    `upstreamStatusCode=${authActionUpstreamStatusCode(payload, error)}`,
     `safeErrorCode=${safeOperatorDiagnosticValue(safeErrorCode || error?.safeErrorCode || diagnostic?.code, "none")}`,
-    `safeMessage=${safeOperatorDiagnosticValue(safeMessage || error?.safeErrorMessage || diagnostic?.message, "none")}`,
+    `safeMessage=${safeOperatorDiagnosticValue(safeMessage || diagnostic?.message, "none")}`,
   ];
-  console.warn(`[auth/operator] POST /api/auth/create-account diagnostic ${fields.join(" ")}`);
+  console.warn(`[auth/operator] ${safeOperatorDiagnosticValue(route, "POST /api/auth")} diagnostic ${fields.join(" ")}`);
 }
 
 function identityTableCounts(tables = {}) {
@@ -1818,13 +1819,13 @@ class LocalDevDataSource {
     };
   }
 
-  async authAdapterForAction(action) {
-    const status = await this.authStatusForRoute();
-    if (!status.ready) {
-      if (status.identityTablesReady === false) {
-        throw authIdentitySetupError(action, `Account identity setup is incomplete. ${status.operatorDiagnostic || status.status}`);
+  async authAdapterForAction(action, status = null) {
+    const readinessStatus = status || await this.authStatusForRoute();
+    if (!readinessStatus.ready) {
+      if (readinessStatus.identityTablesReady === false) {
+        throw authIdentitySetupError(action, `Account identity setup is incomplete. ${readinessStatus.operatorDiagnostic || readinessStatus.status}`);
       }
-      throw authUnavailableError(action, `Supabase Auth is not ready. ${status.operatorDiagnostic || status.status}`);
+      throw authUnavailableError(action, `Supabase Auth is not ready. ${readinessStatus.operatorDiagnostic || readinessStatus.status}`);
     }
     return new SupabaseAuthProviderAdapter();
   }
@@ -1936,16 +1937,68 @@ class LocalDevDataSource {
   }
 
   async authSignIn(body = {}) {
-    const adapter = await this.authAdapterForAction("Sign in");
-    const email = normalizedAuthEmail(body.email || body.identity);
+    const operatorStatus = await this.authStatusForRoute();
+    logAuthActionOperatorDiagnostic({
+      phase: "start",
+      route: "POST /api/auth/sign-in",
+      safeMessage: "ready-check-complete",
+      status: operatorStatus,
+    });
+    let adapter = null;
     try {
-      const payload = await adapter.signIn({
+      adapter = await this.authAdapterForAction("Sign in", operatorStatus);
+    } catch (error) {
+      logAuthActionOperatorDiagnostic({
+        error,
+        phase: "provider-not-ready",
+        route: "POST /api/auth/sign-in",
+        status: operatorStatus,
+      });
+      throw error;
+    }
+    const email = normalizedAuthEmail(body.email || body.identity);
+    let payload = null;
+    try {
+      payload = await adapter.signIn({
         email,
         password: body.password,
       });
+    } catch (error) {
+      logAuthActionOperatorDiagnostic({
+        error,
+        phase: "upstream-failed",
+        route: "POST /api/auth/sign-in",
+        status: operatorStatus,
+      });
+      if (error?.statusCode === 503) {
+        throw error;
+      }
+      const diagnostic = sanitizedAuthErrorDiagnostic(error);
+      throw authUnavailableError("Sign in", diagnostic.message);
+    }
+
+    try {
       const session = await this.resolvedSessionForAuthPayload("Sign in", email, payload);
+      logAuthActionOperatorDiagnostic({
+        payload,
+        phase: "success",
+        route: "POST /api/auth/sign-in",
+        safeMessage: "session-resolved",
+        status: {
+          ...operatorStatus,
+          identityTablesReady: true,
+        },
+      });
       return sanitizedSupabaseAuthActionResult("sign-in", email, payload, session);
     } catch (error) {
+      logAuthActionOperatorDiagnostic({
+        error,
+        payload,
+        phase: "session-resolution-failed",
+        route: "POST /api/auth/sign-in",
+        safeMessage: error?.operatorDiagnostic || error?.message || "session resolution failed",
+        status: operatorStatus,
+      });
       if (error?.statusCode === 503) {
         throw error;
       }
@@ -1956,18 +2009,20 @@ class LocalDevDataSource {
 
   async authCreateAccount(body = {}) {
     const operatorStatus = await this.authStatusForRoute();
-    logCreateAccountOperatorDiagnostic({
+    logAuthActionOperatorDiagnostic({
       phase: "start",
+      route: "POST /api/auth/create-account",
       safeMessage: "ready-check-complete",
       status: operatorStatus,
     });
     let adapter = null;
     try {
-      adapter = await this.authAdapterForAction("Create account");
+      adapter = await this.authAdapterForAction("Create account", operatorStatus);
     } catch (error) {
-      logCreateAccountOperatorDiagnostic({
+      logAuthActionOperatorDiagnostic({
         error,
         phase: "provider-not-ready",
+        route: "POST /api/auth/create-account",
         status: operatorStatus,
       });
       throw error;
@@ -1980,9 +2035,10 @@ class LocalDevDataSource {
         password: body.password,
       });
     } catch (error) {
-      logCreateAccountOperatorDiagnostic({
+      logAuthActionOperatorDiagnostic({
         error,
         phase: "upstream-failed",
+        route: "POST /api/auth/create-account",
         status: operatorStatus,
       });
       if (error?.statusCode === 503) {
@@ -1996,10 +2052,11 @@ class LocalDevDataSource {
     try {
       identity = await this.provisionSupabaseIdentityForAuthPayload("Create account", email, payload);
     } catch (error) {
-      logCreateAccountOperatorDiagnostic({
+      logAuthActionOperatorDiagnostic({
         error,
         payload,
         phase: "identity-provisioning-failed",
+        route: "POST /api/auth/create-account",
         safeMessage: error?.operatorDiagnostic || error?.message || "identity provisioning failed",
         status: operatorStatus,
       });
@@ -2010,9 +2067,10 @@ class LocalDevDataSource {
       throw authIdentitySetupError("Create account", diagnostic);
     }
 
-    logCreateAccountOperatorDiagnostic({
+    logAuthActionOperatorDiagnostic({
       payload,
       phase: "success",
+      route: "POST /api/auth/create-account",
       safeMessage: "account-created-and-identity-provisioned",
       status: {
         ...operatorStatus,

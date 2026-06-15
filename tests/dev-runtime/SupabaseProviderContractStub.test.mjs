@@ -874,11 +874,14 @@ test("Create account provider failure returns generic browser error and logs saf
         assert.equal(createAccount.payload.error, "The site is currently unavailable. Please try again later.");
         assert.equal(JSON.stringify(createAccount.payload).includes("User already registered"), false);
         assert.equal(JSON.stringify(createAccount.payload).includes("existing.creator@example.test"), false);
-        assert.equal(warnings.length, 1);
-        assert.match(warnings[0], /\[auth\/operator\] POST \/api\/auth\/create-account failed:/);
-        assert.match(warnings[0], /Create account: Supabase Auth request failed with HTTP 422\./);
-        assert.equal(warnings[0].includes("User already registered"), false);
-        assert.equal(warnings[0].includes("test-service-role-key"), false);
+        assert.equal(warnings.length, 3);
+        assert.match(warnings[0], /\[auth\/operator\] POST \/api\/auth\/create-account diagnostic phase=start/);
+        assert.match(warnings[1], /\[auth\/operator\] POST \/api\/auth\/create-account diagnostic phase=upstream-failed/);
+        assert.match(warnings[1], /safeMessage=Supabase Auth request failed with HTTP 422\./);
+        assert.match(warnings[2], /\[auth\/operator\] POST \/api\/auth\/create-account failed:/);
+        assert.match(warnings[2], /Create account: Supabase Auth request failed with HTTP 422\./);
+        assert.equal(warnings.join("\n").includes("User already registered"), false);
+        assert.equal(warnings.join("\n").includes("test-service-role-key"), false);
       });
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
     } finally {
@@ -919,8 +922,12 @@ test("Create account identity provisioning failure returns support message after
         assert.equal(createAccount.payload.ok, false);
         assert.equal(createAccount.payload.error, "Account identity setup is incomplete. Please contact support.");
         assert.equal(JSON.stringify(createAccount.payload).includes("no-identity-id@example.test"), false);
-        assert.equal(warnings.length, 1);
-        assert.match(warnings[0], /Create account: Supabase Auth did not return the user id and email required for identity provisioning\./);
+        assert.equal(warnings.length, 3);
+        assert.match(warnings[0], /\[auth\/operator\] POST \/api\/auth\/create-account diagnostic phase=start/);
+        assert.match(warnings[1], /\[auth\/operator\] POST \/api\/auth\/create-account diagnostic phase=identity-provisioning-failed/);
+        assert.match(warnings[1], /Create account: Supabase Auth did not return the user id and email required for identity provisioning\./);
+        assert.match(warnings[2], /\[auth\/operator\] POST \/api\/auth\/create-account failed:/);
+        assert.match(warnings[2], /Create account: Supabase Auth did not return the user id and email required for identity provisioning\./);
       });
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path.startsWith("/rest/v1/")), false);
@@ -952,14 +959,26 @@ test("Supabase sign in fails visibly when the Auth user has no app identity row"
       assert.equal(status.ready, true);
       assert.equal(status.identityTablesReady, true);
 
-      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
-        email: "missing.identity@example.test",
-        password: "not-stored-locally",
+      await withCapturedConsoleWarn(async (warnings) => {
+        const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
+          email: "missing.identity@example.test",
+          password: "not-stored-locally",
+        });
+        assert.equal(signIn.status, 503);
+        assert.equal(signIn.payload.ok, false);
+        assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
+        assert.equal(JSON.stringify(signIn.payload).includes("missing.identity@example.test"), false);
+        assert.equal(warnings.length, 3);
+        assert.match(warnings[0], /\[auth\/operator\] POST \/api\/auth\/sign-in diagnostic phase=start/);
+        assert.match(warnings[1], /\[auth\/operator\] POST \/api\/auth\/sign-in diagnostic phase=session-resolution-failed/);
+        assert.match(warnings[1], /safeMessage=Sign in: Account authentication succeeded, but no matching users record exists for this account\./);
+        assert.match(warnings[2], /\[auth\/operator\] POST \/api\/auth\/sign-in failed:/);
+        assert.match(warnings[2], /Sign in: Account authentication succeeded, but no matching users record exists for this account\./);
+        assert.equal(warnings.join("\n").includes("missing.identity@example.test"), false);
+        assert.equal(warnings.join("\n").includes("not-stored-locally"), false);
+        assert.equal(warnings.join("\n").includes("fake-supabase-access-token"), false);
+        assert.equal(warnings.join("\n").includes("test-service-role-key"), false);
       });
-      assert.equal(signIn.status, 503);
-      assert.equal(signIn.payload.ok, false);
-      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
-      assert.equal(JSON.stringify(signIn.payload).includes("missing.identity@example.test"), false);
     } finally {
       await server.close();
     }
