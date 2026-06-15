@@ -7,9 +7,6 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(59%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 38/64
-(100%) assets/theme-v2/js/account-auth-actions.js - executed lines 115/115; executed functions 13/13
-(100%) assets/theme-v2/js/login-session.js - executed lines 150/150; executed functions 17/17
 
 Guardrail warnings:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
