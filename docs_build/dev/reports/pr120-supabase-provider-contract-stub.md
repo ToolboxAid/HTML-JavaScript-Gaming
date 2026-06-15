@@ -89,6 +89,7 @@ Server-only variables remain server-only. The Local API provider contract intent
 - PASS: Documented required environment variables without values.
 - PASS: Ensured browser API payloads never receive service-role key values.
 - PASS: Preserved Browser -> API/Service Contract -> Database.
+- PASS: Confirmed Local DB remains the active DEV path after this PR.
 
 ## Validation
 
@@ -98,12 +99,19 @@ Server-only variables remain server-only. The Local API provider contract intent
 - PASS: `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
 - PASS: `node --test tests/dev-runtime/DevRuntimeBoundary.test.mjs`
 - PASS: `node --test tests/dev-runtime/DbSeedIntegrity.test.mjs`
-- PASS: Local API startup probe on `127.0.0.1:5521`
+- PASS: `npm run dev:local-api` startup validated on `127.0.0.1:5521` with `GAMEFOUNDRY_LOCAL_API_PORT=5521` because `127.0.0.1:5501` was already occupied before validation.
 - PASS: Provider contract route returns active auth/database provider as `local-db`
 - PASS: Session route returns mode `local-db`
 - PASS: Sign-in page returns HTTP 200 through Local API
-- PASS: `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs -g "Sign-in page uses a production-safe account form without public Local DB controls" --project=playwright`
+- PASS: DB Viewer page returns HTTP 200 through Local API
+- PASS: `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs -g "Sign-in page uses a production-safe account form without public Local DB controls|Protected pages block direct URL access without the required Local session role" --project=playwright`
+- PASS: Targeted Playwright rendered `account/sign-in.html`.
+- PASS: Targeted Playwright rendered `admin/db-viewer.html` with Local DB table status.
 - PASS: Playwright V8 coverage report produced.
+- PASS: Dependency diff for package manifests and lockfiles is empty.
+- PASS: Secret-pattern scan over added diff lines found no matches.
+- PASS: Added runtime/test diff scan found no retired auth/database/login-route additions.
+- PASS: `git diff --check`
 - WARN: Browser V8 coverage reports changed dev-runtime server files as not collected by browser coverage; these are Node-side modules and are covered by targeted Node tests.
 
 ## Manual Validation Notes
@@ -115,8 +123,11 @@ Server-only variables remain server-only. The Local API provider contract intent
 - Secret-like additions: PASS, none found in added diff.
 - Password tables added: PASS, none.
 - Sign-in behavior changed: PASS, placeholder sign-in Playwright test still passes.
-- Local API still starts: PASS.
-- Playwright impacted: Yes, targeted sign-in placeholder test passed.
+- Local API still starts: PASS, npm script validated on alternate port because the default local port was already occupied by a pre-existing node process.
+- Current sign-in route opens: PASS, `account/sign-in.html`.
+- DB Viewer loads: PASS, `admin/db-viewer.html`.
+- Retired auth/database/login-route references introduced by this rerun: PASS, none.
+- Playwright impacted: Yes, targeted sign-in and DB Viewer tests passed.
 - Samples smoke test: SKIP, no samples changed and PR scope is provider contract stubs.
 
 ## Required Outputs
