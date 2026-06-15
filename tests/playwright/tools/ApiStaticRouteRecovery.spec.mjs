@@ -3,6 +3,7 @@ import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 
 const SESSION_ROUTE_CHECKS = [
+  { method: "GET", route: "/api/auth/status", status: 200 },
   { method: "HEAD", route: "/api/session/current", status: 200 },
   { method: "OPTIONS", route: "/api/session/mode", status: 204 },
   { method: "GET", route: "/api/session/current", status: 200 },

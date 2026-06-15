@@ -91,6 +91,8 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
 const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
+const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
+const AUTH_READY_MESSAGE = "Account service is available.";
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
 const TOOLBOX_PLANNING_FIELDS = Object.freeze([
@@ -613,7 +615,7 @@ function sanitizedSupabaseAuthActionResult(action, email, payload = {}) {
     email: String(user.email || email || "").trim(),
     externalAuthUserIdPresent: Boolean(user.id),
     localDbSessionCreated: false,
-    message: "Supabase Auth completed. Product data remains Local DB and no Local DB user session was created by this DEV auth-only path.",
+    message: "Account authentication completed through the configured account provider.",
     passwordStoredLocally: false,
     providerId: SUPABASE_AUTH_PROVIDER_ID,
     refreshTokenExposed: false,
@@ -1278,7 +1280,7 @@ class LocalDevDataSource {
     return this.currentSession();
   }
 
-  devSupabaseAuthStatus() {
+  authStatus() {
     const providerContract = this.providerContract();
     const authProviderId = providerContract.activeProviders.authProviderId;
     const databaseProviderId = providerContract.activeProviders.databaseProviderId;
@@ -1288,25 +1290,26 @@ class LocalDevDataSource {
     const failure = providerContract.providerDiagnostics.providerFailures
       .find((candidate) => candidate.providerId === authProviderId || candidate.providerId === SUPABASE_AUTH_PROVIDER_ID);
     const missingBrowserSafeEnvironmentVariables = providerContract.supabaseAuth.missingBrowserSafeEnvironmentVariables || [];
-    let message = "";
+    let operatorDiagnostic = "";
     let status = "unavailable";
 
     if (!selected) {
-      message = "Supabase DEV Auth is not active. Set GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth and configure GAMEFOUNDRY_SUPABASE_URL plus GAMEFOUNDRY_SUPABASE_ANON_KEY to use external Supabase Auth. Guest browsing remains available.";
+      operatorDiagnostic = "Supabase Auth is not the selected auth provider for this API runtime.";
       status = "inactive";
     } else if (!localDbProductDataActive) {
-      message = "Supabase DEV Auth activation keeps Local DB active for product data. Set GAMEFOUNDRY_DB_PROVIDER=local-db before using this auth-only path.";
+      operatorDiagnostic = "Supabase Auth activation keeps Local DB active for product data; the selected database provider is not Local DB.";
       status = "unavailable";
     } else if (!configured) {
-      message = providerContract.supabaseAuth.diagnostic || "Supabase DEV Auth is missing required browser-safe environment configuration.";
+      operatorDiagnostic = providerContract.supabaseAuth.diagnostic || "Supabase Auth is missing required browser-safe environment configuration.";
       status = "unavailable";
     } else if (failure) {
-      message = failure.remediation || providerContract.supabaseAuth.diagnostic || "Supabase DEV Auth provider is not ready.";
+      operatorDiagnostic = failure.remediation || providerContract.supabaseAuth.diagnostic || "Supabase Auth provider is not ready.";
       status = "unavailable";
     } else {
-      message = "Supabase DEV Auth is configured. Account actions will use external Supabase Auth while product data remains Local DB.";
+      operatorDiagnostic = "Supabase Auth is configured. Account actions use the external auth provider while product data remains Local DB.";
       status = "ready";
     }
+    const message = status === "ready" ? AUTH_READY_MESSAGE : AUTH_UNAVAILABLE_MESSAGE;
 
     return {
       actionRequired: status === "ready" ? "" : message,
@@ -1318,6 +1321,7 @@ class LocalDevDataSource {
       message,
       missingBrowserSafeEnvironmentVariables,
       noAutomaticFallback: true,
+      operatorDiagnostic,
       passwordStorage: "external-provider",
       providerId: SUPABASE_AUTH_PROVIDER_ID,
       ready: status === "ready",
@@ -1326,16 +1330,19 @@ class LocalDevDataSource {
     };
   }
 
-  supabaseAuthAdapterForAction(action) {
-    const status = this.devSupabaseAuthStatus();
+  authAdapterForAction(action) {
+    const status = this.authStatus();
     if (!status.ready) {
-      throw new Error(`${action} requires configured DEV Supabase Auth. ${status.message}`);
+      const error = new Error(AUTH_UNAVAILABLE_MESSAGE);
+      error.statusCode = 503;
+      error.operatorDiagnostic = `${action} requires configured Supabase Auth. ${status.operatorDiagnostic || status.status}`;
+      throw error;
     }
     return new SupabaseAuthProviderAdapter();
   }
 
-  async devSupabaseSignIn(body = {}) {
-    const adapter = this.supabaseAuthAdapterForAction("Sign in");
+  async authSignIn(body = {}) {
+    const adapter = this.authAdapterForAction("Sign in");
     const email = normalizedAuthEmail(body.email || body.identity);
     const payload = await adapter.signIn({
       email,
@@ -1344,8 +1351,8 @@ class LocalDevDataSource {
     return sanitizedSupabaseAuthActionResult("sign-in", email, payload);
   }
 
-  async devSupabaseCreateAccount(body = {}) {
-    const adapter = this.supabaseAuthAdapterForAction("Create account");
+  async authCreateAccount(body = {}) {
+    const adapter = this.authAdapterForAction("Create account");
     const email = normalizedAuthEmail(body.email || body.identity);
     const payload = await adapter.createAccount({
       email,
@@ -1354,8 +1361,8 @@ class LocalDevDataSource {
     return sanitizedSupabaseAuthActionResult("create-account", email, payload);
   }
 
-  async devSupabasePasswordReset(body = {}, redirectTo = "") {
-    const adapter = this.supabaseAuthAdapterForAction("Password reset");
+  async authPasswordReset(body = {}, redirectTo = "") {
+    const adapter = this.authAdapterForAction("Password reset");
     const email = normalizedAuthEmail(body.email || body.identity);
     const payload = await adapter.requestPasswordReset({
       email,
@@ -1363,7 +1370,7 @@ class LocalDevDataSource {
     });
     return {
       ...sanitizedSupabaseAuthActionResult("password-reset", email, payload),
-      message: "Supabase Auth password reset request was sent through the external provider. Product data remains Local DB.",
+      message: "Password reset request was sent through the configured account provider.",
       redirectToIncluded: Boolean(redirectTo),
     };
   }
@@ -1375,7 +1382,7 @@ class LocalDevDataSource {
     if (providerId !== LOCAL_AUTH_PROVIDER_ID) {
       return guestSession(
         this.currentMode(),
-        `Selected auth provider is ${providerId}. Supabase Auth does not create a Local DB product-data session in this DEV auth-only path.`,
+        `Selected auth provider is ${providerId}. Supabase Auth does not create a Local DB product-data session through this auth-only path.`,
       );
     }
     return this.localAuthSession("Reading current session");
@@ -2091,24 +2098,24 @@ export function createLocalApiRouter() {
         }
       }
 
-      if (parts[1] === "auth" && parts[2] === "dev" && parts[3] === "supabase") {
-        if (request.method === "GET" && parts[4] === "status") {
-          ok(response, dataSource.devSupabaseAuthStatus());
+      if (parts[1] === "auth") {
+        if (request.method === "GET" && parts[2] === "status") {
+          ok(response, dataSource.authStatus());
           return true;
         }
-        if (request.method === "POST" && parts[4] === "sign-in") {
+        if (request.method === "POST" && parts[2] === "sign-in") {
           const body = await readRequestJson(request);
-          ok(response, await dataSource.devSupabaseSignIn(body));
+          ok(response, await dataSource.authSignIn(body));
           return true;
         }
-        if (request.method === "POST" && parts[4] === "create-account") {
+        if (request.method === "POST" && parts[2] === "create-account") {
           const body = await readRequestJson(request);
-          ok(response, await dataSource.devSupabaseCreateAccount(body));
+          ok(response, await dataSource.authCreateAccount(body));
           return true;
         }
-        if (request.method === "POST" && parts[4] === "password-reset") {
+        if (request.method === "POST" && parts[2] === "password-reset") {
           const body = await readRequestJson(request);
-          ok(response, await dataSource.devSupabasePasswordReset(body, `${requestUrl.origin}/account/password-reset.html`));
+          ok(response, await dataSource.authPasswordReset(body, `${requestUrl.origin}/account/password-reset.html`));
           return true;
         }
       }
@@ -2231,7 +2238,7 @@ export function createLocalApiRouter() {
       fail(response, 404, `Unknown API route: ${request.method} ${requestUrl.pathname}.`);
       return true;
     } catch (error) {
-      fail(response, 500, error);
+      fail(response, error?.statusCode || 500, error);
       return true;
     }
   };

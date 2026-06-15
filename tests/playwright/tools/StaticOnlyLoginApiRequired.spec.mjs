@@ -115,11 +115,12 @@ test("static sign-in page renders production-safe account actions without API di
     await expect(page.locator("main")).not.toContainText("reseed");
     await expect(page.locator("main")).not.toContainText("Local DB");
     await page.getByRole("button", { name: "Sign In" }).click();
-    await expect(page.locator("[data-login-status]")).toHaveText("Start the DEV API server to use Supabase Auth. Guest browsing remains available.");
+    await expect(page.locator("[data-login-status]")).toHaveText("The site is currently unavailable. Please try again later.");
 
     expect(requests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
     expect(requests.filter((request) => request.includes("/api/session/"))).toEqual([]);
     expect(requests.filter((request) => request.includes("/api/auth/dev/supabase"))).toEqual([]);
+    expect(requests.filter((request) => request.includes("/api/auth/"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/mode"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/users"))).toEqual([]);

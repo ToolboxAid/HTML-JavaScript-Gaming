@@ -318,7 +318,7 @@ test("Selected Supabase providers keep diagnostics available and block Local DB 
   });
 });
 
-test("DEV Supabase Auth selection keeps Local DB product data active and fails auth actions visibly when config is missing", async () => {
+test("Supabase Auth selection keeps Local DB product data active and fails auth actions safely when config is missing", async () => {
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "local-db",
@@ -327,14 +327,15 @@ test("DEV Supabase Auth selection keeps Local DB product data active and fails a
   }, async () => {
     const server = await startApiServer();
     try {
-      const status = await apiJson(server.baseUrl, "/api/auth/dev/supabase/status");
+      const status = await apiJson(server.baseUrl, "/api/auth/status");
       assert.equal(status.ready, false);
       assert.equal(status.selected, true);
       assert.equal(status.configured, false);
       assert.equal(status.databaseProviderId, "local-db");
       assert.equal(status.localDbProductDataActive, true);
       assert.equal(status.noAutomaticFallback, true);
-      assert.match(status.message, /Supabase Auth provider selected but not configured/);
+      assert.equal(status.message, "The site is currently unavailable. Please try again later.");
+      assert.match(status.operatorDiagnostic, /Supabase Auth provider selected but not configured/);
 
       const session = await apiPayload(server.baseUrl, "/api/session/current");
       assert.equal(session.status, 200);
@@ -347,21 +348,20 @@ test("DEV Supabase Auth selection keeps Local DB product data active and fails a
       assert.equal(snapshot.payload.ok, true);
       assert.equal(Array.isArray(snapshot.payload.data.tables.users), true);
 
-      const signIn = await postApiPayload(server.baseUrl, "/api/auth/dev/supabase/sign-in", {
+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "creator@example.test",
         password: "not-stored",
       });
-      assert.equal(signIn.status, 500);
+      assert.equal(signIn.status, 503);
       assert.equal(signIn.payload.ok, false);
-      assert.match(signIn.payload.error, /requires configured DEV Supabase Auth/);
-      assert.match(signIn.payload.error, /GAMEFOUNDRY_SUPABASE_URL/);
+      assert.equal(signIn.payload.error, "The site is currently unavailable. Please try again later.");
     } finally {
       await server.close();
     }
   });
 });
 
-test("DEV Supabase Auth routes call external Supabase Auth and return sanitized action results", async () => {
+test("Account auth routes call external Supabase Auth and return sanitized action results", async () => {
   const fakeSupabase = await startFakeSupabaseAuthServer();
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
@@ -371,12 +371,13 @@ test("DEV Supabase Auth routes call external Supabase Auth and return sanitized 
   }, async () => {
     const server = await startApiServer();
     try {
-      const status = await apiJson(server.baseUrl, "/api/auth/dev/supabase/status");
+      const status = await apiJson(server.baseUrl, "/api/auth/status");
       assert.equal(status.ready, true);
       assert.equal(status.configured, true);
       assert.equal(status.localDbProductDataActive, true);
+      assert.equal(status.message, "Account service is available.");
 
-      const signIn = await postApiPayload(server.baseUrl, "/api/auth/dev/supabase/sign-in", {
+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "creator@example.test",
         password: "not-stored-locally",
       });
@@ -391,7 +392,7 @@ test("DEV Supabase Auth routes call external Supabase Auth and return sanitized 
       assert.equal(JSON.stringify(signIn.payload).includes("fake-supabase-access-token"), false);
       assert.equal(JSON.stringify(signIn.payload).includes("fake-supabase-refresh-token"), false);
 
-      const createAccount = await postApiPayload(server.baseUrl, "/api/auth/dev/supabase/create-account", {
+      const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
         email: "new@example.test",
         password: "not-stored-locally",
       });
@@ -399,7 +400,7 @@ test("DEV Supabase Auth routes call external Supabase Auth and return sanitized 
       assert.equal(createAccount.payload.data.action, "create-account");
       assert.equal(createAccount.payload.data.localDbSessionCreated, false);
 
-      const reset = await postApiPayload(server.baseUrl, "/api/auth/dev/supabase/password-reset", {
+      const reset = await postApiPayload(server.baseUrl, "/api/auth/password-reset", {
         email: "reset@example.test",
       });
       assert.equal(reset.status, 200);

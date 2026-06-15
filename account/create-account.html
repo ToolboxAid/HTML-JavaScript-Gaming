@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Create Account - GameFoundryStudio</title>
-    <meta name="description" content="Create a GameFoundryStudio account through configured DEV Supabase Auth.">
+    <meta name="description" content="Create a GameFoundryStudio account through the configured account provider.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
 </head>
@@ -17,7 +17,7 @@
             <div class="container">
                 <div class="kicker">Account</div>
                 <h1>Create Account</h1>
-                <p class="lede">Create an account through external DEV Supabase Auth when it is configured.</p>
+                <p class="lede">Create an account through the configured account provider.</p>
             </div>
         </section>
         <section class="section">
@@ -28,14 +28,14 @@
                             <div class="kicker">Account Access</div>
                             <h2>Create Account</h2>
                         </div>
-                        <p>Account creation is handled by external Supabase Auth when the DEV provider is configured.</p>
+                        <p>Account creation is handled by the configured account provider.</p>
                         <form class="content-stack" data-account-auth-form="create-account">
                             <label for="createAccountEmail">Email</label>
                             <input id="createAccountEmail" name="email" type="email" autocomplete="email" data-account-auth-email>
                             <label for="createAccountPassword">Password</label>
                             <input id="createAccountPassword" name="password" type="password" autocomplete="new-password" data-account-auth-password>
                             <button class="btn primary" type="submit" data-account-auth-submit>Create Account</button>
-                            <div class="status" role="status" data-account-auth-status>Checking DEV Supabase Auth configuration.</div>
+                            <div class="status" role="status" data-account-auth-status>Checking account availability.</div>
                         </form>
                         <div class="action-group">
                             <a class="btn btn--compact" href="sign-in.html">Back to Sign In</a>

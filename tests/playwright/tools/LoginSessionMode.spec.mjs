@@ -401,18 +401,18 @@ test("Sign-in page uses a production-safe account form without public Local DB c
     await page.getByLabel("Email or username").fill("user@example.invalid");
     await page.getByLabel("Password").fill("not-stored");
     await page.getByRole("button", { name: "Sign In" }).click();
-    await expect(page.locator("[data-login-status]")).toContainText("Supabase DEV Auth is not active.");
+    await expect(page.locator("[data-login-status]")).toHaveText("The site is currently unavailable. Please try again later.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
 
     await page.getByRole("link", { name: "Create Account" }).click();
     await expect(page).toHaveURL(/\/account\/create-account\.html$/);
     await expect(page.getByRole("heading", { name: "Create Account", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-account-auth-status]")).toContainText("Supabase DEV Auth is not active.");
+    await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
     await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
     await page.getByRole("link", { name: "Password Reset" }).click();
     await expect(page).toHaveURL(/\/account\/password-reset\.html$/);
     await expect(page.getByRole("heading", { name: "Password Reset", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-account-auth-status]")).toContainText("Supabase DEV Auth is not active.");
+    await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -420,7 +420,7 @@ test("Sign-in page uses a production-safe account form without public Local DB c
   }
 });
 
-test("Configured DEV Supabase Auth account actions use external Auth without Local DB session fallback", async ({ page }) => {
+test("Configured account auth actions use external Auth without Local DB session fallback", async ({ page }) => {
   const fakeSupabase = await startFakeSupabaseAuthServer();
   await withSupabaseEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
@@ -434,7 +434,7 @@ test("Configured DEV Supabase Auth account actions use external Auth without Loc
       await page.getByLabel("Email or username").fill("creator@example.test");
       await page.getByLabel("Password").fill("not-stored-locally");
       await page.getByRole("button", { name: "Sign In" }).click();
-      await expect(page.locator("[data-login-status]")).toContainText("Supabase Auth completed.");
+      await expect(page.locator("[data-login-status]")).toHaveText("Account authentication completed through the configured account provider.");
 
       const session = await page.evaluate(async () => fetch("/api/session/current").then((response) => response.json()));
       expect(session.data.authenticated).toBe(false);
@@ -442,17 +442,17 @@ test("Configured DEV Supabase Auth account actions use external Auth without Loc
       expect(session.data.diagnostic).toContain("Supabase Auth does not create a Local DB product-data session");
 
       await page.goto(`${failures.server.baseUrl}/account/create-account.html`, { waitUntil: "networkidle" });
-      await expect(page.locator("[data-account-auth-status]")).toHaveText("DEV Supabase Auth is ready.");
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
       await page.getByLabel("Email").fill("new@example.test");
       await page.getByLabel("Password").fill("not-stored-locally");
       await page.getByRole("button", { name: "Create Account" }).click();
-      await expect(page.locator("[data-account-auth-status]")).toContainText("Supabase Auth completed.");
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account authentication completed through the configured account provider.");
 
       await page.goto(`${failures.server.baseUrl}/account/password-reset.html`, { waitUntil: "networkidle" });
-      await expect(page.locator("[data-account-auth-status]")).toHaveText("DEV Supabase Auth is ready.");
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
       await page.getByLabel("Email").fill("reset@example.test");
       await page.getByRole("button", { name: "Request Password Reset" }).click();
-      await expect(page.locator("[data-account-auth-status]")).toContainText("Supabase Auth password reset request was sent");
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Password reset request was sent through the configured account provider.");
 
       expect(fakeSupabase.calls.map((call) => call.path)).toEqual([
         "/auth/v1/token?grant_type=password",

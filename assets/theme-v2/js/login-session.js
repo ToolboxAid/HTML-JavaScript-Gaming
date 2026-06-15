@@ -3,7 +3,8 @@ const form = document.querySelector("[data-login-form]");
 const identityField = document.querySelector("[data-login-identity]");
 const passwordField = document.querySelector("[data-login-password]");
 const statusField = document.querySelector("[data-login-status]");
-let supabaseStatus = null;
+const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
+let authStatus = null;
 
 function rootPrefix() {
   const rootSegments = new Set([
@@ -57,44 +58,44 @@ async function readJson(response, fallbackMessage) {
     payload = null;
   }
   if (!response.ok || payload?.ok === false) {
-    throw new Error(payload?.error || fallbackMessage);
+    throw new Error(fallbackMessage);
   }
   return payload?.data || {};
 }
 
-async function requestSupabaseAuth(path, options = {}) {
-  const response = await fetch(`/api/auth/dev/supabase/${path}`, {
+async function requestAccountAuth(path, options = {}) {
+  const response = await fetch(`/api/auth/${path}`, {
     body: options.body ? JSON.stringify(options.body) : undefined,
     headers: options.body ? { "content-type": "application/json" } : undefined,
     method: options.method || "GET",
   });
-  return readJson(response, "DEV Supabase Auth API is unavailable. Start the API-backed local server.");
+  return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
 }
 
 function unavailableMessage(status) {
-  return status?.message || "DEV Supabase Auth is unavailable. Configure GAMEFOUNDRY_SUPABASE_URL and GAMEFOUNDRY_SUPABASE_ANON_KEY on the local server.";
+  return status?.message || AUTH_UNAVAILABLE_MESSAGE;
 }
 
-async function refreshSupabaseStatus() {
+async function refreshAccountAuthStatus() {
   if (isStaticOnlyLocalEntrypoint()) {
-    supabaseStatus = {
+    authStatus = {
       ready: false,
-      message: "Start the DEV API server to use Supabase Auth. Guest browsing remains available.",
+      message: AUTH_UNAVAILABLE_MESSAGE,
     };
-    setStatus(supabaseStatus.message);
-    return supabaseStatus;
+    setStatus(authStatus.message);
+    return authStatus;
   }
   try {
-    supabaseStatus = await requestSupabaseAuth("status");
-    setStatus(supabaseStatus.ready ? "DEV Supabase Auth is ready for sign-in." : unavailableMessage(supabaseStatus));
+    authStatus = await requestAccountAuth("status");
+    setStatus(authStatus.ready ? "Account service is available." : unavailableMessage(authStatus));
   } catch (error) {
-    supabaseStatus = {
+    authStatus = {
       ready: false,
-      message: error instanceof Error ? error.message : String(error || "DEV Supabase Auth status failed."),
+      message: error instanceof Error ? error.message : AUTH_UNAVAILABLE_MESSAGE,
     };
-    setStatus(supabaseStatus.message);
+    setStatus(authStatus.message);
   }
-  return supabaseStatus;
+  return authStatus;
 }
 
 if (continueLink) {
@@ -103,13 +104,13 @@ if (continueLink) {
 
 form?.addEventListener("submit", (event) => {
   event.preventDefault();
-  Promise.resolve(refreshSupabaseStatus())
+  Promise.resolve(refreshAccountAuthStatus())
     .then((status) => {
       if (!status?.ready) {
         setStatus(unavailableMessage(status));
         return null;
       }
-      return requestSupabaseAuth("sign-in", {
+      return requestAccountAuth("sign-in", {
         body: {
           identity: identityField?.value || "",
           password: passwordField?.value || "",
@@ -119,10 +120,10 @@ form?.addEventListener("submit", (event) => {
     })
     .then((result) => {
       if (result) {
-        setStatus(result.message || "Supabase Auth sign-in completed.");
+        setStatus(result.message || "Account authentication completed.");
       }
     })
     .catch((error) => {
-      setStatus(error instanceof Error ? error.message : String(error || "Supabase Auth sign-in failed."));
+      setStatus(error instanceof Error ? error.message : AUTH_UNAVAILABLE_MESSAGE);
     });
 });

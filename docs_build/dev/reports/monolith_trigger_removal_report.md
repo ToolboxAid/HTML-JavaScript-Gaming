@@ -1,6 +1,6 @@
 # Monolith Trigger Removal Report
 
-Generated: 2026-06-15T15:27:50.152Z
+Generated: 2026-06-15T15:46:13.861Z
 Status: PASS
 
 ## Removed Broad Execution Triggers
