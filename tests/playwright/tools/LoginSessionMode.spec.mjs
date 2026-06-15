@@ -544,12 +544,15 @@ test("Configured account auth actions use external Auth and resolve the app sess
 
       expect(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length).toBeGreaterThanOrEqual(4);
       expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password")).toBe(true);
-      expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup")).toBe(true);
+      expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users")).toBe(true);
       expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover")).toBe(true);
       expect(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*")).toBe(true);
       expect(fakeSupabase.calls
-        .filter((call) => call.path.startsWith("/auth/v1/"))
+        .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
         .every((call) => call.headers.apikey === "browser-test-anon-key")).toBe(true);
+      expect(fakeSupabase.calls
+        .filter((call) => call.path === "/auth/v1/admin/users")
+        .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);
       expect(fakeSupabase.calls
         .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);

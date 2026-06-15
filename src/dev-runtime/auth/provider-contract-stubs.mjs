@@ -130,6 +130,15 @@ function authHeaders(env, accessToken = "") {
   return headers;
 }
 
+function authAdminHeaders(env) {
+  const serviceRoleKey = supabaseServiceRoleKey(env);
+  return {
+    apikey: serviceRoleKey,
+    authorization: `Bearer ${serviceRoleKey}`,
+    "content-type": "application/json",
+  };
+}
+
 function postgresHeaders(env, prefer = "return=representation") {
   const serviceRoleKey = supabaseServiceRoleKey(env);
   return {
@@ -449,14 +458,34 @@ export class SupabaseAuthProviderAdapter {
 
   async createAccount({ email, password } = {}) {
     this.assertConfigured();
-    return this.request("/auth/v1/signup", {
-      body: {
+    const serviceRoleKey = supabaseServiceRoleKey(this.env);
+    if (!serviceRoleKey) {
+      throw new Error("Supabase Auth createAccount requires the server-only service role key.");
+    }
+    const response = await this.fetchImpl(`${supabaseUrl(this.env)}/auth/v1/admin/users`, {
+      body: JSON.stringify({
         email: requireString(email, "email"),
+        email_confirm: true,
         password: requireString(password, "password"),
-      },
+      }),
+      headers: authAdminHeaders(this.env),
       method: "POST",
-      operation: "createAccount",
     });
+    const payload = await readResponseJson(response);
+    if (!response.ok) {
+      const message = payload?.error_description || payload?.msg || payload?.message || "No Supabase Auth error message returned.";
+      throw new Error(`Supabase Auth createAccount failed with HTTP ${response.status}: ${message}`);
+    }
+    if (payload?.id && !payload.user) {
+      return {
+        user: {
+          email: payload.email || email,
+          id: payload.id,
+        },
+        ...payload,
+      };
+    }
+    return payload;
   }
 
   async requestPasswordReset({ email, redirectTo = "" } = {}) {

@@ -1,341 +1,599 @@
-diff --git a/package.json b/package.json
-index f14e8b790..90d698f23 100644
---- a/package.json
-+++ b/package.json
-@@ -24,7 +24,7 @@
-     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
-     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
-     "dev:local-api": "node ./scripts/start-local-api-server.mjs",
--    "validate:supabase-dev": "node ./scripts/validate-supabase-dev.mjs",
-+    "validate:supabase-dev": "node --use-system-ca ./scripts/validate-supabase-dev.mjs",
-     "check:shared-extraction-guard": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
-     "check:phase24-closeout-guard": "node docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs",
-     "check:style-system-guard": "node docs_build/dev/toolbox/checkStyleSystemGuard.mjs",
-diff --git a/scripts/validate-supabase-dev.mjs b/scripts/validate-supabase-dev.mjs
-index 546395dea..28be2f882 100644
---- a/scripts/validate-supabase-dev.mjs
-+++ b/scripts/validate-supabase-dev.mjs
-@@ -107,7 +107,11 @@ function envValue(key) {
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index f5bc8b913..e67e0ecf6 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,9 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(92%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 12/13
+-(94%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 15/16
+
+ Guardrail warnings:
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 43512a673..19c4316d2 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -14,32 +14,30 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+ Exercised tool entry points detected:
+ (70%) Toolbox Index - exercised 3 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(70%) Theme V2 Shared JS - exercised 3 runtime JS files
++(67%) Theme V2 Shared JS - exercised 3 runtime JS files
+
+ Changed runtime JS files covered:
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(92%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 12/13
+-(94%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 15/16
+
+ Files with executed line/function counts where available:
+ (25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+ (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+ (45%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 10/22
+ (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+-(59%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 38/64
++(58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 37/64
+ (75%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 77/103
+-(92%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 12/13
+-(94%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 15/16
++(85%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 11/13
++(88%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 14/16
+ (100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
+
+ Uncovered or low-coverage changed JS files:
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+
+ Changed JS files considered:
++(0%) scripts/validate-supabase-dev.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs - changed JS file not collected as browser runtime coverage
+-(92%) assets/theme-v2/js/account-auth-actions.js - changed JS file with browser V8 coverage
+-(94%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
+index 2c5e41b15..283ba1d62 100644
+--- a/src/dev-runtime/auth/provider-contract-stubs.mjs
++++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
+@@ -130,6 +130,15 @@ function authHeaders(env, accessToken = "") {
+   return headers;
  }
 
- function sanitizeDiagnostic(value) {
--  let text = String(value || "No diagnostic returned.");
-+  const source = String(value || "").trim();
-+  if (!source) {
-+    return "";
-+  }
-+  let text = source;
-   REQUIRED_ENV.forEach(({ key }) => {
-     const raw = envValue(key);
-     if (raw) {
-@@ -141,6 +145,10 @@ function fail(label, detail = "") {
-   return result("FAIL", label, detail);
- }
-
-+function warn(label, detail = "") {
-+  return result("WARN", label, detail);
++function authAdminHeaders(env) {
++  const serviceRoleKey = supabaseServiceRoleKey(env);
++  return {
++    apikey: serviceRoleKey,
++    authorization: `Bearer ${serviceRoleKey}`,
++    "content-type": "application/json",
++  };
 +}
 +
- function formatResult({ detail, label, status }) {
-   return detail ? `${status} - ${label} (${detail})` : `${status} - ${label}`;
+ function postgresHeaders(env, prefer = "return=representation") {
+   const serviceRoleKey = supabaseServiceRoleKey(env);
+   return {
+@@ -449,14 +458,34 @@ export class SupabaseAuthProviderAdapter {
+
+   async createAccount({ email, password } = {}) {
+     this.assertConfigured();
+-    return this.request("/auth/v1/signup", {
+-      body: {
++    const serviceRoleKey = supabaseServiceRoleKey(this.env);
++    if (!serviceRoleKey) {
++      throw new Error("Supabase Auth createAccount requires the server-only service role key.");
++    }
++    const response = await this.fetchImpl(`${supabaseUrl(this.env)}/auth/v1/admin/users`, {
++      body: JSON.stringify({
+         email: requireString(email, "email"),
++        email_confirm: true,
+         password: requireString(password, "password"),
+-      },
++      }),
++      headers: authAdminHeaders(this.env),
+       method: "POST",
+-      operation: "createAccount",
+     });
++    const payload = await readResponseJson(response);
++    if (!response.ok) {
++      const message = payload?.error_description || payload?.msg || payload?.message || "No Supabase Auth error message returned.";
++      throw new Error(`Supabase Auth createAccount failed with HTTP ${response.status}: ${message}`);
++    }
++    if (payload?.id && !payload.user) {
++      return {
++        user: {
++          email: payload.email || email,
++          id: payload.id,
++        },
++        ...payload,
++      };
++    }
++    return payload;
+   }
+
+   async requestPasswordReset({ email, redirectTo = "" } = {}) {
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 75b5959e5..4eb33a876 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -93,6 +93,7 @@ const LOCAL_DB_MODE_ID = "local-db";
+ const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
+ const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
+ const AUTH_READY_MESSAGE = "Account service is available.";
++const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
+ const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
+   description: "Default creator/player account role.",
+   isSystemRole: false,
+@@ -705,6 +706,13 @@ function authUnavailableError(action, diagnostic = "") {
+   return error;
  }
-@@ -223,7 +231,11 @@ async function checkIdentityTable(tableName) {
-       return pass(`${tableName} table`, `HTTP ${response.status}`);
+
++function authIdentitySetupError(action, diagnostic = "") {
++  const error = new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
++  error.statusCode = 503;
++  error.operatorDiagnostic = diagnostic ? `${action}: ${diagnostic}` : `${action}: ${ACCOUNT_IDENTITY_SETUP_MESSAGE}`;
++  return error;
++}
++
+ function sanitizedSupabaseAuthActionResult(action, email, payload = {}, session = null) {
+   const user = payload.user && typeof payload.user === "object" ? payload.user : {};
+   const resolvedSession = session && session.authenticated ? session : null;
+@@ -1140,6 +1148,9 @@ class LocalDevDataSource {
+     this.assertLocalDatabaseProvider(action);
+     const authStatus = await this.authStatusForRoute();
+     if (!authStatus.ready) {
++      if (authStatus.identityTablesReady === false) {
++        throw authIdentitySetupError(action, authStatus.operatorDiagnostic || "Account identity tables are not ready.");
++      }
+       throw authUnavailableError(action, `Supabase Auth identity ownership is not ready. ${authStatus.operatorDiagnostic || authStatus.status}`);
      }
-     const payload = await safeJson(response);
--    return fail(`${tableName} table`, `HTTP ${response.status}${payload?.message ? `: ${payload.message}` : ""}`);
-+    const message = payload?.message || "";
-+    const setupHint = response.status === 404
-+      ? " Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path."
-+      : "";
-+    return fail(`${tableName} table`, `HTTP ${response.status}${message ? `: ${message}` : ""}${setupHint}`);
-   } catch (error) {
-     return fail(`${tableName} table`, error?.code || error?.cause?.code || error?.message);
-   }
-@@ -601,6 +613,27 @@ async function checkDatabaseConnection() {
-   }
- }
+     return this.readSupabaseIdentityTablesUnchecked(action);
+@@ -1155,11 +1166,16 @@ class LocalDevDataSource {
+         identityTablesReady: true,
+       };
+     } catch (error) {
++      const rawMessage = String(error?.message || error || "");
++      const setupDiagnostic = rawMessage.includes("Supabase Postgres") && rawMessage.includes("HTTP 404")
++        ? "Identity tables are missing. Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path."
++        : "";
+       const diagnostic = sanitizedAuthErrorDiagnostic(error);
++      const fallbackDiagnostic = diagnostic.httpStatus
++        ? diagnostic.message
++        : "Supabase identity table validation failed before an HTTP status was available.";
+       return {
+-        diagnostic: diagnostic.httpStatus
+-          ? diagnostic.message
+-          : "Supabase identity table validation failed before an HTTP status was available.",
++        diagnostic: setupDiagnostic || fallbackDiagnostic,
+         identityBootstrapReady: false,
+         identityTableRecords: {
+           roles: 0,
+@@ -1633,13 +1649,13 @@ class LocalDevDataSource {
+     if (!identity.identityTablesReady) {
+       return {
+         ...status,
+-        actionRequired: AUTH_UNAVAILABLE_MESSAGE,
++        actionRequired: ACCOUNT_IDENTITY_SETUP_MESSAGE,
+         connectivityHealthy: true,
+         connectivityStatus: "healthy",
+         identityBootstrapReady: false,
+         identityTableRecords: identity.identityTableRecords,
+         identityTablesReady: false,
+-        message: AUTH_UNAVAILABLE_MESSAGE,
++        message: ACCOUNT_IDENTITY_SETUP_MESSAGE,
+         operatorDiagnostic: `Supabase Auth is reachable, but identity table readiness could not be proven. ${identity.diagnostic}`,
+         ready: false,
+         status: "unavailable",
+@@ -1738,6 +1754,9 @@ class LocalDevDataSource {
+   async authAdapterForAction(action) {
+     const status = await this.authStatusForRoute();
+     if (!status.ready) {
++      if (status.identityTablesReady === false) {
++        throw authIdentitySetupError(action, `Account identity setup is incomplete. ${status.operatorDiagnostic || status.status}`);
++      }
+       throw authUnavailableError(action, `Supabase Auth is not ready. ${status.operatorDiagnostic || status.status}`);
+     }
+     return new SupabaseAuthProviderAdapter();
+@@ -1759,11 +1778,11 @@ class LocalDevDataSource {
+         (authEmail && normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
+     });
+     if (!matchingUser) {
+-      throw authUnavailableError(action, "Supabase Auth user is missing a matching users record.");
++      throw authIdentitySetupError(action, "Account authentication succeeded, but no matching users record exists for this account.");
+     }
+     const session = sessionUserFromIdentityTables(tables, matchingUser.key, this.sessionModeId, "Supabase identity");
+     if (!session.authenticated) {
+-      throw authUnavailableError(action, session.diagnostic || "Supabase identity session could not be resolved.");
++      throw authIdentitySetupError(action, session.diagnostic || "Account identity session could not be resolved.");
+     }
+     this.sessionUserKey = matchingUser.key;
+     this.sharedOptions.sessionMode = this.sessionModeId;
+@@ -1788,14 +1807,14 @@ class LocalDevDataSource {
+       String(user.authProviderUserId || "") === authUserId);
+     const matchingByEmail = users.find((user) => normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
+     if (matchingByProviderId && matchingByEmail && matchingByProviderId.key !== matchingByEmail.key) {
+-      throw authUnavailableError(action, "Supabase Auth identity maps to conflicting users records.");
++      throw authIdentitySetupError(action, "Account identity maps to conflicting users records.");
+     }
+     const matchingUser = matchingByProviderId || matchingByEmail || null;
+     if (matchingUser?.authProvider && matchingUser.authProvider !== SUPABASE_AUTH_PROVIDER_ID) {
+-      throw authUnavailableError(action, "Existing users record is owned by a different auth provider.");
++      throw authIdentitySetupError(action, "Existing users record is owned by a different account provider.");
+     }
+     if (matchingUser?.authProviderUserId && String(matchingUser.authProviderUserId) !== authUserId) {
+-      throw authUnavailableError(action, "Existing users record is linked to a different Supabase Auth user.");
++      throw authIdentitySetupError(action, "Existing users record is linked to a different account identity.");
+     }
 
-+function isTlsTrustFailure(detail) {
-+  return [
-+    "CERT_",
-+    "SELF_SIGNED_CERT_IN_CHAIN",
-+    "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
-+  ].some((marker) => String(detail || "").includes(marker));
-+}
-+
-+function directDatabaseReadiness(databaseResult, restIdentityReady) {
-+  if (databaseResult.status !== "FAIL") {
-+    return databaseResult;
-+  }
-+  if (restIdentityReady && isTlsTrustFailure(databaseResult.detail)) {
-+    return warn(
-+      "Database connection",
-+      `${databaseResult.detail}; REST/API identity readiness passed, so direct PostgreSQL TLS failure is advisory for DEV.`,
-+    );
-+  }
-+  return databaseResult;
-+}
-+
- async function main() {
-   const envLoad = loadEnvLocal();
-   const results = [];
-@@ -613,21 +646,33 @@ async function main() {
-     results.push(value ? pass(label, `${key}=${maskValue(value)}`) : fail(label, `${key}=missing`));
-   });
+     const timestamp = new Date().toISOString();
+@@ -1836,7 +1855,7 @@ class LocalDevDataSource {
+     const refreshedTables = await this.readSupabaseIdentityTablesUnchecked(`${action} identity provisioning result`);
+     const session = sessionUserFromIdentityTables(refreshedTables, userKey, this.sessionModeId, "Supabase identity");
+     if (!session.authenticated) {
+-      throw authUnavailableError(action, session.diagnostic || "Provisioned Supabase identity session could not be validated.");
++      throw authIdentitySetupError(action, session.diagnostic || "Provisioned account identity session could not be validated.");
+     }
 
--  results.push(await checkSupabaseReachable());
--  results.push(await checkTlsValidation());
--  results.push(await checkAuthEndpointReachable());
--  results.push(await checkServiceRoleAuthentication());
--  results.push(await checkDatabaseConnection());
-+  const supabaseReachable = await checkSupabaseReachable();
-+  const tlsValidation = await checkTlsValidation();
-+  const authEndpoint = await checkAuthEndpointReachable();
-+  const serviceRole = await checkServiceRoleAuthentication();
-+  results.push(supabaseReachable);
-+  results.push(tlsValidation);
-+  results.push(authEndpoint);
-+  results.push(serviceRole);
-+  const identityTableResults = [];
-   for (const tableName of IDENTITY_TABLES) {
--    results.push(await checkIdentityTable(tableName));
-+    identityTableResults.push(await checkIdentityTable(tableName));
-   }
-+  const restIdentityReady = serviceRole.status === "PASS"
-+    && identityTableResults.every((check) => check.status === "PASS");
-+  results.push(directDatabaseReadiness(await checkDatabaseConnection(), restIdentityReady));
-+  results.push(...identityTableResults);
+     return {
+@@ -1860,7 +1879,7 @@ class LocalDevDataSource {
+       const session = await this.resolvedSessionForAuthPayload("Sign in", email, payload);
+       return sanitizedSupabaseAuthActionResult("sign-in", email, payload, session);
+     } catch (error) {
+-      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
++      if (error?.statusCode === 503) {
+         throw error;
+       }
+       const diagnostic = sanitizedAuthErrorDiagnostic(error);
+@@ -1888,7 +1907,7 @@ class LocalDevDataSource {
+         userRoleCreated: identity.userRoleCreated,
+       };
+     } catch (error) {
+-      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
++      if (error?.statusCode === 503) {
+         throw error;
+       }
+       const diagnostic = sanitizedAuthErrorDiagnostic(error);
+@@ -1910,7 +1929,7 @@ class LocalDevDataSource {
+         redirectToIncluded: Boolean(redirectTo),
+       };
+     } catch (error) {
+-      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
++      if (error?.statusCode === 503) {
+         throw error;
+       }
+       const diagnostic = sanitizedAuthErrorDiagnostic(error);
+diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+index 038931180..fcdea2366 100644
+--- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
++++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+@@ -72,6 +72,9 @@ function startApiServer() {
+ function startFakeSupabaseAuthServer(options = {}) {
+   const expectedApiKey = options.expectedApiKey || "";
+   const rejectWrongApiKey = options.rejectWrongApiKey === true;
++  const unavailableIdentityTables = new Set(options.identityTablesUnavailable === true
++    ? ["users", "roles", "user_roles"]
++    : options.unavailableIdentityTables || []);
+   const identityTables = {
+     roles: [...(options.identityTables?.roles || [])],
+     user_roles: [...(options.identityTables?.user_roles || [])],
+@@ -113,6 +116,12 @@ function startFakeSupabaseAuthServer(options = {}) {
+     }
+     if (requestUrl.pathname.startsWith("/rest/v1/")) {
+       const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
++      if (unavailableIdentityTables.has(tableName)) {
++        response.statusCode = 404;
++        response.setHeader("Content-Type", "application/json; charset=utf-8");
++        response.end(JSON.stringify({ message: `Could not find the table 'public.${tableName}' in the schema cache` }));
++        return;
++      }
+       if (request.method === "POST") {
+         const rows = Array.isArray(body) ? body : [body];
+         identityTables[tableName] = identityTables[tableName] || [];
+@@ -717,14 +726,17 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
 
-   results.forEach((check) => {
-     console.log(formatResult(check));
-   });
--  const failed = results.filter((check) => check.status !== "PASS");
-+  const failed = results.filter((check) => check.status === "FAIL");
-+  const warned = results.filter((check) => check.status === "WARN");
-   console.log("");
-   console.log(`Overall Result: ${failed.length ? "FAIL" : "PASS"}`);
-+  if (warned.length) {
-+    console.log(`Warning checks: ${warned.map((check) => check.label).join(", ")}`);
-+  }
-   if (failed.length) {
-     console.log(`Failed checks: ${failed.map((check) => check.label).join(", ")}`);
-     process.exitCode = 1;
-diff --git a/docs_build/database/ddl/account/supabase-identity-tables.sql b/docs_build/database/ddl/account/supabase-identity-tables.sql
+       assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 5, true);
+       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
+-      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup"), true);
++      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
+       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
+       assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*"), true);
+       assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/roles?select=*"), true);
+       assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/user_roles?select=*"), true);
+       assert.equal(fakeSupabase.calls
+-        .filter((call) => call.path.startsWith("/auth/v1/"))
++        .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
+         .every((call) => call.headers.apikey === "test-anon-key"), true);
++      assert.equal(fakeSupabase.calls
++        .filter((call) => call.path === "/auth/v1/admin/users")
++        .every((call) => call.headers.apikey === "test-service-role-key"), true);
+       assert.equal(fakeSupabase.calls
+         .filter((call) => call.path.startsWith("/rest/v1/"))
+         .every((call) => call.headers.apikey === "test-service-role-key"), true);
+@@ -838,7 +850,7 @@ test("Supabase sign in fails visibly when the Auth user has no app identity row"
+       });
+       assert.equal(signIn.status, 503);
+       assert.equal(signIn.payload.ok, false);
+-      assert.equal(signIn.payload.error, "The site is currently unavailable. Please try again later.");
++      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
+       assert.equal(JSON.stringify(signIn.payload).includes("missing.identity@example.test"), false);
+     } finally {
+       await server.close();
+@@ -847,6 +859,40 @@ test("Supabase sign in fails visibly when the Auth user has no app identity row"
+   await fakeSupabase.close();
+ });
+
++test("Supabase account actions fail actionably when identity tables are missing", async () => {
++  const fakeSupabase = await startFakeSupabaseAuthServer({
++    identityTablesUnavailable: true,
++  });
++  await withEnv({
++    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
++    GAMEFOUNDRY_DB_PROVIDER: "local-db",
++    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
++    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
++    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
++  }, async () => {
++    const server = await startApiServer();
++    try {
++      const status = await apiJson(server.baseUrl, "/api/auth/status");
++      assert.equal(status.ready, false);
++      assert.equal(status.identityTablesReady, false);
++      assert.equal(status.message, "Account identity setup is incomplete. Please contact support.");
++      assert.match(status.operatorDiagnostic, /supabase-identity-tables\.sql/);
++
++      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
++        email: "creator@example.test",
++        password: "not-stored-locally",
++      });
++      assert.equal(signIn.status, 503);
++      assert.equal(signIn.payload.ok, false);
++      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
++      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), false);
++    } finally {
++      await server.close();
++    }
++  });
++  await fakeSupabase.close();
++});
++
+ test("Default Supabase Auth routes sign in create account and password reset through external auth", async () => {
+   const fakeSupabase = await startFakeSupabaseAuthServer({
+     identityTables: fakeSupabaseIdentityTables(),
+@@ -900,11 +946,14 @@ test("Default Supabase Auth routes sign in create account and password reset thr
+
+       assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 4, true);
+       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
+-      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup"), true);
++      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
+       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
+       assert.equal(fakeSupabase.calls
+-        .filter((call) => call.path.startsWith("/auth/v1/"))
++        .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
+         .every((call) => call.headers.apikey === "test-anon-key"), true);
++      assert.equal(fakeSupabase.calls
++        .filter((call) => call.path === "/auth/v1/admin/users")
++        .every((call) => call.headers.apikey === "test-service-role-key"), true);
+       assert.equal(fakeSupabase.calls
+         .filter((call) => call.path.startsWith("/rest/v1/"))
+         .every((call) => call.headers.apikey === "test-service-role-key"), true);
+@@ -1136,7 +1185,7 @@ test("Supabase Auth adapter fails visibly when selected without configuration",
+   assert.throws(() => auth.requireRole(), /future app user mapping adapter/);
+ });
+
+-test("Supabase Auth adapter uses browser-safe env config without service-role values", async () => {
++test("Supabase Auth adapter uses service role only for server-owned account creation", async () => {
+   const calls = [];
+   const auth = new SupabaseAuthProviderAdapter({
+     env: {
+@@ -1162,14 +1211,17 @@ test("Supabase Auth adapter uses browser-safe env config without service-role va
+
+   assert.deepEqual(calls.map((call) => call.url), [
+     "https://supabase-dev.example.test/auth/v1/token?grant_type=password",
+-    "https://supabase-dev.example.test/auth/v1/signup",
++    "https://supabase-dev.example.test/auth/v1/admin/users",
+     "https://supabase-dev.example.test/auth/v1/recover",
+     "https://supabase-dev.example.test/auth/v1/user",
+     "https://supabase-dev.example.test/auth/v1/logout",
+   ]);
+-  const callText = JSON.stringify(calls);
+-  assert.equal(callText.includes("not-a-real-service-role-test-value"), false);
+-  assert.equal(calls.every((call) => call.options.headers.apikey === "test-anon-key"), true);
++  assert.equal(calls[0].options.headers.apikey, "test-anon-key");
++  assert.equal(calls[1].options.headers.apikey, "not-a-real-service-role-test-value");
++  assert.equal(calls[1].options.headers.authorization, "Bearer not-a-real-service-role-test-value");
++  assert.equal(calls[2].options.headers.apikey, "test-anon-key");
++  assert.equal(calls[3].options.headers.apikey, "test-anon-key");
++  assert.equal(calls[4].options.headers.apikey, "test-anon-key");
+   assert.equal(calls[3].options.headers.authorization, "Bearer user-access-token");
+   assert.equal(calls[4].options.headers.authorization, "Bearer user-access-token");
+ });
+diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
+index 3ae0db465..6df1f95ed 100644
+--- a/tests/playwright/tools/LoginSessionMode.spec.mjs
++++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
+@@ -544,12 +544,15 @@ test("Configured account auth actions use external Auth and resolve the app sess
+
+       expect(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length).toBeGreaterThanOrEqual(4);
+       expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password")).toBe(true);
+-      expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup")).toBe(true);
++      expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users")).toBe(true);
+       expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover")).toBe(true);
+       expect(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*")).toBe(true);
+       expect(fakeSupabase.calls
+-        .filter((call) => call.path.startsWith("/auth/v1/"))
++        .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
+         .every((call) => call.headers.apikey === "browser-test-anon-key")).toBe(true);
++      expect(fakeSupabase.calls
++        .filter((call) => call.path === "/auth/v1/admin/users")
++        .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);
+       expect(fakeSupabase.calls
+         .filter((call) => call.path.startsWith("/rest/v1/"))
+         .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);
+diff --git a/docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md b/docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md
 new file mode 100644
-index 000000000..bc91dc4cd
+index 000000000..d7e5a0f2e
 --- /dev/null
-+++ b/docs_build/database/ddl/account/supabase-identity-tables.sql
-@@ -0,0 +1,77 @@
-+-- Game Foundry Studio Supabase identity bootstrap DDL
-+-- Scope: Supabase account identity tables only.
-+-- Product data remains on Local DB for PR_26166_155.
-+-- No password tables are created here; passwords remain owned by Supabase Auth.
-+-- users.key is the authoritative ownership reference for app records.
-+
-+begin;
-+
-+create table if not exists public.users (
-+    key text primary key,
-+    "displayName" text not null default 'Creator',
-+    email text,
-+    "authProvider" text,
-+    "authProviderUserId" text,
-+    "isActive" boolean not null default true,
-+    "createdAt" timestamptz not null default now(),
-+    "updatedAt" timestamptz not null default now(),
-+    "createdBy" text references public.users(key) on delete set null,
-+    "updatedBy" text references public.users(key) on delete set null,
-+    constraint users_auth_identity_unique unique ("authProvider", "authProviderUserId"),
-+    constraint users_no_mock_auth_provider check ("authProvider" is null or "authProvider" <> 'mock')
-+);
-+
-+create unique index if not exists idx_users_email_unique_not_null
-+    on public.users (lower(email))
-+    where email is not null;
-+
-+create index if not exists idx_users_createdby on public.users ("createdBy");
-+create index if not exists idx_users_updatedby on public.users ("updatedBy");
-+
-+create table if not exists public.roles (
-+    key text primary key,
-+    "roleSlug" text not null unique,
-+    name text not null,
-+    description text not null default '',
-+    "isSystemRole" boolean not null default false,
-+    "isActive" boolean not null default true,
-+    "createdAt" timestamptz not null default now(),
-+    "updatedAt" timestamptz not null default now(),
-+    "createdBy" text not null references public.users(key),
-+    "updatedBy" text not null references public.users(key)
-+);
-+
-+create index if not exists idx_roles_createdby on public.roles ("createdBy");
-+create index if not exists idx_roles_updatedby on public.roles ("updatedBy");
-+
-+create table if not exists public.user_roles (
-+    key text primary key,
-+    "userKey" text not null references public.users(key) on delete cascade,
-+    "roleKey" text not null references public.roles(key) on delete cascade,
-+    "createdAt" timestamptz not null default now(),
-+    "updatedAt" timestamptz not null default now(),
-+    "createdBy" text not null references public.users(key),
-+    "updatedBy" text not null references public.users(key),
-+    constraint user_roles_user_role_unique unique ("userKey", "roleKey")
-+);
-+
-+create index if not exists idx_user_roles_userkey on public.user_roles ("userKey");
-+create index if not exists idx_user_roles_rolekey on public.user_roles ("roleKey");
-+create index if not exists idx_user_roles_createdby on public.user_roles ("createdBy");
-+create index if not exists idx_user_roles_updatedby on public.user_roles ("updatedBy");
-+
-+alter table public.users enable row level security;
-+alter table public.roles enable row level security;
-+alter table public.user_roles enable row level security;
-+
-+revoke all on public.users from anon, authenticated;
-+revoke all on public.roles from anon, authenticated;
-+revoke all on public.user_roles from anon, authenticated;
-+
-+grant select, insert, update, delete on public.users to service_role;
-+grant select, insert, update, delete on public.roles to service_role;
-+grant select, insert, update, delete on public.user_roles to service_role;
-+
-+notify pgrst, 'reload schema';
-+
-+commit;
-diff --git a/docs_build/database/seed/account/supabase-dev-identity-bootstrap.md b/docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
-new file mode 100644
-index 000000000..924b93a69
---- /dev/null
-+++ b/docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
-@@ -0,0 +1,34 @@
-+# Supabase DEV Identity Bootstrap
-+
-+Use this only for the DEV Supabase project while product data remains on Local DB.
-+
-+## Bootstrap Order
-+
-+1. Run `docs_build/database/ddl/account/supabase-identity-tables.sql` in the Supabase SQL editor or through an approved operator SQL path.
-+2. Run `npm run validate:supabase-dev`.
-+3. Confirm these checks pass through REST/API:
-+   - `Service role authentication`
-+   - `users table`
-+   - `roles table`
-+   - `user_roles table`
-+4. Keep `GAMEFOUNDRY_DB_PROVIDER=local-db`.
-+
-+## Seed Rules
-+
-+- Passwords remain owned by Supabase Auth.
-+- Do not create password tables.
-+- Browser JavaScript must not generate authoritative identity keys.
-+- Create Account provisions app `users`, `roles`, and `user_roles` records server-side.
-+- Static DEV user ULIDs are allowed only for these DEV seed users:
-+  - User 1: `01K2GFSJ0Y0000000000000051`
-+  - User 2: `01K2GFSJ0Y0000000000000052`
-+  - User 3: `01K2GFSJ0Y0000000000000053`
-+  - DavidQ admin: `01K2GFSJ0Y0000000000000054`
-+- Do not use static keys for games, assets, objects, controls, votes, tickets, tool metadata, tool planning, tool state records, guest seed data, roles, or user_roles.
-+- Do not use `authProvider: mock` for Supabase account identity records.
-+
-+## Existing Auth Users
-+
-+For existing DEV Supabase Auth users, provision app identity through the server/API provisioning path so the `users.authProviderUserId` value matches the real Supabase Auth user id.
-+
-+Do not commit Supabase Auth user ids, access tokens, service role keys, or database URLs.
-diff --git a/docs_build/dev/reports/PR_26166_155-supabase-identity-tables-bootstrap.md b/docs_build/dev/reports/PR_26166_155-supabase-identity-tables-bootstrap.md
-new file mode 100644
-index 000000000..1b7c9a31e
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26166_155-supabase-identity-tables-bootstrap.md
-@@ -0,0 +1,89 @@
-+# PR_26166_155-supabase-identity-tables-bootstrap
++++ b/docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md
+@@ -0,0 +1,156 @@
++# PR_26166_156-live-sign-in-and-provisioning
 +
 +## Branch Validation
-+- PASS: Current branch is `main`.
-+- Expected branch: `main`.
++
++- Current branch: main
++- Expected branch: main
++- Branch validation: PASS
++
++## Summary
++
++Made Supabase Create Account and Sign In usable end-to-end through backend API contracts.
++
++- Create Account now uses server-owned Supabase Admin Auth user creation, provisions the matching `users` identity record, and assigns the default `user` role through `user_roles`.
++- Sign In authenticates with Supabase Auth, resolves the matching app identity rows, and creates the current session state.
++- Password Reset remains Supabase Auth provider-backed.
++- Missing identity records now fail visibly with: `Account identity setup is incomplete. Please contact support.`
++- Product data remains on Local DB with `GAMEFOUNDRY_DB_PROVIDER=local-db`.
 +
 +## Requirement Checklist
-+- PASS: `docs_build/dev/PROJECT_INSTRUCTIONS.md` was read before implementation.
-+- PASS: `GAMEFOUNDRY_DB_PROVIDER=local-db` remains the required product-data posture.
-+- PASS: Product data remains on Local DB; no product-table migration was added.
-+- PASS: Direct PostgreSQL is not required for identity readiness. `validate:supabase-dev` uses Supabase REST/Auth checks for service-role and identity table readiness.
-+- PASS: Direct PostgreSQL TLS failure is retained as a diagnostic and can be downgraded to `WARN` when REST/API identity readiness passes.
-+- PASS: Added Supabase identity DDL under `docs_build/database/ddl/account/`.
-+- PASS: Added DEV/review bootstrap instructions under `docs_build/database/seed/account/`.
-+- PASS: Required identity tables are represented in DDL:
-+  - `users`
-+  - `roles`
-+  - `user_roles`
-+- PASS: Required ownership fields are represented:
-+  - `key`
-+  - `createdAt`
-+  - `updatedAt`
-+  - `createdBy`
-+  - `updatedBy`
-+- PASS: `users.key` remains the authoritative ownership reference.
-+- PASS: DEV static ULID exceptions are documented only for User 1, User 2, User 3, and DavidQ admin.
-+- PASS: No password tables were added.
-+- PASS: No browser-owned auth or identity data was added.
-+- PASS: No secrets or `.env.local` files were committed or modified.
-+- PASS: `validate:supabase-dev` now runs with Node system CA support while keeping TLS verification enabled.
-+- PASS: Service role authentication validates successfully through REST/Auth.
-+- FAIL: Live Supabase `users`, `roles`, and `user_roles` table checks do not pass yet because the tables are not present in the remote Supabase schema cache.
-+- FAIL: Live direct DB TLS failure remains a blocker in the current output because REST/API identity table readiness does not pass yet. Once the tables pass through REST/API, the direct DB TLS failure is downgraded to `WARN`.
 +
-+## Validation Lane Report
-+- Impacted lane: targeted operator auth/provider database bootstrap validation.
-+- Playwright impacted: No. No browser runtime or auth/session page behavior changed.
-+- Samples validation: SKIP. No samples or sample manifests changed.
-+
-+## Validation Performed
-+- PASS: `node --check scripts/validate-supabase-dev.mjs`
-+- PASS: `node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('package.json OK')"`
-+- PASS: `git diff --check`
-+- PASS: No TLS bypass patterns were added.
-+- PASS: No password table DDL was added.
-+- FAIL: `npm run validate:supabase-dev` because the remote Supabase identity tables still need the DDL applied.
-+
-+## validate:supabase-dev Output
-+
-+```text
-+> html-javascript-gaming@1.0.0 validate:supabase-dev
-+> node --use-system-ca ./scripts/validate-supabase-dev.mjs
-+
-+PASS - .env.local loaded (6 key(s) loaded)
-+PASS - URL configured (GAMEFOUNDRY_SUPABASE_URL=https:...e.co)
-+PASS - Publishable key configured (GAMEFOUNDRY_SUPABASE_ANON_KEY=sb_pub...V2Zj)
-+PASS - Service role key configured (GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=sb_sec...KRU6)
-+PASS - Database URL configured (GAMEFOUNDRY_SUPABASE_DATABASE_URL=postgr...gres)
-+PASS - Supabase reachable (HTTP 404)
-+PASS - TLS validation
-+PASS - Auth endpoint reachable (HTTP 200)
-+PASS - Service role authentication (HTTP 200)
-+FAIL - Database connection (SELF_SIGNED_CERT_IN_CHAIN)
-+FAIL - users table (HTTP 404: Could not find the table 'public.users' in the schema cache Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path.)
-+FAIL - roles table (HTTP 404: Could not find the table 'public.roles' in the schema cache Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path.)
-+FAIL - user_roles table (HTTP 404: Could not find the table 'public.user_roles' in the schema cache Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path.)
-+
-+Overall Result: FAIL
-+Failed checks: Database connection, users table, roles table, user_roles table
-+```
-+
-+## Manual Validation Notes
-+- The new DDL file is the approved SQL setup path for the missing Supabase identity tables.
-+- REST/Auth TLS now validates successfully under Node by using the system CA store; TLS verification remains enabled.
-+- Service-role authentication passes without printing secret values.
-+- The direct database URL still fails TLS trust, which matches the known DEV DB URL issue.
-+- The validator intentionally keeps the direct DB failure as `FAIL` until REST/API identity table readiness is green.
-+- After running the DDL in Supabase SQL editor or another approved operator SQL path, rerun `npm run validate:supabase-dev`; expected result is identity table PASS and direct DB TLS WARN if the DB URL still fails.
++- PASS - Main branch only; execution was on `main`.
++- PASS - `docs_build/dev/PROJECT_INSTRUCTIONS.md` was read before implementation.
++- PASS - Product data remains Local DB; no product-table migration was added.
++- PASS - Backend API contracts remain the browser boundary; browser tests call pages/API, not provider-specific browser logic.
++- PASS - Create Account creates a Supabase Auth user through server-side Admin Auth.
++- PASS - Create Account provisions the matching `users` record server-side.
++- PASS - Create Account assigns the default role through `user_roles`.
++- PASS - Sign In authenticates with Supabase Auth.
++- PASS - Sign In resolves `users`, `roles`, and `user_roles`.
++- PASS - Sign In creates and returns current session state.
++- PASS - Password Reset remains Supabase Auth provider-backed.
++- PASS - Missing identity records fail visibly and actionably.
++- PASS - No password tables were added.
++- PASS - No secrets or `.env.local` files were committed.
++- PASS - No silent fallback to Local DB auth was added.
 +
 +## Changed Files
-+- `package.json`
-+- `scripts/validate-supabase-dev.mjs`
-+- `docs_build/database/ddl/account/supabase-identity-tables.sql`
-+- `docs_build/database/seed/account/supabase-dev-identity-bootstrap.md`
-+- `docs_build/dev/reports/PR_26166_155-supabase-identity-tables-bootstrap.md`
 +
-+## Review Artifacts
++- `src/dev-runtime/auth/provider-contract-stubs.mjs`
++- `src/dev-runtime/server/local-api-router.mjs`
++- `tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- `tests/playwright/tools/LoginSessionMode.spec.mjs`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md`
++
++## Impacted Lanes
++
++- runtime: auth provider/server API routing.
++- integration: Supabase identity table readiness and app session resolution.
++- Playwright impacted: Yes.
++
++## Validation Performed
++
++- PASS - `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
++- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
++- PASS - `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- PASS - `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
++- PASS - `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++  - Result: 26 passed, 0 failed.
++- PASS - `npm run validate:supabase-dev`
++  - Overall Result: PASS.
++  - Users, roles, and user_roles REST/API table checks: PASS.
++  - Direct DB connection: WARN only, due to `SELF_SIGNED_CERT_IN_CHAIN`; REST/API identity readiness passed.
++- PASS - `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --grep "Sign-in page uses a production-safe account form without public Local DB controls" --reporter=list`
++  - Result: 1 passed.
++- PASS - `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --grep "Configured account auth actions use external Auth and resolve the app session" --reporter=list`
++  - Result: 1 passed.
++- PASS - Live DEV API probe for create account, sign in, and session resolution.
++- PASS - Live DEV API probe for missing identity failure.
++- PASS - Live DEV API probe for password reset.
++- PASS - `git diff --check`
++
++## Live DEV Evidence
++
++`npm run validate:supabase-dev`:
++
++```text
++PASS - .env.local loaded (6 key(s) loaded)
++PASS - URL configured
++PASS - Publishable key configured
++PASS - Service role key configured
++PASS - Database URL configured
++PASS - Supabase reachable
++PASS - TLS validation
++PASS - Auth endpoint reachable
++PASS - Service role authentication
++WARN - Database connection (SELF_SIGNED_CERT_IN_CHAIN; REST/API identity readiness passed, so direct PostgreSQL TLS failure is advisory for DEV.)
++PASS - users table
++PASS - roles table
++PASS - user_roles table
++Overall Result: PASS
++```
++
++Create Account and Sign In live probe:
++
++```json
++{
++  "createStatus": 200,
++  "identityProvisioned": true,
++  "signInStatus": 200,
++  "sessionResolved": true,
++  "currentSession": {
++    "status": 200,
++    "authenticated": true,
++    "roleSlugs": ["user"],
++    "userKeyLooksLikeUlid": true
++  }
++}
++```
++
++Missing identity live probe:
++
++```json
++{
++  "authOnlyCreated": true,
++  "signInStatus": 503,
++  "error": "Account identity setup is incomplete. Please contact support.",
++  "messageIsActionable": true
++}
++```
++
++Password Reset live probe:
++
++```json
++{
++  "passwordResetStatus": 200,
++  "action": "password-reset",
++  "redirectToIncluded": true,
++  "message": "If an account exists for that email, password reset instructions will be sent."
++}
++```
++
++## V8 Coverage
++
++- Coverage artifact: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- Coverage status: WARN advisory for changed Node/server runtime modules because Chromium V8 coverage does not collect those files.
++- Browser auth scripts were exercised by the targeted Playwright runs.
++
++## Skipped Lanes
++
++- samples: SKIP - full samples smoke was explicitly out of scope.
++- product table migration: SKIP - product data remains Local DB by requirement.
++- full workspace suite: SKIP - targeted auth/session validation was the requested lane for this PR.
++
++## Manual Validation Notes
++
++1. Start the dev runtime with Supabase auth environment configured and `GAMEFOUNDRY_DB_PROVIDER=local-db`.
++2. Open `account/create-account.html`.
++3. Create a new account with an email and password.
++4. Open `account/sign-in.html` and sign in with that account.
++5. Confirm the session resolves with a `user` role.
++6. Open `account/password-reset.html` and request reset instructions.
++7. Confirm no browser-visible secrets are shown and failures use production-safe messages.

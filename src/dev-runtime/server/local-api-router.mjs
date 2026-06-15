@@ -93,6 +93,7 @@ const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
 const AUTH_READY_MESSAGE = "Account service is available.";
+const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
 const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
   description: "Default creator/player account role.",
   isSystemRole: false,
@@ -705,6 +706,13 @@ function authUnavailableError(action, diagnostic = "") {
   return error;
 }
 
+function authIdentitySetupError(action, diagnostic = "") {
+  const error = new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
+  error.statusCode = 503;
+  error.operatorDiagnostic = diagnostic ? `${action}: ${diagnostic}` : `${action}: ${ACCOUNT_IDENTITY_SETUP_MESSAGE}`;
+  return error;
+}
+
 function sanitizedSupabaseAuthActionResult(action, email, payload = {}, session = null) {
   const user = payload.user && typeof payload.user === "object" ? payload.user : {};
   const resolvedSession = session && session.authenticated ? session : null;
@@ -1140,6 +1148,9 @@ class LocalDevDataSource {
     this.assertLocalDatabaseProvider(action);
     const authStatus = await this.authStatusForRoute();
     if (!authStatus.ready) {
+      if (authStatus.identityTablesReady === false) {
+        throw authIdentitySetupError(action, authStatus.operatorDiagnostic || "Account identity tables are not ready.");
+      }
       throw authUnavailableError(action, `Supabase Auth identity ownership is not ready. ${authStatus.operatorDiagnostic || authStatus.status}`);
     }
     return this.readSupabaseIdentityTablesUnchecked(action);
@@ -1155,11 +1166,16 @@ class LocalDevDataSource {
         identityTablesReady: true,
       };
     } catch (error) {
+      const rawMessage = String(error?.message || error || "");
+      const setupDiagnostic = rawMessage.includes("Supabase Postgres") && rawMessage.includes("HTTP 404")
+        ? "Identity tables are missing. Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path."
+        : "";
       const diagnostic = sanitizedAuthErrorDiagnostic(error);
+      const fallbackDiagnostic = diagnostic.httpStatus
+        ? diagnostic.message
+        : "Supabase identity table validation failed before an HTTP status was available.";
       return {
-        diagnostic: diagnostic.httpStatus
-          ? diagnostic.message
-          : "Supabase identity table validation failed before an HTTP status was available.",
+        diagnostic: setupDiagnostic || fallbackDiagnostic,
         identityBootstrapReady: false,
         identityTableRecords: {
           roles: 0,
@@ -1633,13 +1649,13 @@ class LocalDevDataSource {
     if (!identity.identityTablesReady) {
       return {
         ...status,
-        actionRequired: AUTH_UNAVAILABLE_MESSAGE,
+        actionRequired: ACCOUNT_IDENTITY_SETUP_MESSAGE,
         connectivityHealthy: true,
         connectivityStatus: "healthy",
         identityBootstrapReady: false,
         identityTableRecords: identity.identityTableRecords,
         identityTablesReady: false,
-        message: AUTH_UNAVAILABLE_MESSAGE,
+        message: ACCOUNT_IDENTITY_SETUP_MESSAGE,
         operatorDiagnostic: `Supabase Auth is reachable, but identity table readiness could not be proven. ${identity.diagnostic}`,
         ready: false,
         status: "unavailable",
@@ -1738,6 +1754,9 @@ class LocalDevDataSource {
   async authAdapterForAction(action) {
     const status = await this.authStatusForRoute();
     if (!status.ready) {
+      if (status.identityTablesReady === false) {
+        throw authIdentitySetupError(action, `Account identity setup is incomplete. ${status.operatorDiagnostic || status.status}`);
+      }
       throw authUnavailableError(action, `Supabase Auth is not ready. ${status.operatorDiagnostic || status.status}`);
     }
     return new SupabaseAuthProviderAdapter();
@@ -1759,11 +1778,11 @@ class LocalDevDataSource {
         (authEmail && normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
     });
     if (!matchingUser) {
-      throw authUnavailableError(action, "Supabase Auth user is missing a matching users record.");
+      throw authIdentitySetupError(action, "Account authentication succeeded, but no matching users record exists for this account.");
     }
     const session = sessionUserFromIdentityTables(tables, matchingUser.key, this.sessionModeId, "Supabase identity");
     if (!session.authenticated) {
-      throw authUnavailableError(action, session.diagnostic || "Supabase identity session could not be resolved.");
+      throw authIdentitySetupError(action, session.diagnostic || "Account identity session could not be resolved.");
     }
     this.sessionUserKey = matchingUser.key;
     this.sharedOptions.sessionMode = this.sessionModeId;
@@ -1788,14 +1807,14 @@ class LocalDevDataSource {
       String(user.authProviderUserId || "") === authUserId);
     const matchingByEmail = users.find((user) => normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
     if (matchingByProviderId && matchingByEmail && matchingByProviderId.key !== matchingByEmail.key) {
-      throw authUnavailableError(action, "Supabase Auth identity maps to conflicting users records.");
+      throw authIdentitySetupError(action, "Account identity maps to conflicting users records.");
     }
     const matchingUser = matchingByProviderId || matchingByEmail || null;
     if (matchingUser?.authProvider && matchingUser.authProvider !== SUPABASE_AUTH_PROVIDER_ID) {
-      throw authUnavailableError(action, "Existing users record is owned by a different auth provider.");
+      throw authIdentitySetupError(action, "Existing users record is owned by a different account provider.");
     }
     if (matchingUser?.authProviderUserId && String(matchingUser.authProviderUserId) !== authUserId) {
-      throw authUnavailableError(action, "Existing users record is linked to a different Supabase Auth user.");
+      throw authIdentitySetupError(action, "Existing users record is linked to a different account identity.");
     }
 
     const timestamp = new Date().toISOString();
@@ -1836,7 +1855,7 @@ class LocalDevDataSource {
     const refreshedTables = await this.readSupabaseIdentityTablesUnchecked(`${action} identity provisioning result`);
     const session = sessionUserFromIdentityTables(refreshedTables, userKey, this.sessionModeId, "Supabase identity");
     if (!session.authenticated) {
-      throw authUnavailableError(action, session.diagnostic || "Provisioned Supabase identity session could not be validated.");
+      throw authIdentitySetupError(action, session.diagnostic || "Provisioned account identity session could not be validated.");
     }
 
     return {
@@ -1860,7 +1879,7 @@ class LocalDevDataSource {
       const session = await this.resolvedSessionForAuthPayload("Sign in", email, payload);
       return sanitizedSupabaseAuthActionResult("sign-in", email, payload, session);
     } catch (error) {
-      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
+      if (error?.statusCode === 503) {
         throw error;
       }
       const diagnostic = sanitizedAuthErrorDiagnostic(error);
@@ -1888,7 +1907,7 @@ class LocalDevDataSource {
         userRoleCreated: identity.userRoleCreated,
       };
     } catch (error) {
-      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
+      if (error?.statusCode === 503) {
         throw error;
       }
       const diagnostic = sanitizedAuthErrorDiagnostic(error);
@@ -1910,7 +1929,7 @@ class LocalDevDataSource {
         redirectToIncluded: Boolean(redirectTo),
       };
     } catch (error) {
-      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
+      if (error?.statusCode === 503) {
         throw error;
       }
       const diagnostic = sanitizedAuthErrorDiagnostic(error);

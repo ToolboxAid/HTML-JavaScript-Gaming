@@ -72,6 +72,9 @@ function startApiServer() {
 function startFakeSupabaseAuthServer(options = {}) {
   const expectedApiKey = options.expectedApiKey || "";
   const rejectWrongApiKey = options.rejectWrongApiKey === true;
+  const unavailableIdentityTables = new Set(options.identityTablesUnavailable === true
+    ? ["users", "roles", "user_roles"]
+    : options.unavailableIdentityTables || []);
   const identityTables = {
     roles: [...(options.identityTables?.roles || [])],
     user_roles: [...(options.identityTables?.user_roles || [])],
@@ -113,6 +116,12 @@ function startFakeSupabaseAuthServer(options = {}) {
     }
     if (requestUrl.pathname.startsWith("/rest/v1/")) {
       const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
+      if (unavailableIdentityTables.has(tableName)) {
+        response.statusCode = 404;
+        response.setHeader("Content-Type", "application/json; charset=utf-8");
+        response.end(JSON.stringify({ message: `Could not find the table 'public.${tableName}' in the schema cache` }));
+        return;
+      }
       if (request.method === "POST") {
         const rows = Array.isArray(body) ? body : [body];
         identityTables[tableName] = identityTables[tableName] || [];
@@ -717,14 +726,17 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
 
       assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 5, true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
-      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/roles?select=*"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/user_roles?select=*"), true);
       assert.equal(fakeSupabase.calls
-        .filter((call) => call.path.startsWith("/auth/v1/"))
+        .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
         .every((call) => call.headers.apikey === "test-anon-key"), true);
+      assert.equal(fakeSupabase.calls
+        .filter((call) => call.path === "/auth/v1/admin/users")
+        .every((call) => call.headers.apikey === "test-service-role-key"), true);
       assert.equal(fakeSupabase.calls
         .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "test-service-role-key"), true);
@@ -838,8 +850,42 @@ test("Supabase sign in fails visibly when the Auth user has no app identity row"
       });
       assert.equal(signIn.status, 503);
       assert.equal(signIn.payload.ok, false);
-      assert.equal(signIn.payload.error, "The site is currently unavailable. Please try again later.");
+      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
       assert.equal(JSON.stringify(signIn.payload).includes("missing.identity@example.test"), false);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Supabase account actions fail actionably when identity tables are missing", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTablesUnavailable: true,
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const status = await apiJson(server.baseUrl, "/api/auth/status");
+      assert.equal(status.ready, false);
+      assert.equal(status.identityTablesReady, false);
+      assert.equal(status.message, "Account identity setup is incomplete. Please contact support.");
+      assert.match(status.operatorDiagnostic, /supabase-identity-tables\.sql/);
+
+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
+        email: "creator@example.test",
+        password: "not-stored-locally",
+      });
+      assert.equal(signIn.status, 503);
+      assert.equal(signIn.payload.ok, false);
+      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), false);
     } finally {
       await server.close();
     }
@@ -900,11 +946,14 @@ test("Default Supabase Auth routes sign in create account and password reset thr
 
       assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 4, true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
-      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
       assert.equal(fakeSupabase.calls
-        .filter((call) => call.path.startsWith("/auth/v1/"))
+        .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
         .every((call) => call.headers.apikey === "test-anon-key"), true);
+      assert.equal(fakeSupabase.calls
+        .filter((call) => call.path === "/auth/v1/admin/users")
+        .every((call) => call.headers.apikey === "test-service-role-key"), true);
       assert.equal(fakeSupabase.calls
         .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "test-service-role-key"), true);
@@ -1136,7 +1185,7 @@ test("Supabase Auth adapter fails visibly when selected without configuration", 
   assert.throws(() => auth.requireRole(), /future app user mapping adapter/);
 });
 
-test("Supabase Auth adapter uses browser-safe env config without service-role values", async () => {
+test("Supabase Auth adapter uses service role only for server-owned account creation", async () => {
   const calls = [];
   const auth = new SupabaseAuthProviderAdapter({
     env: {
@@ -1162,14 +1211,17 @@ test("Supabase Auth adapter uses browser-safe env config without service-role va
 
   assert.deepEqual(calls.map((call) => call.url), [
     "https://supabase-dev.example.test/auth/v1/token?grant_type=password",
-    "https://supabase-dev.example.test/auth/v1/signup",
+    "https://supabase-dev.example.test/auth/v1/admin/users",
     "https://supabase-dev.example.test/auth/v1/recover",
     "https://supabase-dev.example.test/auth/v1/user",
     "https://supabase-dev.example.test/auth/v1/logout",
   ]);
-  const callText = JSON.stringify(calls);
-  assert.equal(callText.includes("not-a-real-service-role-test-value"), false);
-  assert.equal(calls.every((call) => call.options.headers.apikey === "test-anon-key"), true);
+  assert.equal(calls[0].options.headers.apikey, "test-anon-key");
+  assert.equal(calls[1].options.headers.apikey, "not-a-real-service-role-test-value");
+  assert.equal(calls[1].options.headers.authorization, "Bearer not-a-real-service-role-test-value");
+  assert.equal(calls[2].options.headers.apikey, "test-anon-key");
+  assert.equal(calls[3].options.headers.apikey, "test-anon-key");
+  assert.equal(calls[4].options.headers.apikey, "test-anon-key");
   assert.equal(calls[3].options.headers.authorization, "Bearer user-access-token");
   assert.equal(calls[4].options.headers.authorization, "Bearer user-access-token");
 });

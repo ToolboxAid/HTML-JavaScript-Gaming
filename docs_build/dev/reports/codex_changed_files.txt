@@ -1,16 +1,24 @@
 # git status --short
-M package.json
- M scripts/validate-supabase-dev.mjs
-?? docs_build/database/ddl/account/
-?? docs_build/database/seed/account/
-?? docs_build/dev/reports/PR_26166_155-supabase-identity-tables-bootstrap.md
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/auth/provider-contract-stubs.mjs
+ M src/dev-runtime/server/local-api-router.mjs
+ M tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+ M tests/playwright/tools/LoginSessionMode.spec.mjs
+?? docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md
 
 # git ls-files --others --exclude-standard
-docs_build/database/ddl/account/supabase-identity-tables.sql
-docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
-docs_build/dev/reports/PR_26166_155-supabase-identity-tables-bootstrap.md
+docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md
 
 # git diff --stat
-package.json                      |  2 +-
- scripts/validate-supabase-dev.mjs | 63 +++++++++++++++++++++++++++++++++------
- 2 files changed, 55 insertions(+), 10 deletions(-)
+ docs_build/dev/reports/codex_changed_files.txt     |  30 +-
+ docs_build/dev/reports/codex_review.diff           | 882 +++++++++++++--------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  18 +-
+ src/dev-runtime/auth/provider-contract-stubs.mjs   |  37 +-
+ src/dev-runtime/server/local-api-router.mjs        |  47 +-
+ .../SupabaseProviderContractStub.test.mjs          |  72 +-
+ tests/playwright/tools/LoginSessionMode.spec.mjs   |   7 +-
+ 8 files changed, 732 insertions(+), 365 deletions(-)
