@@ -3,6 +3,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import {
+  SupabaseAuthProviderAdapter,
   SupabaseAuthProviderStub,
   SupabasePostgresProviderStub,
   createProviderContractSnapshot,
@@ -77,7 +78,10 @@ test("Supabase provider contract stubs keep Local DB active by default", () => {
   assert.equal(snapshot.requestedProviders.authProviderId, "local-db");
   assert.equal(snapshot.requestedProviders.databaseProviderId, "local-db");
   assert.equal(snapshot.boundary, "Browser -> API/Service Contract -> Database");
-  assert.equal(snapshot.supabaseAuth.status, "stub");
+  assert.equal(snapshot.supabaseAuth.status, "adapter-inactive");
+  assert.equal(snapshot.supabaseAuth.adapter.activeByDefault, false);
+  assert.equal(snapshot.supabaseAuth.adapter.passwordStorage, "external-provider");
+  assert.equal(snapshot.supabaseAuth.adapter.serviceRoleSecretsUsed, false);
   assert.deepEqual(snapshot.supabaseAuth.operations, [
     "getCurrentUser",
     "signIn",
@@ -168,15 +172,56 @@ test("Supabase stubs do not expose server-only secret names or values through th
   });
 });
 
-test("Supabase provider classes are stubs only and do not implement runtime sign-in or database access", () => {
+test("Supabase Auth adapter fails visibly when selected without configuration", async () => {
   const auth = new SupabaseAuthProviderStub({ env: { GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth" } });
+  await assert.rejects(() => auth.getCurrentUser(), /Supabase Auth provider selected but not configured/);
+  await assert.rejects(() => auth.signIn(), /Supabase Auth provider selected but not configured/);
+  await assert.rejects(() => auth.signOut(), /Supabase Auth provider selected but not configured/);
+  await assert.rejects(() => auth.createAccount(), /Supabase Auth provider selected but not configured/);
+  await assert.rejects(() => auth.requestPasswordReset(), /Supabase Auth provider selected but not configured/);
+  assert.throws(() => auth.requireRole(), /future app user mapping adapter/);
+});
+
+test("Supabase Auth adapter uses browser-safe env config without service-role values", async () => {
+  const calls = [];
+  const auth = new SupabaseAuthProviderAdapter({
+    env: {
+      GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+      GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+      GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+    },
+    fetchImpl: async (url, options) => {
+      calls.push({ options, url });
+      return {
+        json: async () => ({ ok: true, url }),
+        ok: true,
+        status: 200,
+      };
+    },
+  });
+
+  await auth.signIn({ email: "creator@example.test", password: "test-password" });
+  await auth.createAccount({ email: "new@example.test", password: "new-password" });
+  await auth.requestPasswordReset({ email: "reset@example.test", redirectTo: "http://127.0.0.1:5501/account/password-reset.html" });
+  await auth.getCurrentUser({ accessToken: "user-access-token" });
+  await auth.signOut({ accessToken: "user-access-token" });
+
+  assert.deepEqual(calls.map((call) => call.url), [
+    "https://supabase-dev.example.test/auth/v1/token?grant_type=password",
+    "https://supabase-dev.example.test/auth/v1/signup",
+    "https://supabase-dev.example.test/auth/v1/recover",
+    "https://supabase-dev.example.test/auth/v1/user",
+    "https://supabase-dev.example.test/auth/v1/logout",
+  ]);
+  const callText = JSON.stringify(calls);
+  assert.equal(callText.includes("not-a-real-service-role-test-value"), false);
+  assert.equal(calls.every((call) => call.options.headers.apikey === "test-anon-key"), true);
+  assert.equal(calls[3].options.headers.authorization, "Bearer user-access-token");
+  assert.equal(calls[4].options.headers.authorization, "Bearer user-access-token");
+});
+
+test("Supabase Postgres provider class remains stub only and does not implement database access", () => {
   const database = new SupabasePostgresProviderStub({ env: { GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres" } });
-  assert.throws(() => auth.getCurrentUser(), /Supabase Auth provider selected but not configured/);
-  assert.throws(() => auth.signIn(), /Supabase Auth provider selected but not configured/);
-  assert.throws(() => auth.signOut(), /Supabase Auth provider selected but not configured/);
-  assert.throws(() => auth.createAccount(), /Supabase Auth provider selected but not configured/);
-  assert.throws(() => auth.requestPasswordReset(), /Supabase Auth provider selected but not configured/);
-  assert.throws(() => auth.requireRole(), /Supabase Auth provider selected but not configured/);
   assert.throws(() => database.connect(), /Supabase Postgres provider selected but not configured/);
   assert.throws(() => database.getUsers(), /Supabase Postgres provider selected but not configured/);
   assert.throws(() => database.getRoles(), /Supabase Postgres provider selected but not configured/);

@@ -75,6 +75,40 @@ export function supabasePostgresDiagnostic(env = process.env) {
     : "Supabase Postgres provider stub is configured but not active until a dedicated adapter PR.";
 }
 
+function supabaseUrl(env) {
+  return envValue(env, "GAMEFOUNDRY_SUPABASE_URL").replace(/\/+$/, "");
+}
+
+function supabaseAnonKey(env) {
+  return envValue(env, "GAMEFOUNDRY_SUPABASE_ANON_KEY");
+}
+
+function authHeaders(env, accessToken = "") {
+  const anonKey = supabaseAnonKey(env);
+  const headers = {
+    apikey: anonKey,
+    authorization: `Bearer ${accessToken || anonKey}`,
+    "content-type": "application/json",
+  };
+  return headers;
+}
+
+function requireString(value, label) {
+  const normalized = String(value || "").trim();
+  if (!normalized) {
+    throw new Error(`Supabase Auth ${label} is required.`);
+  }
+  return normalized;
+}
+
+async function readResponseJson(response) {
+  try {
+    return await response.json();
+  } catch {
+    return {};
+  }
+}
+
 function futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing) {
   const warnings = [];
   if (supabaseAuthMissing.length) {
@@ -97,9 +131,10 @@ function configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing) {
   };
 }
 
-export class SupabaseAuthProviderStub {
-  constructor({ env = process.env } = {}) {
+export class SupabaseAuthProviderAdapter {
+  constructor({ env = process.env, fetchImpl = globalThis.fetch } = {}) {
     this.env = env;
+    this.fetchImpl = fetchImpl;
     this.providerId = SUPABASE_AUTH_PROVIDER_ID;
   }
 
@@ -107,30 +142,91 @@ export class SupabaseAuthProviderStub {
     return supabaseAuthDiagnostic(this.env);
   }
 
-  getCurrentUser() {
-    throw new Error(this.diagnostic());
+  assertConfigured() {
+    const missing = missingEnvKeys(this.env, BROWSER_SAFE_SUPABASE_ENV_KEYS);
+    if (missing.length) {
+      throw new Error(supabaseAuthDiagnostic(this.env));
+    }
+    if (typeof this.fetchImpl !== "function") {
+      throw new Error("Supabase Auth provider requires a server fetch implementation.");
+    }
   }
 
-  signIn() {
-    throw new Error(this.diagnostic());
+  async request(path, { accessToken = "", body = null, method = "GET", operation } = {}) {
+    this.assertConfigured();
+    const response = await this.fetchImpl(`${supabaseUrl(this.env)}${path}`, {
+      body: body === null ? undefined : JSON.stringify(body),
+      headers: authHeaders(this.env, accessToken),
+      method,
+    });
+    const payload = await readResponseJson(response);
+    if (!response.ok) {
+      const message = payload?.error_description || payload?.msg || payload?.message || "No Supabase Auth error message returned.";
+      throw new Error(`Supabase Auth ${operation} failed with HTTP ${response.status}: ${message}`);
+    }
+    return payload;
   }
 
-  signOut() {
-    throw new Error(this.diagnostic());
+  async getCurrentUser({ accessToken } = {}) {
+    this.assertConfigured();
+    return this.request("/auth/v1/user", {
+      accessToken: requireString(accessToken, "access token"),
+      operation: "getCurrentUser",
+    });
   }
 
-  createAccount() {
-    throw new Error(this.diagnostic());
+  async signIn({ email, password } = {}) {
+    this.assertConfigured();
+    return this.request("/auth/v1/token?grant_type=password", {
+      body: {
+        email: requireString(email, "email"),
+        password: requireString(password, "password"),
+      },
+      method: "POST",
+      operation: "signIn",
+    });
   }
 
-  requestPasswordReset() {
-    throw new Error(this.diagnostic());
+  async signOut({ accessToken } = {}) {
+    this.assertConfigured();
+    return this.request("/auth/v1/logout", {
+      accessToken: requireString(accessToken, "access token"),
+      method: "POST",
+      operation: "signOut",
+    });
+  }
+
+  async createAccount({ email, password } = {}) {
+    this.assertConfigured();
+    return this.request("/auth/v1/signup", {
+      body: {
+        email: requireString(email, "email"),
+        password: requireString(password, "password"),
+      },
+      method: "POST",
+      operation: "createAccount",
+    });
+  }
+
+  async requestPasswordReset({ email, redirectTo = "" } = {}) {
+    this.assertConfigured();
+    const body = { email: requireString(email, "email") };
+    if (redirectTo) {
+      body.redirect_to = redirectTo;
+    }
+    return this.request("/auth/v1/recover", {
+      body,
+      method: "POST",
+      operation: "requestPasswordReset",
+    });
   }
 
   requireRole() {
-    throw new Error(this.diagnostic());
+    throw new Error("Supabase Auth role checks require the future app user mapping adapter.");
   }
 }
+
+export const SupabaseAuthProviderStub = SupabaseAuthProviderAdapter;
 
 export class SupabasePostgresProviderStub {
   constructor({ env = process.env } = {}) {
@@ -213,11 +309,21 @@ export function createProviderContractSnapshot(env = process.env) {
     },
     supabaseAuth: {
       configured: supabaseAuthMissing.length === 0,
-      diagnostic: supabaseAuthSelected ? supabaseAuthDiagnostic(env) : "Supabase Auth provider stub is inactive.",
+      adapter: {
+        activeByDefault: false,
+        implementation: "config-gated Supabase Auth REST adapter",
+        passwordStorage: "external-provider",
+        serviceRoleSecretsUsed: false,
+      },
+      diagnostic: supabaseAuthSelected ? supabaseAuthDiagnostic(env) : "Supabase Auth provider adapter is inactive.",
       missingBrowserSafeEnvironmentVariables: supabaseAuthSelected ? supabaseAuthMissing : [],
       operations: AUTH_PROVIDER_CONTRACT_OPERATIONS.slice(),
       providerId: SUPABASE_AUTH_PROVIDER_ID,
-      status: supabaseAuthSelected && supabaseAuthMissing.length ? "not-configured" : "stub",
+      status: supabaseAuthSelected && supabaseAuthMissing.length
+        ? "not-configured"
+        : supabaseAuthMissing.length
+          ? "adapter-inactive"
+          : "adapter-ready",
       userMapping: {
         appUserKeyField: "users.key",
         browserAuthoritativeUserKeysAllowed: false,
