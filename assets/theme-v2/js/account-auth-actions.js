@@ -4,6 +4,7 @@ const passwordField = document.querySelector("[data-account-auth-password]");
 const statusField = document.querySelector("[data-account-auth-status]");
 const submitButton = document.querySelector("[data-account-auth-submit]");
 const action = form?.getAttribute("data-account-auth-form") || "";
+const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
 let authStatus = null;
 
@@ -32,6 +33,9 @@ async function readJson(response, fallbackMessage) {
     payload = null;
   }
   if (!response.ok || payload?.ok === false) {
+    if (payload?.error === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
+      throw new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
+    }
     throw new Error(fallbackMessage);
   }
   return payload?.data || {};

@@ -1,447 +1,401 @@
+diff --git a/account/create-account.html b/account/create-account.html
+index 0f39c06a1..6aef138cc 100644
+--- a/account/create-account.html
++++ b/account/create-account.html
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Create Account - GameFoundryStudio</title>
+-    <meta name="description" content="Create a GameFoundryStudio account through the configured account provider.">
++    <meta name="description" content="Create a GameFoundryStudio account through the account service.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+@@ -17,7 +17,7 @@
+             <div class="container">
+                 <div class="kicker">Account</div>
+                 <h1>Create Account</h1>
+-                <p class="lede">Create an account through the configured account provider.</p>
++                <p class="lede">Create an account through the account service.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -28,7 +28,7 @@
+                             <div class="kicker">Account Access</div>
+                             <h2>Create Account</h2>
+                         </div>
+-                        <p>Account creation is handled by the configured account provider.</p>
++                        <p>Account creation is handled by the account service.</p>
+                         <form class="content-stack" data-account-auth-form="create-account">
+                             <label for="createAccountEmail">Email</label>
+                             <input id="createAccountEmail" name="email" type="email" autocomplete="email" data-account-auth-email>
+diff --git a/account/password-reset.html b/account/password-reset.html
+index b179e0f32..439875485 100644
+--- a/account/password-reset.html
++++ b/account/password-reset.html
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Password Reset - GameFoundryStudio</title>
+-    <meta name="description" content="Request a GameFoundryStudio password reset through the configured account provider.">
++    <meta name="description" content="Request a GameFoundryStudio password reset through the account service.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+@@ -17,7 +17,7 @@
+             <div class="container">
+                 <div class="kicker">Account</div>
+                 <h1>Password Reset</h1>
+-                <p class="lede">Request a password reset through the configured account provider.</p>
++                <p class="lede">Request a password reset through the account service.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -28,7 +28,7 @@
+                             <div class="kicker">Account Access</div>
+                             <h2>Password Reset</h2>
+                         </div>
+-                        <p>Password reset email delivery is handled by the configured account provider.</p>
++                        <p>Password reset email delivery is handled by the account service.</p>
+                         <form class="content-stack" data-account-auth-form="password-reset">
+                             <label for="passwordResetEmail">Email</label>
+                             <input id="passwordResetEmail" name="email" type="email" autocomplete="email" data-account-auth-email>
+diff --git a/assets/theme-v2/js/account-auth-actions.js b/assets/theme-v2/js/account-auth-actions.js
+index 683faacea..12b2bb9a5 100644
+--- a/assets/theme-v2/js/account-auth-actions.js
++++ b/assets/theme-v2/js/account-auth-actions.js
+@@ -4,6 +4,7 @@ const passwordField = document.querySelector("[data-account-auth-password]");
+ const statusField = document.querySelector("[data-account-auth-status]");
+ const submitButton = document.querySelector("[data-account-auth-submit]");
+ const action = form?.getAttribute("data-account-auth-form") || "";
++const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
+ const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
+ let authStatus = null;
+
+@@ -32,6 +33,9 @@ async function readJson(response, fallbackMessage) {
+     payload = null;
+   }
+   if (!response.ok || payload?.ok === false) {
++    if (payload?.error === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
++      throw new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
++    }
+     throw new Error(fallbackMessage);
+   }
+   return payload?.data || {};
+diff --git a/assets/theme-v2/js/gamefoundry-partials.js b/assets/theme-v2/js/gamefoundry-partials.js
+index 5bc03a14b..7cb05a4a9 100644
+--- a/assets/theme-v2/js/gamefoundry-partials.js
++++ b/assets/theme-v2/js/gamefoundry-partials.js
+@@ -527,7 +527,7 @@
+             return {
+                 role: "user",
+                 title: "Sign-in required",
+-                message: "Sign in as a local user to open Account pages."
++                message: "Sign in with your account to open Account pages."
+             };
+         }
+         return null;
+diff --git a/assets/theme-v2/js/login-session.js b/assets/theme-v2/js/login-session.js
+index c99660aae..b18222932 100644
+--- a/assets/theme-v2/js/login-session.js
++++ b/assets/theme-v2/js/login-session.js
+@@ -4,6 +4,7 @@ const identityField = document.querySelector("[data-login-identity]");
+ const passwordField = document.querySelector("[data-login-password]");
+ const statusField = document.querySelector("[data-login-status]");
+ const submitButton = document.querySelector("[data-login-submit]");
++const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
+ const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
+ let authStatus = null;
+
+@@ -65,6 +66,9 @@ async function readJson(response, fallbackMessage) {
+     payload = null;
+   }
+   if (!response.ok || payload?.ok === false) {
++    if (payload?.error === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
++      throw new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
++    }
+     throw new Error(fallbackMessage);
+   }
+   return payload?.data || {};
+@@ -79,6 +83,14 @@ async function requestAccountAuth(path, options = {}) {
+   return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
+ }
+
++async function requestCurrentSession() {
++  const response = await fetch("/api/session/current", {
++    headers: { "accept": "application/json" },
++    method: "GET",
++  });
++  return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
++}
++
+ function unavailableMessage(status) {
+   return status?.message || AUTH_UNAVAILABLE_MESSAGE;
+ }
+@@ -95,6 +107,14 @@ async function refreshAccountAuthStatus() {
+   }
+   try {
+     authStatus = await requestAccountAuth("status");
++    if (authStatus.ready) {
++      const session = await requestCurrentSession();
++      if (session?.authenticated) {
++        setFormEnabled(false);
++        setStatus(`Signed in as ${session.displayName || session.label || "Account"}.`);
++        return authStatus;
++      }
++    }
+     setFormEnabled(Boolean(authStatus.ready));
+     setStatus(authStatus.ready ? "Account service is available." : unavailableMessage(authStatus));
+   } catch (error) {
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index f5bc8b913..e67e0ecf6 100644
+index e67e0ecf6..951932659 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,9 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,9 +6,14 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(92%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 12/13
--(94%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 15/16
++(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
 
  Guardrail warnings:
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 43512a673..19c4316d2 100644
+index 19c4316d2..a69020bc2 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -14,32 +14,30 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+@@ -12,32 +12,35 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
  Exercised tool entry points detected:
- (70%) Toolbox Index - exercised 3 runtime JS files
+-(70%) Toolbox Index - exercised 3 runtime JS files
++(0%) Toolbox Index - not exercised by this Playwright run
  (0%) Tool Template V2 - not exercised by this Playwright run
--(70%) Theme V2 Shared JS - exercised 3 runtime JS files
-+(67%) Theme V2 Shared JS - exercised 3 runtime JS files
+-(67%) Theme V2 Shared JS - exercised 3 runtime JS files
++(46%) Theme V2 Shared JS - exercised 2 runtime JS files
 
  Changed runtime JS files covered:
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(92%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 12/13
--(94%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 15/16
++(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
 
  Files with executed line/function counts where available:
- (25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
- (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
- (45%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 10/22
- (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
--(59%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 38/64
-+(58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 37/64
- (75%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 77/103
--(92%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 12/13
--(94%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 15/16
-+(85%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 11/13
-+(88%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 14/16
- (100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
+-(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+-(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+-(45%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 10/22
+-(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+-(58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 37/64
+-(75%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 77/103
+-(85%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 11/13
+-(88%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 14/16
+-(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
++(7%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 1/14
++(8%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 1/12
++(10%) assets/theme-v2/js/local-db-page-data.js - executed lines 299/299; executed functions 3/29
++(20%) src/engine/api/local-db-api-client.js - executed lines 19/19; executed functions 1/5
++(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
 
  Uncovered or low-coverage changed JS files:
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) assets/theme-v2/js/login-session.js - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
  Changed JS files considered:
-+(0%) scripts/validate-supabase-dev.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+-(0%) scripts/validate-supabase-dev.mjs - changed JS file not collected as browser runtime coverage
++(0%) assets/theme-v2/js/account-auth-actions.js - changed JS file not collected as browser runtime coverage
++(0%) assets/theme-v2/js/login-session.js - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs - changed JS file not collected as browser runtime coverage
--(92%) assets/theme-v2/js/account-auth-actions.js - changed JS file with browser V8 coverage
--(94%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
-index 2c5e41b15..283ba1d62 100644
---- a/src/dev-runtime/auth/provider-contract-stubs.mjs
-+++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
-@@ -130,6 +130,15 @@ function authHeaders(env, accessToken = "") {
-   return headers;
- }
++(63%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
+index 6df1f95ed..8651ff277 100644
+--- a/tests/playwright/tools/LoginSessionMode.spec.mjs
++++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
+@@ -492,11 +492,15 @@ test("Sign-in page uses a production-safe account form without public Local DB c
+     await expect(page).toHaveURL(/\/account\/create-account\.html$/);
+     await expect(page.getByRole("heading", { name: "Create Account", level: 1 })).toBeVisible();
+     await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
++    await expect(page.locator("main")).toContainText("account service");
++    await expect(page.locator("main")).not.toContainText("configured account provider");
+     await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
+     await page.getByRole("link", { name: "Password Reset" }).click();
+     await expect(page).toHaveURL(/\/account\/password-reset\.html$/);
+     await expect(page.getByRole("heading", { name: "Password Reset", level: 1 })).toBeVisible();
+     await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
++    await expect(page.locator("main")).toContainText("account service");
++    await expect(page.locator("main")).not.toContainText("configured account provider");
 
-+function authAdminHeaders(env) {
-+  const serviceRoleKey = supabaseServiceRoleKey(env);
-+  return {
-+    apikey: serviceRoleKey,
-+    authorization: `Bearer ${serviceRoleKey}`,
-+    "content-type": "application/json",
-+  };
-+}
+     await expectNoPageFailures(failures);
+   } finally {
+@@ -528,6 +532,11 @@ test("Configured account auth actions use external Auth and resolve the app sess
+       expect(session.data.authenticated).toBe(true);
+       expect(session.data.userKey).toBe(MOCK_DB_KEYS.users.user1);
+       expect(session.data.roleSlugs).toEqual(["user"]);
++      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
 +
- function postgresHeaders(env, prefer = "return=representation") {
-   const serviceRoleKey = supabaseServiceRoleKey(env);
-   return {
-@@ -449,14 +458,34 @@ export class SupabaseAuthProviderAdapter {
++      await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
++      await expect(page.locator("[data-login-status]")).toHaveText("Signed in as User 1.");
++      await expect(page.getByRole("button", { name: "Sign In" })).toBeDisabled();
 
-   async createAccount({ email, password } = {}) {
-     this.assertConfigured();
--    return this.request("/auth/v1/signup", {
--      body: {
-+    const serviceRoleKey = supabaseServiceRoleKey(this.env);
-+    if (!serviceRoleKey) {
-+      throw new Error("Supabase Auth createAccount requires the server-only service role key.");
-+    }
-+    const response = await this.fetchImpl(`${supabaseUrl(this.env)}/auth/v1/admin/users`, {
-+      body: JSON.stringify({
-         email: requireString(email, "email"),
-+        email_confirm: true,
-         password: requireString(password, "password"),
--      },
-+      }),
-+      headers: authAdminHeaders(this.env),
-       method: "POST",
--      operation: "createAccount",
-     });
-+    const payload = await readResponseJson(response);
-+    if (!response.ok) {
-+      const message = payload?.error_description || payload?.msg || payload?.message || "No Supabase Auth error message returned.";
-+      throw new Error(`Supabase Auth createAccount failed with HTTP ${response.status}: ${message}`);
-+    }
-+    if (payload?.id && !payload.user) {
-+      return {
-+        user: {
-+          email: payload.email || email,
-+          id: payload.id,
-+        },
-+        ...payload,
-+      };
-+    }
-+    return payload;
-   }
-
-   async requestPasswordReset({ email, redirectTo = "" } = {}) {
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 75b5959e5..4eb33a876 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -93,6 +93,7 @@ const LOCAL_DB_MODE_ID = "local-db";
- const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
- const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
- const AUTH_READY_MESSAGE = "Account service is available.";
-+const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
- const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
-   description: "Default creator/player account role.",
-   isSystemRole: false,
-@@ -705,6 +706,13 @@ function authUnavailableError(action, diagnostic = "") {
-   return error;
- }
-
-+function authIdentitySetupError(action, diagnostic = "") {
-+  const error = new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
-+  error.statusCode = 503;
-+  error.operatorDiagnostic = diagnostic ? `${action}: ${diagnostic}` : `${action}: ${ACCOUNT_IDENTITY_SETUP_MESSAGE}`;
-+  return error;
-+}
-+
- function sanitizedSupabaseAuthActionResult(action, email, payload = {}, session = null) {
-   const user = payload.user && typeof payload.user === "object" ? payload.user : {};
-   const resolvedSession = session && session.authenticated ? session : null;
-@@ -1140,6 +1148,9 @@ class LocalDevDataSource {
-     this.assertLocalDatabaseProvider(action);
-     const authStatus = await this.authStatusForRoute();
-     if (!authStatus.ready) {
-+      if (authStatus.identityTablesReady === false) {
-+        throw authIdentitySetupError(action, authStatus.operatorDiagnostic || "Account identity tables are not ready.");
-+      }
-       throw authUnavailableError(action, `Supabase Auth identity ownership is not ready. ${authStatus.operatorDiagnostic || authStatus.status}`);
-     }
-     return this.readSupabaseIdentityTablesUnchecked(action);
-@@ -1155,11 +1166,16 @@ class LocalDevDataSource {
-         identityTablesReady: true,
-       };
-     } catch (error) {
-+      const rawMessage = String(error?.message || error || "");
-+      const setupDiagnostic = rawMessage.includes("Supabase Postgres") && rawMessage.includes("HTTP 404")
-+        ? "Identity tables are missing. Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path."
-+        : "";
-       const diagnostic = sanitizedAuthErrorDiagnostic(error);
-+      const fallbackDiagnostic = diagnostic.httpStatus
-+        ? diagnostic.message
-+        : "Supabase identity table validation failed before an HTTP status was available.";
-       return {
--        diagnostic: diagnostic.httpStatus
--          ? diagnostic.message
--          : "Supabase identity table validation failed before an HTTP status was available.",
-+        diagnostic: setupDiagnostic || fallbackDiagnostic,
-         identityBootstrapReady: false,
-         identityTableRecords: {
-           roles: 0,
-@@ -1633,13 +1649,13 @@ class LocalDevDataSource {
-     if (!identity.identityTablesReady) {
-       return {
-         ...status,
--        actionRequired: AUTH_UNAVAILABLE_MESSAGE,
-+        actionRequired: ACCOUNT_IDENTITY_SETUP_MESSAGE,
-         connectivityHealthy: true,
-         connectivityStatus: "healthy",
-         identityBootstrapReady: false,
-         identityTableRecords: identity.identityTableRecords,
-         identityTablesReady: false,
--        message: AUTH_UNAVAILABLE_MESSAGE,
-+        message: ACCOUNT_IDENTITY_SETUP_MESSAGE,
-         operatorDiagnostic: `Supabase Auth is reachable, but identity table readiness could not be proven. ${identity.diagnostic}`,
-         ready: false,
-         status: "unavailable",
-@@ -1738,6 +1754,9 @@ class LocalDevDataSource {
-   async authAdapterForAction(action) {
-     const status = await this.authStatusForRoute();
-     if (!status.ready) {
-+      if (status.identityTablesReady === false) {
-+        throw authIdentitySetupError(action, `Account identity setup is incomplete. ${status.operatorDiagnostic || status.status}`);
-+      }
-       throw authUnavailableError(action, `Supabase Auth is not ready. ${status.operatorDiagnostic || status.status}`);
-     }
-     return new SupabaseAuthProviderAdapter();
-@@ -1759,11 +1778,11 @@ class LocalDevDataSource {
-         (authEmail && normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
-     });
-     if (!matchingUser) {
--      throw authUnavailableError(action, "Supabase Auth user is missing a matching users record.");
-+      throw authIdentitySetupError(action, "Account authentication succeeded, but no matching users record exists for this account.");
-     }
-     const session = sessionUserFromIdentityTables(tables, matchingUser.key, this.sessionModeId, "Supabase identity");
-     if (!session.authenticated) {
--      throw authUnavailableError(action, session.diagnostic || "Supabase identity session could not be resolved.");
-+      throw authIdentitySetupError(action, session.diagnostic || "Account identity session could not be resolved.");
-     }
-     this.sessionUserKey = matchingUser.key;
-     this.sharedOptions.sessionMode = this.sessionModeId;
-@@ -1788,14 +1807,14 @@ class LocalDevDataSource {
-       String(user.authProviderUserId || "") === authUserId);
-     const matchingByEmail = users.find((user) => normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
-     if (matchingByProviderId && matchingByEmail && matchingByProviderId.key !== matchingByEmail.key) {
--      throw authUnavailableError(action, "Supabase Auth identity maps to conflicting users records.");
-+      throw authIdentitySetupError(action, "Account identity maps to conflicting users records.");
-     }
-     const matchingUser = matchingByProviderId || matchingByEmail || null;
-     if (matchingUser?.authProvider && matchingUser.authProvider !== SUPABASE_AUTH_PROVIDER_ID) {
--      throw authUnavailableError(action, "Existing users record is owned by a different auth provider.");
-+      throw authIdentitySetupError(action, "Existing users record is owned by a different account provider.");
-     }
-     if (matchingUser?.authProviderUserId && String(matchingUser.authProviderUserId) !== authUserId) {
--      throw authUnavailableError(action, "Existing users record is linked to a different Supabase Auth user.");
-+      throw authIdentitySetupError(action, "Existing users record is linked to a different account identity.");
-     }
-
-     const timestamp = new Date().toISOString();
-@@ -1836,7 +1855,7 @@ class LocalDevDataSource {
-     const refreshedTables = await this.readSupabaseIdentityTablesUnchecked(`${action} identity provisioning result`);
-     const session = sessionUserFromIdentityTables(refreshedTables, userKey, this.sessionModeId, "Supabase identity");
-     if (!session.authenticated) {
--      throw authUnavailableError(action, session.diagnostic || "Provisioned Supabase identity session could not be validated.");
-+      throw authIdentitySetupError(action, session.diagnostic || "Provisioned account identity session could not be validated.");
-     }
-
-     return {
-@@ -1860,7 +1879,7 @@ class LocalDevDataSource {
-       const session = await this.resolvedSessionForAuthPayload("Sign in", email, payload);
-       return sanitizedSupabaseAuthActionResult("sign-in", email, payload, session);
-     } catch (error) {
--      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
-+      if (error?.statusCode === 503) {
-         throw error;
-       }
-       const diagnostic = sanitizedAuthErrorDiagnostic(error);
-@@ -1888,7 +1907,7 @@ class LocalDevDataSource {
-         userRoleCreated: identity.userRoleCreated,
-       };
-     } catch (error) {
--      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
-+      if (error?.statusCode === 503) {
-         throw error;
-       }
-       const diagnostic = sanitizedAuthErrorDiagnostic(error);
-@@ -1910,7 +1929,7 @@ class LocalDevDataSource {
-         redirectToIncluded: Boolean(redirectTo),
-       };
-     } catch (error) {
--      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
-+      if (error?.statusCode === 503) {
-         throw error;
-       }
-       const diagnostic = sanitizedAuthErrorDiagnostic(error);
-diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-index 038931180..fcdea2366 100644
---- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-+++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-@@ -72,6 +72,9 @@ function startApiServer() {
- function startFakeSupabaseAuthServer(options = {}) {
-   const expectedApiKey = options.expectedApiKey || "";
-   const rejectWrongApiKey = options.rejectWrongApiKey === true;
-+  const unavailableIdentityTables = new Set(options.identityTablesUnavailable === true
-+    ? ["users", "roles", "user_roles"]
-+    : options.unavailableIdentityTables || []);
-   const identityTables = {
-     roles: [...(options.identityTables?.roles || [])],
-     user_roles: [...(options.identityTables?.user_roles || [])],
-@@ -113,6 +116,12 @@ function startFakeSupabaseAuthServer(options = {}) {
-     }
-     if (requestUrl.pathname.startsWith("/rest/v1/")) {
-       const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
-+      if (unavailableIdentityTables.has(tableName)) {
-+        response.statusCode = 404;
-+        response.setHeader("Content-Type", "application/json; charset=utf-8");
-+        response.end(JSON.stringify({ message: `Could not find the table 'public.${tableName}' in the schema cache` }));
-+        return;
-+      }
-       if (request.method === "POST") {
-         const rows = Array.isArray(body) ? body : [body];
-         identityTables[tableName] = identityTables[tableName] || [];
-@@ -717,14 +726,17 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
-
-       assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 5, true);
-       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
--      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup"), true);
-+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
-       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
-       assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*"), true);
-       assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/roles?select=*"), true);
-       assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/user_roles?select=*"), true);
-       assert.equal(fakeSupabase.calls
--        .filter((call) => call.path.startsWith("/auth/v1/"))
-+        .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
-         .every((call) => call.headers.apikey === "test-anon-key"), true);
-+      assert.equal(fakeSupabase.calls
-+        .filter((call) => call.path === "/auth/v1/admin/users")
-+        .every((call) => call.headers.apikey === "test-service-role-key"), true);
-       assert.equal(fakeSupabase.calls
-         .filter((call) => call.path.startsWith("/rest/v1/"))
-         .every((call) => call.headers.apikey === "test-service-role-key"), true);
-@@ -838,7 +850,7 @@ test("Supabase sign in fails visibly when the Auth user has no app identity row"
-       });
-       assert.equal(signIn.status, 503);
-       assert.equal(signIn.payload.ok, false);
--      assert.equal(signIn.payload.error, "The site is currently unavailable. Please try again later.");
-+      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
-       assert.equal(JSON.stringify(signIn.payload).includes("missing.identity@example.test"), false);
-     } finally {
-       await server.close();
-@@ -847,6 +859,40 @@ test("Supabase sign in fails visibly when the Auth user has no app identity row"
+       await page.goto(`${failures.server.baseUrl}/account/create-account.html`, { waitUntil: "networkidle" });
+       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
+@@ -564,6 +573,51 @@ test("Configured account auth actions use external Auth and resolve the app sess
    await fakeSupabase.close();
  });
 
-+test("Supabase account actions fail actionably when identity tables are missing", async () => {
++test("Account auth actions show actionable identity setup failures without exposing provider details", async ({ page }) => {
++  const timestamp = "2026-06-15T00:00:00.000Z";
 +  const fakeSupabase = await startFakeSupabaseAuthServer({
-+    identityTablesUnavailable: true,
++    identityTables: {
++      roles: [{
++        createdAt: timestamp,
++        createdBy: MOCK_DB_KEYS.users.admin,
++        isActive: true,
++        key: MOCK_DB_KEYS.roles.user,
++        name: "User",
++        roleSlug: "user",
++        updatedAt: timestamp,
++        updatedBy: MOCK_DB_KEYS.users.admin,
++      }],
++      user_roles: [],
++      users: [],
++    },
 +  });
-+  await withEnv({
++  await withSupabaseEnv({
 +    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
 +    GAMEFOUNDRY_DB_PROVIDER: "local-db",
-+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
-+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
++    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
++    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
 +    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
 +  }, async () => {
-+    const server = await startApiServer();
-+    try {
-+      const status = await apiJson(server.baseUrl, "/api/auth/status");
-+      assert.equal(status.ready, false);
-+      assert.equal(status.identityTablesReady, false);
-+      assert.equal(status.message, "Account identity setup is incomplete. Please contact support.");
-+      assert.match(status.operatorDiagnostic, /supabase-identity-tables\.sql/);
++    const failures = await openRepoPage(page, "/account/sign-in.html");
 +
-+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
-+        email: "creator@example.test",
-+        password: "not-stored-locally",
-+      });
-+      assert.equal(signIn.status, 503);
-+      assert.equal(signIn.payload.ok, false);
-+      assert.equal(signIn.payload.error, "Account identity setup is incomplete. Please contact support.");
-+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), false);
++    try {
++      await expect(page.locator("[data-login-status]")).toHaveText("Account service is available.");
++      await page.getByLabel("Email").fill("user1@example.invalid");
++      await page.getByLabel("Password").fill("not-stored-locally");
++      await page.getByRole("button", { name: "Sign In" }).click();
++      await expect(page.locator("[data-login-status]")).toHaveText("Account identity setup is incomplete. Please contact support.");
++      await expect(page.locator("main")).not.toContainText("Supabase");
++      await expect(page.locator("main")).not.toContainText("DEV");
++      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/sign-in"))).toHaveLength(1);
++      expect(failures.pageErrors).toEqual([]);
++      expect(failures.consoleErrors.filter((entry) => !entry.includes("503"))).toEqual([]);
 +    } finally {
-+      await server.close();
++      await closeWithCoverage(page, failures);
 +    }
 +  });
 +  await fakeSupabase.close();
 +});
 +
- test("Default Supabase Auth routes sign in create account and password reset through external auth", async () => {
-   const fakeSupabase = await startFakeSupabaseAuthServer({
-     identityTables: fakeSupabaseIdentityTables(),
-@@ -900,11 +946,14 @@ test("Default Supabase Auth routes sign in create account and password reset thr
-
-       assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 4, true);
-       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
--      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup"), true);
-+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
-       assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
-       assert.equal(fakeSupabase.calls
--        .filter((call) => call.path.startsWith("/auth/v1/"))
-+        .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
-         .every((call) => call.headers.apikey === "test-anon-key"), true);
-+      assert.equal(fakeSupabase.calls
-+        .filter((call) => call.path === "/auth/v1/admin/users")
-+        .every((call) => call.headers.apikey === "test-service-role-key"), true);
-       assert.equal(fakeSupabase.calls
-         .filter((call) => call.path.startsWith("/rest/v1/"))
-         .every((call) => call.headers.apikey === "test-service-role-key"), true);
-@@ -1136,7 +1185,7 @@ test("Supabase Auth adapter fails visibly when selected without configuration",
-   assert.throws(() => auth.requireRole(), /future app user mapping adapter/);
+ test("Protected pages block direct URL access without the required Local session role", async ({ page }) => {
+   let failures = await openRepoPage(page, "/admin/site-settings.html", {
+     sessionUserKey: "",
+@@ -863,45 +917,52 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
  });
 
--test("Supabase Auth adapter uses browser-safe env config without service-role values", async () => {
-+test("Supabase Auth adapter uses service role only for server-owned account creation", async () => {
-   const calls = [];
-   const auth = new SupabaseAuthProviderAdapter({
-     env: {
-@@ -1162,14 +1211,17 @@ test("Supabase Auth adapter uses browser-safe env config without service-role va
+ test("Account logout clears only the current session and blocks protected pages", async ({ page }) => {
+-  const failures = await openRepoPage(page, "/account/profile.html", {
+-    seedStandalone: true,
+-    sessionUserKey: MOCK_DB_KEYS.users.user1,
+-  });
+-
+-  try {
+-    await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
+-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
+-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
+-    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
+-    await page.locator("[data-account-logout]").click();
+-    await expect(page.locator("[data-session-access-blocked='user']")).toBeVisible();
+-    await expect(page.getByRole("heading", { name: "Sign-in required", level: 1 })).toBeVisible();
+-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
+-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
+-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
+-
+-    const storedUsers = await page.evaluate(async () => {
+-      const snapshot = await fetch("/api/local-db/snapshot").then((response) => response.json());
+-      return (snapshot.data.tables.users || []).map((user) => user.displayName);
++  await withSupabaseEnv({
++    GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
++    GAMEFOUNDRY_DB_PROVIDER: "local-db",
++  }, async () => {
++    const failures = await openRepoPage(page, "/account/profile.html", {
++      seedStandalone: true,
++      sessionUserKey: MOCK_DB_KEYS.users.user1,
+     });
+-    expect(storedUsers).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ admin"]));
+-    expect(storedUsers).not.toContain("Guest");
+-    expect(storedUsers).toHaveLength(4);
 
-   assert.deepEqual(calls.map((call) => call.url), [
-     "https://supabase-dev.example.test/auth/v1/token?grant_type=password",
--    "https://supabase-dev.example.test/auth/v1/signup",
-+    "https://supabase-dev.example.test/auth/v1/admin/users",
-     "https://supabase-dev.example.test/auth/v1/recover",
-     "https://supabase-dev.example.test/auth/v1/user",
-     "https://supabase-dev.example.test/auth/v1/logout",
-   ]);
--  const callText = JSON.stringify(calls);
--  assert.equal(callText.includes("not-a-real-service-role-test-value"), false);
--  assert.equal(calls.every((call) => call.options.headers.apikey === "test-anon-key"), true);
-+  assert.equal(calls[0].options.headers.apikey, "test-anon-key");
-+  assert.equal(calls[1].options.headers.apikey, "not-a-real-service-role-test-value");
-+  assert.equal(calls[1].options.headers.authorization, "Bearer not-a-real-service-role-test-value");
-+  assert.equal(calls[2].options.headers.apikey, "test-anon-key");
-+  assert.equal(calls[3].options.headers.apikey, "test-anon-key");
-+  assert.equal(calls[4].options.headers.apikey, "test-anon-key");
-   assert.equal(calls[3].options.headers.authorization, "Bearer user-access-token");
-   assert.equal(calls[4].options.headers.authorization, "Bearer user-access-token");
+-    const directPage = await page.context().newPage();
+     try {
+-      await directPage.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
+-      await expect(directPage.locator("[data-session-access-blocked='user']")).toBeVisible();
+-      await directPage.goto(`${failures.server.baseUrl}/admin/site-settings.html`, { waitUntil: "networkidle" });
+-      await expect(directPage.locator("[data-session-access-blocked='admin']")).toBeVisible();
++      await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
++      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
++      await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
++      await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
++      await page.locator("[data-account-logout]").click();
++      await expect(page.locator("[data-session-access-blocked='user']")).toBeVisible();
++      await expect(page.getByRole("heading", { name: "Sign-in required", level: 1 })).toBeVisible();
++      await expect(page.locator("main")).toContainText("Sign in with your account to open Account pages.");
++      await expect(page.locator("main")).not.toContainText("local user");
++      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
++      await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
++      await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
++
++      const storedUsers = await page.evaluate(async () => {
++        const snapshot = await fetch("/api/local-db/snapshot").then((response) => response.json());
++        return (snapshot.data.tables.users || []).map((user) => user.displayName);
++      });
++      expect(storedUsers).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ admin"]));
++      expect(storedUsers).not.toContain("Guest");
++      expect(storedUsers).toHaveLength(4);
++
++      const directPage = await page.context().newPage();
++      try {
++        await directPage.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
++        await expect(directPage.locator("[data-session-access-blocked='user']")).toBeVisible();
++        await directPage.goto(`${failures.server.baseUrl}/admin/site-settings.html`, { waitUntil: "networkidle" });
++        await expect(directPage.locator("[data-session-access-blocked='admin']")).toBeVisible();
++      } finally {
++        await directPage.close();
++      }
++
++      await expectNoPageFailures(failures);
+     } finally {
+-      await directPage.close();
++      await closeWithCoverage(page, failures);
+     }
+-
+-    await expectNoPageFailures(failures);
+-  } finally {
+-    await closeWithCoverage(page, failures);
+-  }
++  });
  });
-diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
-index 3ae0db465..6df1f95ed 100644
---- a/tests/playwright/tools/LoginSessionMode.spec.mjs
-+++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
-@@ -544,12 +544,15 @@ test("Configured account auth actions use external Auth and resolve the app sess
 
-       expect(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length).toBeGreaterThanOrEqual(4);
-       expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password")).toBe(true);
--      expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup")).toBe(true);
-+      expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users")).toBe(true);
-       expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover")).toBe(true);
-       expect(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*")).toBe(true);
-       expect(fakeSupabase.calls
--        .filter((call) => call.path.startsWith("/auth/v1/"))
-+        .filter((call) => call.path.startsWith("/auth/v1/") && call.path !== "/auth/v1/admin/users")
-         .every((call) => call.headers.apikey === "browser-test-anon-key")).toBe(true);
-+      expect(fakeSupabase.calls
-+        .filter((call) => call.path === "/auth/v1/admin/users")
-+        .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);
-       expect(fakeSupabase.calls
-         .filter((call) => call.path.startsWith("/rest/v1/"))
-         .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);
-diff --git a/docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md b/docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md
+ test("Guest can explore allowed Toolbox pages without persistence access", async ({ page }) => {
+diff --git a/docs_build/dev/reports/PR_26166_157-first-real-sign-in-validation.md b/docs_build/dev/reports/PR_26166_157-first-real-sign-in-validation.md
 new file mode 100644
-index 000000000..d7e5a0f2e
+index 000000000..474aea99a
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md
-@@ -0,0 +1,156 @@
-+# PR_26166_156-live-sign-in-and-provisioning
++++ b/docs_build/dev/reports/PR_26166_157-first-real-sign-in-validation.md
+@@ -0,0 +1,103 @@
++# PR_26166_157-first-real-sign-in-validation
 +
 +## Branch Validation
 +
@@ -449,151 +403,313 @@ index 000000000..d7e5a0f2e
 +- Expected branch: main
 +- Branch validation: PASS
 +
-+## Summary
++## Purpose
 +
-+Made Supabase Create Account and Sign In usable end-to-end through backend API contracts.
-+
-+- Create Account now uses server-owned Supabase Admin Auth user creation, provisions the matching `users` identity record, and assigns the default `user` role through `user_roles`.
-+- Sign In authenticates with Supabase Auth, resolves the matching app identity rows, and creates the current session state.
-+- Password Reset remains Supabase Auth provider-backed.
-+- Missing identity records now fail visibly with: `Account identity setup is incomplete. Please contact support.`
-+- Product data remains on Local DB with `GAMEFOUNDRY_DB_PROVIDER=local-db`.
++Validate real Supabase Create Account, Sign In, Session, Role Resolution, Sign Out, and Password Reset flows without adding new infrastructure.
 +
 +## Requirement Checklist
 +
-+- PASS - Main branch only; execution was on `main`.
-+- PASS - `docs_build/dev/PROJECT_INSTRUCTIONS.md` was read before implementation.
-+- PASS - Product data remains Local DB; no product-table migration was added.
-+- PASS - Backend API contracts remain the browser boundary; browser tests call pages/API, not provider-specific browser logic.
-+- PASS - Create Account creates a Supabase Auth user through server-side Admin Auth.
-+- PASS - Create Account provisions the matching `users` record server-side.
-+- PASS - Create Account assigns the default role through `user_roles`.
-+- PASS - Sign In authenticates with Supabase Auth.
-+- PASS - Sign In resolves `users`, `roles`, and `user_roles`.
-+- PASS - Sign In creates and returns current session state.
-+- PASS - Password Reset remains Supabase Auth provider-backed.
-+- PASS - Missing identity records fail visibly and actionably.
-+- PASS - No password tables were added.
-+- PASS - No secrets or `.env.local` files were committed.
-+- PASS - No silent fallback to Local DB auth was added.
++- PASS - Real Create Account path validated against configured DEV Supabase.
++- PASS - Real Sign In path validated against configured DEV Supabase.
++- PASS - Current Session path validated after sign in.
++- PASS - Role resolution validated; created account resolved with `user`.
++- PASS - Sign Out validated; session returned to unauthenticated.
++- PASS - Password Reset validated with production-safe message.
++- PASS - No new infrastructure was added for this validation PR.
++- PASS - Product data remained Local DB.
++- PASS - No full samples smoke was run.
++
++## Validation Lane Report
++
++- contract: PASS - `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- runtime: PASS - live local API probe against configured DEV Supabase.
++- integration: PASS - `npm run validate:supabase-dev`
++- Playwright: PASS - targeted auth/session Playwright subset.
++- samples: SKIP - explicitly out of scope.
 +
 +## Changed Files
 +
-+- `src/dev-runtime/auth/provider-contract-stubs.mjs`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- Dedicated runtime implementation: none for this validation PR.
++- Stack reports/artifacts: `docs_build/dev/reports/*`
++- Shared stack tests: `tests/playwright/tools/LoginSessionMode.spec.mjs`
++
++## Playwright V8 Coverage
++
++- Artifact: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- Status: WARN advisory for files not collected by current Chromium V8 coverage; targeted behavior validation passed.
++
++## Skipped Lanes
++
++- samples: SKIP - explicitly out of scope.
++- full workspace suite: SKIP - targeted auth/session validation was requested for this stack.
++
++## Live DEV Evidence
++
++Sanitized live UAT probe:
++
++```json
++{
++  "authStatus": {
++    "status": 200,
++    "configured": true,
++    "ready": true,
++    "identityTablesReady": true,
++    "productDataProvider": "local-db"
++  },
++  "createAccount": {
++    "status": 200,
++    "identityProvisioned": true,
++    "roleSlugs": ["user"],
++    "userKeyLooksLikeUlid": true
++  },
++  "signIn": {
++    "status": 200,
++    "sessionResolved": true,
++    "roleSlugs": ["user"]
++  },
++  "signedInSession": {
++    "status": 200,
++    "authenticated": true,
++    "roleSlugs": ["user"],
++    "userKeyLooksLikeUlid": true
++  },
++  "signOut": {
++    "status": 200,
++    "authenticated": false
++  },
++  "signedOutSession": {
++    "status": 200,
++    "authenticated": false,
++    "displayName": "Login"
++  },
++  "passwordReset": {
++    "status": 200,
++    "action": "password-reset",
++    "message": "If an account exists for that email, password reset instructions will be sent."
++  }
++}
++```
++
++## Manual Validation Notes
++
++1. Start the local API runtime with Supabase Auth env configured and `GAMEFOUNDRY_DB_PROVIDER=local-db`.
++2. Open `account/create-account.html` and create a new account.
++3. Open `account/sign-in.html`, sign in, and confirm the Account nav shows the signed-in user.
++4. Confirm `/api/session/current` returns authenticated with the `user` role.
++5. Use the Account logout action and confirm the session returns to signed out.
++6. Open `account/password-reset.html` and request a password reset.
+diff --git a/docs_build/dev/reports/PR_26166_158-account-flow-error-polish.md b/docs_build/dev/reports/PR_26166_158-account-flow-error-polish.md
+new file mode 100644
+index 000000000..3c8da53ea
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26166_158-account-flow-error-polish.md
+@@ -0,0 +1,60 @@
++# PR_26166_158-account-flow-error-polish
++
++## Branch Validation
++
++- Current branch: main
++- Expected branch: main
++- Branch validation: PASS
++
++## Purpose
++
++Polish user-facing account errors and remove provider/internal wording from active account flows.
++
++## Requirement Checklist
++
++- PASS - Generic unavailable message remains for site/provider failures: `The site is currently unavailable. Please try again later.`
++- PASS - Identity provisioning failures show the actionable support message: `Account identity setup is incomplete. Please contact support.`
++- PASS - Active Create Account and Password Reset copy says `account service`, not provider-specific wording.
++- PASS - No DEV wording appears in active account flow UI.
++- PASS - Browser still calls backend API contracts only.
++- PASS - No secrets, `.env`, password tables, or auth fallback changes were added.
++
++## Implementation Evidence
++
++- `assets/theme-v2/js/account-auth-actions.js` now allows only the safe identity setup support message through failed auth responses; other failed responses remain generic.
++- `assets/theme-v2/js/login-session.js` uses the same safe-message rule for Sign In.
++- `account/create-account.html` and `account/password-reset.html` now use account-service wording.
++- `assets/theme-v2/js/gamefoundry-partials.js` no longer tells users to sign in as a `local user` on protected Account pages.
++
++## Changed Files
++
++- `account/create-account.html`
++- `account/password-reset.html`
++- `assets/theme-v2/js/account-auth-actions.js`
++- `assets/theme-v2/js/login-session.js`
++- `assets/theme-v2/js/gamefoundry-partials.js`
++- `tests/playwright/tools/LoginSessionMode.spec.mjs`
++
++## Validation Lane Report
++
++- static: PASS - changed-file syntax checks passed.
++- Playwright: PASS - targeted browser test confirms identity setup support message renders and provider details are not exposed.
++- samples: SKIP - explicitly out of scope.
++
++## Playwright V8 Coverage
++
++- Artifact: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- Status: WARN advisory for some changed JS files not collected by current Chromium V8 coverage; behavior passed through Playwright.
++
++## Skipped Lanes
++
++- samples: SKIP - explicitly out of scope.
++- full workspace suite: SKIP - targeted auth/session validation was requested for this stack.
++
++## Manual Validation Notes
++
++1. Temporarily create an Auth user without a matching app identity row.
++2. Attempt Sign In.
++3. Confirm the page shows `Account identity setup is incomplete. Please contact support.`
++4. Break or omit auth configuration and confirm the page shows the generic unavailable message.
++5. Confirm Create Account and Password Reset pages use account-service language.
+diff --git a/docs_build/dev/reports/PR_26166_159-account-session-ui-state.md b/docs_build/dev/reports/PR_26166_159-account-session-ui-state.md
+new file mode 100644
+index 000000000..734b5c00d
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26166_159-account-session-ui-state.md
+@@ -0,0 +1,60 @@
++# PR_26166_159-account-session-ui-state
++
++## Branch Validation
++
++- Current branch: main
++- Expected branch: main
++- Branch validation: PASS
++
++## Purpose
++
++Show signed-in and signed-out account state consistently while preserving guest browsing and guest-save redirects.
++
++## Requirement Checklist
++
++- PASS - Sign In page checks current session through `/api/session/current`.
++- PASS - Signed-in users see `Signed in as <name>.` on the Sign In page.
++- PASS - Signed-in users have the Sign In submit button disabled on the Sign In page.
++- PASS - Header Account nav shows the signed-in display name after successful sign in.
++- PASS - Logout clears the current session and returns Account nav to `Sign In`.
++- PASS - Guest browsing remains allowed.
++- PASS - Guest saving still redirects to `account/sign-in.html`.
++- PASS - No browser-owned provider logic was added.
++
++## Implementation Evidence
++
++- `assets/theme-v2/js/login-session.js` reads current session through the backend session API after account service readiness.
++- `assets/theme-v2/js/gamefoundry-partials.js` retains shared header/account state behavior and updates protected Account copy.
++- Targeted Playwright covers signed-in Sign In page state, logout state, and guest save redirect.
++
++## Changed Files
++
++- `assets/theme-v2/js/login-session.js`
++- `assets/theme-v2/js/gamefoundry-partials.js`
++- `tests/playwright/tools/LoginSessionMode.spec.mjs`
++
++## Validation Lane Report
++
++- static: PASS - changed-file syntax checks passed.
++- Playwright: PASS - targeted auth/session subset passed 5/5.
++- samples: SKIP - explicitly out of scope.
++
++## Playwright V8 Coverage
++
++- Artifact: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- Status: WARN advisory for some changed JS files not collected by current Chromium V8 coverage; signed-in/signed-out behavior passed through Playwright.
++
++## Skipped Lanes
++
++- samples: SKIP - explicitly out of scope.
++- full workspace suite: SKIP - targeted auth/session validation was requested for this stack.
++
++## Manual Validation Notes
++
++1. Sign in with a valid account.
++2. Confirm Account nav shows the signed-in display name.
++3. Visit `account/sign-in.html` while signed in.
++4. Confirm status reads `Signed in as <name>.` and Sign In is disabled.
++5. Sign out from the Account menu and confirm protected Account pages block access.
++6. Open a guest-allowed Toolbox page and confirm browsing remains possible.
++7. Trigger a guest save action and confirm it redirects to `account/sign-in.html`.
+diff --git a/docs_build/dev/reports/PR_26166_160-supabase-auth-dev-uat-closeout.md b/docs_build/dev/reports/PR_26166_160-supabase-auth-dev-uat-closeout.md
+new file mode 100644
+index 000000000..056c3dea3
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26166_160-supabase-auth-dev-uat-closeout.md
+@@ -0,0 +1,77 @@
++# PR_26166_160-supabase-auth-dev-uat-closeout
++
++## Branch Validation
++
++- Current branch: main
++- Expected branch: main
++- Branch validation: PASS
++
++## Purpose
++
++Close out DEV Supabase Auth UAT readiness for the stacked sign-in work.
++
++## Requirement Checklist
++
++- PASS - DEV Supabase Auth readiness validated with `npm run validate:supabase-dev`.
++- PASS - Sign In is usable through backend API contracts.
++- PASS - Create Account provisions Supabase Auth plus app identity rows.
++- PASS - Password Reset is usable and production-safe.
++- PASS - Product data remains Local DB with `GAMEFOUNDRY_DB_PROVIDER=local-db`.
++- PASS - No secrets or `.env.local` files were changed or committed.
++- PASS - No product-table migration was added.
++- PASS - No silent fallback to Local DB auth was added.
++- PASS - Playwright impacted: Yes; targeted auth/session coverage passed.
++- PASS - V8 coverage report was produced.
++
++## Validation Summary
++
++- PASS - `npm run validate:supabase-dev`
++  - Supabase URL configured.
++  - Publishable key configured.
++  - Service role key configured.
++  - Auth endpoint reachable.
++  - Service role authentication PASS.
++  - `users`, `roles`, and `user_roles` table checks PASS.
++  - Direct DB connection WARN due to `SELF_SIGNED_CERT_IN_CHAIN`; REST/API identity readiness passed.
++- PASS - `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++  - 26 passed, 0 failed.
++- PASS - `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --grep "Sign-in page uses|Configured account auth actions|Account auth actions show actionable identity setup|Account logout clears|Guest can explore" --reporter=list`
++  - 5 passed, 0 failed.
++- PASS - Changed-file syntax checks.
++- PASS - `git diff --check`
++
++## Coverage
++
++- Coverage artifact: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- Coverage result: WARN advisory for some changed runtime JS entries not collected by the current Chromium V8 reporter, while the targeted Playwright behavior passed.
++
++## Changed Files
++
++- `account/create-account.html`
++- `account/password-reset.html`
++- `assets/theme-v2/js/account-auth-actions.js`
++- `assets/theme-v2/js/login-session.js`
++- `assets/theme-v2/js/gamefoundry-partials.js`
 +- `tests/playwright/tools/LoginSessionMode.spec.mjs`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/PR_26166_156-live-sign-in-and-provisioning.md`
-+
-+## Impacted Lanes
-+
-+- runtime: auth provider/server API routing.
-+- integration: Supabase identity table readiness and app session resolution.
-+- Playwright impacted: Yes.
-+
-+## Validation Performed
-+
-+- PASS - `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
-+- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS - `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+- PASS - `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
-+- PASS - `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
-+  - Result: 26 passed, 0 failed.
-+- PASS - `npm run validate:supabase-dev`
-+  - Overall Result: PASS.
-+  - Users, roles, and user_roles REST/API table checks: PASS.
-+  - Direct DB connection: WARN only, due to `SELF_SIGNED_CERT_IN_CHAIN`; REST/API identity readiness passed.
-+- PASS - `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --grep "Sign-in page uses a production-safe account form without public Local DB controls" --reporter=list`
-+  - Result: 1 passed.
-+- PASS - `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --grep "Configured account auth actions use external Auth and resolve the app session" --reporter=list`
-+  - Result: 1 passed.
-+- PASS - Live DEV API probe for create account, sign in, and session resolution.
-+- PASS - Live DEV API probe for missing identity failure.
-+- PASS - Live DEV API probe for password reset.
-+- PASS - `git diff --check`
-+
-+## Live DEV Evidence
-+
-+`npm run validate:supabase-dev`:
-+
-+```text
-+PASS - .env.local loaded (6 key(s) loaded)
-+PASS - URL configured
-+PASS - Publishable key configured
-+PASS - Service role key configured
-+PASS - Database URL configured
-+PASS - Supabase reachable
-+PASS - TLS validation
-+PASS - Auth endpoint reachable
-+PASS - Service role authentication
-+WARN - Database connection (SELF_SIGNED_CERT_IN_CHAIN; REST/API identity readiness passed, so direct PostgreSQL TLS failure is advisory for DEV.)
-+PASS - users table
-+PASS - roles table
-+PASS - user_roles table
-+Overall Result: PASS
-+```
-+
-+Create Account and Sign In live probe:
-+
-+```json
-+{
-+  "createStatus": 200,
-+  "identityProvisioned": true,
-+  "signInStatus": 200,
-+  "sessionResolved": true,
-+  "currentSession": {
-+    "status": 200,
-+    "authenticated": true,
-+    "roleSlugs": ["user"],
-+    "userKeyLooksLikeUlid": true
-+  }
-+}
-+```
-+
-+Missing identity live probe:
-+
-+```json
-+{
-+  "authOnlyCreated": true,
-+  "signInStatus": 503,
-+  "error": "Account identity setup is incomplete. Please contact support.",
-+  "messageIsActionable": true
-+}
-+```
-+
-+Password Reset live probe:
-+
-+```json
-+{
-+  "passwordResetStatus": 200,
-+  "action": "password-reset",
-+  "redirectToIncluded": true,
-+  "message": "If an account exists for that email, password reset instructions will be sent."
-+}
-+```
-+
-+## V8 Coverage
-+
-+- Coverage artifact: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- Coverage status: WARN advisory for changed Node/server runtime modules because Chromium V8 coverage does not collect those files.
-+- Browser auth scripts were exercised by the targeted Playwright runs.
++- `docs_build/dev/reports/PR_26166_157-first-real-sign-in-validation.md`
++- `docs_build/dev/reports/PR_26166_158-account-flow-error-polish.md`
++- `docs_build/dev/reports/PR_26166_159-account-session-ui-state.md`
++- `docs_build/dev/reports/PR_26166_160-supabase-auth-dev-uat-closeout.md`
 +
 +## Skipped Lanes
 +
 +- samples: SKIP - full samples smoke was explicitly out of scope.
-+- product table migration: SKIP - product data remains Local DB by requirement.
-+- full workspace suite: SKIP - targeted auth/session validation was the requested lane for this PR.
++- product database migration: SKIP - product data must remain Local DB.
++- full workspace Playwright suite: SKIP - targeted auth/session Playwright validation was requested.
 +
-+## Manual Validation Notes
++## Manual Closeout Notes
 +
-+1. Start the dev runtime with Supabase auth environment configured and `GAMEFOUNDRY_DB_PROVIDER=local-db`.
-+2. Open `account/create-account.html`.
-+3. Create a new account with an email and password.
-+4. Open `account/sign-in.html` and sign in with that account.
-+5. Confirm the session resolves with a `user` role.
-+6. Open `account/password-reset.html` and request reset instructions.
-+7. Confirm no browser-visible secrets are shown and failures use production-safe messages.
++1. Keep `GAMEFOUNDRY_DB_PROVIDER=local-db`.
++2. Configure Supabase Auth env values locally.
++3. Run `npm run validate:supabase-dev`.
++4. Create a new account, sign in, confirm session/role, sign out, and request password reset.
++5. Confirm no browser UI exposes secrets or provider-specific DEV diagnostics.

@@ -527,7 +527,7 @@
             return {
                 role: "user",
                 title: "Sign-in required",
-                message: "Sign in as a local user to open Account pages."
+                message: "Sign in with your account to open Account pages."
             };
         }
         return null;

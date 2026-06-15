@@ -492,11 +492,15 @@ test("Sign-in page uses a production-safe account form without public Local DB c
     await expect(page).toHaveURL(/\/account\/create-account\.html$/);
     await expect(page.getByRole("heading", { name: "Create Account", level: 1 })).toBeVisible();
     await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+    await expect(page.locator("main")).toContainText("account service");
+    await expect(page.locator("main")).not.toContainText("configured account provider");
     await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
     await page.getByRole("link", { name: "Password Reset" }).click();
     await expect(page).toHaveURL(/\/account\/password-reset\.html$/);
     await expect(page.getByRole("heading", { name: "Password Reset", level: 1 })).toBeVisible();
     await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+    await expect(page.locator("main")).toContainText("account service");
+    await expect(page.locator("main")).not.toContainText("configured account provider");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -528,6 +532,11 @@ test("Configured account auth actions use external Auth and resolve the app sess
       expect(session.data.authenticated).toBe(true);
       expect(session.data.userKey).toBe(MOCK_DB_KEYS.users.user1);
       expect(session.data.roleSlugs).toEqual(["user"]);
+      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
+
+      await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
+      await expect(page.locator("[data-login-status]")).toHaveText("Signed in as User 1.");
+      await expect(page.getByRole("button", { name: "Sign In" })).toBeDisabled();
 
       await page.goto(`${failures.server.baseUrl}/account/create-account.html`, { waitUntil: "networkidle" });
       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
@@ -557,6 +566,51 @@ test("Configured account auth actions use external Auth and resolve the app sess
         .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);
       await expectNoPageFailures(failures);
+    } finally {
+      await closeWithCoverage(page, failures);
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Account auth actions show actionable identity setup failures without exposing provider details", async ({ page }) => {
+  const timestamp = "2026-06-15T00:00:00.000Z";
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: {
+      roles: [{
+        createdAt: timestamp,
+        createdBy: MOCK_DB_KEYS.users.admin,
+        isActive: true,
+        key: MOCK_DB_KEYS.roles.user,
+        name: "User",
+        roleSlug: "user",
+        updatedAt: timestamp,
+        updatedBy: MOCK_DB_KEYS.users.admin,
+      }],
+      user_roles: [],
+      users: [],
+    },
+  });
+  await withSupabaseEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const failures = await openRepoPage(page, "/account/sign-in.html");
+
+    try {
+      await expect(page.locator("[data-login-status]")).toHaveText("Account service is available.");
+      await page.getByLabel("Email").fill("user1@example.invalid");
+      await page.getByLabel("Password").fill("not-stored-locally");
+      await page.getByRole("button", { name: "Sign In" }).click();
+      await expect(page.locator("[data-login-status]")).toHaveText("Account identity setup is incomplete. Please contact support.");
+      await expect(page.locator("main")).not.toContainText("Supabase");
+      await expect(page.locator("main")).not.toContainText("DEV");
+      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/sign-in"))).toHaveLength(1);
+      expect(failures.pageErrors).toEqual([]);
+      expect(failures.consoleErrors.filter((entry) => !entry.includes("503"))).toEqual([]);
     } finally {
       await closeWithCoverage(page, failures);
     }
@@ -863,45 +917,52 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
 });
 
 test("Account logout clears only the current session and blocks protected pages", async ({ page }) => {
-  const failures = await openRepoPage(page, "/account/profile.html", {
-    seedStandalone: true,
-    sessionUserKey: MOCK_DB_KEYS.users.user1,
-  });
-
-  try {
-    await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
-    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
-    await page.locator("[data-account-logout]").click();
-    await expect(page.locator("[data-session-access-blocked='user']")).toBeVisible();
-    await expect(page.getByRole("heading", { name: "Sign-in required", level: 1 })).toBeVisible();
-    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
-    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
-
-    const storedUsers = await page.evaluate(async () => {
-      const snapshot = await fetch("/api/local-db/snapshot").then((response) => response.json());
-      return (snapshot.data.tables.users || []).map((user) => user.displayName);
+  await withSupabaseEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+  }, async () => {
+    const failures = await openRepoPage(page, "/account/profile.html", {
+      seedStandalone: true,
+      sessionUserKey: MOCK_DB_KEYS.users.user1,
     });
-    expect(storedUsers).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ admin"]));
-    expect(storedUsers).not.toContain("Guest");
-    expect(storedUsers).toHaveLength(4);
 
-    const directPage = await page.context().newPage();
     try {
-      await directPage.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
-      await expect(directPage.locator("[data-session-access-blocked='user']")).toBeVisible();
-      await directPage.goto(`${failures.server.baseUrl}/admin/site-settings.html`, { waitUntil: "networkidle" });
-      await expect(directPage.locator("[data-session-access-blocked='admin']")).toBeVisible();
-    } finally {
-      await directPage.close();
-    }
+      await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
+      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
+      await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
+      await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
+      await page.locator("[data-account-logout]").click();
+      await expect(page.locator("[data-session-access-blocked='user']")).toBeVisible();
+      await expect(page.getByRole("heading", { name: "Sign-in required", level: 1 })).toBeVisible();
+      await expect(page.locator("main")).toContainText("Sign in with your account to open Account pages.");
+      await expect(page.locator("main")).not.toContainText("local user");
+      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
+      await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
+      await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
 
-    await expectNoPageFailures(failures);
-  } finally {
-    await closeWithCoverage(page, failures);
-  }
+      const storedUsers = await page.evaluate(async () => {
+        const snapshot = await fetch("/api/local-db/snapshot").then((response) => response.json());
+        return (snapshot.data.tables.users || []).map((user) => user.displayName);
+      });
+      expect(storedUsers).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ admin"]));
+      expect(storedUsers).not.toContain("Guest");
+      expect(storedUsers).toHaveLength(4);
+
+      const directPage = await page.context().newPage();
+      try {
+        await directPage.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
+        await expect(directPage.locator("[data-session-access-blocked='user']")).toBeVisible();
+        await directPage.goto(`${failures.server.baseUrl}/admin/site-settings.html`, { waitUntil: "networkidle" });
+        await expect(directPage.locator("[data-session-access-blocked='admin']")).toBeVisible();
+      } finally {
+        await directPage.close();
+      }
+
+      await expectNoPageFailures(failures);
+    } finally {
+      await closeWithCoverage(page, failures);
+    }
+  });
 });
 
 test("Guest can explore allowed Toolbox pages without persistence access", async ({ page }) => {

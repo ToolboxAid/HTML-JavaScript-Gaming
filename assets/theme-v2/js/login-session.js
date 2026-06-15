@@ -4,6 +4,7 @@ const identityField = document.querySelector("[data-login-identity]");
 const passwordField = document.querySelector("[data-login-password]");
 const statusField = document.querySelector("[data-login-status]");
 const submitButton = document.querySelector("[data-login-submit]");
+const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
 let authStatus = null;
 
@@ -65,6 +66,9 @@ async function readJson(response, fallbackMessage) {
     payload = null;
   }
   if (!response.ok || payload?.ok === false) {
+    if (payload?.error === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
+      throw new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
+    }
     throw new Error(fallbackMessage);
   }
   return payload?.data || {};
@@ -75,6 +79,14 @@ async function requestAccountAuth(path, options = {}) {
     body: options.body ? JSON.stringify(options.body) : undefined,
     headers: options.body ? { "content-type": "application/json" } : undefined,
     method: options.method || "GET",
+  });
+  return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
+}
+
+async function requestCurrentSession() {
+  const response = await fetch("/api/session/current", {
+    headers: { "accept": "application/json" },
+    method: "GET",
   });
   return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
 }
@@ -95,6 +107,14 @@ async function refreshAccountAuthStatus() {
   }
   try {
     authStatus = await requestAccountAuth("status");
+    if (authStatus.ready) {
+      const session = await requestCurrentSession();
+      if (session?.authenticated) {
+        setFormEnabled(false);
+        setStatus(`Signed in as ${session.displayName || session.label || "Account"}.`);
+        return authStatus;
+      }
+    }
     setFormEnabled(Boolean(authStatus.ready));
     setStatus(authStatus.ready ? "Account service is available." : unavailableMessage(authStatus));
   } catch (error) {
