@@ -77,6 +77,7 @@ import {
 } from "../persistence/mock-db-store.js";
 import { createServerSeedTables } from "../seed/server-seed-loader.mjs";
 import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
+import { createProviderContractSnapshot } from "../auth/provider-contract-stubs.mjs";
 
 export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
@@ -930,7 +931,14 @@ class LocalDevDataSource {
   }
 
   adapterContract() {
-    return clone(DB_ADAPTER_CONTRACT);
+    return {
+      ...clone(DB_ADAPTER_CONTRACT),
+      providerContract: createProviderContractSnapshot(),
+    };
+  }
+
+  providerContract() {
+    return createProviderContractSnapshot();
   }
 
   currentAdapter() {
@@ -1788,6 +1796,10 @@ export function createLocalApiRouter() {
           ok(response, dataSource.sessionUsers());
           return true;
         }
+        if (request.method === "GET" && parts[2] === "provider-contract") {
+          ok(response, dataSource.providerContract());
+          return true;
+        }
         if (request.method === "POST" && parts[2] === "mode") {
           const body = await readRequestJson(request);
           ok(response, {
@@ -1835,6 +1847,11 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "data-source" && request.method === "GET" && parts[2] === "adapter-contract") {
         ok(response, dataSource.adapterContract());
+        return true;
+      }
+
+      if (parts[1] === "providers" && request.method === "GET" && parts[2] === "contract") {
+        ok(response, dataSource.providerContract());
         return true;
       }
 
