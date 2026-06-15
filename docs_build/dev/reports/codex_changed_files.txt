@@ -30,15 +30,19 @@ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/testing_lane_execution_report.md
  M docs_build/dev/reports/validation_cache_report.md
  M docs_build/dev/reports/zero_browser_preflight_report.md
- M package.json
- M scripts/start-local-api-server.mjs
-?? docs_build/dev/reports/PR_26166_162-live-create-account-runtime-fix.md
+ M src/dev-runtime/auth/provider-contract-stubs.mjs
+ M src/dev-runtime/server/local-api-router.mjs
+?? docs_build/dev/reports/PR_26166_163-create-account-live-diagnostic-fix.md
+?? docs_build/dev/reports/PR_26166_163-local-api-console-errors.txt
+?? docs_build/dev/reports/PR_26166_163-local-api-console.txt
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26166_162-live-create-account-runtime-fix.md
+docs_build/dev/reports/PR_26166_163-create-account-live-diagnostic-fix.md
+docs_build/dev/reports/PR_26166_163-local-api-console-errors.txt
+docs_build/dev/reports/PR_26166_163-local-api-console.txt
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  3 -
+.../dev/reports/coverage_changed_js_guardrail.txt  |  2 +
  docs_build/dev/reports/dependency_gating_report.md |  2 +-
  .../reports/dependency_hydration_reuse_report.md   |  4 +-
  .../dev/reports/execution_graph_reuse_report.md    |  4 +-
@@ -48,27 +52,27 @@ docs_build/dev/reports/PR_26166_162-live-create-account-runtime-fix.md
  docs_build/dev/reports/lane_compilation_report.md  |  2 +-
  .../dev/reports/lane_deduplication_report.md       |  2 +-
  .../dev/reports/lane_input_validation_report.md    |  2 +-
- .../reports/lane_manifests/workspace-contract.json | 10 ++--
+ .../reports/lane_manifests/workspace-contract.json | 10 +--
  .../reports/lane_runtime_optimization_report.md    |  2 +-
  docs_build/dev/reports/lane_snapshot_report.md     |  4 +-
- .../reports/lane_snapshots/workspace-contract.json | 22 +++----
+ .../reports/lane_snapshots/workspace-contract.json | 22 ++---
  docs_build/dev/reports/lane_warm_start_report.md   |  4 +-
- .../lane_warm_starts/workspace-contract.json       | 16 ++---
+ .../lane_warm_starts/workspace-contract.json       | 16 ++--
  .../dev/reports/monolith_trigger_removal_report.md |  2 +-
  .../dev/reports/persistent_lane_manifest_report.md |  6 +-
  .../playwright_discovery_ownership_report.md       |  2 +-
  .../reports/playwright_discovery_scope_report.md   |  2 +-
  .../dev/reports/playwright_structure_audit.md      |  2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  | 21 ++-----
+ .../dev/reports/playwright_v8_coverage_report.txt  | 28 +++++--
  docs_build/dev/reports/retry_suppression_report.md |  2 +-
- docs_build/dev/reports/slow_path_pruning_report.md | 14 ++---
+ docs_build/dev/reports/slow_path_pruning_report.md | 14 ++--
  docs_build/dev/reports/static_validation_report.md |  4 +-
  .../dev/reports/targeted_file_manifest_report.md   |  4 +-
- .../dev/reports/test_cleanup_performance_report.md | 16 ++---
+ .../dev/reports/test_cleanup_performance_report.md | 16 ++--
  .../dev/reports/test_cleanup_routing_report.md     |  2 +-
- .../dev/reports/testing_lane_execution_report.md   | 18 +++---
- docs_build/dev/reports/validation_cache_report.md  | 30 +++++-----
+ .../dev/reports/testing_lane_execution_report.md   | 18 ++--
+ docs_build/dev/reports/validation_cache_report.md  | 30 +++----
  .../dev/reports/zero_browser_preflight_report.md   |  2 +-
- package.json                                       |  2 +-
- scripts/start-local-api-server.mjs                 | 70 ++++++++++++++++++++++
- 33 files changed, 168 insertions(+), 114 deletions(-)
+ src/dev-runtime/auth/provider-contract-stubs.mjs   | 49 +++++++++--
+ src/dev-runtime/server/local-api-router.mjs        | 96 +++++++++++++++++++++-
+ 33 files changed, 252 insertions(+), 109 deletions(-)

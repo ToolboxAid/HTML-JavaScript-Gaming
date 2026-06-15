@@ -702,6 +702,62 @@ function sanitizedAuthErrorDiagnostic(error) {
   };
 }
 
+function safeOperatorDiagnosticValue(value, fallback = "none") {
+  const normalized = String(value || "").replace(/[\r\n]+/g, " ").trim();
+  if (!normalized) {
+    return fallback;
+  }
+  return normalized
+    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
+    .replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, "Bearer [redacted]")
+    .replace(/apikey\s*[:=]\s*[A-Za-z0-9._~+/=-]+/gi, "apikey=[redacted]");
+}
+
+function operatorYesNo(value) {
+  if (value === true) {
+    return "yes";
+  }
+  if (value === false) {
+    return "no";
+  }
+  return "unknown";
+}
+
+function createAccountUpstreamStatusCode(payload, error) {
+  const fromPayload = Number(payload?.__operator?.upstreamStatusCode || 0);
+  if (fromPayload) {
+    return String(fromPayload);
+  }
+  const fromError = Number(error?.upstreamStatusCode || error?.status || error?.statusCode || 0);
+  if (fromError && fromError !== 503) {
+    return String(fromError);
+  }
+  const diagnostic = error ? sanitizedAuthErrorDiagnostic(error) : null;
+  return diagnostic?.httpStatus ? String(diagnostic.httpStatus) : "none";
+}
+
+function logCreateAccountOperatorDiagnostic({
+  error = null,
+  phase,
+  payload = null,
+  safeErrorCode = "",
+  safeMessage = "",
+  status = {},
+}) {
+  const diagnostic = error ? sanitizedAuthErrorDiagnostic(error) : null;
+  const fields = [
+    `phase=${safeOperatorDiagnosticValue(phase, "unknown")}`,
+    `selectedAuthProvider=${safeOperatorDiagnosticValue(status.authProviderId || status.providerId || "unknown")}`,
+    `dbProvider=${safeOperatorDiagnosticValue(status.databaseProviderId || "unknown")}`,
+    `supabaseConfigured=${operatorYesNo(status.configured ?? status.supabaseConfigPresent)}`,
+    `identityTablesReady=${operatorYesNo(status.identityTablesReady)}`,
+    `upstreamStatusCode=${createAccountUpstreamStatusCode(payload, error)}`,
+    `safeErrorCode=${safeOperatorDiagnosticValue(safeErrorCode || error?.safeErrorCode || diagnostic?.code, "none")}`,
+    `safeMessage=${safeOperatorDiagnosticValue(safeMessage || error?.safeErrorMessage || diagnostic?.message, "none")}`,
+  ];
+  console.warn(`[auth/operator] POST /api/auth/create-account diagnostic ${fields.join(" ")}`);
+}
+
 function identityTableCounts(tables = {}) {
   return {
     roles: Array.isArray(tables.roles) ? tables.roles.length : 0,
@@ -1899,7 +1955,23 @@ class LocalDevDataSource {
   }
 
   async authCreateAccount(body = {}) {
-    const adapter = await this.authAdapterForAction("Create account");
+    const operatorStatus = await this.authStatusForRoute();
+    logCreateAccountOperatorDiagnostic({
+      phase: "start",
+      safeMessage: "ready-check-complete",
+      status: operatorStatus,
+    });
+    let adapter = null;
+    try {
+      adapter = await this.authAdapterForAction("Create account");
+    } catch (error) {
+      logCreateAccountOperatorDiagnostic({
+        error,
+        phase: "provider-not-ready",
+        status: operatorStatus,
+      });
+      throw error;
+    }
     const email = normalizedAuthEmail(body.email || body.identity);
     let payload = null;
     try {
@@ -1908,6 +1980,11 @@ class LocalDevDataSource {
         password: body.password,
       });
     } catch (error) {
+      logCreateAccountOperatorDiagnostic({
+        error,
+        phase: "upstream-failed",
+        status: operatorStatus,
+      });
       if (error?.statusCode === 503) {
         throw error;
       }
@@ -1919,12 +1996,29 @@ class LocalDevDataSource {
     try {
       identity = await this.provisionSupabaseIdentityForAuthPayload("Create account", email, payload);
     } catch (error) {
+      logCreateAccountOperatorDiagnostic({
+        error,
+        payload,
+        phase: "identity-provisioning-failed",
+        safeMessage: error?.operatorDiagnostic || error?.message || "identity provisioning failed",
+        status: operatorStatus,
+      });
       if (error?.message === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
         throw error;
       }
       const diagnostic = error?.operatorDiagnostic || sanitizedAuthErrorDiagnostic(error).message;
       throw authIdentitySetupError("Create account", diagnostic);
     }
+
+    logCreateAccountOperatorDiagnostic({
+      payload,
+      phase: "success",
+      safeMessage: "account-created-and-identity-provisioned",
+      status: {
+        ...operatorStatus,
+        identityTablesReady: true,
+      },
+    });
 
     return {
       ...sanitizedSupabaseAuthActionResult("create-account", email, payload),

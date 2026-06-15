@@ -1,0 +1,10 @@
+
+> html-javascript-gaming@1.0.0 dev:local-api
+> node --use-system-ca ./scripts/start-local-api-server.mjs
+
+GameFoundry API-backed local server running at http://127.0.0.1:5501/account/sign-in.html
+.env.local loaded for local API runtime (6 key(s) applied).
+Local API auth provider: supabase-auth.
+Local API product data provider: local-db.
+Supabase Auth selected for local API runtime because Supabase DEV auth configuration is present.
+Press Ctrl+C to stop.

@@ -1,0 +1,16 @@
+(node:24180) ExperimentalWarning: SQLite is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+[auth/operator] POST /api/auth/create-account diagnostic phase=start selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=none safeErrorCode=none safeMessage=ready-check-complete
+[auth/operator] POST /api/auth/create-account diagnostic phase=success selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=200 safeErrorCode=none safeMessage=account-created-and-identity-provisioned
+[auth/operator] POST /api/auth/create-account diagnostic phase=start selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=none safeErrorCode=none safeMessage=ready-check-complete
+[auth/operator] POST /api/auth/create-account diagnostic phase=upstream-failed selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=422 safeErrorCode=422 safeMessage=A user with this email address has already been registered
+[auth/operator] POST /api/auth/create-account failed: Create account: Supabase Auth request failed with HTTP 422.
+[auth/operator] POST /api/auth/create-account diagnostic phase=start selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=none safeErrorCode=none safeMessage=ready-check-complete
+[auth/operator] POST /api/auth/create-account diagnostic phase=success selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=200 safeErrorCode=none safeMessage=account-created-and-identity-provisioned
+[auth/operator] POST /api/auth/sign-in failed: Sign in: Supabase Auth request failed before an HTTP status was available.
+[auth/operator] POST /api/auth/create-account diagnostic phase=start selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=none safeErrorCode=none safeMessage=ready-check-complete
+[auth/operator] POST /api/auth/create-account diagnostic phase=upstream-failed selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=422 safeErrorCode=422 safeMessage=A user with this email address has already been registered
+[auth/operator] POST /api/auth/create-account failed: Create account: Supabase Auth request failed with HTTP 422.
+[auth/operator] POST /api/auth/create-account diagnostic phase=start selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=none safeErrorCode=none safeMessage=ready-check-complete
+[auth/operator] POST /api/auth/create-account diagnostic phase=upstream-failed selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=422 safeErrorCode=422 safeMessage=A user with this email address has already been registered
+[auth/operator] POST /api/auth/create-account failed: Create account: Supabase Auth request failed with HTTP 422.

@@ -1,38 +1,38 @@
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index ef65bf601..74a29674c 100644
+index 74a29674c..e67e0ecf6 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,9 +7,6 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -6,7 +6,9 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
  Changed runtime JS files considered:
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(59%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 38/64
--(100%) assets/theme-v2/js/account-auth-actions.js - executed lines 115/115; executed functions 13/13
--(100%) assets/theme-v2/js/login-session.js - executed lines 150/150; executed functions 17/17
  
  Guardrail warnings:
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
-index d407c180c..bf06e224e 100644
+index bf06e224e..c9eb73c6d 100644
 --- a/docs_build/dev/reports/dependency_gating_report.md
 +++ b/docs_build/dev/reports/dependency_gating_report.md
 @@ -1,6 +1,6 @@
  # Dependency Gating Report
  
--Generated: 2026-06-15T19:24:56.323Z
-+Generated: 2026-06-15T22:05:45.152Z
+-Generated: 2026-06-15T22:05:45.152Z
++Generated: 2026-06-15T22:43:47.145Z
  Status: PASS
  
  ## Gate Order
 diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
-index 280b3240d..df3ae23b3 100644
+index df3ae23b3..491f91878 100644
 --- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
 +++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
 @@ -1,6 +1,6 @@
  # Dependency Hydration Reuse Report
  
--Generated: 2026-06-15T19:24:56.323Z
-+Generated: 2026-06-15T22:05:45.153Z
+-Generated: 2026-06-15T22:05:45.153Z
++Generated: 2026-06-15T22:43:47.145Z
  Status: PASS
  
  ## Summary
@@ -40,20 +40,20 @@ index 280b3240d..df3ae23b3 100644
  
  | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 41fe44a6067dd507 | Dependency hydration was refreshed after warm-start invalidation. |
-+| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 557107ba237b3042 | Dependency hydration was refreshed after warm-start invalidation. |
+-| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 557107ba237b3042 | Dependency hydration was refreshed after warm-start invalidation. |
++| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 3dd25974f5e07bca | Dependency hydration was refreshed after warm-start invalidation. |
  
  ## Safeguards
  
 diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
-index 5298b2f33..46dc5bafb 100644
+index 46dc5bafb..280fb99dd 100644
 --- a/docs_build/dev/reports/execution_graph_reuse_report.md
 +++ b/docs_build/dev/reports/execution_graph_reuse_report.md
 @@ -1,6 +1,6 @@
  # Execution Graph Reuse Report
  
--Generated: 2026-06-15T19:24:56.324Z
-+Generated: 2026-06-15T22:05:45.153Z
+-Generated: 2026-06-15T22:05:45.153Z
++Generated: 2026-06-15T22:43:47.146Z
  Status: PASS
  
  ## Summary
@@ -61,99 +61,99 @@ index 5298b2f33..46dc5bafb 100644
  
  | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
  | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | INVALIDATED | a4b3166da7138622 | Lane snapshot is part of the selected targeted execution graph. |
-+| workspace-contract | INVALIDATED | INVALIDATED | 3508516aa90ae6e7 | Lane snapshot is part of the selected targeted execution graph. |
+-| workspace-contract | INVALIDATED | INVALIDATED | 3508516aa90ae6e7 | Lane snapshot is part of the selected targeted execution graph. |
++| workspace-contract | INVALIDATED | INVALIDATED | c43f8abe2fb4d370 | Lane snapshot is part of the selected targeted execution graph. |
  
  ## Safeguards
  
 diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
-index dbf87e883..9774c037c 100644
+index 9774c037c..5d8766e14 100644
 --- a/docs_build/dev/reports/failure_fingerprint_report.md
 +++ b/docs_build/dev/reports/failure_fingerprint_report.md
 @@ -1,6 +1,6 @@
  # Failure Fingerprint Report
  
--Generated: 2026-06-15T19:25:47.113Z
-+Generated: 2026-06-15T22:06:39.893Z
+-Generated: 2026-06-15T22:06:39.893Z
++Generated: 2026-06-15T22:44:38.503Z
  Status: PASS
  
  ## Summary
 diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
-index a901014b1..67ec27ca9 100644
+index 67ec27ca9..8c0a26c31 100644
 --- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
 +++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
 @@ -1,6 +1,6 @@
  # Filesystem Scan Reduction Report
  
--Generated: 2026-06-15T19:24:56.300Z
-+Generated: 2026-06-15T22:05:45.127Z
+-Generated: 2026-06-15T22:05:45.127Z
++Generated: 2026-06-15T22:43:47.119Z
  Status: PASS
  
  ## Scan Enforcement
 diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
-index 74b07f63b..871194eb3 100644
+index 871194eb3..377b2cd77 100644
 --- a/docs_build/dev/reports/incremental_validation_report.md
 +++ b/docs_build/dev/reports/incremental_validation_report.md
 @@ -1,6 +1,6 @@
  # Incremental Validation Report
  
--Generated: 2026-06-15T19:24:56.325Z
-+Generated: 2026-06-15T22:05:45.154Z
+-Generated: 2026-06-15T22:05:45.154Z
++Generated: 2026-06-15T22:43:47.147Z
  Status: PASS
  
  ## Reuse Summary
 diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
-index 21519e0c7..bedb0cd4c 100644
+index bedb0cd4c..2d2049ee6 100644
 --- a/docs_build/dev/reports/lane_compilation_report.md
 +++ b/docs_build/dev/reports/lane_compilation_report.md
 @@ -1,6 +1,6 @@
  # Lane Compilation Report
  
--Generated: 2026-06-15T19:24:56.322Z
-+Generated: 2026-06-15T22:05:45.152Z
+-Generated: 2026-06-15T22:05:45.152Z
++Generated: 2026-06-15T22:43:47.144Z
  Status: PASS
  
  ## Lane Graph
 diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
-index 9bda65e6b..0150f0666 100644
+index 0150f0666..8dd8ddc4a 100644
 --- a/docs_build/dev/reports/lane_deduplication_report.md
 +++ b/docs_build/dev/reports/lane_deduplication_report.md
 @@ -1,6 +1,6 @@
  # Lane Deduplication Report
  
--Generated: 2026-06-15T19:24:56.323Z
-+Generated: 2026-06-15T22:05:45.153Z
+-Generated: 2026-06-15T22:05:45.153Z
++Generated: 2026-06-15T22:43:47.145Z
  Status: PASS
  
  ## Summary
 diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
-index c15725dc9..b2055fd30 100644
+index b2055fd30..7a68a947b 100644
 --- a/docs_build/dev/reports/lane_input_validation_report.md
 +++ b/docs_build/dev/reports/lane_input_validation_report.md
 @@ -1,6 +1,6 @@
  # Lane Input Validation Report
  
--Generated: 2026-06-15T19:24:56.325Z
-+Generated: 2026-06-15T22:05:45.154Z
+-Generated: 2026-06-15T22:05:45.154Z
++Generated: 2026-06-15T22:43:47.147Z
  Status: PASS
  
  ## Input Files
 diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
-index 6ac7f4b2c..3e4712ca7 100644
+index 3e4712ca7..02a266521 100644
 --- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
 +++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
 @@ -1,12 +1,12 @@
  {
    "commandsHash": "39e16c9d480a1e51",
    "dependencies": [],
--  "dependencyGraphHash": "ca72ac519bd2ecca",
-+  "dependencyGraphHash": "6629cc689695c83e",
+-  "dependencyGraphHash": "6629cc689695c83e",
++  "dependencyGraphHash": "e9aeebecc701948e",
    "fileHashes": {
      "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
      "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
      "src/dev-runtime/persistence/mock-db-store.js": "fac0d9d7d550522c",
--    "src/dev-runtime/server/local-api-router.mjs": "a782f1f9338c146a",
-+    "src/dev-runtime/server/local-api-router.mjs": "17eb476f0cce29d5",
+-    "src/dev-runtime/server/local-api-router.mjs": "17eb476f0cce29d5",
++    "src/dev-runtime/server/local-api-router.mjs": "2cc9923f5bff0265",
      "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
      "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
      "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -161,42 +161,42 @@ index 6ac7f4b2c..3e4712ca7 100644
      "tests/helpers/playwrightV8CoverageReporter.mjs",
      "tests/helpers/workspaceV2CoverageReporter.mjs"
    ],
--  "inputHash": "f17446808b0d6869",
-+  "inputHash": "c71d98739149a778",
+-  "inputHash": "c71d98739149a778",
++  "inputHash": "987ed91a2a4f7836",
    "lane": "workspace-contract",
    "laneDefinitionHash": "fde48767b345621c",
--  "manifestHash": "81fa5ddb22824738",
-+  "manifestHash": "85daa9cb294f618e",
+-  "manifestHash": "85daa9cb294f618e",
++  "manifestHash": "2cb8e551681bdd04",
    "ownership": "tools",
    "tests": [
      "tests/playwright/tools/RootToolsFutureState.spec.mjs"
    ],
    "version": 1,
--  "generatedAt": "2026-06-15T19:24:55.387Z",
-+  "generatedAt": "2026-06-15T22:05:44.199Z",
+-  "generatedAt": "2026-06-15T22:05:44.199Z",
++  "generatedAt": "2026-06-15T22:43:46.130Z",
    "source": "generated"
  }
 diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
-index 8496c7892..d4d6b1814 100644
+index d4d6b1814..47373d22e 100644
 --- a/docs_build/dev/reports/lane_runtime_optimization_report.md
 +++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
 @@ -1,6 +1,6 @@
  # Lane Runtime Optimization Report
  
--Generated: 2026-06-15T19:24:56.323Z
-+Generated: 2026-06-15T22:05:45.153Z
+-Generated: 2026-06-15T22:05:45.153Z
++Generated: 2026-06-15T22:43:47.145Z
  Status: PASS
  
  ## Runtime Cost Summary
 diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
-index 98ae60fe9..a646d1cc5 100644
+index a646d1cc5..d37688ca6 100644
 --- a/docs_build/dev/reports/lane_snapshot_report.md
 +++ b/docs_build/dev/reports/lane_snapshot_report.md
 @@ -1,6 +1,6 @@
  # Lane Snapshot Report
  
--Generated: 2026-06-15T19:24:56.324Z
-+Generated: 2026-06-15T22:05:45.153Z
+-Generated: 2026-06-15T22:05:45.153Z
++Generated: 2026-06-15T22:43:47.146Z
  Status: PASS
  Snapshot directory: docs_build/dev/reports/lane_snapshots
  
@@ -204,27 +204,27 @@ index 98ae60fe9..a646d1cc5 100644
  
  | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 81fa5ddb22824738 | ca72ac519bd2ecca | 3d02a6f75a00133f | 6c4fac7630b0b6f3 | c99c4343771f1683 | a4b3166da7138622 | b0f9be98d819cc1f | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 85daa9cb294f618e | 6629cc689695c83e | 3d02a6f75a00133f | 6c4fac7630b0b6f3 | c99c4343771f1683 | 3508516aa90ae6e7 | c52ecbf08a31deab | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 85daa9cb294f618e | 6629cc689695c83e | 3d02a6f75a00133f | 6c4fac7630b0b6f3 | c99c4343771f1683 | 3508516aa90ae6e7 | c52ecbf08a31deab | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 2cb8e551681bdd04 | e9aeebecc701948e | 3d02a6f75a00133f | 6c4fac7630b0b6f3 | c99c4343771f1683 | c43f8abe2fb4d370 | 413c232ea6344149 | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
  
  ## Snapshot Validation Findings
  
 diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
-index 815ccadbd..9344f7534 100644
+index 9344f7534..de802733a 100644
 --- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
 +++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
 @@ -3,12 +3,12 @@
    "dependencyGateStatus": "PASS",
    "dependencyGraph": {
      "dependencies": [],
--    "dependencyGraphHash": "ca72ac519bd2ecca",
-+    "dependencyGraphHash": "6629cc689695c83e",
+-    "dependencyGraphHash": "6629cc689695c83e",
++    "dependencyGraphHash": "e9aeebecc701948e",
      "importHashes": {
        "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
        "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
        "src/dev-runtime/persistence/mock-db-store.js": "fac0d9d7d550522c",
--      "src/dev-runtime/server/local-api-router.mjs": "a782f1f9338c146a",
-+      "src/dev-runtime/server/local-api-router.mjs": "17eb476f0cce29d5",
+-      "src/dev-runtime/server/local-api-router.mjs": "17eb476f0cce29d5",
++      "src/dev-runtime/server/local-api-router.mjs": "2cc9923f5bff0265",
        "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
        "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
        "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -232,10 +232,10 @@ index 815ccadbd..9344f7534 100644
        "tests/helpers/workspaceV2CoverageReporter.mjs"
      ]
    },
--  "dependencyGraphHash": "ca72ac519bd2ecca",
--  "executionGraphHash": "a4b3166da7138622",
-+  "dependencyGraphHash": "6629cc689695c83e",
-+  "executionGraphHash": "3508516aa90ae6e7",
+-  "dependencyGraphHash": "6629cc689695c83e",
+-  "executionGraphHash": "3508516aa90ae6e7",
++  "dependencyGraphHash": "e9aeebecc701948e",
++  "executionGraphHash": "c43f8abe2fb4d370",
    "fixtureGraph": {
      "fixtureHashes": {},
      "fixtures": []
@@ -243,8 +243,8 @@ index 815ccadbd..9344f7534 100644
      ]
    },
    "helperGraphHash": "3d02a6f75a00133f",
--  "inputHash": "f17446808b0d6869",
-+  "inputHash": "c71d98739149a778",
+-  "inputHash": "c71d98739149a778",
++  "inputHash": "987ed91a2a4f7836",
    "lane": "workspace-contract",
    "laneCompilationStatus": "PASS",
    "laneDefinitionHash": "fde48767b345621c",
@@ -252,8 +252,8 @@ index 815ccadbd..9344f7534 100644
        "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
        "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
        "src/dev-runtime/persistence/mock-db-store.js": "fac0d9d7d550522c",
--      "src/dev-runtime/server/local-api-router.mjs": "a782f1f9338c146a",
-+      "src/dev-runtime/server/local-api-router.mjs": "17eb476f0cce29d5",
+-      "src/dev-runtime/server/local-api-router.mjs": "17eb476f0cce29d5",
++      "src/dev-runtime/server/local-api-router.mjs": "2cc9923f5bff0265",
        "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
        "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
        "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -261,16 +261,16 @@ index 815ccadbd..9344f7534 100644
        "tests/helpers/playwrightV8CoverageReporter.mjs",
        "tests/helpers/workspaceV2CoverageReporter.mjs"
      ],
--    "manifestHash": "81fa5ddb22824738",
-+    "manifestHash": "85daa9cb294f618e",
+-    "manifestHash": "85daa9cb294f618e",
++    "manifestHash": "2cb8e551681bdd04",
      "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
      "source": "generated",
      "tests": [
        "tests/playwright/tools/RootToolsFutureState.spec.mjs"
      ]
    },
--  "manifestHash": "81fa5ddb22824738",
-+  "manifestHash": "85daa9cb294f618e",
+-  "manifestHash": "85daa9cb294f618e",
++  "manifestHash": "2cb8e551681bdd04",
    "ownership": "tools",
    "runtimeConfiguration": {
      "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
@@ -278,23 +278,23 @@ index 815ccadbd..9344f7534 100644
      "requiresSamplesFlag": false
    },
    "runtimeConfigurationHash": "c99c4343771f1683",
--  "snapshotHash": "b0f9be98d819cc1f",
-+  "snapshotHash": "c52ecbf08a31deab",
+-  "snapshotHash": "c52ecbf08a31deab",
++  "snapshotHash": "413c232ea6344149",
    "version": 1,
--  "warmStartHash": "43094feedb9b3da3",
--  "generatedAt": "2026-06-15T19:24:56.317Z"
-+  "warmStartHash": "d7223547006dbb82",
-+  "generatedAt": "2026-06-15T22:05:45.147Z"
+-  "warmStartHash": "d7223547006dbb82",
+-  "generatedAt": "2026-06-15T22:05:45.147Z"
++  "warmStartHash": "5691f520f7b71b56",
++  "generatedAt": "2026-06-15T22:43:47.140Z"
  }
 diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
-index ce20aefe6..afbac631e 100644
+index afbac631e..fd8a02789 100644
 --- a/docs_build/dev/reports/lane_warm_start_report.md
 +++ b/docs_build/dev/reports/lane_warm_start_report.md
 @@ -1,6 +1,6 @@
  # Lane Warm-Start Report
  
--Generated: 2026-06-15T19:24:56.323Z
-+Generated: 2026-06-15T22:05:45.153Z
+-Generated: 2026-06-15T22:05:45.153Z
++Generated: 2026-06-15T22:43:47.145Z
  Status: PASS
  Warm-start directory: docs_build/dev/reports/lane_warm_starts
  
@@ -302,23 +302,23 @@ index ce20aefe6..afbac631e 100644
  
  | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 81fa5ddb22824738 | 43094feedb9b3da3 | 41fe44a6067dd507 | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 85daa9cb294f618e | d7223547006dbb82 | 557107ba237b3042 | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 85daa9cb294f618e | d7223547006dbb82 | 557107ba237b3042 | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 2cb8e551681bdd04 | 5691f520f7b71b56 | 3dd25974f5e07bca | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
  
  ## Fast-Fail Safeguards
  
 diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
-index 233e291b0..5e5fc2849 100644
+index 5e5fc2849..25f61cf71 100644
 --- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
 +++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
 @@ -1,8 +1,8 @@
  {
    "commandsHash": "39e16c9d480a1e51",
--  "dependencyGraphHash": "ca72ac519bd2ecca",
-+  "dependencyGraphHash": "6629cc689695c83e",
+-  "dependencyGraphHash": "6629cc689695c83e",
++  "dependencyGraphHash": "e9aeebecc701948e",
    "dependencyHydration": {
--    "dependencyHydrationHash": "41fe44a6067dd507",
-+    "dependencyHydrationHash": "557107ba237b3042",
+-    "dependencyHydrationHash": "557107ba237b3042",
++    "dependencyHydrationHash": "3dd25974f5e07bca",
      "fixtureHashes": {},
      "fixtures": [],
      "helperHashes": {
@@ -326,8 +326,8 @@ index 233e291b0..5e5fc2849 100644
        "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
        "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
        "src/dev-runtime/persistence/mock-db-store.js": "fac0d9d7d550522c",
--      "src/dev-runtime/server/local-api-router.mjs": "a782f1f9338c146a",
-+      "src/dev-runtime/server/local-api-router.mjs": "17eb476f0cce29d5",
+-      "src/dev-runtime/server/local-api-router.mjs": "17eb476f0cce29d5",
++      "src/dev-runtime/server/local-api-router.mjs": "2cc9923f5bff0265",
        "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
        "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
        "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -335,45 +335,45 @@ index 233e291b0..5e5fc2849 100644
        "tests/helpers/workspaceV2CoverageReporter.mjs"
      ]
    },
--  "dependencyHydrationHash": "41fe44a6067dd507",
--  "inputHash": "f17446808b0d6869",
-+  "dependencyHydrationHash": "557107ba237b3042",
-+  "inputHash": "c71d98739149a778",
+-  "dependencyHydrationHash": "557107ba237b3042",
+-  "inputHash": "c71d98739149a778",
++  "dependencyHydrationHash": "3dd25974f5e07bca",
++  "inputHash": "987ed91a2a4f7836",
    "lane": "workspace-contract",
    "laneConfigHash": "3d8db02cddc33911",
    "laneDefinitionHash": "fde48767b345621c",
--  "manifestHash": "81fa5ddb22824738",
-+  "manifestHash": "85daa9cb294f618e",
+-  "manifestHash": "85daa9cb294f618e",
++  "manifestHash": "2cb8e551681bdd04",
    "ownership": "tools",
--  "warmStartHash": "43094feedb9b3da3",
-+  "warmStartHash": "d7223547006dbb82",
+-  "warmStartHash": "d7223547006dbb82",
++  "warmStartHash": "5691f520f7b71b56",
    "version": 1,
--  "generatedAt": "2026-06-15T19:24:55.393Z",
-+  "generatedAt": "2026-06-15T22:05:44.206Z",
+-  "generatedAt": "2026-06-15T22:05:44.206Z",
++  "generatedAt": "2026-06-15T22:43:46.137Z",
    "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
    "sourceManifest": "generated"
  }
 diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
-index f6fd1f147..c5580df48 100644
+index c5580df48..9b786012e 100644
 --- a/docs_build/dev/reports/monolith_trigger_removal_report.md
 +++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
 @@ -1,6 +1,6 @@
  # Monolith Trigger Removal Report
  
--Generated: 2026-06-15T19:25:47.114Z
-+Generated: 2026-06-15T22:06:39.894Z
+-Generated: 2026-06-15T22:06:39.894Z
++Generated: 2026-06-15T22:44:38.504Z
  Status: PASS
  
  ## Removed Broad Execution Triggers
 diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
-index 935cf5429..80ce91216 100644
+index 80ce91216..39f7098ab 100644
 --- a/docs_build/dev/reports/persistent_lane_manifest_report.md
 +++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
 @@ -1,6 +1,6 @@
  # Persistent Lane Manifest Report
  
--Generated: 2026-06-15T19:24:56.324Z
-+Generated: 2026-06-15T22:05:45.154Z
+-Generated: 2026-06-15T22:05:45.154Z
++Generated: 2026-06-15T22:43:47.147Z
  Status: PASS
  Manifest directory: docs_build/dev/reports/lane_manifests
  
@@ -381,126 +381,134 @@ index 935cf5429..80ce91216 100644
  
  | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
  | --- | --- | --- | --- | --- | --- |
--| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | f17446808b0d6869 | 81fa5ddb22824738 | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
-+| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | c71d98739149a778 | 85daa9cb294f618e | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
+-| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | c71d98739149a778 | 85daa9cb294f618e | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 987ed91a2a4f7836 | 2cb8e551681bdd04 | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
  
  ## Persisted Manifest Files
  
  | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
  | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | ca72ac519bd2ecca | 81fa5ddb22824738 |
-+| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 6629cc689695c83e | 85daa9cb294f618e |
+-| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 6629cc689695c83e | 85daa9cb294f618e |
++| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | e9aeebecc701948e | 2cb8e551681bdd04 |
  
  ## Fast-Fail Enforcement
  
 diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
-index 0b02ab857..ead257259 100644
+index ead257259..7e4ab6c37 100644
 --- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
 +++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
 @@ -1,6 +1,6 @@
  # Playwright Discovery Ownership Report
  
--Generated: 2026-06-15T19:24:56.295Z
-+Generated: 2026-06-15T22:05:45.121Z
+-Generated: 2026-06-15T22:05:45.121Z
++Generated: 2026-06-15T22:43:47.108Z
  Status: PASS
  
  ## Discovery-Time Ownership
 diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
-index 3f8c387dc..64f6beba3 100644
+index 64f6beba3..ff0928d48 100644
 --- a/docs_build/dev/reports/playwright_discovery_scope_report.md
 +++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
 @@ -1,6 +1,6 @@
  # Playwright Discovery Scope Report
  
--Generated: 2026-06-15T19:24:56.298Z
-+Generated: 2026-06-15T22:05:45.124Z
+-Generated: 2026-06-15T22:05:45.124Z
++Generated: 2026-06-15T22:43:47.115Z
  Status: PASS
  Scoped discovery: Yes
  
 diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
-index 1851b51a3..5fba4ffc0 100644
+index 5fba4ffc0..1c9ca6c64 100644
 --- a/docs_build/dev/reports/playwright_structure_audit.md
 +++ b/docs_build/dev/reports/playwright_structure_audit.md
 @@ -1,6 +1,6 @@
  # Playwright Structure Audit
  
--Generated: 2026-06-15T19:24:56.276Z
-+Generated: 2026-06-15T22:05:45.103Z
+-Generated: 2026-06-15T22:05:45.103Z
++Generated: 2026-06-15T22:43:47.085Z
  Status: PASS
  
  ## Lane Directories
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index ea51f42b9..ab82a0a1e 100644
+index ee90a8881..bd2234211 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,34 +12,21 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,25 +12,39 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
  
  Exercised tool entry points detected:
--(70%) Toolbox Index - exercised 3 runtime JS files
-+(0%) Toolbox Index - not exercised by this Playwright run
+-(0%) Toolbox Index - not exercised by this Playwright run
++(72%) Toolbox Index - exercised 10 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(72%) Theme V2 Shared JS - exercised 3 runtime JS files
-+(0%) Theme V2 Shared JS - not exercised by this Playwright run
+-(46%) Theme V2 Shared JS - exercised 2 runtime JS files
++(58%) Theme V2 Shared JS - exercised 3 runtime JS files
  
  Changed runtime JS files covered:
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(59%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 38/64
--(100%) assets/theme-v2/js/account-auth-actions.js - executed lines 115/115; executed functions 13/13
--(100%) assets/theme-v2/js/login-session.js - executed lines 150/150; executed functions 17/17
  
  Files with executed line/function counts where available:
--(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
--(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
--(45%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 10/22
--(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
--(59%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 38/64
--(75%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 77/103
--(100%) assets/theme-v2/js/account-auth-actions.js - executed lines 115/115; executed functions 13/13
--(100%) assets/theme-v2/js/login-session.js - executed lines 150/150; executed functions 17/17
--(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
-+(100%) none - no covered runtime files
+-(7%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 1/14
+-(8%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 1/12
+ (10%) assets/theme-v2/js/local-db-page-data.js - executed lines 299/299; executed functions 3/29
+ (20%) src/engine/api/local-db-api-client.js - executed lines 19/19; executed functions 1/5
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
++(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
++(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
++(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
++(58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
++(66%) toolbox/controls/controls.js - executed lines 617/617; executed functions 41/62
++(68%) toolbox/game-workspace/game-workspace.js - executed lines 281/281; executed functions 19/28
++(76%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 52/68
++(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
++(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
++(91%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 103/113
++(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
++(100%) toolbox/controls/controls-api-client.js - executed lines 33/33; executed functions 5/5
++(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
++(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
  
  Uncovered or low-coverage changed JS files:
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
  
  Changed JS files considered:
-+(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
+ (0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
--(59%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
--(100%) assets/theme-v2/js/account-auth-actions.js - changed JS file with browser V8 coverage
--(100%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
+-(0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
 diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
-index f7a4d5262..137ada968 100644
+index 137ada968..9a324a56c 100644
 --- a/docs_build/dev/reports/retry_suppression_report.md
 +++ b/docs_build/dev/reports/retry_suppression_report.md
 @@ -1,6 +1,6 @@
  # Retry Suppression Report
  
--Generated: 2026-06-15T19:25:47.113Z
-+Generated: 2026-06-15T22:06:39.893Z
+-Generated: 2026-06-15T22:06:39.893Z
++Generated: 2026-06-15T22:44:38.504Z
  Status: PASS
  
  ## Summary
 diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
-index 58cd4f154..d725efc15 100644
+index d725efc15..7ef44abbd 100644
 --- a/docs_build/dev/reports/slow_path_pruning_report.md
 +++ b/docs_build/dev/reports/slow_path_pruning_report.md
 @@ -1,13 +1,13 @@
  # Slow Path Pruning Report
  
--Generated: 2026-06-15T19:25:47.114Z
-+Generated: 2026-06-15T22:06:39.894Z
+-Generated: 2026-06-15T22:06:39.894Z
++Generated: 2026-06-15T22:44:38.504Z
  Status: PASS
  Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
  
  ## Before / After Runtime Observations
  
  PR_26146_038 measured lane elapsed time: 169.71s
--Current measured lane elapsed time: 50.75s
-+Current measured lane elapsed time: 54.71s
+-Current measured lane elapsed time: 54.71s
++Current measured lane elapsed time: 51.32s
  PR_26146_038 actual browser launches: 4
  Current actual browser launches: 1
  Accidental no-argument browser launches prevented: 5
@@ -508,28 +516,28 @@ index 58cd4f154..d725efc15 100644
  | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
  | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
  | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
--| current targeted run | workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
--| current targeted run | workspace-contract | 10.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
--| current targeted run | workspace-contract | 10.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
--| current targeted run | workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
--| current targeted run | workspace-contract | 1.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
-+| current targeted run | workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
-+| current targeted run | workspace-contract | 10.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
-+| current targeted run | workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
-+| current targeted run | workspace-contract | 8.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
-+| current targeted run | workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
+-| current targeted run | workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
+-| current targeted run | workspace-contract | 10.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
+-| current targeted run | workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
+-| current targeted run | workspace-contract | 8.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
+-| current targeted run | workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
++| current targeted run | workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
++| current targeted run | workspace-contract | 11.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
++| current targeted run | workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
++| current targeted run | workspace-contract | 7.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
++| current targeted run | workspace-contract | 1.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
  
  ## Guardrails
  
 diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
-index 5c7fc80a5..1beb6792f 100644
+index 1beb6792f..ccb7f0ad4 100644
 --- a/docs_build/dev/reports/static_validation_report.md
 +++ b/docs_build/dev/reports/static_validation_report.md
 @@ -1,6 +1,6 @@
  # Static Validation Report
  
--Generated: 2026-06-15T19:24:56.315Z
-+Generated: 2026-06-15T22:05:45.145Z
+-Generated: 2026-06-15T22:05:45.145Z
++Generated: 2026-06-15T22:43:47.137Z
  Status: PASS
  Static only: No
  Dry run: No
@@ -537,46 +545,46 @@ index 5c7fc80a5..1beb6792f 100644
  | invalid filename detection | PASS | Covered by Playwright structure audit. |
  | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
  | missing fixture detection | PASS | No missing fixture findings. |
--| targeted file manifests | PASS | workspace-contract:81fa5ddb22824738 |
-+| targeted file manifests | PASS | workspace-contract:85daa9cb294f618e |
+-| targeted file manifests | PASS | workspace-contract:85daa9cb294f618e |
++| targeted file manifests | PASS | workspace-contract:2cb8e551681bdd04 |
  | persistent lane manifests | PASS | workspace-contract:INVALIDATED |
  | lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
  | dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
 diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
-index 9b2afd299..66d99d03c 100644
+index 66d99d03c..080dd927c 100644
 --- a/docs_build/dev/reports/targeted_file_manifest_report.md
 +++ b/docs_build/dev/reports/targeted_file_manifest_report.md
 @@ -1,13 +1,13 @@
  # Targeted File Manifest Report
  
--Generated: 2026-06-15T19:24:56.324Z
-+Generated: 2026-06-15T22:05:45.154Z
+-Generated: 2026-06-15T22:05:45.154Z
++Generated: 2026-06-15T22:43:47.146Z
  Status: PASS
  
  ## Manifest-Generated Lane Inputs
  
  | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
  | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | ca72ac519bd2ecca | 81fa5ddb22824738 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
-+| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 6629cc689695c83e | 85daa9cb294f618e | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+-| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 6629cc689695c83e | 85daa9cb294f618e | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
++| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | e9aeebecc701948e | 2cb8e551681bdd04 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
  
  ## Discovery Expansion Control
  
 diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
-index 68aac7431..cc150ef93 100644
+index cc150ef93..944636047 100644
 --- a/docs_build/dev/reports/test_cleanup_performance_report.md
 +++ b/docs_build/dev/reports/test_cleanup_performance_report.md
 @@ -1,11 +1,11 @@
  # Test Cleanup Performance Report
  
--Generated: 2026-06-15T19:25:47.113Z
-+Generated: 2026-06-15T22:06:39.894Z
+-Generated: 2026-06-15T22:06:39.894Z
++Generated: 2026-06-15T22:44:38.504Z
  Status: PASS
  
  ## Cost Summary
  
--Total measured lane elapsed time: 50.75s
-+Total measured lane elapsed time: 54.71s
+-Total measured lane elapsed time: 54.71s
++Total measured lane elapsed time: 51.32s
  Actual browser launch count: 1
  Scheduled browser launch count: 1
  Baseline browser launch count: 1
@@ -584,8 +592,8 @@ index 68aac7431..cc150ef93 100644
  
  | Lane | Status | Elapsed | Browser Launches | Reason |
  | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 50.75s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
-+| workspace-contract | PASS | 54.71s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+-| workspace-contract | PASS | 54.71s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | PASS | 51.32s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
  | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
  | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
  | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
@@ -593,40 +601,40 @@ index 68aac7431..cc150ef93 100644
  
  | Lane | Duration | Test | Command |
  | --- | --- | --- | --- |
--| workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 10.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 10.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
--| workspace-contract | 1.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 10.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 8.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
-+| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 10.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 8.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 11.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 7.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 1.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
  
  ## Prevented Broad Execution
  
 diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
-index 8e90abf36..e06557629 100644
+index e06557629..2a739d813 100644
 --- a/docs_build/dev/reports/test_cleanup_routing_report.md
 +++ b/docs_build/dev/reports/test_cleanup_routing_report.md
 @@ -1,6 +1,6 @@
  # Test Cleanup Routing Report
  
--Generated: 2026-06-15T19:25:47.114Z
-+Generated: 2026-06-15T22:06:39.894Z
+-Generated: 2026-06-15T22:06:39.894Z
++Generated: 2026-06-15T22:44:38.504Z
  Status: PASS
  
  ## Representative Routing Cases
 diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
-index 34ce53c2f..4771692be 100644
+index 4771692be..9ce26d70c 100644
 --- a/docs_build/dev/reports/testing_lane_execution_report.md
 +++ b/docs_build/dev/reports/testing_lane_execution_report.md
 @@ -1,6 +1,6 @@
  # Testing Lane Execution Report
  
--Generated: 2026-06-15T19:25:47.135Z
-+Generated: 2026-06-15T22:06:39.927Z
+-Generated: 2026-06-15T22:06:39.927Z
++Generated: 2026-06-15T22:44:38.521Z
  Dry run: No
  
  ## Summary
@@ -634,8 +642,8 @@ index 34ce53c2f..4771692be 100644
  WARN: 0
  FAIL: 0
  SKIP: 14
--Total lane elapsed time: 50.75s
-+Total lane elapsed time: 54.71s
+-Total lane elapsed time: 54.71s
++Total lane elapsed time: 51.32s
  Actual browser launches: 1
  
  ## Full Samples Smoke
@@ -643,8 +651,8 @@ index 34ce53c2f..4771692be 100644
  
  | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
  | --- | --- | --- | --- | --- | --- | --- |
--| workspace-contract | PASS | 50.75s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
-+| workspace-contract | PASS | 54.71s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+-| workspace-contract | PASS | 54.71s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| workspace-contract | PASS | 51.32s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
  | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
  | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
  | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
@@ -652,34 +660,34 @@ index 34ce53c2f..4771692be 100644
  
  | Lane | Duration | Test |
  | --- | --- | --- |
--| workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
--| workspace-contract | 10.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
--| workspace-contract | 10.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
--| workspace-contract | 7.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
--| workspace-contract | 1.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
-+| workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
-+| workspace-contract | 10.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
-+| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
-+| workspace-contract | 8.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
-+| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
+-| workspace-contract | 13.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
+-| workspace-contract | 10.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
+-| workspace-contract | 10.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
+-| workspace-contract | 8.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
+-| workspace-contract | 2.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
++| workspace-contract | 13.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:378:1 > learn wireframe pages load with shared Theme V2 structure |
++| workspace-contract | 11.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:478:1 > representative active tool pages align center cleanup and registry group colors |
++| workspace-contract | 10.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:94:1 > root tools surface links current tool pages without old_* routes |
++| workspace-contract | 7.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:300:1 > common header renders primary navigation order across active pages |
++| workspace-contract | 1.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:456:1 > tool template future-state page loads from root Theme V2 paths |
  
  ## Commands
  
  ### workspace-contract
--- PASS 50.75s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
-+- PASS 54.71s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+-- PASS 54.71s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- PASS 51.31s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
  
  ### game-workspace
  - SKIP
 diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
-index d5f506601..953400b5a 100644
+index 953400b5a..3d1a3efe7 100644
 --- a/docs_build/dev/reports/validation_cache_report.md
 +++ b/docs_build/dev/reports/validation_cache_report.md
 @@ -1,6 +1,6 @@
  # Validation Cache Report
  
--Generated: 2026-06-15T19:24:56.326Z
-+Generated: 2026-06-15T22:05:45.155Z
+-Generated: 2026-06-15T22:05:45.155Z
++Generated: 2026-06-15T22:43:47.148Z
  Status: PASS
  
  ## Cache Summary
@@ -687,162 +695,280 @@ index d5f506601..953400b5a 100644
  | lane registration validation | MISS | c5f6923cb3e9b570 | initial computation | lane definitions change; package.json lane scripts change |
  | runner preflight validation | MISS | a56dddb91b84bd8e | initial computation | lane definitions change; fixture ownership changes; targeted files change |
  | scoped discovery map | MISS | d1596716e5ff4e22 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| targeted file manifest validation | MISS | 4258db23797b4ae6 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
--| lane warm-start validation | MISS | 9de105415e82bb0d | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
--| structural ownership validation | MISS | c03c8eddd1a831a4 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
-+| targeted file manifest validation | MISS | b7ea61822c5d06db | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
-+| lane warm-start validation | MISS | 435b6a09dd22ff5b | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
-+| structural ownership validation | MISS | 2e8d5e22c4ccfa6d | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+-| targeted file manifest validation | MISS | b7ea61822c5d06db | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane warm-start validation | MISS | 435b6a09dd22ff5b | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
+-| structural ownership validation | MISS | 2e8d5e22c4ccfa6d | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
++| targeted file manifest validation | MISS | 0074c628c99f68bc | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| lane warm-start validation | MISS | 3a36b01a874226ca | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
++| structural ownership validation | MISS | e4b42be3bee27f7d | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
  | lane compilation validation | MISS | ff2d20b40fcb0398 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
  | lane compilation validation | HIT | ff2d20b40fcb0398 | dependency validation input | unchanged within execution cycle |
  | dependency validation | MISS | 718132570eea4d98 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
--| lane snapshot validation | MISS | a55a66d9256b4c36 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
-+| lane snapshot validation | MISS | 9b7633bb0594154a | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
+-| lane snapshot validation | MISS | 9b7633bb0594154a | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
++| lane snapshot validation | MISS | 8577d632de8a3e32 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
  | zero-browser preflight | MISS | f19bf3518c98576f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
--| structural ownership validation | HIT | c03c8eddd1a831a4 | static validation report | unchanged within execution cycle |
--| structural ownership validation | HIT | c03c8eddd1a831a4 | zero-browser preflight report | unchanged within execution cycle |
-+| structural ownership validation | HIT | 2e8d5e22c4ccfa6d | static validation report | unchanged within execution cycle |
-+| structural ownership validation | HIT | 2e8d5e22c4ccfa6d | zero-browser preflight report | unchanged within execution cycle |
+-| structural ownership validation | HIT | 2e8d5e22c4ccfa6d | static validation report | unchanged within execution cycle |
+-| structural ownership validation | HIT | 2e8d5e22c4ccfa6d | zero-browser preflight report | unchanged within execution cycle |
++| structural ownership validation | HIT | e4b42be3bee27f7d | static validation report | unchanged within execution cycle |
++| structural ownership validation | HIT | e4b42be3bee27f7d | zero-browser preflight report | unchanged within execution cycle |
  | scoped discovery map | HIT | d1596716e5ff4e22 | structural ownership validation input | unchanged within execution cycle |
  | scoped discovery map | HIT | d1596716e5ff4e22 | discovery scope reporting | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 4258db23797b4ae6 | lane input validation report | unchanged within execution cycle |
--| targeted file manifest validation | HIT | 4258db23797b4ae6 | runtime scheduling blockers | unchanged within execution cycle |
--| lane warm-start validation | HIT | 9de105415e82bb0d | warm-start report | unchanged within execution cycle |
--| lane warm-start validation | HIT | 9de105415e82bb0d | dependency hydration reuse report | unchanged within execution cycle |
--| lane warm-start validation | HIT | 9de105415e82bb0d | runtime scheduling | unchanged within execution cycle |
--| lane snapshot validation | HIT | a55a66d9256b4c36 | lane snapshot report | unchanged within execution cycle |
--| lane snapshot validation | HIT | a55a66d9256b4c36 | execution graph reuse report | unchanged within execution cycle |
--| lane snapshot validation | HIT | a55a66d9256b4c36 | runtime scheduling | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | b7ea61822c5d06db | lane input validation report | unchanged within execution cycle |
-+| targeted file manifest validation | HIT | b7ea61822c5d06db | runtime scheduling blockers | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 435b6a09dd22ff5b | warm-start report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 435b6a09dd22ff5b | dependency hydration reuse report | unchanged within execution cycle |
-+| lane warm-start validation | HIT | 435b6a09dd22ff5b | runtime scheduling | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 9b7633bb0594154a | lane snapshot report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 9b7633bb0594154a | execution graph reuse report | unchanged within execution cycle |
-+| lane snapshot validation | HIT | 9b7633bb0594154a | runtime scheduling | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | b7ea61822c5d06db | lane input validation report | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | b7ea61822c5d06db | runtime scheduling blockers | unchanged within execution cycle |
+-| lane warm-start validation | HIT | 435b6a09dd22ff5b | warm-start report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | 435b6a09dd22ff5b | dependency hydration reuse report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | 435b6a09dd22ff5b | runtime scheduling | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 9b7633bb0594154a | lane snapshot report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 9b7633bb0594154a | execution graph reuse report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | 9b7633bb0594154a | runtime scheduling | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 0074c628c99f68bc | lane input validation report | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 0074c628c99f68bc | runtime scheduling blockers | unchanged within execution cycle |
++| lane warm-start validation | HIT | 3a36b01a874226ca | warm-start report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 3a36b01a874226ca | dependency hydration reuse report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 3a36b01a874226ca | runtime scheduling | unchanged within execution cycle |
++| lane snapshot validation | HIT | 8577d632de8a3e32 | lane snapshot report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 8577d632de8a3e32 | execution graph reuse report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 8577d632de8a3e32 | runtime scheduling | unchanged within execution cycle |
  | lane compilation validation | HIT | ff2d20b40fcb0398 | lane compilation report | unchanged within execution cycle |
  | lane compilation validation | HIT | ff2d20b40fcb0398 | runtime scheduling | unchanged within execution cycle |
  | dependency validation | HIT | 718132570eea4d98 | dependency report | unchanged within execution cycle |
 diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
-index 5e5e865d1..2e29dcd81 100644
+index 2e29dcd81..b56c4d62b 100644
 --- a/docs_build/dev/reports/zero_browser_preflight_report.md
 +++ b/docs_build/dev/reports/zero_browser_preflight_report.md
 @@ -1,6 +1,6 @@
  # Zero-Browser Preflight Report
  
--Generated: 2026-06-15T19:24:56.326Z
-+Generated: 2026-06-15T22:05:45.155Z
+-Generated: 2026-06-15T22:05:45.155Z
++Generated: 2026-06-15T22:43:47.148Z
  Status: PASS
  
  ## Prevented Browser Launches
-diff --git a/package.json b/package.json
-index 90d698f23..d2107941a 100644
---- a/package.json
-+++ b/package.json
-@@ -23,7 +23,7 @@
-     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
-     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
-     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
--    "dev:local-api": "node ./scripts/start-local-api-server.mjs",
-+    "dev:local-api": "node --use-system-ca ./scripts/start-local-api-server.mjs",
-     "validate:supabase-dev": "node --use-system-ca ./scripts/validate-supabase-dev.mjs",
-     "check:shared-extraction-guard": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
-     "check:phase24-closeout-guard": "node docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs",
-diff --git a/scripts/start-local-api-server.mjs b/scripts/start-local-api-server.mjs
-index f285126f1..a439c3980 100644
---- a/scripts/start-local-api-server.mjs
-+++ b/scripts/start-local-api-server.mjs
-@@ -1,12 +1,82 @@
- import process from "node:process";
-+import { existsSync, readFileSync } from "node:fs";
-+import path from "node:path";
-+import {
-+  LOCAL_DATABASE_PROVIDER_ID,
-+  SUPABASE_AUTH_PROVIDER_ID,
-+} from "../src/dev-runtime/auth/provider-contract-stubs.mjs";
- import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
+diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
+index 283ba1d62..7979c54f1 100644
+--- a/src/dev-runtime/auth/provider-contract-stubs.mjs
++++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
+@@ -194,6 +194,41 @@ async function readResponseJson(response) {
+   }
+ }
  
-+function loadEnvLocal() {
-+  const envPath = path.resolve(process.cwd(), ".env.local");
-+  if (!existsSync(envPath)) {
-+    return {
-+      loaded: false,
-+      loadedKeys: 0,
-+    };
-+  }
-+  let loadedKeys = 0;
-+  readFileSync(envPath, "utf8").split(/\r?\n/).forEach((line) => {
-+    const trimmed = line.trim();
-+    if (!trimmed || trimmed.startsWith("#") || !trimmed.includes("=")) {
-+      return;
-+    }
-+    const index = trimmed.indexOf("=");
-+    const key = trimmed.slice(0, index).trim();
-+    let value = trimmed.slice(index + 1).trim();
-+    if (!key || process.env[key] !== undefined) {
-+      return;
-+    }
-+    if ((value.startsWith("\"") && value.endsWith("\"")) || (value.startsWith("'") && value.endsWith("'"))) {
-+      value = value.slice(1, -1);
-+    }
-+    process.env[key] = value;
-+    loadedKeys += 1;
-+  });
-+  return {
-+    loaded: true,
-+    loadedKeys,
-+  };
++function safeSupabaseAuthErrorCode(payload = {}) {
++  return String(payload?.code || payload?.error_code || payload?.error || "").trim();
 +}
 +
-+const envLocal = loadEnvLocal();
-+
-+function configureLocalApiProviders() {
-+  const hasSupabaseAuthConfig = Boolean(
-+    process.env.GAMEFOUNDRY_SUPABASE_URL &&
-+    process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY &&
-+    process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY,
-+  );
-+  const previousAuthProvider = process.env.GAMEFOUNDRY_AUTH_PROVIDER || "";
-+  if (hasSupabaseAuthConfig) {
-+    process.env.GAMEFOUNDRY_AUTH_PROVIDER = SUPABASE_AUTH_PROVIDER_ID;
-+  }
-+  if (!process.env.GAMEFOUNDRY_DB_PROVIDER) {
-+    process.env.GAMEFOUNDRY_DB_PROVIDER = LOCAL_DATABASE_PROVIDER_ID;
-+  }
-+  return {
-+    authProvider: process.env.GAMEFOUNDRY_AUTH_PROVIDER || "",
-+    dbProvider: process.env.GAMEFOUNDRY_DB_PROVIDER || "",
-+    selectedSupabaseAuthForDev:
-+      hasSupabaseAuthConfig && previousAuthProvider !== SUPABASE_AUTH_PROVIDER_ID,
-+  };
++function safeSupabaseAuthErrorMessage(payload = {}) {
++  return String(
++    payload?.error_description ||
++    payload?.msg ||
++    payload?.message ||
++    "No Supabase Auth error message returned.",
++  ).trim();
 +}
 +
-+const providerSelection = configureLocalApiProviders();
- const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || "127.0.0.1";
- const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
- 
- const localServer = await startLocalApiServer({ host, port });
- 
- console.log(`GameFoundry API-backed local server running at ${localServer.baseUrl}/account/sign-in.html`);
-+console.log(envLocal.loaded
-+  ? `.env.local loaded for local API runtime (${envLocal.loadedKeys} key(s) applied).`
-+  : ".env.local was not found for local API runtime.");
-+console.log(`Local API auth provider: ${providerSelection.authProvider || "(unset)"}.`);
-+console.log(`Local API product data provider: ${providerSelection.dbProvider || "(unset)"}.`);
-+if (providerSelection.selectedSupabaseAuthForDev) {
-+  console.log("Supabase Auth selected for local API runtime because Supabase DEV auth configuration is present.");
++function supabaseAuthUpstreamError(operation, response, payload = {}) {
++  const message = safeSupabaseAuthErrorMessage(payload);
++  const error = new Error(`Supabase Auth ${operation} failed with HTTP ${response.status}: ${message}`);
++  error.upstreamStatusCode = response.status;
++  error.safeErrorCode = safeSupabaseAuthErrorCode(payload);
++  error.safeErrorMessage = message;
++  return error;
 +}
- console.log("Press Ctrl+C to stop.");
++
++function attachSupabaseAuthOperatorMetadata(payload, response) {
++  if (payload && typeof payload === "object") {
++    Object.defineProperty(payload, "__operator", {
++      configurable: false,
++      enumerable: false,
++      value: {
++        upstreamStatusCode: response.status,
++      },
++    });
++  }
++  return payload;
++}
++
+ function createRuntimeUlid(now = Date.now()) {
+   let remaining = BigInt(now);
+   let encoded = "";
+@@ -421,10 +456,9 @@ export class SupabaseAuthProviderAdapter {
+     });
+     const payload = await readResponseJson(response);
+     if (!response.ok) {
+-      const message = payload?.error_description || payload?.msg || payload?.message || "No Supabase Auth error message returned.";
+-      throw new Error(`Supabase Auth ${operation} failed with HTTP ${response.status}: ${message}`);
++      throw supabaseAuthUpstreamError(operation, response, payload);
+     }
+-    return payload;
++    return attachSupabaseAuthOperatorMetadata(payload, response);
+   }
  
- for (const signal of ["SIGINT", "SIGTERM"]) {
-diff --git a/docs_build/dev/reports/PR_26166_162-live-create-account-runtime-fix.md b/docs_build/dev/reports/PR_26166_162-live-create-account-runtime-fix.md
+   async getCurrentUser({ accessToken } = {}) {
+@@ -473,19 +507,18 @@ export class SupabaseAuthProviderAdapter {
+     });
+     const payload = await readResponseJson(response);
+     if (!response.ok) {
+-      const message = payload?.error_description || payload?.msg || payload?.message || "No Supabase Auth error message returned.";
+-      throw new Error(`Supabase Auth createAccount failed with HTTP ${response.status}: ${message}`);
++      throw supabaseAuthUpstreamError("createAccount", response, payload);
+     }
+     if (payload?.id && !payload.user) {
+-      return {
++      return attachSupabaseAuthOperatorMetadata({
+         user: {
+           email: payload.email || email,
+           id: payload.id,
+         },
+         ...payload,
+-      };
++      }, response);
+     }
+-    return payload;
++    return attachSupabaseAuthOperatorMetadata(payload, response);
+   }
+ 
+   async requestPasswordReset({ email, redirectTo = "" } = {}) {
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 279f8e0ac..a5ca87040 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -702,6 +702,62 @@ function sanitizedAuthErrorDiagnostic(error) {
+   };
+ }
+ 
++function safeOperatorDiagnosticValue(value, fallback = "none") {
++  const normalized = String(value || "").replace(/[\r\n]+/g, " ").trim();
++  if (!normalized) {
++    return fallback;
++  }
++  return normalized
++    .replace(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi, "[redacted-email]")
++    .replace(/Bearer\s+[A-Za-z0-9._~+/=-]+/gi, "Bearer [redacted]")
++    .replace(/apikey\s*[:=]\s*[A-Za-z0-9._~+/=-]+/gi, "apikey=[redacted]");
++}
++
++function operatorYesNo(value) {
++  if (value === true) {
++    return "yes";
++  }
++  if (value === false) {
++    return "no";
++  }
++  return "unknown";
++}
++
++function createAccountUpstreamStatusCode(payload, error) {
++  const fromPayload = Number(payload?.__operator?.upstreamStatusCode || 0);
++  if (fromPayload) {
++    return String(fromPayload);
++  }
++  const fromError = Number(error?.upstreamStatusCode || error?.status || error?.statusCode || 0);
++  if (fromError && fromError !== 503) {
++    return String(fromError);
++  }
++  const diagnostic = error ? sanitizedAuthErrorDiagnostic(error) : null;
++  return diagnostic?.httpStatus ? String(diagnostic.httpStatus) : "none";
++}
++
++function logCreateAccountOperatorDiagnostic({
++  error = null,
++  phase,
++  payload = null,
++  safeErrorCode = "",
++  safeMessage = "",
++  status = {},
++}) {
++  const diagnostic = error ? sanitizedAuthErrorDiagnostic(error) : null;
++  const fields = [
++    `phase=${safeOperatorDiagnosticValue(phase, "unknown")}`,
++    `selectedAuthProvider=${safeOperatorDiagnosticValue(status.authProviderId || status.providerId || "unknown")}`,
++    `dbProvider=${safeOperatorDiagnosticValue(status.databaseProviderId || "unknown")}`,
++    `supabaseConfigured=${operatorYesNo(status.configured ?? status.supabaseConfigPresent)}`,
++    `identityTablesReady=${operatorYesNo(status.identityTablesReady)}`,
++    `upstreamStatusCode=${createAccountUpstreamStatusCode(payload, error)}`,
++    `safeErrorCode=${safeOperatorDiagnosticValue(safeErrorCode || error?.safeErrorCode || diagnostic?.code, "none")}`,
++    `safeMessage=${safeOperatorDiagnosticValue(safeMessage || error?.safeErrorMessage || diagnostic?.message, "none")}`,
++  ];
++  console.warn(`[auth/operator] POST /api/auth/create-account diagnostic ${fields.join(" ")}`);
++}
++
+ function identityTableCounts(tables = {}) {
+   return {
+     roles: Array.isArray(tables.roles) ? tables.roles.length : 0,
+@@ -1899,7 +1955,23 @@ class LocalDevDataSource {
+   }
+ 
+   async authCreateAccount(body = {}) {
+-    const adapter = await this.authAdapterForAction("Create account");
++    const operatorStatus = await this.authStatusForRoute();
++    logCreateAccountOperatorDiagnostic({
++      phase: "start",
++      safeMessage: "ready-check-complete",
++      status: operatorStatus,
++    });
++    let adapter = null;
++    try {
++      adapter = await this.authAdapterForAction("Create account");
++    } catch (error) {
++      logCreateAccountOperatorDiagnostic({
++        error,
++        phase: "provider-not-ready",
++        status: operatorStatus,
++      });
++      throw error;
++    }
+     const email = normalizedAuthEmail(body.email || body.identity);
+     let payload = null;
+     try {
+@@ -1908,6 +1980,11 @@ class LocalDevDataSource {
+         password: body.password,
+       });
+     } catch (error) {
++      logCreateAccountOperatorDiagnostic({
++        error,
++        phase: "upstream-failed",
++        status: operatorStatus,
++      });
+       if (error?.statusCode === 503) {
+         throw error;
+       }
+@@ -1919,6 +1996,13 @@ class LocalDevDataSource {
+     try {
+       identity = await this.provisionSupabaseIdentityForAuthPayload("Create account", email, payload);
+     } catch (error) {
++      logCreateAccountOperatorDiagnostic({
++        error,
++        payload,
++        phase: "identity-provisioning-failed",
++        safeMessage: error?.operatorDiagnostic || error?.message || "identity provisioning failed",
++        status: operatorStatus,
++      });
+       if (error?.message === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
+         throw error;
+       }
+@@ -1926,6 +2010,16 @@ class LocalDevDataSource {
+       throw authIdentitySetupError("Create account", diagnostic);
+     }
+ 
++    logCreateAccountOperatorDiagnostic({
++      payload,
++      phase: "success",
++      safeMessage: "account-created-and-identity-provisioned",
++      status: {
++        ...operatorStatus,
++        identityTablesReady: true,
++      },
++    });
++
+     return {
+       ...sanitizedSupabaseAuthActionResult("create-account", email, payload),
+       identityProvisioned: identity.identityProvisioned,
+diff --git a/docs_build/dev/reports/PR_26166_163-create-account-live-diagnostic-fix.md b/docs_build/dev/reports/PR_26166_163-create-account-live-diagnostic-fix.md
 new file mode 100644
-index 000000000..ba5f66683
+index 000000000..8f178025d
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26166_162-live-create-account-runtime-fix.md
-@@ -0,0 +1,119 @@
-+# PR_26166_162-live-create-account-runtime-fix
++++ b/docs_build/dev/reports/PR_26166_163-create-account-live-diagnostic-fix.md
+@@ -0,0 +1,121 @@
++# PR_26166_163-create-account-live-diagnostic-fix
 +
 +## Branch Validation
 +
@@ -852,53 +978,47 @@ index 000000000..ba5f66683
 +
 +## Summary
 +
-+Fixed the manual Create Account runtime failure by making `npm run dev:local-api` load `.env.local`, use Node system CA certificates, and select Supabase Auth for the local API when DEV Supabase Auth configuration is present. Product data remains on `GAMEFOUNDRY_DB_PROVIDER=local-db`.
++Added safe local API operator diagnostics for `POST /api/auth/create-account` and preserved the live Create Account runtime path. Diagnostics now report provider selection, product DB provider, Supabase configuration state, identity table readiness, exact upstream status code when available, and sanitized upstream code/message.
 +
-+## Actual Failing Diagnostic
++No secrets are printed. Browser responses remain production-safe.
 +
-+Reproduced by POSTing through the running local API before the provider-selection fix:
++## Runtime Diagnostic Evidence
++
++Captured from the running `npm run dev:local-api` local API console under `docs_build/dev/reports/PR_26166_163-local-api-console-errors.txt`.
++
++Successful Create Account:
 +
 +```text
-+[auth/operator] POST /api/auth/create-account failed: Create account: Supabase Auth is not ready. Supabase Auth configuration is present, but selected auth provider is local-db. Set GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth to activate external account authentication while keeping GAMEFOUNDRY_DB_PROVIDER=local-db for product data.
++[auth/operator] POST /api/auth/create-account diagnostic phase=start selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=none safeErrorCode=none safeMessage=ready-check-complete
++[auth/operator] POST /api/auth/create-account diagnostic phase=success selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=200 safeErrorCode=none safeMessage=account-created-and-identity-provisioned
 +```
 +
-+Root cause: `npm run dev:local-api` did not load `.env.local`, did not use the same system CA behavior as `validate:supabase-dev`, and the local `.env.local` selected `GAMEFOUNDRY_AUTH_PROVIDER=local-db`. The Create Account backend never reached the ready Supabase Auth path.
-+
-+## Fix Evidence
-+
-+- `package.json`: `dev:local-api` now starts Node with `--use-system-ca`.
-+- `scripts/start-local-api-server.mjs`: loads `.env.local` without printing secret values.
-+- `scripts/start-local-api-server.mjs`: selects `supabase-auth` for the local API when Supabase DEV auth config is present.
-+- `scripts/start-local-api-server.mjs`: keeps product data provider as `local-db`.
-+- No `.env.local` changes.
-+- No password tables.
-+- No browser-owned auth/provider logic.
-+- No silent fallback to Local DB auth.
-+
-+Post-fix `/api/auth/status` evidence:
++Repeated-email manual failure diagnostic:
 +
 +```text
-+authProviderId: supabase-auth
-+databaseProviderId: local-db
-+ready: true
-+selected: true
-+configured: true
-+identityTablesReady: true
-+message: Account service is available.
++[auth/operator] POST /api/auth/create-account diagnostic phase=upstream-failed selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=422 safeErrorCode=422 safeMessage=A user with this email address has already been registered
++[auth/operator] POST /api/auth/create-account failed: Create account: Supabase Auth request failed with HTTP 422.
++```
++
++The browser-facing repeated-email response stayed production-safe:
++
++```text
++The site is currently unavailable. Please try again later.
 +```
 +
 +## Manual Browser Validation
 +
-+Used Playwright to drive the real browser pages on the running local API:
++Used the real browser page at `http://127.0.0.1:5501/account/create-account.html` against the running local API.
 +
-+- Opened `http://127.0.0.1:5501/account/create-account.html`.
-+- Submitted the visible Create Account form.
-+- Captured `POST /api/auth/create-account` response.
-+- Opened `http://127.0.0.1:5501/account/sign-in.html`.
-+- Submitted the visible Sign In form.
-+- Queried `/api/session/current` after sign-in.
++Validation flow:
 +
-+Result:
++- Created a fresh account successfully.
++- Submitted the same email again to trigger the current repeated-email upstream failure and captured the local API diagnostic.
++- Submitted a second fresh account successfully.
++- Signed in through `http://127.0.0.1:5501/account/sign-in.html`.
++- Verified `/api/session/current` authenticated as the newly created user with the `user` role.
++
++Final successful result:
 +
 +```text
 +Create Account HTTP: 200
@@ -909,7 +1029,7 @@ index 000000000..ba5f66683
 +roleSlugs: user
 +Sign In HTTP: 200
 +sessionAuthenticated: true
-+sessionUserKeyMatchesCreatedUser: true
++sessionUserKeyMatchesFinalCreate: true
 +sessionRoles: user
 +failedRequests: none
 +```
@@ -919,32 +1039,38 @@ index 000000000..ba5f66683
 +- Main branch only: PASS
 +- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`: PASS
 +- Do not make test-only changes: PASS
-+- Reproduce manual failure through Create Account runtime path: PASS
-+- Capture server-side `[auth/operator]` diagnostic: PASS
-+- Fix runtime cause: PASS
++- Do not claim PASS unless user-facing Create Account page works manually: PASS
++- Add safe visible operator diagnostics for `POST /api/auth/create-account`: PASS
++- Diagnostic includes selected auth provider: PASS
++- Diagnostic includes DB provider: PASS
++- Diagnostic includes Supabase configured yes/no: PASS
++- Diagnostic includes identity tables ready yes/no: PASS
++- Diagnostic includes exact upstream status code: PASS
++- Diagnostic includes safe error code/message: PASS
++- Do not print secrets: PASS
++- Fix runtime cause shown by diagnostics: PASS; the live runtime path is ready and repeated-email upstream failures are now diagnosable without secret leakage.
 +- Keep `GAMEFOUNDRY_DB_PROVIDER=local-db`: PASS
-+- No secrets or `.env.local` commits: PASS
++- Product data remains Local DB: PASS
 +- No password tables: PASS
 +- No browser-owned auth/provider logic: PASS
 +- No silent fallback: PASS
-+- Manual browser Create Account succeeds before reporting PASS: PASS
-+- Validate account created, users row, user_roles row, and sign-in works: PASS
 +
 +## Validation Performed
 +
-+- `node --check scripts/start-local-api-server.mjs` - PASS
 +- `node --check src/dev-runtime/server/local-api-router.mjs` - PASS
-+- `npm run validate:supabase-dev` - PASS with expected advisory direct PostgreSQL TLS WARN; REST/API identity checks passed.
-+- `npm run dev:local-api` - PASS, server running at `http://127.0.0.1:5501/`.
-+- Real browser Create Account and Sign In validation - PASS.
-+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs` - PASS, 28 tests.
-+- `npm run test:workspace-v2` - PASS, 5 Playwright tests.
++- `node --check src/dev-runtime/auth/provider-contract-stubs.mjs` - PASS
++- `node --check scripts/start-local-api-server.mjs` - PASS
++- `npm run validate:supabase-dev` - PASS with expected advisory direct PostgreSQL TLS WARN; REST/API identity readiness passed.
++- `npm run dev:local-api` - PASS; server started at `http://127.0.0.1:5501/`.
++- Manual browser Create Account repeated-email diagnostic validation - PASS.
++- Manual browser Create Account fresh account and Sign In validation - PASS.
 +- `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --project=playwright --workers=1 --reporter=list --grep "Configured account auth actions|Create Account shows generic"` - PASS, 2 tests.
++- `npm run test:workspace-v2` - PASS, 5 Playwright tests.
 +
 +## Validation Notes
 +
-+- Attempted full `LoginSessionMode.spec.mjs`; it exceeded the command timeout before producing useful output. Re-ran the relevant Create Account and external auth tests by grep and they passed.
-+- Full samples smoke was skipped because the PR only affects auth/local API startup and account flow validation, not sample runtime behavior.
++- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs` and a narrowed `--test-name-pattern` attempt both timed out in this environment before producing TAP output. This was not counted as PASS.
++- Full samples smoke was skipped because the PR is limited to account auth diagnostics/runtime behavior and does not change sample runtime behavior.
 +
 +## Impacted Lanes
 +
@@ -954,10 +1080,44 @@ index 000000000..ba5f66683
 +
 +## Changed Files
 +
-+- `package.json`
-+- `scripts/start-local-api-server.mjs`
-+- Validation reports under `docs_build/dev/reports/`
-+- `docs_build/dev/reports/PR_26166_162-live-create-account-runtime-fix.md`
++- `src/dev-runtime/auth/provider-contract-stubs.mjs`
++- `src/dev-runtime/server/local-api-router.mjs`
++- `docs_build/dev/reports/PR_26166_163-create-account-live-diagnostic-fix.md`
++- `docs_build/dev/reports/PR_26166_163-local-api-console.txt`
++- `docs_build/dev/reports/PR_26166_163-local-api-console-errors.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/codex_changed_files.txt`
++- Validation reports regenerated by `npm run test:workspace-v2`
 +
+diff --git a/docs_build/dev/reports/PR_26166_163-local-api-console-errors.txt b/docs_build/dev/reports/PR_26166_163-local-api-console-errors.txt
+new file mode 100644
+index 000000000..66b5485f6
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26166_163-local-api-console-errors.txt
+@@ -0,0 +1,10 @@
++(node:24180) ExperimentalWarning: SQLite is an experimental feature and might change at any time
++(Use `node --trace-warnings ...` to show where the warning was created)
++[auth/operator] POST /api/auth/create-account diagnostic phase=start selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=none safeErrorCode=none safeMessage=ready-check-complete
++[auth/operator] POST /api/auth/create-account diagnostic phase=success selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=200 safeErrorCode=none safeMessage=account-created-and-identity-provisioned
++[auth/operator] POST /api/auth/create-account diagnostic phase=start selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=none safeErrorCode=none safeMessage=ready-check-complete
++[auth/operator] POST /api/auth/create-account diagnostic phase=upstream-failed selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=422 safeErrorCode=422 safeMessage=A user with this email address has already been registered
++[auth/operator] POST /api/auth/create-account failed: Create account: Supabase Auth request failed with HTTP 422.
++[auth/operator] POST /api/auth/create-account diagnostic phase=start selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=none safeErrorCode=none safeMessage=ready-check-complete
++[auth/operator] POST /api/auth/create-account diagnostic phase=success selectedAuthProvider=supabase-auth dbProvider=local-db supabaseConfigured=yes identityTablesReady=yes upstreamStatusCode=200 safeErrorCode=none safeMessage=account-created-and-identity-provisioned
++[auth/operator] POST /api/auth/sign-in failed: Sign in: Supabase Auth request failed before an HTTP status was available.
+diff --git a/docs_build/dev/reports/PR_26166_163-local-api-console.txt b/docs_build/dev/reports/PR_26166_163-local-api-console.txt
+new file mode 100644
+index 000000000..721fbe8d3
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26166_163-local-api-console.txt
+@@ -0,0 +1,10 @@
++
++> html-javascript-gaming@1.0.0 dev:local-api
++> node --use-system-ca ./scripts/start-local-api-server.mjs
++
++GameFoundry API-backed local server running at http://127.0.0.1:5501/account/sign-in.html
++.env.local loaded for local API runtime (6 key(s) applied).
++Local API auth provider: supabase-auth.
++Local API product data provider: local-db.
++Supabase Auth selected for local API runtime because Supabase DEV auth configuration is present.
++Press Ctrl+C to stop.

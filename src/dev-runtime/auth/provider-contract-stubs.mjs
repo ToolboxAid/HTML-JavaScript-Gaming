@@ -194,6 +194,41 @@ async function readResponseJson(response) {
   }
 }
 
+function safeSupabaseAuthErrorCode(payload = {}) {
+  return String(payload?.code || payload?.error_code || payload?.error || "").trim();
+}
+
+function safeSupabaseAuthErrorMessage(payload = {}) {
+  return String(
+    payload?.error_description ||
+    payload?.msg ||
+    payload?.message ||
+    "No Supabase Auth error message returned.",
+  ).trim();
+}
+
+function supabaseAuthUpstreamError(operation, response, payload = {}) {
+  const message = safeSupabaseAuthErrorMessage(payload);
+  const error = new Error(`Supabase Auth ${operation} failed with HTTP ${response.status}: ${message}`);
+  error.upstreamStatusCode = response.status;
+  error.safeErrorCode = safeSupabaseAuthErrorCode(payload);
+  error.safeErrorMessage = message;
+  return error;
+}
+
+function attachSupabaseAuthOperatorMetadata(payload, response) {
+  if (payload && typeof payload === "object") {
+    Object.defineProperty(payload, "__operator", {
+      configurable: false,
+      enumerable: false,
+      value: {
+        upstreamStatusCode: response.status,
+      },
+    });
+  }
+  return payload;
+}
+
 function createRuntimeUlid(now = Date.now()) {
   let remaining = BigInt(now);
   let encoded = "";
@@ -421,10 +456,9 @@ export class SupabaseAuthProviderAdapter {
     });
     const payload = await readResponseJson(response);
     if (!response.ok) {
-      const message = payload?.error_description || payload?.msg || payload?.message || "No Supabase Auth error message returned.";
-      throw new Error(`Supabase Auth ${operation} failed with HTTP ${response.status}: ${message}`);
+      throw supabaseAuthUpstreamError(operation, response, payload);
     }
-    return payload;
+    return attachSupabaseAuthOperatorMetadata(payload, response);
   }
 
   async getCurrentUser({ accessToken } = {}) {
@@ -473,19 +507,18 @@ export class SupabaseAuthProviderAdapter {
     });
     const payload = await readResponseJson(response);
     if (!response.ok) {
-      const message = payload?.error_description || payload?.msg || payload?.message || "No Supabase Auth error message returned.";
-      throw new Error(`Supabase Auth createAccount failed with HTTP ${response.status}: ${message}`);
+      throw supabaseAuthUpstreamError("createAccount", response, payload);
     }
     if (payload?.id && !payload.user) {
-      return {
+      return attachSupabaseAuthOperatorMetadata({
         user: {
           email: payload.email || email,
           id: payload.id,
         },
         ...payload,
-      };
+      }, response);
     }
-    return payload;
+    return attachSupabaseAuthOperatorMetadata(payload, response);
   }
 
   async requestPasswordReset({ email, redirectTo = "" } = {}) {
