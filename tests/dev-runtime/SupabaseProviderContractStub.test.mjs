@@ -158,6 +158,17 @@ function startFakeSupabaseAuthServer(options = {}) {
       response.end(JSON.stringify({ ok: true }));
       return;
     }
+    if (requestUrl.pathname === "/auth/v1/admin/users") {
+      if (options.failAdminCreateAccount) {
+        response.statusCode = options.failAdminCreateAccount.status || 500;
+        response.end(JSON.stringify(options.failAdminCreateAccount.payload || { message: "Create account failed" }));
+        return;
+      }
+      if (options.adminCreateAccountPayload) {
+        response.end(JSON.stringify(options.adminCreateAccountPayload));
+        return;
+      }
+    }
     response.end(JSON.stringify({
       access_token: "fake-supabase-access-token",
       refresh_token: "fake-supabase-refresh-token",
@@ -209,6 +220,19 @@ async function postApiPayload(baseUrl, pathName, body = {}) {
   });
   const payload = await response.json();
   return { payload, status: response.status };
+}
+
+async function withCapturedConsoleWarn(callback) {
+  const originalWarn = console.warn;
+  const warnings = [];
+  console.warn = (...args) => {
+    warnings.push(args.map((arg) => String(arg)).join(" "));
+  };
+  try {
+    return await callback(warnings);
+  } finally {
+    console.warn = originalWarn;
+  }
 }
 
 function preflightCheck(snapshot, checkId) {
@@ -816,6 +840,90 @@ test("Create account provisions Supabase identity user default role and user_rol
       assert.equal(fakeSupabase.calls
         .filter((call) => call.path.startsWith("/rest/v1/"))
         .every((call) => call.headers.apikey === "test-service-role-key"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Create account provider failure returns generic browser error and logs safe operator diagnostics", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    failAdminCreateAccount: {
+      payload: { message: "User already registered" },
+      status: 422,
+    },
+    identityTables: fakeSupabaseIdentityTables(),
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      await withCapturedConsoleWarn(async (warnings) => {
+        const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
+          email: "existing.creator@example.test",
+          password: "not-stored-locally",
+        });
+        assert.equal(createAccount.status, 503);
+        assert.equal(createAccount.payload.ok, false);
+        assert.equal(createAccount.payload.error, "The site is currently unavailable. Please try again later.");
+        assert.equal(JSON.stringify(createAccount.payload).includes("User already registered"), false);
+        assert.equal(JSON.stringify(createAccount.payload).includes("existing.creator@example.test"), false);
+        assert.equal(warnings.length, 1);
+        assert.match(warnings[0], /\[auth\/operator\] POST \/api\/auth\/create-account failed:/);
+        assert.match(warnings[0], /Create account: Supabase Auth request failed with HTTP 422\./);
+        assert.equal(warnings[0].includes("User already registered"), false);
+        assert.equal(warnings[0].includes("test-service-role-key"), false);
+      });
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Create account identity provisioning failure returns support message after Auth succeeds", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    adminCreateAccountPayload: {
+      user: {
+        email: "no-identity-id@example.test",
+      },
+    },
+    identityTables: {
+      roles: [],
+      user_roles: [],
+      users: [],
+    },
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      await withCapturedConsoleWarn(async (warnings) => {
+        const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
+          email: "no-identity-id@example.test",
+          password: "not-stored-locally",
+        });
+        assert.equal(createAccount.status, 503);
+        assert.equal(createAccount.payload.ok, false);
+        assert.equal(createAccount.payload.error, "Account identity setup is incomplete. Please contact support.");
+        assert.equal(JSON.stringify(createAccount.payload).includes("no-identity-id@example.test"), false);
+        assert.equal(warnings.length, 1);
+        assert.match(warnings[0], /Create account: Supabase Auth did not return the user id and email required for identity provisioning\./);
+      });
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path.startsWith("/rest/v1/")), false);
     } finally {
       await server.close();
     }

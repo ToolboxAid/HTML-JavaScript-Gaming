@@ -1,34 +1,22 @@
 # git status --short
- M account/create-account.html
- M account/password-reset.html
- M assets/theme-v2/js/account-auth-actions.js
- M assets/theme-v2/js/gamefoundry-partials.js
- M assets/theme-v2/js/login-session.js
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/server/local-api-router.mjs
+ M tests/dev-runtime/SupabaseProviderContractStub.test.mjs
  M tests/playwright/tools/LoginSessionMode.spec.mjs
-?? docs_build/dev/reports/PR_26166_157-first-real-sign-in-validation.md
-?? docs_build/dev/reports/PR_26166_158-account-flow-error-polish.md
-?? docs_build/dev/reports/PR_26166_159-account-session-ui-state.md
-?? docs_build/dev/reports/PR_26166_160-supabase-auth-dev-uat-closeout.md
+?? docs_build/dev/reports/PR_26166_161-create-account-defect-fix.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26166_157-first-real-sign-in-validation.md
-docs_build/dev/reports/PR_26166_158-account-flow-error-polish.md
-docs_build/dev/reports/PR_26166_159-account-session-ui-state.md
-docs_build/dev/reports/PR_26166_160-supabase-auth-dev-uat-closeout.md
+docs_build/dev/reports/PR_26166_161-create-account-defect-fix.md
 
 # git diff --stat
- account/create-account.html                        |    6 +-
- account/password-reset.html                        |    6 +-
- assets/theme-v2/js/account-auth-actions.js         |    4 +
- assets/theme-v2/js/gamefoundry-partials.js         |    2 +-
- assets/theme-v2/js/login-session.js                |   20 +
- docs_build/dev/reports/codex_changed_files.txt     |   38 +-
- docs_build/dev/reports/codex_review.diff           | 1120 +++++++++++---------
- .../dev/reports/coverage_changed_js_guardrail.txt  |    5 +
- .../dev/reports/playwright_v8_coverage_report.txt  |   27 +-
- tests/playwright/tools/LoginSessionMode.spec.mjs   |  129 ++-
- 10 files changed, 788 insertions(+), 569 deletions(-)
+ docs_build/dev/reports/codex_changed_files.txt     |  38 +-
+ docs_build/dev/reports/codex_review.diff           | 851 +++++++++++++--------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |  10 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  35 +-
+ src/dev-runtime/server/local-api-router.mjs        |  52 +-
+ .../SupabaseProviderContractStub.test.mjs          | 108 +++
+ tests/playwright/tools/LoginSessionMode.spec.mjs   |  80 ++
+ 7 files changed, 778 insertions(+), 396 deletions(-)

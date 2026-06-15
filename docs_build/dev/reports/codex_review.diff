@@ -1,273 +1,383 @@
-diff --git a/account/create-account.html b/account/create-account.html
-index 0f39c06a1..6aef138cc 100644
---- a/account/create-account.html
-+++ b/account/create-account.html
-@@ -5,7 +5,7 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Create Account - GameFoundryStudio</title>
--    <meta name="description" content="Create a GameFoundryStudio account through the configured account provider.">
-+    <meta name="description" content="Create a GameFoundryStudio account through the account service.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
- </head>
-@@ -17,7 +17,7 @@
-             <div class="container">
-                 <div class="kicker">Account</div>
-                 <h1>Create Account</h1>
--                <p class="lede">Create an account through the configured account provider.</p>
-+                <p class="lede">Create an account through the account service.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -28,7 +28,7 @@
-                             <div class="kicker">Account Access</div>
-                             <h2>Create Account</h2>
-                         </div>
--                        <p>Account creation is handled by the configured account provider.</p>
-+                        <p>Account creation is handled by the account service.</p>
-                         <form class="content-stack" data-account-auth-form="create-account">
-                             <label for="createAccountEmail">Email</label>
-                             <input id="createAccountEmail" name="email" type="email" autocomplete="email" data-account-auth-email>
-diff --git a/account/password-reset.html b/account/password-reset.html
-index b179e0f32..439875485 100644
---- a/account/password-reset.html
-+++ b/account/password-reset.html
-@@ -5,7 +5,7 @@
-     <meta charset="utf-8">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Password Reset - GameFoundryStudio</title>
--    <meta name="description" content="Request a GameFoundryStudio password reset through the configured account provider.">
-+    <meta name="description" content="Request a GameFoundryStudio password reset through the account service.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
- </head>
-@@ -17,7 +17,7 @@
-             <div class="container">
-                 <div class="kicker">Account</div>
-                 <h1>Password Reset</h1>
--                <p class="lede">Request a password reset through the configured account provider.</p>
-+                <p class="lede">Request a password reset through the account service.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -28,7 +28,7 @@
-                             <div class="kicker">Account Access</div>
-                             <h2>Password Reset</h2>
-                         </div>
--                        <p>Password reset email delivery is handled by the configured account provider.</p>
-+                        <p>Password reset email delivery is handled by the account service.</p>
-                         <form class="content-stack" data-account-auth-form="password-reset">
-                             <label for="passwordResetEmail">Email</label>
-                             <input id="passwordResetEmail" name="email" type="email" autocomplete="email" data-account-auth-email>
-diff --git a/assets/theme-v2/js/account-auth-actions.js b/assets/theme-v2/js/account-auth-actions.js
-index 683faacea..12b2bb9a5 100644
---- a/assets/theme-v2/js/account-auth-actions.js
-+++ b/assets/theme-v2/js/account-auth-actions.js
-@@ -4,6 +4,7 @@ const passwordField = document.querySelector("[data-account-auth-password]");
- const statusField = document.querySelector("[data-account-auth-status]");
- const submitButton = document.querySelector("[data-account-auth-submit]");
- const action = form?.getAttribute("data-account-auth-form") || "";
-+const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
- const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
- let authStatus = null;
-
-@@ -32,6 +33,9 @@ async function readJson(response, fallbackMessage) {
-     payload = null;
-   }
-   if (!response.ok || payload?.ok === false) {
-+    if (payload?.error === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
-+      throw new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
-+    }
-     throw new Error(fallbackMessage);
-   }
-   return payload?.data || {};
-diff --git a/assets/theme-v2/js/gamefoundry-partials.js b/assets/theme-v2/js/gamefoundry-partials.js
-index 5bc03a14b..7cb05a4a9 100644
---- a/assets/theme-v2/js/gamefoundry-partials.js
-+++ b/assets/theme-v2/js/gamefoundry-partials.js
-@@ -527,7 +527,7 @@
-             return {
-                 role: "user",
-                 title: "Sign-in required",
--                message: "Sign in as a local user to open Account pages."
-+                message: "Sign in with your account to open Account pages."
-             };
-         }
-         return null;
-diff --git a/assets/theme-v2/js/login-session.js b/assets/theme-v2/js/login-session.js
-index c99660aae..b18222932 100644
---- a/assets/theme-v2/js/login-session.js
-+++ b/assets/theme-v2/js/login-session.js
-@@ -4,6 +4,7 @@ const identityField = document.querySelector("[data-login-identity]");
- const passwordField = document.querySelector("[data-login-password]");
- const statusField = document.querySelector("[data-login-status]");
- const submitButton = document.querySelector("[data-login-submit]");
-+const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
- const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
- let authStatus = null;
-
-@@ -65,6 +66,9 @@ async function readJson(response, fallbackMessage) {
-     payload = null;
-   }
-   if (!response.ok || payload?.ok === false) {
-+    if (payload?.error === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
-+      throw new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
-+    }
-     throw new Error(fallbackMessage);
-   }
-   return payload?.data || {};
-@@ -79,6 +83,14 @@ async function requestAccountAuth(path, options = {}) {
-   return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
- }
-
-+async function requestCurrentSession() {
-+  const response = await fetch("/api/session/current", {
-+    headers: { "accept": "application/json" },
-+    method: "GET",
-+  });
-+  return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
-+}
-+
- function unavailableMessage(status) {
-   return status?.message || AUTH_UNAVAILABLE_MESSAGE;
- }
-@@ -95,6 +107,14 @@ async function refreshAccountAuthStatus() {
-   }
-   try {
-     authStatus = await requestAccountAuth("status");
-+    if (authStatus.ready) {
-+      const session = await requestCurrentSession();
-+      if (session?.authenticated) {
-+        setFormEnabled(false);
-+        setStatus(`Signed in as ${session.displayName || session.label || "Account"}.`);
-+        return authStatus;
-+      }
-+    }
-     setFormEnabled(Boolean(authStatus.ready));
-     setStatus(authStatus.ready ? "Account service is available." : unavailableMessage(authStatus));
-   } catch (error) {
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index e67e0ecf6..951932659 100644
+index 951932659..ef65bf601 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,9 +6,14 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,14 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
-+(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
++(59%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 38/64
++(100%) assets/theme-v2/js/account-auth-actions.js - executed lines 115/115; executed functions 13/13
++(100%) assets/theme-v2/js/login-session.js - executed lines 150/150; executed functions 17/17
 
  Guardrail warnings:
-+(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 19c4316d2..a69020bc2 100644
+index a69020bc2..ea51f42b9 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,32 +12,35 @@ Note: entry percentages use function coverage when available, otherwise line cov
+@@ -12,35 +12,34 @@ Note: entry percentages use function coverage when available, otherwise line cov
  Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
  Exercised tool entry points detected:
--(70%) Toolbox Index - exercised 3 runtime JS files
-+(0%) Toolbox Index - not exercised by this Playwright run
+-(0%) Toolbox Index - not exercised by this Playwright run
++(70%) Toolbox Index - exercised 3 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(67%) Theme V2 Shared JS - exercised 3 runtime JS files
-+(46%) Theme V2 Shared JS - exercised 2 runtime JS files
+-(46%) Theme V2 Shared JS - exercised 2 runtime JS files
++(72%) Theme V2 Shared JS - exercised 3 runtime JS files
 
  Changed runtime JS files covered:
-+(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
++(59%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 38/64
++(100%) assets/theme-v2/js/account-auth-actions.js - executed lines 115/115; executed functions 13/13
++(100%) assets/theme-v2/js/login-session.js - executed lines 150/150; executed functions 17/17
 
  Files with executed line/function counts where available:
--(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
--(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
--(45%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 10/22
--(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
--(58%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 37/64
--(75%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 77/103
--(85%) assets/theme-v2/js/account-auth-actions.js - executed lines 111/111; executed functions 11/13
--(88%) assets/theme-v2/js/login-session.js - executed lines 131/131; executed functions 14/16
--(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
-+(7%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 1/14
-+(8%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 1/12
-+(10%) assets/theme-v2/js/local-db-page-data.js - executed lines 299/299; executed functions 3/29
-+(20%) src/engine/api/local-db-api-client.js - executed lines 19/19; executed functions 1/5
-+(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
+-(7%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 1/14
+-(8%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 1/12
+-(10%) assets/theme-v2/js/local-db-page-data.js - executed lines 299/299; executed functions 3/29
+-(20%) src/engine/api/local-db-api-client.js - executed lines 19/19; executed functions 1/5
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 40/64
++(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
++(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(45%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 10/22
++(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
++(59%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 38/64
++(75%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 77/103
++(100%) assets/theme-v2/js/account-auth-actions.js - executed lines 115/115; executed functions 13/13
++(100%) assets/theme-v2/js/login-session.js - executed lines 150/150; executed functions 17/17
++(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
  Uncovered or low-coverage changed JS files:
-+(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) assets/theme-v2/js/login-session.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/login-session.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
  Changed JS files considered:
--(0%) scripts/validate-supabase-dev.mjs - changed JS file not collected as browser runtime coverage
-+(0%) assets/theme-v2/js/account-auth-actions.js - changed JS file not collected as browser runtime coverage
-+(0%) assets/theme-v2/js/login-session.js - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/account-auth-actions.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/login-session.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
-+(63%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
-index 6df1f95ed..8651ff277 100644
---- a/tests/playwright/tools/LoginSessionMode.spec.mjs
-+++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
-@@ -492,11 +492,15 @@ test("Sign-in page uses a production-safe account form without public Local DB c
-     await expect(page).toHaveURL(/\/account\/create-account\.html$/);
-     await expect(page.getByRole("heading", { name: "Create Account", level: 1 })).toBeVisible();
-     await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
-+    await expect(page.locator("main")).toContainText("account service");
-+    await expect(page.locator("main")).not.toContainText("configured account provider");
-     await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
-     await page.getByRole("link", { name: "Password Reset" }).click();
-     await expect(page).toHaveURL(/\/account\/password-reset\.html$/);
-     await expect(page.getByRole("heading", { name: "Password Reset", level: 1 })).toBeVisible();
-     await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
-+    await expect(page.locator("main")).toContainText("account service");
-+    await expect(page.locator("main")).not.toContainText("configured account provider");
+-(63%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
++(59%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
++(100%) assets/theme-v2/js/account-auth-actions.js - changed JS file with browser V8 coverage
++(100%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index 4eb33a876..279f8e0ac 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -524,6 +524,17 @@ function fail(response, statusCode, error) {
+   });
+ }
 
-     await expectNoPageFailures(failures);
-   } finally {
-@@ -528,6 +532,11 @@ test("Configured account auth actions use external Auth and resolve the app sess
-       expect(session.data.authenticated).toBe(true);
-       expect(session.data.userKey).toBe(MOCK_DB_KEYS.users.user1);
-       expect(session.data.roleSlugs).toEqual(["user"]);
-+      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
++function logSafeAuthOperatorDiagnostic(request, requestUrl, error) {
++  const route = `${request?.method || "REQUEST"} ${requestUrl?.pathname || "/api/auth"}`;
++  if (!String(requestUrl?.pathname || "").startsWith("/api/auth/")) {
++    return;
++  }
++  const diagnostic = String(error?.operatorDiagnostic || error?.message || "No operator diagnostic available.")
++    .replace(/[\r\n]+/g, " ")
++    .trim();
++  console.warn(`[auth/operator] ${route} failed: ${diagnostic}`);
++}
 +
-+      await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
-+      await expect(page.locator("[data-login-status]")).toHaveText("Signed in as User 1.");
-+      await expect(page.getByRole("button", { name: "Sign In" })).toBeDisabled();
+ async function readRequestJson(request) {
+   const chunks = [];
+   for await (const chunk of request) {
+@@ -722,7 +733,7 @@ function sanitizedSupabaseAuthActionResult(action, email, payload = {}, session
+     email: String(user.email || email || "").trim(),
+     externalAuthUserIdPresent: Boolean(user.id),
+     localDbSessionCreated: Boolean(resolvedSession),
+-    message: "Account authentication completed through the configured account provider.",
++    message: "Account authentication completed through the account service.",
+     passwordStoredLocally: false,
+     providerId: SUPABASE_AUTH_PROVIDER_ID,
+     refreshTokenExposed: false,
+@@ -1795,7 +1806,7 @@ class LocalDevDataSource {
+     const authUserId = String(authUser.id || "").trim();
+     const authEmail = normalizedAuthEmail(authUser.email || email);
+     if (!authUserId || !authEmail) {
+-      throw authUnavailableError(action, "Supabase Auth did not return the user id and email required for identity provisioning.");
++      throw authIdentitySetupError(action, "Supabase Auth did not return the user id and email required for identity provisioning.");
+     }
 
-       await page.goto(`${failures.server.baseUrl}/account/create-account.html`, { waitUntil: "networkidle" });
-       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
-@@ -564,6 +573,51 @@ test("Configured account auth actions use external Auth and resolve the app sess
+     const adapter = new SupabasePostgresProviderAdapter();
+@@ -1890,22 +1901,12 @@ class LocalDevDataSource {
+   async authCreateAccount(body = {}) {
+     const adapter = await this.authAdapterForAction("Create account");
+     const email = normalizedAuthEmail(body.email || body.identity);
++    let payload = null;
+     try {
+-      const payload = await adapter.createAccount({
++      payload = await adapter.createAccount({
+         email,
+         password: body.password,
+       });
+-      const identity = await this.provisionSupabaseIdentityForAuthPayload("Create account", email, payload);
+-      return {
+-        ...sanitizedSupabaseAuthActionResult("create-account", email, payload),
+-        identityProvisioned: identity.identityProvisioned,
+-        identityTableRecords: identity.identityTableRecords,
+-        message: "Account created. You can sign in after confirming your email.",
+-        roleCreated: identity.roleCreated,
+-        roleSlugs: identity.roleSlugs,
+-        userKey: identity.userKey,
+-        userRoleCreated: identity.userRoleCreated,
+-      };
+     } catch (error) {
+       if (error?.statusCode === 503) {
+         throw error;
+@@ -1913,6 +1914,28 @@ class LocalDevDataSource {
+       const diagnostic = sanitizedAuthErrorDiagnostic(error);
+       throw authUnavailableError("Create account", diagnostic.message);
+     }
++
++    let identity = null;
++    try {
++      identity = await this.provisionSupabaseIdentityForAuthPayload("Create account", email, payload);
++    } catch (error) {
++      if (error?.message === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
++        throw error;
++      }
++      const diagnostic = error?.operatorDiagnostic || sanitizedAuthErrorDiagnostic(error).message;
++      throw authIdentitySetupError("Create account", diagnostic);
++    }
++
++    return {
++      ...sanitizedSupabaseAuthActionResult("create-account", email, payload),
++      identityProvisioned: identity.identityProvisioned,
++      identityTableRecords: identity.identityTableRecords,
++      message: "Account created. You can sign in after confirming your email.",
++      roleCreated: identity.roleCreated,
++      roleSlugs: identity.roleSlugs,
++      userKey: identity.userKey,
++      userRoleCreated: identity.userRoleCreated,
++    };
+   }
+
+   async authPasswordReset(body = {}, redirectTo = "") {
+@@ -2804,6 +2827,7 @@ export function createLocalApiRouter() {
+       fail(response, 404, `Unknown API route: ${request.method} ${requestUrl.pathname}.`);
+       return true;
+     } catch (error) {
++      logSafeAuthOperatorDiagnostic(request, requestUrl, error);
+       fail(response, error?.statusCode || 500, error);
+       return true;
+     }
+diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+index fcdea2366..b3ea69394 100644
+--- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
++++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+@@ -158,6 +158,17 @@ function startFakeSupabaseAuthServer(options = {}) {
+       response.end(JSON.stringify({ ok: true }));
+       return;
+     }
++    if (requestUrl.pathname === "/auth/v1/admin/users") {
++      if (options.failAdminCreateAccount) {
++        response.statusCode = options.failAdminCreateAccount.status || 500;
++        response.end(JSON.stringify(options.failAdminCreateAccount.payload || { message: "Create account failed" }));
++        return;
++      }
++      if (options.adminCreateAccountPayload) {
++        response.end(JSON.stringify(options.adminCreateAccountPayload));
++        return;
++      }
++    }
+     response.end(JSON.stringify({
+       access_token: "fake-supabase-access-token",
+       refresh_token: "fake-supabase-refresh-token",
+@@ -211,6 +222,19 @@ async function postApiPayload(baseUrl, pathName, body = {}) {
+   return { payload, status: response.status };
+ }
+
++async function withCapturedConsoleWarn(callback) {
++  const originalWarn = console.warn;
++  const warnings = [];
++  console.warn = (...args) => {
++    warnings.push(args.map((arg) => String(arg)).join(" "));
++  };
++  try {
++    return await callback(warnings);
++  } finally {
++    console.warn = originalWarn;
++  }
++}
++
+ function preflightCheck(snapshot, checkId) {
+   return snapshot.supabasePreflight.checks.find((check) => check.id === checkId);
+ }
+@@ -823,6 +847,90 @@ test("Create account provisions Supabase identity user default role and user_rol
    await fakeSupabase.close();
  });
 
-+test("Account auth actions show actionable identity setup failures without exposing provider details", async ({ page }) => {
-+  const timestamp = "2026-06-15T00:00:00.000Z";
++test("Create account provider failure returns generic browser error and logs safe operator diagnostics", async () => {
 +  const fakeSupabase = await startFakeSupabaseAuthServer({
++    failAdminCreateAccount: {
++      payload: { message: "User already registered" },
++      status: 422,
++    },
++    identityTables: fakeSupabaseIdentityTables(),
++  });
++  await withEnv({
++    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
++    GAMEFOUNDRY_DB_PROVIDER: "local-db",
++    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
++    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
++    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
++  }, async () => {
++    const server = await startApiServer();
++    try {
++      await withCapturedConsoleWarn(async (warnings) => {
++        const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
++          email: "existing.creator@example.test",
++          password: "not-stored-locally",
++        });
++        assert.equal(createAccount.status, 503);
++        assert.equal(createAccount.payload.ok, false);
++        assert.equal(createAccount.payload.error, "The site is currently unavailable. Please try again later.");
++        assert.equal(JSON.stringify(createAccount.payload).includes("User already registered"), false);
++        assert.equal(JSON.stringify(createAccount.payload).includes("existing.creator@example.test"), false);
++        assert.equal(warnings.length, 1);
++        assert.match(warnings[0], /\[auth\/operator\] POST \/api\/auth\/create-account failed:/);
++        assert.match(warnings[0], /Create account: Supabase Auth request failed with HTTP 422\./);
++        assert.equal(warnings[0].includes("User already registered"), false);
++        assert.equal(warnings[0].includes("test-service-role-key"), false);
++      });
++      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
++    } finally {
++      await server.close();
++    }
++  });
++  await fakeSupabase.close();
++});
++
++test("Create account identity provisioning failure returns support message after Auth succeeds", async () => {
++  const fakeSupabase = await startFakeSupabaseAuthServer({
++    adminCreateAccountPayload: {
++      user: {
++        email: "no-identity-id@example.test",
++      },
++    },
 +    identityTables: {
-+      roles: [{
-+        createdAt: timestamp,
-+        createdBy: MOCK_DB_KEYS.users.admin,
-+        isActive: true,
-+        key: MOCK_DB_KEYS.roles.user,
-+        name: "User",
-+        roleSlug: "user",
-+        updatedAt: timestamp,
-+        updatedBy: MOCK_DB_KEYS.users.admin,
-+      }],
++      roles: [],
++      user_roles: [],
++      users: [],
++    },
++  });
++  await withEnv({
++    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
++    GAMEFOUNDRY_DB_PROVIDER: "local-db",
++    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
++    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
++    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
++  }, async () => {
++    const server = await startApiServer();
++    try {
++      await withCapturedConsoleWarn(async (warnings) => {
++        const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
++          email: "no-identity-id@example.test",
++          password: "not-stored-locally",
++        });
++        assert.equal(createAccount.status, 503);
++        assert.equal(createAccount.payload.ok, false);
++        assert.equal(createAccount.payload.error, "Account identity setup is incomplete. Please contact support.");
++        assert.equal(JSON.stringify(createAccount.payload).includes("no-identity-id@example.test"), false);
++        assert.equal(warnings.length, 1);
++        assert.match(warnings[0], /Create account: Supabase Auth did not return the user id and email required for identity provisioning\./);
++      });
++      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users"), true);
++      assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path.startsWith("/rest/v1/")), false);
++    } finally {
++      await server.close();
++    }
++  });
++  await fakeSupabase.close();
++});
++
+ test("Supabase sign in fails visibly when the Auth user has no app identity row", async () => {
+   const fakeSupabase = await startFakeSupabaseAuthServer({
+     identityTables: {
+diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
+index 8651ff277..068092630 100644
+--- a/tests/playwright/tools/LoginSessionMode.spec.mjs
++++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
+@@ -145,6 +145,17 @@ async function startFakeSupabaseAuthServer(options = {}) {
+       response.end(JSON.stringify({ ok: true }));
+       return;
+     }
++    if (requestUrl.pathname === "/auth/v1/admin/users") {
++      if (options.failAdminCreateAccount) {
++        response.statusCode = options.failAdminCreateAccount.status || 500;
++        response.end(JSON.stringify(options.failAdminCreateAccount.payload || { message: "Create account failed" }));
++        return;
++      }
++      if (options.adminCreateAccountPayload) {
++        response.end(JSON.stringify(options.adminCreateAccountPayload));
++        return;
++      }
++    }
+     response.end(JSON.stringify({
+       access_token: "browser-test-access-token",
+       refresh_token: "browser-test-refresh-token",
+@@ -618,6 +629,75 @@ test("Account auth actions show actionable identity setup failures without expos
+   await fakeSupabase.close();
+ });
+
++test("Create Account shows generic provider failure and support message for identity provisioning failure", async ({ page }) => {
++  const providerFailureSupabase = await startFakeSupabaseAuthServer({
++    failAdminCreateAccount: {
++      payload: { message: "User already registered" },
++      status: 422,
++    },
++    identityTables: fakeSupabaseIdentityTables(),
++  });
++  await withSupabaseEnv({
++    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
++    GAMEFOUNDRY_DB_PROVIDER: "local-db",
++    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
++    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
++    GAMEFOUNDRY_SUPABASE_URL: providerFailureSupabase.baseUrl,
++  }, async () => {
++    const failures = await openRepoPage(page, "/account/create-account.html");
++    try {
++      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
++      await page.getByLabel("Email").fill("existing@example.test");
++      await page.getByLabel("Password").fill("not-stored-locally");
++      await page.getByRole("button", { name: "Create Account" }).click();
++      await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
++      await expect(page.locator("main")).not.toContainText("User already registered");
++      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/create-account"))).toHaveLength(1);
++      expect(failures.pageErrors).toEqual([]);
++      expect(failures.consoleErrors.filter((entry) => !entry.includes("503"))).toEqual([]);
++    } finally {
++      await closeWithCoverage(page, failures);
++    }
++  });
++  await providerFailureSupabase.close();
++
++  const identityFailureSupabase = await startFakeSupabaseAuthServer({
++    adminCreateAccountPayload: {
++      user: {
++        email: "missing-identity@example.test",
++      },
++    },
++    identityTables: {
++      roles: [],
 +      user_roles: [],
 +      users: [],
 +    },
@@ -277,118 +387,29 @@ index 6df1f95ed..8651ff277 100644
 +    GAMEFOUNDRY_DB_PROVIDER: "local-db",
 +    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
 +    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
-+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
++    GAMEFOUNDRY_SUPABASE_URL: identityFailureSupabase.baseUrl,
 +  }, async () => {
-+    const failures = await openRepoPage(page, "/account/sign-in.html");
-+
++    const failures = await openRepoPage(page, "/account/create-account.html");
 +    try {
-+      await expect(page.locator("[data-login-status]")).toHaveText("Account service is available.");
-+      await page.getByLabel("Email").fill("user1@example.invalid");
++      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
++      await page.getByLabel("Email").fill("missing-identity@example.test");
 +      await page.getByLabel("Password").fill("not-stored-locally");
-+      await page.getByRole("button", { name: "Sign In" }).click();
-+      await expect(page.locator("[data-login-status]")).toHaveText("Account identity setup is incomplete. Please contact support.");
-+      await expect(page.locator("main")).not.toContainText("Supabase");
-+      await expect(page.locator("main")).not.toContainText("DEV");
-+      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/sign-in"))).toHaveLength(1);
++      await page.getByRole("button", { name: "Create Account" }).click();
++      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account identity setup is incomplete. Please contact support.");
++      await expect(page.locator("main")).not.toContainText("missing-identity@example.test");
++      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/create-account"))).toHaveLength(1);
 +      expect(failures.pageErrors).toEqual([]);
 +      expect(failures.consoleErrors.filter((entry) => !entry.includes("503"))).toEqual([]);
 +    } finally {
 +      await closeWithCoverage(page, failures);
 +    }
 +  });
-+  await fakeSupabase.close();
++  await identityFailureSupabase.close();
 +});
 +
  test("Protected pages block direct URL access without the required Local session role", async ({ page }) => {
    let failures = await openRepoPage(page, "/admin/site-settings.html", {
      sessionUserKey: "",
-@@ -863,45 +917,52 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
- });
-
- test("Account logout clears only the current session and blocks protected pages", async ({ page }) => {
--  const failures = await openRepoPage(page, "/account/profile.html", {
--    seedStandalone: true,
--    sessionUserKey: MOCK_DB_KEYS.users.user1,
--  });
--
--  try {
--    await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
--    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
--    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
--    await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
--    await page.locator("[data-account-logout]").click();
--    await expect(page.locator("[data-session-access-blocked='user']")).toBeVisible();
--    await expect(page.getByRole("heading", { name: "Sign-in required", level: 1 })).toBeVisible();
--    await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
--    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
--    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
--
--    const storedUsers = await page.evaluate(async () => {
--      const snapshot = await fetch("/api/local-db/snapshot").then((response) => response.json());
--      return (snapshot.data.tables.users || []).map((user) => user.displayName);
-+  await withSupabaseEnv({
-+    GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
-+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
-+  }, async () => {
-+    const failures = await openRepoPage(page, "/account/profile.html", {
-+      seedStandalone: true,
-+      sessionUserKey: MOCK_DB_KEYS.users.user1,
-     });
--    expect(storedUsers).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ admin"]));
--    expect(storedUsers).not.toContain("Guest");
--    expect(storedUsers).toHaveLength(4);
-
--    const directPage = await page.context().newPage();
-     try {
--      await directPage.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
--      await expect(directPage.locator("[data-session-access-blocked='user']")).toBeVisible();
--      await directPage.goto(`${failures.server.baseUrl}/admin/site-settings.html`, { waitUntil: "networkidle" });
--      await expect(directPage.locator("[data-session-access-blocked='admin']")).toBeVisible();
-+      await expect(page.locator("[data-session-access-blocked]")).toHaveCount(0);
-+      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("User 1");
-+      await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).not.toHaveAttribute("hidden", "");
-+      await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
-+      await page.locator("[data-account-logout]").click();
-+      await expect(page.locator("[data-session-access-blocked='user']")).toBeVisible();
-+      await expect(page.getByRole("heading", { name: "Sign-in required", level: 1 })).toBeVisible();
-+      await expect(page.locator("main")).toContainText("Sign in with your account to open Account pages.");
-+      await expect(page.locator("main")).not.toContainText("local user");
-+      await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
-+      await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='account']) > .sub-menu")).toBeHidden();
-+      await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
-+
-+      const storedUsers = await page.evaluate(async () => {
-+        const snapshot = await fetch("/api/local-db/snapshot").then((response) => response.json());
-+        return (snapshot.data.tables.users || []).map((user) => user.displayName);
-+      });
-+      expect(storedUsers).toEqual(expect.arrayContaining(["User 1", "User 2", "User 3", "DavidQ admin"]));
-+      expect(storedUsers).not.toContain("Guest");
-+      expect(storedUsers).toHaveLength(4);
-+
-+      const directPage = await page.context().newPage();
-+      try {
-+        await directPage.goto(`${failures.server.baseUrl}/account/profile.html`, { waitUntil: "networkidle" });
-+        await expect(directPage.locator("[data-session-access-blocked='user']")).toBeVisible();
-+        await directPage.goto(`${failures.server.baseUrl}/admin/site-settings.html`, { waitUntil: "networkidle" });
-+        await expect(directPage.locator("[data-session-access-blocked='admin']")).toBeVisible();
-+      } finally {
-+        await directPage.close();
-+      }
-+
-+      await expectNoPageFailures(failures);
-     } finally {
--      await directPage.close();
-+      await closeWithCoverage(page, failures);
-     }
--
--    await expectNoPageFailures(failures);
--  } finally {
--    await closeWithCoverage(page, failures);
--  }
-+  });
- });
-
- test("Guest can explore allowed Toolbox pages without persistence access", async ({ page }) => {
 diff --git a/docs_build/dev/reports/PR_26166_157-first-real-sign-in-validation.md b/docs_build/dev/reports/PR_26166_157-first-real-sign-in-validation.md
 new file mode 100644
 index 000000000..474aea99a
@@ -713,3 +734,173 @@ index 000000000..056c3dea3
 +3. Run `npm run validate:supabase-dev`.
 +4. Create a new account, sign in, confirm session/role, sign out, and request password reset.
 +5. Confirm no browser UI exposes secrets or provider-specific DEV diagnostics.
+diff --git a/docs_build/dev/reports/PR_26166_161-create-account-defect-fix.md b/docs_build/dev/reports/PR_26166_161-create-account-defect-fix.md
+new file mode 100644
+index 000000000..285e91bd4
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26166_161-create-account-defect-fix.md
+@@ -0,0 +1,164 @@
++# PR_26166_161-create-account-defect-fix
++
++## Branch Validation
++
++- Current branch: main
++- Expected branch: main
++- Branch validation: PASS
++
++## Purpose
++
++Fix and validate Create Account failure handling for live Supabase DEV account creation.
++
++## Requirement Checklist
++
++- PASS - Main branch guard passed.
++- PASS - `docs_build/dev/PROJECT_INSTRUCTIONS.md` was read first.
++- PASS - `GAMEFOUNDRY_DB_PROVIDER=local-db` remains the expected product data provider.
++- PASS - Product data remains Local DB.
++- PASS - No secrets were added.
++- PASS - `.env.local` was not modified.
++- PASS - No password tables were added.
++- PASS - No browser-owned auth/provider logic was added.
++- PASS - `POST /api/auth/create-account` was traced end-to-end.
++- PASS - Safe operator diagnostics are logged for exact backend failures.
++- PASS - Browser message remains production-safe for provider failures.
++- PASS - Supabase Auth success followed by identity provisioning failure shows account-support message.
++- PASS - Supabase Auth failure reports generic browser unavailable plus safe operator diagnostics in server logs.
++- PASS - `users`, `roles`, and `user_roles` provisioning was validated.
++
++## Implementation Notes
++
++- `src/dev-runtime/server/local-api-router.mjs`
++  - Added auth-route-only safe operator diagnostics logging.
++  - Split Create Account into provider creation and identity provisioning phases.
++  - Provider creation failures return generic unavailable to the browser and log sanitized operator diagnostics.
++  - Post-Auth identity provisioning failures return `Account identity setup is incomplete. Please contact support.`
++  - Removed remaining provider wording from the sanitized account-auth action message.
++- `tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++  - Added failure simulation for Supabase Admin Auth create-user.
++  - Added malformed successful Auth response simulation.
++  - Added tests for provider failure diagnostics and identity provisioning support message.
++- `tests/playwright/tools/LoginSessionMode.spec.mjs`
++  - Added browser Create Account checks for provider failure versus identity provisioning failure.
++
++## Changed Files
++
++- `src/dev-runtime/server/local-api-router.mjs`
++- `tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++- `tests/playwright/tools/LoginSessionMode.spec.mjs`
++- `docs_build/dev/reports/PR_26166_161-create-account-defect-fix.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++
++## Create Account Trace
++
++Successful path:
++
++1. Browser posts `/api/auth/create-account`.
++2. Backend resolves Supabase Auth readiness and Local DB product-data mode.
++3. Backend calls Supabase Admin Auth create-user with the server-only service role.
++4. Backend provisions/updates `users`.
++5. Backend ensures default `user` role exists in `roles`.
++6. Backend creates `user_roles` assignment.
++7. Backend returns production-safe Create Account success data.
++
++Provider failure path:
++
++1. Supabase Admin Auth create-user fails.
++2. Browser receives `The site is currently unavailable. Please try again later.`
++3. Server logs a safe operator diagnostic such as:
++   - `[auth/operator] POST /api/auth/create-account failed: Create account: Supabase Auth request failed with HTTP 422.`
++
++Identity provisioning failure path:
++
++1. Supabase Auth create-user succeeds.
++2. Identity provisioning cannot complete.
++3. Browser receives `Account identity setup is incomplete. Please contact support.`
++4. Server logs the safe operator diagnostic for the failed provisioning step.
++
++## Validation Lane Report
++
++- PASS - `npm run validate:supabase-dev`
++  - Overall Result: PASS.
++  - Direct database connection remains WARN for `SELF_SIGNED_CERT_IN_CHAIN`; REST/API identity readiness passed.
++- PASS - changed-file syntax checks:
++  - `node --check src/dev-runtime/server/local-api-router.mjs`
++  - `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++  - `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
++  - `node --check assets/theme-v2/js/account-auth-actions.js`
++  - `node --check assets/theme-v2/js/login-session.js`
++- PASS - `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
++  - 28 passed, 0 failed.
++- PASS - targeted Create Account Playwright validation:
++  - `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --grep "Sign-in page uses|Configured account auth actions|Account auth actions show actionable identity setup|Create Account shows generic provider failure" --reporter=list`
++  - 4 passed, 0 failed.
++- PASS - live Supabase DEV Create Account probe.
++- PASS - `git diff --check`.
++
++## Live Supabase DEV Evidence
++
++Sanitized live Create Account probe:
++
++```json
++{
++  "authStatus": {
++    "status": 200,
++    "ready": true,
++    "identityTablesReady": true,
++    "productDataProvider": "local-db"
++  },
++  "createAccount": {
++    "status": 200,
++    "identityProvisioned": true,
++    "identityTableRecords": {
++      "roles": 1,
++      "user_roles": 5,
++      "users": 5
++    },
++    "roleCreated": false,
++    "userRoleCreated": true,
++    "roleSlugs": ["user"],
++    "userKeyLooksLikeUlid": true
++  },
++  "signIn": {
++    "status": 200,
++    "sessionResolved": true,
++    "roleSlugs": ["user"]
++  },
++  "session": {
++    "status": 200,
++    "authenticated": true,
++    "roleSlugs": ["user"],
++    "userKeyLooksLikeUlid": true
++  }
++}
++```
++
++## Playwright V8 Coverage
++
++- Artifact: `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- Result: PASS/WARN.
++- `assets/theme-v2/js/account-auth-actions.js`: 100% advisory V8 function coverage.
++- `assets/theme-v2/js/login-session.js`: 100% advisory V8 function coverage.
++- `src/dev-runtime/server/local-api-router.mjs`: WARN because browser V8 coverage does not collect Node server modules; covered by provider contract tests.
++
++## Skipped Lanes
++
++- samples: SKIP - full samples smoke was explicitly out of scope.
++- product DB migration: SKIP - product data must remain Local DB.
++- full workspace suite: SKIP - targeted Create Account/auth validation was requested.
++
++## Manual Validation Notes
++
++1. Run `npm run validate:supabase-dev`.
++2. Start local API runtime with Supabase Auth configured and `GAMEFOUNDRY_DB_PROVIDER=local-db`.
++3. Open `account/create-account.html`.
++4. Create a new account.
++5. Confirm the page shows the account-created success message.
++6. Sign in with the new account.
++7. Confirm `/api/session/current` returns authenticated with the `user` role.
++8. For provider failures, confirm the browser shows generic unavailable while server logs a safe `[auth/operator]` diagnostic.
++9. For identity provisioning failures, confirm the browser shows the account-support message.

@@ -524,6 +524,17 @@ function fail(response, statusCode, error) {
   });
 }
 
+function logSafeAuthOperatorDiagnostic(request, requestUrl, error) {
+  const route = `${request?.method || "REQUEST"} ${requestUrl?.pathname || "/api/auth"}`;
+  if (!String(requestUrl?.pathname || "").startsWith("/api/auth/")) {
+    return;
+  }
+  const diagnostic = String(error?.operatorDiagnostic || error?.message || "No operator diagnostic available.")
+    .replace(/[\r\n]+/g, " ")
+    .trim();
+  console.warn(`[auth/operator] ${route} failed: ${diagnostic}`);
+}
+
 async function readRequestJson(request) {
   const chunks = [];
   for await (const chunk of request) {
@@ -722,7 +733,7 @@ function sanitizedSupabaseAuthActionResult(action, email, payload = {}, session 
     email: String(user.email || email || "").trim(),
     externalAuthUserIdPresent: Boolean(user.id),
     localDbSessionCreated: Boolean(resolvedSession),
-    message: "Account authentication completed through the configured account provider.",
+    message: "Account authentication completed through the account service.",
     passwordStoredLocally: false,
     providerId: SUPABASE_AUTH_PROVIDER_ID,
     refreshTokenExposed: false,
@@ -1795,7 +1806,7 @@ class LocalDevDataSource {
     const authUserId = String(authUser.id || "").trim();
     const authEmail = normalizedAuthEmail(authUser.email || email);
     if (!authUserId || !authEmail) {
-      throw authUnavailableError(action, "Supabase Auth did not return the user id and email required for identity provisioning.");
+      throw authIdentitySetupError(action, "Supabase Auth did not return the user id and email required for identity provisioning.");
     }
 
     const adapter = new SupabasePostgresProviderAdapter();
@@ -1890,22 +1901,12 @@ class LocalDevDataSource {
   async authCreateAccount(body = {}) {
     const adapter = await this.authAdapterForAction("Create account");
     const email = normalizedAuthEmail(body.email || body.identity);
+    let payload = null;
     try {
-      const payload = await adapter.createAccount({
+      payload = await adapter.createAccount({
         email,
         password: body.password,
       });
-      const identity = await this.provisionSupabaseIdentityForAuthPayload("Create account", email, payload);
-      return {
-        ...sanitizedSupabaseAuthActionResult("create-account", email, payload),
-        identityProvisioned: identity.identityProvisioned,
-        identityTableRecords: identity.identityTableRecords,
-        message: "Account created. You can sign in after confirming your email.",
-        roleCreated: identity.roleCreated,
-        roleSlugs: identity.roleSlugs,
-        userKey: identity.userKey,
-        userRoleCreated: identity.userRoleCreated,
-      };
     } catch (error) {
       if (error?.statusCode === 503) {
         throw error;
@@ -1913,6 +1914,28 @@ class LocalDevDataSource {
       const diagnostic = sanitizedAuthErrorDiagnostic(error);
       throw authUnavailableError("Create account", diagnostic.message);
     }
+
+    let identity = null;
+    try {
+      identity = await this.provisionSupabaseIdentityForAuthPayload("Create account", email, payload);
+    } catch (error) {
+      if (error?.message === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
+        throw error;
+      }
+      const diagnostic = error?.operatorDiagnostic || sanitizedAuthErrorDiagnostic(error).message;
+      throw authIdentitySetupError("Create account", diagnostic);
+    }
+
+    return {
+      ...sanitizedSupabaseAuthActionResult("create-account", email, payload),
+      identityProvisioned: identity.identityProvisioned,
+      identityTableRecords: identity.identityTableRecords,
+      message: "Account created. You can sign in after confirming your email.",
+      roleCreated: identity.roleCreated,
+      roleSlugs: identity.roleSlugs,
+      userKey: identity.userKey,
+      userRoleCreated: identity.userRoleCreated,
+    };
   }
 
   async authPasswordReset(body = {}, redirectTo = "") {
@@ -2804,6 +2827,7 @@ export function createLocalApiRouter() {
       fail(response, 404, `Unknown API route: ${request.method} ${requestUrl.pathname}.`);
       return true;
     } catch (error) {
+      logSafeAuthOperatorDiagnostic(request, requestUrl, error);
       fail(response, error?.statusCode || 500, error);
       return true;
     }

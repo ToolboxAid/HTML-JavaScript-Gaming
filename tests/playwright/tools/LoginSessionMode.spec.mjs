@@ -145,6 +145,17 @@ async function startFakeSupabaseAuthServer(options = {}) {
       response.end(JSON.stringify({ ok: true }));
       return;
     }
+    if (requestUrl.pathname === "/auth/v1/admin/users") {
+      if (options.failAdminCreateAccount) {
+        response.statusCode = options.failAdminCreateAccount.status || 500;
+        response.end(JSON.stringify(options.failAdminCreateAccount.payload || { message: "Create account failed" }));
+        return;
+      }
+      if (options.adminCreateAccountPayload) {
+        response.end(JSON.stringify(options.adminCreateAccountPayload));
+        return;
+      }
+    }
     response.end(JSON.stringify({
       access_token: "browser-test-access-token",
       refresh_token: "browser-test-refresh-token",
@@ -616,6 +627,75 @@ test("Account auth actions show actionable identity setup failures without expos
     }
   });
   await fakeSupabase.close();
+});
+
+test("Create Account shows generic provider failure and support message for identity provisioning failure", async ({ page }) => {
+  const providerFailureSupabase = await startFakeSupabaseAuthServer({
+    failAdminCreateAccount: {
+      payload: { message: "User already registered" },
+      status: 422,
+    },
+    identityTables: fakeSupabaseIdentityTables(),
+  });
+  await withSupabaseEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: providerFailureSupabase.baseUrl,
+  }, async () => {
+    const failures = await openRepoPage(page, "/account/create-account.html");
+    try {
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
+      await page.getByLabel("Email").fill("existing@example.test");
+      await page.getByLabel("Password").fill("not-stored-locally");
+      await page.getByRole("button", { name: "Create Account" }).click();
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+      await expect(page.locator("main")).not.toContainText("User already registered");
+      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/create-account"))).toHaveLength(1);
+      expect(failures.pageErrors).toEqual([]);
+      expect(failures.consoleErrors.filter((entry) => !entry.includes("503"))).toEqual([]);
+    } finally {
+      await closeWithCoverage(page, failures);
+    }
+  });
+  await providerFailureSupabase.close();
+
+  const identityFailureSupabase = await startFakeSupabaseAuthServer({
+    adminCreateAccountPayload: {
+      user: {
+        email: "missing-identity@example.test",
+      },
+    },
+    identityTables: {
+      roles: [],
+      user_roles: [],
+      users: [],
+    },
+  });
+  await withSupabaseEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: identityFailureSupabase.baseUrl,
+  }, async () => {
+    const failures = await openRepoPage(page, "/account/create-account.html");
+    try {
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
+      await page.getByLabel("Email").fill("missing-identity@example.test");
+      await page.getByLabel("Password").fill("not-stored-locally");
+      await page.getByRole("button", { name: "Create Account" }).click();
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account identity setup is incomplete. Please contact support.");
+      await expect(page.locator("main")).not.toContainText("missing-identity@example.test");
+      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/create-account"))).toHaveLength(1);
+      expect(failures.pageErrors).toEqual([]);
+      expect(failures.consoleErrors.filter((entry) => !entry.includes("503"))).toEqual([]);
+    } finally {
+      await closeWithCoverage(page, failures);
+    }
+  });
+  await identityFailureSupabase.close();
 });
 
 test("Protected pages block direct URL access without the required Local session role", async ({ page }) => {
