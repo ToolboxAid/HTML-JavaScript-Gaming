@@ -79,8 +79,9 @@ async function withSupabaseEnv(nextEnv, callback) {
   }
 }
 
-async function startFakeSupabaseAuthServer() {
+async function startFakeSupabaseAuthServer(options = {}) {
   const calls = [];
+  const identityTables = options.identityTables || {};
   const server = http.createServer(async (request, response) => {
     const chunks = [];
     for await (const chunk of request) {
@@ -97,6 +98,15 @@ async function startFakeSupabaseAuthServer() {
     });
     response.statusCode = 200;
     response.setHeader("Content-Type", "application/json; charset=utf-8");
+    if (requestUrl.pathname.startsWith("/rest/v1/")) {
+      const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
+      response.end(JSON.stringify(identityTables[tableName] || []));
+      return;
+    }
+    if (requestUrl.pathname === "/auth/v1/health") {
+      response.end(JSON.stringify({ status: "ok" }));
+      return;
+    }
     if (requestUrl.pathname === "/auth/v1/recover") {
       response.end(JSON.stringify({ ok: true }));
       return;
@@ -106,7 +116,7 @@ async function startFakeSupabaseAuthServer() {
       refresh_token: "browser-test-refresh-token",
       user: {
         email: body.email || "creator@example.test",
-        id: "supabase-browser-user-id",
+        id: options.authUserId || "supabase-user-1",
       },
     }));
   });
@@ -124,6 +134,46 @@ async function startFakeSupabaseAuthServer() {
     close: async () => {
       await new Promise((resolve) => server.close(resolve));
     },
+  };
+}
+
+function fakeSupabaseIdentityTables() {
+  const timestamp = "2026-06-15T00:00:00.000Z";
+  const audit = {
+    createdAt: timestamp,
+    createdBy: MOCK_DB_KEYS.users.admin,
+    updatedAt: timestamp,
+    updatedBy: MOCK_DB_KEYS.users.admin,
+  };
+  return {
+    roles: [
+      {
+        key: MOCK_DB_KEYS.roles.user,
+        roleSlug: "user",
+        name: "User",
+        isActive: true,
+        ...audit,
+      },
+    ],
+    user_roles: [
+      {
+        key: MOCK_DB_KEYS.userRoles.user1User,
+        userKey: MOCK_DB_KEYS.users.user1,
+        roleKey: MOCK_DB_KEYS.roles.user,
+        ...audit,
+      },
+    ],
+    users: [
+      {
+        key: MOCK_DB_KEYS.users.user1,
+        displayName: "User 1",
+        email: "user1@example.invalid",
+        authProvider: "supabase-auth",
+        authProviderUserId: "supabase-user-1",
+        isActive: true,
+        ...audit,
+      },
+    ],
   };
 }
 
@@ -333,7 +383,7 @@ test("Sign-in page uses a production-safe account form without public Local DB c
   try {
     await expect(page.getByRole("heading", { name: "Sign In", level: 1 })).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expect(page.getByLabel("Email or username")).toBeVisible();
+    await expect(page.getByLabel("Email")).toBeVisible();
     await expect(page.getByLabel("Password")).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create Account" })).toHaveAttribute("href", /create-account\.html$/);
@@ -398,9 +448,9 @@ test("Sign-in page uses a production-safe account form without public Local DB c
     expect(snapshot.userNames.sort()).toEqual(["DavidQ admin", "User 1", "User 2", "User 3"].sort());
     expect(snapshot.userNames).not.toContain("Guest");
 
-    await page.getByLabel("Email or username").fill("user@example.invalid");
+    await page.getByLabel("Email").fill("user@example.invalid");
     await page.getByLabel("Password").fill("not-stored");
-    await page.getByRole("button", { name: "Sign In" }).click();
+    await expect(page.getByRole("button", { name: "Sign In" })).toBeDisabled();
     await expect(page.locator("[data-login-status]")).toHaveText("The site is currently unavailable. Please try again later.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
 
@@ -420,26 +470,30 @@ test("Sign-in page uses a production-safe account form without public Local DB c
   }
 });
 
-test("Configured account auth actions use external Auth without Local DB session fallback", async ({ page }) => {
-  const fakeSupabase = await startFakeSupabaseAuthServer();
+test("Configured account auth actions use external Auth and resolve the app session", async ({ page }) => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: fakeSupabaseIdentityTables(),
+  });
   await withSupabaseEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "local-db",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
   }, async () => {
     const failures = await openRepoPage(page, "/account/sign-in.html");
 
     try {
-      await page.getByLabel("Email or username").fill("creator@example.test");
+      await expect(page.locator("[data-login-status]")).toHaveText("Account service is available.");
+      await page.getByLabel("Email").fill("user1@example.invalid");
       await page.getByLabel("Password").fill("not-stored-locally");
       await page.getByRole("button", { name: "Sign In" }).click();
-      await expect(page.locator("[data-login-status]")).toHaveText("Account authentication completed through the configured account provider.");
+      await expect(page).toHaveURL(/\/toolbox\/index\.html$/);
 
       const session = await page.evaluate(async () => fetch("/api/session/current").then((response) => response.json()));
-      expect(session.data.authenticated).toBe(false);
-      expect(session.data.userKey).toBe(null);
-      expect(session.data.diagnostic).toContain("Supabase Auth does not create a Local DB product-data session");
+      expect(session.data.authenticated).toBe(true);
+      expect(session.data.userKey).toBe(MOCK_DB_KEYS.users.user1);
+      expect(session.data.roleSlugs).toEqual(["user"]);
 
       await page.goto(`${failures.server.baseUrl}/account/create-account.html`, { waitUntil: "networkidle" });
       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
@@ -452,14 +506,19 @@ test("Configured account auth actions use external Auth without Local DB session
       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
       await page.getByLabel("Email").fill("reset@example.test");
       await page.getByRole("button", { name: "Request Password Reset" }).click();
-      await expect(page.locator("[data-account-auth-status]")).toHaveText("Password reset request was sent through the configured account provider.");
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("If an account exists for that email, password reset instructions will be sent.");
 
-      expect(fakeSupabase.calls.map((call) => call.path)).toEqual([
-        "/auth/v1/token?grant_type=password",
-        "/auth/v1/signup",
-        "/auth/v1/recover",
-      ]);
-      expect(fakeSupabase.calls.every((call) => call.headers.apikey === "browser-test-anon-key")).toBe(true);
+      expect(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length).toBeGreaterThanOrEqual(4);
+      expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password")).toBe(true);
+      expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup")).toBe(true);
+      expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover")).toBe(true);
+      expect(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*")).toBe(true);
+      expect(fakeSupabase.calls
+        .filter((call) => call.path.startsWith("/auth/v1/"))
+        .every((call) => call.headers.apikey === "browser-test-anon-key")).toBe(true);
+      expect(fakeSupabase.calls
+        .filter((call) => call.path.startsWith("/rest/v1/"))
+        .every((call) => call.headers.apikey === "browser-test-service-role-key")).toBe(true);
       await expectNoPageFailures(failures);
     } finally {
       await closeWithCoverage(page, failures);

@@ -119,7 +119,7 @@ function startFakeSupabaseAuthServer(options = {}) {
       token_type: "bearer",
       user: {
         email: body.email || "creator@example.test",
-        id: "supabase-user-id-1",
+        id: options.authUserId || "supabase-user-1",
       },
     }));
   });
@@ -605,11 +605,14 @@ test("Supabase Auth selection keeps Local DB product data active and fails auth 
 });
 
 test("Account auth routes call external Supabase Auth and return sanitized action results", async () => {
-  const fakeSupabase = await startFakeSupabaseAuthServer();
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: fakeSupabaseIdentityTables(),
+  });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "local-db",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
   }, async () => {
     const server = await startApiServer();
@@ -622,8 +625,8 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(status.supabaseConfigPresent, true);
       assert.equal(status.supabaseProviderSelected, true);
       assert.equal(status.supabaseProviderNotSelected, false);
-      assert.equal(status.supabaseConnectivityStatus, "not-checked");
-      assert.equal(status.connectivityHealthy, null);
+      assert.equal(status.supabaseConnectivityStatus, "healthy");
+      assert.equal(status.connectivityHealthy, true);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, true);
@@ -635,7 +638,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "PASS");
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
-        email: "creator@example.test",
+        email: "user1@example.invalid",
         password: "not-stored-locally",
       });
       assert.equal(signIn.status, 200);
@@ -643,11 +646,19 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(signIn.payload.data.providerId, "supabase-auth");
       assert.equal(signIn.payload.data.status, "PASS");
       assert.equal(signIn.payload.data.passwordStoredLocally, false);
-      assert.equal(signIn.payload.data.localDbSessionCreated, false);
+      assert.equal(signIn.payload.data.localDbSessionCreated, true);
+      assert.equal(signIn.payload.data.sessionResolved, true);
+      assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
+      assert.deepEqual(signIn.payload.data.roleSlugs, ["user"]);
       assert.equal(signIn.payload.data.accessTokenExposed, false);
       assert.equal(signIn.payload.data.refreshTokenExposed, false);
       assert.equal(JSON.stringify(signIn.payload).includes("fake-supabase-access-token"), false);
       assert.equal(JSON.stringify(signIn.payload).includes("fake-supabase-refresh-token"), false);
+
+      const session = await apiJson(server.baseUrl, "/api/session/current");
+      assert.equal(session.authenticated, true);
+      assert.equal(session.userKey, MOCK_DB_KEYS.users.user1);
+      assert.deepEqual(session.roleSlugs, ["user"]);
 
       const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
         email: "new@example.test",
@@ -663,14 +674,21 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(reset.status, 200);
       assert.equal(reset.payload.data.action, "password-reset");
       assert.equal(reset.payload.data.redirectToIncluded, true);
+      assert.equal(reset.payload.data.message, "If an account exists for that email, password reset instructions will be sent.");
 
-      assert.deepEqual(fakeSupabase.calls.map((call) => call.path), [
-        "/auth/v1/health",
-        "/auth/v1/token?grant_type=password",
-        "/auth/v1/signup",
-        "/auth/v1/recover",
-      ]);
-      assert.equal(fakeSupabase.calls.every((call) => call.headers.apikey === "test-anon-key"), true);
+      assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 5, true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/users?select=*"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/roles?select=*"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/rest/v1/user_roles?select=*"), true);
+      assert.equal(fakeSupabase.calls
+        .filter((call) => call.path.startsWith("/auth/v1/"))
+        .every((call) => call.headers.apikey === "test-anon-key"), true);
+      assert.equal(fakeSupabase.calls
+        .filter((call) => call.path.startsWith("/rest/v1/"))
+        .every((call) => call.headers.apikey === "test-service-role-key"), true);
     } finally {
       await server.close();
     }
@@ -679,12 +697,14 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
 });
 
 test("Default Supabase Auth routes sign in create account and password reset through external auth", async () => {
-  const fakeSupabase = await startFakeSupabaseAuthServer();
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: fakeSupabaseIdentityTables(),
+  });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: undefined,
     GAMEFOUNDRY_DB_PROVIDER: undefined,
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
-    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: undefined,
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
   }, async () => {
     const server = await startApiServer();
@@ -696,16 +716,21 @@ test("Default Supabase Auth routes sign in create account and password reset thr
       assert.equal(status.localDbProductDataActive, true);
       assert.equal(status.message, "Account service is available.");
       assert.equal(status.noAutomaticFallback, true);
+      assert.equal(status.selected, true);
+      assert.equal(status.configured, true);
+      assert.equal(status.connectivityHealthy, true);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
-        email: "default-signin@example.test",
+        email: "user1@example.invalid",
         password: "not-stored-locally",
       });
       assert.equal(signIn.status, 200);
       assert.equal(signIn.payload.data.action, "sign-in");
       assert.equal(signIn.payload.data.providerId, "supabase-auth");
       assert.equal(signIn.payload.data.passwordStoredLocally, false);
-      assert.equal(signIn.payload.data.localDbSessionCreated, false);
+      assert.equal(signIn.payload.data.localDbSessionCreated, true);
+      assert.equal(signIn.payload.data.sessionResolved, true);
+      assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
 
       const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
         email: "default-create@example.test",
@@ -722,12 +747,16 @@ test("Default Supabase Auth routes sign in create account and password reset thr
       assert.equal(reset.payload.data.action, "password-reset");
       assert.equal(reset.payload.data.providerId, "supabase-auth");
 
-      assert.deepEqual(fakeSupabase.calls.map((call) => call.path), [
-        "/auth/v1/token?grant_type=password",
-        "/auth/v1/signup",
-        "/auth/v1/recover",
-      ]);
-      assert.equal(fakeSupabase.calls.every((call) => call.headers.apikey === "test-anon-key"), true);
+      assert.equal(fakeSupabase.calls.filter((call) => call.path === "/auth/v1/health").length >= 4, true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/signup"), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
+      assert.equal(fakeSupabase.calls
+        .filter((call) => call.path.startsWith("/auth/v1/"))
+        .every((call) => call.headers.apikey === "test-anon-key"), true);
+      assert.equal(fakeSupabase.calls
+        .filter((call) => call.path.startsWith("/rest/v1/"))
+        .every((call) => call.headers.apikey === "test-service-role-key"), true);
     } finally {
       await server.close();
     }
@@ -883,9 +912,12 @@ test("Operator auth preflight reports failed Supabase connectivity for wrong ano
     const server = await startApiServer();
     try {
       const status = await apiJson(server.baseUrl, "/api/auth/status");
-      assert.equal(status.ready, true);
+      assert.equal(status.ready, false);
       assert.equal(status.supabaseConfigPresent, true);
-      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.supabaseConnectivityStatus, "failed");
+      assert.equal(status.connectivityHealthy, false);
+      assert.equal(status.message, "The site is currently unavailable. Please try again later.");
+      assert.match(status.operatorDiagnostic, /readiness could not be proven/);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, true);
@@ -897,6 +929,14 @@ test("Operator auth preflight reports failed Supabase connectivity for wrong ano
       assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").httpStatus, 401);
       assert.equal(JSON.stringify(preflight).includes("wrong-anon-key"), false);
       assert.equal(JSON.stringify(preflight).includes("expected-anon-key"), false);
+
+      const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
+        email: "user1@example.invalid",
+        password: "not-stored",
+      });
+      assert.equal(signIn.status, 503);
+      assert.equal(signIn.payload.error, "The site is currently unavailable. Please try again later.");
+      assert.equal(JSON.stringify(signIn.payload).includes("wrong-anon-key"), false);
     } finally {
       await server.close();
     }

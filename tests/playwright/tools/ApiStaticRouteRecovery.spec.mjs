@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import process from "node:process";
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 
@@ -15,6 +16,10 @@ const SESSION_ROUTE_CHECKS = [
 ];
 
 test("login session API routes recover static probes and Local DB mode calls", async ({ page }) => {
+  const previousAuthProvider = process.env.GAMEFOUNDRY_AUTH_PROVIDER;
+  const previousDbProvider = process.env.GAMEFOUNDRY_DB_PROVIDER;
+  process.env.GAMEFOUNDRY_AUTH_PROVIDER = "local-db";
+  process.env.GAMEFOUNDRY_DB_PROVIDER = "local-db";
   const server = await startRepoServer();
   const failedRequests = [];
   const pageErrors = [];
@@ -58,7 +63,7 @@ test("login session API routes recover static probes and Local DB mode calls", a
 
     await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { name: "Sign In", level: 1 })).toBeVisible();
-    await expect(page.getByLabel("Email or username")).toBeVisible();
+    await expect(page.getByLabel("Email")).toBeVisible();
     await expect(page.getByLabel("Password")).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create Account" })).toBeVisible();
@@ -76,5 +81,15 @@ test("login session API routes recover static probes and Local DB mode calls", a
     expect(consoleErrors).toEqual([]);
   } finally {
     await server.close();
+    if (previousAuthProvider === undefined) {
+      delete process.env.GAMEFOUNDRY_AUTH_PROVIDER;
+    } else {
+      process.env.GAMEFOUNDRY_AUTH_PROVIDER = previousAuthProvider;
+    }
+    if (previousDbProvider === undefined) {
+      delete process.env.GAMEFOUNDRY_DB_PROVIDER;
+    } else {
+      process.env.GAMEFOUNDRY_DB_PROVIDER = previousDbProvider;
+    }
   }
 });

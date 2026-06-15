@@ -3,6 +3,7 @@ const form = document.querySelector("[data-login-form]");
 const identityField = document.querySelector("[data-login-identity]");
 const passwordField = document.querySelector("[data-login-password]");
 const statusField = document.querySelector("[data-login-status]");
+const submitButton = document.querySelector("[data-login-submit]");
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
 let authStatus = null;
 
@@ -45,6 +46,12 @@ function setStatus(message) {
   }
 }
 
+function setFormEnabled(enabled) {
+  if (submitButton) {
+    submitButton.disabled = !enabled;
+  }
+}
+
 function isStaticOnlyLocalEntrypoint() {
   return ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
     window.location.port === "5500";
@@ -82,17 +89,20 @@ async function refreshAccountAuthStatus() {
       ready: false,
       message: AUTH_UNAVAILABLE_MESSAGE,
     };
+    setFormEnabled(false);
     setStatus(authStatus.message);
     return authStatus;
   }
   try {
     authStatus = await requestAccountAuth("status");
+    setFormEnabled(Boolean(authStatus.ready));
     setStatus(authStatus.ready ? "Account service is available." : unavailableMessage(authStatus));
   } catch (error) {
     authStatus = {
       ready: false,
       message: error instanceof Error ? error.message : AUTH_UNAVAILABLE_MESSAGE,
     };
+    setFormEnabled(false);
     setStatus(authStatus.message);
   }
   return authStatus;
@@ -120,10 +130,15 @@ form?.addEventListener("submit", (event) => {
     })
     .then((result) => {
       if (result) {
-        setStatus(result.message || "Account authentication completed.");
+        setStatus(result.sessionResolved ? "Signed in." : result.message || "Account authentication completed.");
+        if (result.sessionResolved) {
+          window.location.assign(currentReturnTo());
+        }
       }
     })
     .catch((error) => {
       setStatus(error instanceof Error ? error.message : AUTH_UNAVAILABLE_MESSAGE);
     });
 });
+
+refreshAccountAuthStatus();

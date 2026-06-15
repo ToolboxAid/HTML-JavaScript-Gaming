@@ -664,20 +664,45 @@ function normalizedAuthEmail(value) {
   return String(value || "").trim();
 }
 
-function sanitizedSupabaseAuthActionResult(action, email, payload = {}) {
+function sanitizedAuthErrorDiagnostic(error) {
+  const message = String(error?.message || error || "").trim();
+  const statusMatch = message.match(/HTTP\s+(\d+)/);
+  return {
+    code: error?.code || "",
+    httpStatus: statusMatch ? Number(statusMatch[1]) : 0,
+    message: statusMatch
+      ? `Supabase Auth request failed with HTTP ${statusMatch[1]}.`
+      : message
+        ? "Supabase Auth request failed before an HTTP status was available."
+        : "Supabase Auth request failed.",
+  };
+}
+
+function authUnavailableError(action, diagnostic = "") {
+  const error = new Error(AUTH_UNAVAILABLE_MESSAGE);
+  error.statusCode = 503;
+  error.operatorDiagnostic = diagnostic ? `${action}: ${diagnostic}` : `${action}: ${AUTH_UNAVAILABLE_MESSAGE}`;
+  return error;
+}
+
+function sanitizedSupabaseAuthActionResult(action, email, payload = {}, session = null) {
   const user = payload.user && typeof payload.user === "object" ? payload.user : {};
+  const resolvedSession = session && session.authenticated ? session : null;
   return {
     accessTokenExposed: false,
     action,
     email: String(user.email || email || "").trim(),
     externalAuthUserIdPresent: Boolean(user.id),
-    localDbSessionCreated: false,
+    localDbSessionCreated: Boolean(resolvedSession),
     message: "Account authentication completed through the configured account provider.",
     passwordStoredLocally: false,
     providerId: SUPABASE_AUTH_PROVIDER_ID,
     refreshTokenExposed: false,
+    roleSlugs: resolvedSession ? resolvedSession.roleSlugs : [],
+    sessionResolved: Boolean(resolvedSession),
     sessionStoredInBrowser: false,
     status: "PASS",
+    userKey: resolvedSession ? resolvedSession.userKey : null,
   };
 }
 
@@ -1073,12 +1098,9 @@ class LocalDevDataSource {
 
   async readSupabaseIdentityTables(action) {
     this.assertLocalDatabaseProvider(action);
-    const authStatus = this.authStatus();
+    const authStatus = await this.authStatusForRoute();
     if (!authStatus.ready) {
-      const error = new Error(AUTH_UNAVAILABLE_MESSAGE);
-      error.statusCode = 503;
-      error.operatorDiagnostic = `${action} requires configured Supabase Auth identity ownership. ${authStatus.operatorDiagnostic || authStatus.status}`;
-      throw error;
+      throw authUnavailableError(action, `Supabase Auth identity ownership is not ready. ${authStatus.operatorDiagnostic || authStatus.status}`);
     }
     const adapter = new SupabasePostgresProviderAdapter();
     const [users, roles, userRoles] = await Promise.all([
@@ -1117,7 +1139,7 @@ class LocalDevDataSource {
       return this.localAuthSession("Reading current session");
     }
     if (providerId === SUPABASE_AUTH_PROVIDER_ID) {
-      const status = this.authStatus();
+      const status = await this.authStatusForRoute();
       if (!status.ready) {
         return guestSession(this.currentMode(), status.operatorDiagnostic || AUTH_UNAVAILABLE_MESSAGE);
       }
@@ -1503,6 +1525,70 @@ class LocalDevDataSource {
     };
   }
 
+  async authConnectivityCheck(status = this.authStatus()) {
+    if (!status.supabaseConfigPresent) {
+      return {
+        connectivityHealthy: false,
+        connectivityHttpStatus: 0,
+        connectivityStatus: "not-configured",
+        diagnostic: "Supabase Auth connectivity cannot be checked until configuration is present.",
+      };
+    }
+    try {
+      const adapter = new SupabaseAuthProviderAdapter();
+      await adapter.request("/auth/v1/health", {
+        operation: "status",
+      });
+      return {
+        connectivityHealthy: true,
+        connectivityHttpStatus: 0,
+        connectivityStatus: "healthy",
+        diagnostic: "Supabase Auth endpoint responded successfully.",
+      };
+    } catch (error) {
+      const diagnostic = sanitizedAuthErrorDiagnostic(error);
+      return {
+        connectivityHealthy: false,
+        connectivityHttpStatus: diagnostic.httpStatus,
+        connectivityStatus: "failed",
+        diagnostic: diagnostic.httpStatus
+          ? diagnostic.message
+          : `${diagnostic.message}${diagnostic.code ? ` (${diagnostic.code})` : ""}`,
+      };
+    }
+  }
+
+  async authStatusForRoute() {
+    const status = this.authStatus();
+    if (!status.selected || !status.configured || !status.localDbProductDataActive || status.status !== "ready") {
+      return status;
+    }
+    const connectivity = await this.authConnectivityCheck(status);
+    if (!connectivity.connectivityHealthy) {
+      return {
+        ...status,
+        actionRequired: AUTH_UNAVAILABLE_MESSAGE,
+        connectivityHealthy: false,
+        connectivityHttpStatus: connectivity.connectivityHttpStatus || undefined,
+        connectivityStatus: connectivity.connectivityStatus,
+        message: AUTH_UNAVAILABLE_MESSAGE,
+        operatorDiagnostic: `Supabase Auth configuration is present but readiness could not be proven. ${connectivity.diagnostic}`,
+        ready: false,
+        status: "unavailable",
+        supabaseConnectivityStatus: connectivity.connectivityStatus,
+      };
+    }
+    return {
+      ...status,
+      connectivityHealthy: true,
+      connectivityStatus: "healthy",
+      operatorDiagnostic: "Supabase Auth is selected, configured, reachable, and ready. Product data remains Local DB.",
+      ready: true,
+      status: "ready",
+      supabaseConnectivityStatus: "healthy",
+    };
+  }
+
   async authOperatorPreflight() {
     const status = this.authStatus();
     const checks = [
@@ -1528,35 +1614,13 @@ class LocalDevDataSource {
           : `Product data provider is ${status.databaseProviderId}; expected ${LOCAL_DATABASE_PROVIDER_ID}.`,
       },
     ];
-    let connectivityStatus = status.supabaseConfigPresent ? "not-checked" : "not-configured";
-    let connectivityHttpStatus = 0;
-    let connectivityDiagnostic = status.supabaseConfigPresent
-      ? "Supabase Auth connectivity has not been checked yet."
-      : "Supabase Auth connectivity cannot be checked until configuration is present.";
-
-    if (status.supabaseConfigPresent) {
-      try {
-        const adapter = new SupabaseAuthProviderAdapter();
-        await adapter.request("/auth/v1/health", {
-          operation: "operatorPreflight",
-        });
-        connectivityStatus = "healthy";
-        connectivityDiagnostic = "Supabase Auth endpoint responded successfully.";
-      } catch (error) {
-        connectivityStatus = "failed";
-        const match = String(error?.message || "").match(/HTTP\s+(\d+)/);
-        connectivityHttpStatus = match ? Number(match[1]) : 0;
-        connectivityDiagnostic = connectivityHttpStatus
-          ? `Supabase Auth connectivity failed with HTTP ${connectivityHttpStatus}.`
-          : "Supabase Auth connectivity failed before an HTTP status was available.";
-      }
-    }
+    const connectivity = await this.authConnectivityCheck(status);
 
     checks.push({
       id: "supabase-connectivity",
-      httpStatus: connectivityHttpStatus || undefined,
-      status: connectivityStatus === "healthy" ? "PASS" : status.supabaseConfigPresent ? "FAIL" : "SKIP",
-      summary: connectivityDiagnostic,
+      httpStatus: connectivity.connectivityHttpStatus || undefined,
+      status: connectivity.connectivityStatus === "healthy" ? "PASS" : status.supabaseConfigPresent ? "FAIL" : "SKIP",
+      summary: connectivity.diagnostic,
     });
 
     return {
@@ -1564,8 +1628,8 @@ class LocalDevDataSource {
       browserMessage: AUTH_UNAVAILABLE_MESSAGE,
       checks,
       configured: status.configured,
-      connectivityHealthy: connectivityStatus === "healthy",
-      connectivityStatus,
+      connectivityHealthy: connectivity.connectivityStatus === "healthy",
+      connectivityStatus: connectivity.connectivityStatus,
       databaseProviderId: status.databaseProviderId,
       localDbProductDataActive: status.localDbProductDataActive,
       noAutomaticFallback: true,
@@ -1573,56 +1637,106 @@ class LocalDevDataSource {
       operatorOnly: true,
       providerId: SUPABASE_AUTH_PROVIDER_ID,
       selected: status.selected,
-      status: connectivityStatus === "healthy" ? "healthy" : connectivityStatus,
+      status: connectivity.connectivityStatus === "healthy" ? "healthy" : connectivity.connectivityStatus,
       supabaseConfigPresent: status.supabaseConfigPresent,
       supabaseProviderNotSelected: status.supabaseProviderNotSelected,
       supabaseProviderSelected: status.supabaseProviderSelected,
     };
   }
 
-  authAdapterForAction(action) {
-    const status = this.authStatus();
+  async authAdapterForAction(action) {
+    const status = await this.authStatusForRoute();
     if (!status.ready) {
-      const error = new Error(AUTH_UNAVAILABLE_MESSAGE);
-      error.statusCode = 503;
-      error.operatorDiagnostic = `${action} requires configured Supabase Auth. ${status.operatorDiagnostic || status.status}`;
-      throw error;
+      throw authUnavailableError(action, `Supabase Auth is not ready. ${status.operatorDiagnostic || status.status}`);
     }
     return new SupabaseAuthProviderAdapter();
   }
 
-  async authSignIn(body = {}) {
-    const adapter = this.authAdapterForAction("Sign in");
-    const email = normalizedAuthEmail(body.email || body.identity);
-    const payload = await adapter.signIn({
-      email,
-      password: body.password,
+  async resolvedSessionForAuthPayload(action, email, payload = {}) {
+    const authUser = payload.user && typeof payload.user === "object" ? payload.user : {};
+    const authUserId = String(authUser.id || "").trim();
+    const authEmail = normalizedAuthEmail(authUser.email || email);
+    if (!authUserId && !authEmail) {
+      throw authUnavailableError(action, "Supabase Auth did not return an account identity to resolve.");
+    }
+    const tables = await this.readSupabaseIdentityTables(`${action} session resolution`);
+    const matchingUser = (tables.users || []).find((user) => {
+      if (user.isActive === false || user.authProvider !== SUPABASE_AUTH_PROVIDER_ID) {
+        return false;
+      }
+      return (authUserId && String(user.authProviderUserId || "") === authUserId) ||
+        (authEmail && normalizedAuthEmail(user.email).toLowerCase() === authEmail.toLowerCase());
     });
-    return sanitizedSupabaseAuthActionResult("sign-in", email, payload);
+    if (!matchingUser) {
+      throw authUnavailableError(action, "Supabase Auth user is missing a matching users record.");
+    }
+    const session = sessionUserFromIdentityTables(tables, matchingUser.key, this.sessionModeId, "Supabase identity");
+    if (!session.authenticated) {
+      throw authUnavailableError(action, session.diagnostic || "Supabase identity session could not be resolved.");
+    }
+    this.sessionUserKey = matchingUser.key;
+    this.sharedOptions.sessionMode = this.sessionModeId;
+    this.sharedOptions.sessionUserKey = this.sessionUserKey;
+    return session;
+  }
+
+  async authSignIn(body = {}) {
+    const adapter = await this.authAdapterForAction("Sign in");
+    const email = normalizedAuthEmail(body.email || body.identity);
+    try {
+      const payload = await adapter.signIn({
+        email,
+        password: body.password,
+      });
+      const session = await this.resolvedSessionForAuthPayload("Sign in", email, payload);
+      return sanitizedSupabaseAuthActionResult("sign-in", email, payload, session);
+    } catch (error) {
+      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
+        throw error;
+      }
+      const diagnostic = sanitizedAuthErrorDiagnostic(error);
+      throw authUnavailableError("Sign in", diagnostic.message);
+    }
   }
 
   async authCreateAccount(body = {}) {
-    const adapter = this.authAdapterForAction("Create account");
+    const adapter = await this.authAdapterForAction("Create account");
     const email = normalizedAuthEmail(body.email || body.identity);
-    const payload = await adapter.createAccount({
-      email,
-      password: body.password,
-    });
-    return sanitizedSupabaseAuthActionResult("create-account", email, payload);
+    try {
+      const payload = await adapter.createAccount({
+        email,
+        password: body.password,
+      });
+      return sanitizedSupabaseAuthActionResult("create-account", email, payload);
+    } catch (error) {
+      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
+        throw error;
+      }
+      const diagnostic = sanitizedAuthErrorDiagnostic(error);
+      throw authUnavailableError("Create account", diagnostic.message);
+    }
   }
 
   async authPasswordReset(body = {}, redirectTo = "") {
-    const adapter = this.authAdapterForAction("Password reset");
+    const adapter = await this.authAdapterForAction("Password reset");
     const email = normalizedAuthEmail(body.email || body.identity);
-    const payload = await adapter.requestPasswordReset({
-      email,
-      redirectTo,
-    });
-    return {
-      ...sanitizedSupabaseAuthActionResult("password-reset", email, payload),
-      message: "Password reset request was sent through the configured account provider.",
-      redirectToIncluded: Boolean(redirectTo),
-    };
+    try {
+      const payload = await adapter.requestPasswordReset({
+        email,
+        redirectTo,
+      });
+      return {
+        ...sanitizedSupabaseAuthActionResult("password-reset", email, payload),
+        message: "If an account exists for that email, password reset instructions will be sent.",
+        redirectToIncluded: Boolean(redirectTo),
+      };
+    } catch (error) {
+      if (error?.statusCode === 503 && error.message === AUTH_UNAVAILABLE_MESSAGE) {
+        throw error;
+      }
+      const diagnostic = sanitizedAuthErrorDiagnostic(error);
+      throw authUnavailableError("Password reset", diagnostic.message);
+    }
   }
 
   currentSession() {
@@ -2350,7 +2464,7 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "auth") {
         if (request.method === "GET" && parts[2] === "status") {
-          ok(response, dataSource.authStatus());
+          ok(response, await dataSource.authStatusForRoute());
           return true;
         }
         if (request.method === "GET" && parts[2] === "operator-preflight") {

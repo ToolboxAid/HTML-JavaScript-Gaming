@@ -1,6 +1,6 @@
 # Lane Snapshot Report
 
-Generated: 2026-06-15T18:15:28.202Z
+Generated: 2026-06-15T18:46:25.864Z
 Status: PASS
 Snapshot directory: docs_build/dev/reports/lane_snapshots
 
@@ -17,7 +17,7 @@ Prevented manifest traversal: 1
 
 | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 6db0a192900118d9 | 7c7fab462b93332a | 3d02a6f75a00133f | 6c4fac7630b0b6f3 | c99c4343771f1683 | 31a1775f09b27b87 | cd9305e138941d36 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
+| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 170a5f12570e6a93 | 478ac7df58f44251 | 3d02a6f75a00133f | 6c4fac7630b0b6f3 | c99c4343771f1683 | 127250115636772e | 092cb7a23bbbda67 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
 
 ## Snapshot Validation Findings
 

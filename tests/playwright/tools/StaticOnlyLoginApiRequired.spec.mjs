@@ -99,7 +99,7 @@ test("static sign-in page renders production-safe account actions without API di
     await workspaceV2CoverageReporter.start(page);
     await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { name: "Sign In", level: 1 })).toBeVisible();
-    await expect(page.getByLabel("Email or username")).toBeVisible();
+    await expect(page.getByLabel("Email")).toBeVisible();
     await expect(page.getByLabel("Password")).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create Account" })).toHaveAttribute("href", /create-account\.html$/);
@@ -114,7 +114,7 @@ test("static sign-in page renders production-safe account actions without API di
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
     await expect(page.locator("main")).not.toContainText("reseed");
     await expect(page.locator("main")).not.toContainText("Local DB");
-    await page.getByRole("button", { name: "Sign In" }).click();
+    await expect(page.getByRole("button", { name: "Sign In" })).toBeDisabled();
     await expect(page.locator("[data-login-status]")).toHaveText("The site is currently unavailable. Please try again later.");
 
     expect(requests.filter((request) => request.includes("/api/session/current"))).toEqual([]);

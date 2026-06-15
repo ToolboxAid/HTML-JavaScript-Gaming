@@ -97,11 +97,14 @@ form?.addEventListener("submit", (event) => {
       if (!endpoint) {
         throw new Error("Unknown account action.");
       }
+      const body = {
+        email: emailField?.value || "",
+      };
+      if (passwordField) {
+        body.password = passwordField.value || "";
+      }
       return requestAccountAuth(endpoint, {
-        body: {
-          email: emailField?.value || "",
-          password: passwordField?.value || "",
-        },
+        body,
         method: "POST",
       });
     })
