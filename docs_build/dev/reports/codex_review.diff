@@ -1,1562 +1,256 @@
-diff --git a/docs_build/database/ddl/admin.sql b/docs_build/database/ddl/admin.sql
-index bd5edb2a5..62803aaae 100644
---- a/docs_build/database/ddl/admin.sql
-+++ b/docs_build/database/ddl/admin.sql
-@@ -2,5 +2,20 @@
- -- Group: Admin
- -- Ownership: docs_build/database/ddl/admin.sql
- -- Target DEV database: gamefoundry_dev
---- Scope: no active persistent Admin tables exist in the Local DB/server API contract yet.
---- Empty-group note: Admin Site Setup owns explicit server-side setup/reseed entry points; no persistent admin table is active.
-+-- Scope: Admin Site Setup ownership tables.
-+
-+CREATE TABLE IF NOT EXISTS platform_settings (
-+    key text PRIMARY KEY,
-+    "settingKey" text NOT NULL UNIQUE,
-+    "settingValue" text NOT NULL DEFAULT '',
-+    "settingType" text NOT NULL DEFAULT 'string',
-+    description text NOT NULL DEFAULT '',
-+    "isActive" boolean NOT NULL DEFAULT true,
-+    "createdAt" timestamptz NOT NULL DEFAULT now(),
-+    "updatedAt" timestamptz NOT NULL DEFAULT now(),
-+    "createdBy" text NOT NULL REFERENCES users(key),
-+    "updatedBy" text NOT NULL REFERENCES users(key)
-+);
-+
-+CREATE INDEX IF NOT EXISTS idx_platform_settings_createdby ON platform_settings ("createdBy");
-+CREATE INDEX IF NOT EXISTS idx_platform_settings_updatedby ON platform_settings ("updatedBy");
-diff --git a/docs_build/database/ddl/sqlite/local-db-schema-map.sql b/docs_build/database/ddl/sqlite/local-db-schema-map.sql
-index c3b6b8acf..e0f4c1758 100644
---- a/docs_build/database/ddl/sqlite/local-db-schema-map.sql
-+++ b/docs_build/database/ddl/sqlite/local-db-schema-map.sql
-@@ -53,7 +53,20 @@ CREATE INDEX IF NOT EXISTS idx_user_roles_updatedby ON "user_roles" ("updatedBy"
-
- -- Group: Admin
- -- Grouped DDL source: docs_build/database/ddl/admin.sql
---- No active Local DB runtime tables for this group in the current DEV adapter.
-+CREATE TABLE IF NOT EXISTS "platform_settings" (
-+    "key" TEXT PRIMARY KEY,
-+    "settingKey" TEXT,
-+    "settingValue" TEXT,
-+    "settingType" TEXT,
-+    "description" TEXT,
-+    "isActive" TEXT,
-+    "createdAt" TEXT,
-+    "updatedAt" TEXT,
-+    "createdBy" TEXT NOT NULL REFERENCES users("key"),
-+    "updatedBy" TEXT NOT NULL REFERENCES users("key")
-+);
-+CREATE INDEX IF NOT EXISTS idx_platform_settings_createdby ON "platform_settings" ("createdBy");
-+CREATE INDEX IF NOT EXISTS idx_platform_settings_updatedby ON "platform_settings" ("updatedBy");
-
- -- Group: Game Workspace
- -- Grouped DDL source: docs_build/database/ddl/game-workspace.sql
-@@ -601,7 +614,20 @@ CREATE INDEX IF NOT EXISTS idx_toolbox_votes_updatedby ON "toolbox_votes" ("upda
-
- -- Group: Support Tickets
- -- Grouped DDL source: docs_build/database/ddl/support-tickets.sql
---- No active Local DB runtime tables for this group in the current DEV adapter.
-+CREATE TABLE IF NOT EXISTS "support_categories" (
-+    "key" TEXT PRIMARY KEY,
-+    "categorySlug" TEXT,
-+    "name" TEXT,
-+    "description" TEXT,
-+    "isActive" TEXT,
-+    "sortOrder" TEXT,
-+    "createdAt" TEXT,
-+    "updatedAt" TEXT,
-+    "createdBy" TEXT NOT NULL REFERENCES users("key"),
-+    "updatedBy" TEXT NOT NULL REFERENCES users("key")
-+);
-+CREATE INDEX IF NOT EXISTS idx_support_categories_createdby ON "support_categories" ("createdBy");
-+CREATE INDEX IF NOT EXISTS idx_support_categories_updatedby ON "support_categories" ("updatedBy");
-
- -- Group: Tool State Samples
- -- Grouped DDL source: Local DB compatibility table; grouped guest seed data is owned under docs_build/database/seed/guest/.
-diff --git a/docs_build/database/ddl/support-tickets.sql b/docs_build/database/ddl/support-tickets.sql
-index de0aac7de..ea79018df 100644
---- a/docs_build/database/ddl/support-tickets.sql
-+++ b/docs_build/database/ddl/support-tickets.sql
-@@ -2,5 +2,20 @@
- -- Group: Support Tickets
- -- Ownership: docs_build/database/ddl/support-tickets.sql
- -- Target DEV database: gamefoundry_dev
---- Scope: no active persistent Support Tickets tables exist in the Local DB/server API contract yet.
---- Empty-group note: support ticket tables are not active in the Local DB adapter yet.
-+-- Scope: Support category setup ownership.
-+
-+CREATE TABLE IF NOT EXISTS support_categories (
-+    key text PRIMARY KEY,
-+    "categorySlug" text NOT NULL UNIQUE,
-+    name text NOT NULL,
-+    description text NOT NULL DEFAULT '',
-+    "isActive" boolean NOT NULL DEFAULT true,
-+    "sortOrder" integer NOT NULL DEFAULT 1,
-+    "createdAt" timestamptz NOT NULL DEFAULT now(),
-+    "updatedAt" timestamptz NOT NULL DEFAULT now(),
-+    "createdBy" text NOT NULL REFERENCES users(key),
-+    "updatedBy" text NOT NULL REFERENCES users(key)
-+);
-+
-+CREATE INDEX IF NOT EXISTS idx_support_categories_createdby ON support_categories ("createdBy");
-+CREATE INDEX IF NOT EXISTS idx_support_categories_updatedby ON support_categories ("updatedBy");
-diff --git a/docs_build/database/dml/DML_INDEX.md b/docs_build/database/dml/DML_INDEX.md
-index 6369d3127..2b3f8c27b 100644
---- a/docs_build/database/dml/DML_INDEX.md
-+++ b/docs_build/database/dml/DML_INDEX.md
-@@ -16,7 +16,7 @@ Direct SQL setup is intentionally narrow. Account DEV users are SQL-executable s
- | Game Workspace | `game-workspace.sql` | Server-seed-owned | Server-side seed API |
- | Objects | `objects.sql` | Server-seed-owned | Server-side seed API |
- | Palette | `palette.sql` | Server-seed-owned | Server-side seed API |
--| Support Tickets | `support-tickets.sql` | Future/not-yet-owned | No active Local DB support ticket tables |
-+| Support Tickets | `support-tickets.sql` | Server-seed-owned | Admin Site Setup/server-side seed API |
- | Tags | `tags.sql` | Server-seed-owned | Server-side seed API |
- | Tool Metadata | `tool-metadata.sql` | Server-seed-owned | Server-side seed API |
- | Tool Planning | `tool-planning.sql` | Server-seed-owned | Server-side seed API |
-@@ -36,4 +36,3 @@ All non-user records must use server/API-generated ULID-style keys.
- ## Browser Seed Prohibition
-
- Browser pages must not seed authoritative records. Setup flows must call server-side APIs.
--
-diff --git a/docs_build/database/dml/account.sql b/docs_build/database/dml/account.sql
-index bc9a25ed7..2e881fe55 100644
---- a/docs_build/database/dml/account.sql
-+++ b/docs_build/database/dml/account.sql
-@@ -90,8 +90,10 @@ BEGIN
-     INTO missing_role_slugs
-     FROM (
-         VALUES
--            ('user'),
--            ('admin')
-+            ('admin'),
-+            ('creator'),
-+            ('guest'),
-+            ('user')
-     ) AS required_roles(role_slug)
-     LEFT JOIN roles ON roles."roleSlug" = required_roles.role_slug
-     WHERE roles.key IS NULL;
-diff --git a/docs_build/database/dml/admin.sql b/docs_build/database/dml/admin.sql
-index 4fd709283..b4056e115 100644
---- a/docs_build/database/dml/admin.sql
-+++ b/docs_build/database/dml/admin.sql
-@@ -4,8 +4,8 @@
- -- Runtime setup/seed operations for this group must run through server-side APIs.
- -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
- -- Browser pages must not directly seed authoritative DB records.
---- Owned tables: none active
---- Note: Admin Site Setup owns explicit server-side setup/reseed entry points. No persistent admin table exists in this PR.
-+-- Owned tables: platform_settings
-+-- Note: Admin Site Setup owns explicit server-side setup/reseed entry points and platform settings bootstrap.
-
- -- DML status: Server-seed-owned.
- -- Setup is performed through the Admin-owned server-side seed API.
-@@ -13,3 +13,5 @@
- -- The server/API layer generates all non-user keys.
- -- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
- -- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
-+-- Starter server seed rows:
-+--   platform_settings.settingKey = site.setup.status
-diff --git a/docs_build/database/dml/support-tickets.sql b/docs_build/database/dml/support-tickets.sql
-index 2f9b302b1..c4d7c159a 100644
---- a/docs_build/database/dml/support-tickets.sql
-+++ b/docs_build/database/dml/support-tickets.sql
-@@ -4,12 +4,14 @@
- -- Runtime setup/seed operations for this group must run through server-side APIs.
- -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
- -- Browser pages must not directly seed authoritative DB records.
---- Owned tables: none active
---- Note: Support ticket tables are not active in the Local DB adapter yet.
-+-- Owned tables: support_categories
-+-- Note: Support category setup is active in the Local DB adapter through Admin Site Setup/server seed ownership.
-
---- DML status: Future/not-yet-owned.
---- No setup is performed for this group yet because there are no active Local DB support ticket tables.
-+-- DML status: Server-seed-owned.
-+-- Setup is performed through the Admin-owned server-side seed API.
- -- Browser pages must not seed authoritative records.
- -- The server/API layer generates all non-user keys.
- -- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
---- Direct SQL setup and server-side seed ownership remain deferred until a later support-ticket persistence PR explicitly owns them.
-+-- Direct SQL setup remains deferred until a later migration-runner PR explicitly owns it.
-+-- Starter server seed rows:
-+--   support_categories.categorySlug = general-help
-diff --git a/docs_build/database/seed/account.json b/docs_build/database/seed/account.json
-index d768e0e4f..4a9040dd9 100644
---- a/docs_build/database/seed/account.json
-+++ b/docs_build/database/seed/account.json
-@@ -41,7 +41,7 @@
-     },
-     "roles": {
-       "mode": "server-api-generated-keys",
--      "requiredRoleSlugs": ["user", "admin"]
-+      "requiredRoleSlugs": ["admin", "creator", "guest", "user"]
-     },
-     "user_roles": {
-       "mode": "server-side-upsert",
-diff --git a/docs_build/database/seed/admin.json b/docs_build/database/seed/admin.json
-index b33e5552e..915a29738 100644
---- a/docs_build/database/seed/admin.json
-+++ b/docs_build/database/seed/admin.json
-@@ -4,6 +4,17 @@
-   "owner": "docs_build/database/seed",
-   "serverSideSeedRequired": true,
-   "browserAuthoritativeKeyGenerationAllowed": false,
--  "tables": {},
--  "note": "Admin Site Setup owns explicit server-side setup/reseed entry points. No persistent admin table exists in this PR."
-+  "tables": {
-+    "platform_settings": {
-+      "mode": "server-api-generated-keys",
-+      "starterRows": [
-+        {
-+          "settingKey": "site.setup.status",
-+          "settingType": "string",
-+          "settingValue": "ready"
-+        }
-+      ]
-+    }
-+  },
-+  "note": "Admin Site Setup owns explicit server-side setup/reseed entry points and platform settings bootstrap."
- }
-diff --git a/docs_build/database/seed/support-tickets.json b/docs_build/database/seed/support-tickets.json
-index e376bbd1d..1b0617251 100644
---- a/docs_build/database/seed/support-tickets.json
-+++ b/docs_build/database/seed/support-tickets.json
-@@ -4,6 +4,17 @@
-   "owner": "docs_build/database/seed",
-   "serverSideSeedRequired": true,
-   "browserAuthoritativeKeyGenerationAllowed": false,
--  "tables": {},
--  "note": "Support ticket tables are not active in the Local DB adapter yet."
-+  "tables": {
-+    "support_categories": {
-+      "mode": "server-api-generated-keys",
-+      "starterRows": [
-+        {
-+          "categorySlug": "general-help",
-+          "name": "General Help",
-+          "sortOrder": 1
-+        }
-+      ]
-+    }
-+  },
-+  "note": "Support category setup is active in the Local DB adapter through Admin Site Setup/server seed ownership."
- }
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 7c2bcc7fd..0dc01f4e3 100644
+index 71be11eb4..ae5e872ce 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,17 +1,32 @@
--.env.example
--admin/site-setup.html
--assets/theme-v2/js/admin-setup-actions.js
-+docs_build/database/ddl/admin.sql
-+docs_build/database/ddl/sqlite/local-db-schema-map.sql
-+docs_build/database/ddl/support-tickets.sql
-+docs_build/database/dml/DML_INDEX.md
-+docs_build/database/dml/account.sql
-+docs_build/database/dml/admin.sql
-+docs_build/database/dml/support-tickets.sql
-+docs_build/database/seed/account.json
-+docs_build/database/seed/admin.json
-+docs_build/database/seed/support-tickets.json
+@@ -1,33 +1,3 @@
+-docs_build/database/ddl/admin.sql
+-docs_build/database/ddl/sqlite/local-db-schema-map.sql
+-docs_build/database/ddl/support-tickets.sql
+-docs_build/database/dml/DML_INDEX.md
+-docs_build/database/dml/account.sql
+-docs_build/database/dml/admin.sql
+-docs_build/database/dml/support-tickets.sql
+-docs_build/database/seed/account.json
+-docs_build/database/seed/admin.json
+-docs_build/database/seed/support-tickets.json
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
- docs_build/dev/reports/coverage_changed_js_guardrail.txt
- docs_build/dev/reports/playwright_v8_coverage_report.txt
--docs_build/dev/reports/pr130-provider-failure-contract.md
--docs_build/dev/reports/pr131-supabase-dev-activation-runtime.md
--docs_build/dev/reports/pr132-supabase-users-roles-migration.md
--docs_build/dev/reports/pr133-site-setup-productionization.md
--docs_build/dev/reports/pr134-db-migration-finish-line-audit.md
-+docs_build/dev/reports/pr135-site-setup-warning-cleanup.md
-+docs_build/dev/reports/pr136-objects-controls-db-catalog-migration.md
-+docs_build/dev/reports/pr137-supabase-dev-preflight-diagnostics.md
- src/dev-runtime/auth/provider-contract-stubs.mjs
-+src/dev-runtime/persistence/mock-db-store.js
-+src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-+src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
-+src/dev-runtime/seed/server-seed-loader.mjs
- src/dev-runtime/server/local-api-router.mjs
--src/engine/api/admin-setup-api-client.js
- tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-+tests/playwright/tools/AdminDbViewer.spec.mjs
-+tests/playwright/tools/InputMappingV2Tool.spec.mjs
- tests/playwright/tools/LoginSessionMode.spec.mjs
-+tests/playwright/tools/ObjectsTool.spec.mjs
-+toolbox/controls/controls-api-client.js
-+toolbox/controls/controls.js
-+toolbox/objects/objects-api-client.js
-+toolbox/objects/objects.js
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 86c4107a2..a231fe34c 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,10 +7,26 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-
- Changed runtime JS files considered:
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/controls/controls-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/objects/objects-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
- (92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
-
- Guardrail warnings:
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) toolbox/controls/controls-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) toolbox/objects/objects-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 65ecd1416..bbdaf6fe3 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -14,11 +14,19 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
- Exercised tool entry points detected:
- (44%) Toolbox Index - exercised 1 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
--(76%) Theme V2 Shared JS - exercised 3 runtime JS files
-+(77%) Theme V2 Shared JS - exercised 4 runtime JS files
-
- Changed runtime JS files covered:
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/controls/controls-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/objects/objects-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
- (92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
-
-@@ -29,15 +37,35 @@ Files with executed line/function counts where available:
- (75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 722/722; executed functions 51/68
- (75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
- (92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
-+(100%) assets/theme-v2/js/login-session.js - executed lines 45/45; executed functions 7/7
-
- Uncovered or low-coverage changed JS files:
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) toolbox/controls/controls-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) toolbox/controls/controls.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) toolbox/objects/objects-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) toolbox/objects/objects.js - WARNING: uncovered changed runtime JS file; advisory only
-
- Changed JS files considered:
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) toolbox/controls/controls-api-client.js - changed JS file not collected as browser runtime coverage
-+(0%) toolbox/controls/controls.js - changed JS file not collected as browser runtime coverage
-+(0%) toolbox/objects/objects-api-client.js - changed JS file not collected as browser runtime coverage
-+(0%) toolbox/objects/objects.js - changed JS file not collected as browser runtime coverage
- (75%) src/engine/api/admin-setup-api-client.js - changed JS file with browser V8 coverage
- (92%) assets/theme-v2/js/admin-setup-actions.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
-index 51445c48a..c5e70aea1 100644
---- a/src/dev-runtime/auth/provider-contract-stubs.mjs
-+++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
-@@ -235,6 +235,122 @@ function providerFailure({ configDiagnostic, missingConfig, providerId, selectio
-   return null;
- }
-
-+function preflightStatus({ ready, selected }) {
-+  if (ready) {
-+    return "PASS";
-+  }
-+  return selected ? "FAIL" : "WARN";
-+}
+-docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/playwright_v8_coverage_report.txt
+-docs_build/dev/reports/pr135-site-setup-warning-cleanup.md
+-docs_build/dev/reports/pr136-objects-controls-db-catalog-migration.md
+-docs_build/dev/reports/pr137-supabase-dev-preflight-diagnostics.md
+-docs_build/dev/reports/pr138-db-auth-ready-for-dev-supabase-audit.md
+-src/dev-runtime/auth/provider-contract-stubs.mjs
+-src/dev-runtime/persistence/mock-db-store.js
+-src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+-src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
+-src/dev-runtime/seed/server-seed-loader.mjs
+-src/dev-runtime/server/local-api-router.mjs
+-tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+-tests/playwright/tools/AdminDbViewer.spec.mjs
+-tests/playwright/tools/InputMappingV2Tool.spec.mjs
+-tests/playwright/tools/LoginSessionMode.spec.mjs
+-tests/playwright/tools/ObjectsTool.spec.mjs
+-toolbox/controls/controls-api-client.js
+-toolbox/controls/controls.js
+-toolbox/objects/objects-api-client.js
+-toolbox/objects/objects.js
++docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md
+diff --git a/docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md b/docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md
+new file mode 100644
+index 0000000..0000000
+--- /dev/null
++++ b/docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md
++# PR_26166_139-supabase-dev-project-creation-guide
 +
-+function createSupabasePreflight({
-+  auth,
-+  database,
-+  selectedProvidersReady,
-+  supabaseAuthReady,
-+  supabaseAuthSelected,
-+  supabasePostgresReadiness,
-+  supabasePostgresReady,
-+  supabasePostgresSelected,
-+  supabaseUrlReady,
-+  supabaseAnonKeyReady,
-+  supabaseServiceRoleReady,
-+}) {
-+  const checks = [
-+    {
-+      id: "auth-provider-selected",
-+      label: "Auth provider selected",
-+      providerId: auth.id,
-+      status: auth.supported ? "PASS" : "FAIL",
-+      summary: auth.supported
-+        ? `Auth provider selection is ${auth.id}.`
-+        : auth.diagnostic,
-+    },
-+    {
-+      id: "database-provider-selected",
-+      label: "DB provider selected",
-+      providerId: database.id,
-+      status: database.supported ? "PASS" : "FAIL",
-+      summary: database.supported
-+        ? `DB provider selection is ${database.id}.`
-+        : database.diagnostic,
-+    },
-+    {
-+      id: "supabase-url",
-+      label: "Supabase URL",
-+      status: preflightStatus({
-+        ready: supabaseUrlReady,
-+        selected: supabaseAuthSelected || supabasePostgresSelected,
-+      }),
-+      summary: supabaseUrlReady
-+        ? "Supabase URL is configured."
-+        : "Supabase URL is required before selecting Supabase Auth or Supabase Postgres.",
-+      visibility: "browser-safe",
-+    },
-+    {
-+      id: "supabase-anon-key",
-+      label: "Supabase anon key",
-+      status: preflightStatus({
-+        ready: supabaseAnonKeyReady,
-+        selected: supabaseAuthSelected,
-+      }),
-+      summary: supabaseAnonKeyReady
-+        ? "Supabase anon key is configured for browser-safe Auth requests."
-+        : "Supabase anon key is required before selecting Supabase Auth.",
-+      visibility: "browser-safe",
-+    },
-+    {
-+      id: "supabase-server-only-credential",
-+      label: "Supabase server-only credential",
-+      status: preflightStatus({
-+        ready: supabaseServiceRoleReady,
-+        selected: supabasePostgresSelected,
-+      }),
-+      summary: supabaseServiceRoleReady
-+        ? "Server-only Supabase database credential is configured on the server."
-+        : "Server-only Supabase database credential is required before selecting Supabase Postgres.",
-+      visibility: "server-only",
-+    },
-+    {
-+      id: "identity-tables-readiness",
-+      label: "users/roles/user_roles readiness",
-+      records: {
-+        roles: supabasePostgresReadiness.records.roles,
-+        user_roles: supabasePostgresReadiness.records.user_roles,
-+        users: supabasePostgresReadiness.records.users,
-+      },
-+      status: preflightStatus({
-+        ready: supabasePostgresReady,
-+        selected: supabasePostgresSelected,
-+      }),
-+      summary: supabasePostgresReady
-+        ? "Supabase identity tables are ready for users, roles, and user_roles checks."
-+        : "Supabase identity table readiness requires Supabase Postgres server configuration.",
-+    },
-+    {
-+      id: "site-setup-readiness",
-+      label: "Site Setup readiness",
-+      status: preflightStatus({
-+        ready: supabasePostgresReadiness.siteSetupReady,
-+        selected: supabasePostgresSelected,
-+      }),
-+      summary: supabasePostgresReadiness.siteSetupReady
-+        ? "Admin Site Setup readiness checks are available for Supabase Postgres."
-+        : "Admin Site Setup for Supabase requires server-only setup configuration.",
-+    },
-+  ];
-+  const failedChecks = checks.filter((check) => check.status === "FAIL");
-+  const warningChecks = checks.filter((check) => check.status === "WARN");
-+  return {
-+    checks,
-+    fallbackAllowed: false,
-+    overallStatus: failedChecks.length ? "FAIL" : warningChecks.length ? "WARN" : "PASS",
-+    selectedProvidersReady,
-+    serverOnlySecretNamesExposed: false,
-+    secretValuesExposed: false,
-+    supabaseSelected: supabaseAuthSelected || supabasePostgresSelected,
-+  };
-+}
++## Branch Validation
 +
- export function createSupabasePostgresReadiness(env = process.env) {
-   const adapterMissing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
-   const siteSetupMissing = missingEnvKeys(env, SUPABASE_POSTGRES_SITE_SETUP_KEYS);
-@@ -574,6 +690,9 @@ export function createProviderContractSnapshot(env = process.env) {
-   const missingConfigWarnings = futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing);
-   const supabaseAuthReady = supabaseAuthMissing.length === 0;
-   const supabasePostgresReady = supabasePostgresReadiness.configured;
-+  const supabaseUrlReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_URL"));
-+  const supabaseAnonKeyReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_ANON_KEY"));
-+  const supabaseServiceRoleReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY"));
-   const providerFailures = [
-     providerFailure({
-       configDiagnostic: supabaseAuthDiagnostic(env),
-@@ -591,6 +710,19 @@ export function createProviderContractSnapshot(env = process.env) {
-     }),
-   ].filter(Boolean);
-   const selectedProvidersReady = providerFailures.length === 0;
-+  const supabasePreflight = createSupabasePreflight({
-+    auth,
-+    database,
-+    selectedProvidersReady,
-+    supabaseAnonKeyReady,
-+    supabaseAuthReady,
-+    supabaseAuthSelected,
-+    supabasePostgresReadiness,
-+    supabasePostgresReady,
-+    supabasePostgresSelected,
-+    supabaseServiceRoleReady,
-+    supabaseUrlReady,
-+  });
-
-   if (supabaseAuthSelected) {
-     diagnostics.push(supabaseAuthDiagnostic(env));
-@@ -690,6 +822,7 @@ export function createProviderContractSnapshot(env = process.env) {
-         owner: "server-api",
-       },
-     },
-+    supabasePreflight,
-     supabasePostgres: {
-       configured: supabasePostgresMissing.length === 0,
-       adapter: {
-diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index 79c426951..d128f47a5 100644
---- a/src/dev-runtime/persistence/mock-db-store.js
-+++ b/src/dev-runtime/persistence/mock-db-store.js
-@@ -22,6 +22,8 @@ export const MOCK_DB_KEYS = Object.freeze({
-     admin: makeMockUlid(73),
-     system: makeMockUlid(74),
-     beta: makeMockUlid(75),
-+    creator: makeMockUlid(76),
-+    guest: makeMockUlid(77),
-   }),
-   userRoles: Object.freeze({
-     user1User: makeMockUlid(82),
-@@ -121,6 +123,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
-   toolbox_tool_metadata: Object.freeze(["key", "toolKey", "toolName", "shortLabel", "shortDescription", "description", "group", "category", "colorGroup", "toolboxGroup", "subgroup", "path", "order", "status", "badge", "toolImage", "active", "adminOnly", "hidden", "deferred", "visibleInToolsList", "capabilityLabel", "childCapabilities", "requiredRole", "statusDiagnostic", "toolId", "releaseChannel", "releaseChannelLabel", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   toolbox_tool_planning: Object.freeze(["key", "toolKey", "readiness", "requiredForPlayable", "requiredForTestable", "requiredForPublish", "requires", "progressChecklist", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   toolbox_votes: Object.freeze(["key", "toolId", "userKey", "direction", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  platform_settings: Object.freeze(["key", "settingKey", "settingValue", "settingType", "description", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-+  support_categories: Object.freeze(["key", "categorySlug", "name", "description", "isActive", "sortOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_workspace_games: Object.freeze(["key", "name", "status", "ownerKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_workspace_progress: Object.freeze(["key", "gameKey", "currentFocus", "gameProgress", "publishingProgress", "recommendedNextTool", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-   game_design_documents: Object.freeze(["key", "gameKey", "title", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
-@@ -157,6 +161,8 @@ const DEFAULT_TABLE_OWNERS = Object.freeze(Object.fromEntries([
-   ["toolbox_tool_metadata", "standalone"],
-   ["toolbox_tool_planning", "standalone"],
-   ["toolbox_votes", "standalone"],
-+  ["platform_settings", "standalone"],
-+  ["support_categories", "standalone"],
-   ["tool_state_samples", "standalone"],
-   ...Object.entries(MOCK_DB_TOOL_GROUPS).flatMap(([ownerId, group]) =>
-     group.tableNames.map((tableName) => [tableName, ownerId]),
-@@ -742,6 +748,24 @@ export function getStandaloneMockDbSeedTables() {
-         isActive: true,
-         ...standaloneAudit(7),
-       },
-+      {
-+        key: MOCK_DB_KEYS.roles.creator,
-+        roleSlug: "creator",
-+        name: "creator",
-+        description: "Creator role for authenticated makers.",
-+        isSystemRole: false,
-+        isActive: true,
-+        ...standaloneAudit(8),
-+      },
-+      {
-+        key: MOCK_DB_KEYS.roles.guest,
-+        roleSlug: "guest",
-+        name: "guest",
-+        description: "Guest role for unauthenticated browsing and starter flows.",
-+        isSystemRole: false,
-+        isActive: true,
-+        ...standaloneAudit(9),
-+      },
-     ],
-     user_roles: [
-       { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(10) },
-@@ -750,6 +774,28 @@ export function getStandaloneMockDbSeedTables() {
-       { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(14) },
-       { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...standaloneAudit(15) },
-     ],
-+    platform_settings: [
-+      {
-+        key: makeMockUlid(110),
-+        settingKey: "site.setup.status",
-+        settingValue: "ready",
-+        settingType: "string",
-+        description: "Starter Site Setup status setting owned by Admin setup.",
-+        isActive: true,
-+        ...standaloneAudit(16),
-+      },
-+    ],
-+    support_categories: [
-+      {
-+        key: makeMockUlid(120),
-+        categorySlug: "general-help",
-+        name: "General Help",
-+        description: "Starter support category for creator questions.",
-+        isActive: true,
-+        sortOrder: 1,
-+        ...standaloneAudit(17),
-+      },
-+    ],
-   };
- }
-
-diff --git a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-index 71d78f4e6..94d3f3044 100644
---- a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-+++ b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
-@@ -11,6 +11,70 @@ export const INPUT_MAPPING_TOOL_TABLES = Object.freeze([
-   "input_custom_action_records",
- ]);
-
-+export const CONTROL_EVENT_OPTIONS = Object.freeze([
-+  Object.freeze({ description: "Down", field: "eventD", label: "D" }),
-+  Object.freeze({ description: "Hold", field: "eventH", label: "H" }),
-+  Object.freeze({ description: "Up", field: "eventU", label: "U" }),
-+  Object.freeze({ description: "Double Click / Double Press", field: "eventDC", label: "DC" }),
-+]);
++PASS - Current branch verified as `main`.
 +
-+export const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
-+  "move.x-",
-+  "move.x+",
-+  "move.y-",
-+  "move.y+",
-+  "aim.x-",
-+  "aim.x+",
-+  "aim.y-",
-+  "aim.y+",
-+  "action.primary",
-+  "action.secondary",
-+  "action.tertiary",
-+  "action.quaternary",
-+  "action.confirm",
-+  "action.cancel",
-+  "action.pause",
-+  "action.start",
-+  "action.select",
-+]);
++## Scope
 +
-+export const NORMALIZED_USAGE_LABELS = Object.freeze({
-+  "action.cancel": "Cancel",
-+  "action.confirm": "Confirm",
-+  "action.pause": "Pause",
-+  "action.primary": "Primary Action",
-+  "action.quaternary": "Fourth Action",
-+  "action.secondary": "Secondary Action",
-+  "action.select": "Select",
-+  "action.start": "Start",
-+  "action.tertiary": "Third Action",
-+  "aim.x-": "Aim Left",
-+  "aim.x+": "Aim Right",
-+  "aim.y-": "Aim Up",
-+  "aim.y+": "Aim Down",
-+  "move.x-": "Move Left",
-+  "move.x+": "Move Right",
-+  "move.y-": "Move Up",
-+  "move.y+": "Move Down",
-+});
++PASS - Report-only Supabase DEV project creation guide.
++PASS - Supabase was not activated.
++PASS - Runtime behavior was not changed.
++PASS - No secrets, password tables, dependencies, or SQL execution were added.
 +
-+export const COMMON_DEFAULT_GAME_CONTROLS = Object.freeze([
-+  "action.cancel",
-+  "action.confirm",
-+  "action.pause",
-+  "action.primary",
-+  "action.secondary",
-+  "action.start",
-+  "move.x-",
-+  "move.x+",
-+  "move.y-",
-+  "move.y+",
-+]);
++## Source Position
 +
-+export const ENGINE_OWNED_NORMALIZED_INPUTS = Object.freeze([
-+  "action.pause",
-+]);
++PR138 closed with Local DB active by default and Supabase inactive until user-provided DEV configuration exists.
 +
- const INPUT_MAPPING_DB_OWNER = "controls";
- const DEFAULT_GAME_ID = "demo-game";
- const DEFAULT_INPUT_MAPPING_AUDIT_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
-@@ -535,7 +599,12 @@ export function createInputMappingToolMockRepository(options = {}) {
-   }
-
-   return {
-+    COMMON_DEFAULT_GAME_CONTROLS,
-+    CONTROL_EVENT_OPTIONS,
-+    ENGINE_OWNED_NORMALIZED_INPUTS,
-+    GAME_CONTROL_NORMALIZED_INPUTS,
-     INPUT_MAPPING_TOOL_TABLES,
-+    NORMALIZED_USAGE_LABELS,
-     getSnapshot,
-     getTables,
-     getSelectedInputDevice,
-diff --git a/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
-index 3c3cb0ba7..4bb2ebd50 100644
---- a/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
-+++ b/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
-@@ -8,6 +8,125 @@ export const OBJECTS_TOOL_TABLES = Object.freeze([
-   "object_definition_records",
- ]);
-
-+export const CAPABILITY_LABELS = Object.freeze({
-+  collectible: "Can Be Collected",
-+  collides: "Can Collide",
-+  damageable: "Takes Damage",
-+  goal: "Completes Goal",
-+  hazard: "Causes Damage",
-+  killable: "Can Be Removed",
-+  movable: "Can Move",
-+  playerControlled: "Player Controlled",
-+  scores: "Scores Points",
-+});
++Current default local settings remain:
 +
-+export const OBJECT_TYPE_TEMPLATES = Object.freeze([
-+  Object.freeze({
-+    capabilities: Object.freeze(["collectible", "scores"]),
-+    modelType: "Collectible",
-+    renderType: "Sprite",
-+    state: "Active",
-+    type: "Collectible",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze([]),
-+    modelType: "Static",
-+    renderType: "None",
-+    state: "Active",
-+    type: "Custom",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze([]),
-+    modelType: "Static",
-+    renderType: "Sprite",
-+    state: "Idle",
-+    type: "Decoration",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze(["movable", "collides", "hazard", "damageable"]),
-+    modelType: "Dynamic",
-+    renderType: "Sprite",
-+    state: "Active",
-+    type: "Enemy",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze(["goal", "scores"]),
-+    modelType: "Goal",
-+    renderType: "Sprite",
-+    state: "Active",
-+    type: "Goal",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze(["hazard", "damageable"]),
-+    modelType: "Hazard",
-+    renderType: "Sprite",
-+    state: "Active",
-+    type: "Hazard",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze(["playerControlled", "movable", "collides", "damageable"]),
-+    modelType: "Dynamic",
-+    renderType: "Sprite",
-+    state: "Active",
-+    type: "Hero",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze(["collides"]),
-+    modelType: "Static",
-+    renderType: "None",
-+    state: "Active",
-+    type: "Platform",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze(["movable", "collides", "hazard"]),
-+    modelType: "Dynamic",
-+    renderType: "Sprite",
-+    state: "Active",
-+    type: "Projectile",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze([]),
-+    modelType: "Static",
-+    renderType: "None",
-+    state: "Active",
-+    type: "Spawn Point",
-+  }),
-+  Object.freeze({
-+    capabilities: Object.freeze(["collides"]),
-+    modelType: "Static",
-+    renderType: "None",
-+    state: "Active",
-+    type: "Wall",
-+  }),
-+]);
++- `GAMEFOUNDRY_AUTH_PROVIDER=local-db`
++- `GAMEFOUNDRY_DB_PROVIDER=local-db`
 +
-+export const STARTER_OBJECTS = Object.freeze([
-+  Object.freeze({
-+    behavior: "Responds to player control mapping.",
-+    interaction: "Can interact with platforms, collectibles, hazards, and goals.",
-+    name: "Hero",
-+    render: Object.freeze({ type: "None" }),
-+    role: "Hero",
-+    state: "Active",
-+  }),
-+  Object.freeze({
-+    behavior: "Moves through the scene under authored behavior.",
-+    interaction: "Can collide with walls, platforms, or targets.",
-+    name: "Projectile",
-+    render: Object.freeze({ type: "None" }),
-+    role: "Projectile",
-+    state: "Active",
-+  }),
-+  Object.freeze({
-+    behavior: "Stays fixed in the scene.",
-+    interaction: "Provides a stable collision surface.",
-+    name: "Wall",
-+    render: Object.freeze({ type: "None" }),
-+    role: "Wall",
-+    state: "Active",
-+  }),
-+]);
++Supabase DEV activation must wait until the user creates the DEV project and supplies local-only environment values outside source control.
 +
- const OBJECTS_DB_OWNER = "objects";
- const DEFAULT_GAME_ID = "demo-project";
- const DEFAULT_OBJECTS_USER_KEY = MOCK_DB_KEYS.users.user1;
-@@ -227,7 +346,10 @@ export function createObjectsToolMockRepository(options = {}) {
-   }
-
-   return {
-+    CAPABILITY_LABELS,
-+    OBJECT_TYPE_TEMPLATES,
-     OBJECTS_TOOL_TABLES,
-+    STARTER_OBJECTS,
-     getSnapshot,
-     getTables,
-     listObjects,
-diff --git a/src/dev-runtime/seed/server-seed-loader.mjs b/src/dev-runtime/seed/server-seed-loader.mjs
-index 0c1a8a94f..73347385e 100644
---- a/src/dev-runtime/seed/server-seed-loader.mjs
-+++ b/src/dev-runtime/seed/server-seed-loader.mjs
-@@ -155,6 +155,24 @@ function roleRows(generateKey) {
-       isActive: true,
-       ...auditFields(6),
-     },
-+    {
-+      key: generateKey(),
-+      roleSlug: "creator",
-+      name: "Creator",
-+      description: "Authenticated game creator.",
-+      isSystemRole: false,
-+      isActive: true,
-+      ...auditFields(7),
-+    },
-+    {
-+      key: generateKey(),
-+      roleSlug: "guest",
-+      name: "Guest",
-+      description: "Unauthenticated visitor and starter flow role.",
-+      isSystemRole: false,
-+      isActive: true,
-+      ...auditFields(8),
-+    },
-   ];
- }
-
-@@ -223,6 +241,34 @@ function toolboxToolPlanningRows(generateKey) {
-   }));
- }
-
-+function platformSettingRows(generateKey) {
-+  return [
-+    {
-+      key: generateKey(),
-+      settingKey: "site.setup.status",
-+      settingValue: "ready",
-+      settingType: "string",
-+      description: "Starter Site Setup status setting owned by Admin setup.",
-+      isActive: true,
-+      ...auditFields(120),
-+    },
-+  ];
-+}
++## Supabase DEV Project Creation Checklist
 +
-+function supportCategoryRows(generateKey) {
-+  return [
-+    {
-+      key: generateKey(),
-+      categorySlug: "general-help",
-+      name: "General Help",
-+      description: "Starter support category for creator questions.",
-+      isActive: true,
-+      sortOrder: 1,
-+      ...auditFields(130),
-+    },
-+  ];
-+}
++Recommended project name:
 +
- function humanToolStateSampleRows(generateKey) {
-   const tools = activeToolRows();
-   const toolByKey = new Map(tools.map((tool) => [tool.toolKey, tool]));
-@@ -277,6 +323,8 @@ export function createServerSeedTables(options = {}) {
-   tables.toolbox_tool_metadata = toolboxToolMetadataRows(generateKey);
-   tables.toolbox_tool_planning = toolboxToolPlanningRows(generateKey);
-   tables.toolbox_votes = [];
-+  tables.platform_settings = platformSettingRows(generateKey);
-+  tables.support_categories = supportCategoryRows(generateKey);
-   tables.tool_state_samples = humanToolStateSampleRows(generateKey);
-   return tables;
- }
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 655b8becc..79080e0aa 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -106,6 +106,8 @@ const DB_VIEWER_STANDALONE_LABELS = Object.freeze({
-   toolbox_tool_planning: "Tool Planning",
-   toolbox_votes: "Toolbox Votes",
-   tool_state_samples: "Tool State Samples",
-+  platform_settings: "Platform Settings",
-+  support_categories: "Support Categories",
-   user_roles: "User Roles",
- });
- const DB_VIEWER_GROUP_ORDER = Object.freeze([
-@@ -1125,6 +1127,8 @@ class LocalDevDataSource {
-       .map((row) => row.userKey));
-     const firstAdminReady = users.some((user) => adminUserKeys.has(user.key) && user.isActive !== false);
-     const toolMetadataCount = (tables.toolbox_tool_metadata || []).length;
-+    const platformSettingsCount = (tables.platform_settings || []).length;
-+    const supportCategoriesCount = (tables.support_categories || []).length;
-     const areas = [
-       {
-         action: "Assign the initial admin user",
-@@ -1157,15 +1161,19 @@ class LocalDevDataSource {
-         action: "Create baseline settings records",
-         id: "starter-platform-settings",
-         label: "Starter Platform Settings",
--        status: "SKIP",
--        message: "No active platform settings table exists yet; Site Setup owns this future bootstrap area.",
-+        status: platformSettingsCount ? "PASS" : "FAIL",
-+        message: platformSettingsCount
-+          ? `${platformSettingsCount} starter platform setting row(s) are available through the Local API.`
-+          : "Starter platform settings are missing from the Local API setup state.",
-       },
-       {
-         action: "Prepare support category setup",
-         id: "support-categories",
-         label: "Support Categories",
--        status: "SKIP",
--        message: "No active support category table exists yet; Site Setup owns this future bootstrap area.",
-+        status: supportCategoriesCount ? "PASS" : "FAIL",
-+        message: supportCategoriesCount
-+          ? `${supportCategoriesCount} support category row(s) are available through the Local API.`
-+          : "Support categories are missing from the Local API setup state.",
-       },
-     ];
-     const statusCounts = areas.reduce((counts, area) => {
-@@ -1721,12 +1729,20 @@ class LocalDevDataSource {
-     }
-     if (toolId === "objects") {
-       return {
-+        CAPABILITY_LABELS: this.objectsRepository.CAPABILITY_LABELS,
-+        OBJECT_TYPE_TEMPLATES: this.objectsRepository.OBJECT_TYPE_TEMPLATES,
-         OBJECTS_TOOL_TABLES: this.objectsRepository.OBJECTS_TOOL_TABLES,
-+        STARTER_OBJECTS: this.objectsRepository.STARTER_OBJECTS,
-       };
-     }
-     if (toolId === "controls") {
-       return {
-+        COMMON_DEFAULT_GAME_CONTROLS: this.inputMappingRepository.COMMON_DEFAULT_GAME_CONTROLS,
-+        CONTROL_EVENT_OPTIONS: this.inputMappingRepository.CONTROL_EVENT_OPTIONS,
-+        ENGINE_OWNED_NORMALIZED_INPUTS: this.inputMappingRepository.ENGINE_OWNED_NORMALIZED_INPUTS,
-+        GAME_CONTROL_NORMALIZED_INPUTS: this.inputMappingRepository.GAME_CONTROL_NORMALIZED_INPUTS,
-         INPUT_MAPPING_TOOL_TABLES: this.inputMappingRepository.INPUT_MAPPING_TOOL_TABLES,
-+        NORMALIZED_USAGE_LABELS: this.inputMappingRepository.NORMALIZED_USAGE_LABELS,
-       };
-     }
-     if (toolId === "game-journey") {
-diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-index 880b3eca4..b6fe9643d 100644
---- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-+++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-@@ -89,6 +89,10 @@ async function postApiPayload(baseUrl, pathName, body = {}) {
-   return { payload, status: response.status };
- }
-
-+function preflightCheck(snapshot, checkId) {
-+  return snapshot.supabasePreflight.checks.find((check) => check.id === checkId);
-+}
++- `GameFoundryStudio-DEV`
 +
- test("Supabase provider contract stubs keep explicitly selected Local DB active", () => {
-   const snapshot = createProviderContractSnapshot({
-     GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
-@@ -137,6 +141,19 @@ test("Supabase provider contract stubs keep explicitly selected Local DB active"
-   assert.equal(snapshot.runtimeActivation.localDbSelected, true);
-   assert.equal(snapshot.runtimeActivation.browserReceivesServiceRoleSecrets, false);
-   assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
-+  assert.equal(snapshot.supabasePreflight.overallStatus, "WARN");
-+  assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
-+  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, true);
-+  assert.equal(snapshot.supabasePreflight.supabaseSelected, false);
-+  assert.equal(snapshot.supabasePreflight.secretValuesExposed, false);
-+  assert.equal(snapshot.supabasePreflight.serverOnlySecretNamesExposed, false);
-+  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "PASS");
-+  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "PASS");
-+  assert.equal(preflightCheck(snapshot, "supabase-url").status, "WARN");
-+  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "WARN");
-+  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "WARN");
-+  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "WARN");
-+  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "WARN");
-   assert.match(snapshot.providerDiagnostics.missingConfigWarnings.join("\n"), /Supabase Auth future provider is not configured/);
-   assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
-   assert.equal(snapshot.supabasePostgres.serverOnlySecretsExposed, false);
-@@ -189,6 +206,22 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
-   assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
-   assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, false);
-   assert.equal(snapshot.runtimeActivation.selectedProvidersFailed, true);
-+  assert.equal(snapshot.supabasePreflight.overallStatus, "FAIL");
-+  assert.equal(snapshot.supabasePreflight.supabaseSelected, true);
-+  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, false);
-+  assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
-+  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "PASS");
-+  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "PASS");
-+  assert.equal(preflightCheck(snapshot, "supabase-url").status, "FAIL");
-+  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "FAIL");
-+  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "FAIL");
-+  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "FAIL");
-+  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "FAIL");
-+  assert.deepEqual(preflightCheck(snapshot, "identity-tables-readiness").records, {
-+    roles: false,
-+    user_roles: false,
-+    users: false,
-+  });
-   assert.equal(snapshot.activationReadiness.blockers.length > 0, true);
-   assert.equal(snapshot.providerDiagnostics.providerFailures.length, 2);
-   assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.providerId), [
-@@ -216,6 +249,8 @@ test("Selected Supabase providers keep diagnostics available and block Local DB
-       assert.equal(providerContract.activeProviders.databaseProviderId, "supabase-postgres");
-       assert.equal(providerContract.activeProviders.status, "failed");
-       assert.equal(providerContract.providerDiagnostics.providerFailures.length, 2);
-+      assert.equal(providerContract.supabasePreflight.overallStatus, "FAIL");
-+      assert.equal(providerContract.supabasePreflight.fallbackAllowed, false);
-
-       const session = await apiPayload(server.baseUrl, "/api/session/current");
-       assert.equal(session.status, 500);
-@@ -256,6 +291,8 @@ test("Supabase stubs do not expose server-only secret names or values through th
-       assert.equal(providerContract.failureContract.automaticFallbackAllowed, false);
-       assert.equal(providerContract.providerDiagnostics.secretValuesExposed, false);
-       assert.equal(providerContract.providerDiagnostics.serverOnlyEnvironmentVariableNamesExposed, false);
-+      assert.equal(providerContract.supabasePreflight.secretValuesExposed, false);
-+      assert.equal(providerContract.supabasePreflight.serverOnlySecretNamesExposed, false);
-       assert.equal(providerContract.supabasePostgres.serverOnlySecretsExposed, false);
-       assert.equal(adapterContract.providerContract.supabasePostgres.serverOnlySecretNamesExposed, false);
-       assert.equal(providerText.includes("not-a-real-service-role-test-value"), false);
-@@ -500,6 +537,20 @@ test("Supabase activation diagnostics report readiness for selected providers",
-   assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
-   assert.equal(snapshot.runtimeActivation.supabaseAuthSelected, true);
-   assert.equal(snapshot.runtimeActivation.supabasePostgresSelected, true);
-+  assert.equal(snapshot.supabasePreflight.overallStatus, "PASS");
-+  assert.equal(snapshot.supabasePreflight.supabaseSelected, true);
-+  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, true);
-+  assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
-+  assert.equal(preflightCheck(snapshot, "supabase-url").status, "PASS");
-+  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "PASS");
-+  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "PASS");
-+  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "PASS");
-+  assert.deepEqual(preflightCheck(snapshot, "identity-tables-readiness").records, {
-+    roles: true,
-+    user_roles: true,
-+    users: true,
-+  });
-+  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "PASS");
-   assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, ["local-db", "supabase-auth"]);
-   assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, ["local-db", "supabase-postgres"]);
-   assert.equal(snapshot.supabaseAuth.status, "adapter-ready");
-@@ -519,6 +570,9 @@ test("Unsupported selected providers fail without falling back to Local DB", ()
-   assert.equal(snapshot.activeProviders.status, "failed");
-   assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
-   assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
-+  assert.equal(snapshot.supabasePreflight.overallStatus, "FAIL");
-+  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "FAIL");
-+  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "FAIL");
-   assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.reason), [
-     "unsupported-provider",
-     "unsupported-provider",
-diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
-index 7ce79ef97..efee15f88 100644
---- a/tests/playwright/tools/AdminDbViewer.spec.mjs
-+++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
-@@ -250,6 +250,8 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
-       "Tool State Samples",
-       "Toolbox Votes",
-       "User Roles",
-+      "Platform Settings",
-+      "Support Categories",
-     ]);
-     await expect(page.locator("[data-admin-db-filter='all']")).toHaveClass(/primary/);
-     await expect(page.locator("[data-admin-db-filter='all']")).toHaveAttribute("aria-pressed", "true");
-@@ -331,9 +333,10 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
-     await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 3");
-     await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
-     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
--    await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("guest");
--    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("user");
-     await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
-+    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("creator");
-+    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("guest");
-+    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("user");
-     await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("system");
-     await expect(page.locator("[data-admin-db-table='user_roles']")).toContainText("01K2GFSJ0Y");
-     const seedData = await seedIntegritySnapshot(page);
-@@ -522,6 +525,8 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
-       "Tool State Samples",
-       "Toolbox Votes",
-       "User Roles",
-+      "Platform Settings",
-+      "Support Categories",
-     ]);
-     await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
-     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);
-diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index 7b8f94534..e3e29d0b1 100644
---- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-+++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -301,6 +301,35 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.x+");
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y-");
-     await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y+");
-+    const constants = await page.evaluate(async () => {
-+      const response = await fetch("/api/toolbox/controls/constants");
-+      const payload = await response.json();
-+      return payload.data;
-+    });
-+    expect(constants.INPUT_MAPPING_TOOL_TABLES).toEqual([
-+      "game_input_mappings",
-+      "player_controller_profiles",
-+      "player_input_device_selections",
-+      "input_custom_action_records",
-+    ]);
-+    expect(constants.GAME_CONTROL_NORMALIZED_INPUTS).toEqual(GAME_CONTROL_NORMALIZED_INPUTS);
-+    expect(constants.COMMON_DEFAULT_GAME_CONTROLS).toEqual([
-+      "action.cancel",
-+      "action.confirm",
-+      "action.pause",
-+      "action.primary",
-+      "action.secondary",
-+      "action.start",
-+      "move.x-",
-+      "move.x+",
-+      "move.y-",
-+      "move.y+",
-+    ]);
-+    expect(constants.ENGINE_OWNED_NORMALIZED_INPUTS).toEqual(["action.pause"]);
-+    expect(constants.CONTROL_EVENT_OPTIONS.map((option) => option.field)).toEqual(["eventD", "eventH", "eventU", "eventDC"]);
-+    expect(constants.NORMALIZED_USAGE_LABELS["action.primary"]).toBe("Primary Action");
-+    const controlsSource = await page.evaluate(async () => fetch("/toolbox/controls/controls.js").then((response) => response.text()));
-+    expect(controlsSource).not.toMatch(/const\s+(CONTROL_EVENT_OPTIONS|GAME_CONTROL_NORMALIZED_INPUTS|NORMALIZED_USAGE_LABELS|COMMON_DEFAULT_GAME_CONTROLS|ENGINE_OWNED_NORMALIZED_INPUTS)\s*=/);
-
-     const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
-     await expect(primaryRow.locator("td").nth(0).locator("input")).toBeChecked();
-diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
-index 3517ad495..b37f337a0 100644
---- a/tests/playwright/tools/LoginSessionMode.spec.mjs
-+++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
-@@ -452,13 +452,15 @@ test("Admin Site Setup status reads server-owned setup diagnostics", async ({ pa
-
-   try {
-     await page.locator("[data-admin-setup-refresh]").click();
--    await expect(page.locator("[data-admin-setup-status]").first()).toHaveText("WARN: Site Setup status checked 5 setup areas.");
-+    await expect(page.locator("[data-admin-setup-status]").first()).toHaveText("PASS: Site Setup status checked 5 setup areas.");
-     await expect(page.locator("[data-admin-setup-status-rows] tr")).toHaveCount(5);
-     await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("First Admin");
-     await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("Tool Metadata Bootstrap");
-+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("Starter Platform Settings");
-+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("Support Categories");
-     await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("PASS");
--    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("WARN");
--    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("SKIP");
-+    await expect(page.locator("[data-admin-setup-status-rows]")).not.toContainText("WARN");
-+    await expect(page.locator("[data-admin-setup-status-rows]")).not.toContainText("SKIP");
-     await expectNoPageFailures(failures);
-   } finally {
-     await closeWithCoverage(page, failures);
-diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
-index 8ef6cc745..49c86364a 100644
---- a/tests/playwright/tools/ObjectsTool.spec.mjs
-+++ b/tests/playwright/tools/ObjectsTool.spec.mjs
-@@ -160,6 +160,17 @@ test("Objects exposes production copy, setup status, and broad table input", asy
-     await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
-     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
-+    const constants = await page.evaluate(async () => {
-+      const response = await fetch("/api/toolbox/objects/constants");
-+      const payload = await response.json();
-+      return payload.data;
-+    });
-+    expect(constants.OBJECTS_TOOL_TABLES).toEqual(["object_definition_records"]);
-+    expect(constants.OBJECT_TYPE_TEMPLATES.map((template) => template.type)).toEqual(TYPE_OPTIONS);
-+    expect(constants.STARTER_OBJECTS.map((object) => object.name)).toEqual(["Hero", "Projectile", "Wall"]);
-+    expect(constants.CAPABILITY_LABELS.movable).toBe("Can Move");
-+    const objectsSource = await page.evaluate(async () => fetch("/toolbox/objects/objects.js").then((response) => response.text()));
-+    expect(objectsSource).not.toMatch(/const\s+(CAPABILITY_LABELS|OBJECT_TYPE_TEMPLATES|STARTER_OBJECTS)\s*=/);
-     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toHaveCount(0);
-     await expect(page.locator("[aria-label='Object status summary']")).toHaveCount(0);
-     await expect(page.locator("[data-objects-status-summary]")).toHaveCount(0);
-diff --git a/toolbox/controls/controls-api-client.js b/toolbox/controls/controls-api-client.js
-index 3d0443406..240d14ee1 100644
---- a/toolbox/controls/controls-api-client.js
-+++ b/toolbox/controls/controls-api-client.js
-@@ -6,10 +6,38 @@ import {
-
- const constants = readServerToolConstants("controls");
-
-+function freezeRows(rows) {
-+  return Object.freeze(rows.map((row) => Object.freeze({ ...row })));
-+}
++User-executed steps:
 +
-+function freezeValues(values) {
-+  return Object.freeze([...values]);
-+}
++1. Sign in to Supabase with the account that will own or administer the DEV project.
++2. Create a new Supabase project named `GameFoundryStudio-DEV`.
++3. Select the intended organization/workspace owner.
++4. Choose a DEV-safe region and database password in Supabase.
++5. Store the database password in the user's password manager or approved local secret store.
++6. Wait for Supabase project provisioning to complete.
++7. Open the Supabase project dashboard.
++8. Locate the project API settings.
++9. Copy the project URL only into local environment storage.
++10. Copy the anon public key only into local environment storage.
++11. Copy the service role key only into server-only local environment storage.
++12. Locate the direct Postgres/database connection string only if the next activation PR asks for it.
++13. Keep all copied values out of Git, reports, screenshots, chat, and ZIP artifacts.
 +
-+export const COMMON_DEFAULT_GAME_CONTROLS = freezeValues(
-+  requireServerConstant(constants, "COMMON_DEFAULT_GAME_CONTROLS", "controls"),
-+);
++## Auth Email/Password Settings
 +
-+export const CONTROL_EVENT_OPTIONS = freezeRows(
-+  requireServerConstant(constants, "CONTROL_EVENT_OPTIONS", "controls"),
-+);
++User-executed Supabase settings checklist:
 +
-+export const ENGINE_OWNED_NORMALIZED_INPUTS = freezeValues(
-+  requireServerConstant(constants, "ENGINE_OWNED_NORMALIZED_INPUTS", "controls"),
-+);
++- Enable email/password authentication for DEV.
++- Keep password storage owned by Supabase Auth.
++- Do not create app-owned password tables.
++- Keep email confirmation behavior DEV-safe and document the selected setting before activation.
++- Enable password reset through Supabase Auth.
++- Confirm password reset redirects return to the local password reset page.
++- Keep OAuth providers disabled until a future dedicated provider PR.
 +
-+export const GAME_CONTROL_NORMALIZED_INPUTS = freezeValues(
-+  requireServerConstant(constants, "GAME_CONTROL_NORMALIZED_INPUTS", "controls"),
-+);
++## Redirect URLs
 +
- export const INPUT_MAPPING_TOOL_TABLES = Object.freeze(
-   requireServerConstant(constants, "INPUT_MAPPING_TOOL_TABLES", "controls"),
- );
-
-+export const NORMALIZED_USAGE_LABELS = Object.freeze(
-+  { ...requireServerConstant(constants, "NORMALIZED_USAGE_LABELS", "controls") },
-+);
++Use the actual local origin that the user will run during DEV validation. Do not commit the resulting values.
 +
- export function createControlsToolApiRepository(options = {}) {
-   return createServerRepositoryClient("controls", options);
- }
-diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
-index 1bc47bdd8..b19ff7d09 100644
---- a/toolbox/controls/controls.js
-+++ b/toolbox/controls/controls.js
-@@ -1,74 +1,20 @@
--import { createControlsToolApiRepository } from "./controls-api-client.js";
-+import {
-+  COMMON_DEFAULT_GAME_CONTROLS,
-+  CONTROL_EVENT_OPTIONS,
-+  ENGINE_OWNED_NORMALIZED_INPUTS,
-+  GAME_CONTROL_NORMALIZED_INPUTS,
-+  NORMALIZED_USAGE_LABELS,
-+  createControlsToolApiRepository,
-+} from "./controls-api-client.js";
- import {
-   normalizeNormalizedInput,
-   normalizedInputOptions,
- } from "../../src/engine/input/NormalizedInputRegistry.js";
-
--const CONTROL_EVENT_OPTIONS = Object.freeze([
--  Object.freeze({ description: "Down", field: "eventD", label: "D" }),
--  Object.freeze({ description: "Hold", field: "eventH", label: "H" }),
--  Object.freeze({ description: "Up", field: "eventU", label: "U" }),
--  Object.freeze({ description: "Double Click / Double Press", field: "eventDC", label: "DC" }),
--]);
--
--const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
--  "move.x-",
--  "move.x+",
--  "move.y-",
--  "move.y+",
--  "aim.x-",
--  "aim.x+",
--  "aim.y-",
--  "aim.y+",
--  "action.primary",
--  "action.secondary",
--  "action.tertiary",
--  "action.quaternary",
--  "action.confirm",
--  "action.cancel",
--  "action.pause",
--  "action.start",
--  "action.select",
--]);
--
- const GAME_CONTROL_NORMALIZED_INPUT_IDS = new Set(GAME_CONTROL_NORMALIZED_INPUTS);
-
--const NORMALIZED_USAGE_LABELS = Object.freeze({
--  "action.cancel": "Cancel",
--  "action.confirm": "Confirm",
--  "action.pause": "Pause",
--  "action.primary": "Primary Action",
--  "action.quaternary": "Fourth Action",
--  "action.secondary": "Secondary Action",
--  "action.select": "Select",
--  "action.start": "Start",
--  "action.tertiary": "Third Action",
--  "aim.x-": "Aim Left",
--  "aim.x+": "Aim Right",
--  "aim.y-": "Aim Up",
--  "aim.y+": "Aim Down",
--  "move.x-": "Move Left",
--  "move.x+": "Move Right",
--  "move.y-": "Move Up",
--  "move.y+": "Move Down",
--});
--
--const COMMON_DEFAULT_GAME_CONTROLS = new Set([
--  "action.cancel",
--  "action.confirm",
--  "action.pause",
--  "action.primary",
--  "action.secondary",
--  "action.start",
--  "move.x-",
--  "move.x+",
--  "move.y-",
--  "move.y+",
--]);
--
--const ENGINE_OWNED_NORMALIZED_INPUTS = new Set([
--  "action.pause",
--]);
-+const COMMON_DEFAULT_GAME_CONTROL_IDS = new Set(COMMON_DEFAULT_GAME_CONTROLS);
-+const ENGINE_OWNED_NORMALIZED_INPUT_IDS = new Set(ENGINE_OWNED_NORMALIZED_INPUTS);
-
- let controlsRepository = createControlsToolApiRepository();
- let mappings = [];
-@@ -234,7 +180,7 @@ function defaultEventFieldsForNormalizedInput(normalizedInput) {
- }
-
- function isEngineOwnedMapping(mapping = {}) {
--  return ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizeGameControlInput(mapping.normalizedInput));
-+  return ENGINE_OWNED_NORMALIZED_INPUT_IDS.has(normalizeGameControlInput(mapping.normalizedInput));
- }
-
- function mappingNeedsEngineOwnedRepair(source = {}) {
-@@ -291,7 +237,7 @@ function mappingIdFor(mapping) {
- function normalizeMapping(source = {}) {
-   const sourceNormalizedInput = normalizeText(source.normalizedInput);
-   const normalizedInput = normalizeGameControlInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
--  const engineOwned = ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizedInput);
-+  const engineOwned = ENGINE_OWNED_NORMALIZED_INPUT_IDS.has(normalizedInput);
-   const usageLabel = engineOwned
-     ? NORMALIZED_USAGE_LABELS[normalizedInput]
-     : normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
-@@ -388,7 +334,7 @@ function readMappings() {
-
- function createDefaultGameControlMappings() {
-   return gameControlNormalizedOptions().map((option, index) => {
--    const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
-+    const enabled = COMMON_DEFAULT_GAME_CONTROL_IDS.has(option.value);
-     return normalizeMapping({
-       enabled,
-       ...defaultEventFieldsForNormalizedInput(option.value),
-diff --git a/toolbox/objects/objects-api-client.js b/toolbox/objects/objects-api-client.js
-index cf6c7db37..95a7bf6ef 100644
---- a/toolbox/objects/objects-api-client.js
-+++ b/toolbox/objects/objects-api-client.js
-@@ -6,8 +6,34 @@ import {
-
- const constants = readServerToolConstants("objects");
-
-+function freezeTemplate(template = {}) {
-+  return Object.freeze({
-+    ...template,
-+    capabilities: Object.freeze(Array.isArray(template.capabilities) ? [...template.capabilities] : []),
-+  });
-+}
++Required DEV redirect entries to configure in Supabase:
 +
-+function freezeStarterObject(object = {}) {
-+  return Object.freeze({
-+    ...object,
-+    render: Object.freeze({ ...(object.render || {}) }),
-+  });
-+}
++- Site URL: local development origin.
++- Sign-in redirect: local development origin plus `/account/sign-in.html`.
++- Create-account redirect: local development origin plus `/account/create-account.html`.
++- Password-reset redirect: local development origin plus `/account/password-reset.html`.
 +
-+export const CAPABILITY_LABELS = Object.freeze(
-+  { ...requireServerConstant(constants, "CAPABILITY_LABELS", "objects") },
-+);
++Rules:
 +
-+export const OBJECT_TYPE_TEMPLATES = Object.freeze(
-+  requireServerConstant(constants, "OBJECT_TYPE_TEMPLATES", "objects").map(freezeTemplate),
-+);
++- Use exact local origins for DEV.
++- Do not add UAT or PROD redirects in the DEV project.
++- Do not use wildcard redirects unless a later security review explicitly approves them.
++- Re-check redirect URLs before OAuth or UAT work.
 +
- export const OBJECTS_TOOL_TABLES = Object.freeze(requireServerConstant(constants, "OBJECTS_TOOL_TABLES", "objects"));
-
-+export const STARTER_OBJECTS = Object.freeze(
-+  requireServerConstant(constants, "STARTER_OBJECTS", "objects").map(freezeStarterObject),
-+);
++## Required Local Environment Variable Names
 +
- export function createObjectsToolApiRepository(options = {}) {
-   return createServerRepositoryClient("objects", options);
- }
-diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
-index 1f855de74..bd600c533 100644
---- a/toolbox/objects/objects.js
-+++ b/toolbox/objects/objects.js
-@@ -5,126 +5,12 @@ import {
-   validateObjectDefinition,
- } from "../../src/engine/object-model/index.js";
- import { createAssetToolApiRepository } from "../assets/assets-api-client.js";
--import { createObjectsToolApiRepository } from "./objects-api-client.js";
--
--const CAPABILITY_LABELS = Object.freeze({
--  collectible: "Can Be Collected",
--  collides: "Can Collide",
--  damageable: "Takes Damage",
--  goal: "Completes Goal",
--  hazard: "Causes Damage",
--  killable: "Can Be Removed",
--  movable: "Can Move",
--  playerControlled: "Player Controlled",
--  scores: "Scores Points",
--});
--
--const OBJECT_TYPE_TEMPLATES = Object.freeze([
--  Object.freeze({
--    capabilities: Object.freeze(["collectible", "scores"]),
--    modelType: "Collectible",
--    renderType: "Sprite",
--    state: "Active",
--    type: "Collectible",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze([]),
--    modelType: "Static",
--    renderType: "None",
--    state: "Active",
--    type: "Custom",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze([]),
--    modelType: "Static",
--    renderType: "Sprite",
--    state: "Idle",
--    type: "Decoration",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze(["movable", "collides", "hazard", "damageable"]),
--    modelType: "Dynamic",
--    renderType: "Sprite",
--    state: "Active",
--    type: "Enemy",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze(["goal", "scores"]),
--    modelType: "Goal",
--    renderType: "Sprite",
--    state: "Active",
--    type: "Goal",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze(["hazard", "damageable"]),
--    modelType: "Hazard",
--    renderType: "Sprite",
--    state: "Active",
--    type: "Hazard",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze(["playerControlled", "movable", "collides", "damageable"]),
--    modelType: "Dynamic",
--    renderType: "Sprite",
--    state: "Active",
--    type: "Hero",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze(["collides"]),
--    modelType: "Static",
--    renderType: "None",
--    state: "Active",
--    type: "Platform",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze(["movable", "collides", "hazard"]),
--    modelType: "Dynamic",
--    renderType: "Sprite",
--    state: "Active",
--    type: "Projectile",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze([]),
--    modelType: "Static",
--    renderType: "None",
--    state: "Active",
--    type: "Spawn Point",
--  }),
--  Object.freeze({
--    capabilities: Object.freeze(["collides"]),
--    modelType: "Static",
--    renderType: "None",
--    state: "Active",
--    type: "Wall",
--  }),
--]);
--
--const STARTER_OBJECTS = Object.freeze([
--  Object.freeze({
--    behavior: "Responds to player control mapping.",
--    interaction: "Can interact with platforms, collectibles, hazards, and goals.",
--    name: "Hero",
--    render: Object.freeze({ type: "None" }),
--    role: "Hero",
--    state: "Active",
--  }),
--  Object.freeze({
--    behavior: "Moves through the scene under authored behavior.",
--    interaction: "Can collide with walls, platforms, or targets.",
--    name: "Projectile",
--    render: Object.freeze({ type: "None" }),
--    role: "Projectile",
--    state: "Active",
--  }),
--  Object.freeze({
--    behavior: "Stays fixed in the scene.",
--    interaction: "Provides a stable collision surface.",
--    name: "Wall",
--    render: Object.freeze({ type: "None" }),
--    role: "Wall",
--    state: "Active",
--  }),
--]);
-+import {
-+  CAPABILITY_LABELS,
-+  OBJECT_TYPE_TEMPLATES,
-+  STARTER_OBJECTS,
-+  createObjectsToolApiRepository,
-+} from "./objects-api-client.js";
-
- let assetRepository = createAssetToolApiRepository();
- let objectsRepository = createObjectsToolApiRepository();
++Store values outside source control. The repo may document names only.
++
++Provider selectors:
++
++- `GAMEFOUNDRY_AUTH_PROVIDER`
++- `GAMEFOUNDRY_DB_PROVIDER`
++
++Browser-safe Supabase values:
++
++- `GAMEFOUNDRY_SUPABASE_URL`
++- `GAMEFOUNDRY_SUPABASE_ANON_KEY`
++
++Server-only Supabase values:
++
++- `GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY`
++- `GAMEFOUNDRY_SUPABASE_DATABASE_URL`
++
++Initial local state before activation:
++
++- `GAMEFOUNDRY_AUTH_PROVIDER` remains `local-db`.
++- `GAMEFOUNDRY_DB_PROVIDER` remains `local-db`.
++- Supabase values may exist locally for diagnostics, but Supabase is not active until a later activation PR changes provider selectors.
++
++## Where To Store Local Env Values
++
++Allowed local-only storage:
++
++- User shell profile environment variables.
++- A local untracked `.env` file, if the user's local startup flow loads it.
++- OS/user secret manager.
++- Hosting/provider secret storage for future UAT/PROD, user-controlled only.
++
++Rules:
++
++- Do not commit real `.env` files.
++- Do not paste real values into reports.
++- Do not paste real values into screenshots.
++- Do not paste real values into chat.
++- Do not put service-role or database URL values in browser JavaScript.
++- Do not add real values to `.env.example`; it must remain names-only with empty values.
++
++## Confirmation Checklist For The User
++
++Before asking Codex for the next activation PR, confirm:
++
++- Supabase project `GameFoundryStudio-DEV` exists.
++- Email/password auth is enabled for DEV.
++- Required redirect URLs are configured for the active local origin.
++- Local env storage contains the required variable names and real values.
++- `.env.example` still contains no real values.
++- Real values are not present in Git status, reports, screenshots, or ZIPs.
++- Provider selectors still point to Local DB until the activation PR.
++
++## What Codex Should Verify After Env Vars Exist
++
++After the user confirms local env values exist, Codex should verify in the next PR:
++
++- Local API starts.
++- Provider contract still defaults to `local-db/local-db` until selectors are changed.
++- Supabase Auth readiness reports PASS when local values are present.
++- Supabase Postgres readiness reports PASS when server-only local values are present.
++- Browser-facing diagnostics do not expose server-only values or server-only variable names.
++- Selecting Supabase without complete config fails visibly.
++- Selecting Supabase with complete DEV config is ready only after explicit activation scope.
++- Admin Site Setup readiness reports the expected Supabase DEV setup status.
++- No automatic fallback to Local DB occurs when Supabase is selected and fails.
++
++## UAT/PROD Execution Boundary
++
++PASS - User creates the Supabase DEV project.
++PASS - User supplies local env values.
++PASS - Codex does not commit secrets.
++PASS - Codex may prepare reviewed SQL/setup artifacts in future PRs.
++PASS - Codex does not execute UAT or PROD SQL.
++PASS - UAT/PROD SQL/setup execution remains user-controlled.
++PASS - No automatic fallback to Local DB is allowed when Supabase is selected and fails.
++
++## Secrets Audit
++
++PASS - This guide names required environment variables but includes no real values.
++PASS - No Supabase URL, anon key, service-role key, database URL, database password, JWT, or OAuth client secret was added.
++PASS - No fake placeholder key/value was committed.
++PASS - No password tables or password storage behavior were added.
++
++## Requirement Checklist
++
++| Requirement | Status | Evidence |
++| --- | --- | --- |
++| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution | PASS | File read before PR139 execution. |
++| Verify current branch is `main` | PASS | `git branch --show-current` returned `main`. |
++| Scope to user-executed Supabase DEV project creation guide only | PASS | Only this report and shared Codex artifacts changed. |
++| Do not activate Supabase | PASS | No runtime or env selector change. |
++| Do not add secrets | PASS | Variable names only; no values. |
++| Do not change runtime behavior | PASS | No runtime files changed. |
++| Include project creation steps | PASS | Checklist included. |
++| Include recommended project name | PASS | `GameFoundryStudio-DEV`. |
++| Include auth email/password settings | PASS | Settings checklist included. |
++| Include redirect URLs | PASS | Local redirect paths documented without concrete origin values. |
++| Include required env var names with no values | PASS | Names listed only. |
++| Include where user should store env vars locally | PASS | Local-only storage section included. |
++| Include confirmation checklist | PASS | User confirmation checklist included. |
++| Include what Codex should verify after env vars exist | PASS | Verification list included. |
++| State user creates Supabase project | PASS | Explicitly documented. |
++| State user supplies local env values | PASS | Explicitly documented. |
++| State Codex does not commit secrets | PASS | Explicitly documented. |
++| State Codex does not execute UAT/PROD SQL | PASS | Explicitly documented. |
++| State no automatic fallback to Local DB when Supabase selected fails | PASS | Explicitly documented. |
++| Playwright impacted: No | PASS | Report-only PR; no UI/runtime changes. |
++
++## Validation Lane Report
++
++Executed:
++
++- `git branch --show-current` - PASS, `main`
++- `git diff --check` - PASS
++- Report existence validation - PASS
++- Runtime file change validation - PASS, no runtime files changed
++- Secret/fake value scan - PASS, no real Supabase secrets or fake key values added
++
++Skipped:
++
++- Playwright - SKIP, report-only PR with no UI/runtime changes.
++- Runtime Node tests - SKIP, no runtime code changed.
++- Full samples smoke - SKIP, report-only PR outside samples scope.
++
++## Manual Validation Notes
++
++PASS - `docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md` exists.
++PASS - The guide is user-executed and does not activate Supabase.
++PASS - The guide keeps Codex out of UAT/PROD SQL execution.
++
++## ZIP
++
++PASS - Repo-structured delta ZIP produced at `tmp/PR_26166_139-supabase-dev-project-creation-guide_delta.zip`.
