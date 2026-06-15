@@ -89,6 +89,10 @@ async function postApiPayload(baseUrl, pathName, body = {}) {
   return { payload, status: response.status };
 }
 
+function preflightCheck(snapshot, checkId) {
+  return snapshot.supabasePreflight.checks.find((check) => check.id === checkId);
+}
+
 test("Supabase provider contract stubs keep explicitly selected Local DB active", () => {
   const snapshot = createProviderContractSnapshot({
     GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
@@ -137,6 +141,19 @@ test("Supabase provider contract stubs keep explicitly selected Local DB active"
   assert.equal(snapshot.runtimeActivation.localDbSelected, true);
   assert.equal(snapshot.runtimeActivation.browserReceivesServiceRoleSecrets, false);
   assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
+  assert.equal(snapshot.supabasePreflight.overallStatus, "WARN");
+  assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
+  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, true);
+  assert.equal(snapshot.supabasePreflight.supabaseSelected, false);
+  assert.equal(snapshot.supabasePreflight.secretValuesExposed, false);
+  assert.equal(snapshot.supabasePreflight.serverOnlySecretNamesExposed, false);
+  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "supabase-url").status, "WARN");
+  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "WARN");
+  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "WARN");
+  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "WARN");
+  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "WARN");
   assert.match(snapshot.providerDiagnostics.missingConfigWarnings.join("\n"), /Supabase Auth future provider is not configured/);
   assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
   assert.equal(snapshot.supabasePostgres.serverOnlySecretsExposed, false);
@@ -189,6 +206,22 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
   assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
   assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, false);
   assert.equal(snapshot.runtimeActivation.selectedProvidersFailed, true);
+  assert.equal(snapshot.supabasePreflight.overallStatus, "FAIL");
+  assert.equal(snapshot.supabasePreflight.supabaseSelected, true);
+  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, false);
+  assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
+  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "supabase-url").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "FAIL");
+  assert.deepEqual(preflightCheck(snapshot, "identity-tables-readiness").records, {
+    roles: false,
+    user_roles: false,
+    users: false,
+  });
   assert.equal(snapshot.activationReadiness.blockers.length > 0, true);
   assert.equal(snapshot.providerDiagnostics.providerFailures.length, 2);
   assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.providerId), [
@@ -216,6 +249,8 @@ test("Selected Supabase providers keep diagnostics available and block Local DB 
       assert.equal(providerContract.activeProviders.databaseProviderId, "supabase-postgres");
       assert.equal(providerContract.activeProviders.status, "failed");
       assert.equal(providerContract.providerDiagnostics.providerFailures.length, 2);
+      assert.equal(providerContract.supabasePreflight.overallStatus, "FAIL");
+      assert.equal(providerContract.supabasePreflight.fallbackAllowed, false);
 
       const session = await apiPayload(server.baseUrl, "/api/session/current");
       assert.equal(session.status, 500);
@@ -256,6 +291,8 @@ test("Supabase stubs do not expose server-only secret names or values through th
       assert.equal(providerContract.failureContract.automaticFallbackAllowed, false);
       assert.equal(providerContract.providerDiagnostics.secretValuesExposed, false);
       assert.equal(providerContract.providerDiagnostics.serverOnlyEnvironmentVariableNamesExposed, false);
+      assert.equal(providerContract.supabasePreflight.secretValuesExposed, false);
+      assert.equal(providerContract.supabasePreflight.serverOnlySecretNamesExposed, false);
       assert.equal(providerContract.supabasePostgres.serverOnlySecretsExposed, false);
       assert.equal(adapterContract.providerContract.supabasePostgres.serverOnlySecretNamesExposed, false);
       assert.equal(providerText.includes("not-a-real-service-role-test-value"), false);
@@ -500,6 +537,20 @@ test("Supabase activation diagnostics report readiness for selected providers", 
   assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
   assert.equal(snapshot.runtimeActivation.supabaseAuthSelected, true);
   assert.equal(snapshot.runtimeActivation.supabasePostgresSelected, true);
+  assert.equal(snapshot.supabasePreflight.overallStatus, "PASS");
+  assert.equal(snapshot.supabasePreflight.supabaseSelected, true);
+  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, true);
+  assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
+  assert.equal(preflightCheck(snapshot, "supabase-url").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "PASS");
+  assert.deepEqual(preflightCheck(snapshot, "identity-tables-readiness").records, {
+    roles: true,
+    user_roles: true,
+    users: true,
+  });
+  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "PASS");
   assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, ["local-db", "supabase-auth"]);
   assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, ["local-db", "supabase-postgres"]);
   assert.equal(snapshot.supabaseAuth.status, "adapter-ready");
@@ -519,6 +570,9 @@ test("Unsupported selected providers fail without falling back to Local DB", () 
   assert.equal(snapshot.activeProviders.status, "failed");
   assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
   assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
+  assert.equal(snapshot.supabasePreflight.overallStatus, "FAIL");
+  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "FAIL");
   assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.reason), [
     "unsupported-provider",
     "unsupported-provider",

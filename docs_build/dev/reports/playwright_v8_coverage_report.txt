@@ -14,11 +14,19 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (44%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(76%) Theme V2 Shared JS - exercised 3 runtime JS files
+(77%) Theme V2 Shared JS - exercised 4 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/controls/controls-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/objects/objects-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
 (92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
 
@@ -29,15 +37,35 @@ Files with executed line/function counts where available:
 (75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 722/722; executed functions 51/68
 (75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
 (92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
+(100%) assets/theme-v2/js/login-session.js - executed lines 45/45; executed functions 7/7
 
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/controls/controls-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/controls/controls.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/objects/objects-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/objects/objects.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) toolbox/controls/controls-api-client.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/controls/controls.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/objects/objects-api-client.js - changed JS file not collected as browser runtime coverage
+(0%) toolbox/objects/objects.js - changed JS file not collected as browser runtime coverage
 (75%) src/engine/api/admin-setup-api-client.js - changed JS file with browser V8 coverage
 (92%) assets/theme-v2/js/admin-setup-actions.js - changed JS file with browser V8 coverage

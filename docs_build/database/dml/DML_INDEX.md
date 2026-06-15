@@ -16,7 +16,7 @@ Direct SQL setup is intentionally narrow. Account DEV users are SQL-executable s
 | Game Workspace | `game-workspace.sql` | Server-seed-owned | Server-side seed API |
 | Objects | `objects.sql` | Server-seed-owned | Server-side seed API |
 | Palette | `palette.sql` | Server-seed-owned | Server-side seed API |
-| Support Tickets | `support-tickets.sql` | Future/not-yet-owned | No active Local DB support ticket tables |
+| Support Tickets | `support-tickets.sql` | Server-seed-owned | Admin Site Setup/server-side seed API |
 | Tags | `tags.sql` | Server-seed-owned | Server-side seed API |
 | Tool Metadata | `tool-metadata.sql` | Server-seed-owned | Server-side seed API |
 | Tool Planning | `tool-planning.sql` | Server-seed-owned | Server-side seed API |
@@ -36,4 +36,3 @@ All non-user records must use server/API-generated ULID-style keys.
 ## Browser Seed Prohibition
 
 Browser pages must not seed authoritative records. Setup flows must call server-side APIs.
-

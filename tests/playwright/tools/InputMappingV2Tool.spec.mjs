@@ -301,6 +301,35 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.x+");
     await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y-");
     await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y+");
+    const constants = await page.evaluate(async () => {
+      const response = await fetch("/api/toolbox/controls/constants");
+      const payload = await response.json();
+      return payload.data;
+    });
+    expect(constants.INPUT_MAPPING_TOOL_TABLES).toEqual([
+      "game_input_mappings",
+      "player_controller_profiles",
+      "player_input_device_selections",
+      "input_custom_action_records",
+    ]);
+    expect(constants.GAME_CONTROL_NORMALIZED_INPUTS).toEqual(GAME_CONTROL_NORMALIZED_INPUTS);
+    expect(constants.COMMON_DEFAULT_GAME_CONTROLS).toEqual([
+      "action.cancel",
+      "action.confirm",
+      "action.pause",
+      "action.primary",
+      "action.secondary",
+      "action.start",
+      "move.x-",
+      "move.x+",
+      "move.y-",
+      "move.y+",
+    ]);
+    expect(constants.ENGINE_OWNED_NORMALIZED_INPUTS).toEqual(["action.pause"]);
+    expect(constants.CONTROL_EVENT_OPTIONS.map((option) => option.field)).toEqual(["eventD", "eventH", "eventU", "eventDC"]);
+    expect(constants.NORMALIZED_USAGE_LABELS["action.primary"]).toBe("Primary Action");
+    const controlsSource = await page.evaluate(async () => fetch("/toolbox/controls/controls.js").then((response) => response.text()));
+    expect(controlsSource).not.toMatch(/const\s+(CONTROL_EVENT_OPTIONS|GAME_CONTROL_NORMALIZED_INPUTS|NORMALIZED_USAGE_LABELS|COMMON_DEFAULT_GAME_CONTROLS|ENGINE_OWNED_NORMALIZED_INPUTS)\s*=/);
 
     const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
     await expect(primaryRow.locator("td").nth(0).locator("input")).toBeChecked();

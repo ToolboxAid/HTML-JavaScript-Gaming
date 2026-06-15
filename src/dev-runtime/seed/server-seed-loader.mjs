@@ -155,6 +155,24 @@ function roleRows(generateKey) {
       isActive: true,
       ...auditFields(6),
     },
+    {
+      key: generateKey(),
+      roleSlug: "creator",
+      name: "Creator",
+      description: "Authenticated game creator.",
+      isSystemRole: false,
+      isActive: true,
+      ...auditFields(7),
+    },
+    {
+      key: generateKey(),
+      roleSlug: "guest",
+      name: "Guest",
+      description: "Unauthenticated visitor and starter flow role.",
+      isSystemRole: false,
+      isActive: true,
+      ...auditFields(8),
+    },
   ];
 }
 
@@ -223,6 +241,34 @@ function toolboxToolPlanningRows(generateKey) {
   }));
 }
 
+function platformSettingRows(generateKey) {
+  return [
+    {
+      key: generateKey(),
+      settingKey: "site.setup.status",
+      settingValue: "ready",
+      settingType: "string",
+      description: "Starter Site Setup status setting owned by Admin setup.",
+      isActive: true,
+      ...auditFields(120),
+    },
+  ];
+}
+
+function supportCategoryRows(generateKey) {
+  return [
+    {
+      key: generateKey(),
+      categorySlug: "general-help",
+      name: "General Help",
+      description: "Starter support category for creator questions.",
+      isActive: true,
+      sortOrder: 1,
+      ...auditFields(130),
+    },
+  ];
+}
+
 function humanToolStateSampleRows(generateKey) {
   const tools = activeToolRows();
   const toolByKey = new Map(tools.map((tool) => [tool.toolKey, tool]));
@@ -277,6 +323,8 @@ export function createServerSeedTables(options = {}) {
   tables.toolbox_tool_metadata = toolboxToolMetadataRows(generateKey);
   tables.toolbox_tool_planning = toolboxToolPlanningRows(generateKey);
   tables.toolbox_votes = [];
+  tables.platform_settings = platformSettingRows(generateKey);
+  tables.support_categories = supportCategoryRows(generateKey);
   tables.tool_state_samples = humanToolStateSampleRows(generateKey);
   return tables;
 }

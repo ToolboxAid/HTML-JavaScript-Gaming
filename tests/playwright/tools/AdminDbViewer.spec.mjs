@@ -250,6 +250,8 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
       "Tool State Samples",
       "Toolbox Votes",
       "User Roles",
+      "Platform Settings",
+      "Support Categories",
     ]);
     await expect(page.locator("[data-admin-db-filter='all']")).toHaveClass(/primary/);
     await expect(page.locator("[data-admin-db-filter='all']")).toHaveAttribute("aria-pressed", "true");
@@ -331,9 +333,10 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 3");
     await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
-    await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("guest");
-    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("user");
     await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
+    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("creator");
+    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("guest");
+    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("user");
     await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("system");
     await expect(page.locator("[data-admin-db-table='user_roles']")).toContainText("01K2GFSJ0Y");
     const seedData = await seedIntegritySnapshot(page);
@@ -522,6 +525,8 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
       "Tool State Samples",
       "Toolbox Votes",
       "User Roles",
+      "Platform Settings",
+      "Support Categories",
     ]);
     await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);

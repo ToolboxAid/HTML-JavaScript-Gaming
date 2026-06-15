@@ -90,8 +90,10 @@ BEGIN
     INTO missing_role_slugs
     FROM (
         VALUES
-            ('user'),
-            ('admin')
+            ('admin'),
+            ('creator'),
+            ('guest'),
+            ('user')
     ) AS required_roles(role_slug)
     LEFT JOIN roles ON roles."roleSlug" = required_roles.role_slug
     WHERE roles.key IS NULL;

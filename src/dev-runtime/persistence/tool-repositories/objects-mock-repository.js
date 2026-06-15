@@ -8,6 +8,125 @@ export const OBJECTS_TOOL_TABLES = Object.freeze([
   "object_definition_records",
 ]);
 
+export const CAPABILITY_LABELS = Object.freeze({
+  collectible: "Can Be Collected",
+  collides: "Can Collide",
+  damageable: "Takes Damage",
+  goal: "Completes Goal",
+  hazard: "Causes Damage",
+  killable: "Can Be Removed",
+  movable: "Can Move",
+  playerControlled: "Player Controlled",
+  scores: "Scores Points",
+});
+
+export const OBJECT_TYPE_TEMPLATES = Object.freeze([
+  Object.freeze({
+    capabilities: Object.freeze(["collectible", "scores"]),
+    modelType: "Collectible",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Collectible",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze([]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Custom",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze([]),
+    modelType: "Static",
+    renderType: "Sprite",
+    state: "Idle",
+    type: "Decoration",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["movable", "collides", "hazard", "damageable"]),
+    modelType: "Dynamic",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Enemy",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["goal", "scores"]),
+    modelType: "Goal",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Goal",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["hazard", "damageable"]),
+    modelType: "Hazard",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Hazard",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["playerControlled", "movable", "collides", "damageable"]),
+    modelType: "Dynamic",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Hero",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["collides"]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Platform",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["movable", "collides", "hazard"]),
+    modelType: "Dynamic",
+    renderType: "Sprite",
+    state: "Active",
+    type: "Projectile",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze([]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Spawn Point",
+  }),
+  Object.freeze({
+    capabilities: Object.freeze(["collides"]),
+    modelType: "Static",
+    renderType: "None",
+    state: "Active",
+    type: "Wall",
+  }),
+]);
+
+export const STARTER_OBJECTS = Object.freeze([
+  Object.freeze({
+    behavior: "Responds to player control mapping.",
+    interaction: "Can interact with platforms, collectibles, hazards, and goals.",
+    name: "Hero",
+    render: Object.freeze({ type: "None" }),
+    role: "Hero",
+    state: "Active",
+  }),
+  Object.freeze({
+    behavior: "Moves through the scene under authored behavior.",
+    interaction: "Can collide with walls, platforms, or targets.",
+    name: "Projectile",
+    render: Object.freeze({ type: "None" }),
+    role: "Projectile",
+    state: "Active",
+  }),
+  Object.freeze({
+    behavior: "Stays fixed in the scene.",
+    interaction: "Provides a stable collision surface.",
+    name: "Wall",
+    render: Object.freeze({ type: "None" }),
+    role: "Wall",
+    state: "Active",
+  }),
+]);
+
 const OBJECTS_DB_OWNER = "objects";
 const DEFAULT_GAME_ID = "demo-project";
 const DEFAULT_OBJECTS_USER_KEY = MOCK_DB_KEYS.users.user1;
@@ -227,7 +346,10 @@ export function createObjectsToolMockRepository(options = {}) {
   }
 
   return {
+    CAPABILITY_LABELS,
+    OBJECT_TYPE_TEMPLATES,
     OBJECTS_TOOL_TABLES,
+    STARTER_OBJECTS,
     getSnapshot,
     getTables,
     listObjects,

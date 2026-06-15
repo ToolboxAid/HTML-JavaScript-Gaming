@@ -106,6 +106,8 @@ const DB_VIEWER_STANDALONE_LABELS = Object.freeze({
   toolbox_tool_planning: "Tool Planning",
   toolbox_votes: "Toolbox Votes",
   tool_state_samples: "Tool State Samples",
+  platform_settings: "Platform Settings",
+  support_categories: "Support Categories",
   user_roles: "User Roles",
 });
 const DB_VIEWER_GROUP_ORDER = Object.freeze([
@@ -1125,6 +1127,8 @@ class LocalDevDataSource {
       .map((row) => row.userKey));
     const firstAdminReady = users.some((user) => adminUserKeys.has(user.key) && user.isActive !== false);
     const toolMetadataCount = (tables.toolbox_tool_metadata || []).length;
+    const platformSettingsCount = (tables.platform_settings || []).length;
+    const supportCategoriesCount = (tables.support_categories || []).length;
     const areas = [
       {
         action: "Assign the initial admin user",
@@ -1157,15 +1161,19 @@ class LocalDevDataSource {
         action: "Create baseline settings records",
         id: "starter-platform-settings",
         label: "Starter Platform Settings",
-        status: "SKIP",
-        message: "No active platform settings table exists yet; Site Setup owns this future bootstrap area.",
+        status: platformSettingsCount ? "PASS" : "FAIL",
+        message: platformSettingsCount
+          ? `${platformSettingsCount} starter platform setting row(s) are available through the Local API.`
+          : "Starter platform settings are missing from the Local API setup state.",
       },
       {
         action: "Prepare support category setup",
         id: "support-categories",
         label: "Support Categories",
-        status: "SKIP",
-        message: "No active support category table exists yet; Site Setup owns this future bootstrap area.",
+        status: supportCategoriesCount ? "PASS" : "FAIL",
+        message: supportCategoriesCount
+          ? `${supportCategoriesCount} support category row(s) are available through the Local API.`
+          : "Support categories are missing from the Local API setup state.",
       },
     ];
     const statusCounts = areas.reduce((counts, area) => {
@@ -1721,12 +1729,20 @@ class LocalDevDataSource {
     }
     if (toolId === "objects") {
       return {
+        CAPABILITY_LABELS: this.objectsRepository.CAPABILITY_LABELS,
+        OBJECT_TYPE_TEMPLATES: this.objectsRepository.OBJECT_TYPE_TEMPLATES,
         OBJECTS_TOOL_TABLES: this.objectsRepository.OBJECTS_TOOL_TABLES,
+        STARTER_OBJECTS: this.objectsRepository.STARTER_OBJECTS,
       };
     }
     if (toolId === "controls") {
       return {
+        COMMON_DEFAULT_GAME_CONTROLS: this.inputMappingRepository.COMMON_DEFAULT_GAME_CONTROLS,
+        CONTROL_EVENT_OPTIONS: this.inputMappingRepository.CONTROL_EVENT_OPTIONS,
+        ENGINE_OWNED_NORMALIZED_INPUTS: this.inputMappingRepository.ENGINE_OWNED_NORMALIZED_INPUTS,
+        GAME_CONTROL_NORMALIZED_INPUTS: this.inputMappingRepository.GAME_CONTROL_NORMALIZED_INPUTS,
         INPUT_MAPPING_TOOL_TABLES: this.inputMappingRepository.INPUT_MAPPING_TOOL_TABLES,
+        NORMALIZED_USAGE_LABELS: this.inputMappingRepository.NORMALIZED_USAGE_LABELS,
       };
     }
     if (toolId === "game-journey") {

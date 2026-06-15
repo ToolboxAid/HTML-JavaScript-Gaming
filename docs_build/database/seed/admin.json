@@ -4,6 +4,17 @@
   "owner": "docs_build/database/seed",
   "serverSideSeedRequired": true,
   "browserAuthoritativeKeyGenerationAllowed": false,
-  "tables": {},
-  "note": "Admin Site Setup owns explicit server-side setup/reseed entry points. No persistent admin table exists in this PR."
+  "tables": {
+    "platform_settings": {
+      "mode": "server-api-generated-keys",
+      "starterRows": [
+        {
+          "settingKey": "site.setup.status",
+          "settingType": "string",
+          "settingValue": "ready"
+        }
+      ]
+    }
+  },
+  "note": "Admin Site Setup owns explicit server-side setup/reseed entry points and platform settings bootstrap."
 }

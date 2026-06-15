@@ -160,6 +160,17 @@ test("Objects exposes production copy, setup status, and broad table input", asy
     await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
+    const constants = await page.evaluate(async () => {
+      const response = await fetch("/api/toolbox/objects/constants");
+      const payload = await response.json();
+      return payload.data;
+    });
+    expect(constants.OBJECTS_TOOL_TABLES).toEqual(["object_definition_records"]);
+    expect(constants.OBJECT_TYPE_TEMPLATES.map((template) => template.type)).toEqual(TYPE_OPTIONS);
+    expect(constants.STARTER_OBJECTS.map((object) => object.name)).toEqual(["Hero", "Projectile", "Wall"]);
+    expect(constants.CAPABILITY_LABELS.movable).toBe("Can Move");
+    const objectsSource = await page.evaluate(async () => fetch("/toolbox/objects/objects.js").then((response) => response.text()));
+    expect(objectsSource).not.toMatch(/const\s+(CAPABILITY_LABELS|OBJECT_TYPE_TEMPLATES|STARTER_OBJECTS)\s*=/);
     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toHaveCount(0);
     await expect(page.locator("[aria-label='Object status summary']")).toHaveCount(0);
     await expect(page.locator("[data-objects-status-summary]")).toHaveCount(0);

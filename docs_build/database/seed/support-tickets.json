@@ -4,6 +4,17 @@
   "owner": "docs_build/database/seed",
   "serverSideSeedRequired": true,
   "browserAuthoritativeKeyGenerationAllowed": false,
-  "tables": {},
-  "note": "Support ticket tables are not active in the Local DB adapter yet."
+  "tables": {
+    "support_categories": {
+      "mode": "server-api-generated-keys",
+      "starterRows": [
+        {
+          "categorySlug": "general-help",
+          "name": "General Help",
+          "sortOrder": 1
+        }
+      ]
+    }
+  },
+  "note": "Support category setup is active in the Local DB adapter through Admin Site Setup/server seed ownership."
 }

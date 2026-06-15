@@ -22,6 +22,8 @@ export const MOCK_DB_KEYS = Object.freeze({
     admin: makeMockUlid(73),
     system: makeMockUlid(74),
     beta: makeMockUlid(75),
+    creator: makeMockUlid(76),
+    guest: makeMockUlid(77),
   }),
   userRoles: Object.freeze({
     user1User: makeMockUlid(82),
@@ -121,6 +123,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
   toolbox_tool_metadata: Object.freeze(["key", "toolKey", "toolName", "shortLabel", "shortDescription", "description", "group", "category", "colorGroup", "toolboxGroup", "subgroup", "path", "order", "status", "badge", "toolImage", "active", "adminOnly", "hidden", "deferred", "visibleInToolsList", "capabilityLabel", "childCapabilities", "requiredRole", "statusDiagnostic", "toolId", "releaseChannel", "releaseChannelLabel", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   toolbox_tool_planning: Object.freeze(["key", "toolKey", "readiness", "requiredForPlayable", "requiredForTestable", "requiredForPublish", "requires", "progressChecklist", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   toolbox_votes: Object.freeze(["key", "toolId", "userKey", "direction", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  platform_settings: Object.freeze(["key", "settingKey", "settingValue", "settingType", "description", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+  support_categories: Object.freeze(["key", "categorySlug", "name", "description", "isActive", "sortOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_workspace_games: Object.freeze(["key", "name", "status", "ownerKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_workspace_progress: Object.freeze(["key", "gameKey", "currentFocus", "gameProgress", "publishingProgress", "recommendedNextTool", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
   game_design_documents: Object.freeze(["key", "gameKey", "title", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
@@ -157,6 +161,8 @@ const DEFAULT_TABLE_OWNERS = Object.freeze(Object.fromEntries([
   ["toolbox_tool_metadata", "standalone"],
   ["toolbox_tool_planning", "standalone"],
   ["toolbox_votes", "standalone"],
+  ["platform_settings", "standalone"],
+  ["support_categories", "standalone"],
   ["tool_state_samples", "standalone"],
   ...Object.entries(MOCK_DB_TOOL_GROUPS).flatMap(([ownerId, group]) =>
     group.tableNames.map((tableName) => [tableName, ownerId]),
@@ -742,6 +748,24 @@ export function getStandaloneMockDbSeedTables() {
         isActive: true,
         ...standaloneAudit(7),
       },
+      {
+        key: MOCK_DB_KEYS.roles.creator,
+        roleSlug: "creator",
+        name: "creator",
+        description: "Creator role for authenticated makers.",
+        isSystemRole: false,
+        isActive: true,
+        ...standaloneAudit(8),
+      },
+      {
+        key: MOCK_DB_KEYS.roles.guest,
+        roleSlug: "guest",
+        name: "guest",
+        description: "Guest role for unauthenticated browsing and starter flows.",
+        isSystemRole: false,
+        isActive: true,
+        ...standaloneAudit(9),
+      },
     ],
     user_roles: [
       { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(10) },
@@ -749,6 +773,28 @@ export function getStandaloneMockDbSeedTables() {
       { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(13) },
       { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(14) },
       { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...standaloneAudit(15) },
+    ],
+    platform_settings: [
+      {
+        key: makeMockUlid(110),
+        settingKey: "site.setup.status",
+        settingValue: "ready",
+        settingType: "string",
+        description: "Starter Site Setup status setting owned by Admin setup.",
+        isActive: true,
+        ...standaloneAudit(16),
+      },
+    ],
+    support_categories: [
+      {
+        key: makeMockUlid(120),
+        categorySlug: "general-help",
+        name: "General Help",
+        description: "Starter support category for creator questions.",
+        isActive: true,
+        sortOrder: 1,
+        ...standaloneAudit(17),
+      },
     ],
   };
 }

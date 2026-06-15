@@ -1,1200 +1,1562 @@
-diff --git a/.env.example b/.env.example
-index d037a8d2c..c83aa1166 100644
---- a/.env.example
-+++ b/.env.example
-@@ -1,7 +1,7 @@
- # Game Foundry Studio local development environment
+diff --git a/docs_build/database/ddl/admin.sql b/docs_build/database/ddl/admin.sql
+index bd5edb2a5..62803aaae 100644
+--- a/docs_build/database/ddl/admin.sql
++++ b/docs_build/database/ddl/admin.sql
+@@ -2,5 +2,20 @@
+ -- Group: Admin
+ -- Ownership: docs_build/database/ddl/admin.sql
+ -- Target DEV database: gamefoundry_dev
+--- Scope: no active persistent Admin tables exist in the Local DB/server API contract yet.
+--- Empty-group note: Admin Site Setup owns explicit server-side setup/reseed entry points; no persistent admin table is active.
++-- Scope: Admin Site Setup ownership tables.
++
++CREATE TABLE IF NOT EXISTS platform_settings (
++    key text PRIMARY KEY,
++    "settingKey" text NOT NULL UNIQUE,
++    "settingValue" text NOT NULL DEFAULT '',
++    "settingType" text NOT NULL DEFAULT 'string',
++    description text NOT NULL DEFAULT '',
++    "isActive" boolean NOT NULL DEFAULT true,
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
++
++CREATE INDEX IF NOT EXISTS idx_platform_settings_createdby ON platform_settings ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_platform_settings_updatedby ON platform_settings ("updatedBy");
+diff --git a/docs_build/database/ddl/sqlite/local-db-schema-map.sql b/docs_build/database/ddl/sqlite/local-db-schema-map.sql
+index c3b6b8acf..e0f4c1758 100644
+--- a/docs_build/database/ddl/sqlite/local-db-schema-map.sql
++++ b/docs_build/database/ddl/sqlite/local-db-schema-map.sql
+@@ -53,7 +53,20 @@ CREATE INDEX IF NOT EXISTS idx_user_roles_updatedby ON "user_roles" ("updatedBy"
 
--# Keep Local DB active by default. Future Supabase provider selectors stay inactive
--# until a dedicated adapter PR enables them.
-+# Local DB is explicitly selected for local development. Selecting Supabase
-+# without complete configuration reports provider diagnostics instead of falling back.
- GAMEFOUNDRY_AUTH_PROVIDER=local-db
- GAMEFOUNDRY_DB_PROVIDER=local-db
+ -- Group: Admin
+ -- Grouped DDL source: docs_build/database/ddl/admin.sql
+--- No active Local DB runtime tables for this group in the current DEV adapter.
++CREATE TABLE IF NOT EXISTS "platform_settings" (
++    "key" TEXT PRIMARY KEY,
++    "settingKey" TEXT,
++    "settingValue" TEXT,
++    "settingType" TEXT,
++    "description" TEXT,
++    "isActive" TEXT,
++    "createdAt" TEXT,
++    "updatedAt" TEXT,
++    "createdBy" TEXT NOT NULL REFERENCES users("key"),
++    "updatedBy" TEXT NOT NULL REFERENCES users("key")
++);
++CREATE INDEX IF NOT EXISTS idx_platform_settings_createdby ON "platform_settings" ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_platform_settings_updatedby ON "platform_settings" ("updatedBy");
 
-diff --git a/admin/site-setup.html b/admin/site-setup.html
-index 622b8dd0f..0a2257112 100644
---- a/admin/site-setup.html
-+++ b/admin/site-setup.html
-@@ -46,6 +46,7 @@
-                                     <label>Setup Area <select disabled><option>Default roles</option><option>First admin</option><option>Tool metadata bootstrap</option><option>Starter platform settings</option><option>Ticket categories</option></select></label>
-                                     <label>Review Mode <select disabled><option>Foundation only</option><option>Local DB dry run</option><option>Admin approval</option></select></label>
-                                     <button class="btn btn--compact" type="button" data-admin-setup-reseed>Reseed Local DB</button>
-+                                    <button class="btn btn--compact" type="button" data-admin-setup-refresh>Refresh Setup Status</button>
-                                     <p class="status" role="status" data-admin-setup-status>SKIP: No setup action has been run.</p>
-                                 </div>
-                             </details>
-@@ -69,12 +70,12 @@
-                                         <th scope="col">Guardrail</th>
-                                     </tr>
-                                 </thead>
--                                <tbody>
--                                    <tr><td>Default Roles</td><td>Create approved role records</td><td>Foundation</td><td>Local DB contract required</td></tr>
--                                    <tr><td>First Admin</td><td>Assign the initial admin user</td><td>Foundation</td><td>No hidden default user</td></tr>
--                                    <tr><td>Tool Metadata Bootstrap</td><td>Seed active tool metadata</td><td>Foundation</td><td>Shared metadata source required</td></tr>
--                                    <tr><td>Starter Platform Settings</td><td>Create baseline settings records</td><td>Foundation</td><td>Visible diagnostics required</td></tr>
--                                    <tr><td>Ticket/Support Categories</td><td>Prepare support category setup</td><td>Foundation</td><td>Admin approval required</td></tr>
-+                                <tbody data-admin-setup-status-rows>
-+                                    <tr><td>Default Roles</td><td>Create approved role records</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
-+                                    <tr><td>First Admin</td><td>Assign the initial admin user</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
-+                                    <tr><td>Tool Metadata Bootstrap</td><td>Seed active tool metadata</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
-+                                    <tr><td>Starter Platform Settings</td><td>Create baseline settings records</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
-+                                    <tr><td>Support Categories</td><td>Prepare support category setup</td><td>SKIP</td><td>Refresh setup status to read server-owned diagnostics.</td></tr>
-                                 </tbody>
-                             </table>
-                         </div>
-diff --git a/assets/theme-v2/js/admin-setup-actions.js b/assets/theme-v2/js/admin-setup-actions.js
-index d0d8e7039..f76fcc9c8 100644
---- a/assets/theme-v2/js/admin-setup-actions.js
-+++ b/assets/theme-v2/js/admin-setup-actions.js
-@@ -1,7 +1,9 @@
--import { reseedAdminSetup } from "../../../src/engine/api/admin-setup-api-client.js";
-+import { readAdminSetupStatus, reseedAdminSetup } from "../../../src/engine/api/admin-setup-api-client.js";
+ -- Group: Game Workspace
+ -- Grouped DDL source: docs_build/database/ddl/game-workspace.sql
+@@ -601,7 +614,20 @@ CREATE INDEX IF NOT EXISTS idx_toolbox_votes_updatedby ON "toolbox_votes" ("upda
 
- const reseedButtons = Array.from(document.querySelectorAll("[data-admin-setup-reseed]"));
-+const refreshButtons = Array.from(document.querySelectorAll("[data-admin-setup-refresh]"));
- const statusFields = Array.from(document.querySelectorAll("[data-admin-setup-status]"));
-+const statusRows = Array.from(document.querySelectorAll("[data-admin-setup-status-rows]"));
+ -- Group: Support Tickets
+ -- Grouped DDL source: docs_build/database/ddl/support-tickets.sql
+--- No active Local DB runtime tables for this group in the current DEV adapter.
++CREATE TABLE IF NOT EXISTS "support_categories" (
++    "key" TEXT PRIMARY KEY,
++    "categorySlug" TEXT,
++    "name" TEXT,
++    "description" TEXT,
++    "isActive" TEXT,
++    "sortOrder" TEXT,
++    "createdAt" TEXT,
++    "updatedAt" TEXT,
++    "createdBy" TEXT NOT NULL REFERENCES users("key"),
++    "updatedBy" TEXT NOT NULL REFERENCES users("key")
++);
++CREATE INDEX IF NOT EXISTS idx_support_categories_createdby ON "support_categories" ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_support_categories_updatedby ON "support_categories" ("updatedBy");
 
- function setStatus(message, status = "PASS") {
-   const text = `${status}: ${message}`;
-@@ -11,7 +13,7 @@ function setStatus(message, status = "PASS") {
+ -- Group: Tool State Samples
+ -- Grouped DDL source: Local DB compatibility table; grouped guest seed data is owned under docs_build/database/seed/guest/.
+diff --git a/docs_build/database/ddl/support-tickets.sql b/docs_build/database/ddl/support-tickets.sql
+index de0aac7de..ea79018df 100644
+--- a/docs_build/database/ddl/support-tickets.sql
++++ b/docs_build/database/ddl/support-tickets.sql
+@@ -2,5 +2,20 @@
+ -- Group: Support Tickets
+ -- Ownership: docs_build/database/ddl/support-tickets.sql
+ -- Target DEV database: gamefoundry_dev
+--- Scope: no active persistent Support Tickets tables exist in the Local DB/server API contract yet.
+--- Empty-group note: support ticket tables are not active in the Local DB adapter yet.
++-- Scope: Support category setup ownership.
++
++CREATE TABLE IF NOT EXISTS support_categories (
++    key text PRIMARY KEY,
++    "categorySlug" text NOT NULL UNIQUE,
++    name text NOT NULL,
++    description text NOT NULL DEFAULT '',
++    "isActive" boolean NOT NULL DEFAULT true,
++    "sortOrder" integer NOT NULL DEFAULT 1,
++    "createdAt" timestamptz NOT NULL DEFAULT now(),
++    "updatedAt" timestamptz NOT NULL DEFAULT now(),
++    "createdBy" text NOT NULL REFERENCES users(key),
++    "updatedBy" text NOT NULL REFERENCES users(key)
++);
++
++CREATE INDEX IF NOT EXISTS idx_support_categories_createdby ON support_categories ("createdBy");
++CREATE INDEX IF NOT EXISTS idx_support_categories_updatedby ON support_categories ("updatedBy");
+diff --git a/docs_build/database/dml/DML_INDEX.md b/docs_build/database/dml/DML_INDEX.md
+index 6369d3127..2b3f8c27b 100644
+--- a/docs_build/database/dml/DML_INDEX.md
++++ b/docs_build/database/dml/DML_INDEX.md
+@@ -16,7 +16,7 @@ Direct SQL setup is intentionally narrow. Account DEV users are SQL-executable s
+ | Game Workspace | `game-workspace.sql` | Server-seed-owned | Server-side seed API |
+ | Objects | `objects.sql` | Server-seed-owned | Server-side seed API |
+ | Palette | `palette.sql` | Server-seed-owned | Server-side seed API |
+-| Support Tickets | `support-tickets.sql` | Future/not-yet-owned | No active Local DB support ticket tables |
++| Support Tickets | `support-tickets.sql` | Server-seed-owned | Admin Site Setup/server-side seed API |
+ | Tags | `tags.sql` | Server-seed-owned | Server-side seed API |
+ | Tool Metadata | `tool-metadata.sql` | Server-seed-owned | Server-side seed API |
+ | Tool Planning | `tool-planning.sql` | Server-seed-owned | Server-side seed API |
+@@ -36,4 +36,3 @@ All non-user records must use server/API-generated ULID-style keys.
+ ## Browser Seed Prohibition
+
+ Browser pages must not seed authoritative records. Setup flows must call server-side APIs.
+-
+diff --git a/docs_build/database/dml/account.sql b/docs_build/database/dml/account.sql
+index bc9a25ed7..2e881fe55 100644
+--- a/docs_build/database/dml/account.sql
++++ b/docs_build/database/dml/account.sql
+@@ -90,8 +90,10 @@ BEGIN
+     INTO missing_role_slugs
+     FROM (
+         VALUES
+-            ('user'),
+-            ('admin')
++            ('admin'),
++            ('creator'),
++            ('guest'),
++            ('user')
+     ) AS required_roles(role_slug)
+     LEFT JOIN roles ON roles."roleSlug" = required_roles.role_slug
+     WHERE roles.key IS NULL;
+diff --git a/docs_build/database/dml/admin.sql b/docs_build/database/dml/admin.sql
+index 4fd709283..b4056e115 100644
+--- a/docs_build/database/dml/admin.sql
++++ b/docs_build/database/dml/admin.sql
+@@ -4,8 +4,8 @@
+ -- Runtime setup/seed operations for this group must run through server-side APIs.
+ -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
+ -- Browser pages must not directly seed authoritative DB records.
+--- Owned tables: none active
+--- Note: Admin Site Setup owns explicit server-side setup/reseed entry points. No persistent admin table exists in this PR.
++-- Owned tables: platform_settings
++-- Note: Admin Site Setup owns explicit server-side setup/reseed entry points and platform settings bootstrap.
+
+ -- DML status: Server-seed-owned.
+ -- Setup is performed through the Admin-owned server-side seed API.
+@@ -13,3 +13,5 @@
+ -- The server/API layer generates all non-user keys.
+ -- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
+ -- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
++-- Starter server seed rows:
++--   platform_settings.settingKey = site.setup.status
+diff --git a/docs_build/database/dml/support-tickets.sql b/docs_build/database/dml/support-tickets.sql
+index 2f9b302b1..c4d7c159a 100644
+--- a/docs_build/database/dml/support-tickets.sql
++++ b/docs_build/database/dml/support-tickets.sql
+@@ -4,12 +4,14 @@
+ -- Runtime setup/seed operations for this group must run through server-side APIs.
+ -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
+ -- Browser pages must not directly seed authoritative DB records.
+--- Owned tables: none active
+--- Note: Support ticket tables are not active in the Local DB adapter yet.
++-- Owned tables: support_categories
++-- Note: Support category setup is active in the Local DB adapter through Admin Site Setup/server seed ownership.
+
+--- DML status: Future/not-yet-owned.
+--- No setup is performed for this group yet because there are no active Local DB support ticket tables.
++-- DML status: Server-seed-owned.
++-- Setup is performed through the Admin-owned server-side seed API.
+ -- Browser pages must not seed authoritative records.
+ -- The server/API layer generates all non-user keys.
+ -- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
+--- Direct SQL setup and server-side seed ownership remain deferred until a later support-ticket persistence PR explicitly owns them.
++-- Direct SQL setup remains deferred until a later migration-runner PR explicitly owns it.
++-- Starter server seed rows:
++--   support_categories.categorySlug = general-help
+diff --git a/docs_build/database/seed/account.json b/docs_build/database/seed/account.json
+index d768e0e4f..4a9040dd9 100644
+--- a/docs_build/database/seed/account.json
++++ b/docs_build/database/seed/account.json
+@@ -41,7 +41,7 @@
+     },
+     "roles": {
+       "mode": "server-api-generated-keys",
+-      "requiredRoleSlugs": ["user", "admin"]
++      "requiredRoleSlugs": ["admin", "creator", "guest", "user"]
+     },
+     "user_roles": {
+       "mode": "server-side-upsert",
+diff --git a/docs_build/database/seed/admin.json b/docs_build/database/seed/admin.json
+index b33e5552e..915a29738 100644
+--- a/docs_build/database/seed/admin.json
++++ b/docs_build/database/seed/admin.json
+@@ -4,6 +4,17 @@
+   "owner": "docs_build/database/seed",
+   "serverSideSeedRequired": true,
+   "browserAuthoritativeKeyGenerationAllowed": false,
+-  "tables": {},
+-  "note": "Admin Site Setup owns explicit server-side setup/reseed entry points. No persistent admin table exists in this PR."
++  "tables": {
++    "platform_settings": {
++      "mode": "server-api-generated-keys",
++      "starterRows": [
++        {
++          "settingKey": "site.setup.status",
++          "settingType": "string",
++          "settingValue": "ready"
++        }
++      ]
++    }
++  },
++  "note": "Admin Site Setup owns explicit server-side setup/reseed entry points and platform settings bootstrap."
  }
-
- function setBusy(isBusy) {
--  reseedButtons.forEach((button) => {
-+  [...reseedButtons, ...refreshButtons].forEach((button) => {
-     button.disabled = isBusy;
-     if (isBusy) {
-       button.setAttribute("aria-disabled", "true");
-@@ -21,6 +23,41 @@ function setBusy(isBusy) {
-   });
+diff --git a/docs_build/database/seed/support-tickets.json b/docs_build/database/seed/support-tickets.json
+index e376bbd1d..1b0617251 100644
+--- a/docs_build/database/seed/support-tickets.json
++++ b/docs_build/database/seed/support-tickets.json
+@@ -4,6 +4,17 @@
+   "owner": "docs_build/database/seed",
+   "serverSideSeedRequired": true,
+   "browserAuthoritativeKeyGenerationAllowed": false,
+-  "tables": {},
+-  "note": "Support ticket tables are not active in the Local DB adapter yet."
++  "tables": {
++    "support_categories": {
++      "mode": "server-api-generated-keys",
++      "starterRows": [
++        {
++          "categorySlug": "general-help",
++          "name": "General Help",
++          "sortOrder": 1
++        }
++      ]
++    }
++  },
++  "note": "Support category setup is active in the Local DB adapter through Admin Site Setup/server seed ownership."
  }
-
-+function appendCell(row, text) {
-+  const cell = document.createElement("td");
-+  cell.textContent = text;
-+  row.appendChild(cell);
-+}
-+
-+function renderSetupRows(report) {
-+  statusRows.forEach((body) => {
-+    body.replaceChildren();
-+    (report.areas || []).forEach((area) => {
-+      const row = document.createElement("tr");
-+      appendCell(row, area.label || area.id || "Setup Area");
-+      appendCell(row, area.action || "Server-owned setup check");
-+      appendCell(row, area.status || "WARN");
-+      appendCell(row, area.message || "No setup status message returned.");
-+      body.appendChild(row);
-+    });
-+  });
-+}
-+
-+function refreshSetupStatus() {
-+  setBusy(true);
-+  setStatus("Reading Site Setup status through Admin setup.", "WARN");
-+  try {
-+    const report = readAdminSetupStatus();
-+    renderSetupRows(report);
-+    setStatus(report.message || "Site Setup status refreshed.", report.status || "PASS");
-+  } catch (error) {
-+    const message = error instanceof Error ? error.message : String(error || "Admin setup status failed.");
-+    setStatus(message, "FAIL");
-+  } finally {
-+    setBusy(false);
-+  }
-+}
-+
- function runReseed() {
-   setBusy(true);
-   setStatus("Running Local DB reseed through Admin setup.", "WARN");
-@@ -41,3 +78,7 @@ function runReseed() {
- reseedButtons.forEach((button) => {
-   button.addEventListener("click", runReseed);
- });
-+
-+refreshButtons.forEach((button) => {
-+  button.addEventListener("click", refreshSetupStatus);
-+});
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 2fbd64b69..4648a2501 100644
+index 7c2bcc7fd..0dc01f4e3 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,12 +1,16 @@
--# git status --short
--M docs_build/dev/reports/codex_changed_files.txt
-- M docs_build/dev/reports/codex_review.diff
--?? docs_build/dev/reports/pr129-local-db-migration-audit.md
--
--# git ls-files --others --exclude-standard
--docs_build/dev/reports/pr129-local-db-migration-audit.md
--
--# git diff --stat
--docs_build/dev/reports/codex_changed_files.txt |   20 +-
-- docs_build/dev/reports/codex_review.diff       | 1001 +++++-------------------
-- 2 files changed, 215 insertions(+), 806 deletions(-)
-+.env.example
-+admin/site-setup.html
-+assets/theme-v2/js/admin-setup-actions.js
-+docs_build/dev/reports/codex_changed_files.txt
-+docs_build/dev/reports/codex_review.diff
-+docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+docs_build/dev/reports/playwright_v8_coverage_report.txt
-+docs_build/dev/reports/pr130-provider-failure-contract.md
-+docs_build/dev/reports/pr131-supabase-dev-activation-runtime.md
-+docs_build/dev/reports/pr132-supabase-users-roles-migration.md
-+docs_build/dev/reports/pr133-site-setup-productionization.md
-+src/dev-runtime/auth/provider-contract-stubs.mjs
-+src/dev-runtime/server/local-api-router.mjs
-+src/engine/api/admin-setup-api-client.js
-+tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-+tests/playwright/tools/LoginSessionMode.spec.mjs
+@@ -1,17 +1,32 @@
+-.env.example
+-admin/site-setup.html
+-assets/theme-v2/js/admin-setup-actions.js
++docs_build/database/ddl/admin.sql
++docs_build/database/ddl/sqlite/local-db-schema-map.sql
++docs_build/database/ddl/support-tickets.sql
++docs_build/database/dml/DML_INDEX.md
++docs_build/database/dml/account.sql
++docs_build/database/dml/admin.sql
++docs_build/database/dml/support-tickets.sql
++docs_build/database/seed/account.json
++docs_build/database/seed/admin.json
++docs_build/database/seed/support-tickets.json
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
+ docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ docs_build/dev/reports/playwright_v8_coverage_report.txt
+-docs_build/dev/reports/pr130-provider-failure-contract.md
+-docs_build/dev/reports/pr131-supabase-dev-activation-runtime.md
+-docs_build/dev/reports/pr132-supabase-users-roles-migration.md
+-docs_build/dev/reports/pr133-site-setup-productionization.md
+-docs_build/dev/reports/pr134-db-migration-finish-line-audit.md
++docs_build/dev/reports/pr135-site-setup-warning-cleanup.md
++docs_build/dev/reports/pr136-objects-controls-db-catalog-migration.md
++docs_build/dev/reports/pr137-supabase-dev-preflight-diagnostics.md
+ src/dev-runtime/auth/provider-contract-stubs.mjs
++src/dev-runtime/persistence/mock-db-store.js
++src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
++src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
++src/dev-runtime/seed/server-seed-loader.mjs
+ src/dev-runtime/server/local-api-router.mjs
+-src/engine/api/admin-setup-api-client.js
+ tests/dev-runtime/SupabaseProviderContractStub.test.mjs
++tests/playwright/tools/AdminDbViewer.spec.mjs
++tests/playwright/tools/InputMappingV2Tool.spec.mjs
+ tests/playwright/tools/LoginSessionMode.spec.mjs
++tests/playwright/tools/ObjectsTool.spec.mjs
++toolbox/controls/controls-api-client.js
++toolbox/controls/controls.js
++toolbox/objects/objects-api-client.js
++toolbox/objects/objects.js
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index aa88fe50b..86c4107a2 100644
+index 86c4107a2..a231fe34c 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -7,6 +7,10 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -7,10 +7,26 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
  (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
-+(92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/controls/controls-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/objects/objects-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
+ (92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
 
  Guardrail warnings:
  (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/controls/controls-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/objects/objects-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index dbebf52d8..65ecd1416 100644
+index 65ecd1416..bbdaf6fe3 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -14,29 +14,30 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+@@ -14,11 +14,19 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
  Exercised tool entry points detected:
  (44%) Toolbox Index - exercised 1 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(60%) Theme V2 Shared JS - exercised 6 runtime JS files
-+(76%) Theme V2 Shared JS - exercised 3 runtime JS files
+-(76%) Theme V2 Shared JS - exercised 3 runtime JS files
++(77%) Theme V2 Shared JS - exercised 4 runtime JS files
 
  Changed runtime JS files covered:
  (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
-+(92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/controls/controls-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/controls/controls.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/objects/objects-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) toolbox/objects/objects.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
+ (92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
 
- Files with executed line/function counts where available:
--(8%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 1/12
--(10%) assets/theme-v2/js/local-db-page-data.js - executed lines 299/299; executed functions 3/29
--(33%) src/engine/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
- (36%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 5/14
--(40%) assets/theme-v2/js/admin-setup-actions.js - executed lines 38/38; executed functions 2/5
- (44%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 11/25
--(60%) src/engine/api/local-db-api-client.js - executed lines 19/19; executed functions 3/5
- (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
--(67%) admin/db-viewer.js - executed lines 49/49; executed functions 4/6
--(76%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 722/722; executed functions 52/68
--(86%) src/engine/api/local-db-viewer-ui.js - executed lines 479/479; executed functions 78/91
--(100%) assets/theme-v2/js/admin-db-status-panel.js - executed lines 30/30; executed functions 3/3
--(100%) assets/theme-v2/js/login-session.js - executed lines 45/45; executed functions 7/7
-+(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 722/722; executed functions 51/68
-+(75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
-+(92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
+@@ -29,15 +37,35 @@ Files with executed line/function counts where available:
+ (75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 722/722; executed functions 51/68
+ (75%) src/engine/api/admin-setup-api-client.js - executed lines 16/16; executed functions 3/4
+ (92%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 12/13
++(100%) assets/theme-v2/js/login-session.js - executed lines 45/45; executed functions 7/7
 
  Uncovered or low-coverage changed JS files:
  (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/controls/controls-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/controls/controls.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/objects/objects-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) toolbox/objects/objects.js - WARNING: uncovered changed runtime JS file; advisory only
 
  Changed JS files considered:
  (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
-+(75%) src/engine/api/admin-setup-api-client.js - changed JS file with browser V8 coverage
-+(92%) assets/theme-v2/js/admin-setup-actions.js - changed JS file with browser V8 coverage
++(0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/InputMappingV2Tool.spec.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ObjectsTool.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) toolbox/controls/controls-api-client.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/controls/controls.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/objects/objects-api-client.js - changed JS file not collected as browser runtime coverage
++(0%) toolbox/objects/objects.js - changed JS file not collected as browser runtime coverage
+ (75%) src/engine/api/admin-setup-api-client.js - changed JS file with browser V8 coverage
+ (92%) assets/theme-v2/js/admin-setup-actions.js - changed JS file with browser V8 coverage
 diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
-index 1297151a5..51445c48a 100644
+index 51445c48a..c5e70aea1 100644
 --- a/src/dev-runtime/auth/provider-contract-stubs.mjs
 +++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
-@@ -1,4 +1,5 @@
- import { randomBytes } from "node:crypto";
-+import { MOCK_DB_KEYS } from "../persistence/mock-db-store.js";
-
- export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
-   "getCurrentUser",
-@@ -14,6 +15,7 @@ export const POSTGRES_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
-   "getUsers",
-   "getRoles",
-   "getUserRoles",
-+  "initializeIdentity",
-   "runSiteSetup",
-   "getDbViewerSnapshot",
- ]);
-@@ -44,6 +46,12 @@ const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
- ]);
- const SUPABASE_POSTGRES_TABLES = Object.freeze(["users", "roles", "user_roles"]);
- const RUNTIME_ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
-+const DEV_STATIC_USER_KEYS = Object.freeze([
-+  MOCK_DB_KEYS.users.user1,
-+  MOCK_DB_KEYS.users.user2,
-+  MOCK_DB_KEYS.users.user3,
-+  MOCK_DB_KEYS.users.admin,
-+]);
-
- export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
-   browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS,
-@@ -54,6 +62,17 @@ export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
- const SUPPORTED_AUTH_PROVIDERS = Object.freeze([LOCAL_AUTH_PROVIDER_ID, SUPABASE_AUTH_PROVIDER_ID]);
- const SUPPORTED_DATABASE_PROVIDERS = Object.freeze([LOCAL_DATABASE_PROVIDER_ID, SUPABASE_POSTGRES_PROVIDER_ID]);
-
-+export const PROVIDER_SELECTION_CONTROLS = Object.freeze({
-+  auth: Object.freeze({
-+    environmentVariable: "GAMEFOUNDRY_AUTH_PROVIDER",
-+    supportedProviders: SUPPORTED_AUTH_PROVIDERS,
-+  }),
-+  database: Object.freeze({
-+    environmentVariable: "GAMEFOUNDRY_DB_PROVIDER",
-+    supportedProviders: SUPPORTED_DATABASE_PROVIDERS,
-+  }),
-+});
-+
- function envValue(env, key) {
-   return String(env?.[key] || "").trim();
- }
-@@ -67,7 +86,7 @@ function requestedProvider(env, key, fallback, supportedValues) {
-   const supported = supportedValues.includes(requested);
-   return {
-     diagnostic: supported ? "" : `${key}=${requested} is not a supported provider. Use ${supportedValues.join(" or ")}.`,
--    id: supported ? requested : fallback,
-+    id: requested,
-     requested,
-     supported,
-   };
-@@ -109,13 +128,13 @@ function authHeaders(env, accessToken = "") {
-   return headers;
+@@ -235,6 +235,122 @@ function providerFailure({ configDiagnostic, missingConfig, providerId, selectio
+   return null;
  }
 
--function postgresHeaders(env) {
-+function postgresHeaders(env, prefer = "return=representation") {
-   const serviceRoleKey = supabaseServiceRoleKey(env);
-   return {
-     apikey: serviceRoleKey,
-     authorization: `Bearer ${serviceRoleKey}`,
-     "content-type": "application/json",
--    prefer: "return=representation",
-+    prefer,
-   };
- }
-
-@@ -127,6 +146,27 @@ function requireString(value, label) {
-   return normalized;
- }
-
-+function requireIdentityString(value, label) {
-+  const normalized = String(value || "").trim();
-+  if (!normalized) {
-+    throw new Error(`Supabase Postgres identity ${label} is required.`);
++function preflightStatus({ ready, selected }) {
++  if (ready) {
++    return "PASS";
 +  }
-+  return normalized;
++  return selected ? "FAIL" : "WARN";
 +}
 +
-+function optionalString(value) {
-+  return String(value || "").trim();
-+}
-+
-+function normalizeAuditFields(source, actorKey, timestamp) {
++function createSupabasePreflight({
++  auth,
++  database,
++  selectedProvidersReady,
++  supabaseAuthReady,
++  supabaseAuthSelected,
++  supabasePostgresReadiness,
++  supabasePostgresReady,
++  supabasePostgresSelected,
++  supabaseUrlReady,
++  supabaseAnonKeyReady,
++  supabaseServiceRoleReady,
++}) {
++  const checks = [
++    {
++      id: "auth-provider-selected",
++      label: "Auth provider selected",
++      providerId: auth.id,
++      status: auth.supported ? "PASS" : "FAIL",
++      summary: auth.supported
++        ? `Auth provider selection is ${auth.id}.`
++        : auth.diagnostic,
++    },
++    {
++      id: "database-provider-selected",
++      label: "DB provider selected",
++      providerId: database.id,
++      status: database.supported ? "PASS" : "FAIL",
++      summary: database.supported
++        ? `DB provider selection is ${database.id}.`
++        : database.diagnostic,
++    },
++    {
++      id: "supabase-url",
++      label: "Supabase URL",
++      status: preflightStatus({
++        ready: supabaseUrlReady,
++        selected: supabaseAuthSelected || supabasePostgresSelected,
++      }),
++      summary: supabaseUrlReady
++        ? "Supabase URL is configured."
++        : "Supabase URL is required before selecting Supabase Auth or Supabase Postgres.",
++      visibility: "browser-safe",
++    },
++    {
++      id: "supabase-anon-key",
++      label: "Supabase anon key",
++      status: preflightStatus({
++        ready: supabaseAnonKeyReady,
++        selected: supabaseAuthSelected,
++      }),
++      summary: supabaseAnonKeyReady
++        ? "Supabase anon key is configured for browser-safe Auth requests."
++        : "Supabase anon key is required before selecting Supabase Auth.",
++      visibility: "browser-safe",
++    },
++    {
++      id: "supabase-server-only-credential",
++      label: "Supabase server-only credential",
++      status: preflightStatus({
++        ready: supabaseServiceRoleReady,
++        selected: supabasePostgresSelected,
++      }),
++      summary: supabaseServiceRoleReady
++        ? "Server-only Supabase database credential is configured on the server."
++        : "Server-only Supabase database credential is required before selecting Supabase Postgres.",
++      visibility: "server-only",
++    },
++    {
++      id: "identity-tables-readiness",
++      label: "users/roles/user_roles readiness",
++      records: {
++        roles: supabasePostgresReadiness.records.roles,
++        user_roles: supabasePostgresReadiness.records.user_roles,
++        users: supabasePostgresReadiness.records.users,
++      },
++      status: preflightStatus({
++        ready: supabasePostgresReady,
++        selected: supabasePostgresSelected,
++      }),
++      summary: supabasePostgresReady
++        ? "Supabase identity tables are ready for users, roles, and user_roles checks."
++        : "Supabase identity table readiness requires Supabase Postgres server configuration.",
++    },
++    {
++      id: "site-setup-readiness",
++      label: "Site Setup readiness",
++      status: preflightStatus({
++        ready: supabasePostgresReadiness.siteSetupReady,
++        selected: supabasePostgresSelected,
++      }),
++      summary: supabasePostgresReadiness.siteSetupReady
++        ? "Admin Site Setup readiness checks are available for Supabase Postgres."
++        : "Admin Site Setup for Supabase requires server-only setup configuration.",
++    },
++  ];
++  const failedChecks = checks.filter((check) => check.status === "FAIL");
++  const warningChecks = checks.filter((check) => check.status === "WARN");
 +  return {
-+    createdAt: optionalString(source.createdAt) || timestamp,
-+    updatedAt: optionalString(source.updatedAt) || timestamp,
-+    createdBy: optionalString(source.createdBy) || actorKey,
-+    updatedBy: optionalString(source.updatedBy) || actorKey,
++    checks,
++    fallbackAllowed: false,
++    overallStatus: failedChecks.length ? "FAIL" : warningChecks.length ? "WARN" : "PASS",
++    selectedProvidersReady,
++    serverOnlySecretNamesExposed: false,
++    secretValuesExposed: false,
++    supabaseSelected: supabaseAuthSelected || supabasePostgresSelected,
 +  };
-+}
-+
- function requireTableName(tableName) {
-   const normalized = String(tableName || "").trim();
-   if (!SUPABASE_POSTGRES_TABLES.includes(normalized)) {
-@@ -175,6 +215,26 @@ function configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing) {
-   };
- }
-
-+function providerFailure({ configDiagnostic, missingConfig, providerId, selection, supabaseProviderId }) {
-+  if (!selection.supported) {
-+    return {
-+      providerId: selection.requested,
-+      reason: "unsupported-provider",
-+      remediation: selection.diagnostic,
-+      selectedProviderAuthoritative: true,
-+    };
-+  }
-+  if (providerId === supabaseProviderId && missingConfig) {
-+    return {
-+      providerId,
-+      reason: "missing-configuration",
-+      remediation: configDiagnostic,
-+      selectedProviderAuthoritative: true,
-+    };
-+  }
-+  return null;
 +}
 +
  export function createSupabasePostgresReadiness(env = process.env) {
    const adapterMissing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
    const siteSetupMissing = missingEnvKeys(env, SUPABASE_POSTGRES_SITE_SETUP_KEYS);
-@@ -331,6 +391,47 @@ export class SupabasePostgresProviderAdapter {
-     return this.keyFactory();
-   }
-
-+  createIdentityKey(sourceKey = "") {
-+    const key = optionalString(sourceKey);
-+    return key || this.createRecordKey();
-+  }
-+
-+  normalizeUserRecord(user = {}, actorKey, timestamp) {
-+    const key = this.createIdentityKey(user.key);
-+    return {
-+      key,
-+      displayName: optionalString(user.displayName) || "Creator",
-+      email: optionalString(user.email) || null,
-+      authProvider: optionalString(user.authProvider) || null,
-+      authProviderUserId: optionalString(user.authProviderUserId) || null,
-+      isActive: user.isActive !== false,
-+      ...normalizeAuditFields(user, actorKey, timestamp),
-+    };
-+  }
-+
-+  normalizeRoleRecord(role = {}, actorKey, timestamp) {
-+    const roleSlug = requireIdentityString(role.roleSlug || role.slug, "roleSlug");
-+    return {
-+      key: this.createIdentityKey(role.key),
-+      roleSlug,
-+      name: optionalString(role.name) || roleSlug,
-+      description: optionalString(role.description),
-+      isSystemRole: role.isSystemRole === true,
-+      isActive: role.isActive !== false,
-+      ...normalizeAuditFields(role, actorKey, timestamp),
-+    };
-+  }
-+
-+  normalizeUserRoleRecord(userRole = {}, roleKeyBySlug, actorKey, timestamp) {
-+    const roleKey = optionalString(userRole.roleKey) || roleKeyBySlug.get(optionalString(userRole.roleSlug || userRole.slug));
-+    return {
-+      key: this.createIdentityKey(userRole.key),
-+      userKey: requireIdentityString(userRole.userKey, "userKey"),
-+      roleKey: requireIdentityString(roleKey, "roleKey"),
-+      ...normalizeAuditFields(userRole, actorKey, timestamp),
-+    };
-+  }
-+
-   connect() {
-     this.assertConfigured();
-     return {
-@@ -340,12 +441,12 @@ export class SupabasePostgresProviderAdapter {
-     };
-   }
-
--  async requestTable(tableName, { body = null, method = "GET", query = "select=*" } = {}) {
-+  async requestTable(tableName, { body = null, method = "GET", prefer = "return=representation", query = "select=*" } = {}) {
-     this.assertConfigured();
-     const table = requireTableName(tableName);
-     const response = await this.fetchImpl(`${supabaseUrl(this.env)}/rest/v1/${encodeURIComponent(table)}?${query}`, {
-       body: body === null ? undefined : JSON.stringify(body),
--      headers: postgresHeaders(this.env),
-+      headers: postgresHeaders(this.env, prefer),
-       method,
-     });
-     const payload = await readResponseJson(response);
-@@ -356,6 +457,18 @@ export class SupabasePostgresProviderAdapter {
-     return payload;
-   }
-
-+  upsertTable(tableName, rows) {
-+    if (!rows.length) {
-+      return [];
-+    }
-+    return this.requestTable(tableName, {
-+      body: rows,
-+      method: "POST",
-+      prefer: "resolution=merge-duplicates,return=representation",
-+      query: "on_conflict=key",
-+    });
-+  }
-+
-   getUsers() {
-     return this.requestTable("users");
-   }
-@@ -368,6 +481,51 @@ export class SupabasePostgresProviderAdapter {
-     return this.requestTable("user_roles");
-   }
-
-+  async initializeIdentity({ actorKey = "", roles = [], userRoles = [], users = [] } = {}) {
-+    this.assertConfigured();
-+    const timestamp = new Date().toISOString();
-+    const normalizedUsers = users.map((user) => this.normalizeUserRecord(user, optionalString(actorKey) || optionalString(user.key), timestamp));
-+    const setupActorKey = optionalString(actorKey) || optionalString(normalizedUsers[0]?.key);
-+    if (!setupActorKey) {
-+      throw new Error("Supabase identity initialization requires actorKey or at least one user row.");
-+    }
-+    const finalizedUsers = normalizedUsers.map((user) => ({
-+      ...user,
-+      createdBy: optionalString(user.createdBy) || setupActorKey,
-+      updatedBy: optionalString(user.updatedBy) || setupActorKey,
-+    }));
-+    const normalizedRoles = roles.map((role) => this.normalizeRoleRecord(role, setupActorKey, timestamp));
-+    const roleKeyBySlug = new Map(normalizedRoles.map((role) => [role.roleSlug, role.key]));
-+    const normalizedUserRoles = userRoles.map((userRole) => this.normalizeUserRoleRecord(userRole, roleKeyBySlug, setupActorKey, timestamp));
-+
-+    const writtenUsers = await this.upsertTable("users", finalizedUsers);
-+    const writtenRoles = await this.upsertTable("roles", normalizedRoles);
-+    const writtenUserRoles = await this.upsertTable("user_roles", normalizedUserRoles);
-+
-+    return {
-+      boundary: PROVIDER_DATA_BOUNDARY_RULE,
-+      identityKeyModel: {
-+        roleKeyField: "roles.key",
-+        userKeyField: "users.key",
-+        userRoleRoleKeyField: "user_roles.roleKey",
-+        userRoleUserKeyField: "user_roles.userKey",
-+      },
-+      initialized: {
-+        roles: normalizedRoles.length,
-+        user_roles: normalizedUserRoles.length,
-+        users: finalizedUsers.length,
-+      },
-+      providerId: this.providerId,
-+      serverApiOwnsKeyGeneration: true,
-+      staticDevUserUlidExceptionUsed: finalizedUsers.some((user) => DEV_STATIC_USER_KEYS.includes(user.key)),
-+      written: {
-+        roles: Array.isArray(writtenRoles) ? writtenRoles.length : normalizedRoles.length,
-+        user_roles: Array.isArray(writtenUserRoles) ? writtenUserRoles.length : normalizedUserRoles.length,
-+        users: Array.isArray(writtenUsers) ? writtenUsers.length : finalizedUsers.length,
-+      },
-+    };
-+  }
-+
-   runSiteSetup() {
-     this.assertConfigured();
-     const readiness = this.readiness();
-@@ -416,6 +574,23 @@ export function createProviderContractSnapshot(env = process.env) {
+@@ -574,6 +690,9 @@ export function createProviderContractSnapshot(env = process.env) {
    const missingConfigWarnings = futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing);
    const supabaseAuthReady = supabaseAuthMissing.length === 0;
    const supabasePostgresReady = supabasePostgresReadiness.configured;
-+  const providerFailures = [
-+    providerFailure({
-+      configDiagnostic: supabaseAuthDiagnostic(env),
-+      missingConfig: supabaseAuthMissing.length > 0,
-+      providerId: auth.id,
-+      selection: auth,
-+      supabaseProviderId: SUPABASE_AUTH_PROVIDER_ID,
-+    }),
-+    providerFailure({
-+      configDiagnostic: supabasePostgresDiagnostic(env),
-+      missingConfig: supabasePostgresMissing.length > 0,
-+      providerId: database.id,
-+      selection: database,
-+      supabaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
-+    }),
-+  ].filter(Boolean);
-+  const selectedProvidersReady = providerFailures.length === 0;
++  const supabaseUrlReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_URL"));
++  const supabaseAnonKeyReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_ANON_KEY"));
++  const supabaseServiceRoleReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY"));
+   const providerFailures = [
+     providerFailure({
+       configDiagnostic: supabaseAuthDiagnostic(env),
+@@ -591,6 +710,19 @@ export function createProviderContractSnapshot(env = process.env) {
+     }),
+   ].filter(Boolean);
+   const selectedProvidersReady = providerFailures.length === 0;
++  const supabasePreflight = createSupabasePreflight({
++    auth,
++    database,
++    selectedProvidersReady,
++    supabaseAnonKeyReady,
++    supabaseAuthReady,
++    supabaseAuthSelected,
++    supabasePostgresReadiness,
++    supabasePostgresReady,
++    supabasePostgresSelected,
++    supabaseServiceRoleReady,
++    supabaseUrlReady,
++  });
 
    if (supabaseAuthSelected) {
      diagnostics.push(supabaseAuthDiagnostic(env));
-@@ -426,31 +601,50 @@ export function createProviderContractSnapshot(env = process.env) {
+@@ -690,6 +822,7 @@ export function createProviderContractSnapshot(env = process.env) {
+         owner: "server-api",
+       },
+     },
++    supabasePreflight,
+     supabasePostgres: {
+       configured: supabasePostgresMissing.length === 0,
+       adapter: {
+diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
+index 79c426951..d128f47a5 100644
+--- a/src/dev-runtime/persistence/mock-db-store.js
++++ b/src/dev-runtime/persistence/mock-db-store.js
+@@ -22,6 +22,8 @@ export const MOCK_DB_KEYS = Object.freeze({
+     admin: makeMockUlid(73),
+     system: makeMockUlid(74),
+     beta: makeMockUlid(75),
++    creator: makeMockUlid(76),
++    guest: makeMockUlid(77),
+   }),
+   userRoles: Object.freeze({
+     user1User: makeMockUlid(82),
+@@ -121,6 +123,8 @@ const MOCK_DB_TABLE_SCHEMAS = Object.freeze({
+   toolbox_tool_metadata: Object.freeze(["key", "toolKey", "toolName", "shortLabel", "shortDescription", "description", "group", "category", "colorGroup", "toolboxGroup", "subgroup", "path", "order", "status", "badge", "toolImage", "active", "adminOnly", "hidden", "deferred", "visibleInToolsList", "capabilityLabel", "childCapabilities", "requiredRole", "statusDiagnostic", "toolId", "releaseChannel", "releaseChannelLabel", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   toolbox_tool_planning: Object.freeze(["key", "toolKey", "readiness", "requiredForPlayable", "requiredForTestable", "requiredForPublish", "requires", "progressChecklist", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   toolbox_votes: Object.freeze(["key", "toolId", "userKey", "direction", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  platform_settings: Object.freeze(["key", "settingKey", "settingValue", "settingType", "description", "isActive", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
++  support_categories: Object.freeze(["key", "categorySlug", "name", "description", "isActive", "sortOrder", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   game_workspace_games: Object.freeze(["key", "name", "status", "ownerKey", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   game_workspace_progress: Object.freeze(["key", "gameKey", "currentFocus", "gameProgress", "publishingProgress", "recommendedNextTool", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+   game_design_documents: Object.freeze(["key", "gameKey", "title", "status", "createdAt", "updatedAt", "createdBy", "updatedBy"]),
+@@ -157,6 +161,8 @@ const DEFAULT_TABLE_OWNERS = Object.freeze(Object.fromEntries([
+   ["toolbox_tool_metadata", "standalone"],
+   ["toolbox_tool_planning", "standalone"],
+   ["toolbox_votes", "standalone"],
++  ["platform_settings", "standalone"],
++  ["support_categories", "standalone"],
+   ["tool_state_samples", "standalone"],
+   ...Object.entries(MOCK_DB_TOOL_GROUPS).flatMap(([ownerId, group]) =>
+     group.tableNames.map((tableName) => [tableName, ownerId]),
+@@ -742,6 +748,24 @@ export function getStandaloneMockDbSeedTables() {
+         isActive: true,
+         ...standaloneAudit(7),
+       },
++      {
++        key: MOCK_DB_KEYS.roles.creator,
++        roleSlug: "creator",
++        name: "creator",
++        description: "Creator role for authenticated makers.",
++        isSystemRole: false,
++        isActive: true,
++        ...standaloneAudit(8),
++      },
++      {
++        key: MOCK_DB_KEYS.roles.guest,
++        roleSlug: "guest",
++        name: "guest",
++        description: "Guest role for unauthenticated browsing and starter flows.",
++        isSystemRole: false,
++        isActive: true,
++        ...standaloneAudit(9),
++      },
+     ],
+     user_roles: [
+       { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(10) },
+@@ -750,6 +774,28 @@ export function getStandaloneMockDbSeedTables() {
+       { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(14) },
+       { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...standaloneAudit(15) },
+     ],
++    platform_settings: [
++      {
++        key: makeMockUlid(110),
++        settingKey: "site.setup.status",
++        settingValue: "ready",
++        settingType: "string",
++        description: "Starter Site Setup status setting owned by Admin setup.",
++        isActive: true,
++        ...standaloneAudit(16),
++      },
++    ],
++    support_categories: [
++      {
++        key: makeMockUlid(120),
++        categorySlug: "general-help",
++        name: "General Help",
++        description: "Starter support category for creator questions.",
++        isActive: true,
++        sortOrder: 1,
++        ...standaloneAudit(17),
++      },
++    ],
+   };
+ }
+
+diff --git a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+index 71d78f4e6..94d3f3044 100644
+--- a/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
+@@ -11,6 +11,70 @@ export const INPUT_MAPPING_TOOL_TABLES = Object.freeze([
+   "input_custom_action_records",
+ ]);
+
++export const CONTROL_EVENT_OPTIONS = Object.freeze([
++  Object.freeze({ description: "Down", field: "eventD", label: "D" }),
++  Object.freeze({ description: "Hold", field: "eventH", label: "H" }),
++  Object.freeze({ description: "Up", field: "eventU", label: "U" }),
++  Object.freeze({ description: "Double Click / Double Press", field: "eventDC", label: "DC" }),
++]);
++
++export const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
++  "move.x-",
++  "move.x+",
++  "move.y-",
++  "move.y+",
++  "aim.x-",
++  "aim.x+",
++  "aim.y-",
++  "aim.y+",
++  "action.primary",
++  "action.secondary",
++  "action.tertiary",
++  "action.quaternary",
++  "action.confirm",
++  "action.cancel",
++  "action.pause",
++  "action.start",
++  "action.select",
++]);
++
++export const NORMALIZED_USAGE_LABELS = Object.freeze({
++  "action.cancel": "Cancel",
++  "action.confirm": "Confirm",
++  "action.pause": "Pause",
++  "action.primary": "Primary Action",
++  "action.quaternary": "Fourth Action",
++  "action.secondary": "Secondary Action",
++  "action.select": "Select",
++  "action.start": "Start",
++  "action.tertiary": "Third Action",
++  "aim.x-": "Aim Left",
++  "aim.x+": "Aim Right",
++  "aim.y-": "Aim Up",
++  "aim.y+": "Aim Down",
++  "move.x-": "Move Left",
++  "move.x+": "Move Right",
++  "move.y-": "Move Up",
++  "move.y+": "Move Down",
++});
++
++export const COMMON_DEFAULT_GAME_CONTROLS = Object.freeze([
++  "action.cancel",
++  "action.confirm",
++  "action.pause",
++  "action.primary",
++  "action.secondary",
++  "action.start",
++  "move.x-",
++  "move.x+",
++  "move.y-",
++  "move.y+",
++]);
++
++export const ENGINE_OWNED_NORMALIZED_INPUTS = Object.freeze([
++  "action.pause",
++]);
++
+ const INPUT_MAPPING_DB_OWNER = "controls";
+ const DEFAULT_GAME_ID = "demo-game";
+ const DEFAULT_INPUT_MAPPING_AUDIT_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
+@@ -535,7 +599,12 @@ export function createInputMappingToolMockRepository(options = {}) {
+   }
 
    return {
-     activeProviders: {
--      authProviderId: LOCAL_AUTH_PROVIDER_ID,
--      databaseProviderId: LOCAL_DATABASE_PROVIDER_ID,
--      diagnostic: "Local DB provider remains active by default. Supabase providers require explicit provider selectors and complete configuration.",
-+      authProviderId: auth.id,
-+      databaseProviderId: database.id,
-+      diagnostic: "Selected providers are authoritative. Missing or unsupported selected providers fail visibly; no automatic Local DB fallback is used.",
-+      status: selectedProvidersReady ? "ready" : "failed",
++    COMMON_DEFAULT_GAME_CONTROLS,
++    CONTROL_EVENT_OPTIONS,
++    ENGINE_OWNED_NORMALIZED_INPUTS,
++    GAME_CONTROL_NORMALIZED_INPUTS,
+     INPUT_MAPPING_TOOL_TABLES,
++    NORMALIZED_USAGE_LABELS,
+     getSnapshot,
+     getTables,
+     getSelectedInputDevice,
+diff --git a/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
+index 3c3cb0ba7..4bb2ebd50 100644
+--- a/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
+@@ -8,6 +8,125 @@ export const OBJECTS_TOOL_TABLES = Object.freeze([
+   "object_definition_records",
+ ]);
+
++export const CAPABILITY_LABELS = Object.freeze({
++  collectible: "Can Be Collected",
++  collides: "Can Collide",
++  damageable: "Takes Damage",
++  goal: "Completes Goal",
++  hazard: "Causes Damage",
++  killable: "Can Be Removed",
++  movable: "Can Move",
++  playerControlled: "Player Controlled",
++  scores: "Scores Points",
++});
++
++export const OBJECT_TYPE_TEMPLATES = Object.freeze([
++  Object.freeze({
++    capabilities: Object.freeze(["collectible", "scores"]),
++    modelType: "Collectible",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Collectible",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze([]),
++    modelType: "Static",
++    renderType: "None",
++    state: "Active",
++    type: "Custom",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze([]),
++    modelType: "Static",
++    renderType: "Sprite",
++    state: "Idle",
++    type: "Decoration",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["movable", "collides", "hazard", "damageable"]),
++    modelType: "Dynamic",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Enemy",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["goal", "scores"]),
++    modelType: "Goal",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Goal",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["hazard", "damageable"]),
++    modelType: "Hazard",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Hazard",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["playerControlled", "movable", "collides", "damageable"]),
++    modelType: "Dynamic",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Hero",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["collides"]),
++    modelType: "Static",
++    renderType: "None",
++    state: "Active",
++    type: "Platform",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["movable", "collides", "hazard"]),
++    modelType: "Dynamic",
++    renderType: "Sprite",
++    state: "Active",
++    type: "Projectile",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze([]),
++    modelType: "Static",
++    renderType: "None",
++    state: "Active",
++    type: "Spawn Point",
++  }),
++  Object.freeze({
++    capabilities: Object.freeze(["collides"]),
++    modelType: "Static",
++    renderType: "None",
++    state: "Active",
++    type: "Wall",
++  }),
++]);
++
++export const STARTER_OBJECTS = Object.freeze([
++  Object.freeze({
++    behavior: "Responds to player control mapping.",
++    interaction: "Can interact with platforms, collectibles, hazards, and goals.",
++    name: "Hero",
++    render: Object.freeze({ type: "None" }),
++    role: "Hero",
++    state: "Active",
++  }),
++  Object.freeze({
++    behavior: "Moves through the scene under authored behavior.",
++    interaction: "Can collide with walls, platforms, or targets.",
++    name: "Projectile",
++    render: Object.freeze({ type: "None" }),
++    role: "Projectile",
++    state: "Active",
++  }),
++  Object.freeze({
++    behavior: "Stays fixed in the scene.",
++    interaction: "Provides a stable collision surface.",
++    name: "Wall",
++    render: Object.freeze({ type: "None" }),
++    role: "Wall",
++    state: "Active",
++  }),
++]);
++
+ const OBJECTS_DB_OWNER = "objects";
+ const DEFAULT_GAME_ID = "demo-project";
+ const DEFAULT_OBJECTS_USER_KEY = MOCK_DB_KEYS.users.user1;
+@@ -227,7 +346,10 @@ export function createObjectsToolMockRepository(options = {}) {
+   }
+
+   return {
++    CAPABILITY_LABELS,
++    OBJECT_TYPE_TEMPLATES,
+     OBJECTS_TOOL_TABLES,
++    STARTER_OBJECTS,
+     getSnapshot,
+     getTables,
+     listObjects,
+diff --git a/src/dev-runtime/seed/server-seed-loader.mjs b/src/dev-runtime/seed/server-seed-loader.mjs
+index 0c1a8a94f..73347385e 100644
+--- a/src/dev-runtime/seed/server-seed-loader.mjs
++++ b/src/dev-runtime/seed/server-seed-loader.mjs
+@@ -155,6 +155,24 @@ function roleRows(generateKey) {
+       isActive: true,
+       ...auditFields(6),
      },
-     activationReadiness: {
-       blockers: [
-         ...supabaseAuthMissing.map((key) => `Add browser-safe ${key} before selecting Supabase Auth.`),
-         ...supabasePostgresReadiness.blockers,
-       ],
--      localDbActiveByDefault: true,
-+      localDbSelected: auth.id === LOCAL_AUTH_PROVIDER_ID && database.id === LOCAL_DATABASE_PROVIDER_ID,
-       readyBeforeActivation: supabaseAuthReady && supabasePostgresReady,
--      rollback: "Set GAMEFOUNDRY_AUTH_PROVIDER=local-db and GAMEFOUNDRY_DB_PROVIDER=local-db.",
-+      selectedProvidersReady,
-       siteSetupReady: supabasePostgresReadiness.siteSetupReady,
-       supabaseAuthReady,
-       supabasePostgresReady,
-     },
-     boundary: PROVIDER_DATA_BOUNDARY_RULE,
-     diagnostics,
-+    failureContract: {
-+      automaticFallbackAllowed: false,
-+      providerChainingAllowed: false,
-+      selectedProviderAuthoritative: true,
++    {
++      key: generateKey(),
++      roleSlug: "creator",
++      name: "Creator",
++      description: "Authenticated game creator.",
++      isSystemRole: false,
++      isActive: true,
++      ...auditFields(7),
 +    },
-     providerDiagnostics: {
-       activeProvider: {
--        authProviderId: LOCAL_AUTH_PROVIDER_ID,
--        databaseProviderId: LOCAL_DATABASE_PROVIDER_ID,
-+        authProviderId: auth.id,
-+        databaseProviderId: database.id,
-       },
-       configuredProviders: configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing),
-       missingConfigWarnings,
-+      providerFailures,
-+      selectionControls: {
-+        auth: {
-+          environmentVariable: PROVIDER_SELECTION_CONTROLS.auth.environmentVariable,
-+          selectedProviderId: auth.id,
-+          supportedProviders: PROVIDER_SELECTION_CONTROLS.auth.supportedProviders.slice(),
-+        },
-+        database: {
-+          environmentVariable: PROVIDER_SELECTION_CONTROLS.database.environmentVariable,
-+          selectedProviderId: database.id,
-+          supportedProviders: PROVIDER_SELECTION_CONTROLS.database.supportedProviders.slice(),
-+        },
-+      },
-       requiredEnvironmentVariables: {
-         browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS.slice(),
-         selectors: PROVIDER_ENVIRONMENT_VARIABLES.selectors.slice(),
-@@ -463,6 +657,15 @@ export function createProviderContractSnapshot(env = process.env) {
-       authProviderId: auth.requested,
-       databaseProviderId: database.requested,
-     },
-+    runtimeActivation: {
-+      apiBoundary: PROVIDER_DATA_BOUNDARY_RULE,
-+      browserReceivesServiceRoleSecrets: false,
-+      localDbSelected: auth.id === LOCAL_AUTH_PROVIDER_ID && database.id === LOCAL_DATABASE_PROVIDER_ID,
-+      selectedProvidersCanServeRuntime: selectedProvidersReady,
-+      selectedProvidersFailed: !selectedProvidersReady,
-+      supabaseAuthSelected,
-+      supabasePostgresSelected,
++    {
++      key: generateKey(),
++      roleSlug: "guest",
++      name: "Guest",
++      description: "Unauthenticated visitor and starter flow role.",
++      isSystemRole: false,
++      isActive: true,
++      ...auditFields(8),
 +    },
-     supabaseAuth: {
-       configured: supabaseAuthMissing.length === 0,
-       adapter: {
-@@ -503,6 +706,13 @@ export function createProviderContractSnapshot(env = process.env) {
-         prod: "User-controlled reviewed SQL/setup execution.",
-         uat: "User-controlled reviewed SQL/setup execution.",
-       },
-+      identityMigration: {
-+        activeByDefault: false,
-+        auditFields: ["createdAt", "updatedAt", "createdBy", "updatedBy"],
-+        serverApiOwnsKeyGeneration: true,
-+        staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ admin only.",
-+        tables: SUPABASE_POSTGRES_TABLES.slice(),
-+      },
-       migrationSequence: [
-         "Supabase Auth",
-         "Supabase users/roles/user_roles",
+   ];
+ }
+
+@@ -223,6 +241,34 @@ function toolboxToolPlanningRows(generateKey) {
+   }));
+ }
+
++function platformSettingRows(generateKey) {
++  return [
++    {
++      key: generateKey(),
++      settingKey: "site.setup.status",
++      settingValue: "ready",
++      settingType: "string",
++      description: "Starter Site Setup status setting owned by Admin setup.",
++      isActive: true,
++      ...auditFields(120),
++    },
++  ];
++}
++
++function supportCategoryRows(generateKey) {
++  return [
++    {
++      key: generateKey(),
++      categorySlug: "general-help",
++      name: "General Help",
++      description: "Starter support category for creator questions.",
++      isActive: true,
++      sortOrder: 1,
++      ...auditFields(130),
++    },
++  ];
++}
++
+ function humanToolStateSampleRows(generateKey) {
+   const tools = activeToolRows();
+   const toolByKey = new Map(tools.map((tool) => [tool.toolKey, tool]));
+@@ -277,6 +323,8 @@ export function createServerSeedTables(options = {}) {
+   tables.toolbox_tool_metadata = toolboxToolMetadataRows(generateKey);
+   tables.toolbox_tool_planning = toolboxToolPlanningRows(generateKey);
+   tables.toolbox_votes = [];
++  tables.platform_settings = platformSettingRows(generateKey);
++  tables.support_categories = supportCategoryRows(generateKey);
+   tables.tool_state_samples = humanToolStateSampleRows(generateKey);
+   return tables;
+ }
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 7abdf04d0..655b8becc 100644
+index 655b8becc..79080e0aa 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -77,7 +77,13 @@ import {
- } from "../persistence/mock-db-store.js";
- import { createServerSeedTables } from "../seed/server-seed-loader.mjs";
- import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
--import { createProviderContractSnapshot } from "../auth/provider-contract-stubs.mjs";
-+import {
-+  LOCAL_AUTH_PROVIDER_ID,
-+  LOCAL_DATABASE_PROVIDER_ID,
-+  SUPABASE_POSTGRES_PROVIDER_ID,
-+  SupabasePostgresProviderAdapter,
-+  createProviderContractSnapshot,
-+} from "../auth/provider-contract-stubs.mjs";
-
- export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
-
-@@ -196,6 +202,15 @@ function clone(value) {
-   return JSON.parse(JSON.stringify(value));
- }
-
-+function providerFailureMessage(providerContract, providerId) {
-+  const failure = providerContract.providerDiagnostics.providerFailures
-+    .find((candidate) => candidate.providerId === providerId);
-+  if (failure?.remediation) {
-+    return failure.remediation;
-+  }
-+  return `Selected provider ${providerId} is not available for this Local API route yet.`;
-+}
-+
- function readDocsBuildGuestSeedPackages() {
-   const guestSeedDir = path.join(process.cwd(), "docs_build", "database", "seed", "guest");
-   try {
-@@ -922,7 +937,11 @@ class LocalDevDataSource {
-       cleared: false,
-       tables: createServerSeedTables(),
-     });
--    const adapterState = this.currentAdapter().readState("Starting Local DB", this.currentStateSnapshot());
-+    const startupAdapter = this.adapterByModeId.get(this.currentMode().id);
-+    if (!startupAdapter) {
-+      throw new Error(`${LOCAL_DB_NOT_CONFIGURED}. Unknown DEV database mode: ${this.currentMode().id || "missing"}.`);
-+    }
-+    const adapterState = startupAdapter.readState("Starting Local DB", this.currentStateSnapshot());
-     this.applyStateSnapshot(adapterState);
-   }
-
-@@ -941,7 +960,34 @@ class LocalDevDataSource {
-     return createProviderContractSnapshot();
-   }
-
-+  assertLocalAuthProvider(action) {
-+    const providerContract = this.providerContract();
-+    const providerId = providerContract.activeProviders.authProviderId;
-+    if (providerId !== LOCAL_AUTH_PROVIDER_ID) {
-+      throw new Error(`${action} requires the Local DB auth provider. Selected auth provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
-+    }
-+  }
-+
-+  assertLocalDatabaseProvider(action) {
-+    const providerContract = this.providerContract();
-+    const providerId = providerContract.activeProviders.databaseProviderId;
-+    if (providerId !== LOCAL_DATABASE_PROVIDER_ID) {
-+      throw new Error(`${action} requires the Local DB database provider. Selected database provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
-+    }
-+  }
-+
-+  assertLocalRuntimeProviders(action) {
-+    this.assertLocalAuthProvider(action);
-+    this.assertLocalDatabaseProvider(action);
-+  }
-+
-+  localAuthSession(action) {
-+    this.assertLocalAuthProvider(action);
-+    return sessionUserFromKey(this.standaloneTables, this.sessionUserKey, this.sessionModeId);
-+  }
-+
-   currentAdapter() {
-+    this.assertLocalDatabaseProvider("Opening Local DB adapter");
-     const adapter = this.adapterByModeId.get(this.currentMode().id);
-     if (!adapter) {
-       throw new Error(`${LOCAL_DB_NOT_CONFIGURED}. Unknown DEV database mode: ${this.currentMode().id || "missing"}.`);
-@@ -1053,6 +1099,90 @@ class LocalDevDataSource {
-     };
-   }
-
-+  adminInitializeIdentity(body = {}) {
-+    const providerContract = this.providerContract();
-+    const providerId = providerContract.activeProviders.databaseProviderId;
-+    if (providerId !== SUPABASE_POSTGRES_PROVIDER_ID) {
-+      throw new Error(`Admin identity setup requires selected database provider ${SUPABASE_POSTGRES_PROVIDER_ID}. Selected database provider is ${providerId}.`);
-+    }
-+    const database = new SupabasePostgresProviderAdapter();
-+    return database.initializeIdentity(body);
-+  }
-+
-+  adminSetupStatus() {
-+    const snapshot = this.snapshot();
-+    const tables = snapshot.tables || {};
-+    const users = tables.users || [];
-+    const roles = tables.roles || [];
-+    const userRoles = tables.user_roles || [];
-+    const roleSlugs = new Set(roles.map((role) => role.roleSlug).filter(Boolean));
-+    const missingDefaultRoles = ["admin", "creator", "guest", "user"].filter((roleSlug) => !roleSlugs.has(roleSlug));
-+    const adminRoleKeys = new Set(roles
-+      .filter((role) => role.roleSlug === "admin")
-+      .map((role) => role.key));
-+    const adminUserKeys = new Set(userRoles
-+      .filter((row) => adminRoleKeys.has(row.roleKey))
-+      .map((row) => row.userKey));
-+    const firstAdminReady = users.some((user) => adminUserKeys.has(user.key) && user.isActive !== false);
-+    const toolMetadataCount = (tables.toolbox_tool_metadata || []).length;
-+    const areas = [
-+      {
-+        action: "Assign the initial admin user",
-+        id: "first-admin",
-+        label: "First Admin",
-+        status: firstAdminReady ? "PASS" : "FAIL",
-+        message: firstAdminReady
-+          ? "At least one active user has the admin role through user_roles."
-+          : "Create or assign the first admin through Admin -> Site Setup before promotion.",
-+      },
-+      {
-+        action: "Create approved role records",
-+        id: "default-roles",
-+        label: "Default Roles",
-+        status: missingDefaultRoles.length ? "WARN" : "PASS",
-+        message: missingDefaultRoles.length
-+          ? `Missing default role slug(s): ${missingDefaultRoles.join(", ")}.`
-+          : "Default role slugs are present.",
-+      },
-+      {
-+        action: "Seed active tool metadata",
-+        id: "tool-metadata-bootstrap",
-+        label: "Tool Metadata Bootstrap",
-+        status: toolMetadataCount ? "PASS" : "FAIL",
-+        message: toolMetadataCount
-+          ? `${toolMetadataCount} tool metadata rows are available through the Local API.`
-+          : "Tool metadata rows are missing from the Local API setup state.",
-+      },
-+      {
-+        action: "Create baseline settings records",
-+        id: "starter-platform-settings",
-+        label: "Starter Platform Settings",
-+        status: "SKIP",
-+        message: "No active platform settings table exists yet; Site Setup owns this future bootstrap area.",
-+      },
-+      {
-+        action: "Prepare support category setup",
-+        id: "support-categories",
-+        label: "Support Categories",
-+        status: "SKIP",
-+        message: "No active support category table exists yet; Site Setup owns this future bootstrap area.",
-+      },
-+    ];
-+    const statusCounts = areas.reduce((counts, area) => {
-+      counts[area.status] = (counts[area.status] || 0) + 1;
-+      return counts;
-+    }, {});
-+    const status = statusCounts.FAIL ? "FAIL" : (statusCounts.WARN || statusCounts.SKIP ? "WARN" : "PASS");
-+    return {
-+      areas,
-+      message: `Site Setup status checked ${areas.length} setup areas.`,
-+      ownership: "Admin -> Site Setup",
-+      provider: this.providerContract().activeProviders,
-+      status,
-+      statusCounts,
-+    };
-+  }
-+
-   guestSeedPackages() {
-     const packages = readDocsBuildGuestSeedPackages();
-     return {
-@@ -1087,6 +1217,7 @@ class LocalDevDataSource {
-   }
-
-   setMode(modeId) {
-+    this.assertLocalRuntimeProviders("Selecting a local session mode");
-     const nextMode = MOCK_DB_SESSION_MODES.find((mode) => mode.id === modeId);
-     if (!nextMode) {
-       throw new Error(`Unknown local login environment: ${modeId || "missing"}.`);
-@@ -1101,7 +1232,7 @@ class LocalDevDataSource {
-   }
-
-   setUser(userKey) {
--    this.assertConfiguredAdapter("Selecting a session user");
-+    this.assertLocalRuntimeProviders("Selecting a session user");
-     this.sessionUserKey = String(userKey || "");
-     this.sharedOptions.sessionMode = this.sessionModeId;
-     this.sharedOptions.sessionUserKey = this.sessionUserKey;
-@@ -1109,6 +1240,7 @@ class LocalDevDataSource {
-   }
-
-   clearSessionUser() {
-+    this.assertLocalRuntimeProviders("Clearing a session user");
-     this.sessionUserKey = "";
-     this.sharedOptions.sessionMode = this.sessionModeId;
-     this.sharedOptions.sessionUserKey = this.sessionUserKey;
-@@ -1116,14 +1248,17 @@ class LocalDevDataSource {
-   }
-
-   currentSession() {
--    return sessionUserFromKey(this.standaloneTables, this.sessionUserKey, this.sessionModeId);
-+    this.assertLocalDatabaseProvider("Reading current session");
-+    return this.localAuthSession("Reading current session");
-   }
-
-   sessionModes() {
-+    this.assertLocalRuntimeProviders("Reading session modes");
-     return clone(MOCK_DB_SESSION_MODES);
-   }
-
-   sessionUsers() {
-+    this.assertLocalRuntimeProviders("Reading session users");
-     if (this.sessionModeId !== LOCAL_DB_MODE_ID) {
-       return [sessionUserFromKey(this.standaloneTables, "", this.sessionModeId)];
+@@ -106,6 +106,8 @@ const DB_VIEWER_STANDALONE_LABELS = Object.freeze({
+   toolbox_tool_planning: "Tool Planning",
+   toolbox_votes: "Toolbox Votes",
+   tool_state_samples: "Tool State Samples",
++  platform_settings: "Platform Settings",
++  support_categories: "Support Categories",
+   user_roles: "User Roles",
+ });
+ const DB_VIEWER_GROUP_ORDER = Object.freeze([
+@@ -1125,6 +1127,8 @@ class LocalDevDataSource {
+       .map((row) => row.userKey));
+     const firstAdminReady = users.some((user) => adminUserKeys.has(user.key) && user.isActive !== false);
+     const toolMetadataCount = (tables.toolbox_tool_metadata || []).length;
++    const platformSettingsCount = (tables.platform_settings || []).length;
++    const supportCategoriesCount = (tables.support_categories || []).length;
+     const areas = [
+       {
+         action: "Assign the initial admin user",
+@@ -1157,15 +1161,19 @@ class LocalDevDataSource {
+         action: "Create baseline settings records",
+         id: "starter-platform-settings",
+         label: "Starter Platform Settings",
+-        status: "SKIP",
+-        message: "No active platform settings table exists yet; Site Setup owns this future bootstrap area.",
++        status: platformSettingsCount ? "PASS" : "FAIL",
++        message: platformSettingsCount
++          ? `${platformSettingsCount} starter platform setting row(s) are available through the Local API.`
++          : "Starter platform settings are missing from the Local API setup state.",
+       },
+       {
+         action: "Prepare support category setup",
+         id: "support-categories",
+         label: "Support Categories",
+-        status: "SKIP",
+-        message: "No active support category table exists yet; Site Setup owns this future bootstrap area.",
++        status: supportCategoriesCount ? "PASS" : "FAIL",
++        message: supportCategoriesCount
++          ? `${supportCategoriesCount} support category row(s) are available through the Local API.`
++          : "Support categories are missing from the Local API setup state.",
+       },
+     ];
+     const statusCounts = areas.reduce((counts, area) => {
+@@ -1721,12 +1729,20 @@ class LocalDevDataSource {
      }
-@@ -1840,6 +1975,17 @@ export function createLocalApiRouter() {
-         return true;
-       }
-
-+      if (parts[1] === "admin" && parts[2] === "setup" && request.method === "GET" && parts[3] === "status") {
-+        ok(response, dataSource.adminSetupStatus());
-+        return true;
-+      }
-+
-+      if (parts[1] === "admin" && parts[2] === "setup" && request.method === "POST" && parts[3] === "identity") {
-+        const body = await readRequestJson(request);
-+        ok(response, await dataSource.adminInitializeIdentity(body));
-+        return true;
-+      }
-+
-       if (parts[1] === "guest" && parts[2] === "seed" && request.method === "GET") {
-         ok(response, dataSource.guestSeedPackages());
-         return true;
-diff --git a/src/engine/api/admin-setup-api-client.js b/src/engine/api/admin-setup-api-client.js
-index daeeb86f7..1d22c07c7 100644
---- a/src/engine/api/admin-setup-api-client.js
-+++ b/src/engine/api/admin-setup-api-client.js
-@@ -13,3 +13,7 @@ function unwrap(response, context) {
- export function reseedAdminSetup() {
-   return unwrap(safeRequestServerApi("/admin/setup/reseed", { method: "POST" }), "Admin setup reseed");
- }
-+
-+export function readAdminSetupStatus() {
-+  return unwrap(safeRequestServerApi("/admin/setup/status"), "Admin setup status");
-+}
+     if (toolId === "objects") {
+       return {
++        CAPABILITY_LABELS: this.objectsRepository.CAPABILITY_LABELS,
++        OBJECT_TYPE_TEMPLATES: this.objectsRepository.OBJECT_TYPE_TEMPLATES,
+         OBJECTS_TOOL_TABLES: this.objectsRepository.OBJECTS_TOOL_TABLES,
++        STARTER_OBJECTS: this.objectsRepository.STARTER_OBJECTS,
+       };
+     }
+     if (toolId === "controls") {
+       return {
++        COMMON_DEFAULT_GAME_CONTROLS: this.inputMappingRepository.COMMON_DEFAULT_GAME_CONTROLS,
++        CONTROL_EVENT_OPTIONS: this.inputMappingRepository.CONTROL_EVENT_OPTIONS,
++        ENGINE_OWNED_NORMALIZED_INPUTS: this.inputMappingRepository.ENGINE_OWNED_NORMALIZED_INPUTS,
++        GAME_CONTROL_NORMALIZED_INPUTS: this.inputMappingRepository.GAME_CONTROL_NORMALIZED_INPUTS,
+         INPUT_MAPPING_TOOL_TABLES: this.inputMappingRepository.INPUT_MAPPING_TOOL_TABLES,
++        NORMALIZED_USAGE_LABELS: this.inputMappingRepository.NORMALIZED_USAGE_LABELS,
+       };
+     }
+     if (toolId === "game-journey") {
 diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-index d657d1f99..880b3eca4 100644
+index 880b3eca4..b6fe9643d 100644
 --- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
 +++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-@@ -9,6 +9,7 @@ import {
-   SupabasePostgresProviderStub,
-   createProviderContractSnapshot,
- } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-+import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
- import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
-
- function withEnv(nextEnv, callback) {
-@@ -72,17 +73,41 @@ async function apiJson(baseUrl, pathName) {
-   return payload.data;
+@@ -89,6 +89,10 @@ async function postApiPayload(baseUrl, pathName, body = {}) {
+   return { payload, status: response.status };
  }
 
--test("Supabase provider contract stubs keep Local DB active by default", () => {
--  const snapshot = createProviderContractSnapshot({});
-+async function apiPayload(baseUrl, pathName) {
-+  const response = await fetch(`${baseUrl}${pathName}`);
-+  const payload = await response.json();
-+  return { payload, status: response.status };
++function preflightCheck(snapshot, checkId) {
++  return snapshot.supabasePreflight.checks.find((check) => check.id === checkId);
 +}
 +
-+async function postApiPayload(baseUrl, pathName, body = {}) {
-+  const response = await fetch(`${baseUrl}${pathName}`, {
-+    body: JSON.stringify(body),
-+    headers: { "content-type": "application/json" },
-+    method: "POST",
-+  });
-+  const payload = await response.json();
-+  return { payload, status: response.status };
-+}
-+
-+test("Supabase provider contract stubs keep explicitly selected Local DB active", () => {
-+  const snapshot = createProviderContractSnapshot({
-+    GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
-+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
-+  });
-   assert.equal(snapshot.activeProviders.authProviderId, "local-db");
-   assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
--  assert.equal(snapshot.activationReadiness.localDbActiveByDefault, true);
-+  assert.equal(snapshot.activeProviders.status, "ready");
-+  assert.equal(snapshot.activationReadiness.localDbSelected, true);
-   assert.equal(snapshot.activationReadiness.readyBeforeActivation, false);
-+  assert.equal(snapshot.activationReadiness.selectedProvidersReady, true);
-   assert.equal(snapshot.activationReadiness.supabaseAuthReady, false);
-   assert.equal(snapshot.activationReadiness.supabasePostgresReady, false);
-   assert.equal(snapshot.requestedProviders.authProviderId, "local-db");
-   assert.equal(snapshot.requestedProviders.databaseProviderId, "local-db");
-   assert.equal(snapshot.boundary, "Browser -> API/Service Contract -> Database");
-+  assert.equal(snapshot.failureContract.selectedProviderAuthoritative, true);
-+  assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
-+  assert.equal(snapshot.failureContract.providerChainingAllowed, false);
-   assert.equal(snapshot.supabaseAuth.status, "adapter-inactive");
-   assert.equal(snapshot.supabaseAuth.adapter.activeByDefault, false);
-   assert.equal(snapshot.supabaseAuth.adapter.passwordStorage, "external-provider");
-@@ -100,6 +125,18 @@ test("Supabase provider contract stubs keep Local DB active by default", () => {
-   assert.equal(snapshot.supabaseAuth.userMapping.browserAuthoritativeUserKeysAllowed, false);
-   assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, ["local-db"]);
-   assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, ["local-db"]);
-+  assert.deepEqual(snapshot.providerDiagnostics.providerFailures, []);
-+  assert.deepEqual(snapshot.providerDiagnostics.selectionControls.auth.supportedProviders, [
-+    "local-db",
-+    "supabase-auth",
-+  ]);
-+  assert.deepEqual(snapshot.providerDiagnostics.selectionControls.database.supportedProviders, [
-+    "local-db",
-+    "supabase-postgres",
-+  ]);
-+  assert.equal(snapshot.runtimeActivation.localDbSelected, true);
-+  assert.equal(snapshot.runtimeActivation.browserReceivesServiceRoleSecrets, false);
-+  assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
+ test("Supabase provider contract stubs keep explicitly selected Local DB active", () => {
+   const snapshot = createProviderContractSnapshot({
+     GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
+@@ -137,6 +141,19 @@ test("Supabase provider contract stubs keep explicitly selected Local DB active"
+   assert.equal(snapshot.runtimeActivation.localDbSelected, true);
+   assert.equal(snapshot.runtimeActivation.browserReceivesServiceRoleSecrets, false);
+   assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
++  assert.equal(snapshot.supabasePreflight.overallStatus, "WARN");
++  assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
++  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, true);
++  assert.equal(snapshot.supabasePreflight.supabaseSelected, false);
++  assert.equal(snapshot.supabasePreflight.secretValuesExposed, false);
++  assert.equal(snapshot.supabasePreflight.serverOnlySecretNamesExposed, false);
++  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "PASS");
++  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "PASS");
++  assert.equal(preflightCheck(snapshot, "supabase-url").status, "WARN");
++  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "WARN");
++  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "WARN");
++  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "WARN");
++  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "WARN");
    assert.match(snapshot.providerDiagnostics.missingConfigWarnings.join("\n"), /Supabase Auth future provider is not configured/);
    assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
    assert.equal(snapshot.supabasePostgres.serverOnlySecretsExposed, false);
-@@ -117,6 +154,7 @@ test("Supabase provider contract stubs keep Local DB active by default", () => {
-     "getUsers",
-     "getRoles",
-     "getUserRoles",
-+    "initializeIdentity",
-     "runSiteSetup",
-     "getDbViewerSnapshot",
-   ]);
-@@ -137,14 +175,27 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
-     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
-   };
-   const snapshot = createProviderContractSnapshot(env);
--  assert.equal(snapshot.activeProviders.authProviderId, "local-db");
--  assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
-+  assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
-+  assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
-+  assert.equal(snapshot.activeProviders.status, "failed");
-   assert.equal(snapshot.requestedProviders.authProviderId, "supabase-auth");
-   assert.equal(snapshot.requestedProviders.databaseProviderId, "supabase-postgres");
-+  assert.equal(snapshot.providerDiagnostics.activeProvider.authProviderId, "supabase-auth");
-+  assert.equal(snapshot.providerDiagnostics.activeProvider.databaseProviderId, "supabase-postgres");
-+  assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
-   assert.equal(snapshot.supabaseAuth.status, "not-configured");
-   assert.equal(snapshot.supabasePostgres.status, "not-configured");
-   assert.equal(snapshot.activationReadiness.readyBeforeActivation, false);
-+  assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
-+  assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, false);
-+  assert.equal(snapshot.runtimeActivation.selectedProvidersFailed, true);
-   assert.equal(snapshot.activationReadiness.blockers.length > 0, true);
-+  assert.equal(snapshot.providerDiagnostics.providerFailures.length, 2);
-+  assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.providerId), [
-+    "supabase-auth",
-+    "supabase-postgres",
-+  ]);
-+  assert.equal(JSON.stringify(snapshot).includes("rollback"), false);
-   assert.match(snapshot.supabaseAuth.diagnostic, /Supabase Auth provider selected but not configured/);
-   assert.match(snapshot.supabasePostgres.diagnostic, /Supabase Postgres provider selected but not configured/);
-   assert.deepEqual(snapshot.supabaseAuth.missingBrowserSafeEnvironmentVariables, [
-@@ -153,6 +204,36 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
-   ]);
- });
-
-+test("Selected Supabase providers keep diagnostics available and block Local DB runtime routes when not configured", async () => {
-+  await withEnv({
-+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
-+  }, async () => {
-+    const server = await startApiServer();
-+    try {
-+      const providerContract = await apiJson(server.baseUrl, "/api/providers/contract");
-+      assert.equal(providerContract.activeProviders.authProviderId, "supabase-auth");
-+      assert.equal(providerContract.activeProviders.databaseProviderId, "supabase-postgres");
-+      assert.equal(providerContract.activeProviders.status, "failed");
-+      assert.equal(providerContract.providerDiagnostics.providerFailures.length, 2);
-+
-+      const session = await apiPayload(server.baseUrl, "/api/session/current");
-+      assert.equal(session.status, 500);
-+      assert.equal(session.payload.ok, false);
-+      assert.match(session.payload.error, /requires the Local DB database provider/);
-+      assert.match(session.payload.error, /Selected database provider is supabase-postgres/);
-+
-+      const snapshot = await apiPayload(server.baseUrl, "/api/local-db/snapshot");
-+      assert.equal(snapshot.status, 500);
-+      assert.equal(snapshot.payload.ok, false);
-+      assert.match(snapshot.payload.error, /requires the Local DB database provider/);
-+      assert.match(snapshot.payload.error, /Selected database provider is supabase-postgres/);
-+    } finally {
-+      await server.close();
-+    }
+@@ -189,6 +206,22 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
+   assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
+   assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, false);
+   assert.equal(snapshot.runtimeActivation.selectedProvidersFailed, true);
++  assert.equal(snapshot.supabasePreflight.overallStatus, "FAIL");
++  assert.equal(snapshot.supabasePreflight.supabaseSelected, true);
++  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, false);
++  assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
++  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "PASS");
++  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "PASS");
++  assert.equal(preflightCheck(snapshot, "supabase-url").status, "FAIL");
++  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "FAIL");
++  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "FAIL");
++  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "FAIL");
++  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "FAIL");
++  assert.deepEqual(preflightCheck(snapshot, "identity-tables-readiness").records, {
++    roles: false,
++    user_roles: false,
++    users: false,
 +  });
-+});
-+
- test("Supabase stubs do not expose server-only secret names or values through the Local API", async () => {
-   await withEnv({
-     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-@@ -168,9 +249,11 @@ test("Supabase stubs do not expose server-only secret names or values through th
-       ]);
-       const providerText = JSON.stringify(providerContract);
-       const adapterText = JSON.stringify(adapterContract);
--      assert.equal(providerContract.activeProviders.authProviderId, "local-db");
--      assert.equal(providerContract.activeProviders.databaseProviderId, "local-db");
--      assert.equal(providerContract.providerDiagnostics.activeProvider.authProviderId, "local-db");
-+      assert.equal(providerContract.activeProviders.authProviderId, "supabase-auth");
-+      assert.equal(providerContract.activeProviders.databaseProviderId, "supabase-postgres");
-+      assert.equal(providerContract.activeProviders.status, "failed");
-+      assert.equal(providerContract.providerDiagnostics.activeProvider.authProviderId, "supabase-auth");
-+      assert.equal(providerContract.failureContract.automaticFallbackAllowed, false);
+   assert.equal(snapshot.activationReadiness.blockers.length > 0, true);
+   assert.equal(snapshot.providerDiagnostics.providerFailures.length, 2);
+   assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.providerId), [
+@@ -216,6 +249,8 @@ test("Selected Supabase providers keep diagnostics available and block Local DB
+       assert.equal(providerContract.activeProviders.databaseProviderId, "supabase-postgres");
+       assert.equal(providerContract.activeProviders.status, "failed");
+       assert.equal(providerContract.providerDiagnostics.providerFailures.length, 2);
++      assert.equal(providerContract.supabasePreflight.overallStatus, "FAIL");
++      assert.equal(providerContract.supabasePreflight.fallbackAllowed, false);
+
+       const session = await apiPayload(server.baseUrl, "/api/session/current");
+       assert.equal(session.status, 500);
+@@ -256,6 +291,8 @@ test("Supabase stubs do not expose server-only secret names or values through th
+       assert.equal(providerContract.failureContract.automaticFallbackAllowed, false);
        assert.equal(providerContract.providerDiagnostics.secretValuesExposed, false);
        assert.equal(providerContract.providerDiagnostics.serverOnlyEnvironmentVariableNamesExposed, false);
++      assert.equal(providerContract.supabasePreflight.secretValuesExposed, false);
++      assert.equal(providerContract.supabasePreflight.serverOnlySecretNamesExposed, false);
        assert.equal(providerContract.supabasePostgres.serverOnlySecretsExposed, false);
-@@ -241,6 +324,7 @@ test("Supabase Postgres adapter fails visibly when selected without configuratio
-   await assert.rejects(() => database.getUsers(), /Supabase Postgres provider selected but not configured/);
-   await assert.rejects(() => database.getRoles(), /Supabase Postgres provider selected but not configured/);
-   await assert.rejects(() => database.getUserRoles(), /Supabase Postgres provider selected but not configured/);
-+  await assert.rejects(() => database.initializeIdentity(), /Supabase Postgres provider selected but not configured/);
-   assert.throws(() => database.runSiteSetup(), /Supabase Postgres provider selected but not configured/);
-   await assert.rejects(() => database.getDbViewerSnapshot(), /Supabase Postgres provider selected but not configured/);
- });
-@@ -291,7 +375,110 @@ test("Supabase Postgres adapter supports identity tables and readiness when conf
-   assert.equal(calls.every((call) => call.options.headers.apikey === "not-a-real-service-role-test-value"), true);
- });
-
--test("Supabase activation diagnostics report readiness without changing active providers", () => {
-+test("Supabase Postgres adapter initializes key-based users roles and user_roles", async () => {
-+  const calls = [];
-+  const generatedKeys = [
-+    "01J000000000000000000ROLE1",
-+    "01J000000000000000USERROLE1",
-+  ];
-+  const database = new SupabasePostgresProviderAdapter({
-+    env: {
-+      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
-+      GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
-+      GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
-+    },
-+    fetchImpl: async (url, options) => {
-+      calls.push({
-+        body: options.body ? JSON.parse(options.body) : null,
-+        headers: options.headers,
-+        method: options.method,
-+        url,
-+      });
-+      return {
-+        json: async () => (options.body ? JSON.parse(options.body) : []),
-+        ok: true,
-+        status: 200,
-+      };
-+    },
-+    keyFactory: () => generatedKeys.shift(),
+       assert.equal(adapterContract.providerContract.supabasePostgres.serverOnlySecretNamesExposed, false);
+       assert.equal(providerText.includes("not-a-real-service-role-test-value"), false);
+@@ -500,6 +537,20 @@ test("Supabase activation diagnostics report readiness for selected providers",
+   assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
+   assert.equal(snapshot.runtimeActivation.supabaseAuthSelected, true);
+   assert.equal(snapshot.runtimeActivation.supabasePostgresSelected, true);
++  assert.equal(snapshot.supabasePreflight.overallStatus, "PASS");
++  assert.equal(snapshot.supabasePreflight.supabaseSelected, true);
++  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, true);
++  assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
++  assert.equal(preflightCheck(snapshot, "supabase-url").status, "PASS");
++  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "PASS");
++  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "PASS");
++  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "PASS");
++  assert.deepEqual(preflightCheck(snapshot, "identity-tables-readiness").records, {
++    roles: true,
++    user_roles: true,
++    users: true,
 +  });
-+
-+  const result = await database.initializeIdentity({
-+    actorKey: MOCK_DB_KEYS.users.admin,
-+    roles: [
-+      {
-+        roleSlug: "admin",
-+        name: "Admin",
-+        description: "Administrative user.",
-+        isSystemRole: false,
-+      },
-+    ],
-+    userRoles: [
-+      {
-+        userKey: MOCK_DB_KEYS.users.admin,
-+        roleSlug: "admin",
-+      },
-+    ],
-+    users: [
-+      {
-+        key: MOCK_DB_KEYS.users.admin,
-+        displayName: "DavidQ admin",
-+        email: "admin@example.invalid",
-+        authProvider: "dev-static-seed",
-+        authProviderUserId: "davidq-admin",
-+      },
-+    ],
-+  });
-+
-+  assert.deepEqual(calls.map((call) => `${call.method} ${call.url}`), [
-+    "POST https://supabase-dev.example.test/rest/v1/users?on_conflict=key",
-+    "POST https://supabase-dev.example.test/rest/v1/roles?on_conflict=key",
-+    "POST https://supabase-dev.example.test/rest/v1/user_roles?on_conflict=key",
-+  ]);
-+  assert.equal(calls.every((call) => call.headers.prefer === "resolution=merge-duplicates,return=representation"), true);
-+  assert.equal(calls[0].body[0].key, MOCK_DB_KEYS.users.admin);
-+  assert.equal(calls[0].body[0].createdBy, MOCK_DB_KEYS.users.admin);
-+  assert.equal(calls[0].body[0].updatedBy, MOCK_DB_KEYS.users.admin);
-+  assert.equal(calls[1].body[0].key, "01J000000000000000000ROLE1");
-+  assert.equal(calls[1].body[0].roleSlug, "admin");
-+  assert.equal(calls[2].body[0].key, "01J000000000000000USERROLE1");
-+  assert.equal(calls[2].body[0].userKey, MOCK_DB_KEYS.users.admin);
-+  assert.equal(calls[2].body[0].roleKey, "01J000000000000000000ROLE1");
-+  assert.deepEqual(result.identityKeyModel, {
-+    roleKeyField: "roles.key",
-+    userKeyField: "users.key",
-+    userRoleRoleKeyField: "user_roles.roleKey",
-+    userRoleUserKeyField: "user_roles.userKey",
-+  });
-+  assert.deepEqual(result.initialized, {
-+    roles: 1,
-+    user_roles: 1,
-+    users: 1,
-+  });
-+  assert.equal(result.serverApiOwnsKeyGeneration, true);
-+  assert.equal(result.staticDevUserUlidExceptionUsed, true);
-+});
-+
-+test("Admin identity setup API fails visibly when Supabase Postgres is selected without config", async () => {
-+  await withEnv({
-+    GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
-+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
-+  }, async () => {
-+    const server = await startApiServer();
-+    try {
-+      const response = await postApiPayload(server.baseUrl, "/api/admin/setup/identity", {
-+        actorKey: MOCK_DB_KEYS.users.admin,
-+      });
-+      assert.equal(response.status, 500);
-+      assert.equal(response.payload.ok, false);
-+      assert.match(response.payload.error, /Supabase Postgres provider selected but not configured/);
-+    } finally {
-+      await server.close();
-+    }
-+  });
-+});
-+
-+test("Supabase activation diagnostics report readiness for selected providers", () => {
-   const snapshot = createProviderContractSnapshot({
-     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
-@@ -301,13 +488,18 @@ test("Supabase activation diagnostics report readiness without changing active p
-     GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
-   });
-
--  assert.equal(snapshot.activeProviders.authProviderId, "local-db");
--  assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
--  assert.equal(snapshot.activationReadiness.localDbActiveByDefault, true);
-+  assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
-+  assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
-+  assert.equal(snapshot.activeProviders.status, "ready");
-+  assert.equal(snapshot.activationReadiness.localDbSelected, false);
-   assert.equal(snapshot.activationReadiness.readyBeforeActivation, true);
-+  assert.equal(snapshot.activationReadiness.selectedProvidersReady, true);
-   assert.equal(snapshot.activationReadiness.siteSetupReady, true);
-   assert.equal(snapshot.activationReadiness.supabaseAuthReady, true);
-   assert.equal(snapshot.activationReadiness.supabasePostgresReady, true);
-+  assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
-+  assert.equal(snapshot.runtimeActivation.supabaseAuthSelected, true);
-+  assert.equal(snapshot.runtimeActivation.supabasePostgresSelected, true);
++  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "PASS");
    assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, ["local-db", "supabase-auth"]);
    assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, ["local-db", "supabase-postgres"]);
    assert.equal(snapshot.supabaseAuth.status, "adapter-ready");
-@@ -316,6 +508,24 @@ test("Supabase activation diagnostics report readiness without changing active p
-   assert.equal(JSON.stringify(snapshot).includes("server-only-database-url-placeholder"), false);
- });
+@@ -519,6 +570,9 @@ test("Unsupported selected providers fail without falling back to Local DB", ()
+   assert.equal(snapshot.activeProviders.status, "failed");
+   assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
+   assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
++  assert.equal(snapshot.supabasePreflight.overallStatus, "FAIL");
++  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "FAIL");
++  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "FAIL");
+   assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.reason), [
+     "unsupported-provider",
+     "unsupported-provider",
+diff --git a/tests/playwright/tools/AdminDbViewer.spec.mjs b/tests/playwright/tools/AdminDbViewer.spec.mjs
+index 7ce79ef97..efee15f88 100644
+--- a/tests/playwright/tools/AdminDbViewer.spec.mjs
++++ b/tests/playwright/tools/AdminDbViewer.spec.mjs
+@@ -250,6 +250,8 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
+       "Tool State Samples",
+       "Toolbox Votes",
+       "User Roles",
++      "Platform Settings",
++      "Support Categories",
+     ]);
+     await expect(page.locator("[data-admin-db-filter='all']")).toHaveClass(/primary/);
+     await expect(page.locator("[data-admin-db-filter='all']")).toHaveAttribute("aria-pressed", "true");
+@@ -331,9 +333,10 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
+     await expect(page.locator("[data-admin-db-table='users']")).toContainText("User 3");
+     await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
+     await expect(page.locator("[data-admin-db-table='users']")).not.toContainText("forge-bot");
+-    await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("guest");
+-    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("user");
+     await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
++    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("creator");
++    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("guest");
++    await expect(page.locator("[data-admin-db-table='roles']")).toContainText("user");
+     await expect(page.locator("[data-admin-db-table='roles']")).not.toContainText("system");
+     await expect(page.locator("[data-admin-db-table='user_roles']")).toContainText("01K2GFSJ0Y");
+     const seedData = await seedIntegritySnapshot(page);
+@@ -522,6 +525,8 @@ test("Admin DB Viewer shows current read-only Local DB tables without write cont
+       "Tool State Samples",
+       "Toolbox Votes",
+       "User Roles",
++      "Platform Settings",
++      "Support Categories",
+     ]);
+     await expect(page.locator("[data-admin-db-clear]")).toHaveCount(0);
+     await expect(page.locator("[data-admin-db-viewer] input, [data-admin-db-viewer] textarea, [data-admin-db-viewer] select")).toHaveCount(0);
+diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
+index 7b8f94534..e3e29d0b1 100644
+--- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
++++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
+@@ -301,6 +301,35 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
+     await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.x+");
+     await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y-");
+     await expect(page.locator("[data-input-mapping-list]")).toContainText("aim.y+");
++    const constants = await page.evaluate(async () => {
++      const response = await fetch("/api/toolbox/controls/constants");
++      const payload = await response.json();
++      return payload.data;
++    });
++    expect(constants.INPUT_MAPPING_TOOL_TABLES).toEqual([
++      "game_input_mappings",
++      "player_controller_profiles",
++      "player_input_device_selections",
++      "input_custom_action_records",
++    ]);
++    expect(constants.GAME_CONTROL_NORMALIZED_INPUTS).toEqual(GAME_CONTROL_NORMALIZED_INPUTS);
++    expect(constants.COMMON_DEFAULT_GAME_CONTROLS).toEqual([
++      "action.cancel",
++      "action.confirm",
++      "action.pause",
++      "action.primary",
++      "action.secondary",
++      "action.start",
++      "move.x-",
++      "move.x+",
++      "move.y-",
++      "move.y+",
++    ]);
++    expect(constants.ENGINE_OWNED_NORMALIZED_INPUTS).toEqual(["action.pause"]);
++    expect(constants.CONTROL_EVENT_OPTIONS.map((option) => option.field)).toEqual(["eventD", "eventH", "eventU", "eventDC"]);
++    expect(constants.NORMALIZED_USAGE_LABELS["action.primary"]).toBe("Primary Action");
++    const controlsSource = await page.evaluate(async () => fetch("/toolbox/controls/controls.js").then((response) => response.text()));
++    expect(controlsSource).not.toMatch(/const\s+(CONTROL_EVENT_OPTIONS|GAME_CONTROL_NORMALIZED_INPUTS|NORMALIZED_USAGE_LABELS|COMMON_DEFAULT_GAME_CONTROLS|ENGINE_OWNED_NORMALIZED_INPUTS)\s*=/);
 
-+test("Unsupported selected providers fail without falling back to Local DB", () => {
-+  const snapshot = createProviderContractSnapshot({
-+    GAMEFOUNDRY_AUTH_PROVIDER: "unknown-auth",
-+    GAMEFOUNDRY_DB_PROVIDER: "unknown-db",
-+  });
-+
-+  assert.equal(snapshot.activeProviders.authProviderId, "unknown-auth");
-+  assert.equal(snapshot.activeProviders.databaseProviderId, "unknown-db");
-+  assert.equal(snapshot.activeProviders.status, "failed");
-+  assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
-+  assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
-+  assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.reason), [
-+    "unsupported-provider",
-+    "unsupported-provider",
-+  ]);
-+  assert.equal(JSON.stringify(snapshot).includes("rollback"), false);
-+});
-+
- test(".env.example documents future Supabase DEV variables without values", async () => {
-   const contents = await readFile(".env.example", "utf8");
-   assert.match(contents, /^GAMEFOUNDRY_AUTH_PROVIDER=local-db$/m);
+     const primaryRow = page.locator("[data-input-mapping-row]").filter({ hasText: "Primary Action" }).first();
+     await expect(primaryRow.locator("td").nth(0).locator("input")).toBeChecked();
 diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
-index 2a076cd38..3517ad495 100644
+index 3517ad495..b37f337a0 100644
 --- a/tests/playwright/tools/LoginSessionMode.spec.mjs
 +++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
-@@ -445,6 +445,26 @@ test("Admin Site Setup reseed uses the admin-owned server setup API", async ({ p
-   }
- });
+@@ -452,13 +452,15 @@ test("Admin Site Setup status reads server-owned setup diagnostics", async ({ pa
 
-+test("Admin Site Setup status reads server-owned setup diagnostics", async ({ page }) => {
-+  const failures = await openRepoPage(page, "/admin/site-setup.html", {
-+    sessionUserKey: MOCK_DB_KEYS.users.admin,
+   try {
+     await page.locator("[data-admin-setup-refresh]").click();
+-    await expect(page.locator("[data-admin-setup-status]").first()).toHaveText("WARN: Site Setup status checked 5 setup areas.");
++    await expect(page.locator("[data-admin-setup-status]").first()).toHaveText("PASS: Site Setup status checked 5 setup areas.");
+     await expect(page.locator("[data-admin-setup-status-rows] tr")).toHaveCount(5);
+     await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("First Admin");
+     await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("Tool Metadata Bootstrap");
++    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("Starter Platform Settings");
++    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("Support Categories");
+     await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("PASS");
+-    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("WARN");
+-    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("SKIP");
++    await expect(page.locator("[data-admin-setup-status-rows]")).not.toContainText("WARN");
++    await expect(page.locator("[data-admin-setup-status-rows]")).not.toContainText("SKIP");
+     await expectNoPageFailures(failures);
+   } finally {
+     await closeWithCoverage(page, failures);
+diff --git a/tests/playwright/tools/ObjectsTool.spec.mjs b/tests/playwright/tools/ObjectsTool.spec.mjs
+index 8ef6cc745..49c86364a 100644
+--- a/tests/playwright/tools/ObjectsTool.spec.mjs
++++ b/tests/playwright/tools/ObjectsTool.spec.mjs
+@@ -160,6 +160,17 @@ test("Objects exposes production copy, setup status, and broad table input", asy
+     await expect(page.locator("[data-objects-template-catalog]")).not.toContainText("Sprite");
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Can Move");
+     await expect(page.locator("[data-objects-template-catalog]")).toContainText("Scores Points");
++    const constants = await page.evaluate(async () => {
++      const response = await fetch("/api/toolbox/objects/constants");
++      const payload = await response.json();
++      return payload.data;
++    });
++    expect(constants.OBJECTS_TOOL_TABLES).toEqual(["object_definition_records"]);
++    expect(constants.OBJECT_TYPE_TEMPLATES.map((template) => template.type)).toEqual(TYPE_OPTIONS);
++    expect(constants.STARTER_OBJECTS.map((object) => object.name)).toEqual(["Hero", "Projectile", "Wall"]);
++    expect(constants.CAPABILITY_LABELS.movable).toBe("Can Move");
++    const objectsSource = await page.evaluate(async () => fetch("/toolbox/objects/objects.js").then((response) => response.text()));
++    expect(objectsSource).not.toMatch(/const\s+(CAPABILITY_LABELS|OBJECT_TYPE_TEMPLATES|STARTER_OBJECTS)\s*=/);
+     await expect(page.getByRole("heading", { level: 3, name: "Object Status" })).toHaveCount(0);
+     await expect(page.locator("[aria-label='Object status summary']")).toHaveCount(0);
+     await expect(page.locator("[data-objects-status-summary]")).toHaveCount(0);
+diff --git a/toolbox/controls/controls-api-client.js b/toolbox/controls/controls-api-client.js
+index 3d0443406..240d14ee1 100644
+--- a/toolbox/controls/controls-api-client.js
++++ b/toolbox/controls/controls-api-client.js
+@@ -6,10 +6,38 @@ import {
+
+ const constants = readServerToolConstants("controls");
+
++function freezeRows(rows) {
++  return Object.freeze(rows.map((row) => Object.freeze({ ...row })));
++}
++
++function freezeValues(values) {
++  return Object.freeze([...values]);
++}
++
++export const COMMON_DEFAULT_GAME_CONTROLS = freezeValues(
++  requireServerConstant(constants, "COMMON_DEFAULT_GAME_CONTROLS", "controls"),
++);
++
++export const CONTROL_EVENT_OPTIONS = freezeRows(
++  requireServerConstant(constants, "CONTROL_EVENT_OPTIONS", "controls"),
++);
++
++export const ENGINE_OWNED_NORMALIZED_INPUTS = freezeValues(
++  requireServerConstant(constants, "ENGINE_OWNED_NORMALIZED_INPUTS", "controls"),
++);
++
++export const GAME_CONTROL_NORMALIZED_INPUTS = freezeValues(
++  requireServerConstant(constants, "GAME_CONTROL_NORMALIZED_INPUTS", "controls"),
++);
++
+ export const INPUT_MAPPING_TOOL_TABLES = Object.freeze(
+   requireServerConstant(constants, "INPUT_MAPPING_TOOL_TABLES", "controls"),
+ );
+
++export const NORMALIZED_USAGE_LABELS = Object.freeze(
++  { ...requireServerConstant(constants, "NORMALIZED_USAGE_LABELS", "controls") },
++);
++
+ export function createControlsToolApiRepository(options = {}) {
+   return createServerRepositoryClient("controls", options);
+ }
+diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
+index 1bc47bdd8..b19ff7d09 100644
+--- a/toolbox/controls/controls.js
++++ b/toolbox/controls/controls.js
+@@ -1,74 +1,20 @@
+-import { createControlsToolApiRepository } from "./controls-api-client.js";
++import {
++  COMMON_DEFAULT_GAME_CONTROLS,
++  CONTROL_EVENT_OPTIONS,
++  ENGINE_OWNED_NORMALIZED_INPUTS,
++  GAME_CONTROL_NORMALIZED_INPUTS,
++  NORMALIZED_USAGE_LABELS,
++  createControlsToolApiRepository,
++} from "./controls-api-client.js";
+ import {
+   normalizeNormalizedInput,
+   normalizedInputOptions,
+ } from "../../src/engine/input/NormalizedInputRegistry.js";
+
+-const CONTROL_EVENT_OPTIONS = Object.freeze([
+-  Object.freeze({ description: "Down", field: "eventD", label: "D" }),
+-  Object.freeze({ description: "Hold", field: "eventH", label: "H" }),
+-  Object.freeze({ description: "Up", field: "eventU", label: "U" }),
+-  Object.freeze({ description: "Double Click / Double Press", field: "eventDC", label: "DC" }),
+-]);
+-
+-const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
+-  "move.x-",
+-  "move.x+",
+-  "move.y-",
+-  "move.y+",
+-  "aim.x-",
+-  "aim.x+",
+-  "aim.y-",
+-  "aim.y+",
+-  "action.primary",
+-  "action.secondary",
+-  "action.tertiary",
+-  "action.quaternary",
+-  "action.confirm",
+-  "action.cancel",
+-  "action.pause",
+-  "action.start",
+-  "action.select",
+-]);
+-
+ const GAME_CONTROL_NORMALIZED_INPUT_IDS = new Set(GAME_CONTROL_NORMALIZED_INPUTS);
+
+-const NORMALIZED_USAGE_LABELS = Object.freeze({
+-  "action.cancel": "Cancel",
+-  "action.confirm": "Confirm",
+-  "action.pause": "Pause",
+-  "action.primary": "Primary Action",
+-  "action.quaternary": "Fourth Action",
+-  "action.secondary": "Secondary Action",
+-  "action.select": "Select",
+-  "action.start": "Start",
+-  "action.tertiary": "Third Action",
+-  "aim.x-": "Aim Left",
+-  "aim.x+": "Aim Right",
+-  "aim.y-": "Aim Up",
+-  "aim.y+": "Aim Down",
+-  "move.x-": "Move Left",
+-  "move.x+": "Move Right",
+-  "move.y-": "Move Up",
+-  "move.y+": "Move Down",
+-});
+-
+-const COMMON_DEFAULT_GAME_CONTROLS = new Set([
+-  "action.cancel",
+-  "action.confirm",
+-  "action.pause",
+-  "action.primary",
+-  "action.secondary",
+-  "action.start",
+-  "move.x-",
+-  "move.x+",
+-  "move.y-",
+-  "move.y+",
+-]);
+-
+-const ENGINE_OWNED_NORMALIZED_INPUTS = new Set([
+-  "action.pause",
+-]);
++const COMMON_DEFAULT_GAME_CONTROL_IDS = new Set(COMMON_DEFAULT_GAME_CONTROLS);
++const ENGINE_OWNED_NORMALIZED_INPUT_IDS = new Set(ENGINE_OWNED_NORMALIZED_INPUTS);
+
+ let controlsRepository = createControlsToolApiRepository();
+ let mappings = [];
+@@ -234,7 +180,7 @@ function defaultEventFieldsForNormalizedInput(normalizedInput) {
+ }
+
+ function isEngineOwnedMapping(mapping = {}) {
+-  return ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizeGameControlInput(mapping.normalizedInput));
++  return ENGINE_OWNED_NORMALIZED_INPUT_IDS.has(normalizeGameControlInput(mapping.normalizedInput));
+ }
+
+ function mappingNeedsEngineOwnedRepair(source = {}) {
+@@ -291,7 +237,7 @@ function mappingIdFor(mapping) {
+ function normalizeMapping(source = {}) {
+   const sourceNormalizedInput = normalizeText(source.normalizedInput);
+   const normalizedInput = normalizeGameControlInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
+-  const engineOwned = ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizedInput);
++  const engineOwned = ENGINE_OWNED_NORMALIZED_INPUT_IDS.has(normalizedInput);
+   const usageLabel = engineOwned
+     ? NORMALIZED_USAGE_LABELS[normalizedInput]
+     : normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
+@@ -388,7 +334,7 @@ function readMappings() {
+
+ function createDefaultGameControlMappings() {
+   return gameControlNormalizedOptions().map((option, index) => {
+-    const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
++    const enabled = COMMON_DEFAULT_GAME_CONTROL_IDS.has(option.value);
+     return normalizeMapping({
+       enabled,
+       ...defaultEventFieldsForNormalizedInput(option.value),
+diff --git a/toolbox/objects/objects-api-client.js b/toolbox/objects/objects-api-client.js
+index cf6c7db37..95a7bf6ef 100644
+--- a/toolbox/objects/objects-api-client.js
++++ b/toolbox/objects/objects-api-client.js
+@@ -6,8 +6,34 @@ import {
+
+ const constants = readServerToolConstants("objects");
+
++function freezeTemplate(template = {}) {
++  return Object.freeze({
++    ...template,
++    capabilities: Object.freeze(Array.isArray(template.capabilities) ? [...template.capabilities] : []),
 +  });
++}
 +
-+  try {
-+    await page.locator("[data-admin-setup-refresh]").click();
-+    await expect(page.locator("[data-admin-setup-status]").first()).toHaveText("WARN: Site Setup status checked 5 setup areas.");
-+    await expect(page.locator("[data-admin-setup-status-rows] tr")).toHaveCount(5);
-+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("First Admin");
-+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("Tool Metadata Bootstrap");
-+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("PASS");
-+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("WARN");
-+    await expect(page.locator("[data-admin-setup-status-rows]")).toContainText("SKIP");
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await closeWithCoverage(page, failures);
-+  }
-+});
++function freezeStarterObject(object = {}) {
++  return Object.freeze({
++    ...object,
++    render: Object.freeze({ ...(object.render || {}) }),
++  });
++}
 +
- test("Admin Site Setup reseed shows a visible failure when the setup API fails", async ({ page }) => {
-   const failures = await openRepoPage(page, "/admin/site-setup.html", {
-     sessionUserKey: MOCK_DB_KEYS.users.admin,
++export const CAPABILITY_LABELS = Object.freeze(
++  { ...requireServerConstant(constants, "CAPABILITY_LABELS", "objects") },
++);
++
++export const OBJECT_TYPE_TEMPLATES = Object.freeze(
++  requireServerConstant(constants, "OBJECT_TYPE_TEMPLATES", "objects").map(freezeTemplate),
++);
++
+ export const OBJECTS_TOOL_TABLES = Object.freeze(requireServerConstant(constants, "OBJECTS_TOOL_TABLES", "objects"));
+
++export const STARTER_OBJECTS = Object.freeze(
++  requireServerConstant(constants, "STARTER_OBJECTS", "objects").map(freezeStarterObject),
++);
++
+ export function createObjectsToolApiRepository(options = {}) {
+   return createServerRepositoryClient("objects", options);
+ }
+diff --git a/toolbox/objects/objects.js b/toolbox/objects/objects.js
+index 1f855de74..bd600c533 100644
+--- a/toolbox/objects/objects.js
++++ b/toolbox/objects/objects.js
+@@ -5,126 +5,12 @@ import {
+   validateObjectDefinition,
+ } from "../../src/engine/object-model/index.js";
+ import { createAssetToolApiRepository } from "../assets/assets-api-client.js";
+-import { createObjectsToolApiRepository } from "./objects-api-client.js";
+-
+-const CAPABILITY_LABELS = Object.freeze({
+-  collectible: "Can Be Collected",
+-  collides: "Can Collide",
+-  damageable: "Takes Damage",
+-  goal: "Completes Goal",
+-  hazard: "Causes Damage",
+-  killable: "Can Be Removed",
+-  movable: "Can Move",
+-  playerControlled: "Player Controlled",
+-  scores: "Scores Points",
+-});
+-
+-const OBJECT_TYPE_TEMPLATES = Object.freeze([
+-  Object.freeze({
+-    capabilities: Object.freeze(["collectible", "scores"]),
+-    modelType: "Collectible",
+-    renderType: "Sprite",
+-    state: "Active",
+-    type: "Collectible",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze([]),
+-    modelType: "Static",
+-    renderType: "None",
+-    state: "Active",
+-    type: "Custom",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze([]),
+-    modelType: "Static",
+-    renderType: "Sprite",
+-    state: "Idle",
+-    type: "Decoration",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze(["movable", "collides", "hazard", "damageable"]),
+-    modelType: "Dynamic",
+-    renderType: "Sprite",
+-    state: "Active",
+-    type: "Enemy",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze(["goal", "scores"]),
+-    modelType: "Goal",
+-    renderType: "Sprite",
+-    state: "Active",
+-    type: "Goal",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze(["hazard", "damageable"]),
+-    modelType: "Hazard",
+-    renderType: "Sprite",
+-    state: "Active",
+-    type: "Hazard",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze(["playerControlled", "movable", "collides", "damageable"]),
+-    modelType: "Dynamic",
+-    renderType: "Sprite",
+-    state: "Active",
+-    type: "Hero",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze(["collides"]),
+-    modelType: "Static",
+-    renderType: "None",
+-    state: "Active",
+-    type: "Platform",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze(["movable", "collides", "hazard"]),
+-    modelType: "Dynamic",
+-    renderType: "Sprite",
+-    state: "Active",
+-    type: "Projectile",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze([]),
+-    modelType: "Static",
+-    renderType: "None",
+-    state: "Active",
+-    type: "Spawn Point",
+-  }),
+-  Object.freeze({
+-    capabilities: Object.freeze(["collides"]),
+-    modelType: "Static",
+-    renderType: "None",
+-    state: "Active",
+-    type: "Wall",
+-  }),
+-]);
+-
+-const STARTER_OBJECTS = Object.freeze([
+-  Object.freeze({
+-    behavior: "Responds to player control mapping.",
+-    interaction: "Can interact with platforms, collectibles, hazards, and goals.",
+-    name: "Hero",
+-    render: Object.freeze({ type: "None" }),
+-    role: "Hero",
+-    state: "Active",
+-  }),
+-  Object.freeze({
+-    behavior: "Moves through the scene under authored behavior.",
+-    interaction: "Can collide with walls, platforms, or targets.",
+-    name: "Projectile",
+-    render: Object.freeze({ type: "None" }),
+-    role: "Projectile",
+-    state: "Active",
+-  }),
+-  Object.freeze({
+-    behavior: "Stays fixed in the scene.",
+-    interaction: "Provides a stable collision surface.",
+-    name: "Wall",
+-    render: Object.freeze({ type: "None" }),
+-    role: "Wall",
+-    state: "Active",
+-  }),
+-]);
++import {
++  CAPABILITY_LABELS,
++  OBJECT_TYPE_TEMPLATES,
++  STARTER_OBJECTS,
++  createObjectsToolApiRepository,
++} from "./objects-api-client.js";
+
+ let assetRepository = createAssetToolApiRepository();
+ let objectsRepository = createObjectsToolApiRepository();

@@ -4,12 +4,14 @@
 -- Runtime setup/seed operations for this group must run through server-side APIs.
 -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
 -- Browser pages must not directly seed authoritative DB records.
--- Owned tables: none active
--- Note: Support ticket tables are not active in the Local DB adapter yet.
+-- Owned tables: support_categories
+-- Note: Support category setup is active in the Local DB adapter through Admin Site Setup/server seed ownership.
 
--- DML status: Future/not-yet-owned.
--- No setup is performed for this group yet because there are no active Local DB support ticket tables.
+-- DML status: Server-seed-owned.
+-- Setup is performed through the Admin-owned server-side seed API.
 -- Browser pages must not seed authoritative records.
 -- The server/API layer generates all non-user keys.
 -- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
--- Direct SQL setup and server-side seed ownership remain deferred until a later support-ticket persistence PR explicitly owns them.
+-- Direct SQL setup remains deferred until a later migration-runner PR explicitly owns it.
+-- Starter server seed rows:
+--   support_categories.categorySlug = general-help

@@ -235,6 +235,122 @@ function providerFailure({ configDiagnostic, missingConfig, providerId, selectio
   return null;
 }
 
+function preflightStatus({ ready, selected }) {
+  if (ready) {
+    return "PASS";
+  }
+  return selected ? "FAIL" : "WARN";
+}
+
+function createSupabasePreflight({
+  auth,
+  database,
+  selectedProvidersReady,
+  supabaseAuthReady,
+  supabaseAuthSelected,
+  supabasePostgresReadiness,
+  supabasePostgresReady,
+  supabasePostgresSelected,
+  supabaseUrlReady,
+  supabaseAnonKeyReady,
+  supabaseServiceRoleReady,
+}) {
+  const checks = [
+    {
+      id: "auth-provider-selected",
+      label: "Auth provider selected",
+      providerId: auth.id,
+      status: auth.supported ? "PASS" : "FAIL",
+      summary: auth.supported
+        ? `Auth provider selection is ${auth.id}.`
+        : auth.diagnostic,
+    },
+    {
+      id: "database-provider-selected",
+      label: "DB provider selected",
+      providerId: database.id,
+      status: database.supported ? "PASS" : "FAIL",
+      summary: database.supported
+        ? `DB provider selection is ${database.id}.`
+        : database.diagnostic,
+    },
+    {
+      id: "supabase-url",
+      label: "Supabase URL",
+      status: preflightStatus({
+        ready: supabaseUrlReady,
+        selected: supabaseAuthSelected || supabasePostgresSelected,
+      }),
+      summary: supabaseUrlReady
+        ? "Supabase URL is configured."
+        : "Supabase URL is required before selecting Supabase Auth or Supabase Postgres.",
+      visibility: "browser-safe",
+    },
+    {
+      id: "supabase-anon-key",
+      label: "Supabase anon key",
+      status: preflightStatus({
+        ready: supabaseAnonKeyReady,
+        selected: supabaseAuthSelected,
+      }),
+      summary: supabaseAnonKeyReady
+        ? "Supabase anon key is configured for browser-safe Auth requests."
+        : "Supabase anon key is required before selecting Supabase Auth.",
+      visibility: "browser-safe",
+    },
+    {
+      id: "supabase-server-only-credential",
+      label: "Supabase server-only credential",
+      status: preflightStatus({
+        ready: supabaseServiceRoleReady,
+        selected: supabasePostgresSelected,
+      }),
+      summary: supabaseServiceRoleReady
+        ? "Server-only Supabase database credential is configured on the server."
+        : "Server-only Supabase database credential is required before selecting Supabase Postgres.",
+      visibility: "server-only",
+    },
+    {
+      id: "identity-tables-readiness",
+      label: "users/roles/user_roles readiness",
+      records: {
+        roles: supabasePostgresReadiness.records.roles,
+        user_roles: supabasePostgresReadiness.records.user_roles,
+        users: supabasePostgresReadiness.records.users,
+      },
+      status: preflightStatus({
+        ready: supabasePostgresReady,
+        selected: supabasePostgresSelected,
+      }),
+      summary: supabasePostgresReady
+        ? "Supabase identity tables are ready for users, roles, and user_roles checks."
+        : "Supabase identity table readiness requires Supabase Postgres server configuration.",
+    },
+    {
+      id: "site-setup-readiness",
+      label: "Site Setup readiness",
+      status: preflightStatus({
+        ready: supabasePostgresReadiness.siteSetupReady,
+        selected: supabasePostgresSelected,
+      }),
+      summary: supabasePostgresReadiness.siteSetupReady
+        ? "Admin Site Setup readiness checks are available for Supabase Postgres."
+        : "Admin Site Setup for Supabase requires server-only setup configuration.",
+    },
+  ];
+  const failedChecks = checks.filter((check) => check.status === "FAIL");
+  const warningChecks = checks.filter((check) => check.status === "WARN");
+  return {
+    checks,
+    fallbackAllowed: false,
+    overallStatus: failedChecks.length ? "FAIL" : warningChecks.length ? "WARN" : "PASS",
+    selectedProvidersReady,
+    serverOnlySecretNamesExposed: false,
+    secretValuesExposed: false,
+    supabaseSelected: supabaseAuthSelected || supabasePostgresSelected,
+  };
+}
+
 export function createSupabasePostgresReadiness(env = process.env) {
   const adapterMissing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
   const siteSetupMissing = missingEnvKeys(env, SUPABASE_POSTGRES_SITE_SETUP_KEYS);
@@ -574,6 +690,9 @@ export function createProviderContractSnapshot(env = process.env) {
   const missingConfigWarnings = futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing);
   const supabaseAuthReady = supabaseAuthMissing.length === 0;
   const supabasePostgresReady = supabasePostgresReadiness.configured;
+  const supabaseUrlReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_URL"));
+  const supabaseAnonKeyReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_ANON_KEY"));
+  const supabaseServiceRoleReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY"));
   const providerFailures = [
     providerFailure({
       configDiagnostic: supabaseAuthDiagnostic(env),
@@ -591,6 +710,19 @@ export function createProviderContractSnapshot(env = process.env) {
     }),
   ].filter(Boolean);
   const selectedProvidersReady = providerFailures.length === 0;
+  const supabasePreflight = createSupabasePreflight({
+    auth,
+    database,
+    selectedProvidersReady,
+    supabaseAnonKeyReady,
+    supabaseAuthReady,
+    supabaseAuthSelected,
+    supabasePostgresReadiness,
+    supabasePostgresReady,
+    supabasePostgresSelected,
+    supabaseServiceRoleReady,
+    supabaseUrlReady,
+  });
 
   if (supabaseAuthSelected) {
     diagnostics.push(supabaseAuthDiagnostic(env));
@@ -690,6 +822,7 @@ export function createProviderContractSnapshot(env = process.env) {
         owner: "server-api",
       },
     },
+    supabasePreflight,
     supabasePostgres: {
       configured: supabasePostgresMissing.length === 0,
       adapter: {

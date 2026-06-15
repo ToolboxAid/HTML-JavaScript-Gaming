@@ -53,7 +53,20 @@ CREATE INDEX IF NOT EXISTS idx_user_roles_updatedby ON "user_roles" ("updatedBy"
 
 -- Group: Admin
 -- Grouped DDL source: docs_build/database/ddl/admin.sql
--- No active Local DB runtime tables for this group in the current DEV adapter.
+CREATE TABLE IF NOT EXISTS "platform_settings" (
+    "key" TEXT PRIMARY KEY,
+    "settingKey" TEXT,
+    "settingValue" TEXT,
+    "settingType" TEXT,
+    "description" TEXT,
+    "isActive" TEXT,
+    "createdAt" TEXT,
+    "updatedAt" TEXT,
+    "createdBy" TEXT NOT NULL REFERENCES users("key"),
+    "updatedBy" TEXT NOT NULL REFERENCES users("key")
+);
+CREATE INDEX IF NOT EXISTS idx_platform_settings_createdby ON "platform_settings" ("createdBy");
+CREATE INDEX IF NOT EXISTS idx_platform_settings_updatedby ON "platform_settings" ("updatedBy");
 
 -- Group: Game Workspace
 -- Grouped DDL source: docs_build/database/ddl/game-workspace.sql
@@ -601,7 +614,20 @@ CREATE INDEX IF NOT EXISTS idx_toolbox_votes_updatedby ON "toolbox_votes" ("upda
 
 -- Group: Support Tickets
 -- Grouped DDL source: docs_build/database/ddl/support-tickets.sql
--- No active Local DB runtime tables for this group in the current DEV adapter.
+CREATE TABLE IF NOT EXISTS "support_categories" (
+    "key" TEXT PRIMARY KEY,
+    "categorySlug" TEXT,
+    "name" TEXT,
+    "description" TEXT,
+    "isActive" TEXT,
+    "sortOrder" TEXT,
+    "createdAt" TEXT,
+    "updatedAt" TEXT,
+    "createdBy" TEXT NOT NULL REFERENCES users("key"),
+    "updatedBy" TEXT NOT NULL REFERENCES users("key")
+);
+CREATE INDEX IF NOT EXISTS idx_support_categories_createdby ON "support_categories" ("createdBy");
+CREATE INDEX IF NOT EXISTS idx_support_categories_updatedby ON "support_categories" ("updatedBy");
 
 -- Group: Tool State Samples
 -- Grouped DDL source: Local DB compatibility table; grouped guest seed data is owned under docs_build/database/seed/guest/.

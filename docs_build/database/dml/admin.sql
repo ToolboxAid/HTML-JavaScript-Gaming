@@ -4,8 +4,8 @@
 -- Runtime setup/seed operations for this group must run through server-side APIs.
 -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
 -- Browser pages must not directly seed authoritative DB records.
--- Owned tables: none active
--- Note: Admin Site Setup owns explicit server-side setup/reseed entry points. No persistent admin table exists in this PR.
+-- Owned tables: platform_settings
+-- Note: Admin Site Setup owns explicit server-side setup/reseed entry points and platform settings bootstrap.
 
 -- DML status: Server-seed-owned.
 -- Setup is performed through the Admin-owned server-side seed API.
@@ -13,3 +13,5 @@
 -- The server/API layer generates all non-user keys.
 -- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
 -- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
+-- Starter server seed rows:
+--   platform_settings.settingKey = site.setup.status

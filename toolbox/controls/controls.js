@@ -1,74 +1,20 @@
-import { createControlsToolApiRepository } from "./controls-api-client.js";
+import {
+  COMMON_DEFAULT_GAME_CONTROLS,
+  CONTROL_EVENT_OPTIONS,
+  ENGINE_OWNED_NORMALIZED_INPUTS,
+  GAME_CONTROL_NORMALIZED_INPUTS,
+  NORMALIZED_USAGE_LABELS,
+  createControlsToolApiRepository,
+} from "./controls-api-client.js";
 import {
   normalizeNormalizedInput,
   normalizedInputOptions,
 } from "../../src/engine/input/NormalizedInputRegistry.js";
 
-const CONTROL_EVENT_OPTIONS = Object.freeze([
-  Object.freeze({ description: "Down", field: "eventD", label: "D" }),
-  Object.freeze({ description: "Hold", field: "eventH", label: "H" }),
-  Object.freeze({ description: "Up", field: "eventU", label: "U" }),
-  Object.freeze({ description: "Double Click / Double Press", field: "eventDC", label: "DC" }),
-]);
-
-const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
-  "move.x-",
-  "move.x+",
-  "move.y-",
-  "move.y+",
-  "aim.x-",
-  "aim.x+",
-  "aim.y-",
-  "aim.y+",
-  "action.primary",
-  "action.secondary",
-  "action.tertiary",
-  "action.quaternary",
-  "action.confirm",
-  "action.cancel",
-  "action.pause",
-  "action.start",
-  "action.select",
-]);
-
 const GAME_CONTROL_NORMALIZED_INPUT_IDS = new Set(GAME_CONTROL_NORMALIZED_INPUTS);
 
-const NORMALIZED_USAGE_LABELS = Object.freeze({
-  "action.cancel": "Cancel",
-  "action.confirm": "Confirm",
-  "action.pause": "Pause",
-  "action.primary": "Primary Action",
-  "action.quaternary": "Fourth Action",
-  "action.secondary": "Secondary Action",
-  "action.select": "Select",
-  "action.start": "Start",
-  "action.tertiary": "Third Action",
-  "aim.x-": "Aim Left",
-  "aim.x+": "Aim Right",
-  "aim.y-": "Aim Up",
-  "aim.y+": "Aim Down",
-  "move.x-": "Move Left",
-  "move.x+": "Move Right",
-  "move.y-": "Move Up",
-  "move.y+": "Move Down",
-});
-
-const COMMON_DEFAULT_GAME_CONTROLS = new Set([
-  "action.cancel",
-  "action.confirm",
-  "action.pause",
-  "action.primary",
-  "action.secondary",
-  "action.start",
-  "move.x-",
-  "move.x+",
-  "move.y-",
-  "move.y+",
-]);
-
-const ENGINE_OWNED_NORMALIZED_INPUTS = new Set([
-  "action.pause",
-]);
+const COMMON_DEFAULT_GAME_CONTROL_IDS = new Set(COMMON_DEFAULT_GAME_CONTROLS);
+const ENGINE_OWNED_NORMALIZED_INPUT_IDS = new Set(ENGINE_OWNED_NORMALIZED_INPUTS);
 
 let controlsRepository = createControlsToolApiRepository();
 let mappings = [];
@@ -234,7 +180,7 @@ function defaultEventFieldsForNormalizedInput(normalizedInput) {
 }
 
 function isEngineOwnedMapping(mapping = {}) {
-  return ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizeGameControlInput(mapping.normalizedInput));
+  return ENGINE_OWNED_NORMALIZED_INPUT_IDS.has(normalizeGameControlInput(mapping.normalizedInput));
 }
 
 function mappingNeedsEngineOwnedRepair(source = {}) {
@@ -291,7 +237,7 @@ function mappingIdFor(mapping) {
 function normalizeMapping(source = {}) {
   const sourceNormalizedInput = normalizeText(source.normalizedInput);
   const normalizedInput = normalizeGameControlInput(sourceNormalizedInput, sourceNormalizedInput ? "" : "action.primary");
-  const engineOwned = ENGINE_OWNED_NORMALIZED_INPUTS.has(normalizedInput);
+  const engineOwned = ENGINE_OWNED_NORMALIZED_INPUT_IDS.has(normalizedInput);
   const usageLabel = engineOwned
     ? NORMALIZED_USAGE_LABELS[normalizedInput]
     : normalizeText(source.usageLabel || source.actionLabel || source.gameActionLabel || source.action);
@@ -388,7 +334,7 @@ function readMappings() {
 
 function createDefaultGameControlMappings() {
   return gameControlNormalizedOptions().map((option, index) => {
-    const enabled = COMMON_DEFAULT_GAME_CONTROLS.has(option.value);
+    const enabled = COMMON_DEFAULT_GAME_CONTROL_IDS.has(option.value);
     return normalizeMapping({
       enabled,
       ...defaultEventFieldsForNormalizedInput(option.value),

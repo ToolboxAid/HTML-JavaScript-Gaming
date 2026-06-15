@@ -11,6 +11,70 @@ export const INPUT_MAPPING_TOOL_TABLES = Object.freeze([
   "input_custom_action_records",
 ]);
 
+export const CONTROL_EVENT_OPTIONS = Object.freeze([
+  Object.freeze({ description: "Down", field: "eventD", label: "D" }),
+  Object.freeze({ description: "Hold", field: "eventH", label: "H" }),
+  Object.freeze({ description: "Up", field: "eventU", label: "U" }),
+  Object.freeze({ description: "Double Click / Double Press", field: "eventDC", label: "DC" }),
+]);
+
+export const GAME_CONTROL_NORMALIZED_INPUTS = Object.freeze([
+  "move.x-",
+  "move.x+",
+  "move.y-",
+  "move.y+",
+  "aim.x-",
+  "aim.x+",
+  "aim.y-",
+  "aim.y+",
+  "action.primary",
+  "action.secondary",
+  "action.tertiary",
+  "action.quaternary",
+  "action.confirm",
+  "action.cancel",
+  "action.pause",
+  "action.start",
+  "action.select",
+]);
+
+export const NORMALIZED_USAGE_LABELS = Object.freeze({
+  "action.cancel": "Cancel",
+  "action.confirm": "Confirm",
+  "action.pause": "Pause",
+  "action.primary": "Primary Action",
+  "action.quaternary": "Fourth Action",
+  "action.secondary": "Secondary Action",
+  "action.select": "Select",
+  "action.start": "Start",
+  "action.tertiary": "Third Action",
+  "aim.x-": "Aim Left",
+  "aim.x+": "Aim Right",
+  "aim.y-": "Aim Up",
+  "aim.y+": "Aim Down",
+  "move.x-": "Move Left",
+  "move.x+": "Move Right",
+  "move.y-": "Move Up",
+  "move.y+": "Move Down",
+});
+
+export const COMMON_DEFAULT_GAME_CONTROLS = Object.freeze([
+  "action.cancel",
+  "action.confirm",
+  "action.pause",
+  "action.primary",
+  "action.secondary",
+  "action.start",
+  "move.x-",
+  "move.x+",
+  "move.y-",
+  "move.y+",
+]);
+
+export const ENGINE_OWNED_NORMALIZED_INPUTS = Object.freeze([
+  "action.pause",
+]);
+
 const INPUT_MAPPING_DB_OWNER = "controls";
 const DEFAULT_GAME_ID = "demo-game";
 const DEFAULT_INPUT_MAPPING_AUDIT_USER_KEY = MOCK_DB_KEYS.users.forgeBot;
@@ -535,7 +599,12 @@ export function createInputMappingToolMockRepository(options = {}) {
   }
 
   return {
+    COMMON_DEFAULT_GAME_CONTROLS,
+    CONTROL_EVENT_OPTIONS,
+    ENGINE_OWNED_NORMALIZED_INPUTS,
+    GAME_CONTROL_NORMALIZED_INPUTS,
     INPUT_MAPPING_TOOL_TABLES,
+    NORMALIZED_USAGE_LABELS,
     getSnapshot,
     getTables,
     getSelectedInputDevice,
