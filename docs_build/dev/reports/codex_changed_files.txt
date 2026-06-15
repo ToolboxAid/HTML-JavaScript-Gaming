@@ -1,7 +1,6 @@
 src/dev-runtime/auth/provider-contract-stubs.mjs
-src/dev-runtime/server/local-api-router.mjs
 tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-docs_build/dev/reports/pr120-supabase-provider-contract-stub.md
+docs_build/dev/reports/pr123-supabase-dev-postgres-stub.md
 docs_build/dev/reports/playwright_v8_coverage_report.txt
 docs_build/dev/reports/coverage_changed_js_guardrail.txt
 docs_build/dev/reports/codex_changed_files.txt

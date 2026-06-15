@@ -2,14 +2,25 @@ export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "getCurrentUser",
   "signIn",
   "signOut",
+  "createAccount",
+  "requestPasswordReset",
   "requireRole",
+]);
+
+export const POSTGRES_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
+  "connect",
+  "getUsers",
+  "getRoles",
+  "getUserRoles",
+  "runSiteSetup",
+  "getDbViewerSnapshot",
 ]);
 
 export const PROVIDER_DATA_BOUNDARY_RULE = "Browser -> API/Service Contract -> Database";
 
 export const LOCAL_AUTH_PROVIDER_ID = "local-db";
 export const LOCAL_DATABASE_PROVIDER_ID = "local-db";
-export const SUPABASE_AUTH_PROVIDER_ID = "supabase";
+export const SUPABASE_AUTH_PROVIDER_ID = "supabase-auth";
 export const SUPABASE_POSTGRES_PROVIDER_ID = "supabase-postgres";
 
 const BROWSER_SAFE_SUPABASE_ENV_KEYS = Object.freeze([
@@ -21,6 +32,12 @@ const SERVER_ONLY_SUPABASE_SECRET_KEYS = Object.freeze([
   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
   "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
 ]);
+
+export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
+  browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS,
+  selectors: Object.freeze(["GAMEFOUNDRY_AUTH_PROVIDER", "GAMEFOUNDRY_DB_PROVIDER"]),
+  serverOnlySupabaseCount: SERVER_ONLY_SUPABASE_SECRET_KEYS.length,
+});
 
 const SUPPORTED_AUTH_PROVIDERS = Object.freeze([LOCAL_AUTH_PROVIDER_ID, SUPABASE_AUTH_PROVIDER_ID]);
 const SUPPORTED_DATABASE_PROVIDERS = Object.freeze([LOCAL_DATABASE_PROVIDER_ID, SUPABASE_POSTGRES_PROVIDER_ID]);
@@ -58,6 +75,28 @@ export function supabasePostgresDiagnostic(env = process.env) {
     : "Supabase Postgres provider stub is configured but not active until a dedicated adapter PR.";
 }
 
+function futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing) {
+  const warnings = [];
+  if (supabaseAuthMissing.length) {
+    warnings.push(`Supabase Auth future provider is not configured. Missing browser-safe environment variables: ${supabaseAuthMissing.join(", ")}.`);
+  }
+  if (supabasePostgresMissing.length) {
+    warnings.push("Supabase Postgres future provider is not configured. Missing server-only environment variables are required but not exposed through browser APIs.");
+  }
+  return warnings;
+}
+
+function configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing) {
+  return {
+    auth: supabaseAuthMissing.length === 0
+      ? [LOCAL_AUTH_PROVIDER_ID, SUPABASE_AUTH_PROVIDER_ID]
+      : [LOCAL_AUTH_PROVIDER_ID],
+    database: supabasePostgresMissing.length === 0
+      ? [LOCAL_DATABASE_PROVIDER_ID, SUPABASE_POSTGRES_PROVIDER_ID]
+      : [LOCAL_DATABASE_PROVIDER_ID],
+  };
+}
+
 export class SupabaseAuthProviderStub {
   constructor({ env = process.env } = {}) {
     this.env = env;
@@ -80,6 +119,14 @@ export class SupabaseAuthProviderStub {
     throw new Error(this.diagnostic());
   }
 
+  createAccount() {
+    throw new Error(this.diagnostic());
+  }
+
+  requestPasswordReset() {
+    throw new Error(this.diagnostic());
+  }
+
   requireRole() {
     throw new Error(this.diagnostic());
   }
@@ -98,6 +145,26 @@ export class SupabasePostgresProviderStub {
   connect() {
     throw new Error(this.diagnostic());
   }
+
+  getUsers() {
+    throw new Error(this.diagnostic());
+  }
+
+  getRoles() {
+    throw new Error(this.diagnostic());
+  }
+
+  getUserRoles() {
+    throw new Error(this.diagnostic());
+  }
+
+  runSiteSetup() {
+    throw new Error(this.diagnostic());
+  }
+
+  getDbViewerSnapshot() {
+    throw new Error(this.diagnostic());
+  }
 }
 
 export function createProviderContractSnapshot(env = process.env) {
@@ -108,6 +175,7 @@ export function createProviderContractSnapshot(env = process.env) {
   const supabasePostgresMissing = missingEnvKeys(env, SERVER_ONLY_SUPABASE_SECRET_KEYS);
   const supabaseAuthSelected = auth.id === SUPABASE_AUTH_PROVIDER_ID;
   const supabasePostgresSelected = database.id === SUPABASE_POSTGRES_PROVIDER_ID;
+  const missingConfigWarnings = futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing);
 
   if (supabaseAuthSelected) {
     diagnostics.push(supabaseAuthDiagnostic(env));
@@ -124,6 +192,21 @@ export function createProviderContractSnapshot(env = process.env) {
     },
     boundary: PROVIDER_DATA_BOUNDARY_RULE,
     diagnostics,
+    providerDiagnostics: {
+      activeProvider: {
+        authProviderId: LOCAL_AUTH_PROVIDER_ID,
+        databaseProviderId: LOCAL_DATABASE_PROVIDER_ID,
+      },
+      configuredProviders: configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing),
+      missingConfigWarnings,
+      requiredEnvironmentVariables: {
+        browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS.slice(),
+        selectors: PROVIDER_ENVIRONMENT_VARIABLES.selectors.slice(),
+        serverOnlySupabaseCount: PROVIDER_ENVIRONMENT_VARIABLES.serverOnlySupabaseCount,
+      },
+      secretValuesExposed: false,
+      serverOnlyEnvironmentVariableNamesExposed: false,
+    },
     requestedProviders: {
       authProviderId: auth.requested,
       databaseProviderId: database.requested,
@@ -135,10 +218,28 @@ export function createProviderContractSnapshot(env = process.env) {
       operations: AUTH_PROVIDER_CONTRACT_OPERATIONS.slice(),
       providerId: SUPABASE_AUTH_PROVIDER_ID,
       status: supabaseAuthSelected && supabaseAuthMissing.length ? "not-configured" : "stub",
+      userMapping: {
+        appUserKeyField: "users.key",
+        browserAuthoritativeUserKeysAllowed: false,
+        externalAuthUserIdField: "supabase.auth.user.id",
+        owner: "server-api",
+      },
     },
     supabasePostgres: {
       configured: supabasePostgresMissing.length === 0,
+      dataMigrationActive: false,
       diagnostic: supabasePostgresSelected ? supabasePostgresDiagnostic(env) : "Supabase Postgres provider stub is inactive.",
+      executionOwnership: {
+        dev: "Codex may execute DEV setup/migration only after a dedicated Supabase DEV PR.",
+        prod: "User-controlled reviewed SQL/setup execution.",
+        uat: "User-controlled reviewed SQL/setup execution.",
+      },
+      migrationSequence: [
+        "Supabase Auth",
+        "Supabase users/roles/user_roles",
+        "Supabase tool/product data groups",
+      ],
+      operations: POSTGRES_PROVIDER_CONTRACT_OPERATIONS.slice(),
       providerId: SUPABASE_POSTGRES_PROVIDER_ID,
       serverOnlySecretsExposed: false,
       serverOnlySecretNamesExposed: false,
