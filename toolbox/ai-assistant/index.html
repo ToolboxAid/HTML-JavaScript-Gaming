@@ -4,8 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AI Assistant — GameFoundryStudio</title>
-    <meta name="description" content="GameFoundryStudio: Build. Play. Share.">
+    <title>AI Command Center - GameFoundryStudio</title>
+    <meta name="description" content="GameFoundryStudio AI Command Center wireframe for creator help across tools.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="../../assets/theme-v2/css/theme.css">
 </head>
@@ -16,37 +16,133 @@
         <section class="page-title">
             <div class="container">
                 <div class="kicker">Foundry Bot</div>
-                <h1>AI Assistant</h1>
-                <p class="lede">Get AI help with code, assets, logic and design.</p>
+                <h1>AI Command Center</h1>
+                <p class="lede">Learn AI, review examples, choose future providers, set preferences, and get Foundry Bot help from every creator tool.</p>
             </div>
         </section>
         <section class="section">
             <div class="container container--tool-wide">
                 <div class="tool-workspace tool-workspace--wide">
-                    <aside class="tool-column tool-group-ai">
+                    <aside class="tool-column tool-group-ai" aria-label="AI Command Center areas">
                         <div class="tool-column-header">
-                            <h2>Toolbox</h2>
+                            <h2>Command Center</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Setup</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Learn AI</summary>
+                                <div class="accordion-body">
+                                    <p>Short lessons will show creators how to ask Foundry Bot for planning, naming, balancing, and polish ideas.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>AI Examples</summary>
+                                <div class="accordion-body">
+                                    <p>Examples help creators start with Objects, Events, Worlds, Assets, and Publish workflows.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>AI Providers</summary>
+                                <div class="accordion-body">
+                                    <p>Provider choices are planned for a later setup flow. No AI provider is connected in this wireframe.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>AI Preferences</summary>
+                                <div class="accordion-body">
+                                    <p>Future preferences will let creators shape tone, detail level, and idea style.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Foundry Bot Help</summary>
+                                <div class="accordion-body">
+                                    <p>Foundry Bot will explain what each tool can help with and suggest the next creator-friendly step.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="../../assets/theme-v2/images" data-tool-slug="ai-assistant" data-tool-icon-src="../../assets/theme-v2/images/badges/ai-assistant.png"></div>
-                    <section class="tool-center-panel"><img src="../../assets/theme-v2/images/mascots/forge-bot-single.png" alt="ForgeBot">
-                        <h2>Workspace</h2>
-                        <p>AI Assistant: Get AI help with code, assets, logic and design.</p>
+                    <section class="tool-center-panel" aria-labelledby="ai-command-center-title">
+                        <img src="../../assets/theme-v2/images/mascots/foundry-bot.png" alt="Foundry Bot">
+                        <h2 id="ai-command-center-title">Creator AI from every tool</h2>
+                        <p>Foundry Bot is planned as a creator guide that understands the current tool, the current game, and the next creative goal without exposing technical internals.</p>
+
+                        <div class="content-grid content-grid--three">
+                            <article class="card">
+                                <div class="card-body content-stack">
+                                    <h3>Objects</h3>
+                                    <p>Ask for enemy ideas, collectible names, object behaviors, and simple balance notes.</p>
+                                    <a class="btn" href="../objects/index.html">Open Objects</a>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-body content-stack">
+                                    <h3>Events</h3>
+                                    <p>Ask for trigger ideas, player feedback moments, win conditions, and scene flow prompts.</p>
+                                    <a class="btn" href="../events/index.html">Open Events</a>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-body content-stack">
+                                    <h3>Worlds</h3>
+                                    <p>Ask for layout themes, hazards, landmarks, secret paths, and exploration goals.</p>
+                                    <a class="btn" href="../worlds/index.html">Open Worlds</a>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-body content-stack">
+                                    <h3>Assets</h3>
+                                    <p>Ask for artwork, sound, font, and naming suggestions that match the game style.</p>
+                                    <a class="btn" href="../assets/index.html">Open Assets</a>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-body content-stack">
+                                    <h3>Publish</h3>
+                                    <p>Ask for launch checklists, store copy ideas, community notes, and sharing steps.</p>
+                                    <a class="btn" href="../publish/index.html">Open Publish</a>
+                                </div>
+                            </article>
+                            <article class="card">
+                                <div class="card-body content-stack">
+                                    <h3>Foundry Bot Help</h3>
+                                    <p>Ask what to do next, how to improve a game idea, or which tool fits the current task.</p>
+                                    <p class="status" role="status">Wireframe only. AI assistance is not connected yet.</p>
+                                </div>
+                            </article>
+                        </div>
                     </section>
-                    <aside class="tool-column tool-group-ai">
+                    <aside class="tool-column tool-group-ai" aria-label="AI Command Center inspector">
                         <div class="tool-column-header">
                             <h2>Inspector</h2>
                         </div>
                         <div class="accordion-stack">
                             <details class="vertical-accordion" open>
-                                <summary>Output</summary>
-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
+                                <summary>Platform Rules</summary>
+                                <div class="accordion-body">
+                                    <ul>
+                                        <li>AI is planned to be available from every creator tool.</li>
+                                        <li>AI is planned to use the current tool and current game as context.</li>
+                                        <li>Creators stay in friendly tool language instead of technical system details.</li>
+                                    </ul>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Provider Status</summary>
+                                <div class="accordion-body">
+                                    <p class="status" role="status">No AI provider is connected yet. Provider setup is planned for a future update.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Current Context</summary>
+                                <div class="accordion-body">
+                                    <p>Future AI help will receive the active game, the open tool, selected creator choices, and the requested task.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion">
+                                <summary>Creator Preferences</summary>
+                                <div class="accordion-body">
+                                    <p>Future preferences will cover concise answers, brainstorming depth, beginner guidance, and accessibility notes.</p>
+                                </div>
                             </details>
                         </div>
                     </aside>

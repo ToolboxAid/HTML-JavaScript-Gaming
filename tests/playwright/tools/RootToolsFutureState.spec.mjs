@@ -131,7 +131,7 @@ test("root tools surface links current tool pages without old_* routes", async (
     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
     expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Journey", "Game Workspace", "Languages", "Objects", "Saved Data", "Tags"]);
     await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Beta", "Wireframe", "Beta"]);
-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Assistant$/ }) })).toHaveCount(0);
+    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
     const oldStandaloneLabels = [
       ["Palette", "Manager"].join(" "),
       ["Stor", "age", " ", "Inspector"].join(""),

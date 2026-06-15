@@ -1,0 +1,496 @@
+diff --git a/assets/theme-v2/partials/header-nav.html b/assets/theme-v2/partials/header-nav.html
+index e5927bfe8..f8eb1fc9d 100644
+--- a/assets/theme-v2/partials/header-nav.html
++++ b/assets/theme-v2/partials/header-nav.html
+@@ -51,7 +51,7 @@
+           <div class="nav-item nav-popout-item" data-toolbox-menu-group>
+             <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Create &#9656;</a>
+             <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Create tools">
+-              <a data-nav-link data-toolbox-menu-item data-route="ai-assistant" href="toolbox/ai-assistant/index.html">AI Assistant</a>
++              <a data-nav-link data-toolbox-menu-item data-route="ai-assistant" href="toolbox/ai-assistant/index.html">AI Command Center</a>
+               <a data-nav-link data-toolbox-menu-item data-route="animations" href="toolbox/animations/index.html">Animations</a>
+               <a data-nav-link data-toolbox-menu-item data-route="characters" href="toolbox/characters/index.html">Characters</a>
+               <a data-nav-link data-toolbox-menu-item data-route="objects" href="toolbox/objects/index.html">Objects</a>
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index aa88fe50b..b292a4e47 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -7,6 +7,12 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+
+ Guardrail warnings:
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 240fdf6cb..94e62df8f 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -12,31 +12,42 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+ Exercised tool entry points detected:
+-(44%) Toolbox Index - exercised 1 runtime JS files
++(89%) Toolbox Index - exercised 6 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(60%) Theme V2 Shared JS - exercised 6 runtime JS files
++(73%) Theme V2 Shared JS - exercised 2 runtime JS files
+
+ Changed runtime JS files covered:
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+
+ Files with executed line/function counts where available:
+-(8%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 1/12
+-(10%) assets/theme-v2/js/local-db-page-data.js - executed lines 299/299; executed functions 3/29
+-(33%) src/engine/api/admin-setup-api-client.js - executed lines 13/13; executed functions 1/3
+-(36%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 5/14
+-(40%) assets/theme-v2/js/admin-setup-actions.js - executed lines 38/38; executed functions 2/5
+-(44%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 11/25
+-(60%) src/engine/api/local-db-api-client.js - executed lines 19/19; executed functions 3/5
++(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
++(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+-(67%) admin/db-viewer.js - executed lines 49/49; executed functions 4/6
+-(76%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 722/722; executed functions 52/68
+-(85%) src/engine/api/local-db-viewer-ui.js - executed lines 479/479; executed functions 77/91
+-(100%) assets/theme-v2/js/admin-db-status-panel.js - executed lines 30/30; executed functions 3/3
+-(100%) assets/theme-v2/js/login-session.js - executed lines 45/45; executed functions 7/7
++(68%) toolbox/game-workspace/game-workspace.js - executed lines 281/281; executed functions 19/28
++(69%) admin/tool-votes.js - executed lines 406/406; executed functions 37/54
++(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 722/722; executed functions 51/68
++(89%) toolbox/tool-registry-api-client.js - executed lines 152/152; executed functions 25/28
++(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
++(93%) toolbox/tools-page-accordions.js - executed lines 965/965; executed functions 106/114
++(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
++(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
+
+ Uncovered or low-coverage changed JS files:
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/shared/contracts/tools/toolContractsIndex.js - WARNING: uncovered changed runtime JS file; advisory only
+
+ Changed JS files considered:
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/guest-seeds/tool-metadata-inventory.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js - changed JS file not collected as browser runtime coverage
++(0%) src/shared/contracts/tools/toolContractsIndex.js - changed JS file not collected as browser runtime coverage
+ (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/ToolboxRoutePages.spec.mjs - changed JS file not collected as browser runtime coverage
+diff --git a/src/dev-runtime/admin/header-nav.local.html b/src/dev-runtime/admin/header-nav.local.html
+index e5927bfe8..f8eb1fc9d 100644
+--- a/src/dev-runtime/admin/header-nav.local.html
++++ b/src/dev-runtime/admin/header-nav.local.html
+@@ -51,7 +51,7 @@
+           <div class="nav-item nav-popout-item" data-toolbox-menu-group>
+             <a data-toolbox-menu-group-label data-route="toolbox" href="toolbox/index.html" aria-haspopup="true">Create &#9656;</a>
+             <div class="sub-menu sub-menu--nested" data-toolbox-submenu aria-label="Create tools">
+-              <a data-nav-link data-toolbox-menu-item data-route="ai-assistant" href="toolbox/ai-assistant/index.html">AI Assistant</a>
++              <a data-nav-link data-toolbox-menu-item data-route="ai-assistant" href="toolbox/ai-assistant/index.html">AI Command Center</a>
+               <a data-nav-link data-toolbox-menu-item data-route="animations" href="toolbox/animations/index.html">Animations</a>
+               <a data-nav-link data-toolbox-menu-item data-route="characters" href="toolbox/characters/index.html">Characters</a>
+               <a data-nav-link data-toolbox-menu-item data-route="objects" href="toolbox/objects/index.html">Objects</a>
+diff --git a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+index d44e6ce9e..5498be0a2 100644
+--- a/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
++++ b/src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+@@ -70,16 +70,16 @@ const RELEASE_CHANNEL_BY_STATUS = Object.freeze({
+ export const TOOL_REGISTRY = Object.freeze([
+   {
+     "id": "ai-assistant",
+-    "name": "AI Assistant",
+-    "displayName": "AI Assistant",
+-    "shortDescription": "Get guided technical help for game creation workflows.",
+-    "shortLabel": "AI Assistant",
++    "name": "AI Command Center",
++    "displayName": "AI Command Center",
++    "shortDescription": "Learn AI, review creator examples, and plan Foundry Bot help across tools.",
++    "shortLabel": "AI Command Center",
+     "path": "ai-assistant",
+     "folderName": "ai-assistant",
+     "entryPoint": "ai-assistant/index.html",
+     "badge": "/assets/theme-v2/images/badges/ai-assistant.png",
+     "tool": "/assets/theme-v2/images/tools/ai-assistant.png",
+-    "description": "Get guided technical help for game creation workflows.",
++    "description": "Learn AI, review creator examples, and plan Foundry Bot help across tools.",
+     "category": "AI",
+     "colorGroup": "tool-group-ai",
+     "active": true,
+diff --git a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+index 109a0dd3b..d4e26bd86 100644
+--- a/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+@@ -150,11 +150,11 @@ export const GAME_JOURNEY_SUGGESTED_TOOLS = Object.freeze({
+   default: Object.freeze(["Game Workspace", "Game Design"]),
+   byNoteType: Object.freeze({
+     design: Object.freeze(["Game Design", "Colors", "Assets"]),
+-    story: Object.freeze(["Game Design", "Game Workspace", "AI Assistant"]),
++    story: Object.freeze(["Game Design", "Game Workspace", "AI Command Center"]),
+     release: Object.freeze(["Publish", "Game Testing", "Game Workspace"]),
+-    research: Object.freeze(["AI Assistant", "Game Design", "Game Workspace"]),
+-    idea: Object.freeze(["AI Assistant", "Game Design", "Assets"]),
+-    question: Object.freeze(["AI Assistant", "Game Workspace", "Game Design"]),
++    research: Object.freeze(["AI Command Center", "Game Design", "Game Workspace"]),
++    idea: Object.freeze(["AI Command Center", "Game Design", "Assets"]),
++    question: Object.freeze(["AI Command Center", "Game Workspace", "Game Design"]),
+     task: Object.freeze(["Game Workspace", "Game Testing", "Debug"]),
+   }),
+ });
+@@ -347,7 +347,7 @@ function getSeedTables() {
+       "research.ux-subnote-decision",
+       "Decide which unanswered UX questions need their own notes.",
+       "Promote only durable UX questions into separate notes; keep short follow-ups inline as item details.",
+-      ["AI Assistant", "Game Workspace"],
++      ["AI Command Center", "Game Workspace"],
+       8,
+     ),
+     {
+diff --git a/src/shared/contracts/tools/toolContractsIndex.js b/src/shared/contracts/tools/toolContractsIndex.js
+index e158f2492..f938cffbc 100644
+--- a/src/shared/contracts/tools/toolContractsIndex.js
++++ b/src/shared/contracts/tools/toolContractsIndex.js
+@@ -190,7 +190,7 @@ export const TOOL_INDEX_ROOT_CARD_COVERAGE = Object.freeze([
+   createRootCardCoverage("Particles", "particle-studio", "contracted", ""),
+   createRootCardCoverage("MIDI", "midi-studio-v2", "mapped", "Root card links toolbox/midi/index.html; first-class contract is midi-studio-v2."),
+   createRootCardCoverage("Sound", "sound-studio", "contracted", ""),
+-  createRootCardCoverage("AI Assistant", "ai-assistant", "contracted", ""),
++  createRootCardCoverage("AI Command Center", "ai-assistant", "contracted", ""),
+   createRootCardCoverage("Custom Extensions", "code-studio", "contracted", ""),
+   createRootCardCoverage("Input", "input-studio", "contracted", ""),
+   createRootCardCoverage("Marketplace", "", "skipped", "Tools Index card targets marketplace/index.html, which is a marketplace page rather than a first-class tool contract."),
+diff --git a/tests/fixtures/project-workspaces/wave-3-tool-migration-scenarios.json b/tests/fixtures/project-workspaces/wave-3-tool-migration-scenarios.json
+index eaff13fdd..f9b34f1b1 100644
+--- a/tests/fixtures/project-workspaces/wave-3-tool-migration-scenarios.json
++++ b/tests/fixtures/project-workspaces/wave-3-tool-migration-scenarios.json
+@@ -82,7 +82,7 @@
+     },
+     {
+       "toolId": "ai-assistant",
+-      "displayName": "AI Assistant",
++      "displayName": "AI Command Center",
+       "toolType": "utility",
+       "requiredInputs": ["text"],
+       "producedOutputs": ["text"],
+diff --git a/tests/playwright/tools/RootToolsFutureState.spec.mjs b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+index 3fa3d3d57..11e70e1e6 100644
+--- a/tests/playwright/tools/RootToolsFutureState.spec.mjs
++++ b/tests/playwright/tools/RootToolsFutureState.spec.mjs
+@@ -131,7 +131,7 @@ test("root tools surface links current tool pages without old_* routes", async (
+     const defaultToolLabels = await page.locator("main [data-tools-accordion-list] .control-card h3").evaluateAll((labels) => labels.map((label) => label.textContent.trim()));
+     expect(defaultToolLabels).toEqual(["Achievements", "Assets", "Colors", "Controls", "Game Configuration", "Game Design", "Game Journey", "Game Workspace", "Languages", "Objects", "Saved Data", "Tags"]);
+     await expect(page.locator("[data-toolbox-readiness]")).toHaveText(["Wireframe", "Beta", "Complete", "Wireframe", "Beta", "Beta", "Beta", "Beta", "Wireframe", "Beta", "Wireframe", "Beta"]);
+-    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Assistant$/ }) })).toHaveCount(0);
++    await expect(page.locator("main .control-card").filter({ has: page.locator("h3", { hasText: /^AI Command Center$/ }) })).toHaveCount(0);
+     const oldStandaloneLabels = [
+       ["Palette", "Manager"].join(" "),
+       ["Stor", "age", " ", "Inspector"].join(""),
+diff --git a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+index 9fbae5221..9f89d2b9e 100644
+--- a/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
++++ b/tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+@@ -13,7 +13,7 @@ const REQUIRED_ADMIN_TOOLS = [
+   "Users",
+ ];
+ const REQUIRED_RESTORED_TOOLS = [
+-  "AI Assistant",
++  "AI Command Center",
+   "Creator Learning",
+ ];
+ const EXPECTED_SETUP_COMPACT_ORDER = [
+diff --git a/tests/playwright/tools/ToolboxRoutePages.spec.mjs b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+index 3f260ee69..a53e1d2fb 100644
+--- a/tests/playwright/tools/ToolboxRoutePages.spec.mjs
++++ b/tests/playwright/tools/ToolboxRoutePages.spec.mjs
+@@ -137,7 +137,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
+
+     await setServerSession(server, MOCK_DB_KEYS.users.user1);
+     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toHaveCount(0);
++    await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-tool-name-link='Colors']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toHaveCount(0);
+     await expect(page.locator("[data-toolbox-tool-name-link='Assets']")).toBeVisible();
+@@ -157,7 +157,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
+     await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
+     await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(39);
+     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 39/40");
+-    await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toBeVisible();
++    await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
+     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
+     await page.locator("[data-toolbox-status-filter='deprecated']").click();
+     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
+@@ -761,15 +761,15 @@ test("toolbox Build Path status filters support multi-select registry-matched to
+     await page.locator("[data-toolbox-status-filter='planned']").click();
+     await expectActiveFilters(["planned", "complete"]);
+     await expectBuildPathChannels(["planned", "complete"], 28);
+-    await expect(page.locator("[data-build-path-tool='AI Assistant']")).toBeVisible();
+-    await expectBuildPathOrder("AI Assistant", registryById.get("ai-assistant").order);
++    await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
++    await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
+     await expectBuildPathOrder("Colors", registryById.get("colors").order);
+
+     await page.locator("[data-toolbox-status-filter='complete']").click();
+     await expectActiveFilters(["planned"]);
+     await expectBuildPathChannels(["planned"], 27);
+     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
+-    await expect(page.locator("[data-build-path-tool='AI Assistant']")).toBeVisible();
++    await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
+
+     await page.locator("[data-toolbox-status-filter='wireframe']").click();
+     await expectActiveFilters(["planned", "wireframe"]);
+diff --git a/toolbox/ai-assistant/index.html b/toolbox/ai-assistant/index.html
+index f6e93342e..f07fdaa74 100644
+--- a/toolbox/ai-assistant/index.html
++++ b/toolbox/ai-assistant/index.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>AI Assistant — GameFoundryStudio</title>
+-    <meta name="description" content="GameFoundryStudio: Build. Play. Share.">
++    <title>AI Command Center - GameFoundryStudio</title>
++    <meta name="description" content="GameFoundryStudio AI Command Center wireframe for creator help across tools.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../../assets/theme-v2/css/theme.css">
+ </head>
+@@ -16,37 +16,133 @@
+         <section class="page-title">
+             <div class="container">
+                 <div class="kicker">Foundry Bot</div>
+-                <h1>AI Assistant</h1>
+-                <p class="lede">Get AI help with code, assets, logic and design.</p>
++                <h1>AI Command Center</h1>
++                <p class="lede">Learn AI, review examples, choose future providers, set preferences, and get Foundry Bot help from every creator tool.</p>
+             </div>
+         </section>
+         <section class="section">
+             <div class="container container--tool-wide">
+                 <div class="tool-workspace tool-workspace--wide">
+-                    <aside class="tool-column tool-group-ai">
++                    <aside class="tool-column tool-group-ai" aria-label="AI Command Center areas">
+                         <div class="tool-column-header">
+-                            <h2>Toolbox</h2>
++                            <h2>Command Center</h2>
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Setup</summary>
+-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
++                                <summary>Learn AI</summary>
++                                <div class="accordion-body">
++                                    <p>Short lessons will show creators how to ask Foundry Bot for planning, naming, balancing, and polish ideas.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion">
++                                <summary>AI Examples</summary>
++                                <div class="accordion-body">
++                                    <p>Examples help creators start with Objects, Events, Worlds, Assets, and Publish workflows.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion">
++                                <summary>AI Providers</summary>
++                                <div class="accordion-body">
++                                    <p>Provider choices are planned for a later setup flow. No AI provider is connected in this wireframe.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion">
++                                <summary>AI Preferences</summary>
++                                <div class="accordion-body">
++                                    <p>Future preferences will let creators shape tone, detail level, and idea style.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion">
++                                <summary>Foundry Bot Help</summary>
++                                <div class="accordion-body">
++                                    <p>Foundry Bot will explain what each tool can help with and suggest the next creator-friendly step.</p>
++                                </div>
+                             </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="../../assets/theme-v2/images" data-tool-slug="ai-assistant" data-tool-icon-src="../../assets/theme-v2/images/badges/ai-assistant.png"></div>
+-                    <section class="tool-center-panel"><img src="../../assets/theme-v2/images/mascots/forge-bot-single.png" alt="ForgeBot">
+-                        <h2>Workspace</h2>
+-                        <p>AI Assistant: Get AI help with code, assets, logic and design.</p>
++                    <section class="tool-center-panel" aria-labelledby="ai-command-center-title">
++                        <img src="../../assets/theme-v2/images/mascots/foundry-bot.png" alt="Foundry Bot">
++                        <h2 id="ai-command-center-title">Creator AI from every tool</h2>
++                        <p>Foundry Bot is planned as a creator guide that understands the current tool, the current game, and the next creative goal without exposing technical internals.</p>
++
++                        <div class="content-grid content-grid--three">
++                            <article class="card">
++                                <div class="card-body content-stack">
++                                    <h3>Objects</h3>
++                                    <p>Ask for enemy ideas, collectible names, object behaviors, and simple balance notes.</p>
++                                    <a class="btn" href="../objects/index.html">Open Objects</a>
++                                </div>
++                            </article>
++                            <article class="card">
++                                <div class="card-body content-stack">
++                                    <h3>Events</h3>
++                                    <p>Ask for trigger ideas, player feedback moments, win conditions, and scene flow prompts.</p>
++                                    <a class="btn" href="../events/index.html">Open Events</a>
++                                </div>
++                            </article>
++                            <article class="card">
++                                <div class="card-body content-stack">
++                                    <h3>Worlds</h3>
++                                    <p>Ask for layout themes, hazards, landmarks, secret paths, and exploration goals.</p>
++                                    <a class="btn" href="../worlds/index.html">Open Worlds</a>
++                                </div>
++                            </article>
++                            <article class="card">
++                                <div class="card-body content-stack">
++                                    <h3>Assets</h3>
++                                    <p>Ask for artwork, sound, font, and naming suggestions that match the game style.</p>
++                                    <a class="btn" href="../assets/index.html">Open Assets</a>
++                                </div>
++                            </article>
++                            <article class="card">
++                                <div class="card-body content-stack">
++                                    <h3>Publish</h3>
++                                    <p>Ask for launch checklists, store copy ideas, community notes, and sharing steps.</p>
++                                    <a class="btn" href="../publish/index.html">Open Publish</a>
++                                </div>
++                            </article>
++                            <article class="card">
++                                <div class="card-body content-stack">
++                                    <h3>Foundry Bot Help</h3>
++                                    <p>Ask what to do next, how to improve a game idea, or which tool fits the current task.</p>
++                                    <p class="status" role="status">Wireframe only. AI assistance is not connected yet.</p>
++                                </div>
++                            </article>
++                        </div>
+                     </section>
+-                    <aside class="tool-column tool-group-ai">
++                    <aside class="tool-column tool-group-ai" aria-label="AI Command Center inspector">
+                         <div class="tool-column-header">
+                             <h2>Inspector</h2>
+                         </div>
+                         <div class="accordion-stack">
+                             <details class="vertical-accordion" open>
+-                                <summary>Output</summary>
+-                                <div class="accordion-body"><p class="status" role="status">Not implemented yet.</p></div>
++                                <summary>Platform Rules</summary>
++                                <div class="accordion-body">
++                                    <ul>
++                                        <li>AI is planned to be available from every creator tool.</li>
++                                        <li>AI is planned to use the current tool and current game as context.</li>
++                                        <li>Creators stay in friendly tool language instead of technical system details.</li>
++                                    </ul>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Provider Status</summary>
++                                <div class="accordion-body">
++                                    <p class="status" role="status">No AI provider is connected yet. Provider setup is planned for a future update.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion">
++                                <summary>Current Context</summary>
++                                <div class="accordion-body">
++                                    <p>Future AI help will receive the active game, the open tool, selected creator choices, and the requested task.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion">
++                                <summary>Creator Preferences</summary>
++                                <div class="accordion-body">
++                                    <p>Future preferences will cover concise answers, brainstorming depth, beginner guidance, and accessibility notes.</p>
++                                </div>
+                             </details>
+                         </div>
+                     </aside>
+diff --git a/docs_build/dev/reports/PR_26166_124-ai-platform-command-center.md b/docs_build/dev/reports/PR_26166_124-ai-platform-command-center.md
+new file mode 100644
+index 000000000..c2c065e49
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26166_124-ai-platform-command-center.md
+@@ -0,0 +1,77 @@
++# PR_26166_124-ai-platform-command-center
++
++## Branch Validation
++- PASS: `git branch --show-current` returned `main`.
++
++## Summary
++- Reworked `toolbox/ai-assistant/index.html` into an AI Command Center wireframe.
++- Positioned the page around Learn AI, AI Examples, AI Providers, AI Preferences, and Foundry Bot Help.
++- Added creator-facing usage examples for Objects, Events, Worlds, Assets, and Publish.
++- Updated active navigation, toolbox metadata, active suggestion strings, and targeted tests from `AI Assistant` to `AI Command Center`.
++- Removed requested temporary folders.
++
++## Requirement Checklist
++- PASS: Created PR scope as `PR_26166_124-ai-platform-command-center`.
++- PASS: Current branch verified as `main` before changes.
++- PASS: Removed `tmp/pr121-baseline-for-pr122/`.
++- PASS: Removed `tmp/pr122-baseline-for-pr123/`.
++- PASS: Removed `tmp/test-results/`.
++- PASS: AI page now presents AI Command Center wireframe sections: Learn AI, AI Examples, AI Providers, AI Preferences, Foundry Bot Help.
++- PASS: Platform rule documented in creator-facing copy: AI is planned from every creator tool.
++- PASS: Platform rule documented in creator-facing copy: AI uses the current tool and current game as context.
++- PASS: Platform rule documented in creator-facing copy: creators stay in friendly tool language instead of technical system details.
++- PASS: Added AI usage examples for Objects, Events, Worlds, Assets, and Publish.
++- PASS: No provider runtime was implemented.
++- PASS: No OpenAI integration was added.
++- PASS: No database changes were made.
++- PASS: No schema changes were made.
++- PASS: No inline script, style block, or inline event handler was added.
++- PASS: Required review artifacts were produced.
++
++## AI Command Center Evidence
++- PASS: `toolbox/ai-assistant/index.html` renders `AI Command Center` as the page heading.
++- PASS: Left column includes `Learn AI`, `AI Examples`, `AI Providers`, `AI Preferences`, and `Foundry Bot Help` accordions.
++- PASS: Center panel includes Foundry Bot and usage cards for Objects, Events, Worlds, Assets, Publish, and Foundry Bot Help.
++- PASS: Right inspector includes Platform Rules, Provider Status, Current Context, and Creator Preferences.
++- PASS: Provider copy states no AI provider is connected yet and avoids implementing provider runtime behavior.
++
++## Navigation and Link Evidence
++- PASS: Shared Theme V2 header nav link text now shows `AI Command Center` and still targets `toolbox/ai-assistant/index.html`.
++- PASS: Local dev-runtime header nav copy matches the shared nav label and target.
++- PASS: Static local-reference validation confirmed all AI page local `href` and `src` targets resolve.
++- PASS: Playwright probe clicked AI usage links and confirmed the Objects, Events, Worlds, Assets, and Publish pages render.
++- PASS: Playwright probe clicked top-level Toolbox navigation from the AI page and confirmed `toolbox/index.html` renders.
++
++## Validation Lane Report
++- Impacted lanes: toolbox AI page render, toolbox navigation, toolbox metadata/build-path display, shared tool-contract label, Wave 3 tool fixture label.
++- Skipped lanes: full samples smoke, broad engine, broad runtime, DB/Admin lanes.
++- Samples decision: SKIP because this PR does not change samples, sample JSON, game runtime, or sample loaders.
++- Playwright impacted: Yes, because visible toolbox metadata/navigation strings and runtime JS metadata changed.
++- Coverage: PASS/WARN. `docs_build/dev/reports/playwright_v8_coverage_report.txt` was regenerated. The helper also listed a latest-HEAD provider stub path as advisory context; PR124 changed runtime JS entries are `src/dev-runtime/guest-seeds/tool-metadata-inventory.js`, `src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js`, and `src/shared/contracts/tools/toolContractsIndex.js`. These server/shared modules are reported as WARN when not collected by browser V8 coverage, per project instructions.
++
++## Commands Run
++- PASS: `git branch --show-current`
++- PASS: `Test-Path tmp\pr121-baseline-for-pr122; Test-Path tmp\pr122-baseline-for-pr123; Test-Path tmp\test-results` returned `False`, `False`, `False`.
++- PASS: `rg --pcre2 -n "<script(?![^>]+src=)|<style\b|\son[a-z]+\s*=" toolbox/ai-assistant/index.html assets/theme-v2/partials/header-nav.html src/dev-runtime/admin/header-nav.local.html -S` returned no matches.
++- PASS: `node --check src/dev-runtime/guest-seeds/tool-metadata-inventory.js`
++- PASS: `node --check src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js`
++- PASS: `node --check src/shared/contracts/tools/toolContractsIndex.js`
++- PASS: `node --check tests/playwright/tools/ToolboxRoutePages.spec.mjs`
++- PASS: `node --check tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs`
++- PASS: `node --check tests/playwright/tools/RootToolsFutureState.spec.mjs`
++- PASS: `node -e "JSON.parse(require('fs').readFileSync('tests/fixtures/project-workspaces/wave-3-tool-migration-scenarios.json','utf8'));"`
++- PASS: Static Node validation for AI page text, local refs, nav links, and tmp cleanup.
++- PASS: Playwright browser probe for AI Command Center render, usage links, top-level Toolbox navigation, no failed requests, no page errors, no console errors, and V8 coverage output.
++- PASS: `npx playwright test tests/playwright/tools/ToolboxRoutePages.spec.mjs tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs tests/playwright/tools/RootToolsFutureState.spec.mjs tests/playwright/tools/ToolDisplayModeNavigation.spec.mjs -g "toolbox index shows wireframe and beta tools while Planned remains opt-in|toolbox Build Path status filters support multi-select registry-matched tool rows|Toolbox and Admin Tool Votes share the same DB-backed metadata and planning|root tools surface links current tool pages without old_.* routes|first registry tool renders disabled previous text instead of a broken link" --project=playwright --workers=1 --reporter=list` passed 5/5 tests.
++- PASS: `node tests/shared/tools/ToolContractCoverage.test.mjs`
++- PASS: `node tests/shared/Wave3ToolContractBaselineValidation.test.mjs`
++- PASS: `node tests/shared/tools/AiAssistantToolContract.test.mjs`
++- PASS: `git diff --check` completed successfully; Git reported only CRLF working-copy notices.
++- PASS: Added-diff scan for `OpenAI`, `Supabase`, `schema`, `database`, `password`, `MEM DB`, `local-mem`, and `login.html` returned no added matches.
++- PASS: Changed-file DDL/SQL scan returned no matches.
++
++## Manual Validation Notes
++- PASS: The AI page uses existing Theme V2 shell, panels, cards, accordions, buttons, and external scripts only.
++- PASS: Creator-facing AI copy avoids JSON, API, DB, and engine concepts.
++- PASS: No provider integration, OpenAI integration, DB migration, or schema artifact was introduced.
++- PASS: No full samples smoke test was run; it was intentionally skipped as out of scope.

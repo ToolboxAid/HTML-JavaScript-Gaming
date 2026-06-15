@@ -82,7 +82,7 @@
     },
     {
       "toolId": "ai-assistant",
-      "displayName": "AI Assistant",
+      "displayName": "AI Command Center",
       "toolType": "utility",
       "requiredInputs": ["text"],
       "producedOutputs": ["text"],

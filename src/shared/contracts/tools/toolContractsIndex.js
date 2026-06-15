@@ -190,7 +190,7 @@ export const TOOL_INDEX_ROOT_CARD_COVERAGE = Object.freeze([
   createRootCardCoverage("Particles", "particle-studio", "contracted", ""),
   createRootCardCoverage("MIDI", "midi-studio-v2", "mapped", "Root card links toolbox/midi/index.html; first-class contract is midi-studio-v2."),
   createRootCardCoverage("Sound", "sound-studio", "contracted", ""),
-  createRootCardCoverage("AI Assistant", "ai-assistant", "contracted", ""),
+  createRootCardCoverage("AI Command Center", "ai-assistant", "contracted", ""),
   createRootCardCoverage("Custom Extensions", "code-studio", "contracted", ""),
   createRootCardCoverage("Input", "input-studio", "contracted", ""),
   createRootCardCoverage("Marketplace", "", "skipped", "Tools Index card targets marketplace/index.html, which is a marketplace page rather than a first-class tool contract."),

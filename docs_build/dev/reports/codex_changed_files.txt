@@ -1,7 +1,32 @@
-src/dev-runtime/auth/provider-contract-stubs.mjs
-tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-docs_build/dev/reports/pr123-supabase-dev-postgres-stub.md
-docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
-docs_build/dev/reports/codex_changed_files.txt
-docs_build/dev/reports/codex_review.diff
+# git status --short
+M assets/theme-v2/partials/header-nav.html
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/admin/header-nav.local.html
+ M src/dev-runtime/guest-seeds/tool-metadata-inventory.js
+ M src/dev-runtime/persistence/tool-repositories/game-journey-mock-repository.js
+ M src/shared/contracts/tools/toolContractsIndex.js
+ M tests/fixtures/project-workspaces/wave-3-tool-migration-scenarios.json
+ M tests/playwright/tools/RootToolsFutureState.spec.mjs
+ M tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs
+ M tests/playwright/tools/ToolboxRoutePages.spec.mjs
+ M toolbox/ai-assistant/index.html
+?? docs_build/dev/reports/PR_26166_124-ai-platform-command-center.md
+
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26166_124-ai-platform-command-center.md
+
+# git diff --stat
+assets/theme-v2/partials/header-nav.html           |   2 +-
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   6 +
+ .../dev/reports/playwright_v8_coverage_report.txt  |  39 ++++---
+ src/dev-runtime/admin/header-nav.local.html        |   2 +-
+ .../guest-seeds/tool-metadata-inventory.js         |  10 +-
+ .../game-journey-mock-repository.js                |  10 +-
+ src/shared/contracts/tools/toolContractsIndex.js   |   2 +-
+ .../wave-3-tool-migration-scenarios.json           |   2 +-
+ .../playwright/tools/RootToolsFutureState.spec.mjs |   2 +-
+ .../tools/ToolboxAdminMetadataSsot.spec.mjs        |   2 +-
+ tests/playwright/tools/ToolboxRoutePages.spec.mjs  |  10 +-
+ toolbox/ai-assistant/index.html                    | 124 ++++++++++++++++++---
+ 12 files changed, 162 insertions(+), 49 deletions(-)

@@ -150,11 +150,11 @@ export const GAME_JOURNEY_SUGGESTED_TOOLS = Object.freeze({
   default: Object.freeze(["Game Workspace", "Game Design"]),
   byNoteType: Object.freeze({
     design: Object.freeze(["Game Design", "Colors", "Assets"]),
-    story: Object.freeze(["Game Design", "Game Workspace", "AI Assistant"]),
+    story: Object.freeze(["Game Design", "Game Workspace", "AI Command Center"]),
     release: Object.freeze(["Publish", "Game Testing", "Game Workspace"]),
-    research: Object.freeze(["AI Assistant", "Game Design", "Game Workspace"]),
-    idea: Object.freeze(["AI Assistant", "Game Design", "Assets"]),
-    question: Object.freeze(["AI Assistant", "Game Workspace", "Game Design"]),
+    research: Object.freeze(["AI Command Center", "Game Design", "Game Workspace"]),
+    idea: Object.freeze(["AI Command Center", "Game Design", "Assets"]),
+    question: Object.freeze(["AI Command Center", "Game Workspace", "Game Design"]),
     task: Object.freeze(["Game Workspace", "Game Testing", "Debug"]),
   }),
 });
@@ -347,7 +347,7 @@ function getSeedTables() {
       "research.ux-subnote-decision",
       "Decide which unanswered UX questions need their own notes.",
       "Promote only durable UX questions into separate notes; keep short follow-ups inline as item details.",
-      ["AI Assistant", "Game Workspace"],
+      ["AI Command Center", "Game Workspace"],
       8,
     ),
     {

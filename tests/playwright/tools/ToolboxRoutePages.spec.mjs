@@ -137,7 +137,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
 
     await setServerSession(server, MOCK_DB_KEYS.users.user1);
     await page.goto(`${server.baseUrl}/toolbox/index.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toHaveCount(0);
+    await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-tool-name-link='Colors']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Fonts']")).toHaveCount(0);
     await expect(page.locator("[data-toolbox-tool-name-link='Assets']")).toBeVisible();
@@ -157,7 +157,7 @@ test("toolbox index shows wireframe and beta tools while Planned remains opt-in"
     await expect(page.locator("[data-toolbox-tool-card][data-toolbox-release-channel='planned']")).toHaveCount(27);
     await expect(page.locator("[data-toolbox-tool-card]")).toHaveCount(39);
     await expect(page.locator("[data-tools-count]")).toHaveText("Tool Count: 39/40");
-    await expect(page.locator("[data-toolbox-tool-name-link='AI Assistant']")).toBeVisible();
+    await expect(page.locator("[data-toolbox-tool-name-link='AI Command Center']")).toBeVisible();
     await expect(page.locator("[data-toolbox-tool-name-link='Publish']")).toBeVisible();
     await page.locator("[data-toolbox-status-filter='deprecated']").click();
     await expect(page.locator("[data-toolbox-tool-name-link='Build Game']")).toBeVisible();
@@ -761,15 +761,15 @@ test("toolbox Build Path status filters support multi-select registry-matched to
     await page.locator("[data-toolbox-status-filter='planned']").click();
     await expectActiveFilters(["planned", "complete"]);
     await expectBuildPathChannels(["planned", "complete"], 28);
-    await expect(page.locator("[data-build-path-tool='AI Assistant']")).toBeVisible();
-    await expectBuildPathOrder("AI Assistant", registryById.get("ai-assistant").order);
+    await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
+    await expectBuildPathOrder("AI Command Center", registryById.get("ai-assistant").order);
     await expectBuildPathOrder("Colors", registryById.get("colors").order);
 
     await page.locator("[data-toolbox-status-filter='complete']").click();
     await expectActiveFilters(["planned"]);
     await expectBuildPathChannels(["planned"], 27);
     await expect(page.locator("[data-build-path-tool='Colors']")).toHaveCount(0);
-    await expect(page.locator("[data-build-path-tool='AI Assistant']")).toBeVisible();
+    await expect(page.locator("[data-build-path-tool='AI Command Center']")).toBeVisible();
 
     await page.locator("[data-toolbox-status-filter='wireframe']").click();
     await expectActiveFilters(["planned", "wireframe"]);

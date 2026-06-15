@@ -13,7 +13,7 @@ const REQUIRED_ADMIN_TOOLS = [
   "Users",
 ];
 const REQUIRED_RESTORED_TOOLS = [
-  "AI Assistant",
+  "AI Command Center",
   "Creator Learning",
 ];
 const EXPECTED_SETUP_COMPACT_ORDER = [
