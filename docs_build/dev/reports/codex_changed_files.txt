@@ -1,22 +1,12 @@
 # git status --short
 M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/auth/provider-contract-stubs.mjs
- M tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-?? docs_build/dev/reports/pr126-supabase-auth-provider-adapter.md
-?? docs_build/dev/reports/pr127-supabase-postgres-provider-adapter.md
-?? docs_build/dev/reports/pr128-supabase-dev-activation-checklist.md
+?? docs_build/dev/reports/pr129-local-db-migration-audit.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/pr126-supabase-auth-provider-adapter.md
-docs_build/dev/reports/pr127-supabase-postgres-provider-adapter.md
-docs_build/dev/reports/pr128-supabase-dev-activation-checklist.md
+docs_build/dev/reports/pr129-local-db-migration-audit.md
 
 # git diff --stat
-docs_build/dev/reports/codex_changed_files.txt     |  23 +-
- docs_build/dev/reports/codex_review.diff           | 889 ++++++++++++++++++---
- .../dev/reports/playwright_v8_coverage_report.txt  |   2 +-
- src/dev-runtime/auth/provider-contract-stubs.mjs   | 203 ++++-
- .../SupabaseProviderContractStub.test.mjs          |  96 ++-
- 5 files changed, 1080 insertions(+), 133 deletions(-)
+docs_build/dev/reports/codex_changed_files.txt |   20 +-
+ docs_build/dev/reports/codex_review.diff       | 1001 +++++-------------------
+ 2 files changed, 215 insertions(+), 806 deletions(-)
