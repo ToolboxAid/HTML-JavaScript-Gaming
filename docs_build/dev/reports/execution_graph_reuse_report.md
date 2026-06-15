@@ -1,6 +1,6 @@
 # Execution Graph Reuse Report
 
-Generated: 2026-06-15T17:49:22.270Z
+Generated: 2026-06-15T18:03:08.643Z
 Status: PASS
 
 ## Summary
@@ -16,7 +16,7 @@ Prevented targeted scheduling work: 0
 
 | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
 | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | INVALIDATED | 319cd89fda76481e | Lane snapshot is part of the selected targeted execution graph. |
+| workspace-contract | INVALIDATED | INVALIDATED | 31a1775f09b27b87 | Lane snapshot is part of the selected targeted execution graph. |
 
 ## Safeguards
 

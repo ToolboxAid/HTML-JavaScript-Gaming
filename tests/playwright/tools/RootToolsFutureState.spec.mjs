@@ -5,6 +5,12 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const PRIMARY_NAVIGATION_ORDER = ["Games", "Toolbox", "Marketplace", "Learn", "Sign In"];
+let previousAuthProvider;
+
+test.beforeAll(() => {
+  previousAuthProvider = process.env.GAMEFOUNDRY_AUTH_PROVIDER;
+  process.env.GAMEFOUNDRY_AUTH_PROVIDER = "local-db";
+});
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -19,6 +25,11 @@ test.afterEach(async ({ page }) => {
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
+  if (previousAuthProvider === undefined) {
+    delete process.env.GAMEFOUNDRY_AUTH_PROVIDER;
+  } else {
+    process.env.GAMEFOUNDRY_AUTH_PROVIDER = previousAuthProvider;
+  }
 });
 
 async function openRepoPage(page, pathName) {

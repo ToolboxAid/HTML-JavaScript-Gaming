@@ -1,15 +1,14 @@
 ﻿Playwright V8 Coverage Report
 
-PR: PR_26166_145-supabase-users-roles-cutover
-Coverage source: Node V8 coverage from targeted auth identity validation.
-Playwright impacted: Yes; browser Playwright lane was covered by npm run test:workspace-v2.
-Runtime JavaScript changed: src/dev-runtime/auth/provider-contract-stubs.mjs, src/dev-runtime/server/local-api-router.mjs.
+PR: PR_26166_146-supabase-auth-default-provider
+Coverage source: Node V8 coverage from targeted auth/provider validation plus Playwright workspace-v2 validation.
+Playwright impacted: Yes; npm run test:workspace-v2 passed.
+Runtime JavaScript changed: src/dev-runtime/auth/provider-contract-stubs.mjs.
 Targeted coverage command: NODE_V8_COVERAGE=<temp> node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs
 
 Coverage JSON files: 1
 
 Changed runtime JS files covered:
 PASS src/dev-runtime/auth/provider-contract-stubs.mjs
-PASS src/dev-runtime/server/local-api-router.mjs
 
-Result: PASS - targeted auth/session runtime tests executed successfully and emitted V8 coverage artifacts.
+Result: PASS - targeted auth/provider runtime tests executed successfully and emitted V8 coverage artifacts.

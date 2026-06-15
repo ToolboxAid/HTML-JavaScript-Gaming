@@ -61,6 +61,8 @@ export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
 
 const SUPPORTED_AUTH_PROVIDERS = Object.freeze([LOCAL_AUTH_PROVIDER_ID, SUPABASE_AUTH_PROVIDER_ID]);
 const SUPPORTED_DATABASE_PROVIDERS = Object.freeze([LOCAL_DATABASE_PROVIDER_ID, SUPABASE_POSTGRES_PROVIDER_ID]);
+const DEFAULT_AUTH_PROVIDER_ID = SUPABASE_AUTH_PROVIDER_ID;
+const DEFAULT_DATABASE_PROVIDER_ID = LOCAL_DATABASE_PROVIDER_ID;
 
 export const PROVIDER_SELECTION_CONTROLS = Object.freeze({
   auth: Object.freeze({
@@ -679,8 +681,8 @@ export class SupabasePostgresProviderAdapter {
 export const SupabasePostgresProviderStub = SupabasePostgresProviderAdapter;
 
 export function createProviderContractSnapshot(env = process.env) {
-  const auth = requestedProvider(env, "GAMEFOUNDRY_AUTH_PROVIDER", LOCAL_AUTH_PROVIDER_ID, SUPPORTED_AUTH_PROVIDERS);
-  const database = requestedProvider(env, "GAMEFOUNDRY_DB_PROVIDER", LOCAL_DATABASE_PROVIDER_ID, SUPPORTED_DATABASE_PROVIDERS);
+  const auth = requestedProvider(env, "GAMEFOUNDRY_AUTH_PROVIDER", DEFAULT_AUTH_PROVIDER_ID, SUPPORTED_AUTH_PROVIDERS);
+  const database = requestedProvider(env, "GAMEFOUNDRY_DB_PROVIDER", DEFAULT_DATABASE_PROVIDER_ID, SUPPORTED_DATABASE_PROVIDERS);
   const diagnostics = [auth.diagnostic, database.diagnostic].filter(Boolean);
   const supabaseAuthMissing = missingEnvKeys(env, BROWSER_SAFE_SUPABASE_ENV_KEYS);
   const supabasePostgresMissing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
@@ -821,7 +823,7 @@ export function createProviderContractSnapshot(env = process.env) {
     supabaseAuth: {
       configured: supabaseAuthMissing.length === 0,
       adapter: {
-        activeByDefault: false,
+        activeByDefault: true,
         implementation: "config-gated Supabase Auth REST adapter",
         passwordStorage: "external-provider",
         serviceRoleSecretsUsed: false,

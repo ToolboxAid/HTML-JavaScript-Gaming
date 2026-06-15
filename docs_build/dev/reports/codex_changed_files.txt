@@ -1,6 +1,6 @@
-﻿docs_build/dev/reports/codex_changed_files.txt
+﻿.env.example
+docs_build/dev/reports/codex_changed_files.txt
 docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/coverage_changed_js_guardrail.txt
 docs_build/dev/reports/dependency_gating_report.md
 docs_build/dev/reports/dependency_hydration_reuse_report.md
 docs_build/dev/reports/execution_graph_reuse_report.md
@@ -22,7 +22,7 @@ docs_build/dev/reports/playwright_discovery_ownership_report.md
 docs_build/dev/reports/playwright_discovery_scope_report.md
 docs_build/dev/reports/playwright_structure_audit.md
 docs_build/dev/reports/playwright_v8_coverage_report.txt
-docs_build/dev/reports/PR_26166_145-supabase-users-roles-cutover.md
+docs_build/dev/reports/PR_26166_146-supabase-auth-default-provider.md
 docs_build/dev/reports/retry_suppression_report.md
 docs_build/dev/reports/slow_path_pruning_report.md
 docs_build/dev/reports/static_validation_report.md
@@ -33,5 +33,5 @@ docs_build/dev/reports/testing_lane_execution_report.md
 docs_build/dev/reports/validation_cache_report.md
 docs_build/dev/reports/zero_browser_preflight_report.md
 src/dev-runtime/auth/provider-contract-stubs.mjs
-src/dev-runtime/server/local-api-router.mjs
 tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+tests/playwright/tools/RootToolsFutureState.spec.mjs
