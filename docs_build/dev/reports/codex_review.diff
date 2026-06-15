@@ -1,256 +1,151 @@
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index 71be11eb4..ae5e872ce 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,33 +1,3 @@
--docs_build/database/ddl/admin.sql
--docs_build/database/ddl/sqlite/local-db-schema-map.sql
--docs_build/database/ddl/support-tickets.sql
--docs_build/database/dml/DML_INDEX.md
--docs_build/database/dml/account.sql
--docs_build/database/dml/admin.sql
--docs_build/database/dml/support-tickets.sql
--docs_build/database/seed/account.json
--docs_build/database/seed/admin.json
--docs_build/database/seed/support-tickets.json
- docs_build/dev/reports/codex_changed_files.txt
- docs_build/dev/reports/codex_review.diff
--docs_build/dev/reports/coverage_changed_js_guardrail.txt
--docs_build/dev/reports/playwright_v8_coverage_report.txt
--docs_build/dev/reports/pr135-site-setup-warning-cleanup.md
--docs_build/dev/reports/pr136-objects-controls-db-catalog-migration.md
--docs_build/dev/reports/pr137-supabase-dev-preflight-diagnostics.md
--docs_build/dev/reports/pr138-db-auth-ready-for-dev-supabase-audit.md
--src/dev-runtime/auth/provider-contract-stubs.mjs
--src/dev-runtime/persistence/mock-db-store.js
--src/dev-runtime/persistence/tool-repositories/input-mapping-mock-repository.js
--src/dev-runtime/persistence/tool-repositories/objects-mock-repository.js
--src/dev-runtime/seed/server-seed-loader.mjs
--src/dev-runtime/server/local-api-router.mjs
--tests/dev-runtime/SupabaseProviderContractStub.test.mjs
--tests/playwright/tools/AdminDbViewer.spec.mjs
--tests/playwright/tools/InputMappingV2Tool.spec.mjs
--tests/playwright/tools/LoginSessionMode.spec.mjs
--tests/playwright/tools/ObjectsTool.spec.mjs
--toolbox/controls/controls-api-client.js
--toolbox/controls/controls.js
--toolbox/objects/objects-api-client.js
--toolbox/objects/objects.js
-+docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md
-diff --git a/docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md b/docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md
+diff --git a/account/create-account.html b/account/create-account.html
+index 07aca9ee0..baa7ccf91 100644
+--- a/account/create-account.html
++++ b/account/create-account.html
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Create Account - GameFoundryStudio</title>
+-    <meta name="description" content="Create a GameFoundryStudio account.">
++    <meta name="description" content="Create a GameFoundryStudio account when account creation is available.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+@@ -17,7 +17,7 @@
+             <div class="container">
+                 <div class="kicker">Account</div>
+                 <h1>Create Account</h1>
+-                <p class="lede">Create a GameFoundryStudio account.</p>
++                <p class="lede">Account creation will open when the production account flow is ready.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -26,9 +26,9 @@
+                     <div class="card-body content-stack">
+                         <div>
+                             <div class="kicker">Account Access</div>
+-                            <h2>Account Creation</h2>
++                            <h2>Create Account Placeholder</h2>
+                         </div>
+-                        <p>Account features are being connected to the production authentication provider.</p>
++                        <p>This page is reserved for the future account creation flow. No account data is collected here yet.</p>
+                         <div class="action-group">
+                             <a class="btn primary" href="sign-in.html">Back to Sign In</a>
+                         </div>
+diff --git a/account/password-reset.html b/account/password-reset.html
 new file mode 100644
-index 0000000..0000000
+index 000000000..781cb81c0
 --- /dev/null
-+++ b/docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md
-+# PR_26166_139-supabase-dev-project-creation-guide
++++ b/account/password-reset.html
+@@ -0,0 +1,44 @@
++<!doctype html>
++<html lang="en">
++
++<head>
++    <meta charset="utf-8">
++    <meta name="viewport" content="width=device-width, initial-scale=1">
++    <title>Password Reset - GameFoundryStudio</title>
++    <meta name="description" content="Reset a GameFoundryStudio account password when password reset is available.">
++    <link rel="icon" href="/favicon.svg">
++    <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
++</head>
++
++<body>
++    <div data-partial="header-nav"></div>
++    <main>
++        <section class="page-title">
++            <div class="container">
++                <div class="kicker">Account</div>
++                <h1>Password Reset</h1>
++                <p class="lede">Password reset will open when the production account flow is ready.</p>
++            </div>
++        </section>
++        <section class="section">
++            <div class="container">
++                <div class="card">
++                    <div class="card-body content-stack">
++                        <div>
++                            <div class="kicker">Account Access</div>
++                            <h2>Password Reset Placeholder</h2>
++                        </div>
++                        <p>This page is reserved for the future password reset flow. No account data is collected here yet.</p>
++                        <div class="action-group">
++                            <a class="btn primary" href="sign-in.html">Back to Sign In</a>
++                        </div>
++                    </div>
++                </div>
++            </div>
++        </section>
++    </main>
++    <div data-partial="footer"></div>
++    <script src="../assets/theme-v2/js/gamefoundry-partials.js" defer></script>
++</body>
++
++</html>
+diff --git a/docs_build/dev/reports/PR_26166_140-create-account-password-reset-pages.md b/docs_build/dev/reports/PR_26166_140-create-account-password-reset-pages.md
+new file mode 100644
+index 000000000..173532754
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26166_140-create-account-password-reset-pages.md
+@@ -0,0 +1,61 @@
++# PR_26166_140-create-account-password-reset-pages
 +
 +## Branch Validation
 +
-+PASS - Current branch verified as `main`.
-+
-+## Scope
-+
-+PASS - Report-only Supabase DEV project creation guide.
-+PASS - Supabase was not activated.
-+PASS - Runtime behavior was not changed.
-+PASS - No secrets, password tables, dependencies, or SQL execution were added.
-+
-+## Source Position
-+
-+PR138 closed with Local DB active by default and Supabase inactive until user-provided DEV configuration exists.
-+
-+Current default local settings remain:
-+
-+- `GAMEFOUNDRY_AUTH_PROVIDER=local-db`
-+- `GAMEFOUNDRY_DB_PROVIDER=local-db`
-+
-+Supabase DEV activation must wait until the user creates the DEV project and supplies local-only environment values outside source control.
-+
-+## Supabase DEV Project Creation Checklist
-+
-+Recommended project name:
-+
-+- `GameFoundryStudio-DEV`
-+
-+User-executed steps:
-+
-+1. Sign in to Supabase with the account that will own or administer the DEV project.
-+2. Create a new Supabase project named `GameFoundryStudio-DEV`.
-+3. Select the intended organization/workspace owner.
-+4. Choose a DEV-safe region and database password in Supabase.
-+5. Store the database password in the user's password manager or approved local secret store.
-+6. Wait for Supabase project provisioning to complete.
-+7. Open the Supabase project dashboard.
-+8. Locate the project API settings.
-+9. Copy the project URL only into local environment storage.
-+10. Copy the anon public key only into local environment storage.
-+11. Copy the service role key only into server-only local environment storage.
-+12. Locate the direct Postgres/database connection string only if the next activation PR asks for it.
-+13. Keep all copied values out of Git, reports, screenshots, chat, and ZIP artifacts.
-+
-+## Auth Email/Password Settings
-+
-+User-executed Supabase settings checklist:
-+
-+- Enable email/password authentication for DEV.
-+- Keep password storage owned by Supabase Auth.
-+- Do not create app-owned password tables.
-+- Keep email confirmation behavior DEV-safe and document the selected setting before activation.
-+- Enable password reset through Supabase Auth.
-+- Confirm password reset redirects return to the local password reset page.
-+- Keep OAuth providers disabled until a future dedicated provider PR.
-+
-+## Redirect URLs
-+
-+Use the actual local origin that the user will run during DEV validation. Do not commit the resulting values.
-+
-+Required DEV redirect entries to configure in Supabase:
-+
-+- Site URL: local development origin.
-+- Sign-in redirect: local development origin plus `/account/sign-in.html`.
-+- Create-account redirect: local development origin plus `/account/create-account.html`.
-+- Password-reset redirect: local development origin plus `/account/password-reset.html`.
-+
-+Rules:
-+
-+- Use exact local origins for DEV.
-+- Do not add UAT or PROD redirects in the DEV project.
-+- Do not use wildcard redirects unless a later security review explicitly approves them.
-+- Re-check redirect URLs before OAuth or UAT work.
-+
-+## Required Local Environment Variable Names
-+
-+Store values outside source control. The repo may document names only.
-+
-+Provider selectors:
-+
-+- `GAMEFOUNDRY_AUTH_PROVIDER`
-+- `GAMEFOUNDRY_DB_PROVIDER`
-+
-+Browser-safe Supabase values:
-+
-+- `GAMEFOUNDRY_SUPABASE_URL`
-+- `GAMEFOUNDRY_SUPABASE_ANON_KEY`
-+
-+Server-only Supabase values:
-+
-+- `GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY`
-+- `GAMEFOUNDRY_SUPABASE_DATABASE_URL`
-+
-+Initial local state before activation:
-+
-+- `GAMEFOUNDRY_AUTH_PROVIDER` remains `local-db`.
-+- `GAMEFOUNDRY_DB_PROVIDER` remains `local-db`.
-+- Supabase values may exist locally for diagnostics, but Supabase is not active until a later activation PR changes provider selectors.
-+
-+## Where To Store Local Env Values
-+
-+Allowed local-only storage:
-+
-+- User shell profile environment variables.
-+- A local untracked `.env` file, if the user's local startup flow loads it.
-+- OS/user secret manager.
-+- Hosting/provider secret storage for future UAT/PROD, user-controlled only.
-+
-+Rules:
-+
-+- Do not commit real `.env` files.
-+- Do not paste real values into reports.
-+- Do not paste real values into screenshots.
-+- Do not paste real values into chat.
-+- Do not put service-role or database URL values in browser JavaScript.
-+- Do not add real values to `.env.example`; it must remain names-only with empty values.
-+
-+## Confirmation Checklist For The User
-+
-+Before asking Codex for the next activation PR, confirm:
-+
-+- Supabase project `GameFoundryStudio-DEV` exists.
-+- Email/password auth is enabled for DEV.
-+- Required redirect URLs are configured for the active local origin.
-+- Local env storage contains the required variable names and real values.
-+- `.env.example` still contains no real values.
-+- Real values are not present in Git status, reports, screenshots, or ZIPs.
-+- Provider selectors still point to Local DB until the activation PR.
-+
-+## What Codex Should Verify After Env Vars Exist
-+
-+After the user confirms local env values exist, Codex should verify in the next PR:
-+
-+- Local API starts.
-+- Provider contract still defaults to `local-db/local-db` until selectors are changed.
-+- Supabase Auth readiness reports PASS when local values are present.
-+- Supabase Postgres readiness reports PASS when server-only local values are present.
-+- Browser-facing diagnostics do not expose server-only values or server-only variable names.
-+- Selecting Supabase without complete config fails visibly.
-+- Selecting Supabase with complete DEV config is ready only after explicit activation scope.
-+- Admin Site Setup readiness reports the expected Supabase DEV setup status.
-+- No automatic fallback to Local DB occurs when Supabase is selected and fails.
-+
-+## UAT/PROD Execution Boundary
-+
-+PASS - User creates the Supabase DEV project.
-+PASS - User supplies local env values.
-+PASS - Codex does not commit secrets.
-+PASS - Codex may prepare reviewed SQL/setup artifacts in future PRs.
-+PASS - Codex does not execute UAT or PROD SQL.
-+PASS - UAT/PROD SQL/setup execution remains user-controlled.
-+PASS - No automatic fallback to Local DB is allowed when Supabase is selected and fails.
-+
-+## Secrets Audit
-+
-+PASS - This guide names required environment variables but includes no real values.
-+PASS - No Supabase URL, anon key, service-role key, database URL, database password, JWT, or OAuth client secret was added.
-+PASS - No fake placeholder key/value was committed.
-+PASS - No password tables or password storage behavior were added.
++- Current branch: `main`
++- Expected branch: `main`
++- Result: PASS
 +
 +## Requirement Checklist
 +
-+| Requirement | Status | Evidence |
-+| --- | --- | --- |
-+| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution | PASS | File read before PR139 execution. |
-+| Verify current branch is `main` | PASS | `git branch --show-current` returned `main`. |
-+| Scope to user-executed Supabase DEV project creation guide only | PASS | Only this report and shared Codex artifacts changed. |
-+| Do not activate Supabase | PASS | No runtime or env selector change. |
-+| Do not add secrets | PASS | Variable names only; no values. |
-+| Do not change runtime behavior | PASS | No runtime files changed. |
-+| Include project creation steps | PASS | Checklist included. |
-+| Include recommended project name | PASS | `GameFoundryStudio-DEV`. |
-+| Include auth email/password settings | PASS | Settings checklist included. |
-+| Include redirect URLs | PASS | Local redirect paths documented without concrete origin values. |
-+| Include required env var names with no values | PASS | Names listed only. |
-+| Include where user should store env vars locally | PASS | Local-only storage section included. |
-+| Include confirmation checklist | PASS | User confirmation checklist included. |
-+| Include what Codex should verify after env vars exist | PASS | Verification list included. |
-+| State user creates Supabase project | PASS | Explicitly documented. |
-+| State user supplies local env values | PASS | Explicitly documented. |
-+| State Codex does not commit secrets | PASS | Explicitly documented. |
-+| State Codex does not execute UAT/PROD SQL | PASS | Explicitly documented. |
-+| State no automatic fallback to Local DB when Supabase selected fails | PASS | Explicitly documented. |
-+| Playwright impacted: No | PASS | Report-only PR; no UI/runtime changes. |
++- PASS - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before implementation.
++- PASS - Created/maintained `account/create-account.html` as a production-safe placeholder page.
++- PASS - Created `account/password-reset.html` as a production-safe placeholder page.
++- PASS - Used Theme V2 only through `../assets/theme-v2/css/theme.css`.
++- PASS - No inline CSS, `<style>` blocks, inline style attributes, inline JavaScript, or inline event handlers were added.
++- PASS - No auth implementation, account submission form, Supabase activation, secrets, runtime DB calls, or runtime DB changes were added.
++- PASS - Playwright impacted: No.
++- PASS - Validation stayed scoped to targeted static validation only.
 +
-+## Validation Lane Report
++## Changed Files
 +
-+Executed:
++- `account/create-account.html`
++- `account/password-reset.html`
++- `docs_build/dev/reports/PR_26166_140-create-account-password-reset-pages.md`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/codex_changed_files.txt`
 +
-+- `git branch --show-current` - PASS, `main`
-+- `git diff --check` - PASS
-+- Report existence validation - PASS
-+- Runtime file change validation - PASS, no runtime files changed
-+- Secret/fake value scan - PASS, no real Supabase secrets or fake key values added
++## Impacted Lane
 +
-+Skipped:
++- Static account placeholder lane only.
 +
-+- Playwright - SKIP, report-only PR with no UI/runtime changes.
-+- Runtime Node tests - SKIP, no runtime code changed.
-+- Full samples smoke - SKIP, report-only PR outside samples scope.
++## Skipped Lanes
++
++- Playwright: SKIP - request explicitly states Playwright impacted: No.
++- Runtime/integration/engine/samples: SKIP - this PR adds static placeholder pages only and does not change runtime JavaScript, persistence, engine code, samples, or auth behavior.
++- Full samples smoke: SKIP - not requested and not affected by static account placeholders.
++
++## Static Validation
++
++- PASS - Target HTML files exist.
++- PASS - Target pages reference Theme V2 CSS.
++- PASS - Target pages load only the shared Theme V2 partial script.
++- PASS - No inline script tags were found.
++- PASS - No `<style>` blocks, inline style attributes, or inline event handlers were found.
++- PASS - No Supabase activation, runtime DB call, secret/token marker, or auth implementation hook was found in the target pages.
++- PASS - `git diff --check -- account/create-account.html account/password-reset.html` reported no whitespace errors. Git emitted only the existing line-ending warning for `account/create-account.html`.
 +
 +## Manual Validation Notes
 +
-+PASS - `docs_build/dev/reports/pr139-supabase-dev-project-creation-guide.md` exists.
-+PASS - The guide is user-executed and does not activate Supabase.
-+PASS - The guide keeps Codex out of UAT/PROD SQL execution.
++1. Open `account/create-account.html`.
++2. Verify the Theme V2 header/footer shell renders.
++3. Verify the page is a placeholder and has no form fields or submit action.
++4. Verify the Back to Sign In link points to `sign-in.html`.
++5. Open `account/password-reset.html`.
++6. Verify the Theme V2 header/footer shell renders.
++7. Verify the page is a placeholder and has no form fields or submit action.
++8. Verify the Back to Sign In link points to `sign-in.html`.
 +
-+## ZIP
++## Packaging
 +
-+PASS - Repo-structured delta ZIP produced at `tmp/PR_26166_139-supabase-dev-project-creation-guide_delta.zip`.
++- Delta ZIP: `tmp/PR_26166_140-create-account-password-reset-pages_delta.zip`
