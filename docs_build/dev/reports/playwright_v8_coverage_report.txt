@@ -18,7 +18,6 @@ Exercised tool entry points detected:
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(86%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 724/724; executed functions 60/70
 (92%) assets/theme-v2/js/account-auth-actions.js - executed lines 108/108; executed functions 12/13
 (93%) assets/theme-v2/js/login-session.js - executed lines 118/118; executed functions 14/15
 
@@ -50,6 +49,5 @@ Changed JS files considered:
 (0%) tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs - changed JS file not collected as browser runtime coverage
-(86%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
 (92%) assets/theme-v2/js/account-auth-actions.js - changed JS file with browser V8 coverage
 (93%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage

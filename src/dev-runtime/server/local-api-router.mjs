@@ -1290,12 +1290,15 @@ class LocalDevDataSource {
     const failure = providerContract.providerDiagnostics.providerFailures
       .find((candidate) => candidate.providerId === authProviderId || candidate.providerId === SUPABASE_AUTH_PROVIDER_ID);
     const missingBrowserSafeEnvironmentVariables = providerContract.supabaseAuth.missingBrowserSafeEnvironmentVariables || [];
+    const connectivityStatus = configured ? "not-checked" : "not-configured";
     let operatorDiagnostic = "";
     let status = "unavailable";
 
     if (!selected) {
-      operatorDiagnostic = "Supabase Auth is not the selected auth provider for this API runtime.";
-      status = "inactive";
+      operatorDiagnostic = configured
+        ? `Supabase Auth configuration is present, but selected auth provider is ${authProviderId}. Set GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth to activate external account authentication while keeping GAMEFOUNDRY_DB_PROVIDER=local-db for product data.`
+        : `Supabase Auth provider is not selected. Selected auth provider is ${authProviderId}; Supabase Auth configuration is not complete.`;
+      status = "provider-not-selected";
     } else if (!localDbProductDataActive) {
       operatorDiagnostic = "Supabase Auth activation keeps Local DB active for product data; the selected database provider is not Local DB.";
       status = "unavailable";
@@ -1316,17 +1319,101 @@ class LocalDevDataSource {
       authProviderId,
       boundary: SERVER_DATA_BOUNDARY_RULE,
       configured,
+      connectivityHealthy: null,
+      connectivityStatus,
       databaseProviderId,
       localDbProductDataActive,
       message,
       missingBrowserSafeEnvironmentVariables,
       noAutomaticFallback: true,
       operatorDiagnostic,
+      operatorPreflightPath: "/api/auth/operator-preflight",
       passwordStorage: "external-provider",
       providerId: SUPABASE_AUTH_PROVIDER_ID,
       ready: status === "ready",
       selected,
+      supabaseConfigPresent: configured,
+      supabaseConnectivityStatus: connectivityStatus,
+      supabaseProviderNotSelected: !selected,
+      supabaseProviderSelected: selected,
       status,
+    };
+  }
+
+  async authOperatorPreflight() {
+    const status = this.authStatus();
+    const checks = [
+      {
+        id: "supabase-config-present",
+        status: status.supabaseConfigPresent ? "PASS" : "FAIL",
+        summary: status.supabaseConfigPresent
+          ? "Supabase Auth browser-safe configuration is present."
+          : "Supabase Auth browser-safe configuration is missing.",
+      },
+      {
+        id: "supabase-provider-selected",
+        status: status.supabaseProviderSelected ? "PASS" : "WARN",
+        summary: status.supabaseProviderSelected
+          ? "Supabase Auth is the selected auth provider."
+          : `Selected auth provider is ${status.authProviderId}; Supabase Auth is not selected.`,
+      },
+      {
+        id: "local-db-product-data",
+        status: status.localDbProductDataActive ? "PASS" : "FAIL",
+        summary: status.localDbProductDataActive
+          ? "Product data remains on Local DB for this preflight."
+          : `Product data provider is ${status.databaseProviderId}; expected ${LOCAL_DATABASE_PROVIDER_ID}.`,
+      },
+    ];
+    let connectivityStatus = status.supabaseConfigPresent ? "not-checked" : "not-configured";
+    let connectivityHttpStatus = 0;
+    let connectivityDiagnostic = status.supabaseConfigPresent
+      ? "Supabase Auth connectivity has not been checked yet."
+      : "Supabase Auth connectivity cannot be checked until configuration is present.";
+
+    if (status.supabaseConfigPresent) {
+      try {
+        const adapter = new SupabaseAuthProviderAdapter();
+        await adapter.request("/auth/v1/health", {
+          operation: "operatorPreflight",
+        });
+        connectivityStatus = "healthy";
+        connectivityDiagnostic = "Supabase Auth endpoint responded successfully.";
+      } catch (error) {
+        connectivityStatus = "failed";
+        const match = String(error?.message || "").match(/HTTP\s+(\d+)/);
+        connectivityHttpStatus = match ? Number(match[1]) : 0;
+        connectivityDiagnostic = connectivityHttpStatus
+          ? `Supabase Auth connectivity failed with HTTP ${connectivityHttpStatus}.`
+          : "Supabase Auth connectivity failed before an HTTP status was available.";
+      }
+    }
+
+    checks.push({
+      id: "supabase-connectivity",
+      httpStatus: connectivityHttpStatus || undefined,
+      status: connectivityStatus === "healthy" ? "PASS" : status.supabaseConfigPresent ? "FAIL" : "SKIP",
+      summary: connectivityDiagnostic,
+    });
+
+    return {
+      authProviderId: status.authProviderId,
+      browserMessage: AUTH_UNAVAILABLE_MESSAGE,
+      checks,
+      configured: status.configured,
+      connectivityHealthy: connectivityStatus === "healthy",
+      connectivityStatus,
+      databaseProviderId: status.databaseProviderId,
+      localDbProductDataActive: status.localDbProductDataActive,
+      noAutomaticFallback: true,
+      operatorDiagnostic: status.operatorDiagnostic,
+      operatorOnly: true,
+      providerId: SUPABASE_AUTH_PROVIDER_ID,
+      selected: status.selected,
+      status: connectivityStatus === "healthy" ? "healthy" : connectivityStatus,
+      supabaseConfigPresent: status.supabaseConfigPresent,
+      supabaseProviderNotSelected: status.supabaseProviderNotSelected,
+      supabaseProviderSelected: status.supabaseProviderSelected,
     };
   }
 
@@ -2101,6 +2188,10 @@ export function createLocalApiRouter() {
       if (parts[1] === "auth") {
         if (request.method === "GET" && parts[2] === "status") {
           ok(response, dataSource.authStatus());
+          return true;
+        }
+        if (request.method === "GET" && parts[2] === "operator-preflight") {
+          ok(response, await dataSource.authOperatorPreflight());
           return true;
         }
         if (request.method === "POST" && parts[2] === "sign-in") {

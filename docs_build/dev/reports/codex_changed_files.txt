@@ -1,94 +1,22 @@
-# git status --short
- M account/create-account.html
- M account/password-reset.html
- M account/sign-in.html
- M assets/theme-v2/js/account-auth-actions.js
- M assets/theme-v2/js/login-session.js
+# git status --short (excluding .env files)
+ M .gitignore
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/dependency_gating_report.md
- M docs_build/dev/reports/dependency_hydration_reuse_report.md
- M docs_build/dev/reports/execution_graph_reuse_report.md
- M docs_build/dev/reports/failure_fingerprint_report.md
- M docs_build/dev/reports/filesystem_scan_reduction_report.md
- M docs_build/dev/reports/incremental_validation_report.md
- M docs_build/dev/reports/lane_compilation_report.md
- M docs_build/dev/reports/lane_deduplication_report.md
- M docs_build/dev/reports/lane_input_validation_report.md
- M docs_build/dev/reports/lane_manifests/workspace-contract.json
- M docs_build/dev/reports/lane_runtime_optimization_report.md
- M docs_build/dev/reports/lane_snapshot_report.md
- M docs_build/dev/reports/lane_snapshots/workspace-contract.json
- M docs_build/dev/reports/lane_warm_start_report.md
- M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
- M docs_build/dev/reports/monolith_trigger_removal_report.md
- M docs_build/dev/reports/persistent_lane_manifest_report.md
- M docs_build/dev/reports/playwright_discovery_ownership_report.md
- M docs_build/dev/reports/playwright_discovery_scope_report.md
- M docs_build/dev/reports/playwright_structure_audit.md
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M docs_build/dev/reports/retry_suppression_report.md
- M docs_build/dev/reports/slow_path_pruning_report.md
- M docs_build/dev/reports/static_validation_report.md
- M docs_build/dev/reports/targeted_file_manifest_report.md
- M docs_build/dev/reports/test_cleanup_performance_report.md
- M docs_build/dev/reports/test_cleanup_routing_report.md
- M docs_build/dev/reports/testing_lane_execution_report.md
- M docs_build/dev/reports/validation_cache_report.md
- M docs_build/dev/reports/zero_browser_preflight_report.md
  M src/dev-runtime/server/local-api-router.mjs
  M tests/dev-runtime/SupabaseProviderContractStub.test.mjs
- M tests/playwright/tools/ApiStaticRouteRecovery.spec.mjs
- M tests/playwright/tools/LoginSessionMode.spec.mjs
- M tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs
-?? docs_build/dev/reports/PR_26166_142-auth-status-backend-contract.md
+?? docs_build/dev/reports/PR_26166_144-supabase-auth-preflight-selection-fix.md
+?? docs_build/dev/reports/supabase-preflight-report.md
 
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26166_142-auth-status-backend-contract.md
+# git ls-files --others --exclude-standard (excluding .env files)
+docs_build/dev/reports/PR_26166_144-supabase-auth-preflight-selection-fix.md
+docs_build/dev/reports/supabase-preflight-report.md
 
-# git diff --stat
- account/create-account.html                        |    8 +-
- account/password-reset.html                        |    8 +-
- account/sign-in.html                               |    2 +-
- assets/theme-v2/js/account-auth-actions.js         |   47 +-
- assets/theme-v2/js/login-session.js                |   43 +-
- docs_build/dev/reports/codex_changed_files.txt     |   94 +-
- docs_build/dev/reports/codex_review.diff           | 2198 ++++++++------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |    8 +-
- docs_build/dev/reports/dependency_gating_report.md |    2 +-
- .../reports/dependency_hydration_reuse_report.md   |    4 +-
- .../dev/reports/execution_graph_reuse_report.md    |    4 +-
- .../dev/reports/failure_fingerprint_report.md      |    2 +-
- .../reports/filesystem_scan_reduction_report.md    |    2 +-
- .../dev/reports/incremental_validation_report.md   |    2 +-
- docs_build/dev/reports/lane_compilation_report.md  |    2 +-
- .../dev/reports/lane_deduplication_report.md       |    2 +-
- .../dev/reports/lane_input_validation_report.md    |    2 +-
- .../reports/lane_manifests/workspace-contract.json |   10 +-
- .../reports/lane_runtime_optimization_report.md    |    2 +-
- docs_build/dev/reports/lane_snapshot_report.md     |    4 +-
- .../reports/lane_snapshots/workspace-contract.json |   22 +-
- docs_build/dev/reports/lane_warm_start_report.md   |    4 +-
- .../lane_warm_starts/workspace-contract.json       |   16 +-
- .../dev/reports/monolith_trigger_removal_report.md |    2 +-
- .../dev/reports/persistent_lane_manifest_report.md |    6 +-
- .../playwright_discovery_ownership_report.md       |    2 +-
- .../reports/playwright_discovery_scope_report.md   |    2 +-
- .../dev/reports/playwright_structure_audit.md      |    2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   47 +-
- docs_build/dev/reports/retry_suppression_report.md |    2 +-
- docs_build/dev/reports/slow_path_pruning_report.md |   12 +-
- docs_build/dev/reports/static_validation_report.md |    4 +-
- .../dev/reports/targeted_file_manifest_report.md   |    4 +-
- .../dev/reports/test_cleanup_performance_report.md |   14 +-
- .../dev/reports/test_cleanup_routing_report.md     |    2 +-
- .../dev/reports/testing_lane_execution_report.md   |   16 +-
- docs_build/dev/reports/validation_cache_report.md  |   30 +-
- .../dev/reports/zero_browser_preflight_report.md   |    2 +-
- src/dev-runtime/server/local-api-router.mjs        |   65 +-
- .../SupabaseProviderContractStub.test.mjs          |   25 +-
- .../tools/ApiStaticRouteRecovery.spec.mjs          |    1 +
- tests/playwright/tools/LoginSessionMode.spec.mjs   |   18 +-
- .../tools/StaticOnlyLoginApiRequired.spec.mjs      |    3 +-
- 43 files changed, 1189 insertions(+), 1558 deletions(-)
+# git diff --stat (excluding .env files and review artifacts)
+ .gitignore                                         |   2 +
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   1 -
+ .../dev/reports/playwright_v8_coverage_report.txt  |   2 -
+ src/dev-runtime/server/local-api-router.mjs        |  95 +++++++++++++++-
+ .../SupabaseProviderContractStub.test.mjs          | 125 ++++++++++++++++++++-
+ 5 files changed, 219 insertions(+), 6 deletions(-)

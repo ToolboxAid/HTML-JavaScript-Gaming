@@ -66,7 +66,9 @@ function startApiServer() {
   });
 }
 
-function startFakeSupabaseAuthServer() {
+function startFakeSupabaseAuthServer(options = {}) {
+  const expectedApiKey = options.expectedApiKey || "";
+  const rejectWrongApiKey = options.rejectWrongApiKey === true;
   const calls = [];
   const server = http.createServer(async (request, response) => {
     const chunks = [];
@@ -82,6 +84,18 @@ function startFakeSupabaseAuthServer() {
       method: request.method,
       path: `${requestUrl.pathname}${requestUrl.search}`,
     });
+    if (rejectWrongApiKey && request.headers.apikey !== expectedApiKey) {
+      response.statusCode = 401;
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.end(JSON.stringify({ message: "Invalid API key" }));
+      return;
+    }
+    if (requestUrl.pathname === "/auth/v1/health") {
+      response.statusCode = 200;
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.end(JSON.stringify({ status: "ok" }));
+      return;
+    }
     response.statusCode = 200;
     response.setHeader("Content-Type", "application/json; charset=utf-8");
     if (requestUrl.pathname === "/auth/v1/recover") {
@@ -286,6 +300,52 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
   ]);
 });
 
+test("Auth status distinguishes configured Supabase when Local DB auth remains selected", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer();
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const status = await apiJson(server.baseUrl, "/api/auth/status");
+      assert.equal(status.ready, false);
+      assert.equal(status.status, "provider-not-selected");
+      assert.equal(status.message, "The site is currently unavailable. Please try again later.");
+      assert.equal(status.configured, true);
+      assert.equal(status.supabaseConfigPresent, true);
+      assert.equal(status.supabaseProviderSelected, false);
+      assert.equal(status.supabaseProviderNotSelected, true);
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.connectivityHealthy, null);
+      assert.equal(status.authProviderId, "local-db");
+      assert.equal(status.databaseProviderId, "local-db");
+      assert.match(status.operatorDiagnostic, /selected auth provider is local-db/);
+      assert.match(status.operatorDiagnostic, /GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth/);
+      assert.match(status.operatorDiagnostic, /GAMEFOUNDRY_DB_PROVIDER=local-db/);
+
+      const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
+      assert.equal(preflight.operatorOnly, true);
+      assert.equal(preflight.selected, false);
+      assert.equal(preflight.supabaseConfigPresent, true);
+      assert.equal(preflight.supabaseProviderSelected, false);
+      assert.equal(preflight.supabaseProviderNotSelected, true);
+      assert.equal(preflight.localDbProductDataActive, true);
+      assert.equal(preflight.connectivityStatus, "healthy");
+      assert.equal(preflight.connectivityHealthy, true);
+      assert.equal(preflight.status, "healthy");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-provider-selected").status, "WARN");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "PASS");
+      assert.equal(JSON.stringify(preflight).includes("test-anon-key"), false);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
 test("Selected Supabase providers keep diagnostics available and block Local DB runtime routes when not configured", async () => {
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
@@ -331,11 +391,24 @@ test("Supabase Auth selection keeps Local DB product data active and fails auth 
       assert.equal(status.ready, false);
       assert.equal(status.selected, true);
       assert.equal(status.configured, false);
+      assert.equal(status.supabaseConfigPresent, false);
+      assert.equal(status.supabaseProviderSelected, true);
+      assert.equal(status.supabaseProviderNotSelected, false);
+      assert.equal(status.supabaseConnectivityStatus, "not-configured");
+      assert.equal(status.connectivityHealthy, null);
       assert.equal(status.databaseProviderId, "local-db");
       assert.equal(status.localDbProductDataActive, true);
       assert.equal(status.noAutomaticFallback, true);
       assert.equal(status.message, "The site is currently unavailable. Please try again later.");
       assert.match(status.operatorDiagnostic, /Supabase Auth provider selected but not configured/);
+
+      const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
+      assert.equal(preflight.supabaseConfigPresent, false);
+      assert.equal(preflight.supabaseProviderSelected, true);
+      assert.equal(preflight.connectivityStatus, "not-configured");
+      assert.equal(preflight.connectivityHealthy, false);
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-config-present").status, "FAIL");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "SKIP");
 
       const session = await apiPayload(server.baseUrl, "/api/session/current");
       assert.equal(session.status, 200);
@@ -376,6 +449,20 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(status.configured, true);
       assert.equal(status.localDbProductDataActive, true);
       assert.equal(status.message, "Account service is available.");
+      assert.equal(status.supabaseConfigPresent, true);
+      assert.equal(status.supabaseProviderSelected, true);
+      assert.equal(status.supabaseProviderNotSelected, false);
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+      assert.equal(status.connectivityHealthy, null);
+
+      const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
+      assert.equal(preflight.supabaseConfigPresent, true);
+      assert.equal(preflight.supabaseProviderSelected, true);
+      assert.equal(preflight.localDbProductDataActive, true);
+      assert.equal(preflight.connectivityStatus, "healthy");
+      assert.equal(preflight.connectivityHealthy, true);
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-provider-selected").status, "PASS");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "PASS");
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "creator@example.test",
@@ -408,11 +495,47 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(reset.payload.data.redirectToIncluded, true);
 
       assert.deepEqual(fakeSupabase.calls.map((call) => call.path), [
+        "/auth/v1/health",
         "/auth/v1/token?grant_type=password",
         "/auth/v1/signup",
         "/auth/v1/recover",
       ]);
       assert.equal(fakeSupabase.calls.every((call) => call.headers.apikey === "test-anon-key"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Operator auth preflight reports failed Supabase connectivity for wrong anon key without exposing secrets", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    expectedApiKey: "expected-anon-key",
+    rejectWrongApiKey: true,
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "wrong-anon-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const status = await apiJson(server.baseUrl, "/api/auth/status");
+      assert.equal(status.ready, true);
+      assert.equal(status.supabaseConfigPresent, true);
+      assert.equal(status.supabaseConnectivityStatus, "not-checked");
+
+      const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
+      assert.equal(preflight.supabaseConfigPresent, true);
+      assert.equal(preflight.supabaseProviderSelected, true);
+      assert.equal(preflight.connectivityStatus, "failed");
+      assert.equal(preflight.connectivityHealthy, false);
+      assert.equal(preflight.status, "failed");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "FAIL");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").httpStatus, 401);
+      assert.equal(JSON.stringify(preflight).includes("wrong-anon-key"), false);
+      assert.equal(JSON.stringify(preflight).includes("expected-anon-key"), false);
     } finally {
       await server.close();
     }
