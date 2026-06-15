@@ -89,6 +89,7 @@
         "sign-in": "account/sign-in.html",
         "create-account": "account/create-account.html",
         "lost-password": "account/lost-password.html",
+        "password-reset": "account/password-reset.html",
         contact: "company/contact.html",
         vision: "company/vision.html",
         mission: "company/mission.html",
@@ -517,7 +518,8 @@
         if ([
             "account/sign-in.html",
             "account/create-account.html",
-            "account/lost-password.html"
+            "account/lost-password.html",
+            "account/password-reset.html"
         ].includes(pagePath)) {
             return null;
         }

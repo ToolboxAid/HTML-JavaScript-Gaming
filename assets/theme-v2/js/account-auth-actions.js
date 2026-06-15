@@ -1,42 +1,10 @@
-const continueLink = document.querySelector("[data-login-continue]");
-const form = document.querySelector("[data-login-form]");
-const identityField = document.querySelector("[data-login-identity]");
-const passwordField = document.querySelector("[data-login-password]");
-const statusField = document.querySelector("[data-login-status]");
+const form = document.querySelector("[data-account-auth-form]");
+const emailField = document.querySelector("[data-account-auth-email]");
+const passwordField = document.querySelector("[data-account-auth-password]");
+const statusField = document.querySelector("[data-account-auth-status]");
+const submitButton = document.querySelector("[data-account-auth-submit]");
+const action = form?.getAttribute("data-account-auth-form") || "";
 let supabaseStatus = null;
-
-function rootPrefix() {
-  const rootSegments = new Set([
-    "account",
-    "admin",
-    "company",
-    "community",
-    "docs",
-    "games",
-    "learn",
-    "legal",
-    "marketplace",
-    "toolbox",
-  ]);
-  const parts = window.location.pathname.split("/").filter(Boolean);
-  const rootIndex = parts.findIndex((part) => rootSegments.has(part));
-  const pageParts = rootIndex >= 0 ? parts.slice(rootIndex) : [parts[parts.length - 1] || "index.html"];
-  return pageParts.length > 1 ? "../".repeat(pageParts.length - 1) : "";
-}
-
-function repoPathHref(path) {
-  const normalizedPath = String(path || "").replace(/^\/+/, "");
-  return normalizedPath ? rootPrefix() + normalizedPath : "#";
-}
-
-function currentReturnTo() {
-  const params = new URLSearchParams(window.location.search);
-  const value = params.get("returnTo") || "";
-  if (!value || value.startsWith("/") || value.includes("://") || value.includes("..")) {
-    return repoPathHref("toolbox/index.html");
-  }
-  return repoPathHref(value);
-}
 
 function setStatus(message) {
   if (statusField) {
@@ -47,6 +15,12 @@ function setStatus(message) {
 function isStaticOnlyLocalEntrypoint() {
   return ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
     window.location.port === "5500";
+}
+
+function setFormEnabled(enabled) {
+  if (submitButton) {
+    submitButton.disabled = !enabled;
+  }
 }
 
 async function readJson(response, fallbackMessage) {
@@ -81,37 +55,50 @@ async function refreshSupabaseStatus() {
       ready: false,
       message: "Start the DEV API server to use Supabase Auth. Guest browsing remains available.",
     };
+    setFormEnabled(false);
     setStatus(supabaseStatus.message);
     return supabaseStatus;
   }
   try {
     supabaseStatus = await requestSupabaseAuth("status");
-    setStatus(supabaseStatus.ready ? "DEV Supabase Auth is ready for sign-in." : unavailableMessage(supabaseStatus));
+    setFormEnabled(Boolean(supabaseStatus.ready));
+    setStatus(supabaseStatus.ready ? "DEV Supabase Auth is ready." : unavailableMessage(supabaseStatus));
   } catch (error) {
     supabaseStatus = {
       ready: false,
       message: error instanceof Error ? error.message : String(error || "DEV Supabase Auth status failed."),
     };
+    setFormEnabled(false);
     setStatus(supabaseStatus.message);
   }
   return supabaseStatus;
 }
 
-if (continueLink) {
-  continueLink.href = currentReturnTo();
+function actionEndpoint() {
+  if (action === "create-account") {
+    return "create-account";
+  }
+  if (action === "password-reset") {
+    return "password-reset";
+  }
+  return "";
 }
 
 form?.addEventListener("submit", (event) => {
   event.preventDefault();
-  Promise.resolve(refreshSupabaseStatus())
+  Promise.resolve(supabaseStatus || refreshSupabaseStatus())
     .then((status) => {
       if (!status?.ready) {
         setStatus(unavailableMessage(status));
         return null;
       }
-      return requestSupabaseAuth("sign-in", {
+      const endpoint = actionEndpoint();
+      if (!endpoint) {
+        throw new Error("Unknown account action.");
+      }
+      return requestSupabaseAuth(endpoint, {
         body: {
-          identity: identityField?.value || "",
+          email: emailField?.value || "",
           password: passwordField?.value || "",
         },
         method: "POST",
@@ -119,10 +106,12 @@ form?.addEventListener("submit", (event) => {
     })
     .then((result) => {
       if (result) {
-        setStatus(result.message || "Supabase Auth sign-in completed.");
+        setStatus(result.message || "Supabase Auth action completed.");
       }
     })
     .catch((error) => {
-      setStatus(error instanceof Error ? error.message : String(error || "Supabase Auth sign-in failed."));
+      setStatus(error instanceof Error ? error.message : String(error || "Supabase Auth action failed."));
     });
 });
+
+refreshSupabaseStatus();

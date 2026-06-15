@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import http from "node:http";
 import path from "node:path";
 import process from "node:process";
 import { expect, test } from "@playwright/test";
@@ -53,6 +54,77 @@ const UAT_PROD_ADMIN_LABELS = [
 function nextLocalDbStoragePath() {
   localDbRunId += 1;
   return path.join(process.cwd(), "tmp", "local-db", `login-session-mode-${process.pid}-${localDbRunId}.sqlite`);
+}
+
+async function withSupabaseEnv(nextEnv, callback) {
+  const previousEnv = {};
+  Object.keys(nextEnv).forEach((key) => {
+    previousEnv[key] = process.env[key];
+    if (nextEnv[key] === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = nextEnv[key];
+    }
+  });
+  try {
+    return await callback();
+  } finally {
+    Object.entries(previousEnv).forEach(([key, value]) => {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    });
+  }
+}
+
+async function startFakeSupabaseAuthServer() {
+  const calls = [];
+  const server = http.createServer(async (request, response) => {
+    const chunks = [];
+    for await (const chunk of request) {
+      chunks.push(chunk);
+    }
+    const rawBody = Buffer.concat(chunks).toString("utf8");
+    const body = rawBody ? JSON.parse(rawBody) : {};
+    const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
+    calls.push({
+      body,
+      headers: request.headers,
+      method: request.method,
+      path: `${requestUrl.pathname}${requestUrl.search}`,
+    });
+    response.statusCode = 200;
+    response.setHeader("Content-Type", "application/json; charset=utf-8");
+    if (requestUrl.pathname === "/auth/v1/recover") {
+      response.end(JSON.stringify({ ok: true }));
+      return;
+    }
+    response.end(JSON.stringify({
+      access_token: "browser-test-access-token",
+      refresh_token: "browser-test-refresh-token",
+      user: {
+        email: body.email || "creator@example.test",
+        id: "supabase-browser-user-id",
+      },
+    }));
+  });
+  await new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", resolve);
+  });
+  const address = server.address();
+  if (!address || typeof address === "string") {
+    throw new Error("Unable to start fake Supabase Auth server.");
+  }
+  return {
+    baseUrl: `http://127.0.0.1:${address.port}`,
+    calls,
+    close: async () => {
+      await new Promise((resolve) => server.close(resolve));
+    },
+  };
 }
 
 async function openRepoPage(page, pathName, options = {}) {
@@ -265,7 +337,7 @@ test("Sign-in page uses a production-safe account form without public Local DB c
     await expect(page.getByLabel("Password")).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create Account" })).toHaveAttribute("href", /create-account\.html$/);
-    await expect(page.getByRole("link", { name: "Lost Password" })).toHaveAttribute("href", /lost-password\.html$/);
+    await expect(page.getByRole("link", { name: "Password Reset" })).toHaveAttribute("href", /password-reset\.html$/);
     await expect(page.getByRole("link", { name: "Continue Browsing" })).toBeVisible();
     await expect(page.locator("aside[aria-label='Session mode']")).toHaveCount(0);
     await expect(page.locator("[aria-labelledby='login-local-status-title']")).toHaveCount(0);
@@ -329,21 +401,71 @@ test("Sign-in page uses a production-safe account form without public Local DB c
     await page.getByLabel("Email or username").fill("user@example.invalid");
     await page.getByLabel("Password").fill("not-stored");
     await page.getByRole("button", { name: "Sign In" }).click();
-    await expect(page.locator("[data-login-status]")).toHaveText("Account features are being connected to the production authentication provider.");
+    await expect(page.locator("[data-login-status]")).toContainText("Supabase DEV Auth is not active.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
 
     await page.getByRole("link", { name: "Create Account" }).click();
     await expect(page).toHaveURL(/\/account\/create-account\.html$/);
     await expect(page.getByRole("heading", { name: "Create Account", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-account-auth-status]")).toContainText("Supabase DEV Auth is not active.");
     await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
-    await page.getByRole("link", { name: "Lost Password" }).click();
-    await expect(page).toHaveURL(/\/account\/lost-password\.html$/);
-    await expect(page.getByRole("heading", { name: "Lost Password", level: 1 })).toBeVisible();
+    await page.getByRole("link", { name: "Password Reset" }).click();
+    await expect(page).toHaveURL(/\/account\/password-reset\.html$/);
+    await expect(page.getByRole("heading", { name: "Password Reset", level: 1 })).toBeVisible();
+    await expect(page.locator("[data-account-auth-status]")).toContainText("Supabase DEV Auth is not active.");
 
     await expectNoPageFailures(failures);
   } finally {
     await closeWithCoverage(page, failures);
   }
+});
+
+test("Configured DEV Supabase Auth account actions use external Auth without Local DB session fallback", async ({ page }) => {
+  const fakeSupabase = await startFakeSupabaseAuthServer();
+  await withSupabaseEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const failures = await openRepoPage(page, "/account/sign-in.html");
+
+    try {
+      await page.getByLabel("Email or username").fill("creator@example.test");
+      await page.getByLabel("Password").fill("not-stored-locally");
+      await page.getByRole("button", { name: "Sign In" }).click();
+      await expect(page.locator("[data-login-status]")).toContainText("Supabase Auth completed.");
+
+      const session = await page.evaluate(async () => fetch("/api/session/current").then((response) => response.json()));
+      expect(session.data.authenticated).toBe(false);
+      expect(session.data.userKey).toBe(null);
+      expect(session.data.diagnostic).toContain("Supabase Auth does not create a Local DB product-data session");
+
+      await page.goto(`${failures.server.baseUrl}/account/create-account.html`, { waitUntil: "networkidle" });
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("DEV Supabase Auth is ready.");
+      await page.getByLabel("Email").fill("new@example.test");
+      await page.getByLabel("Password").fill("not-stored-locally");
+      await page.getByRole("button", { name: "Create Account" }).click();
+      await expect(page.locator("[data-account-auth-status]")).toContainText("Supabase Auth completed.");
+
+      await page.goto(`${failures.server.baseUrl}/account/password-reset.html`, { waitUntil: "networkidle" });
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("DEV Supabase Auth is ready.");
+      await page.getByLabel("Email").fill("reset@example.test");
+      await page.getByRole("button", { name: "Request Password Reset" }).click();
+      await expect(page.locator("[data-account-auth-status]")).toContainText("Supabase Auth password reset request was sent");
+
+      expect(fakeSupabase.calls.map((call) => call.path)).toEqual([
+        "/auth/v1/token?grant_type=password",
+        "/auth/v1/signup",
+        "/auth/v1/recover",
+      ]);
+      expect(fakeSupabase.calls.every((call) => call.headers.apikey === "browser-test-anon-key")).toBe(true);
+      await expectNoPageFailures(failures);
+    } finally {
+      await closeWithCoverage(page, failures);
+    }
+  });
+  await fakeSupabase.close();
 });
 
 test("Protected pages block direct URL access without the required Local session role", async ({ page }) => {
@@ -552,7 +674,7 @@ test("Admin and Account Local DB pages render identity data or actionable migrat
     {
       assertions: async () => {
         await expect(page.getByRole("heading", { name: "Roles", level: 1 })).toBeVisible();
-        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded 2 Local DB roles and 5 user-role assignments.");
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded 4 Local DB roles and 5 user-role assignments.");
         await expect(page.locator("[data-local-db-table='roles']")).toContainText("admin");
         await expect(page.locator("[data-local-db-table='roles']")).toContainText("DavidQ admin");
         await expect(page.locator("[data-local-db-audit]").first()).toContainText("Audit PASS");

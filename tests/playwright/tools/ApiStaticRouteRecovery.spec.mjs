@@ -61,7 +61,7 @@ test("login session API routes recover static probes and Local DB mode calls", a
     await expect(page.getByLabel("Password")).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create Account" })).toBeVisible();
-    await expect(page.getByRole("link", { name: "Lost Password" })).toBeVisible();
+    await expect(page.getByRole("link", { name: "Password Reset" })).toBeVisible();
     await expect(page.locator("[data-login-mode]")).toHaveCount(0);
     await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
     await expect(page.locator("[data-login-local-status]")).toHaveCount(0);

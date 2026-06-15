@@ -103,7 +103,7 @@ test("static sign-in page renders production-safe account actions without API di
     await expect(page.getByLabel("Password")).toBeVisible();
     await expect(page.getByRole("button", { name: "Sign In" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Create Account" })).toHaveAttribute("href", /create-account\.html$/);
-    await expect(page.getByRole("link", { name: "Lost Password" })).toHaveAttribute("href", /lost-password\.html$/);
+    await expect(page.getByRole("link", { name: "Password Reset" })).toHaveAttribute("href", /password-reset\.html$/);
     await expect(page.locator("[data-login-mode]")).toHaveCount(0);
     await expect(page.locator("[data-login-mode='local-mem']")).toHaveCount(0);
     await expect(page.locator("[data-login-local-status]")).toHaveCount(0);
@@ -115,10 +115,11 @@ test("static sign-in page renders production-safe account actions without API di
     await expect(page.locator("main")).not.toContainText("reseed");
     await expect(page.locator("main")).not.toContainText("Local DB");
     await page.getByRole("button", { name: "Sign In" }).click();
-    await expect(page.locator("[data-login-status]")).toHaveText("Account features are being connected to the production authentication provider.");
+    await expect(page.locator("[data-login-status]")).toHaveText("Start the DEV API server to use Supabase Auth. Guest browsing remains available.");
 
     expect(requests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
     expect(requests.filter((request) => request.includes("/api/session/"))).toEqual([]);
+    expect(requests.filter((request) => request.includes("/api/auth/dev/supabase"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/mode"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/users"))).toEqual([]);

@@ -80,7 +80,9 @@ import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-moc
 import {
   LOCAL_AUTH_PROVIDER_ID,
   LOCAL_DATABASE_PROVIDER_ID,
+  SUPABASE_AUTH_PROVIDER_ID,
   SUPABASE_POSTGRES_PROVIDER_ID,
+  SupabaseAuthProviderAdapter,
   SupabasePostgresProviderAdapter,
   createProviderContractSnapshot,
 } from "../auth/provider-contract-stubs.mjs";
@@ -596,6 +598,27 @@ function sessionUserFromKey(tables, userKey, modeId) {
     label: user.displayName || key,
     roleSlugs,
     userKey: key,
+  };
+}
+
+function normalizedAuthEmail(value) {
+  return String(value || "").trim();
+}
+
+function sanitizedSupabaseAuthActionResult(action, email, payload = {}) {
+  const user = payload.user && typeof payload.user === "object" ? payload.user : {};
+  return {
+    accessTokenExposed: false,
+    action,
+    email: String(user.email || email || "").trim(),
+    externalAuthUserIdPresent: Boolean(user.id),
+    localDbSessionCreated: false,
+    message: "Supabase Auth completed. Product data remains Local DB and no Local DB user session was created by this DEV auth-only path.",
+    passwordStoredLocally: false,
+    providerId: SUPABASE_AUTH_PROVIDER_ID,
+    refreshTokenExposed: false,
+    sessionStoredInBrowser: false,
+    status: "PASS",
   };
 }
 
@@ -1255,8 +1278,106 @@ class LocalDevDataSource {
     return this.currentSession();
   }
 
+  devSupabaseAuthStatus() {
+    const providerContract = this.providerContract();
+    const authProviderId = providerContract.activeProviders.authProviderId;
+    const databaseProviderId = providerContract.activeProviders.databaseProviderId;
+    const selected = authProviderId === SUPABASE_AUTH_PROVIDER_ID;
+    const localDbProductDataActive = databaseProviderId === LOCAL_DATABASE_PROVIDER_ID;
+    const configured = providerContract.supabaseAuth.configured === true;
+    const failure = providerContract.providerDiagnostics.providerFailures
+      .find((candidate) => candidate.providerId === authProviderId || candidate.providerId === SUPABASE_AUTH_PROVIDER_ID);
+    const missingBrowserSafeEnvironmentVariables = providerContract.supabaseAuth.missingBrowserSafeEnvironmentVariables || [];
+    let message = "";
+    let status = "unavailable";
+
+    if (!selected) {
+      message = "Supabase DEV Auth is not active. Set GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth and configure GAMEFOUNDRY_SUPABASE_URL plus GAMEFOUNDRY_SUPABASE_ANON_KEY to use external Supabase Auth. Guest browsing remains available.";
+      status = "inactive";
+    } else if (!localDbProductDataActive) {
+      message = "Supabase DEV Auth activation keeps Local DB active for product data. Set GAMEFOUNDRY_DB_PROVIDER=local-db before using this auth-only path.";
+      status = "unavailable";
+    } else if (!configured) {
+      message = providerContract.supabaseAuth.diagnostic || "Supabase DEV Auth is missing required browser-safe environment configuration.";
+      status = "unavailable";
+    } else if (failure) {
+      message = failure.remediation || providerContract.supabaseAuth.diagnostic || "Supabase DEV Auth provider is not ready.";
+      status = "unavailable";
+    } else {
+      message = "Supabase DEV Auth is configured. Account actions will use external Supabase Auth while product data remains Local DB.";
+      status = "ready";
+    }
+
+    return {
+      actionRequired: status === "ready" ? "" : message,
+      authProviderId,
+      boundary: SERVER_DATA_BOUNDARY_RULE,
+      configured,
+      databaseProviderId,
+      localDbProductDataActive,
+      message,
+      missingBrowserSafeEnvironmentVariables,
+      noAutomaticFallback: true,
+      passwordStorage: "external-provider",
+      providerId: SUPABASE_AUTH_PROVIDER_ID,
+      ready: status === "ready",
+      selected,
+      status,
+    };
+  }
+
+  supabaseAuthAdapterForAction(action) {
+    const status = this.devSupabaseAuthStatus();
+    if (!status.ready) {
+      throw new Error(`${action} requires configured DEV Supabase Auth. ${status.message}`);
+    }
+    return new SupabaseAuthProviderAdapter();
+  }
+
+  async devSupabaseSignIn(body = {}) {
+    const adapter = this.supabaseAuthAdapterForAction("Sign in");
+    const email = normalizedAuthEmail(body.email || body.identity);
+    const payload = await adapter.signIn({
+      email,
+      password: body.password,
+    });
+    return sanitizedSupabaseAuthActionResult("sign-in", email, payload);
+  }
+
+  async devSupabaseCreateAccount(body = {}) {
+    const adapter = this.supabaseAuthAdapterForAction("Create account");
+    const email = normalizedAuthEmail(body.email || body.identity);
+    const payload = await adapter.createAccount({
+      email,
+      password: body.password,
+    });
+    return sanitizedSupabaseAuthActionResult("create-account", email, payload);
+  }
+
+  async devSupabasePasswordReset(body = {}, redirectTo = "") {
+    const adapter = this.supabaseAuthAdapterForAction("Password reset");
+    const email = normalizedAuthEmail(body.email || body.identity);
+    const payload = await adapter.requestPasswordReset({
+      email,
+      redirectTo,
+    });
+    return {
+      ...sanitizedSupabaseAuthActionResult("password-reset", email, payload),
+      message: "Supabase Auth password reset request was sent through the external provider. Product data remains Local DB.",
+      redirectToIncluded: Boolean(redirectTo),
+    };
+  }
+
   currentSession() {
     this.assertLocalDatabaseProvider("Reading current session");
+    const providerContract = this.providerContract();
+    const providerId = providerContract.activeProviders.authProviderId;
+    if (providerId !== LOCAL_AUTH_PROVIDER_ID) {
+      return guestSession(
+        this.currentMode(),
+        `Selected auth provider is ${providerId}. Supabase Auth does not create a Local DB product-data session in this DEV auth-only path.`,
+      );
+    }
     return this.localAuthSession("Reading current session");
   }
 
@@ -1966,6 +2087,28 @@ export function createLocalApiRouter() {
         }
         if (request.method === "POST" && parts[2] === "logout") {
           ok(response, dataSource.clearSessionUser());
+          return true;
+        }
+      }
+
+      if (parts[1] === "auth" && parts[2] === "dev" && parts[3] === "supabase") {
+        if (request.method === "GET" && parts[4] === "status") {
+          ok(response, dataSource.devSupabaseAuthStatus());
+          return true;
+        }
+        if (request.method === "POST" && parts[4] === "sign-in") {
+          const body = await readRequestJson(request);
+          ok(response, await dataSource.devSupabaseSignIn(body));
+          return true;
+        }
+        if (request.method === "POST" && parts[4] === "create-account") {
+          const body = await readRequestJson(request);
+          ok(response, await dataSource.devSupabaseCreateAccount(body));
+          return true;
+        }
+        if (request.method === "POST" && parts[4] === "password-reset") {
+          const body = await readRequestJson(request);
+          ok(response, await dataSource.devSupabasePasswordReset(body, `${requestUrl.origin}/account/password-reset.html`));
           return true;
         }
       }
