@@ -559,6 +559,9 @@ export function createPostgresConnectionClient({ env = process.env } = {}) {
     throw new Error("GAMEFOUNDRY_DATABASE_URL must include username and password.");
   }
   return {
+    async query(sql) {
+      return withConnection(config, (connection) => connection.query(sql));
+    },
     async requestTable(tableName, { body = null, method = "GET", query = "select=*" } = {}) {
       const normalizedMethod = String(method || "GET").toUpperCase();
       return withConnection(config, (connection) => {

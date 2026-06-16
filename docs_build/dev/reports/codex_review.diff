@@ -1,72 +1,13 @@
-diff --git a/docs_build/dev/reports/PR_26167_195-product-data-uses-database-url.md b/docs_build/dev/reports/PR_26167_195-product-data-uses-database-url.md
-new file mode 100644
-index 000000000..ee1b56ce1
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26167_195-product-data-uses-database-url.md
-@@ -0,0 +1,53 @@
-+# PR_26167_195-product-data-uses-database-url
-+
-+## Branch Validation
-+- PASS - Current branch is `main`.
-+- PASS - `docs_build/dev/PROJECT_INSTRUCTIONS.md` was read before changes.
-+
-+## Requirement Checklist
-+- PASS - Investigated the platform banner data path.
-+- PASS - Root cause: `SupabasePostgresProviderAdapter.requestTable()` was using `GAMEFOUNDRY_SUPABASE_URL/rest/v1` with the service-role key for product-data table reads/writes.
-+- PASS - Added a server-side direct PostgreSQL client that reads `GAMEFOUNDRY_DATABASE_URL`.
-+- PASS - Updated the product-data adapter so table reads/writes use the configured database client, not Supabase REST.
-+- PASS - `platform_settings` read/write now flows through `GAMEFOUNDRY_DATABASE_URL`.
-+- PASS - Supabase URL/keys remain in the Auth adapter path only.
-+- PASS - Runtime `.env` loading behavior was not changed.
-+- PASS - No local-db/mock-db/SQLite fallback was added.
-+- PASS - No DEV/UAT/PROD branching was added; environment-agnostic validation passed.
-+- PASS - No secrets were printed in validation output or this report.
-+- FAIL - Live local Postgres validation could not complete because nothing is listening on `127.0.0.1:5432`.
-+- FAIL - Saving a platform banner and verifying local `platform_settings` update could not complete until local Postgres is running.
-+- FAIL - Supabase-not-updated live evidence could not be completed through an actual banner save because the configured local database connection refused connections before any write.
-+
-+## Files Changed
-+- `src/dev-runtime/auth/provider-contract-stubs.mjs`
-+- `src/dev-runtime/persistence/postgres-connection-client.mjs`
-+- `tests/dev-runtime/ProductDataDatabaseUrl.test.mjs`
-+- `docs_build/dev/reports/environment_agnostic_browser_gate_report.md`
-+- `docs_build/dev/reports/PR_26167_195-product-data-uses-database-url.md`
-+
-+## Local Postgres Evidence
-+- PASS - `.env` contains `GAMEFOUNDRY_DATABASE_URL` pointing at host `127.0.0.1`, port `5432`, database `gamefoundry_dev`; username/password presence was verified without printing values.
-+- FAIL - Direct configured database read of `platform_settings` returned `ECONNREFUSED 127.0.0.1:5432`.
-+- FAIL - API-level `GET /api/platform-settings/banner` returned HTTP 500 with an `ECONNREFUSED` diagnostic from the configured database connection.
-+- BLOCKED - `POST /api/admin/platform-settings/banner` was not run because the read path already proved the configured database is unavailable.
-+
-+## Supabase-Not-Updated Evidence
-+- PASS - Static code evidence: `src/dev-runtime/auth/provider-contract-stubs.mjs` and `src/dev-runtime/persistence/postgres-connection-client.mjs` contain no `/rest/v1/` product-data path after the fix.
-+- PASS - Focused unit evidence: `tests/dev-runtime/ProductDataDatabaseUrl.test.mjs` verifies `platform_settings` calls `postgresClient.requestTable()` for POST and GET.
-+- BLOCKED - Live UAT before/after row comparison was not performed because this PR must not write product data through Supabase and the configured local database connection is unavailable.
-+
-+## Validation Notes
-+- PASS - `node --check src/dev-runtime/persistence/postgres-connection-client.mjs`
-+- PASS - `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
-+- PASS - `node --check tests/dev-runtime/ProductDataDatabaseUrl.test.mjs`
-+- PASS - `node --test tests/dev-runtime/ProductDataDatabaseUrl.test.mjs`
-+- PASS - `npm run validate:browser-env-agnostic`
-+- FAIL - Connection validation with `.env` local Postgres: `ECONNREFUSED 127.0.0.1:5432`.
-+- FAIL - Platform banner save/read local Postgres validation: blocked by local Postgres connection refusal.
-+- FAIL - Targeted platform banner live validation: blocked by local Postgres connection refusal.
-+- FAIL - Targeted Game Workspace create live validation: blocked by local Postgres connection refusal.
-+- SKIP - Full samples smoke was not run, per request.
-+
-+## Completion Status
-+- BLOCKED - PR is not complete because required live validation cannot pass until local Postgres is running on `127.0.0.1:5432` with the `gamefoundry_dev` schema available.
 diff --git a/docs_build/dev/reports/environment_agnostic_browser_gate_report.md b/docs_build/dev/reports/environment_agnostic_browser_gate_report.md
-index 12f1f200d..9c22b7b27 100644
+index 9c22b7b27..37a060c5e 100644
 --- a/docs_build/dev/reports/environment_agnostic_browser_gate_report.md
 +++ b/docs_build/dev/reports/environment_agnostic_browser_gate_report.md
 @@ -5,7 +5,7 @@ Status: PASS
  ## Scope
  - Scanned active browser/page/server/runtime roots: `account`, `admin`, `assets/theme-v2/js`, `toolbox`, `src/engine`, `src`, `scripts`, `docs_build/database`
  - Scanned active runtime example files: `.env.example`, `package.json`
--- Files scanned: 798
-+- Files scanned: 799
+-- Files scanned: 799
++- Files scanned: 801
  - Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `start_of_day`, `tests`, `tmp`.
  - Tests and validation scripts are excluded only from deployment-label branching failures; their non-branching mentions may still appear for review.
  
@@ -74,857 +15,654 @@ index 12f1f200d..9c22b7b27 100644
  - `docs_build/database/ddl/tags.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
  - `docs_build/database/ddl/tool-metadata.sql:1` - `-- Game Foundry Studio DEV database DDL`
  - `docs_build/database/ddl/tool-metadata.sql:4` - `-- Target DEV database: gamefoundry_dev`
--- ... 121 additional record(s) omitted from this report.
-+- ... 122 additional record(s) omitted from this report.
+-- ... 122 additional record(s) omitted from this report.
++- ... 132 additional record(s) omitted from this report.
  
  ## Result
  - PASS - Active app/server/DB code uses service contracts without deployment-label branching, account dependency leaks, product-data fallback, or user-facing implementation wording.
-diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
-index d54b7758b..9e31dc368 100644
---- a/src/dev-runtime/auth/provider-contract-stubs.mjs
-+++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
-@@ -1,4 +1,5 @@
- import { randomBytes } from "node:crypto";
-+import { createPostgresConnectionClient } from "../persistence/postgres-connection-client.mjs";
- import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
- 
- export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
-@@ -54,11 +55,9 @@ const SERVER_ONLY_SUPABASE_SECRET_KEYS = Object.freeze([
-   "GAMEFOUNDRY_DATABASE_URL",
- ]);
- const SUPABASE_POSTGRES_CONFIG_KEYS = Object.freeze([
--  "GAMEFOUNDRY_SUPABASE_URL",
--  "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
-+  "GAMEFOUNDRY_DATABASE_URL",
- ]);
- const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
--  ...SUPABASE_POSTGRES_CONFIG_KEYS,
-   "GAMEFOUNDRY_DATABASE_URL",
- ]);
- export const SUPABASE_POSTGRES_IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
-@@ -140,8 +139,8 @@ export function supabaseAuthDiagnostic(env = process.env) {
- export function supabasePostgresDiagnostic(env = process.env) {
-   const missing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
-   return missing.length
--    ? "Supabase Postgres connection is not configured. Add the Supabase URL and server-only database credentials on the server; server-only details are not exposed through browser APIs."
--    : "Supabase Postgres connection adapter is configured for the fixed runtime path.";
-+    ? "Configured database connection is not configured. Add GAMEFOUNDRY_DATABASE_URL on the server; server-only details are not exposed through browser APIs."
-+    : "Configured database connection adapter is ready for the fixed runtime path.";
- }
- 
- function supabaseUrl(env) {
-@@ -175,16 +174,6 @@ function authAdminHeaders(env) {
-   };
- }
- 
--function postgresHeaders(env, prefer = "return=representation") {
--  const serviceRoleKey = supabaseServiceRoleKey(env);
--  return {
--    apikey: serviceRoleKey,
--    authorization: `Bearer ${serviceRoleKey}`,
--    "content-type": "application/json",
--    prefer,
--  };
--}
--
- function requireString(value, label) {
-   const normalized = String(value || "").trim();
-   if (!normalized) {
-@@ -281,7 +270,7 @@ function supabaseMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMiss
-     warnings.push(`Supabase Auth is not configured. Missing browser-safe environment variables: ${supabaseAuthMissing.join(", ")}.`);
-   }
-   if (supabasePostgresMissing.length) {
--    warnings.push("Supabase Postgres is not configured. Missing browser-safe URL or server-only credentials are required; server-only details are not exposed through browser APIs.");
-+    warnings.push("Configured database connection is not configured. GAMEFOUNDRY_DATABASE_URL is required on the server; server-only details are not exposed through browser APIs.");
-   }
-   return warnings;
- }
-@@ -327,7 +316,7 @@ function createSupabasePreflight({
-   supabasePostgresReady,
-   supabaseUrlReady,
-   supabaseAnonKeyReady,
--  supabaseServiceRoleReady,
-+  databaseUrlReady,
- }) {
-   const checks = [
-     {
-@@ -357,7 +346,7 @@ function createSupabasePreflight({
-       }),
-       summary: supabaseUrlReady
-         ? "Supabase URL is configured."
--        : "Supabase URL is required for the fixed Supabase Auth and Supabase Postgres path.",
-+        : "Supabase URL is required for Supabase Auth.",
-       visibility: "browser-safe",
-     },
-     {
-@@ -373,15 +362,15 @@ function createSupabasePreflight({
-       visibility: "browser-safe",
-     },
-     {
--      id: "supabase-server-only-credential",
--      label: "Supabase server-only credential",
-+      id: "database-url",
-+      label: "Database connection URL",
-       status: preflightStatus({
-         active: supabasePostgresActive,
--        ready: supabaseServiceRoleReady,
-+        ready: databaseUrlReady,
-       }),
--      summary: supabaseServiceRoleReady
--        ? "Server-only Supabase database credential is configured on the server."
--        : "Server-only Supabase database credential is required for Supabase Postgres.",
-+      summary: databaseUrlReady
-+        ? "Server-only database connection URL is configured on the server."
-+        : "GAMEFOUNDRY_DATABASE_URL is required for product data.",
-       visibility: "server-only",
-     },
-     {
-@@ -432,10 +421,10 @@ export function createSupabasePostgresReadiness(env = process.env) {
-   const siteSetupReady = siteSetupMissing.length === 0;
-   const blockers = [];
-   if (!configured) {
--    blockers.push("Add Supabase URL and server-only credentials for Supabase Postgres.");
-+    blockers.push("Add GAMEFOUNDRY_DATABASE_URL for the configured database connection.");
-   }
-   if (!siteSetupReady) {
--    blockers.push("Add server-only direct SQL configuration before Owner Operations can run Supabase setup.");
-+    blockers.push("Add server-only direct database configuration before Owner Operations can run setup.");
+diff --git a/package.json b/package.json
+index 91b97c8e5..d73695838 100644
+--- a/package.json
++++ b/package.json
+@@ -23,7 +23,9 @@
+     "test:lane:integration": "node ./scripts/run-targeted-test-lanes.mjs --lane integration",
+     "test:lane:engine-src": "node ./scripts/run-targeted-test-lanes.mjs --lane engine-src",
+     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
++    "dev:local-postgres": "node ./scripts/start-local-postgres.mjs",
+     "dev:local-api": "node --use-system-ca ./scripts/start-local-api-server.mjs",
++    "validate:local-postgres-runtime": "node --use-system-ca ./scripts/validate-local-postgres-runtime.mjs",
+     "validate:supabase-dev": "node --use-system-ca ./scripts/validate-supabase-dev.mjs",
+     "validate:browser-env-agnostic": "node ./scripts/validate-browser-env-agnostic.mjs",
+     "cleanup:supabase-dev-auth-test-users": "node --use-system-ca ./scripts/cleanup-supabase-dev-auth-test-users.mjs",
+diff --git a/src/dev-runtime/persistence/postgres-connection-client.mjs b/src/dev-runtime/persistence/postgres-connection-client.mjs
+index 33725bc34..fdaf6104e 100644
+--- a/src/dev-runtime/persistence/postgres-connection-client.mjs
++++ b/src/dev-runtime/persistence/postgres-connection-client.mjs
+@@ -559,6 +559,9 @@ export function createPostgresConnectionClient({ env = process.env } = {}) {
+     throw new Error("GAMEFOUNDRY_DATABASE_URL must include username and password.");
    }
    return {
-     configured,
-@@ -670,10 +659,10 @@ export class SupabaseAuthProviderAdapter {
- export const SupabaseAuthProviderStub = SupabaseAuthProviderAdapter;
++    async query(sql) {
++      return withConnection(config, (connection) => connection.query(sql));
++    },
+     async requestTable(tableName, { body = null, method = "GET", query = "select=*" } = {}) {
+       const normalizedMethod = String(method || "GET").toUpperCase();
+       return withConnection(config, (connection) => {
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index c506cd908..32fd5e7ea 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -109,6 +109,13 @@ const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
+ });
+ const IDENTITY_TABLES = ["users", "roles", "user_roles"];
+ const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
++const TOOL_SNAPSHOT_PERSISTENCE_EXCLUDED_TABLES = new Set([
++  "platform_settings",
++  "support_categories",
++  "toolbox_tool_metadata",
++  "toolbox_tool_planning",
++  "toolbox_votes",
++]);
+ const TOOLBOX_PLANNING_FIELDS = Object.freeze([
+   "progressChecklist",
+   "readiness",
+@@ -1048,7 +1055,9 @@ function productTableNamesForSnapshot() {
  
- export class SupabasePostgresProviderAdapter {
--  constructor({ env = process.env, fetchImpl = globalThis.fetch, keyFactory = createRuntimeUlid } = {}) {
-+  constructor({ env = process.env, keyFactory = createRuntimeUlid, postgresClient = null } = {}) {
-     this.env = env;
--    this.fetchImpl = fetchImpl;
-     this.keyFactory = keyFactory;
-+    this.postgresClient = postgresClient;
-     this.providerId = SUPABASE_POSTGRES_PROVIDER_ID;
-   }
- 
-@@ -690,9 +679,10 @@ export class SupabasePostgresProviderAdapter {
-     if (!readiness.configured) {
-       throw new Error(this.diagnostic());
-     }
--    if (typeof this.fetchImpl !== "function") {
--      throw new Error("Supabase Postgres connection requires a server fetch implementation.");
--    }
-+  }
-+
-+  databaseClient() {
-+    return this.postgresClient || createPostgresConnectionClient({ env: this.env });
-   }
- 
-   createRecordKey() {
-@@ -752,17 +742,16 @@ export class SupabasePostgresProviderAdapter {
-   async requestTable(tableName, { body = null, method = "GET", prefer = "return=representation", query = "select=*" } = {}) {
-     this.assertConfigured();
-     const table = requireTableName(tableName);
--    const response = await this.fetchImpl(`${supabaseUrl(this.env)}/rest/v1/${encodeURIComponent(table)}?${query}`, {
--      body: body === null ? undefined : JSON.stringify(body),
--      headers: postgresHeaders(this.env, prefer),
--      method,
--    });
--    const payload = await readResponseJson(response);
--    if (!response.ok) {
--      const message = payload?.message || payload?.hint || "No Supabase Postgres error message returned.";
--      throw new Error(`Supabase Postgres ${table} request failed with HTTP ${response.status}: ${message}`);
-+    try {
-+      return await this.databaseClient().requestTable(table, {
-+        body,
-+        method,
-+        prefer,
-+        query,
-+      });
-+    } catch (error) {
-+      throw new Error(`Configured database ${table} request failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`);
-     }
--    return payload;
-   }
- 
-   upsertTable(tableName, rows) {
-@@ -1059,7 +1048,7 @@ export function createProviderContractSnapshot(env = process.env) {
-   const supabasePostgresReady = supabasePostgresReadiness.configured;
-   const supabaseUrlReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_URL"));
-   const supabaseAnonKeyReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_ANON_KEY"));
--  const supabaseServiceRoleReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY"));
-+  const databaseUrlReady = Boolean(envValue(env, "GAMEFOUNDRY_DATABASE_URL"));
-   const providerFailures = [
-     providerFailure({
-       configDiagnostic: supabaseAuthDiagnostic(env),
-@@ -1084,7 +1073,7 @@ export function createProviderContractSnapshot(env = process.env) {
-     supabasePostgresActive: true,
-     supabasePostgresReadiness,
-     supabasePostgresReady,
--    supabaseServiceRoleReady,
-+    databaseUrlReady,
-     supabaseUrlReady,
-   });
- 
-@@ -1186,7 +1175,7 @@ export function createProviderContractSnapshot(env = process.env) {
-       configured: supabasePostgresMissing.length === 0,
-       adapter: {
-         activeByDefault: true,
--        implementation: "config-gated Supabase Postgres REST adapter",
-+        implementation: "config-gated direct Postgres adapter",
-         keyGenerationOwner: "server-api",
-         staticUlidsAllowedOnlyForDevSeedUsers: true,
-       },
-diff --git a/src/dev-runtime/persistence/postgres-connection-client.mjs b/src/dev-runtime/persistence/postgres-connection-client.mjs
+ function productTablesFromSnapshot(snapshot) {
+   const tables = snapshot?.tables && typeof snapshot.tables === "object" ? snapshot.tables : {};
+-  return Object.fromEntries(productTableNamesForSnapshot().map((tableName) => [
++  const persistenceTableNames = productTableNamesForSnapshot()
++    .filter((tableName) => !TOOL_SNAPSHOT_PERSISTENCE_EXCLUDED_TABLES.has(tableName));
++  return Object.fromEntries(persistenceTableNames.map((tableName) => [
+     tableName,
+     Array.isArray(tables[tableName]) ? tables[tableName] : [],
+   ]));
+diff --git a/docs_build/dev/reports/PR_26167_196-local-postgres-runtime-unblock.md b/docs_build/dev/reports/PR_26167_196-local-postgres-runtime-unblock.md
 new file mode 100644
-index 000000000..33725bc34
+index 000000000..0c32bdf2a
 --- /dev/null
-+++ b/src/dev-runtime/persistence/postgres-connection-client.mjs
-@@ -0,0 +1,581 @@
-+import crypto from "node:crypto";
-+import net from "node:net";
-+import tls from "node:tls";
++++ b/docs_build/dev/reports/PR_26167_196-local-postgres-runtime-unblock.md
+@@ -0,0 +1,68 @@
++# PR_26167_196-local-postgres-runtime-unblock
 +
-+const POSTGRES_PROTOCOL_VERSION = 196608;
-+const POSTGRES_SSL_REQUEST_CODE = 80877103;
-+const DEFAULT_TIMEOUT_MS = 15000;
-+const LOCAL_HOSTS = new Set(["127.0.0.1", "::1", "localhost"]);
-+const BOOL_OID = 16;
-+const INT_OIDS = new Set([20, 21, 23]);
-+const FLOAT_OIDS = new Set([700, 701, 1700]);
-+const JSON_OIDS = new Set([114, 3802]);
++Status: BLOCKED
 +
-+function int32(value) {
-+  const buffer = Buffer.alloc(4);
-+  buffer.writeInt32BE(value, 0);
-+  return buffer;
-+}
++## Branch Validation
++- PASS - Current branch is `main`.
++- PASS - `docs_build/dev/PROJECT_INSTRUCTIONS.md` was read before implementation.
 +
-+function pgCString(value) {
-+  return Buffer.from(`${value}\0`, "utf8");
-+}
++## Summary
++- Added `npm run dev:local-postgres` to start a Docker-backed local Postgres container for `postgresql://postgres:postgres@127.0.0.1:5432/gamefoundry_dev`.
++- Added `npm run validate:local-postgres-runtime` to load only `.env`, apply grouped DDL, seed server-side identity rows, save/read platform banner through the API, assert no Supabase product-data REST call, and exercise Game Workspace create/getActiveGame.
++- Extended the direct Postgres client with a raw query method for setup/validation SQL.
++- Kept platform settings out of tool snapshot persistence so Game Workspace saves do not overwrite banner-owned rows.
 +
-+function parseDatabaseUrl(env) {
-+  const value = String(env?.GAMEFOUNDRY_DATABASE_URL || "").trim();
-+  if (!value) {
-+    throw new Error("Configured database connection is not configured. Add GAMEFOUNDRY_DATABASE_URL on the server.");
++## Requirement Checklist
++- PASS - Main branch only: confirmed `main`.
++- PASS - Project instructions read first.
++- PASS - Continued PR_26167_195 direct database URL product-data path.
++- PASS - Added smallest local Postgres setup/run path: `npm run dev:local-postgres`.
++- PASS - Did not reintroduce SQLite, mock-db, local-db, provider switching, or Supabase REST product-data writes.
++- PASS - Supabase URL/keys remain auth-only for runtime Auth checks; product-data adapter uses `GAMEFOUNDRY_DATABASE_URL`.
++- PASS - `platform_settings` banner API path remains owned by the configured database adapter.
++- PASS - Game Workspace active-game browser logic already avoids `undefined.some`; server still rejects malformed `getActiveGame` payloads visibly.
++- PASS - Runtime startup still loads only `.env`.
++- PASS - No environment branching gate passed for active code.
++- BLOCKED - Live local Postgres connection validation could not complete because nothing accepted connections at `127.0.0.1:5432`.
++- BLOCKED - Live local banner save/read and Game Workspace create validation did not run because the database connection failed first.
++
++## Local Postgres Evidence
++- Added helper: `npm run dev:local-postgres`.
++- Helper uses Docker container `gamefoundry-local-postgres`, image `postgres:16`, database `gamefoundry_dev`, and host port `127.0.0.1:5432`.
++- Docker Desktop launch was requested, but Docker CLI readiness calls hung and timed out.
++- `Test-NetConnection 127.0.0.1 -Port 5432`: `TcpTestSucceeded=False`.
++- `npm run validate:local-postgres-runtime`: BLOCKED with `connect ECONNREFUSED 127.0.0.1:5432`.
++
++## Banner Evidence
++- Static/unit evidence: `tests/dev-runtime/ProductDataDatabaseUrl.test.mjs` passed and proves `platform_settings` reads/writes call the configured Postgres client, not Supabase REST.
++- Runtime guard added: `scripts/validate-local-postgres-runtime.mjs` asserts `Supabase platform_settings REST calls=0` after a banner save/read.
++- BLOCKED - The live banner save/read path did not reach execution because local Postgres was unavailable.
++
++## Supabase Not Updated Evidence
++- PASS - Product-data adapter no longer uses Supabase REST table writes.
++- PASS - Local runtime validation script routes Supabase to an Auth-health-only fake endpoint and fails if `/rest/v1/platform_settings` is called.
++- BLOCKED - Live zero-call assertion was not reached because local Postgres refused the connection before API validation began.
++
++## Game Workspace Evidence
++- PASS - `toolbox/game-workspace/game-workspace.js` uses `activeGameMembers(activeGame)` before `.some()`, so missing/malformed active game data does not throw `undefined.some`.
++- PASS - Server repository method validation still rejects malformed `getActiveGame` responses with a visible error.
++- PASS - Tool snapshot persistence now excludes global/platform tables including `platform_settings`.
++- BLOCKED - Live Game Workspace create/getActiveGame validation did not run because local Postgres was unavailable.
++
++## Validation Lane Report
++- PASS - `node --check scripts/start-local-postgres.mjs`.
++- PASS - `node --check scripts/validate-local-postgres-runtime.mjs`.
++- PASS - `node --check src/dev-runtime/persistence/postgres-connection-client.mjs`.
++- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`.
++- PASS - `node --test tests/dev-runtime/ProductDataDatabaseUrl.test.mjs`.
++- PASS - `npm run validate:browser-env-agnostic`.
++- PASS - `git diff --check`.
++- BLOCKED - `npm run dev:local-postgres` did not complete because Docker CLI readiness calls timed out.
++- BLOCKED - `npm run validate:local-postgres-runtime` failed with `ECONNREFUSED 127.0.0.1:5432`.
++- SKIP - Full samples smoke intentionally not run; not in scope.
++
++## Manual Validation Notes
++- To unblock live validation, start Docker Desktop until `docker info` returns promptly, then run `npm run dev:local-postgres`.
++- With Postgres listening, run `npm run validate:local-postgres-runtime`.
++- The validation script restores banner rows and deletes its `PR196 Runtime Game <pid>` row after execution.
++- No secrets were printed in this report.
+diff --git a/scripts/start-local-postgres.mjs b/scripts/start-local-postgres.mjs
+new file mode 100644
+index 000000000..583e85343
+--- /dev/null
++++ b/scripts/start-local-postgres.mjs
+@@ -0,0 +1,119 @@
++#!/usr/bin/env node
++import { spawnSync } from "node:child_process";
++import process from "node:process";
++
++const CONTAINER_NAME = "gamefoundry-local-postgres";
++const IMAGE_NAME = "postgres:16";
++const VOLUME_NAME = "gamefoundry-local-postgres-data";
++const LOCAL_DATABASE_URL = "postgresql://postgres:postgres@127.0.0.1:5432/gamefoundry_dev";
++const READY_ATTEMPTS = 30;
++const READY_WAIT_MS = 1000;
++
++function runDocker(args, { allowFailure = false } = {}) {
++  const result = spawnSync("docker", args, {
++    encoding: "utf8",
++    windowsHide: true,
++  });
++  if (!allowFailure && result.status !== 0) {
++    const message = [result.stderr, result.stdout].filter(Boolean).join("\n").trim();
++    throw new Error(message || `docker ${args.join(" ")} failed.`);
 +  }
-+  const databaseUrl = new URL(value);
-+  if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
-+    throw new Error("GAMEFOUNDRY_DATABASE_URL must use postgres:// or postgresql://.");
-+  }
-+  const host = databaseUrl.hostname;
-+  const sslMode = String(databaseUrl.searchParams.get("sslmode") || (LOCAL_HOSTS.has(host) ? "disable" : "require")).toLowerCase();
 +  return {
-+    database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
-+    host,
-+    password: decodeURIComponent(databaseUrl.password || ""),
-+    port: Number(databaseUrl.port || 5432),
-+    rejectUnauthorized: sslMode === "verify-ca" || sslMode === "verify-full",
-+    sslMode,
-+    user: decodeURIComponent(databaseUrl.username || ""),
++    ok: result.status === 0,
++    output: String(result.stdout || "").trim(),
++    error: String(result.stderr || "").trim(),
 +  };
 +}
 +
-+function createReader(socket) {
-+  let buffer = Buffer.alloc(0);
-+  let closedError = null;
-+  const waiters = [];
++function sleep(ms) {
++  return new Promise((resolve) => setTimeout(resolve, ms));
++}
 +
-+  function flush() {
-+    while (waiters.length) {
-+      const waiter = waiters[0];
-+      if (closedError) {
-+        waiters.shift();
-+        clearTimeout(waiter.timeout);
-+        waiter.reject(closedError);
-+        continue;
-+      }
-+      if (buffer.length < waiter.length) {
-+        break;
-+      }
-+      waiters.shift();
-+      clearTimeout(waiter.timeout);
-+      const chunk = buffer.subarray(0, waiter.length);
-+      buffer = buffer.subarray(waiter.length);
-+      waiter.resolve(chunk);
-+    }
++function assertDockerReady() {
++  const version = runDocker(["info", "--format", "{{.ServerVersion}}"], { allowFailure: true });
++  if (!version.ok || !version.output) {
++    throw new Error("Docker daemon is not reachable. Start Docker Desktop, then rerun npm run dev:local-postgres.");
 +  }
-+
-+  socket.on("data", (chunk) => {
-+    buffer = Buffer.concat([buffer, chunk]);
-+    flush();
-+  });
-+  socket.once("error", (error) => {
-+    closedError = error;
-+    flush();
-+  });
-+  socket.once("close", () => {
-+    if (!closedError) {
-+      closedError = new Error("Connection closed before the expected PostgreSQL response.");
-+      flush();
-+    }
-+  });
-+
-+  return {
-+    read(length, timeoutMs = DEFAULT_TIMEOUT_MS) {
-+      if (buffer.length >= length) {
-+        const chunk = buffer.subarray(0, length);
-+        buffer = buffer.subarray(length);
-+        return Promise.resolve(chunk);
-+      }
-+      if (closedError) {
-+        return Promise.reject(closedError);
-+      }
-+      return new Promise((resolve, reject) => {
-+        const timeout = setTimeout(() => {
-+          const index = waiters.findIndex((waiter) => waiter.resolve === resolve);
-+          if (index !== -1) {
-+            waiters.splice(index, 1);
-+          }
-+          reject(new Error("Timed out waiting for PostgreSQL response."));
-+        }, timeoutMs);
-+        waiters.push({
-+          length,
-+          reject,
-+          resolve,
-+          timeout,
-+        });
-+        flush();
-+      });
-+    },
-+  };
++  return version.output;
 +}
 +
-+async function readPgMessage(reader) {
-+  const type = (await reader.read(1)).toString("utf8");
-+  const length = (await reader.read(4)).readInt32BE(0);
-+  const payload = length > 4 ? await reader.read(length - 4) : Buffer.alloc(0);
-+  return {
-+    payload,
-+    type,
-+  };
++function containerName() {
++  return runDocker([
++    "ps",
++    "-a",
++    "--filter",
++    `name=^/${CONTAINER_NAME}$`,
++    "--format",
++    "{{.Names}}",
++  ], { allowFailure: true }).output;
 +}
 +
-+function pgStartupMessage({ database, user }) {
-+  const params = Buffer.concat([
-+    pgCString("user"),
-+    pgCString(user),
-+    pgCString("database"),
-+    pgCString(database),
-+    pgCString("client_encoding"),
-+    pgCString("UTF8"),
-+    pgCString("application_name"),
-+    pgCString("gamefoundry-runtime-product-data"),
-+    Buffer.from([0]),
++function runningContainerName() {
++  return runDocker([
++    "ps",
++    "--filter",
++    `name=^/${CONTAINER_NAME}$`,
++    "--format",
++    "{{.Names}}",
++  ], { allowFailure: true }).output;
++}
++
++function ensureContainer() {
++  if (runningContainerName() === CONTAINER_NAME) {
++    return "already-running";
++  }
++  if (containerName() === CONTAINER_NAME) {
++    runDocker(["start", CONTAINER_NAME]);
++    return "started-existing";
++  }
++  runDocker([
++    "run",
++    "--detach",
++    "--name",
++    CONTAINER_NAME,
++    "--env",
++    "POSTGRES_PASSWORD=postgres",
++    "--env",
++    "POSTGRES_DB=gamefoundry_dev",
++    "--publish",
++    "127.0.0.1:5432:5432",
++    "--volume",
++    `${VOLUME_NAME}:/var/lib/postgresql/data`,
++    IMAGE_NAME,
 +  ]);
-+  const payload = Buffer.concat([int32(POSTGRES_PROTOCOL_VERSION), params]);
-+  return Buffer.concat([int32(payload.length + 4), payload]);
++  return "created";
 +}
 +
-+function pgPasswordMessage(content) {
-+  const payload = Buffer.isBuffer(content) ? content : pgCString(content);
-+  return Buffer.concat([Buffer.from("p"), int32(payload.length + 4), payload]);
-+}
-+
-+function pgQueryMessage(sql) {
-+  const payload = pgCString(sql);
-+  return Buffer.concat([Buffer.from("Q"), int32(payload.length + 4), payload]);
-+}
-+
-+function parseCStringList(payload, offset = 0) {
-+  const values = [];
-+  let start = offset;
-+  for (let index = offset; index < payload.length; index += 1) {
-+    if (payload[index] !== 0) {
-+      continue;
++async function waitForReady() {
++  for (let attempt = 1; attempt <= READY_ATTEMPTS; attempt += 1) {
++    const ready = runDocker([
++      "exec",
++      CONTAINER_NAME,
++      "pg_isready",
++      "-h",
++      "127.0.0.1",
++      "-U",
++      "postgres",
++      "-d",
++      "gamefoundry_dev",
++    ], { allowFailure: true });
++    if (ready.ok && ready.output.includes("accepting connections")) {
++      return attempt;
 +    }
-+    if (index === start) {
-+      break;
++    await sleep(READY_WAIT_MS);
++  }
++  throw new Error(`PostgreSQL did not become ready after ${READY_ATTEMPTS} second(s).`);
++}
++
++async function main() {
++  const dockerVersion = assertDockerReady();
++  const state = ensureContainer();
++  const readyAttempt = await waitForReady();
++
++  console.log(`PASS - Docker daemon reachable (${dockerVersion}).`);
++  console.log(`PASS - Local Postgres container ${CONTAINER_NAME} ${state}.`);
++  console.log(`PASS - PostgreSQL accepted connections after readiness attempt ${readyAttempt}.`);
++  console.log(`PASS - Runtime database URL: ${LOCAL_DATABASE_URL}`);
++}
++
++await main();
+diff --git a/scripts/validate-local-postgres-runtime.mjs b/scripts/validate-local-postgres-runtime.mjs
+new file mode 100644
+index 000000000..6bd2df084
+--- /dev/null
++++ b/scripts/validate-local-postgres-runtime.mjs
+@@ -0,0 +1,384 @@
++#!/usr/bin/env node
++import fs from "node:fs";
++import http from "node:http";
++import path from "node:path";
++import process from "node:process";
++import { createProviderContractSnapshot, SupabasePostgresProviderAdapter } from "../src/dev-runtime/auth/provider-contract-stubs.mjs";
++import { createPostgresConnectionClient } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
++import { createLocalApiRouter } from "../src/dev-runtime/server/local-api-router.mjs";
++import { createServerSeedTables } from "../src/dev-runtime/seed/server-seed-loader.mjs";
++import { SEED_DB_KEYS } from "../src/dev-runtime/seed/seed-db-keys.mjs";
++
++const RUNTIME_ENV_FILE = ".env";
++const EXPECTED_DATABASE_URL = Object.freeze({
++  database: "gamefoundry_dev",
++  host: "127.0.0.1",
++  port: "5432",
++  protocol: "postgresql:",
++  user: "postgres",
++});
++const DDL_FILES = Object.freeze([
++  "docs_build/database/ddl/account.sql",
++  "docs_build/database/ddl/admin.sql",
++  "docs_build/database/ddl/game-workspace.sql",
++  "docs_build/database/ddl/asset.sql",
++  "docs_build/database/ddl/objects.sql",
++  "docs_build/database/ddl/controls.sql",
++  "docs_build/database/ddl/game-design.sql",
++  "docs_build/database/ddl/game-configuration.sql",
++  "docs_build/database/ddl/game-journey.sql",
++  "docs_build/database/ddl/palette.sql",
++  "docs_build/database/ddl/tags.sql",
++  "docs_build/database/ddl/tool-metadata.sql",
++  "docs_build/database/ddl/tool-planning.sql",
++  "docs_build/database/ddl/toolbox-votes.sql",
++  "docs_build/database/ddl/support-tickets.sql",
++]);
++const BANNER_SETTING_KEYS = Object.freeze([
++  "platform.banner.enabled",
++  "platform.banner.message",
++  "platform.banner.tone",
++]);
++const GAME_NAME = `PR196 Runtime Game ${process.pid}`;
++
++function parseEnvValue(value) {
++  const trimmed = String(value || "").trim();
++  const quote = trimmed[0];
++  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
++    return trimmed.slice(1, -1);
++  }
++  const commentIndex = trimmed.indexOf(" #");
++  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
++}
++
++function loadRuntimeEnv() {
++  const envPath = path.resolve(process.cwd(), RUNTIME_ENV_FILE);
++  if (!fs.existsSync(envPath)) {
++    throw new Error(`${RUNTIME_ENV_FILE} is required for runtime validation. Runtime startup does not auto-load copy-source env files.`);
++  }
++  const loadedKeys = [];
++  fs.readFileSync(envPath, "utf8").split(/\r?\n/).forEach((line) => {
++    const trimmed = line.trim();
++    if (!trimmed || trimmed.startsWith("#")) {
++      return;
 +    }
-+    values.push(payload.subarray(start, index).toString("utf8"));
-+    start = index + 1;
-+  }
-+  return values;
-+}
-+
-+function parsePgError(payload) {
-+  const fields = {};
-+  let index = 0;
-+  while (index < payload.length && payload[index] !== 0) {
-+    const code = String.fromCharCode(payload[index]);
-+    index += 1;
-+    const end = payload.indexOf(0, index);
-+    if (end === -1) {
-+      break;
++    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
++    const separatorIndex = normalized.indexOf("=");
++    if (separatorIndex <= 0) {
++      return;
 +    }
-+    fields[code] = payload.subarray(index, end).toString("utf8");
-+    index = end + 1;
-+  }
-+  return fields.M || fields.C || "PostgreSQL returned an error response.";
-+}
-+
-+function md5PostgresPassword(password, user, salt) {
-+  const inner = crypto.createHash("md5").update(password + user).digest("hex");
-+  return `md5${crypto.createHash("md5").update(Buffer.concat([Buffer.from(inner), salt])).digest("hex")}`;
-+}
-+
-+function saslName(value) {
-+  return String(value).replace(/=/g, "=3D").replace(/,/g, "=2C");
-+}
-+
-+function xorBuffers(left, right) {
-+  const output = Buffer.alloc(left.length);
-+  for (let index = 0; index < left.length; index += 1) {
-+    output[index] = left[index] ^ right[index];
-+  }
-+  return output;
-+}
-+
-+function parseScramAttributes(message) {
-+  const attributes = new Map();
-+  message.split(",").forEach((part) => {
-+    const key = part.slice(0, 1);
-+    attributes.set(key, part.slice(2));
++    const key = normalized.slice(0, separatorIndex).trim();
++    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
++      return;
++    }
++    process.env[key] = parseEnvValue(normalized.slice(separatorIndex + 1));
++    loadedKeys.push(key);
 +  });
-+  return attributes;
-+}
-+
-+function createScramClient(user, password) {
-+  const nonce = crypto.randomBytes(18).toString("base64").replace(/=+$/u, "");
-+  const clientFirstBare = `n=${saslName(user)},r=${nonce}`;
-+  const clientFirstMessage = `n,,${clientFirstBare}`;
-+  let expectedServerSignature = "";
-+
 +  return {
-+    clientFirstMessage,
-+    createFinalMessage(serverFirstMessage) {
-+      const attributes = parseScramAttributes(serverFirstMessage);
-+      const serverNonce = attributes.get("r") || "";
-+      const salt = Buffer.from(attributes.get("s") || "", "base64");
-+      const iterations = Number(attributes.get("i") || 0);
-+      if (!serverNonce.startsWith(nonce) || !salt.length || !iterations) {
-+        throw new Error("PostgreSQL SCRAM authentication returned an invalid challenge.");
-+      }
-+      const clientFinalWithoutProof = `c=${Buffer.from("n,,").toString("base64")},r=${serverNonce}`;
-+      const authMessage = `${clientFirstBare},${serverFirstMessage},${clientFinalWithoutProof}`;
-+      const saltedPassword = crypto.pbkdf2Sync(password, salt, iterations, 32, "sha256");
-+      const clientKey = crypto.createHmac("sha256", saltedPassword).update("Client Key").digest();
-+      const storedKey = crypto.createHash("sha256").update(clientKey).digest();
-+      const clientSignature = crypto.createHmac("sha256", storedKey).update(authMessage).digest();
-+      const clientProof = xorBuffers(clientKey, clientSignature).toString("base64");
-+      const serverKey = crypto.createHmac("sha256", saltedPassword).update("Server Key").digest();
-+      expectedServerSignature = crypto.createHmac("sha256", serverKey).update(authMessage).digest("base64");
-+      return `${clientFinalWithoutProof},p=${clientProof}`;
-+    },
-+    verifyServerFinal(serverFinalMessage) {
-+      const attributes = parseScramAttributes(serverFinalMessage);
-+      const signature = attributes.get("v");
-+      if (expectedServerSignature && signature && signature !== expectedServerSignature) {
-+        throw new Error("PostgreSQL SCRAM server signature did not match.");
-+      }
-+    },
++    loadedKeys: loadedKeys.sort(),
++    path: envPath,
 +  };
 +}
 +
-+async function openTcpSocket({ host, port }) {
-+  const socket = net.connect({
-+    host,
-+    port,
-+    timeout: DEFAULT_TIMEOUT_MS,
-+  });
-+  await new Promise((resolve, reject) => {
-+    socket.once("connect", resolve);
-+    socket.once("timeout", () => {
-+      socket.destroy();
-+      reject(new Error("PostgreSQL TCP connection timed out."));
-+    });
-+    socket.once("error", reject);
-+  });
-+  return socket;
-+}
-+
-+async function negotiateSocket(config) {
-+  const socket = await openTcpSocket(config);
-+  if (config.sslMode === "disable") {
-+    return socket;
-+  }
-+
-+  socket.write(Buffer.concat([int32(8), int32(POSTGRES_SSL_REQUEST_CODE)]));
-+  const sslResponse = await new Promise((resolve, reject) => {
-+    socket.once("data", (chunk) => resolve(chunk.subarray(0, 1).toString("utf8")));
-+    socket.once("error", reject);
-+    socket.once("timeout", () => {
-+      socket.destroy();
-+      reject(new Error("Timed out waiting for PostgreSQL SSL response."));
-+    });
-+  });
-+
-+  if (sslResponse !== "S") {
-+    if (config.sslMode === "prefer") {
-+      return socket;
-+    }
-+    socket.destroy();
-+    throw new Error("PostgreSQL server did not accept TLS negotiation.");
-+  }
-+
-+  return new Promise((resolve, reject) => {
-+    const secureSocket = tls.connect({
-+      rejectUnauthorized: config.rejectUnauthorized,
-+      servername: config.host,
-+      socket,
-+    });
-+    secureSocket.once("secureConnect", () => resolve(secureSocket));
-+    secureSocket.once("error", reject);
-+  });
-+}
-+
-+function parseFieldDescription(payload, offset) {
-+  const nameEnd = payload.indexOf(0, offset);
-+  const name = payload.subarray(offset, nameEnd).toString("utf8");
-+  const typeOid = payload.readInt32BE(nameEnd + 7);
-+  return {
-+    name,
-+    nextOffset: nameEnd + 19,
-+    typeOid,
-+  };
-+}
-+
-+function parseRowDescription(payload) {
-+  const count = payload.readInt16BE(0);
-+  const fields = [];
-+  let offset = 2;
-+  for (let index = 0; index < count; index += 1) {
-+    const field = parseFieldDescription(payload, offset);
-+    fields.push({
-+      name: field.name,
-+      typeOid: field.typeOid,
-+    });
-+    offset = field.nextOffset;
-+  }
-+  return fields;
-+}
-+
-+function parsePgValue(value, typeOid) {
-+  if (value === null) {
-+    return null;
-+  }
-+  if (typeOid === BOOL_OID) {
-+    return value === "t";
-+  }
-+  if (INT_OIDS.has(typeOid)) {
-+    return Number(value);
-+  }
-+  if (FLOAT_OIDS.has(typeOid)) {
-+    return Number(value);
-+  }
-+  if (JSON_OIDS.has(typeOid)) {
-+    return JSON.parse(value);
++function requireEnv(key) {
++  const value = String(process.env[key] || "").trim();
++  if (!value) {
++    throw new Error(`${key} is required for local Postgres runtime validation.`);
 +  }
 +  return value;
 +}
 +
-+function parseDataRow(payload, fields) {
-+  const count = payload.readInt16BE(0);
-+  const row = {};
-+  let offset = 2;
-+  for (let index = 0; index < count; index += 1) {
-+    const length = payload.readInt32BE(offset);
-+    offset += 4;
-+    const field = fields[index];
-+    if (length === -1) {
-+      row[field.name] = null;
-+      continue;
-+    }
-+    const rawValue = payload.subarray(offset, offset + length).toString("utf8");
-+    row[field.name] = parsePgValue(rawValue, field.typeOid);
-+    offset += length;
++function assertExpectedDatabaseUrl() {
++  const value = requireEnv("GAMEFOUNDRY_DATABASE_URL");
++  const databaseUrl = new URL(value);
++  const database = decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "");
++  const actual = {
++    database,
++    host: databaseUrl.hostname,
++    port: databaseUrl.port || "5432",
++    protocol: databaseUrl.protocol,
++    user: decodeURIComponent(databaseUrl.username || ""),
++  };
++  const mismatches = Object.entries(EXPECTED_DATABASE_URL)
++    .filter(([key, expected]) => actual[key] !== expected)
++    .map(([key, expected]) => `${key} expected ${expected}, got ${actual[key] || "(empty)"}`);
++  if (mismatches.length) {
++    throw new Error(`GAMEFOUNDRY_DATABASE_URL must target the local validation database: ${mismatches.join("; ")}.`);
 +  }
-+  return row;
-+}
-+
-+function quoteIdentifier(value) {
-+  const name = String(value || "").trim();
-+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
-+    throw new Error(`Invalid PostgreSQL identifier: ${name || "(empty)"}.`);
++  if (decodeURIComponent(databaseUrl.password || "") !== "postgres") {
++    throw new Error("GAMEFOUNDRY_DATABASE_URL must use the local validation password configured by npm run dev:local-postgres.");
 +  }
-+  return `"${name.replace(/"/g, "\"\"")}"`;
++  return actual;
 +}
 +
 +function sqlLiteral(value) {
-+  if (value === null || value === undefined) {
-+    return "NULL";
-+  }
-+  if (typeof value === "boolean") {
-+    return value ? "TRUE" : "FALSE";
-+  }
-+  if (typeof value === "number" && Number.isFinite(value)) {
-+    return String(value);
-+  }
-+  const normalized = typeof value === "object" ? JSON.stringify(value) : String(value);
-+  return `'${normalized.replace(/'/g, "''")}'`;
++  return `'${String(value || "").replace(/'/g, "''")}'`;
 +}
 +
-+function filterFromQuery(query = "") {
-+  const params = new URLSearchParams(query);
-+  for (const [key, value] of params.entries()) {
-+    if (key === "select" || key === "on_conflict") {
-+      continue;
++function bannerRows(rows) {
++  return rows.filter((row) => BANNER_SETTING_KEYS.includes(String(row?.settingKey || "")));
++}
++
++async function applyGroupedDdl(client) {
++  for (const filePath of DDL_FILES) {
++    const absolutePath = path.resolve(process.cwd(), filePath);
++    const sql = fs.readFileSync(absolutePath, "utf8");
++    await client.query(`\n-- Begin ${filePath}\n${sql}\n-- End ${filePath}\n`);
++  }
++}
++
++async function seedIdentity(adapter) {
++  const seedTables = createServerSeedTables();
++  return adapter.initializeIdentity({
++    actorKey: SEED_DB_KEYS.users.admin,
++    roles: seedTables.roles,
++    userRoles: seedTables.user_roles,
++    users: seedTables.users,
++  });
++}
++
++async function restoreBannerRows(client, adapter, rows) {
++  await client.query(`DELETE FROM platform_settings WHERE "settingKey" IN (${BANNER_SETTING_KEYS.map(sqlLiteral).join(", ")});`);
++  if (rows.length) {
++    await adapter.upsertPlatformSettings(rows);
++  }
++}
++
++async function deleteValidationGames(client) {
++  await client.query(`
++DELETE FROM game_workspace_progress
++WHERE "gameKey" IN (
++  SELECT key FROM game_workspace_games WHERE name = ${sqlLiteral(GAME_NAME)}
++);
++DELETE FROM game_workspace_games WHERE name = ${sqlLiteral(GAME_NAME)};
++`);
++}
++
++function startFakeSupabaseServer() {
++  const requests = [];
++  const server = http.createServer(async (request, response) => {
++    const chunks = [];
++    for await (const chunk of request) {
++      chunks.push(chunk);
 +    }
-+    if (!value.startsWith("eq.")) {
-+      throw new Error(`Unsupported PostgreSQL query filter for ${key}.`);
++    const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
++    requests.push({
++      method: request.method,
++      path: requestUrl.pathname,
++    });
++    if (requestUrl.pathname === "/auth/v1/health") {
++      response.statusCode = 200;
++      response.setHeader("Content-Type", "application/json; charset=utf-8");
++      response.end(JSON.stringify({ status: "ok" }));
++      return;
 +    }
-+    return {
-+      column: key,
-+      value: decodeURIComponent(value.slice(3)),
-+    };
-+  }
-+  return null;
-+}
-+
-+function selectSql(tableName, query) {
-+  const filter = filterFromQuery(query);
-+  const where = filter ? ` WHERE ${quoteIdentifier(filter.column)} = ${sqlLiteral(filter.value)}` : "";
-+  return `SELECT * FROM ${quoteIdentifier(tableName)}${where};`;
-+}
-+
-+function upsertSql(tableName, rows) {
-+  if (!rows.length) {
-+    return "";
-+  }
-+  const columns = Array.from(new Set(rows.flatMap((row) => Object.keys(row || {}))));
-+  if (!columns.includes("key")) {
-+    throw new Error(`PostgreSQL upsert for ${tableName} requires key.`);
-+  }
-+  const columnList = columns.map(quoteIdentifier).join(", ");
-+  const values = rows.map((row) => `(${columns.map((column) => sqlLiteral(row[column])).join(", ")})`).join(", ");
-+  const updateColumns = columns.filter((column) => column !== "key");
-+  const updateList = updateColumns.length
-+    ? updateColumns.map((column) => `${quoteIdentifier(column)} = EXCLUDED.${quoteIdentifier(column)}`).join(", ")
-+    : `${quoteIdentifier("key")} = EXCLUDED.${quoteIdentifier("key")}`;
-+  return `INSERT INTO ${quoteIdentifier(tableName)} (${columnList}) VALUES ${values} ON CONFLICT (${quoteIdentifier("key")}) DO UPDATE SET ${updateList} RETURNING *;`;
-+}
-+
-+function patchSql(tableName, body, query) {
-+  const filter = filterFromQuery(query);
-+  if (!filter) {
-+    throw new Error(`PostgreSQL patch for ${tableName} requires an equality filter.`);
-+  }
-+  const columns = Object.keys(body || {});
-+  if (!columns.length) {
-+    return "";
-+  }
-+  const setList = columns.map((column) => `${quoteIdentifier(column)} = ${sqlLiteral(body[column])}`).join(", ");
-+  return `UPDATE ${quoteIdentifier(tableName)} SET ${setList} WHERE ${quoteIdentifier(filter.column)} = ${sqlLiteral(filter.value)} RETURNING *;`;
-+}
-+
-+function deleteSql(tableName, query) {
-+  const filter = filterFromQuery(query);
-+  if (!filter) {
-+    throw new Error(`PostgreSQL delete for ${tableName} requires an equality filter.`);
-+  }
-+  return `DELETE FROM ${quoteIdentifier(tableName)} WHERE ${quoteIdentifier(filter.column)} = ${sqlLiteral(filter.value)} RETURNING *;`;
-+}
-+
-+class PostgresConnection {
-+  constructor(socket, reader) {
-+    this.socket = socket;
-+    this.reader = reader;
-+  }
-+
-+  async authenticate(config) {
-+    this.socket.write(pgStartupMessage(config));
-+    let scramClient = null;
-+    let authenticated = false;
-+    while (true) {
-+      const message = await readPgMessage(this.reader);
-+      if (message.type === "R") {
-+        const authCode = message.payload.readInt32BE(0);
-+        if (authCode === 0) {
-+          authenticated = true;
-+          continue;
-+        }
-+        if (authCode === 3) {
-+          this.socket.write(pgPasswordMessage(config.password));
-+          continue;
-+        }
-+        if (authCode === 5) {
-+          this.socket.write(pgPasswordMessage(md5PostgresPassword(config.password, config.user, message.payload.subarray(4, 8))));
-+          continue;
-+        }
-+        if (authCode === 10) {
-+          const mechanisms = parseCStringList(message.payload, 4);
-+          if (!mechanisms.includes("SCRAM-SHA-256")) {
-+            throw new Error(`PostgreSQL requested unsupported authentication mechanism: ${mechanisms.join(", ") || "unknown"}.`);
-+          }
-+          scramClient = createScramClient(config.user, config.password);
-+          const initialResponse = Buffer.from(scramClient.clientFirstMessage, "utf8");
-+          this.socket.write(pgPasswordMessage(Buffer.concat([
-+            pgCString("SCRAM-SHA-256"),
-+            int32(initialResponse.length),
-+            initialResponse,
-+          ])));
-+          continue;
-+        }
-+        if (authCode === 11) {
-+          if (!scramClient) {
-+            throw new Error("PostgreSQL SCRAM challenge arrived before client setup.");
-+          }
-+          this.socket.write(pgPasswordMessage(Buffer.from(scramClient.createFinalMessage(message.payload.subarray(4).toString("utf8")), "utf8")));
-+          continue;
-+        }
-+        if (authCode === 12) {
-+          if (scramClient) {
-+            scramClient.verifyServerFinal(message.payload.subarray(4).toString("utf8"));
-+          }
-+          continue;
-+        }
-+        throw new Error(`PostgreSQL requested unsupported authentication code ${authCode}.`);
-+      }
-+      if (message.type === "E") {
-+        throw new Error(parsePgError(message.payload));
-+      }
-+      if (message.type === "Z") {
-+        if (!authenticated) {
-+          throw new Error("PostgreSQL reached ready state before authentication completed.");
-+        }
-+        return;
-+      }
-+    }
-+  }
-+
-+  async query(sql) {
-+    if (!sql) {
-+      return [];
-+    }
-+    this.socket.write(pgQueryMessage(sql));
-+    let fields = [];
-+    const rows = [];
-+    while (true) {
-+      const message = await readPgMessage(this.reader);
-+      if (message.type === "T") {
-+        fields = parseRowDescription(message.payload);
-+        continue;
-+      }
-+      if (message.type === "D") {
-+        rows.push(parseDataRow(message.payload, fields));
-+        continue;
-+      }
-+      if (message.type === "E") {
-+        throw new Error(parsePgError(message.payload));
-+      }
-+      if (message.type === "Z") {
-+        return rows;
-+      }
-+    }
-+  }
-+
-+  close() {
-+    this.socket.write(Buffer.from("X\0\0\0\u0004", "binary"));
-+    this.socket.end();
-+  }
-+}
-+
-+async function withConnection(config, callback) {
-+  const socket = await negotiateSocket(config);
-+  const connection = new PostgresConnection(socket, createReader(socket));
-+  try {
-+    await connection.authenticate(config);
-+    return await callback(connection);
-+  } finally {
-+    connection.close();
-+  }
-+}
-+
-+export function createPostgresConnectionClient({ env = process.env } = {}) {
-+  const config = parseDatabaseUrl(env);
-+  if (!config.user || !config.password) {
-+    throw new Error("GAMEFOUNDRY_DATABASE_URL must include username and password.");
-+  }
-+  return {
-+    async requestTable(tableName, { body = null, method = "GET", query = "select=*" } = {}) {
-+      const normalizedMethod = String(method || "GET").toUpperCase();
-+      return withConnection(config, (connection) => {
-+        if (normalizedMethod === "GET") {
-+          return connection.query(selectSql(tableName, query));
-+        }
-+        if (normalizedMethod === "POST") {
-+          return connection.query(upsertSql(tableName, Array.isArray(body) ? body : [body]));
-+        }
-+        if (normalizedMethod === "PATCH") {
-+          return connection.query(patchSql(tableName, body || {}, query));
-+        }
-+        if (normalizedMethod === "DELETE") {
-+          return connection.query(deleteSql(tableName, query));
-+        }
-+        throw new Error(`Unsupported PostgreSQL table request method: ${normalizedMethod}.`);
-+      });
-+    },
-+  };
-+}
-diff --git a/tests/dev-runtime/ProductDataDatabaseUrl.test.mjs b/tests/dev-runtime/ProductDataDatabaseUrl.test.mjs
-new file mode 100644
-index 000000000..b494743da
---- /dev/null
-+++ b/tests/dev-runtime/ProductDataDatabaseUrl.test.mjs
-@@ -0,0 +1,62 @@
-+import test from "node:test";
-+import assert from "node:assert/strict";
-+import { SupabasePostgresProviderAdapter } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-+
-+test("platform_settings product data uses the configured database connection client", async () => {
-+  const calls = [];
-+  const database = new SupabasePostgresProviderAdapter({
-+    env: {
-+      GAMEFOUNDRY_DATABASE_URL: "postgresql://product-data:test@127.0.0.1:5432/gamefoundry_dev",
-+      GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "service-role-must-not-own-product-data",
-+      GAMEFOUNDRY_SUPABASE_URL: "https://auth-only.example.invalid",
-+    },
-+    postgresClient: {
-+      async requestTable(tableName, options) {
-+        calls.push({
-+          body: options.body,
-+          method: options.method,
-+          query: options.query,
-+          tableName,
-+        });
-+        if (options.method === "POST") {
-+          return options.body;
-+        }
-+        return [
-+          {
-+            key: "01JPRODUCTDATA000000000000",
-+            settingKey: "platform.banner.message",
-+            settingValue: "Database URL owns product data.",
-+          },
-+        ];
-+      },
-+    },
++    response.statusCode = 503;
++    response.setHeader("Content-Type", "application/json; charset=utf-8");
++    response.end(JSON.stringify({ message: "Fake Supabase Auth server only allows Auth health checks." }));
 +  });
 +
-+  const written = await database.upsertPlatformSettings([
-+    {
-+      key: "01JPRODUCTDATA000000000000",
-+      settingKey: "platform.banner.message",
-+      settingValue: "Database URL owns product data.",
-+    },
-+  ]);
-+  const rows = await database.getPlatformSettings();
++  return new Promise((resolve, reject) => {
++    server.once("error", reject);
++    server.listen(0, "127.0.0.1", () => {
++      const address = server.address();
++      if (!address || typeof address === "string") {
++        reject(new Error("Unable to start fake Supabase Auth validation server."));
++        return;
++      }
++      resolve({
++        baseUrl: `http://127.0.0.1:${address.port}`,
++        close: () => new Promise((closeResolve) => {
++          server.closeAllConnections?.();
++          server.close(closeResolve);
++        }),
++        requests,
++      });
++    });
++  });
++}
 +
-+  assert.equal(written[0].settingValue, "Database URL owns product data.");
-+  assert.equal(rows[0].settingKey, "platform.banner.message");
-+  assert.deepEqual(calls.map((call) => ({
-+    method: call.method,
-+    query: call.query,
-+    tableName: call.tableName,
-+  })), [
-+    {
++function startApiValidationServer() {
++  const handleApiRuntimeRequest = createLocalApiRouter();
++  const server = http.createServer(async (request, response) => {
++    try {
++      const address = server.address();
++      const origin = address && typeof address !== "string"
++        ? `http://127.0.0.1:${address.port}`
++        : "http://127.0.0.1";
++      const requestUrl = new URL(request.url || "/", origin);
++      if (await handleApiRuntimeRequest(request, response, requestUrl)) {
++        return;
++      }
++      response.statusCode = 404;
++      response.setHeader("Content-Type", "application/json; charset=utf-8");
++      response.end(JSON.stringify({ error: "Validation API route not found.", ok: false }));
++    } catch (error) {
++      response.statusCode = 500;
++      response.setHeader("Content-Type", "application/json; charset=utf-8");
++      response.end(JSON.stringify({ error: error instanceof Error ? error.message : String(error), ok: false }));
++    }
++  });
++
++  return new Promise((resolve, reject) => {
++    server.once("error", reject);
++    server.listen(0, "127.0.0.1", () => {
++      const address = server.address();
++      if (!address || typeof address === "string") {
++        reject(new Error("Unable to start API validation server."));
++        return;
++      }
++      resolve({
++        baseUrl: `http://127.0.0.1:${address.port}`,
++        close: () => new Promise((closeResolve) => {
++          server.closeAllConnections?.();
++          server.close(closeResolve);
++        }),
++      });
++    });
++  });
++}
++
++async function apiJson(baseUrl, routePath, { body = null, method = "GET" } = {}) {
++  const response = await fetch(`${baseUrl}${routePath}`, {
++    body: body === null ? undefined : JSON.stringify(body),
++    headers: body === null ? undefined : { "content-type": "application/json" },
++    method,
++  });
++  const payload = await response.json().catch(() => ({}));
++  if (!response.ok || payload.ok === false) {
++    throw new Error(`API ${method} ${routePath} failed with HTTP ${response.status}: ${payload.error || "No error payload."}`);
++  }
++  return payload.data;
++}
++
++function assert(condition, message) {
++  if (!condition) {
++    throw new Error(message);
++  }
++}
++
++async function validateApiRuntime({ adapter, client }) {
++  const initialBannerRows = bannerRows(await adapter.getPlatformSettings());
++  const server = await startApiValidationServer();
++  try {
++    const session = await apiJson(server.baseUrl, "/api/session/user", {
++      body: { userKey: SEED_DB_KEYS.users.admin },
 +      method: "POST",
-+      query: "on_conflict=key",
-+      tableName: "platform_settings",
-+    },
-+    {
-+      method: "GET",
-+      query: "select=*",
-+      tableName: "platform_settings",
-+    },
-+  ]);
-+});
++    });
++    assert(session.authenticated === true, "DavidQ validation session did not authenticate from local Postgres users.");
++    assert(session.isAdmin === true, "DavidQ validation session did not resolve admin role from local Postgres user_roles.");
++
++    const message = "PR196 local Postgres banner validation";
++    const bannerUpdate = await apiJson(server.baseUrl, "/api/admin/platform-settings/banner", {
++      body: {
++        active: true,
++        message,
++        tone: "info",
++      },
++      method: "POST",
++    });
++    assert(bannerUpdate.banner?.active === true, "Admin banner save did not return active=true.");
++    assert(bannerUpdate.banner?.message === message, "Admin banner save did not return the validation message.");
++
++    const publicBanner = await apiJson(server.baseUrl, "/api/platform-settings/banner");
++    assert(publicBanner.banner?.active === true, "Public banner read did not return active=true.");
++    assert(publicBanner.banner?.message === message, "Public banner read did not return the validation message.");
++
++    const savedBannerRows = bannerRows(await adapter.getPlatformSettings());
++    const messageRow = savedBannerRows.find((row) => row.settingKey === "platform.banner.message");
++    assert(messageRow?.settingValue === message, "Local Postgres platform_settings message row was not updated.");
++
++    const repository = await apiJson(server.baseUrl, "/api/toolbox/game-workspace/repositories", {
++      body: {},
++      method: "POST",
++    });
++    assert(repository.repositoryId, "Game Workspace repository was not created.");
++
++    const created = await apiJson(server.baseUrl, `/api/toolbox/game-workspace/repositories/${repository.repositoryId}/methods/createGame`, {
++      body: {
++        args: [
++          {
++            name: GAME_NAME,
++            purpose: "Game",
++            status: "Planning",
++          },
++        ],
++      },
++      method: "POST",
++    });
++    assert(created.result?.name === GAME_NAME, "Game Workspace create did not return the validation game.");
++
++    const active = await apiJson(server.baseUrl, `/api/toolbox/game-workspace/repositories/${repository.repositoryId}/methods/getActiveGame`, {
++      body: { args: [] },
++      method: "POST",
++    });
++    assert(active.result?.name === GAME_NAME, "Game Workspace active game did not resolve the validation game.");
++    assert(Array.isArray(active.result?.members), "Game Workspace active game did not include members.");
++
++    const gameRows = await adapter.getProductTableRows("game_workspace_games");
++    assert(gameRows.some((row) => row.name === GAME_NAME), "Local Postgres game_workspace_games did not include the validation game.");
++
++    return {
++      activeBanner: publicBanner.banner,
++      bannerRows: savedBannerRows.length,
++      gameRows: gameRows.filter((row) => row.name === GAME_NAME).length,
++      initialBannerRows,
++      repositoryId: repository.repositoryId,
++      session,
++    };
++  } finally {
++    await server.close();
++    await restoreBannerRows(client, adapter, initialBannerRows);
++    await deleteValidationGames(client);
++  }
++}
++
++async function main() {
++  const envLoad = loadRuntimeEnv();
++  const database = assertExpectedDatabaseUrl();
++  const originalSupabaseEnv = {
++    GAMEFOUNDRY_SUPABASE_ANON_KEY: process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY,
++    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY,
++    GAMEFOUNDRY_SUPABASE_URL: process.env.GAMEFOUNDRY_SUPABASE_URL,
++  };
++  const fakeSupabase = await startFakeSupabaseServer();
++  process.env.GAMEFOUNDRY_SUPABASE_URL = fakeSupabase.baseUrl;
++  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "local-postgres-validation-anon";
++  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "local-postgres-validation-service-role";
++
++  const client = createPostgresConnectionClient();
++  const adapter = new SupabasePostgresProviderAdapter();
++
++  try {
++    await client.query("SELECT 1 AS ok;");
++    await applyGroupedDdl(client);
++    const identity = await seedIdentity(adapter);
++    const apiEvidence = await validateApiRuntime({ adapter, client });
++    const restPlatformCalls = fakeSupabase.requests
++      .filter((request) => request.path === "/rest/v1/platform_settings");
++    assert(restPlatformCalls.length === 0, "Supabase platform_settings REST endpoint was called during product-data validation.");
++
++    const providerContract = createProviderContractSnapshot();
++    assert(providerContract.supabasePostgres?.configured === true, "Provider contract did not report the database connection as configured.");
++
++    console.log(`PASS - ${RUNTIME_ENV_FILE} loaded only (${envLoad.loadedKeys.length} key(s) applied).`);
++    console.log(`PASS - Local Postgres connection validated at ${database.host}:${database.port}/${database.database}.`);
++    console.log(`PASS - Applied ${DDL_FILES.length} grouped DDL file(s) through GAMEFOUNDRY_DATABASE_URL.`);
++    console.log(`PASS - Seeded identity rows: users=${identity.written.users}, roles=${identity.written.roles}, user_roles=${identity.written.user_roles}.`);
++    console.log(`PASS - Banner saved and read through API; local platform_settings banner rows observed=${apiEvidence.bannerRows}.`);
++    console.log(`PASS - Supabase Auth health calls=${fakeSupabase.requests.filter((request) => request.path === "/auth/v1/health").length}; Supabase platform_settings REST calls=0.`);
++    console.log(`PASS - Game Workspace create/getActiveGame used repository ${apiEvidence.repositoryId}; local game rows observed=${apiEvidence.gameRows}.`);
++    console.log("PASS - Validation cleanup restored banner rows and removed PR196 Game Workspace rows.");
++  } finally {
++    await fakeSupabase.close();
++    Object.entries(originalSupabaseEnv).forEach(([key, value]) => {
++      if (value === undefined) {
++        delete process.env[key];
++      } else {
++        process.env[key] = value;
++      }
++    });
++  }
++}
++
++await main();

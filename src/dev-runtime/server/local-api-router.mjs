@@ -109,6 +109,13 @@ const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
 });
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
+const TOOL_SNAPSHOT_PERSISTENCE_EXCLUDED_TABLES = new Set([
+  "platform_settings",
+  "support_categories",
+  "toolbox_tool_metadata",
+  "toolbox_tool_planning",
+  "toolbox_votes",
+]);
 const TOOLBOX_PLANNING_FIELDS = Object.freeze([
   "progressChecklist",
   "readiness",
@@ -1048,7 +1055,9 @@ function productTableNamesForSnapshot() {
 
 function productTablesFromSnapshot(snapshot) {
   const tables = snapshot?.tables && typeof snapshot.tables === "object" ? snapshot.tables : {};
-  return Object.fromEntries(productTableNamesForSnapshot().map((tableName) => [
+  const persistenceTableNames = productTableNamesForSnapshot()
+    .filter((tableName) => !TOOL_SNAPSHOT_PERSISTENCE_EXCLUDED_TABLES.has(tableName));
+  return Object.fromEntries(persistenceTableNames.map((tableName) => [
     tableName,
     Array.isArray(tables[tableName]) ? tables[tableName] : [],
   ]));
