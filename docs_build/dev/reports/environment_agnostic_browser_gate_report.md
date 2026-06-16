@@ -4,10 +4,13 @@ Status: PASS
 
 ## Scope
 - Scanned active browser/page roots: `account`, `admin`, `assets/theme-v2/js`, `toolbox`, `src/engine`
-- Files scanned: 438
+- Files scanned: 439
 - Excluded server/dev/test/archive/report/temp roots: `.git`, `archive`, `docs_build`, `node_modules`, `start_of_day`, `tests`, `tmp`.
 
 ## Deployment-Label Branching Findings
+- None
+
+## Account Page Dependency Findings
 - None
 
 ## Non-Branching Deployment Mentions Reviewed
@@ -22,4 +25,4 @@ Status: PASS
 - `src/engine/audio/SoundFontPreviewEngine.js:46` - `description: "Embedded Web Audio SoundFont bank for MIDI Studio V2 UAT playback and WAV rendering.",`
 
 ## Result
-- PASS - No DEV/UAT/PROD deployment-label branching was found in active browser/page code.
+- PASS - No DEV/UAT/PROD deployment-label branching or forbidden account page dependency terms were found in active browser/page code.

@@ -1,18 +1,12 @@
 import { getLocalDbSnapshot } from "../../../src/engine/api/local-db-api-client.js";
-import { getSessionCurrent } from "../../../src/engine/api/session-api-client.js";
 
 const LOCAL_DB_START_ACTION = "Start the API-backed local server with npm run dev:local-api, then reload this page.";
-const ACCOUNT_DATA_START_ACTION = "Start the account data API, then reload this page.";
 
 function text(value) {
   if (value === undefined || value === null || value === "") {
     return "N/A";
   }
   return String(value);
-}
-
-function titleCase(value) {
-  return text(value).replace(/\b\w/g, (letter) => letter.toUpperCase());
 }
 
 function pageRoots() {
@@ -169,21 +163,6 @@ function renderFollowUp(parent, title, tableName, reason, action) {
   parent.append(article);
 }
 
-function renderUserContext(parent, identity, session) {
-  const currentUser = identity.usersByKey.get(session.userKey || session.sessionUser?.id || "");
-  const roles = currentUser ? rolesForUser(identity, currentUser.key) : [];
-  renderTable(parent, "Current Account User", [
-    "Field",
-    "Value",
-  ], [
-    ["users.key", currentUser?.key || session.userKey || "N/A"],
-    ["Display Name", currentUser?.displayName || session.label || "N/A"],
-    ["Email", currentUser?.email || "N/A"],
-    ["Roles", roles.length ? roles.join(", ") : "N/A"],
-    ["Account State", currentUser?.isActive === false ? "Inactive" : "Active"],
-  ], { tableName: "current-user" });
-}
-
 function renderAdminUsers(root, snapshot) {
   const content = clearContent(root);
   const identity = identityState(snapshot);
@@ -242,54 +221,7 @@ function renderAdminSiteSettings(root, snapshot) {
   );
 }
 
-function renderAccountHome(root, snapshot, session) {
-  const content = clearContent(root);
-  const identity = identityState(snapshot);
-  renderUserContext(content, identity, session);
-  renderAudit(content, auditMessage("current identity", identity.users, identity.usersByKey));
-  setStatus(root, "Loaded account summary from the account service.");
-}
-
-function renderAccountProfile(root, snapshot, session) {
-  const content = clearContent(root);
-  const identity = identityState(snapshot);
-  renderUserContext(content, identity, session);
-  setStatus(root, "Loaded profile identity from the account service.");
-}
-
-function renderAccountPreferences(root, snapshot, session) {
-  const content = clearContent(root);
-  const identity = identityState(snapshot);
-  renderUserContext(content, identity, session);
-  renderFollowUp(
-    content,
-    "Preferences Service",
-    "account_preferences",
-    "Account preferences are not available yet.",
-    "A future account service update is required before this page can save preferences.",
-  );
-  setStatus(root, "Loaded current account. Preferences storage is not available yet.");
-}
-
-function renderAccountSecurity(root, snapshot, session) {
-  const content = clearContent(root);
-  const identity = identityState(snapshot);
-  renderUserContext(content, identity, session);
-  renderFollowUp(
-    content,
-    "Security Service",
-    "account_security_settings",
-    "Account security settings are not available yet.",
-    "A future account service update is required before this page can show live security controls.",
-  );
-  setStatus(root, "Loaded current account. Security settings are not available yet.");
-}
-
 const RENDERERS = Object.freeze({
-  "account-home": renderAccountHome,
-  "account-preferences": renderAccountPreferences,
-  "account-profile": renderAccountProfile,
-  "account-security": renderAccountSecurity,
   "admin-roles": renderAdminRoles,
   "admin-site-settings": renderAdminSiteSettings,
   "admin-users": renderAdminUsers,
@@ -299,20 +231,6 @@ function renderFailure(root, error) {
   clearContent(root);
   const content = contentElement(root);
   const message = error instanceof Error ? error.message : String(error || "Local DB data unavailable.");
-  if (root.dataset.localDbPage?.startsWith("account-")) {
-    console.warn("[account/operator] Account data service unavailable:", message);
-    setStatus(root, "Account data is unavailable. Please try again later.");
-    if (content) {
-      renderFollowUp(
-        content,
-        "Account Data Service",
-        "account-data",
-        "Account data could not load.",
-        ACCOUNT_DATA_START_ACTION,
-      );
-    }
-    return;
-  }
   setStatus(root, `Local DB unavailable: ${message}`);
   if (content) {
     renderFollowUp(
@@ -333,8 +251,7 @@ function renderRoot(root) {
   }
   try {
     const snapshot = getLocalDbSnapshot();
-    const session = getSessionCurrent();
-    renderer(root, snapshot, session);
+    renderer(root, snapshot);
   } catch (error) {
     renderFailure(root, error);
   }

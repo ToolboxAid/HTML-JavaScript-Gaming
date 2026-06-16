@@ -1893,3 +1893,39 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26167_179-environment-agnostic-validation-gates_delta.zip`
+
+
+## PR_26167_180-account-pages-remove-local-db-browser-contract
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Removed Account pages from the Local DB browser contract hooks.
+- Added Account page service/API contract rendering through `assets/theme-v2/js/account-page-data.js`.
+- Removed Account page renderers from `assets/theme-v2/js/local-db-page-data.js` while preserving Admin Local DB page behavior.
+- Extended `scripts/validate-browser-env-agnostic.mjs` to detect forbidden Account page/browser dependency terms.
+- Updated targeted Account/Auth Playwright assertions for the Account service page contract.
+
+Validation:
+- `node --check assets/theme-v2/js/account-page-data.js`
+- `node --check assets/theme-v2/js/local-db-page-data.js`
+- `node --check scripts/validate-browser-env-agnostic.mjs`
+- `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
+- Forbidden Account term scan for account pages and Account browser modules.
+- Removed Account renderer scan for `assets/theme-v2/js/local-db-page-data.js`.
+- `npm run validate:browser-env-agnostic`
+- Targeted account/auth Playwright for static auth pages, sign-in behavior, configured account auth actions, create-account failure, password-reset rate-limit/provider-failure behavior, protected-page blocks, and Account service page status/content rendering.
+- `git diff --check`
+- `npm run test:workspace-v2` skipped because PR180 did not change shared runtime/session UI behavior; command name is legacy and user-facing language is Project Workspace.
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_180-account-pages-remove-local-db-browser-contract.md`
+- `docs_build/dev/reports/environment_agnostic_browser_gate_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_180-account-pages-remove-local-db-browser-contract_delta.zip`

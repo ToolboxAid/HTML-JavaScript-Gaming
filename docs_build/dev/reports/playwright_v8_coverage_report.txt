@@ -14,7 +14,7 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (73%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(82%) Theme V2 Shared JS - exercised 8 runtime JS files
+(84%) Theme V2 Shared JS - exercised 9 runtime JS files
 
 Changed runtime JS files covered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
@@ -22,9 +22,10 @@ Changed runtime JS files covered:
 (67%) admin/db-viewer.js - executed lines 45/45; executed functions 4/6
 (78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 644/644; executed functions 45/58
 (92%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 12/13
-(95%) assets/theme-v2/js/local-db-page-data.js - executed lines 314/314; executed functions 40/42
+(97%) assets/theme-v2/js/local-db-page-data.js - executed lines 237/237; executed functions 35/36
 (100%) assets/theme-v2/js/account-auth-actions.js - executed lines 83/83; executed functions 10/10
 (100%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 7/7
+(100%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 21/21
 
 Files with executed line/function counts where available:
 (22%) assets/theme-v2/js/admin-setup-actions.js - executed lines 75/75; executed functions 2/9
@@ -40,9 +41,10 @@ Files with executed line/function counts where available:
 (78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 644/644; executed functions 45/58
 (85%) src/engine/api/local-db-viewer-ui.js - executed lines 522/522; executed functions 81/95
 (92%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 12/13
-(95%) assets/theme-v2/js/local-db-page-data.js - executed lines 314/314; executed functions 40/42
+(97%) assets/theme-v2/js/local-db-page-data.js - executed lines 237/237; executed functions 35/36
 (100%) assets/theme-v2/js/account-auth-actions.js - executed lines 83/83; executed functions 10/10
 (100%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 7/7
+(100%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 21/21
 (100%) assets/theme-v2/js/admin-db-status-panel.js - executed lines 37/37; executed functions 3/3
 (100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
@@ -58,6 +60,7 @@ Changed JS files considered:
 (67%) admin/db-viewer.js - changed JS file with browser V8 coverage
 (78%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
 (92%) assets/theme-v2/js/login-session.js - changed JS file with browser V8 coverage
-(95%) assets/theme-v2/js/local-db-page-data.js - changed JS file with browser V8 coverage
+(97%) assets/theme-v2/js/local-db-page-data.js - changed JS file with browser V8 coverage
 (100%) assets/theme-v2/js/account-auth-actions.js - changed JS file with browser V8 coverage
 (100%) assets/theme-v2/js/account-auth-service.js - changed JS file with browser V8 coverage
+(100%) assets/theme-v2/js/account-page-data.js - changed JS file with browser V8 coverage

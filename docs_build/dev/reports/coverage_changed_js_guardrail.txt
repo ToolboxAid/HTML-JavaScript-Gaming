@@ -11,9 +11,10 @@ Changed runtime JS files considered:
 (67%) admin/db-viewer.js - executed lines 45/45; executed functions 4/6
 (78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 644/644; executed functions 45/58
 (92%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 12/13
-(95%) assets/theme-v2/js/local-db-page-data.js - executed lines 314/314; executed functions 40/42
+(97%) assets/theme-v2/js/local-db-page-data.js - executed lines 237/237; executed functions 35/36
 (100%) assets/theme-v2/js/account-auth-actions.js - executed lines 83/83; executed functions 10/10
 (100%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 7/7
+(100%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 21/21
 
 Guardrail warnings:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

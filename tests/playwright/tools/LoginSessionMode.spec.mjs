@@ -970,7 +970,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
   }
 });
 
-test("Admin and Account Local DB pages render identity data or actionable migration diagnostics", async ({ page }) => {
+test("Admin Local DB pages and Account service pages render identity data or actionable diagnostics", async ({ page }) => {
   const pageChecks = [
     {
       assertions: async () => {
@@ -1007,9 +1007,10 @@ test("Admin and Account Local DB pages render identity data or actionable migrat
     {
       assertions: async () => {
         await expect(page.getByRole("heading", { name: "Account Home", level: 1 })).toBeVisible();
-        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded account summary from the account service.");
-        await expect(page.locator("[data-local-db-table='current-user']")).toContainText("User 1");
-        await expect(page.locator("[data-local-db-table='current-user']")).toContainText(MOCK_DB_KEYS.users.user1);
+        await expect(page.locator("[data-local-db-page], [data-local-db-status], [data-local-db-content]")).toHaveCount(0);
+        await expect(page.locator("[data-account-status]")).toHaveText("Loaded account summary from the account service.");
+        await expect(page.locator("[data-account-table='current-account']")).toContainText("User 1");
+        await expect(page.locator("[data-account-table='current-account']")).toContainText(MOCK_DB_KEYS.users.user1);
       },
       path: "/account/index.html",
       sessionUserKey: MOCK_DB_KEYS.users.user1,
@@ -1017,8 +1018,9 @@ test("Admin and Account Local DB pages render identity data or actionable migrat
     {
       assertions: async () => {
         await expect(page.getByRole("heading", { name: "Profile", level: 1 })).toBeVisible();
-        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded profile identity from the account service.");
-        await expect(page.locator("[data-local-db-table='current-user']")).toContainText("user1@example.invalid");
+        await expect(page.locator("[data-local-db-page], [data-local-db-status], [data-local-db-content]")).toHaveCount(0);
+        await expect(page.locator("[data-account-status]")).toHaveText("Loaded profile identity from the account service.");
+        await expect(page.locator("[data-account-table='current-account']")).toContainText("User 1");
       },
       path: "/account/profile.html",
       sessionUserKey: MOCK_DB_KEYS.users.user1,
@@ -1026,9 +1028,10 @@ test("Admin and Account Local DB pages render identity data or actionable migrat
     {
       assertions: async () => {
         await expect(page.getByRole("heading", { name: "Preferences", level: 1 })).toBeVisible();
-        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded current account. Preferences storage is not available yet.");
-        await expect(page.locator("[data-local-db-follow-up='account_preferences']")).toContainText("FOLLOW-UP REQUIRED");
-        await expect(page.locator("[data-local-db-follow-up='account_preferences']")).toContainText("Account preferences are not available yet.");
+        await expect(page.locator("[data-local-db-page], [data-local-db-status], [data-local-db-content]")).toHaveCount(0);
+        await expect(page.locator("[data-account-status]")).toHaveText("Loaded current account. Preferences storage is not available yet.");
+        await expect(page.locator("[data-account-follow-up='account-preferences']")).toContainText("FOLLOW-UP REQUIRED");
+        await expect(page.locator("[data-account-follow-up='account-preferences']")).toContainText("Account preferences are not available yet.");
       },
       path: "/account/preferences.html",
       sessionUserKey: MOCK_DB_KEYS.users.user1,
@@ -1036,9 +1039,10 @@ test("Admin and Account Local DB pages render identity data or actionable migrat
     {
       assertions: async () => {
         await expect(page.getByRole("heading", { name: "Security", level: 1 })).toBeVisible();
-        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded current account. Security settings are not available yet.");
-        await expect(page.locator("[data-local-db-follow-up='account_security_settings']")).toContainText("FOLLOW-UP REQUIRED");
-        await expect(page.locator("[data-local-db-follow-up='account_security_settings']")).toContainText("Account security settings are not available yet.");
+        await expect(page.locator("[data-local-db-page], [data-local-db-status], [data-local-db-content]")).toHaveCount(0);
+        await expect(page.locator("[data-account-status]")).toHaveText("Loaded current account. Security settings are not available yet.");
+        await expect(page.locator("[data-account-follow-up='account-security']")).toContainText("FOLLOW-UP REQUIRED");
+        await expect(page.locator("[data-account-follow-up='account-security']")).toContainText("Account security settings are not available yet.");
       },
       path: "/account/security.html",
       sessionUserKey: MOCK_DB_KEYS.users.user1,
