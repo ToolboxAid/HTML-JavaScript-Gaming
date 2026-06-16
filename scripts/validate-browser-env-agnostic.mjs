@@ -3,18 +3,27 @@ import path from "node:path";
 
 const repoRoot = process.cwd();
 const reportPath = path.join(repoRoot, "docs_build", "dev", "reports", "environment_agnostic_browser_gate_report.md");
-const scanRoots = [
+const browserScanRoots = [
   "account",
   "admin",
   "assets/theme-v2/js",
   "toolbox",
   "src/engine",
 ];
-const allowedExtensions = new Set([".html", ".js", ".mjs"]);
+const environmentScanRoots = [
+  ...browserScanRoots,
+  "src",
+  "scripts",
+  "docs_build/database",
+];
+const environmentScanFiles = [
+  ".env.example",
+  "package.json",
+];
+const allowedExtensions = new Set([".html", ".js", ".json", ".md", ".mjs", ".sql"]);
 const excludedSegments = new Set([
   ".git",
   "archive",
-  "docs_build",
   "node_modules",
   "start_of_day",
   "tests",
@@ -22,7 +31,9 @@ const excludedSegments = new Set([
 ]);
 
 const deploymentTermPattern = /\b(?:DEV|UAT|PROD|Prod|Production|production|Development|development)\b|process\.env|GAMEFOUNDRY_[A-Z0-9_]*(?:ENV|ENVIRONMENT|STAGE|PROVIDER|MODE)[A-Z0-9_]*/;
-const branchPattern = /^\s*(?:if|else\s+if|switch|while|for)\s*\(|^\s*case\b|\?|\&\&|\|\|/;
+const deploymentBranchDecisionPattern = /^\s*(?:if|else\s+if|switch|while|for)\s*\([^)]*(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env\.(?:GAMEFOUNDRY_ENV|GAMEFOUNDRY_DEPLOYMENT_ENV|NODE_ENV)|\.env\.(?:local|uat|prod)|deployment|environment|stage)[^)]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)[^)]*\)/i;
+const deploymentCasePattern = /^\s*case\s+["'`](?:dev|development|uat|prod|production)["'`]\s*:/i;
+const deploymentTernaryDecisionPattern = /(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env|deployment|environment|stage)[^?\r\n]*\?[^:\r\n]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)/i;
 const accountDependencyPattern = /\b(?:Local(?: DB| API)?|SQLite|Supabase|provider|localhost|DEV|UAT|PROD|Prod)\b|data-local-db-|local-db-page-data\.js/i;
 const userFacingImplementationPattern = /\b(?:DEV|UAT|PROD|Local DB|Local API|SQLite|Supabase|provider)\b/i;
 const accountBrowserFiles = new Set([
@@ -70,9 +81,22 @@ function repoPath(absolutePath) {
 }
 
 function isExcluded(absolutePath) {
-  return repoPath(absolutePath)
+  const normalizedPath = repoPath(absolutePath);
+  if (normalizedPath.startsWith("docs_build/database/")) {
+    return false;
+  }
+  return normalizedPath
     .split("/")
     .some((segment) => excludedSegments.has(segment));
+}
+
+function isValidationOrTestException(filePath) {
+  const normalizedPath = repoPath(filePath);
+  return normalizedPath.startsWith("tests/") ||
+    normalizedPath.startsWith("src/dev-runtime/testing/") ||
+    /^scripts\/validate-[^/]+\.mjs$/.test(normalizedPath) ||
+    /^scripts\/cleanup-supabase-dev-auth-test-users\.mjs$/.test(normalizedPath) ||
+    /^scripts\/sync-supabase-dev-creator-identities\.mjs$/.test(normalizedPath);
 }
 
 function isCommentOnly(line) {
@@ -85,6 +109,12 @@ function isCommentOnly(line) {
 
 function isModuleSyntaxOnly(line) {
   return /^\s*(?:import|export)\b/.test(line);
+}
+
+function isEnvironmentBranchLine(line) {
+  return deploymentBranchDecisionPattern.test(line) ||
+    deploymentCasePattern.test(line) ||
+    deploymentTernaryDecisionPattern.test(line);
 }
 
 function isAccountBrowserFile(filePath) {
@@ -118,6 +148,18 @@ async function collectFiles(rootPath) {
   return files;
 }
 
+async function collectExplicitFiles(filePaths) {
+  const files = [];
+  for (const filePath of filePaths) {
+    const absolutePath = path.join(repoRoot, filePath);
+    const stat = await fs.stat(absolutePath).catch(() => null);
+    if (stat?.isFile() && allowedExtensions.has(path.extname(filePath))) {
+      files.push(absolutePath);
+    }
+  }
+  return files;
+}
+
 function scanFile(filePath, contents) {
   const mentions = [];
   const findings = [];
@@ -133,10 +175,10 @@ function scanFile(filePath, contents) {
     if (deploymentTermPattern.test(line)) {
       mentions.push(record);
     }
-    if (deploymentTermPattern.test(line) && !isCommentOnly(line) && branchPattern.test(line)) {
+    if (deploymentTermPattern.test(line) && !isCommentOnly(line) && !isValidationOrTestException(filePath) && isEnvironmentBranchLine(line)) {
       findings.push({
         ...record,
-        reason: "Deployment label appears on a control-flow or branching line.",
+        reason: "Deployment label appears on an active environment control-flow line.",
       });
     }
     if (isAccountBrowserFile(filePath) && accountDependencyPattern.test(line)) {
@@ -292,7 +334,9 @@ function formatTechnicalDebt(records) {
   ).join("\n");
 }
 
-const files = (await Promise.all(scanRoots.map(collectFiles))).flat();
+const collectedFiles = (await Promise.all(environmentScanRoots.map(collectFiles))).flat();
+const explicitFiles = await collectExplicitFiles(environmentScanFiles);
+const files = Array.from(new Set([...collectedFiles, ...explicitFiles])).sort();
 const allMentions = [];
 const accountFindings = [];
 const findings = [];
@@ -316,14 +360,16 @@ const status = findings.length ||
   ? "FAIL"
   : "PASS";
 const report = [
-  "# Environment-Agnostic Browser Gate Report",
+  "# Environment-Agnostic Runtime Gate Report",
   "",
   `Status: ${status}`,
   "",
   "## Scope",
-  `- Scanned active browser/page roots: ${scanRoots.map((root) => `\`${root}\``).join(", ")}`,
+  `- Scanned active browser/page/server/runtime roots: ${environmentScanRoots.map((root) => `\`${root}\``).join(", ")}`,
+  `- Scanned active runtime example files: ${environmentScanFiles.map((filePath) => `\`${filePath}\``).join(", ")}`,
   `- Files scanned: ${files.length}`,
-  "- Excluded server/dev/test/archive/report/temp roots: `.git`, `archive`, `docs_build`, `node_modules`, `start_of_day`, `tests`, `tmp`.",
+  "- Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `start_of_day`, `tests`, `tmp`.",
+  "- Tests and validation scripts are excluded only from deployment-label branching failures; their non-branching mentions may still appear for review.",
   "",
   "## Deployment-Label Branching Findings",
   formatRecords(findings),
@@ -350,7 +396,7 @@ const report = [
   "",
   "## Result",
   findings.length
-    ? "- FAIL - Browser/page code contains deployment-label branching that must be removed or moved behind server connection config."
+    ? "- FAIL - Active app/server/DB code contains deployment-label branching that must be removed or moved behind server connection config."
     : accountFindings.length
       ? "- FAIL - Account page/browser code contains forbidden environment/provider dependency terms."
       : accountServiceContractFindings.length
@@ -359,7 +405,7 @@ const report = [
           ? "- FAIL - Product data browser/API paths are not fully constrained to server service contracts."
           : userFacingUiFindings.length
             ? "- FAIL - User-facing Account/product UI contains implementation wording."
-            : "- PASS - Browser/page code uses service contracts without deployment-label branching, account dependency leaks, product-data fallback, or user-facing implementation wording.",
+            : "- PASS - Active app/server/DB code uses service contracts without deployment-label branching, account dependency leaks, product-data fallback, or user-facing implementation wording.",
   "",
 ].join("\n");
 

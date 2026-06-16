@@ -17,7 +17,7 @@ Exercised tool entry points detected:
 (57%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(100%) none changed - no changed runtime JS files
 
 Files with executed line/function counts where available:
 (25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
@@ -29,12 +29,7 @@ Files with executed line/function counts where available:
 (100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(100%) none changed - no changed runtime JS files
 
 Changed JS files considered:
-(0%) scripts/apply-supabase-dev-ddl.mjs - changed JS file not collected as browser runtime coverage
-(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
-(0%) scripts/validate-supabase-dev.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage

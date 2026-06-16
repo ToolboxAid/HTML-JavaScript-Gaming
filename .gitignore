@@ -38,4 +38,7 @@ docs/dev/reports/playwright_v8_coverage_report.txt
 *.mkv
 
 .env
-.env.local
+.env.*
+!.env.example
+!.env.sample
+!.env.template

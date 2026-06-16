@@ -1,471 +1,321 @@
-# PR_26167_193 source commit patch (HEAD)
-commit 24d9ae19148d89244872cd1e51d999e57f1f6348
-Author:     DavidQ <qbytes.dq@gmail.com>
-AuthorDate: Tue Jun 16 17:23:25 2026 -0400
-Commit:     DavidQ <qbytes.dq@gmail.com>
-CommitDate: Tue Jun 16 17:23:25 2026 -0400
-
-    Use single runtime env file and generic database URL - PR_26167_193-env-runtime-single-file-and-generic-db-url
----
- .env                                                |  6 ++++--
- .env.example                                        |  6 +++---
- .env.uat                                            |  2 +-
- .gitignore                                          |  1 +
- scripts/apply-supabase-dev-ddl.mjs                  |  8 ++++----
- scripts/start-local-api-server.mjs                  | 21 ++++++++++++---------
- scripts/validate-supabase-dev.mjs                   | 18 +++++++++---------
- src/dev-runtime/auth/provider-contract-stubs.mjs    |  4 ++--
- .../SupabaseProviderContractStub.test.mjs           | 18 +++++++++---------
- .../tools/GameWorkspaceMockRepository.spec.mjs      |  4 ++--
- 10 files changed, 47 insertions(+), 41 deletions(-)
-
+# git diff --cached
 diff --git a/.env b/.env
-index 017d323d3..385a27d5c 100644
+deleted file mode 100644
+index 385a27d5c..000000000
 --- a/.env
-+++ b/.env
-@@ -1,2 +1,4 @@
--TEST_VAR=hello_world
--API_URL=http://localhost:3000
-\ No newline at end of file
-+GAMEFOUNDRY_SUPABASE_URL=
-+GAMEFOUNDRY_SUPABASE_ANON_KEY=
-+GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=
-+GAMEFOUNDRY_DATABASE_URL=
-diff --git a/.env.example b/.env.example
-index 9e10bad49..4156edf83 100644
---- a/.env.example
-+++ b/.env.example
-@@ -1,14 +1,14 @@
- # Game Foundry Studio local development environment
- 
--# Configure the local API account and product-data connections here.
-+# Configure the runtime auth and database connections here.
- # Missing connection configuration reports diagnostics instead of falling back.
- 
- # Browser-safe account connection configuration.
--# Leave values empty in this example; local values belong in .env.local.
-+# Leave values empty in this example; local values belong in user-managed copy files.
- GAMEFOUNDRY_SUPABASE_URL=
- GAMEFOUNDRY_SUPABASE_ANON_KEY=
- 
- # Server-only product-data and account administration connection configuration.
- # Do not expose these values to browser JavaScript, HTML, reports, or screenshots.
- GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=
--GAMEFOUNDRY_SUPABASE_DATABASE_URL=
-+GAMEFOUNDRY_DATABASE_URL=
++++ /dev/null
+@@ -1,4 +0,0 @@
+-GAMEFOUNDRY_SUPABASE_URL=
+-GAMEFOUNDRY_SUPABASE_ANON_KEY=
+-GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=
+-GAMEFOUNDRY_DATABASE_URL=
 diff --git a/.env.uat b/.env.uat
-index 7a79dfd2c..5f395b3a3 100644
+deleted file mode 100644
+index 5f395b3a3..000000000
 --- a/.env.uat
-+++ b/.env.uat
-@@ -6,4 +6,4 @@
- GAMEFOUNDRY_SUPABASE_URL=
- GAMEFOUNDRY_SUPABASE_ANON_KEY=
- GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=
--GAMEFOUNDRY_SUPABASE_DATABASE_URL=
-+GAMEFOUNDRY_DATABASE_URL=
++++ /dev/null
+@@ -1,9 +0,0 @@
+-# Game Foundry Studio UAT connection environment
+-
+-# Populate reviewed UAT connection values outside commits before starting UAT.
+-# Do not paste secrets into reports, screenshots, browser code, or PR notes.
+-
+-GAMEFOUNDRY_SUPABASE_URL=
+-GAMEFOUNDRY_SUPABASE_ANON_KEY=
+-GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=
+-GAMEFOUNDRY_DATABASE_URL=
 diff --git a/.gitignore b/.gitignore
-index dd2fb3bf3..f6558e4d1 100644
+index f6558e4d1..a7841af18 100644
 --- a/.gitignore
 +++ b/.gitignore
-@@ -37,4 +37,5 @@ docs/dev/reports/playwright_v8_coverage_report.txt
- *.mp4
+@@ -38,4 +38,7 @@ docs/dev/reports/playwright_v8_coverage_report.txt
  *.mkv
  
-+.env
- .env.local
-diff --git a/scripts/apply-supabase-dev-ddl.mjs b/scripts/apply-supabase-dev-ddl.mjs
-index c1607d9dc..76f3ee8b7 100644
---- a/scripts/apply-supabase-dev-ddl.mjs
-+++ b/scripts/apply-supabase-dev-ddl.mjs
-@@ -89,13 +89,13 @@ function envValue(key) {
- }
- 
- function parseDatabaseUrl() {
--  const value = envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL");
-+  const value = envValue("GAMEFOUNDRY_DATABASE_URL");
-   if (!value) {
--    throw new Error("GAMEFOUNDRY_SUPABASE_DATABASE_URL is required to apply DEV DDL.");
-+    throw new Error("GAMEFOUNDRY_DATABASE_URL is required to apply DEV DDL.");
-   }
-   const databaseUrl = new URL(value);
-   if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
--    throw new Error("GAMEFOUNDRY_SUPABASE_DATABASE_URL must use postgres:// or postgresql://.");
-+    throw new Error("GAMEFOUNDRY_DATABASE_URL must use postgres:// or postgresql://.");
-   }
-   return {
-     database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
-@@ -431,7 +431,7 @@ async function main() {
-   const envLoad = loadEnvLocal();
-   const config = parseDatabaseUrl();
-   if (!config.user || !config.password) {
--    throw new Error("GAMEFOUNDRY_SUPABASE_DATABASE_URL must include username and password.");
-+    throw new Error("GAMEFOUNDRY_DATABASE_URL must include username and password.");
-   }
-   const socket = await openPostgresTlsConnection(config);
-   try {
-diff --git a/scripts/start-local-api-server.mjs b/scripts/start-local-api-server.mjs
-index 7895b6f18..03cb15762 100644
---- a/scripts/start-local-api-server.mjs
-+++ b/scripts/start-local-api-server.mjs
-@@ -3,8 +3,10 @@ import { existsSync, readFileSync } from "node:fs";
- import path from "node:path";
- import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
- 
--function loadEnvLocal() {
--  const envPath = path.resolve(process.cwd(), ".env.local");
-+const RUNTIME_ENV_FILE = ".env";
-+
-+function loadRuntimeEnv() {
-+  const envPath = path.resolve(process.cwd(), RUNTIME_ENV_FILE);
-   if (!existsSync(envPath)) {
-     return {
-       loaded: false,
-@@ -35,7 +37,7 @@ function loadEnvLocal() {
-   };
- }
- 
--const envLocal = loadEnvLocal();
-+const runtimeEnv = loadRuntimeEnv();
- 
- function connectionStatus(requiredKeys) {
-   const missingKeys = requiredKeys.filter((key) => !String(process.env[key] || "").trim());
-@@ -49,9 +51,10 @@ const accountConnection = connectionStatus([
-   "GAMEFOUNDRY_SUPABASE_URL",
-   "GAMEFOUNDRY_SUPABASE_ANON_KEY",
- ]);
--const productDataConnection = connectionStatus([
-+const databaseConnection = connectionStatus([
-   "GAMEFOUNDRY_SUPABASE_URL",
-   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
-+  "GAMEFOUNDRY_DATABASE_URL",
- ]);
- const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || "127.0.0.1";
- const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
-@@ -59,11 +62,11 @@ const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
- const localServer = await startLocalApiServer({ host, port });
- 
- console.log(`GameFoundry API runtime server running at ${localServer.baseUrl}/account/sign-in.html`);
--console.log(envLocal.loaded
--  ? `.env.local loaded for API runtime (${envLocal.loadedKeys} key(s) applied).`
--  : ".env.local was not found for API runtime.");
--console.log(`Configured account connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
--console.log(`Configured product data connection: ${productDataConnection.ready ? "configured" : `missing ${productDataConnection.missingKeys.join(", ")}`}.`);
-+console.log(runtimeEnv.loaded
-+  ? `.env loaded for API runtime (${runtimeEnv.loadedKeys} key(s) applied).`
-+  : ".env was not found for API runtime.");
-+console.log(`Configured auth connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
-+console.log(`Configured database connection: ${databaseConnection.ready ? "configured" : `missing ${databaseConnection.missingKeys.join(", ")}`}.`);
- console.log("Press Ctrl+C to stop.");
- 
- for (const signal of ["SIGINT", "SIGTERM"]) {
-diff --git a/scripts/validate-supabase-dev.mjs b/scripts/validate-supabase-dev.mjs
-index 28be2f882..b1cdff075 100644
---- a/scripts/validate-supabase-dev.mjs
-+++ b/scripts/validate-supabase-dev.mjs
-@@ -11,19 +11,19 @@ const ENV_FILE = ".env.local";
- const REQUIRED_ENV = Object.freeze([
-   {
-     key: "GAMEFOUNDRY_SUPABASE_URL",
--    label: "URL configured",
-+    label: "Auth connection URL configured",
-   },
-   {
-     key: "GAMEFOUNDRY_SUPABASE_ANON_KEY",
--    label: "Publishable key configured",
-+    label: "Auth anon key configured",
-   },
-   {
-     key: "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
--    label: "Service role key configured",
-+    label: "Auth service role key configured",
-   },
-   {
--    key: "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
--    label: "Database URL configured",
-+    key: "GAMEFOUNDRY_DATABASE_URL",
-+    label: "Database connection URL configured",
-   },
- ]);
- 
-@@ -119,7 +119,7 @@ function sanitizeDiagnostic(value) {
-     }
-   });
-   try {
--    const databaseUrl = new URL(envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL"));
-+    const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
-     if (databaseUrl.password) {
-       text = text.split(databaseUrl.password).join(maskValue(databaseUrl.password));
-     }
-@@ -283,7 +283,7 @@ async function checkTlsValidation() {
- }
- 
- function parseDatabaseUrl() {
--  const databaseUrl = new URL(envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL"));
-+  const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
-   if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
-     throw new Error("Database URL must use postgres:// or postgresql://.");
-   }
-@@ -638,8 +638,8 @@ async function main() {
-   const envLoad = loadEnvLocal();
-   const results = [];
-   results.push(envLoad.loaded
--    ? pass(".env.local loaded", `${envLoad.loadedKeys.length} key(s) loaded`)
--    : fail(".env.local loaded", `${ENV_FILE} was not found`));
-+    ? pass("Explicit .env.local DEV validation load", `${envLoad.loadedKeys.length} key(s) loaded`)
-+    : fail("Explicit .env.local DEV validation load", `${ENV_FILE} was not found`));
- 
-   REQUIRED_ENV.forEach(({ key, label }) => {
-     const value = envValue(key);
-diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
-index c31f060c4..d54b7758b 100644
---- a/src/dev-runtime/auth/provider-contract-stubs.mjs
-+++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
-@@ -51,7 +51,7 @@ const BROWSER_SAFE_SUPABASE_ENV_KEYS = Object.freeze([
- 
- const SERVER_ONLY_SUPABASE_SECRET_KEYS = Object.freeze([
-   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
--  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
-+  "GAMEFOUNDRY_DATABASE_URL",
- ]);
- const SUPABASE_POSTGRES_CONFIG_KEYS = Object.freeze([
-   "GAMEFOUNDRY_SUPABASE_URL",
-@@ -59,7 +59,7 @@ const SUPABASE_POSTGRES_CONFIG_KEYS = Object.freeze([
- ]);
- const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
-   ...SUPABASE_POSTGRES_CONFIG_KEYS,
--  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
-+  "GAMEFOUNDRY_DATABASE_URL",
- ]);
- export const SUPABASE_POSTGRES_IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
- export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
-diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-index 2e6ecab97..e75cc5d16 100644
---- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-+++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-@@ -522,7 +522,7 @@ test("Provider contract assigns identity and product data ownership to Supabase
-     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
-     GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-safe-anon-key",
--    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
-+    GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
-     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "server-only-service-role-key",
-     GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test",
-   });
-@@ -1371,7 +1371,7 @@ test("Supabase stubs do not expose server-only secret names or values through th
-   await withEnv({
-     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
--    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
-+    GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
-     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
-   }, async () => {
-     const server = await startApiServer();
-@@ -1396,7 +1396,7 @@ test("Supabase stubs do not expose server-only secret names or values through th
-       assert.equal(providerText.includes("not-a-real-service-role-test-value"), false);
-       assert.equal(providerText.includes("server-only-database-url-placeholder"), false);
-       assert.equal(providerText.includes("GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY"), false);
--      assert.equal(providerText.includes("GAMEFOUNDRY_SUPABASE_DATABASE_URL"), false);
-+      assert.equal(providerText.includes("GAMEFOUNDRY_DATABASE_URL"), false);
-       assert.equal(adapterText.includes("not-a-real-service-role-test-value"), false);
-       assert.equal(adapterText.includes("server-only-database-url-placeholder"), false);
-     } finally {
-@@ -1490,7 +1490,7 @@ test("Supabase Postgres adapter supports identity tables and readiness when conf
-   const calls = [];
-   const database = new SupabasePostgresProviderAdapter({
-     env: {
--      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
-+      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
-       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
-       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
-     },
-@@ -1539,7 +1539,7 @@ test("Supabase Postgres adapter supports DEV cleanup deletes and audit reassignm
-   const calls = [];
-   const database = new SupabasePostgresProviderAdapter({
-     env: {
--      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
-+      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
-       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
-       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
-     },
-@@ -1604,7 +1604,7 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
-   ];
-   const database = new SupabasePostgresProviderAdapter({
-     env: {
--      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
-+      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
-       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
-       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
-     },
-@@ -1686,7 +1686,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
-   const calls = [];
-   const database = new SupabasePostgresProviderAdapter({
-     env: {
--      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
-+      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
-       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
-       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
-     },
-@@ -1781,7 +1781,7 @@ test("Supabase activation diagnostics report readiness for fixed providers", ()
-     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
-     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
--    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
-+    GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
-     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
-     GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
-   });
-@@ -1845,6 +1845,6 @@ test(".env.example documents Supabase DEV variables without values", async () =>
-   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_URL=$/m);
-   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_ANON_KEY=$/m);
-   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=$/m);
--  assert.match(contents, /^GAMEFOUNDRY_SUPABASE_DATABASE_URL=$/m);
-+  assert.match(contents, /^GAMEFOUNDRY_DATABASE_URL=$/m);
-   assert.equal(/supabase\.co|sbp_|eyJ[A-Za-z0-9_-]{20,}/.test(contents), false);
- });
-diff --git a/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs b/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
-index 2171ebb80..fcb560147 100644
---- a/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
-+++ b/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
-@@ -7,7 +7,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
- 
- const SUPABASE_ENV_KEYS = Object.freeze([
-   "GAMEFOUNDRY_SUPABASE_ANON_KEY",
--  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
-+  "GAMEFOUNDRY_DATABASE_URL",
-   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
-   "GAMEFOUNDRY_SUPABASE_URL",
- ]);
-@@ -91,7 +91,7 @@ test.beforeAll(async () => {
-   previousSupabaseEnv = Object.fromEntries(SUPABASE_ENV_KEYS.map((key) => [key, process.env[key]]));
-   fakeSupabaseServer = await startFakeSupabaseServer();
-   process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "game-workspace-anon-key";
--  process.env.GAMEFOUNDRY_SUPABASE_DATABASE_URL = "postgres://game-workspace:test@127.0.0.1:5432/game_workspace";
-+  process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://game-workspace:test@127.0.0.1:5432/game_workspace";
-   process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "game-workspace-service-role-key";
-   process.env.GAMEFOUNDRY_SUPABASE_URL = fakeSupabaseServer.baseUrl;
- });
+ .env
+-.env.local
++.env.*
++!.env.example
++!.env.sample
++!.env.template
 
-# Current report/artifact working-tree diff
-diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index bb4f6e438..59c5a9d4c 100644
---- a/docs_build/dev/reports/codex_changed_files.txt
-+++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,20 +1,12 @@
- # git status --short
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
-  M docs_build/dev/reports/playwright_v8_coverage_report.txt
-- M src/dev-runtime/server/local-api-router.mjs
-- M tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
-- M toolbox/game-workspace/game-workspace.js
--?? .env.uat
--?? docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
-+?? docs_build/dev/reports/PR_26167_193-env-runtime-single-file-and-generic-db-url.md
- 
- # git ls-files --others --exclude-standard
--.env.uat
--docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
-+docs_build/dev/reports/PR_26167_193-env-runtime-single-file-and-generic-db-url.md
- 
- # git diff --stat
--.../dev/reports/coverage_changed_js_guardrail.txt  |  15 ++-
-- .../dev/reports/playwright_v8_coverage_report.txt  |  52 ++++----
-- src/dev-runtime/server/local-api-router.mjs        |  31 ++++-
-- .../tools/GameWorkspaceMockRepository.spec.mjs     | 133 +++++++++++++++++++++
-- toolbox/game-workspace/game-workspace.js           | 115 +++++++++++++++---
-- 5 files changed, 299 insertions(+), 47 deletions(-)
-\ No newline at end of file
-+.../dev/reports/coverage_changed_js_guardrail.txt  | 20 ------------
-+ .../dev/reports/playwright_v8_coverage_report.txt  | 38 +++-------------------
-+ 2 files changed, 4 insertions(+), 54 deletions(-)
-\ No newline at end of file
+# git diff (unstaged, excluding generated codex review artifacts)
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index a79f341ec..aa88fe50b 100644
+index aa88fe50b..7b1c51f19 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,27 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,7 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
  
  Changed runtime JS files considered:
--(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
--(86%) toolbox/game-workspace/game-workspace.js - executed lines 358/358; executed functions 30/35
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
  
  Guardrail warnings:
--(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(100%) none changed - no changed runtime JS files
+diff --git a/docs_build/dev/reports/environment_agnostic_browser_gate_report.md b/docs_build/dev/reports/environment_agnostic_browser_gate_report.md
+index 11802f7f2..12f1f200d 100644
+--- a/docs_build/dev/reports/environment_agnostic_browser_gate_report.md
++++ b/docs_build/dev/reports/environment_agnostic_browser_gate_report.md
+@@ -1,11 +1,13 @@
+-# Environment-Agnostic Browser Gate Report
++# Environment-Agnostic Runtime Gate Report
+ 
+ Status: PASS
+ 
+ ## Scope
+-- Scanned active browser/page roots: `account`, `admin`, `assets/theme-v2/js`, `toolbox`, `src/engine`
+-- Files scanned: 441
+-- Excluded server/dev/test/archive/report/temp roots: `.git`, `archive`, `docs_build`, `node_modules`, `start_of_day`, `tests`, `tmp`.
++- Scanned active browser/page/server/runtime roots: `account`, `admin`, `assets/theme-v2/js`, `toolbox`, `src/engine`, `src`, `scripts`, `docs_build/database`
++- Scanned active runtime example files: `.env.example`, `package.json`
++- Files scanned: 798
++- Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `start_of_day`, `tests`, `tmp`.
++- Tests and validation scripts are excluded only from deployment-label branching failures; their non-branching mentions may still appear for review.
+ 
+ ## Deployment-Label Branching Findings
+ - None
+@@ -27,6 +29,46 @@ Status: PASS
+ 
+ ## Non-Branching Deployment Mentions Reviewed
+ - `admin/branding.html:21` - `development.</p>`
++- `docs_build/database/README.md:7` - `- DEV database DDL belongs in `docs_build/database/ddl/`.`
++- `docs_build/database/README.md:8` - `- DEV setup or DML review artifacts belong in `docs_build/database/dml/`.`
++- `docs_build/database/README.md:20` - `Runtime DEV setup and reseed actions must call server-side APIs. Browser pages must not directly seed authoritative DB records or generate authoritative DB keys.`
++- `docs_build/database/README.md:22` - `Codex may execute DEV database setup only. UAT and production SQL execution is user-controlled. Codex may prepare review artifacts, but it must not execute UAT or production SQL.`
++- `docs_build/database/ddl/account.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/account.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/admin.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/admin.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/asset.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/asset.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/asset.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
++- `docs_build/database/ddl/controls.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/controls.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/controls.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
++- `docs_build/database/ddl/game-configuration.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/game-configuration.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/game-configuration.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
++- `docs_build/database/ddl/game-design.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/game-design.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/game-design.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
++- `docs_build/database/ddl/game-journey.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/game-journey.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/game-journey.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
++- `docs_build/database/ddl/game-workspace.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/game-workspace.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/game-workspace.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
++- `docs_build/database/ddl/objects.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/objects.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/objects.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
++- `docs_build/database/ddl/palette.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/palette.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/palette.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
++- `docs_build/database/ddl/support-tickets.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/support-tickets.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/tags.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/tags.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- `docs_build/database/ddl/tags.sql:6` - `-- Authoritative key values are generated by the server/API layer unless a later DEV-only seed exception explicitly applies.`
++- `docs_build/database/ddl/tool-metadata.sql:1` - `-- Game Foundry Studio DEV database DDL`
++- `docs_build/database/ddl/tool-metadata.sql:4` - `-- Target DEV database: gamefoundry_dev`
++- ... 121 additional record(s) omitted from this report.
+ 
+ ## Result
+-- PASS - Browser/page code uses service contracts without deployment-label branching, account dependency leaks, product-data fallback, or user-facing implementation wording.
++- PASS - Active app/server/DB code uses service contracts without deployment-label branching, account dependency leaks, product-data fallback, or user-facing implementation wording.
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index a778ef12c..aa7322329 100644
+index aa7322329..1c2dff38c 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -17,18 +17,7 @@ Exercised tool entry points detected:
+@@ -17,7 +17,7 @@ Exercised tool entry points detected:
  (57%) Theme V2 Shared JS - exercised 2 runtime JS files
  
  Changed runtime JS files covered:
--(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
--(86%) toolbox/game-workspace/game-workspace.js - executed lines 358/358; executed functions 30/35
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(100%) none changed - no changed runtime JS files
  
  Files with executed line/function counts where available:
  (25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
-@@ -40,31 +29,12 @@ Files with executed line/function counts where available:
+@@ -29,12 +29,7 @@ Files with executed line/function counts where available:
  (100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
  
  Uncovered or low-coverage changed JS files:
--(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) assets/theme-v2/js/owner-operations.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/engine/api/owner-operations-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(100%) none changed - no changed runtime JS files
  
  Changed JS files considered:
--(0%) assets/theme-v2/js/admin-platform-settings.js - changed JS file not collected as browser runtime coverage
--(0%) assets/theme-v2/js/admin-service-page-data.js - changed JS file not collected as browser runtime coverage
--(0%) assets/theme-v2/js/owner-operations.js - changed JS file not collected as browser runtime coverage
--(0%) scripts/sync-supabase-dev-creator-identities.mjs - changed JS file not collected as browser runtime coverage
-+(0%) scripts/apply-supabase-dev-ddl.mjs - changed JS file not collected as browser runtime coverage
-+(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
-+(0%) scripts/validate-supabase-dev.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/engine/api/owner-operations-api-client.js - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
--(56%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
--(86%) toolbox/game-workspace/game-workspace.js - changed JS file with browser V8 coverage
+-(0%) scripts/apply-supabase-dev-ddl.mjs - changed JS file not collected as browser runtime coverage
+-(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
+-(0%) scripts/validate-supabase-dev.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
+diff --git a/scripts/validate-browser-env-agnostic.mjs b/scripts/validate-browser-env-agnostic.mjs
+index b78b0e9b8..887289116 100644
+--- a/scripts/validate-browser-env-agnostic.mjs
++++ b/scripts/validate-browser-env-agnostic.mjs
+@@ -3,18 +3,27 @@ import path from "node:path";
+ 
+ const repoRoot = process.cwd();
+ const reportPath = path.join(repoRoot, "docs_build", "dev", "reports", "environment_agnostic_browser_gate_report.md");
+-const scanRoots = [
++const browserScanRoots = [
+   "account",
+   "admin",
+   "assets/theme-v2/js",
+   "toolbox",
+   "src/engine",
+ ];
+-const allowedExtensions = new Set([".html", ".js", ".mjs"]);
++const environmentScanRoots = [
++  ...browserScanRoots,
++  "src",
++  "scripts",
++  "docs_build/database",
++];
++const environmentScanFiles = [
++  ".env.example",
++  "package.json",
++];
++const allowedExtensions = new Set([".html", ".js", ".json", ".md", ".mjs", ".sql"]);
+ const excludedSegments = new Set([
+   ".git",
+   "archive",
+-  "docs_build",
+   "node_modules",
+   "start_of_day",
+   "tests",
+@@ -22,7 +31,9 @@ const excludedSegments = new Set([
+ ]);
+ 
+ const deploymentTermPattern = /\b(?:DEV|UAT|PROD|Prod|Production|production|Development|development)\b|process\.env|GAMEFOUNDRY_[A-Z0-9_]*(?:ENV|ENVIRONMENT|STAGE|PROVIDER|MODE)[A-Z0-9_]*/;
+-const branchPattern = /^\s*(?:if|else\s+if|switch|while|for)\s*\(|^\s*case\b|\?|\&\&|\|\|/;
++const deploymentBranchDecisionPattern = /^\s*(?:if|else\s+if|switch|while|for)\s*\([^)]*(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env\.(?:GAMEFOUNDRY_ENV|GAMEFOUNDRY_DEPLOYMENT_ENV|NODE_ENV)|\.env\.(?:local|uat|prod)|deployment|environment|stage)[^)]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)[^)]*\)/i;
++const deploymentCasePattern = /^\s*case\s+["'`](?:dev|development|uat|prod|production)["'`]\s*:/i;
++const deploymentTernaryDecisionPattern = /(?:GAMEFOUNDRY_(?:ENV|DEPLOYMENT_ENV|STAGE|MODE)|NODE_ENV|process\.env|deployment|environment|stage)[^?\r\n]*\?[^:\r\n]*(?:DEV|UAT|PROD|dev|development|uat|prod|production)/i;
+ const accountDependencyPattern = /\b(?:Local(?: DB| API)?|SQLite|Supabase|provider|localhost|DEV|UAT|PROD|Prod)\b|data-local-db-|local-db-page-data\.js/i;
+ const userFacingImplementationPattern = /\b(?:DEV|UAT|PROD|Local DB|Local API|SQLite|Supabase|provider)\b/i;
+ const accountBrowserFiles = new Set([
+@@ -70,11 +81,24 @@ function repoPath(absolutePath) {
+ }
+ 
+ function isExcluded(absolutePath) {
+-  return repoPath(absolutePath)
++  const normalizedPath = repoPath(absolutePath);
++  if (normalizedPath.startsWith("docs_build/database/")) {
++    return false;
++  }
++  return normalizedPath
+     .split("/")
+     .some((segment) => excludedSegments.has(segment));
+ }
+ 
++function isValidationOrTestException(filePath) {
++  const normalizedPath = repoPath(filePath);
++  return normalizedPath.startsWith("tests/") ||
++    normalizedPath.startsWith("src/dev-runtime/testing/") ||
++    /^scripts\/validate-[^/]+\.mjs$/.test(normalizedPath) ||
++    /^scripts\/cleanup-supabase-dev-auth-test-users\.mjs$/.test(normalizedPath) ||
++    /^scripts\/sync-supabase-dev-creator-identities\.mjs$/.test(normalizedPath);
++}
++
+ function isCommentOnly(line) {
+   const trimmed = line.trim();
+   return trimmed.startsWith("//") ||
+@@ -87,6 +111,12 @@ function isModuleSyntaxOnly(line) {
+   return /^\s*(?:import|export)\b/.test(line);
+ }
+ 
++function isEnvironmentBranchLine(line) {
++  return deploymentBranchDecisionPattern.test(line) ||
++    deploymentCasePattern.test(line) ||
++    deploymentTernaryDecisionPattern.test(line);
++}
++
+ function isAccountBrowserFile(filePath) {
+   const normalizedPath = repoPath(filePath);
+   return normalizedPath.startsWith("account/") || accountBrowserFiles.has(normalizedPath);
+@@ -118,6 +148,18 @@ async function collectFiles(rootPath) {
+   return files;
+ }
+ 
++async function collectExplicitFiles(filePaths) {
++  const files = [];
++  for (const filePath of filePaths) {
++    const absolutePath = path.join(repoRoot, filePath);
++    const stat = await fs.stat(absolutePath).catch(() => null);
++    if (stat?.isFile() && allowedExtensions.has(path.extname(filePath))) {
++      files.push(absolutePath);
++    }
++  }
++  return files;
++}
++
+ function scanFile(filePath, contents) {
+   const mentions = [];
+   const findings = [];
+@@ -133,10 +175,10 @@ function scanFile(filePath, contents) {
+     if (deploymentTermPattern.test(line)) {
+       mentions.push(record);
+     }
+-    if (deploymentTermPattern.test(line) && !isCommentOnly(line) && branchPattern.test(line)) {
++    if (deploymentTermPattern.test(line) && !isCommentOnly(line) && !isValidationOrTestException(filePath) && isEnvironmentBranchLine(line)) {
+       findings.push({
+         ...record,
+-        reason: "Deployment label appears on a control-flow or branching line.",
++        reason: "Deployment label appears on an active environment control-flow line.",
+       });
+     }
+     if (isAccountBrowserFile(filePath) && accountDependencyPattern.test(line)) {
+@@ -292,7 +334,9 @@ function formatTechnicalDebt(records) {
+   ).join("\n");
+ }
+ 
+-const files = (await Promise.all(scanRoots.map(collectFiles))).flat();
++const collectedFiles = (await Promise.all(environmentScanRoots.map(collectFiles))).flat();
++const explicitFiles = await collectExplicitFiles(environmentScanFiles);
++const files = Array.from(new Set([...collectedFiles, ...explicitFiles])).sort();
+ const allMentions = [];
+ const accountFindings = [];
+ const findings = [];
+@@ -316,14 +360,16 @@ const status = findings.length ||
+   ? "FAIL"
+   : "PASS";
+ const report = [
+-  "# Environment-Agnostic Browser Gate Report",
++  "# Environment-Agnostic Runtime Gate Report",
+   "",
+   `Status: ${status}`,
+   "",
+   "## Scope",
+-  `- Scanned active browser/page roots: ${scanRoots.map((root) => `\`${root}\``).join(", ")}`,
++  `- Scanned active browser/page/server/runtime roots: ${environmentScanRoots.map((root) => `\`${root}\``).join(", ")}`,
++  `- Scanned active runtime example files: ${environmentScanFiles.map((filePath) => `\`${filePath}\``).join(", ")}`,
+   `- Files scanned: ${files.length}`,
+-  "- Excluded server/dev/test/archive/report/temp roots: `.git`, `archive`, `docs_build`, `node_modules`, `start_of_day`, `tests`, `tmp`.",
++  "- Excluded test/archive/report/temp roots: `.git`, `archive`, `node_modules`, `start_of_day`, `tests`, `tmp`.",
++  "- Tests and validation scripts are excluded only from deployment-label branching failures; their non-branching mentions may still appear for review.",
+   "",
+   "## Deployment-Label Branching Findings",
+   formatRecords(findings),
+@@ -350,7 +396,7 @@ const report = [
+   "",
+   "## Result",
+   findings.length
+-    ? "- FAIL - Browser/page code contains deployment-label branching that must be removed or moved behind server connection config."
++    ? "- FAIL - Active app/server/DB code contains deployment-label branching that must be removed or moved behind server connection config."
+     : accountFindings.length
+       ? "- FAIL - Account page/browser code contains forbidden environment/provider dependency terms."
+       : accountServiceContractFindings.length
+@@ -359,7 +405,7 @@ const report = [
+           ? "- FAIL - Product data browser/API paths are not fully constrained to server service contracts."
+           : userFacingUiFindings.length
+             ? "- FAIL - User-facing Account/product UI contains implementation wording."
+-            : "- PASS - Browser/page code uses service contracts without deployment-label branching, account dependency leaks, product-data fallback, or user-facing implementation wording.",
++            : "- PASS - Active app/server/DB code uses service contracts without deployment-label branching, account dependency leaks, product-data fallback, or user-facing implementation wording.",
+   "",
+ ].join("\n");
+
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26167_193-env-runtime-single-file-and-generic-db-url-redo.md
