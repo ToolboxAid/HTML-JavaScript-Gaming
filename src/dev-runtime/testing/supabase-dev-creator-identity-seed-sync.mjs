@@ -61,6 +61,13 @@ const DEV_ROLE_DEFINITIONS = Object.freeze([
     roleSlug: "admin",
   }),
   Object.freeze({
+    description: "Owner account with platform-level stewardship access.",
+    isActive: true,
+    isSystemRole: false,
+    name: "Owner",
+    roleSlug: "owner",
+  }),
+  Object.freeze({
     description: "Deprecated compatibility role. Authenticated accounts use creator.",
     isActive: false,
     isSystemRole: false,
@@ -194,11 +201,13 @@ function roleBySlug(roles, roleSlug) {
 function canonicalDesiredUserRolePairs(roles) {
   const creatorRole = roleBySlug(roles, "creator");
   const adminRole = roleBySlug(roles, "admin");
+  const ownerRole = roleBySlug(roles, "owner");
   return new Set([
     ...DEV_CREATOR_IDENTITIES
       .filter(() => creatorRole)
       .map((identity) => `${identity.key}\u0000${creatorRole.key}`),
     adminRole ? `${SEED_DB_KEYS.users.admin}\u0000${adminRole.key}` : "",
+    ownerRole ? `${SEED_DB_KEYS.users.admin}\u0000${ownerRole.key}` : "",
   ].filter(Boolean));
 }
 
@@ -420,6 +429,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
   const userRolePairs = new Set(afterUserRoles.map((row) => `${row.userKey}\u0000${row.roleKey}`));
   const creatorRole = activeRoleBySlug.get("creator");
   const adminRole = activeRoleBySlug.get("admin");
+  const ownerRole = activeRoleBySlug.get("owner");
   const userRole = afterRoles.find((role) => role.roleSlug === "user");
   const roleSlugByKey = new Map(afterRoles.map((role) => [String(role.key || ""), String(role.roleSlug || "")]));
   const desiredPairs = canonicalDesiredUserRolePairs(afterRoles);
@@ -449,15 +459,20 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
   });
   const davidq = publicByEmail.get("qbytes.dq@gmail.com");
   const davidqAdminAssignment = Boolean(davidq && adminRole && userRolePairs.has(`${davidq.key}\u0000${adminRole.key}`));
+  const davidqOwnerAssignment = Boolean(davidq && ownerRole && userRolePairs.has(`${davidq.key}\u0000${ownerRole.key}`));
   const roleEvidence = {
     davidqAdmin: davidqAdminAssignment,
     davidqCreator: creatorAssignments.find((record) => record.email === "qbytes.dq@gmail.com")?.assigned === true,
+    davidqOwner: davidqOwnerAssignment,
     user1Creator: creatorAssignments.find((record) => record.email === "user1@example.invalid")?.assigned === true,
     user2Creator: creatorAssignments.find((record) => record.email === "user2@example.invalid")?.assigned === true,
     user3Creator: creatorAssignments.find((record) => record.email === "user3@example.invalid")?.assigned === true,
   };
   const nonDavidqAdminAssignments = afterUserRoles
     .filter((row) => adminRole && row.roleKey === adminRole.key && row.userKey !== davidq?.key)
+    .map((row) => String(row.userKey || ""));
+  const nonDavidqOwnerAssignments = afterUserRoles
+    .filter((row) => ownerRole && row.roleKey === ownerRole.key && row.userKey !== davidq?.key)
     .map((row) => String(row.userKey || ""));
   const missingRoleReferenceUserRoles = afterUserRoles
     .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
@@ -497,7 +512,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
   if (creatorAssignments.some((record) => !record.assigned)) {
     failures.push("creator-role-assignment-missing");
   }
-  if (!creatorRole || !adminRole || !activeRoleBySlug.get("guest")) {
+  if (!creatorRole || !adminRole || !activeRoleBySlug.get("guest") || !ownerRole) {
     failures.push("required-role-missing");
   }
   if (userRole && userRole.isActive !== false) {
@@ -509,8 +524,14 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
   if (!davidqAdminAssignment) {
     failures.push("davidq-admin-role-missing");
   }
+  if (!davidqOwnerAssignment) {
+    failures.push("davidq-owner-role-missing");
+  }
   if (nonDavidqAdminAssignments.length) {
     failures.push("unexpected-seeded-admin-assignment");
+  }
+  if (nonDavidqOwnerAssignments.length) {
+    failures.push("unexpected-seeded-owner-assignment");
   }
   if (missingRoleReferenceUserRoles.length || staleRequestedRoleReferences.length) {
     failures.push("stale-user-role-reference-remaining");
@@ -521,6 +542,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
   return {
     creatorAssignments,
     davidqAdminAssignmentPreserved: davidqAdminAssignment,
+    davidqOwnerAssignmentPreserved: davidqOwnerAssignment,
     failures,
     identityEvidence,
     legacyUserRoleDeprecated: !userRole || userRole.isActive === false,
@@ -529,8 +551,10 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
       admin: Boolean(adminRole),
       creator: Boolean(creatorRole),
       guest: Boolean(activeRoleBySlug.get("guest")),
+      owner: Boolean(ownerRole),
     },
     nonDavidqAdminAssignments,
+    nonDavidqOwnerAssignments,
     roleEvidence,
     status: failures.length ? "FAIL" : "PASS",
     staleRequestedRoleReferences,
@@ -563,7 +587,7 @@ export async function syncSupabaseDevCreatorIdentities({
       dryRun: true,
       initialized: {
         roles: DEV_ROLE_DEFINITIONS.length,
-        user_roles: DEV_CREATOR_IDENTITIES.length + 1,
+        user_roles: DEV_CREATOR_IDENTITIES.length + 2,
         users: DEV_CREATOR_IDENTITIES.length,
       },
       written: {
@@ -582,6 +606,10 @@ export async function syncSupabaseDevCreatorIdentities({
         })),
         {
           roleSlug: "admin",
+          userKey: SEED_DB_KEYS.users.admin,
+        },
+        {
+          roleSlug: "owner",
           userKey: SEED_DB_KEYS.users.admin,
         },
       ],

@@ -157,7 +157,7 @@
         return {
             adminMainItems: [],
             diagnostic: diagnostic || "Admin navigation API did not return menu data.",
-            localAdminMyStuffItems: [],
+            ownerMenuItems: [],
             source: "missing-api"
         };
     }
@@ -198,7 +198,7 @@
             navigationAdminMenuCache = {
                 adminMainItems: normalizeNavigationItems(data.adminMainItems),
                 diagnostic: "",
-                localAdminMyStuffItems: normalizeNavigationItems(data.localAdminMyStuffItems),
+                ownerMenuItems: normalizeNavigationItems(data.ownerMenuItems),
                 source: data.source || "server-api"
             };
             return navigationAdminMenuCache;
@@ -236,21 +236,22 @@
         return link;
     }
 
-    function createLocalAdminMyStuffMenu(items) {
+    function createOwnerMenu(items) {
         const item = document.createElement("div");
-        item.className = "nav-item nav-popout-item";
-        item.dataset.adminMyStuffMenu = "";
+        item.className = "nav-item";
+        item.dataset.ownerMenu = "";
 
         const label = document.createElement("a");
-        label.dataset.adminMyStuffLabel = "";
+        label.dataset.navLink = "";
+        label.dataset.route = "owner";
+        label.dataset.ownerMenuLabel = "";
         label.href = items[0] ? menuItemHref(items[0]) : "#";
-        label.setAttribute("aria-haspopup", "true");
-        label.textContent = "My Stuff \u25B8";
+        label.textContent = "Owner \u25BE";
 
         const submenu = document.createElement("div");
-        submenu.className = "sub-menu sub-menu--nested";
-        submenu.dataset.adminMyStuffSubmenu = "";
-        submenu.setAttribute("aria-label", "My Stuff");
+        submenu.className = "sub-menu";
+        submenu.dataset.ownerSubmenu = "";
+        submenu.setAttribute("aria-label", "Owner");
         items.forEach(function (menuItem) {
             submenu.append(createMenuLink(menuItem));
         });
@@ -285,14 +286,6 @@
         if (navigationMenu.diagnostic) {
             submenu.append(createAdminNavigationDiagnostic(navigationMenu.diagnostic));
         }
-        if (navigationMenu.localAdminMyStuffItems.length) {
-            const separator = document.createElement("hr");
-            separator.dataset.adminMyStuffSeparator = "";
-            separator.setAttribute("role", "separator");
-            separator.setAttribute("aria-disabled", "true");
-            separator.tabIndex = -1;
-            submenu.append(createLocalAdminMyStuffMenu(navigationMenu.localAdminMyStuffItems), separator);
-        }
         navigationMenu.adminMainItems.forEach(function (menuItem) {
             submenu.append(createMenuLink(menuItem));
         });
@@ -311,6 +304,20 @@
         const nav = root.querySelector("nav.nav-links");
         if (nav) {
             nav.append(createAdminMenu(loginState));
+        }
+    }
+
+    function renderOwnerMenu(root, canUseOwner) {
+        root.querySelectorAll("[data-owner-menu]").forEach(function (item) {
+            item.remove();
+        });
+        if (!canUseOwner) {
+            return;
+        }
+        const navigationMenu = readNavigationAdminMenu();
+        const nav = root.querySelector("nav.nav-links");
+        if (nav && navigationMenu.ownerMenuItems.length) {
+            nav.append(createOwnerMenu(navigationMenu.ownerMenuItems));
         }
     }
 
@@ -414,10 +421,11 @@
         });
     }
 
-    function createPlatformBanner(banner) {
+    function createPlatformBanner(banner, placement) {
         const section = document.createElement("section");
         section.className = "platform-banner platform-banner--" + banner.tone;
         section.dataset.platformBanner = "";
+        section.dataset.platformBannerPlacement = placement;
         section.setAttribute("aria-label", "Platform notice");
         const inner = document.createElement("div");
         inner.className = "platform-banner__inner";
@@ -442,15 +450,19 @@
             if (!banner.active || !banner.message) {
                 return;
             }
-            const element = createPlatformBanner(banner);
             const header = document.querySelector("header.site-header");
             if (header) {
-                header.after(element);
-                return;
+                header.after(createPlatformBanner(banner, "header"));
             }
-            const main = document.querySelector("main");
-            if (main?.parentNode) {
-                main.parentNode.insertBefore(element, main);
+            const footer = document.querySelector("footer.footer");
+            if (footer?.parentNode) {
+                footer.parentNode.insertBefore(createPlatformBanner(banner, "footer"), footer);
+            }
+            if (!header) {
+                const main = document.querySelector("main");
+                if (main?.parentNode) {
+                    main.parentNode.insertBefore(createPlatformBanner(banner, "header"), main);
+                }
             }
         } catch (error) {
             removePlatformBanner();
@@ -482,6 +494,7 @@
         const accountMenu = directSubMenu(accountItem);
         const canUseAccount = loginState.authenticated;
         const canUseAdmin = loginState.authenticated && loginState.roleSlugs.includes("admin");
+        const canUseOwner = loginState.authenticated && loginState.roleSlugs.includes("owner");
 
         if (accountLink) {
             accountLink.textContent = canUseAccount ? loginState.displayName + " \u25BE" : "Sign In";
@@ -495,6 +508,7 @@
                 link.setAttribute("aria-hidden", String(!canUseAccount));
             });
         }
+        renderOwnerMenu(root, canUseOwner);
         renderAdminMenu(root, loginState, canUseAdmin);
     }
 

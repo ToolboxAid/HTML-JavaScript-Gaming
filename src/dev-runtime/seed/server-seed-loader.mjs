@@ -157,12 +157,21 @@ function roleRows(generateKey) {
     },
     {
       key: generateKey(),
+      roleSlug: "owner",
+      name: "Owner",
+      description: "Owner account with platform-level stewardship access.",
+      isSystemRole: false,
+      isActive: true,
+      ...auditFields(7),
+    },
+    {
+      key: generateKey(),
       roleSlug: "creator",
       name: "Creator",
       description: "Authenticated game creator.",
       isSystemRole: false,
       isActive: true,
-      ...auditFields(7),
+      ...auditFields(8),
     },
     {
       key: generateKey(),
@@ -171,7 +180,7 @@ function roleRows(generateKey) {
       description: "Unauthenticated visitor and starter flow role.",
       isSystemRole: false,
       isActive: true,
-      ...auditFields(8),
+      ...auditFields(9),
     },
   ];
 }
@@ -184,6 +193,7 @@ function userRoleRows(roles) {
     { key: SEED_DB_KEYS.userRoles.user3User, userKey: SEED_DB_KEYS.users.user3, roleKey: roleBySlug.get("creator") },
     { key: SEED_DB_KEYS.userRoles.adminUser, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("creator") },
     { key: SEED_DB_KEYS.userRoles.adminAdmin, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("admin") },
+    { key: SEED_DB_KEYS.userRoles.adminOwner, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("owner") },
   ].map((row, index) => ({
     ...row,
     ...auditFields(10 + index),

@@ -1,841 +1,1415 @@
-﻿diff --git a/admin/platform-settings.html b/admin/platform-settings.html
-index 4567b85ec..12f9a4f53 100644
+diff --git a/account/create-account.html b/account/create-account.html
+index 88c144891..0f222d688 100644
+--- a/account/create-account.html
++++ b/account/create-account.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Create Account - GameFoundryStudio</title>
+-    <meta name="description" content="Create a GameFoundryStudio account through the account service.">
++    <title>Create Account - Game Foundry Studio LLC</title>
++    <meta name="description" content="Create a Game Foundry Studio LLC account through the account service.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+diff --git a/account/index.html b/account/index.html
+index 3380366af..7b6384915 100644
+--- a/account/index.html
++++ b/account/index.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Account Home - GameFoundryStudio</title>
+-    <meta name="description" content="Plan the personal account workspace for GameFoundryStudio creators.">
++    <title>Account Home - Game Foundry Studio LLC</title>
++    <meta name="description" content="Plan the personal account workspace for Game Foundry Studio LLC creators.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+diff --git a/account/lost-password.html b/account/lost-password.html
+index fe0de5204..782849098 100644
+--- a/account/lost-password.html
++++ b/account/lost-password.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Lost Password - GameFoundryStudio</title>
+-    <meta name="description" content="Use the current GameFoundryStudio password reset page.">
++    <title>Lost Password - Game Foundry Studio LLC</title>
++    <meta name="description" content="Use the current Game Foundry Studio LLC password reset page.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+diff --git a/account/password-reset.html b/account/password-reset.html
+index bdf209208..ac2af034e 100644
+--- a/account/password-reset.html
++++ b/account/password-reset.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Password Reset - GameFoundryStudio</title>
+-    <meta name="description" content="Request a GameFoundryStudio password reset through the account service.">
++    <title>Password Reset - Game Foundry Studio LLC</title>
++    <meta name="description" content="Request a Game Foundry Studio LLC password reset through the account service.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+diff --git a/account/sign-in.html b/account/sign-in.html
+index 4ba1716e2..29359bce4 100644
+--- a/account/sign-in.html
++++ b/account/sign-in.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Sign In - GameFoundryStudio</title>
+-    <meta name="description" content="Sign in to your GameFoundryStudio account.">
++    <title>Sign In - Game Foundry Studio LLC</title>
++    <meta name="description" content="Sign in to your Game Foundry Studio LLC account.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+@@ -17,7 +17,7 @@
+             <div class="container">
+                 <div class="kicker">Account</div>
+                 <h1>Sign In</h1>
+-                <p class="lede">Access your GameFoundryStudio account.</p>
++                <p class="lede">Access your Game Foundry Studio LLC account.</p>
+             </div>
+         </section>
+         <section class="section">
+diff --git a/account/user-controls.html b/account/user-controls.html
+index b4d24b290..bc0095c0f 100644
+--- a/account/user-controls.html
++++ b/account/user-controls.html
+@@ -4,7 +4,7 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>User Controls - GameFoundryStudio</title>
++    <title>User Controls - Game Foundry Studio LLC</title>
+     <meta name="description" content="Map personal physical controls to generic normalized controls.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+diff --git a/admin/controls.html b/admin/controls.html
+index 43d322048..a42ff5905 100644
+--- a/admin/controls.html
++++ b/admin/controls.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Controls - GameFoundryStudio</title>
+-    <meta name="description" content="GameFoundryStudio controls and form component examples.">
++    <title>Controls - Game Foundry Studio LLC</title>
++    <meta name="description" content="Game Foundry Studio LLC controls and form component examples.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,7 +18,7 @@
+                 <div>
+                     <div class="kicker">Admin control forge</div>
+                     <h1 class="controls-title">Controls.</h1>
+-                    <p class="lede">A GameFoundryStudio control page showing common HTML controls with foundry-side
++                    <p class="lede">A Game Foundry Studio LLC control page showing common HTML controls with foundry-side
+                         accent colors for forms, tool panels, settings screens, publishing workflows, and account
+                         management.</p>
+                     <div class="hero-actions"><a class="btn primary" href="../admin/controls.html#controls">View Controls</a><a class="btn"
+diff --git a/admin/db-viewer.html b/admin/db-viewer.html
+index 3af44332e..a388c069c 100644
+--- a/admin/db-viewer.html
++++ b/admin/db-viewer.html
+@@ -5,8 +5,8 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>DB Viewer - GameFoundryStudio</title>
+-    <meta name="description" content="Admin-only read-only DB viewer for GameFoundryStudio project data diagnostics.">
++    <title>DB Viewer - Game Foundry Studio LLC</title>
++    <meta name="description" content="Admin-only read-only DB viewer for Game Foundry Studio LLC project data diagnostics.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+diff --git a/admin/design-system.html b/admin/design-system.html
+index 7db09c5a6..b07b8b5e2 100644
+--- a/admin/design-system.html
++++ b/admin/design-system.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Design System - GameFoundryStudio</title>
+-    <meta name="description" content="Authoritative Theme V2 catalog for GameFoundryStudio.">
++    <title>Design System - Game Foundry Studio LLC</title>
++    <meta name="description" content="Authoritative Theme V2 catalog for Game Foundry Studio LLC.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,7 +18,7 @@
+                 <div class="kicker">Admin Reference</div>
+                 <h1>Theme V2 design-system catalog.</h1>
+                 <p class="lede">Authoritative ownership, usage, consumers, status, and gap tracking for the approved
+-                    GameFoundryStudio Theme V2 surface.</p>
++                    Game Foundry Studio LLC Theme V2 surface.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -76,7 +76,7 @@
+                                     <summary>Theme V2 Overview</summary>
+                                     <div class="accordion-body">
+                                         <p><strong>Purpose:</strong> Define the single approved styling surface for
+-                                            GameFoundryStudio pages, Admin references, and first-class tool shells.</p>
++                                            Game Foundry Studio LLC pages, Admin references, and first-class tool shells.</p>
+                                         <p><strong>Approved Theme V2 ownership file:</strong>
+                                             <code>theme.css</code></p>
+                                         <p><strong>Example usage:</strong>
+diff --git a/admin/environments.html b/admin/environments.html
+index 8888e0086..77fd673d3 100644
+--- a/admin/environments.html
++++ b/admin/environments.html
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Environments - GameFoundryStudio</title>
++    <title>Environments - Game Foundry Studio LLC</title>
+     <meta name="description" content="Admin wireframe for release planning and readiness.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+diff --git a/admin/game-migration.html b/admin/game-migration.html
+index 885dfd239..eebe0fadb 100644
+--- a/admin/game-migration.html
++++ b/admin/game-migration.html
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Game Migration - GameFoundryStudio</title>
++    <title>Game Migration - Game Foundry Studio LLC</title>
+     <meta name="description" content="Admin wireframe for legacy game migration planning and validation readiness.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+diff --git a/admin/grouping-colors.html b/admin/grouping-colors.html
+index 6363d481c..1333f1692 100644
+--- a/admin/grouping-colors.html
++++ b/admin/grouping-colors.html
+@@ -4,8 +4,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Grouping Colors - GameFoundryStudio</title>
+-    <meta name="description" content="GameFoundryStudio tool grouping and badge color reference.">
++    <title>Grouping Colors - Game Foundry Studio LLC</title>
++    <meta name="description" content="Game Foundry Studio LLC tool grouping and badge color reference.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+diff --git a/admin/platform-settings.html b/admin/platform-settings.html
+index 12f9a4f53..73c6f1a89 100644
 --- a/admin/platform-settings.html
 +++ b/admin/platform-settings.html
-@@ -43,7 +43,7 @@
-                                 <summary>Banner Controls</summary>
-                                 <div class="accordion-body content-stack">
-                                     <label class="field-inline">
--                                        <input type="checkbox" data-platform-banner-enabled>
-+                                        <input type="checkbox" data-platform-banner-active>
-                                         <span>Show banner</span>
-                                     </label>
-                                     <label class="field-group">Notice kind
-@@ -88,6 +88,7 @@
-                                 <summary>Status</summary>
-                                 <div class="accordion-body content-stack">
-                                     <p class="status" role="status" data-platform-settings-status>Loading platform banner settings...</p>
-+                                    <p class="status" role="status" data-platform-banner-diagnostics>Banner diagnostics unavailable.</p>
-                                 </div>
-                             </details>
-                             <details class="vertical-accordion" open>
-diff --git a/assets/theme-v2/js/admin-platform-settings.js b/assets/theme-v2/js/admin-platform-settings.js
-index 2436f79f8..9502ce936 100644
---- a/assets/theme-v2/js/admin-platform-settings.js
-+++ b/assets/theme-v2/js/admin-platform-settings.js
-@@ -6,8 +6,9 @@ import {
- class AdminPlatformSettingsController {
-     constructor(root) {
-         this.root = root;
--        this.enabledInput = root.querySelector("[data-platform-banner-enabled]");
-+        this.activeInput = root.querySelector("[data-platform-banner-active]");
-         this.kindInput = root.querySelector("[data-platform-banner-kind]");
-+        this.diagnostics = root.querySelector("[data-platform-banner-diagnostics]");
-         this.messageInput = root.querySelector("[data-platform-banner-message]");
-         this.preview = root.querySelector("[data-platform-banner-preview]");
-         this.status = root.querySelector("[data-platform-settings-status]");
-@@ -16,11 +17,11 @@ class AdminPlatformSettingsController {
-     }
-
-     init() {
--        if (!this.enabledInput || !this.kindInput || !this.messageInput || !this.preview || !this.status || !this.toneInput || !this.saveButton) {
-+        if (!this.activeInput || !this.kindInput || !this.diagnostics || !this.messageInput || !this.preview || !this.status || !this.toneInput || !this.saveButton) {
-             return;
-         }
-         this.saveButton.addEventListener("click", () => this.save());
--        [this.enabledInput, this.kindInput, this.messageInput, this.toneInput].forEach((control) => {
-+        [this.activeInput, this.kindInput, this.messageInput, this.toneInput].forEach((control) => {
-             control.addEventListener("input", () => this.renderPreview(this.currentBanner()));
-             control.addEventListener("change", () => this.renderPreview(this.currentBanner()));
-         });
-@@ -33,7 +34,7 @@ class AdminPlatformSettingsController {
-
-     currentBanner() {
-         return {
--            enabled: this.enabledInput.checked,
-+            active: this.activeInput.checked,
-             kind: this.kindInput.value,
-             message: this.messageInput.value.trim(),
-             tone: this.toneInput.value
-@@ -41,16 +42,27 @@ class AdminPlatformSettingsController {
-     }
-
-     applyBanner(banner) {
--        this.enabledInput.checked = banner.enabled === true;
-+        this.activeInput.checked = banner.active === true;
-         this.kindInput.value = banner.kind || "general";
-         this.messageInput.value = banner.message || "";
-         this.toneInput.value = banner.tone || "info";
-         this.renderPreview(this.currentBanner());
-     }
-
-+    setDiagnostics(diagnostics = {}) {
-+        const active = diagnostics.active === true;
-+        const message = typeof diagnostics.message === "string" && diagnostics.message
-+            ? diagnostics.message
-+            : "(empty)";
-+        const sourceTableRowKey = typeof diagnostics.sourceTableRowKey === "string" && diagnostics.sourceTableRowKey
-+            ? diagnostics.sourceTableRowKey
-+            : "(missing)";
-+        this.diagnostics.textContent = `Active: ${active}. Message: ${message}. Source row: ${sourceTableRowKey}.`;
-+    }
-+
-     renderPreview(banner) {
-         this.preview.dataset.platformBannerPreviewTone = banner.tone || "info";
--        this.preview.textContent = banner.enabled && banner.message
-+        this.preview.textContent = banner.active && banner.message
-             ? banner.message
-             : "No active banner.";
-     }
-@@ -59,6 +71,7 @@ class AdminPlatformSettingsController {
-         try {
-             const payload = readAdminPlatformBanner();
-             this.applyBanner(payload.banner || {});
-+            this.setDiagnostics(payload.diagnostics || payload.banner || {});
-             this.setStatus("Platform banner settings loaded.");
-         } catch (error) {
-             this.setStatus(error instanceof Error ? error.message : "Platform banner settings are unavailable.");
-@@ -69,6 +82,7 @@ class AdminPlatformSettingsController {
-         try {
-             const payload = updateAdminPlatformBanner(this.currentBanner());
-             this.applyBanner(payload.banner || {});
-+            this.setDiagnostics(payload.diagnostics || payload.banner || {});
-             this.setStatus("Platform banner settings saved.");
-             window.dispatchEvent(new CustomEvent("gamefoundry:platform-settings-changed"));
-         } catch (error) {
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Platform Settings - GameFoundryStudio</title>
++    <title>Platform Settings - Game Foundry Studio LLC</title>
+     <meta name="description" content="Admin controls for platform settings and operational notice banners.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+diff --git a/admin/site-settings.html b/admin/site-settings.html
+index 56d78e731..e2d1e0dbc 100644
+--- a/admin/site-settings.html
++++ b/admin/site-settings.html
+@@ -3,8 +3,8 @@
+ <head>
+     <meta charset="utf-8">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Site Settings - GameFoundryStudio</title>
+-    <meta name="description" content="Plan global site settings for GameFoundryStudio.">
++    <title>Site Settings - Game Foundry Studio LLC</title>
++    <meta name="description" content="Plan global site settings for Game Foundry Studio LLC.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="../assets/theme-v2/css/theme.css">
+ </head>
+diff --git a/admin/site-setup.html b/admin/site-setup.html
+index 4dc322d46..f65a76dfd 100644
+--- a/admin/site-setup.html
++++ b/admin/site-setup.html
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Site Setup - GameFoundryStudio</title>
++    <title>Site Setup - Game Foundry Studio LLC</title>
+     <meta name="description" content="Admin foundation for future controlled setup actions.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+diff --git a/admin/tool-votes.html b/admin/tool-votes.html
+index a4ecbeacd..0cbb6555f 100644
+--- a/admin/tool-votes.html
++++ b/admin/tool-votes.html
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Tool Votes - GameFoundryStudio</title>
++    <title>Tool Votes - Game Foundry Studio LLC</title>
+     <meta name="description" content="Admin review page for Toolbox vote totals and current-user vote state.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+diff --git a/admin/users.html b/admin/users.html
+index 730edddfb..6b241edc1 100644
+--- a/admin/users.html
++++ b/admin/users.html
+@@ -5,7 +5,7 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Users - GameFoundryStudio</title>
++    <title>Users - Game Foundry Studio LLC</title>
+     <meta name="description" content="Admin wireframe for user review, account status, and role assignment planning.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 diff --git a/assets/theme-v2/js/gamefoundry-partials.js b/assets/theme-v2/js/gamefoundry-partials.js
-index 2538b2c69..24b705b47 100644
+index 24b705b47..74ceebcf3 100644
 --- a/assets/theme-v2/js/gamefoundry-partials.js
 +++ b/assets/theme-v2/js/gamefoundry-partials.js
-@@ -388,6 +388,8 @@
+@@ -157,7 +157,7 @@
          return {
-             active: banner.active === true,
-             message: typeof banner.message === "string" ? banner.message.trim() : "",
-+            sourceTable: typeof banner.sourceTable === "string" ? banner.sourceTable : data?.sourceTable || "",
-+            sourceTableRowKey: typeof banner.sourceTableRowKey === "string" ? banner.sourceTableRowKey : "",
-             tone
+             adminMainItems: [],
+             diagnostic: diagnostic || "Admin navigation API did not return menu data.",
+-            localAdminMyStuffItems: [],
++            ownerMenuItems: [],
+             source: "missing-api"
          };
      }
-@@ -430,6 +432,12 @@
-     async function renderPlatformBanner() {
-         try {
-             const banner = await requestPlatformBanner();
-+            window.GameFoundryPlatformBannerDiagnostics = {
-+                active: banner.active,
-+                message: banner.message,
-+                sourceTable: banner.sourceTable,
-+                sourceTableRowKey: banner.sourceTableRowKey
-+            };
-             removePlatformBanner();
+@@ -198,7 +198,7 @@
+             navigationAdminMenuCache = {
+                 adminMainItems: normalizeNavigationItems(data.adminMainItems),
+                 diagnostic: "",
+-                localAdminMyStuffItems: normalizeNavigationItems(data.localAdminMyStuffItems),
++                ownerMenuItems: normalizeNavigationItems(data.ownerMenuItems),
+                 source: data.source || "server-api"
+             };
+             return navigationAdminMenuCache;
+@@ -236,21 +236,22 @@
+         return link;
+     }
+
+-    function createLocalAdminMyStuffMenu(items) {
++    function createOwnerMenu(items) {
+         const item = document.createElement("div");
+-        item.className = "nav-item nav-popout-item";
+-        item.dataset.adminMyStuffMenu = "";
++        item.className = "nav-item";
++        item.dataset.ownerMenu = "";
+
+         const label = document.createElement("a");
+-        label.dataset.adminMyStuffLabel = "";
++        label.dataset.navLink = "";
++        label.dataset.route = "owner";
++        label.dataset.ownerMenuLabel = "";
+         label.href = items[0] ? menuItemHref(items[0]) : "#";
+-        label.setAttribute("aria-haspopup", "true");
+-        label.textContent = "My Stuff \u25B8";
++        label.textContent = "Owner \u25BE";
+
+         const submenu = document.createElement("div");
+-        submenu.className = "sub-menu sub-menu--nested";
+-        submenu.dataset.adminMyStuffSubmenu = "";
+-        submenu.setAttribute("aria-label", "My Stuff");
++        submenu.className = "sub-menu";
++        submenu.dataset.ownerSubmenu = "";
++        submenu.setAttribute("aria-label", "Owner");
+         items.forEach(function (menuItem) {
+             submenu.append(createMenuLink(menuItem));
+         });
+@@ -285,14 +286,6 @@
+         if (navigationMenu.diagnostic) {
+             submenu.append(createAdminNavigationDiagnostic(navigationMenu.diagnostic));
+         }
+-        if (navigationMenu.localAdminMyStuffItems.length) {
+-            const separator = document.createElement("hr");
+-            separator.dataset.adminMyStuffSeparator = "";
+-            separator.setAttribute("role", "separator");
+-            separator.setAttribute("aria-disabled", "true");
+-            separator.tabIndex = -1;
+-            submenu.append(createLocalAdminMyStuffMenu(navigationMenu.localAdminMyStuffItems), separator);
+-        }
+         navigationMenu.adminMainItems.forEach(function (menuItem) {
+             submenu.append(createMenuLink(menuItem));
+         });
+@@ -314,6 +307,20 @@
+         }
+     }
+
++    function renderOwnerMenu(root, canUseOwner) {
++        root.querySelectorAll("[data-owner-menu]").forEach(function (item) {
++            item.remove();
++        });
++        if (!canUseOwner) {
++            return;
++        }
++        const navigationMenu = readNavigationAdminMenu();
++        const nav = root.querySelector("nav.nav-links");
++        if (nav && navigationMenu.ownerMenuItems.length) {
++            nav.append(createOwnerMenu(navigationMenu.ownerMenuItems));
++        }
++    }
++
+     function serverRouteUnavailableDiagnostic(method, url, status) {
+         return "Server API route unavailable for " + method + " " + url + " (" + status + "). Start the site API route instead of a static-only server.";
+     }
+@@ -414,10 +421,11 @@
+         });
+     }
+
+-    function createPlatformBanner(banner) {
++    function createPlatformBanner(banner, placement) {
+         const section = document.createElement("section");
+         section.className = "platform-banner platform-banner--" + banner.tone;
+         section.dataset.platformBanner = "";
++        section.dataset.platformBannerPlacement = placement;
+         section.setAttribute("aria-label", "Platform notice");
+         const inner = document.createElement("div");
+         inner.className = "platform-banner__inner";
+@@ -442,15 +450,19 @@
              if (!banner.active || !banner.message) {
                  return;
-@@ -446,6 +454,12 @@
+             }
+-            const element = createPlatformBanner(banner);
+             const header = document.querySelector("header.site-header");
+             if (header) {
+-                header.after(element);
+-                return;
++                header.after(createPlatformBanner(banner, "header"));
++            }
++            const footer = document.querySelector("footer.footer");
++            if (footer?.parentNode) {
++                footer.parentNode.insertBefore(createPlatformBanner(banner, "footer"), footer);
+             }
+-            const main = document.querySelector("main");
+-            if (main?.parentNode) {
+-                main.parentNode.insertBefore(element, main);
++            if (!header) {
++                const main = document.querySelector("main");
++                if (main?.parentNode) {
++                    main.parentNode.insertBefore(createPlatformBanner(banner, "header"), main);
++                }
              }
          } catch (error) {
              removePlatformBanner();
-+            window.GameFoundryPlatformBannerDiagnostics = {
-+                active: false,
-+                message: "",
-+                sourceTable: "",
-+                sourceTableRowKey: ""
-+            };
-             console.warn("[platform-settings/operator] Platform banner unavailable:", error instanceof Error ? error.message : String(error || ""));
+@@ -482,6 +494,7 @@
+         const accountMenu = directSubMenu(accountItem);
+         const canUseAccount = loginState.authenticated;
+         const canUseAdmin = loginState.authenticated && loginState.roleSlugs.includes("admin");
++        const canUseOwner = loginState.authenticated && loginState.roleSlugs.includes("owner");
+
+         if (accountLink) {
+             accountLink.textContent = canUseAccount ? loginState.displayName + " \u25BE" : "Sign In";
+@@ -495,6 +508,7 @@
+                 link.setAttribute("aria-hidden", String(!canUseAccount));
+             });
          }
++        renderOwnerMenu(root, canUseOwner);
+         renderAdminMenu(root, loginState, canUseAdmin);
      }
+
+diff --git a/assets/theme-v2/partials/footer.html b/assets/theme-v2/partials/footer.html
+index 31e60d5f6..121a4233f 100644
+--- a/assets/theme-v2/partials/footer.html
++++ b/assets/theme-v2/partials/footer.html
+@@ -1,6 +1,6 @@
+ <footer class="footer">
+   <div class="container footer__inner">
+-    <div class="footer__tagline" aria-label="GameFoundryStudio motto">Build &middot; Play &middot; Share</div>
++    <div class="footer__tagline" aria-label="Game Foundry Studio LLC motto">Build &middot; Play &middot; Share</div>
+     <nav class="footer__groups" aria-label="Footer navigation">
+       <section class="footer__group" aria-labelledby="footer-product">
+         <h2 id="footer-product">Product</h2>
+@@ -61,7 +61,7 @@
+     </nav>
+     <div class="footer__brand">
+       <span>&copy; 2026</span>
+-      <span>GameFoundryStudio LLC</span>
++      <span>Game Foundry Studio LLC</span>
+     </div>
+     <button class="return-to-top" type="button" data-return-to-top aria-label="Return to top" title="Return to top">
+       <span aria-hidden="true">^</span>
+diff --git a/assets/theme-v2/partials/header-nav.html b/assets/theme-v2/partials/header-nav.html
+index f8eb1fc9d..8c02d92e1 100644
+--- a/assets/theme-v2/partials/header-nav.html
++++ b/assets/theme-v2/partials/header-nav.html
+@@ -1,8 +1,8 @@
+ <header class="site-header">
+   <div class="container nav">
+     <a class="brand" data-route="home" href="index.html">
+-      <img src="/assets/theme-v2/images/logo-mark.svg" alt="GameFoundryStudio mark">
+-      <span>GameFoundryStudio</span>
++      <img src="/assets/theme-v2/images/logo-mark.svg" alt="Game Foundry Studio LLC mark">
++      <span>Game Foundry Studio LLC</span>
+     </a>
+     <nav class="nav-links" aria-label="Main navigation">
+       <div class="nav-item">
+diff --git a/docs_build/database/dml/account.sql b/docs_build/database/dml/account.sql
+index 5d0b9093f..ce4e137db 100644
+--- a/docs_build/database/dml/account.sql
++++ b/docs_build/database/dml/account.sql
+@@ -94,7 +94,8 @@ BEGIN
+         VALUES
+             ('admin'),
+             ('creator'),
+-            ('guest')
++            ('guest'),
++            ('owner')
+     ) AS required_roles(role_slug)
+     LEFT JOIN roles ON roles."roleSlug" = required_roles.role_slug
+     WHERE roles.key IS NULL;
+@@ -110,7 +111,8 @@ WITH user_role_seed (user_role_key, user_key, role_slug) AS (
+         ('01K2GFSJ0Y0000000000000083', '01K2GFSJ0Y0000000000000052', 'creator'),
+         ('01K2GFSJ0Y0000000000000084', '01K2GFSJ0Y0000000000000053', 'creator'),
+         ('01K2GFSJ0Y0000000000000085', '01K2GFSJ0Y0000000000000054', 'creator'),
+-        ('01K2GFSJ0Y0000000000000086', '01K2GFSJ0Y0000000000000054', 'admin')
++        ('01K2GFSJ0Y0000000000000086', '01K2GFSJ0Y0000000000000054', 'admin'),
++        ('01K2GFSJ0Y0000000000000089', '01K2GFSJ0Y0000000000000054', 'owner')
+ ),
+ resolved_user_roles AS (
+     SELECT
+diff --git a/docs_build/database/seed/account.json b/docs_build/database/seed/account.json
+index 4d7845f03..436541605 100644
+--- a/docs_build/database/seed/account.json
++++ b/docs_build/database/seed/account.json
+@@ -30,7 +30,8 @@
+       "01K2GFSJ0Y0000000000000083",
+       "01K2GFSJ0Y0000000000000084",
+       "01K2GFSJ0Y0000000000000085",
+-      "01K2GFSJ0Y0000000000000086"
++      "01K2GFSJ0Y0000000000000086",
++      "01K2GFSJ0Y0000000000000089"
+     ]
+   },
+   "tables": {
+@@ -41,7 +42,7 @@
+     },
+     "roles": {
+       "mode": "server-api-generated-keys",
+-      "requiredRoleSlugs": ["admin", "creator", "guest"],
++      "requiredRoleSlugs": ["admin", "creator", "guest", "owner"],
+       "deprecatedRoleSlugs": ["user"]
+     },
+     "user_roles": {
 diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
-index feb46a9b3..60a15566c 100644
+index 60a15566c..35421870e 100644
 --- a/docs_build/dev/reports/codex_changed_files.txt
 +++ b/docs_build/dev/reports/codex_changed_files.txt
-@@ -1,27 +1,11 @@
--﻿admin/platform-settings.html
--assets/theme-v2/css/status.css
-+admin/platform-settings.html
- assets/theme-v2/js/admin-platform-settings.js
+@@ -1,11 +1,38 @@
++account/create-account.html
++account/index.html
++account/lost-password.html
++account/password-reset.html
++account/sign-in.html
++account/user-controls.html
++admin/controls.html
++admin/db-viewer.html
++admin/design-system.html
++admin/environments.html
++admin/game-migration.html
++admin/grouping-colors.html
+ admin/platform-settings.html
+-assets/theme-v2/js/admin-platform-settings.js
++admin/site-settings.html
++admin/site-setup.html
++admin/tool-votes.html
++admin/users.html
  assets/theme-v2/js/gamefoundry-partials.js
--docs_build/database/dml/admin.sql
--docs_build/database/seed/admin.json
--docs_build/dev/reports/PR_26167_187-live-db-cleanup-and-platform-banner.md
-+docs_build/dev/reports/PR_26167_188-platform-banner-display-fix.md
+-docs_build/dev/reports/PR_26167_188-platform-banner-display-fix.md
++assets/theme-v2/partials/footer.html
++assets/theme-v2/partials/header-nav.html
++docs_build/database/dml/account.sql
++docs_build/database/seed/account.json
  docs_build/dev/reports/codex_changed_files.txt
  docs_build/dev/reports/codex_review.diff
  docs_build/dev/reports/coverage_changed_js_guardrail.txt
--docs_build/dev/reports/environment_agnostic_browser_gate_report.md
  docs_build/dev/reports/playwright_v8_coverage_report.txt
--scripts/sync-supabase-dev-creator-identities.mjs
--src/dev-runtime/auth/provider-contract-stubs.mjs
--src/dev-runtime/persistence/mock-db-store.js
--src/dev-runtime/seed/seed-db-keys.mjs
--src/dev-runtime/seed/server-seed-loader.mjs
++docs_build/dev/reports/PR_26167_189-owner-role-branding-and-footer-banner.md
++index.html
++src/dev-runtime/admin/header-nav.local.html
++src/dev-runtime/admin/notes.html
++src/dev-runtime/persistence/mock-db-store.js
++src/dev-runtime/seed/seed-db-keys.mjs
++src/dev-runtime/seed/server-seed-loader.mjs
  src/dev-runtime/server/local-api-router.mjs
--src/dev-runtime/server/local-api-server.mjs
--src/dev-runtime/server/mock-api-router.mjs
--src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs
--src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
--src/engine/api/platform-settings-api-client.js
--tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
- tests/dev-runtime/SupabaseProductDataCutover.test.mjs
--tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+-tests/dev-runtime/SupabaseProductDataCutover.test.mjs
++src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
++tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
  tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
++tests/playwright/tools/LoginSessionMode.spec.mjs
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index ff2a4a8fe..311366a9a 100644
+index 311366a9a..bc2a31555 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -1,55 +1,14 @@
+@@ -1,14 +1,22 @@
  Changed Runtime JS Coverage Guardrail
 
-+PR: PR_26167_188-platform-banner-display-fix
+-PR: PR_26167_188-platform-banner-display-fix
  Status: advisory only.
  Thresholds: none enforced.
--Missing changed runtime JS files are WARN, not FAIL.
--Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
-+Missing browser V8 coverage is WARN, not FAIL.
+-Missing browser V8 coverage is WARN, not FAIL.
++Missing changed runtime JS files are WARN, not FAIL.
++Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(0%) admin/db-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/account-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/api/admin-setup-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/api/db-viewer-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/input/GamepadHapticsService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
--(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 707/707; executed functions 44/62
--(75%) src/engine/api/platform-settings-api-client.js - executed lines 25/25; executed functions 3/4
--(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 77/77; executed functions 14/14
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: server-side route module is outside browser V8 collection; covered by node contract and live API validation
-+(73%) assets/theme-v2/js/gamefoundry-partials.js - targeted Playwright covered banner request/render/remove behavior
-+(100%) assets/theme-v2/js/admin-platform-settings.js - targeted Playwright covered Admin load/save/diagnostics behavior
-
- Guardrail warnings:
--(0%) admin/db-viewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) assets/theme-v2/js/account-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/engine/api/admin-setup-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/engine/api/db-viewer-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/engine/api/db-viewer-ui.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/engine/input/GamepadHapticsService.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(25%) src/engine/api/session-api-client.js - WARNING: advisory low coverage below 50%; executed lines 68/68; executed functions 3/12
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: browser V8 does not collect server-side modules
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 120f757b0..3a7be7e35 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -1,113 +1,21 @@
- Playwright V8 Coverage Report
-
--PR: generated by current Playwright run.
--Coverage source: Playwright/Chromium built-in V8 coverage.
--Coverage scope: all repo-relative browser JavaScript collected by Playwright/Chromium V8 coverage.
--Dependencies: no new npm packages.
-+PR: PR_26167_188-platform-banner-display-fix
-+Coverage source: Playwright/Chromium built-in V8 coverage from targeted platform-settings Playwright.
-+Command: npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Platform banner renders|Platform Settings Admin controls" --workers=1
- Thresholds: none enforced.
--Note: coverage is an advisory baseline only for this PR.
--Note: missing changed runtime JS coverage is reported as WARN, not FAIL.
--Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.
--Note: entry percentages use function coverage when available, otherwise line coverage.
--Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
--
--Exercised tool entry points detected:
--(14%) Toolbox Index - exercised 1 runtime JS files
--(0%) Tool Template V2 - not exercised by this Playwright run
--(79%) Theme V2 Shared JS - exercised 7 runtime JS files
-+Note: coverage is advisory for changed browser runtime JavaScript.
-+Note: server-side runtime JavaScript is not collected by browser V8 coverage and is reported as WARN.
-
- Changed runtime JS files covered:
--(0%) admin/db-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/account-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/api/admin-setup-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/api/db-viewer-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/engine/input/GamepadHapticsService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
--(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 707/707; executed functions 44/62
--(75%) src/engine/api/platform-settings-api-client.js - executed lines 25/25; executed functions 3/4
--(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 77/77; executed functions 14/14
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: server-side route module validated by node --check, targeted node contract test, and live API validation; browser V8 does not collect it
-+(73%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 721/721; executed functions 45/62
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: server-side route module is outside browser V8 collection; covered by node contract and live API validation
+-(73%) assets/theme-v2/js/gamefoundry-partials.js - targeted Playwright covered banner request/render/remove behavior
+-(100%) assets/theme-v2/js/admin-platform-settings.js - targeted Playwright covered Admin load/save/diagnostics behavior
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 734/734; executed functions 51/65
 +(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 90/90; executed functions 15/15
 
--Files with executed line/function counts where available:
--(14%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 3/22
--(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
--(47%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 9/19
--(50%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 7/14
--(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 707/707; executed functions 44/62
-+Supporting covered runtime JS:
+ Guardrail warnings:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: browser V8 does not collect server-side modules
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 3a7be7e35..48d4f4ab0 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -1,21 +1,56 @@
+ Playwright V8 Coverage Report
+
+-PR: PR_26167_188-platform-banner-display-fix
+-Coverage source: Playwright/Chromium built-in V8 coverage from targeted platform-settings Playwright.
+-Command: npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Platform banner renders|Platform Settings Admin controls" --workers=1
++PR: generated by current Playwright run.
++Coverage source: Playwright/Chromium built-in V8 coverage.
++Coverage scope: all repo-relative browser JavaScript collected by Playwright/Chromium V8 coverage.
++Dependencies: no new npm packages.
+ Thresholds: none enforced.
+-Note: coverage is advisory for changed browser runtime JavaScript.
+-Note: server-side runtime JavaScript is not collected by browser V8 coverage and is reported as WARN.
++Note: coverage is an advisory baseline only for this PR.
++Note: missing changed runtime JS coverage is reported as WARN, not FAIL.
++Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.
++Note: entry percentages use function coverage when available, otherwise line coverage.
++Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
++
++Exercised tool entry points detected:
++(14%) Toolbox Index - exercised 1 runtime JS files
++(0%) Tool Template V2 - not exercised by this Playwright run
++(78%) Theme V2 Shared JS - exercised 5 runtime JS files
+
+ Changed runtime JS files covered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: server-side route module validated by node --check, targeted node contract test, and live API validation; browser V8 does not collect it
+-(73%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 721/721; executed functions 45/62
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 734/734; executed functions 51/65
+ (100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 90/90; executed functions 15/15
+
+-Supporting covered runtime JS:
++Files with executed line/function counts where available:
++(14%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 3/22
++(43%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 6/14
++(50%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 7/14
++(71%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 5/7
  (75%) src/engine/api/platform-settings-api-client.js - executed lines 25/25; executed functions 3/4
--(87%) assets/theme-v2/js/account-achievements.js - executed lines 117/117; executed functions 13/15
--(90%) assets/theme-v2/js/account-auth-actions.js - executed lines 83/83; executed functions 9/10
--(92%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 12/13
--(100%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 7/7
--(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 77/77; executed functions 14/14
--
--Uncovered or low-coverage changed JS files:
--(0%) admin/db-viewer.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) assets/theme-v2/js/account-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/engine/api/admin-setup-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/engine/api/db-viewer-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/engine/api/db-viewer-ui.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/engine/input/GamepadHapticsService.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/assets/assets.js - WARNING: uncovered changed runtime JS file; advisory only
--(25%) src/engine/api/session-api-client.js - WARNING: advisory low coverage; executed lines 68/68
++(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 734/734; executed functions 51/65
++(90%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 9/10
++(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 90/90; executed functions 15/15
++
++Uncovered or low-coverage changed JS files:
++(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
--Changed JS files considered:
--(0%) account/user-controls-page.js - changed JS file not collected as browser runtime coverage
--(0%) admin/db-viewer.js - changed JS file not collected as browser runtime coverage
--(0%) assets/theme-v2/js/account-page-data.js - changed JS file not collected as browser runtime coverage
--(0%) assets/theme-v2/js/admin-db-status-panel.js - changed JS file not collected as browser runtime coverage
--(0%) assets/theme-v2/js/admin-service-page-data.js - changed JS file not collected as browser runtime coverage
--(0%) assets/theme-v2/js/admin-setup-actions.js - changed JS file not collected as browser runtime coverage
--(0%) scripts/sync-supabase-dev-creator-identities.mjs - changed JS file not collected as browser runtime coverage
--(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/seed/seed-db-keys.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/engine/api/admin-setup-api-client.js - changed JS file not collected as browser runtime coverage
--(0%) src/engine/api/db-viewer-api-client.js - changed JS file not collected as browser runtime coverage
--(0%) src/engine/api/db-viewer-ui.js - changed JS file not collected as browser runtime coverage
--(0%) src/engine/audio/SoundFontPreviewEngine.js - changed JS file not collected as browser runtime coverage
--(0%) src/engine/input/GamepadHapticsService.js - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/SupabaseProductDataCutover.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/assets/assets.js - changed JS file not collected as browser runtime coverage
--(25%) src/engine/api/session-api-client.js - changed JS file with browser V8 coverage
--(71%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
--(75%) src/engine/api/platform-settings-api-client.js - changed JS file with browser V8 coverage
--(100%) assets/theme-v2/js/admin-platform-settings.js - changed JS file with browser V8 coverage
-+Behavior covered:
-+(100%) active banner response renders under the header with diagnostics
-+(100%) Admin Preferences save sends active=true through the service route
-+(100%) Admin Preferences save sends active=false and removes the rendered banner
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index c061e502f..a64919057 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -210,7 +210,7 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
-   ]),
+-Behavior covered:
+-(100%) active banner response renders under the header with diagnostics
+-(100%) Admin Preferences save sends active=true through the service route
+-(100%) Admin Preferences save sends active=false and removes the rendered banner
++Changed JS files considered:
++(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/seed/seed-db-keys.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/SupabaseProductDataCutover.test.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
++(78%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
++(100%) assets/theme-v2/js/admin-platform-settings.js - changed JS file with browser V8 coverage
+diff --git a/index.html b/index.html
+index aac42f207..4caf1192e 100644
+--- a/index.html
++++ b/index.html
+@@ -4,8 +4,8 @@
+ <head>
+   <meta charset="utf-8">
+   <meta name="viewport" content="width=device-width, initial-scale=1">
+-  <title>GameFoundryStudio - Build. Play. Share.</title>
+-  <meta name="description" content="Build, play, publish, and share browser games with GameFoundryStudio.">
++  <title>Game Foundry Studio LLC - Build. Play. Share.</title>
++  <meta name="description" content="Build, play, publish, and share browser games with Game Foundry Studio LLC.">
+   <link rel="icon" href="/favicon.svg">
+   <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -31,9 +31,9 @@
+             <a class="entry-card" href="marketplace/index.html"><span>Share</span><strong>Share Creations</strong><small>Publish and Connect</small></a>
+           </div>
+         </div>
+-        <aside class="hero-art" aria-label="GameFoundryStudio logo artwork">
++        <aside class="hero-art" aria-label="Game Foundry Studio LLC logo artwork">
+           <img src="assets/theme-v2/images/game-foundry-studio-logo.png"
+-            alt="GameFoundryStudio forged logo with anvil, sword, die, and gear">
++            alt="Game Foundry Studio LLC forged logo with anvil, sword, die, and gear">
+         </aside>
+       </div>
+     </section>
+@@ -92,7 +92,7 @@
+     <section class="section" id="what">
+       <div class="container split">
+         <div>
+-          <div class="kicker">What is GameFoundryStudio?</div>
++          <div class="kicker">What is Game Foundry Studio LLC?</div>
+           <h2>A complete place to create, test, publish, and play.</h2>
+           <p class="lede small">Game Foundry Studio is a creator destination for building browser games, assets, worlds,
+             audio, rules, and publishing workflows in one connected place.</p>
+diff --git a/src/dev-runtime/admin/header-nav.local.html b/src/dev-runtime/admin/header-nav.local.html
+index f8eb1fc9d..8c02d92e1 100644
+--- a/src/dev-runtime/admin/header-nav.local.html
++++ b/src/dev-runtime/admin/header-nav.local.html
+@@ -1,8 +1,8 @@
+ <header class="site-header">
+   <div class="container nav">
+     <a class="brand" data-route="home" href="index.html">
+-      <img src="/assets/theme-v2/images/logo-mark.svg" alt="GameFoundryStudio mark">
+-      <span>GameFoundryStudio</span>
++      <img src="/assets/theme-v2/images/logo-mark.svg" alt="Game Foundry Studio LLC mark">
++      <span>Game Foundry Studio LLC</span>
+     </a>
+     <nav class="nav-links" aria-label="Main navigation">
+       <div class="nav-item">
+diff --git a/src/dev-runtime/admin/notes.html b/src/dev-runtime/admin/notes.html
+index 5190928d9..70d9d733e 100644
+--- a/src/dev-runtime/admin/notes.html
++++ b/src/dev-runtime/admin/notes.html
+@@ -4,7 +4,7 @@
+     <meta charset="utf-8">
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+-    <title>Admin Notes Local Viewer - GameFoundryStudio</title>
++    <title>Admin Notes Local Viewer - Game Foundry Studio LLC</title>
+     <meta name="description" content="Local development viewer for Admin Notes under docs_build/dev/admin-notes.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
+index 0c3553fc2..1921ee04c 100644
+--- a/src/dev-runtime/persistence/mock-db-store.js
++++ b/src/dev-runtime/persistence/mock-db-store.js
+@@ -240,6 +240,7 @@ function sanitizeState(source = {}) {
+       MOCK_DB_KEYS.userRoles.user3User,
+       MOCK_DB_KEYS.userRoles.adminUser,
+       MOCK_DB_KEYS.userRoles.adminAdmin,
++      MOCK_DB_KEYS.userRoles.adminOwner,
+     ]);
+     const allowedUserKeys = new Set((state.tables.users || []).map((user) => user?.key));
+     const allowedRoleKeys = new Set((state.tables.roles || []).map((role) => role?.key));
+@@ -721,6 +722,15 @@ export function getStandaloneMockDbSeedTables() {
+         isActive: true,
+         ...standaloneAudit(7),
+       },
++      {
++        key: MOCK_DB_KEYS.roles.owner,
++        roleSlug: "owner",
++        name: "owner",
++        description: "Owner account with platform-level stewardship access.",
++        isSystemRole: false,
++        isActive: true,
++        ...standaloneAudit(8),
++      },
+       {
+         key: MOCK_DB_KEYS.roles.creator,
+         roleSlug: "creator",
+@@ -728,7 +738,7 @@ export function getStandaloneMockDbSeedTables() {
+         description: "Creator role for authenticated makers.",
+         isSystemRole: false,
+         isActive: true,
+-        ...standaloneAudit(8),
++        ...standaloneAudit(9),
+       },
+       {
+         key: MOCK_DB_KEYS.roles.guest,
+@@ -737,7 +747,7 @@ export function getStandaloneMockDbSeedTables() {
+         description: "Guest role for unauthenticated browsing and starter flows.",
+         isSystemRole: false,
+         isActive: true,
+-        ...standaloneAudit(9),
++        ...standaloneAudit(10),
+       },
+     ],
+     user_roles: [
+@@ -746,6 +756,7 @@ export function getStandaloneMockDbSeedTables() {
+       { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: MOCK_DB_KEYS.roles.creator, ...standaloneAudit(13) },
+       { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.creator, ...standaloneAudit(14) },
+       { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...standaloneAudit(15) },
++      { key: MOCK_DB_KEYS.userRoles.adminOwner, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.owner, ...standaloneAudit(16) },
+     ],
+     platform_settings: [
+       {
+diff --git a/src/dev-runtime/seed/seed-db-keys.mjs b/src/dev-runtime/seed/seed-db-keys.mjs
+index cab6cf023..bbc8db609 100644
+--- a/src/dev-runtime/seed/seed-db-keys.mjs
++++ b/src/dev-runtime/seed/seed-db-keys.mjs
+@@ -19,6 +19,7 @@ export const SEED_DB_KEYS = Object.freeze({
+     beta: makeSeedUlid(75),
+     creator: makeSeedUlid(76),
+     guest: makeSeedUlid(77),
++    owner: makeSeedUlid(78),
+   }),
+   userRoles: Object.freeze({
+     user1User: makeSeedUlid(82),
+@@ -28,6 +29,7 @@ export const SEED_DB_KEYS = Object.freeze({
+     adminAdmin: makeSeedUlid(86),
+     forgeBotSystem: makeSeedUlid(87),
+     user2Beta: makeSeedUlid(88),
++    adminOwner: makeSeedUlid(89),
+   }),
  });
- const PLATFORM_BANNER_SETTING_KEYS = Object.freeze({
--  enabled: "platform.banner.enabled",
-+  active: "platform.banner.enabled",
-   kind: "platform.banner.kind",
-   message: "platform.banner.message",
-   tone: "platform.banner.tone",
-@@ -218,7 +218,7 @@ const PLATFORM_BANNER_SETTING_KEYS = Object.freeze({
- const PLATFORM_BANNER_KINDS = Object.freeze(["general", "temporary-data", "outage"]);
- const PLATFORM_BANNER_TONES = Object.freeze(["info", "warning", "danger"]);
- const PLATFORM_BANNER_DEFAULTS = Object.freeze({
--  enabled: false,
-+  active: false,
-   kind: "general",
-   message: "",
-   tone: "info",
-@@ -401,7 +401,7 @@ function platformSettingBoolean(rowsByKey, fieldName) {
 
- function normalizedPlatformBanner(rows = []) {
-   const rowsByKey = platformSettingBySettingKey(rows);
--  const enabled = platformSettingBoolean(rowsByKey, "enabled");
-+  const activeFlag = platformSettingBoolean(rowsByKey, "active");
-   const message = platformSettingValue(rowsByKey, "message");
-   const tone = PLATFORM_BANNER_TONES.includes(platformSettingValue(rowsByKey, "tone"))
-     ? platformSettingValue(rowsByKey, "tone")
-@@ -410,17 +410,17 @@ function normalizedPlatformBanner(rows = []) {
-     ? platformSettingValue(rowsByKey, "kind")
-     : PLATFORM_BANNER_DEFAULTS.kind;
-   return {
--    active: enabled && Boolean(message),
--    enabled,
-+    active: activeFlag && Boolean(message),
-     kind,
-     message,
-+    sourceTableRowKey: rowsByKey.get(PLATFORM_BANNER_SETTING_KEYS.active)?.key || "",
-     sourceTable: "platform_settings",
-     tone,
-   };
- }
-
- function normalizePlatformBannerUpdate(body = {}) {
--  const enabled = body.enabled === true || String(body.enabled).toLowerCase() === "true";
-+  const active = body.active === true || String(body.active).toLowerCase() === "true";
-   const message = String(body.message || "").trim();
-   const tone = PLATFORM_BANNER_TONES.includes(String(body.tone || "").trim())
-     ? String(body.tone).trim()
-@@ -428,10 +428,10 @@ function normalizePlatformBannerUpdate(body = {}) {
-   const kind = PLATFORM_BANNER_KINDS.includes(String(body.kind || "").trim())
-     ? String(body.kind).trim()
-     : PLATFORM_BANNER_DEFAULTS.kind;
--  if (enabled && !message) {
-+  if (active && !message) {
-     throw new Error("Platform banner message is required before enabling the banner.");
-   }
--  return { enabled, kind, message, tone };
-+  return { active, kind, message, tone };
- }
-
- function platformBannerSettingRows({ actorKey, adapter, banner, existingRows }) {
-@@ -440,9 +440,9 @@ function platformBannerSettingRows({ actorKey, adapter, banner, existingRows })
-   const settingRows = [
+diff --git a/src/dev-runtime/seed/server-seed-loader.mjs b/src/dev-runtime/seed/server-seed-loader.mjs
+index 226826111..5c3f21f86 100644
+--- a/src/dev-runtime/seed/server-seed-loader.mjs
++++ b/src/dev-runtime/seed/server-seed-loader.mjs
+@@ -155,6 +155,15 @@ function roleRows(generateKey) {
+       isActive: true,
+       ...auditFields(6),
+     },
++    {
++      key: generateKey(),
++      roleSlug: "owner",
++      name: "Owner",
++      description: "Owner account with platform-level stewardship access.",
++      isSystemRole: false,
++      isActive: true,
++      ...auditFields(7),
++    },
      {
-       description: "Controls whether the platform banner renders.",
--      settingKey: PLATFORM_BANNER_SETTING_KEYS.enabled,
-+      settingKey: PLATFORM_BANNER_SETTING_KEYS.active,
-       settingType: "boolean",
--      settingValue: banner.enabled ? "true" : "false",
-+      settingValue: banner.active ? "true" : "false",
+       key: generateKey(),
+       roleSlug: "creator",
+@@ -162,7 +171,7 @@ function roleRows(generateKey) {
+       description: "Authenticated game creator.",
+       isSystemRole: false,
+       isActive: true,
+-      ...auditFields(7),
++      ...auditFields(8),
      },
      {
-       description: "Platform banner message text.",
-@@ -478,6 +478,15 @@ function platformBannerSettingRows({ actorKey, adapter, banner, existingRows })
+       key: generateKey(),
+@@ -171,7 +180,7 @@ function roleRows(generateKey) {
+       description: "Unauthenticated visitor and starter flow role.",
+       isSystemRole: false,
+       isActive: true,
+-      ...auditFields(8),
++      ...auditFields(9),
+     },
+   ];
+ }
+@@ -184,6 +193,7 @@ function userRoleRows(roles) {
+     { key: SEED_DB_KEYS.userRoles.user3User, userKey: SEED_DB_KEYS.users.user3, roleKey: roleBySlug.get("creator") },
+     { key: SEED_DB_KEYS.userRoles.adminUser, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("creator") },
+     { key: SEED_DB_KEYS.userRoles.adminAdmin, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("admin") },
++    { key: SEED_DB_KEYS.userRoles.adminOwner, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("owner") },
+   ].map((row, index) => ({
+     ...row,
+     ...auditFields(10 + index),
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index a64919057..560edb4fe 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -180,7 +180,7 @@ const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
+   Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
+   Object.freeze({ label: "Users", path: "admin/users.html", route: "admin-users" }),
+ ]);
+-const LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS = Object.freeze([
++const OWNER_NAVIGATION_ITEMS = Object.freeze([
+   Object.freeze({ label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" }),
+   Object.freeze({ label: "Design System", path: "admin/design-system.html", route: "admin-design-system" }),
+   Object.freeze({ label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" }),
+@@ -1286,7 +1286,7 @@ class ApiRuntimeDataSource {
+     const roles = tables.roles || [];
+     const userRoles = tables.user_roles || [];
+     const roleSlugs = new Set(roles.map((role) => role.roleSlug).filter(Boolean));
+-    const missingDefaultRoles = ["admin", "creator", "guest"].filter((roleSlug) => !roleSlugs.has(roleSlug));
++    const missingDefaultRoles = ["admin", "creator", "guest", "owner"].filter((roleSlug) => !roleSlugs.has(roleSlug));
+     const adminRoleKeys = new Set(roles
+       .filter((role) => role.roleSlug === "admin")
+       .map((role) => role.key));
+@@ -2334,10 +2334,10 @@ class ApiRuntimeDataSource {
+   adminNavigationMenu() {
+     return {
+       adminMainItems: clone(ADMIN_NAVIGATION_MAIN_ITEMS),
+-      localAdminMyStuffItems: clone(LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS),
++      ownerMenuItems: clone(OWNER_NAVIGATION_ITEMS),
+       ownership: {
+         adminMainItems: "navigation config",
+-        localAdminMyStuffItems: "server connection config",
++        ownerMenuItems: "owner navigation config",
+         routeMap: "static shell route resolution",
+       },
+       source: "server-api",
+diff --git a/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs b/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
+index d634a7c71..01f8e9372 100644
+--- a/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
++++ b/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
+@@ -60,6 +60,13 @@ const DEV_ROLE_DEFINITIONS = Object.freeze([
+     name: "Admin",
+     roleSlug: "admin",
+   }),
++  Object.freeze({
++    description: "Owner account with platform-level stewardship access.",
++    isActive: true,
++    isSystemRole: false,
++    name: "Owner",
++    roleSlug: "owner",
++  }),
+   Object.freeze({
+     description: "Deprecated compatibility role. Authenticated accounts use creator.",
+     isActive: false,
+@@ -194,11 +201,13 @@ function roleBySlug(roles, roleSlug) {
+ function canonicalDesiredUserRolePairs(roles) {
+   const creatorRole = roleBySlug(roles, "creator");
+   const adminRole = roleBySlug(roles, "admin");
++  const ownerRole = roleBySlug(roles, "owner");
+   return new Set([
+     ...DEV_CREATOR_IDENTITIES
+       .filter(() => creatorRole)
+       .map((identity) => `${identity.key}\u0000${creatorRole.key}`),
+     adminRole ? `${SEED_DB_KEYS.users.admin}\u0000${adminRole.key}` : "",
++    ownerRole ? `${SEED_DB_KEYS.users.admin}\u0000${ownerRole.key}` : "",
+   ].filter(Boolean));
+ }
+
+@@ -420,6 +429,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+   const userRolePairs = new Set(afterUserRoles.map((row) => `${row.userKey}\u0000${row.roleKey}`));
+   const creatorRole = activeRoleBySlug.get("creator");
+   const adminRole = activeRoleBySlug.get("admin");
++  const ownerRole = activeRoleBySlug.get("owner");
+   const userRole = afterRoles.find((role) => role.roleSlug === "user");
+   const roleSlugByKey = new Map(afterRoles.map((role) => [String(role.key || ""), String(role.roleSlug || "")]));
+   const desiredPairs = canonicalDesiredUserRolePairs(afterRoles);
+@@ -449,9 +459,11 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
    });
- }
-
-+function platformBannerDiagnostics(banner) {
-+  return {
-+    active: banner.active,
-+    message: banner.message,
-+    sourceTable: banner.sourceTable,
-+    sourceTableRowKey: banner.sourceTableRowKey,
-+  };
-+}
-+
- function normalizedToolKey(row) {
-   return String(row?.toolKey || row?.toolId || row?.id || "").trim();
- }
-@@ -1353,8 +1362,10 @@ class ApiRuntimeDataSource {
-   async platformBannerForRoute() {
-     const adapter = this.supabaseDatabaseAdapter("Reading platform banner settings");
-     const rows = await adapter.getPlatformSettings();
-+    const banner = normalizedPlatformBanner(rows);
-     return {
--      banner: normalizedPlatformBanner(rows),
-+      banner,
-+      diagnostics: platformBannerDiagnostics(banner),
-       sourceTable: "platform_settings",
-     };
+   const davidq = publicByEmail.get("qbytes.dq@gmail.com");
+   const davidqAdminAssignment = Boolean(davidq && adminRole && userRolePairs.has(`${davidq.key}\u0000${adminRole.key}`));
++  const davidqOwnerAssignment = Boolean(davidq && ownerRole && userRolePairs.has(`${davidq.key}\u0000${ownerRole.key}`));
+   const roleEvidence = {
+     davidqAdmin: davidqAdminAssignment,
+     davidqCreator: creatorAssignments.find((record) => record.email === "qbytes.dq@gmail.com")?.assigned === true,
++    davidqOwner: davidqOwnerAssignment,
+     user1Creator: creatorAssignments.find((record) => record.email === "user1@example.invalid")?.assigned === true,
+     user2Creator: creatorAssignments.find((record) => record.email === "user2@example.invalid")?.assigned === true,
+     user3Creator: creatorAssignments.find((record) => record.email === "user3@example.invalid")?.assigned === true,
+@@ -459,6 +471,9 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+   const nonDavidqAdminAssignments = afterUserRoles
+     .filter((row) => adminRole && row.roleKey === adminRole.key && row.userKey !== davidq?.key)
+     .map((row) => String(row.userKey || ""));
++  const nonDavidqOwnerAssignments = afterUserRoles
++    .filter((row) => ownerRole && row.roleKey === ownerRole.key && row.userKey !== davidq?.key)
++    .map((row) => String(row.userKey || ""));
+   const missingRoleReferenceUserRoles = afterUserRoles
+     .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
+     .filter((row) => normalizedId(row.roleKey) && !roleSlugByKey.has(normalizedId(row.roleKey)))
+@@ -497,7 +512,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+   if (creatorAssignments.some((record) => !record.assigned)) {
+     failures.push("creator-role-assignment-missing");
    }
-@@ -1383,8 +1394,10 @@ class ApiRuntimeDataSource {
+-  if (!creatorRole || !adminRole || !activeRoleBySlug.get("guest")) {
++  if (!creatorRole || !adminRole || !activeRoleBySlug.get("guest") || !ownerRole) {
+     failures.push("required-role-missing");
+   }
+   if (userRole && userRole.isActive !== false) {
+@@ -509,9 +524,15 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+   if (!davidqAdminAssignment) {
+     failures.push("davidq-admin-role-missing");
+   }
++  if (!davidqOwnerAssignment) {
++    failures.push("davidq-owner-role-missing");
++  }
+   if (nonDavidqAdminAssignments.length) {
+     failures.push("unexpected-seeded-admin-assignment");
+   }
++  if (nonDavidqOwnerAssignments.length) {
++    failures.push("unexpected-seeded-owner-assignment");
++  }
+   if (missingRoleReferenceUserRoles.length || staleRequestedRoleReferences.length) {
+     failures.push("stale-user-role-reference-remaining");
+   }
+@@ -521,6 +542,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+   return {
+     creatorAssignments,
+     davidqAdminAssignmentPreserved: davidqAdminAssignment,
++    davidqOwnerAssignmentPreserved: davidqOwnerAssignment,
+     failures,
+     identityEvidence,
+     legacyUserRoleDeprecated: !userRole || userRole.isActive === false,
+@@ -529,8 +551,10 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
+       admin: Boolean(adminRole),
+       creator: Boolean(creatorRole),
+       guest: Boolean(activeRoleBySlug.get("guest")),
++      owner: Boolean(ownerRole),
+     },
+     nonDavidqAdminAssignments,
++    nonDavidqOwnerAssignments,
+     roleEvidence,
+     status: failures.length ? "FAIL" : "PASS",
+     staleRequestedRoleReferences,
+@@ -563,7 +587,7 @@ export async function syncSupabaseDevCreatorIdentities({
+       dryRun: true,
+       initialized: {
+         roles: DEV_ROLE_DEFINITIONS.length,
+-        user_roles: DEV_CREATOR_IDENTITIES.length + 1,
++        user_roles: DEV_CREATOR_IDENTITIES.length + 2,
+         users: DEV_CREATOR_IDENTITIES.length,
+       },
+       written: {
+@@ -584,6 +608,10 @@ export async function syncSupabaseDevCreatorIdentities({
+           roleSlug: "admin",
+           userKey: SEED_DB_KEYS.users.admin,
+         },
++        {
++          roleSlug: "owner",
++          userKey: SEED_DB_KEYS.users.admin,
++        },
+       ],
+       users: canonicalUserRows(authUsersForIdentity),
      });
-     await adapter.upsertPlatformSettings(rows);
-     const refreshedRows = await adapter.getPlatformSettings();
-+    const refreshedBanner = normalizedPlatformBanner(refreshedRows);
-     return {
--      banner: normalizedPlatformBanner(refreshedRows),
-+      banner: refreshedBanner,
-+      diagnostics: platformBannerDiagnostics(refreshedBanner),
-       recordsWritten: rows.length,
-       sourceTable: "platform_settings",
-     };
-diff --git a/tests/dev-runtime/SupabaseProductDataCutover.test.mjs b/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
-index 54ab780a9..e28122bb9 100644
---- a/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
-+++ b/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
-@@ -279,6 +279,8 @@ test("Platform banner reads and writes through platform settings service routes"
-       assert.equal(initial.sourceTable, "platform_settings");
-       assert.equal(initial.banner.active, false);
-       assert.equal(initial.banner.message, "");
-+      assert.equal(initial.diagnostics.active, false);
-+      assert.equal(initial.diagnostics.message, "");
-
-       await apiJson(server.baseUrl, "/api/session/user", {
-         body: { userKey: SEED_DB_KEYS.users.admin },
-@@ -286,7 +288,7 @@ test("Platform banner reads and writes through platform settings service routes"
-       });
-       const saved = await apiJson(server.baseUrl, "/api/admin/platform-settings/banner", {
-         body: {
--          enabled: true,
-+          active: true,
-           kind: "temporary-data",
-           message: "Temporary data notice for creators.",
-           tone: "warning",
-@@ -298,12 +300,18 @@ test("Platform banner reads and writes through platform settings service routes"
-       assert.equal(saved.banner.kind, "temporary-data");
-       assert.equal(saved.banner.message, "Temporary data notice for creators.");
-       assert.equal(saved.banner.tone, "warning");
-+      assert.equal(saved.diagnostics.active, true);
-+      assert.equal(saved.diagnostics.message, "Temporary data notice for creators.");
-+      assert.equal(/^[0-9A-HJKMNP-TV-Z]{26}$/.test(saved.diagnostics.sourceTableRowKey), true);
-
-       const publicBanner = await apiJson(server.baseUrl, "/api/platform-settings/banner");
-       assert.deepEqual(publicBanner.banner, saved.banner);
-+      assert.deepEqual(publicBanner.diagnostics, saved.diagnostics);
-       assert.equal(fakeSupabase.tables.platform_settings.length, 4);
-       assert.equal(fakeSupabase.tables.platform_settings.every((row) => /^[0-9A-HJKMNP-TV-Z]{26}$/.test(row.key)), true);
-       assert.equal(fakeSupabase.tables.platform_settings.every((row) => row.createdBy === SEED_DB_KEYS.users.admin), true);
-+      assert.equal(fakeSupabase.tables.platform_settings.find((row) => row.settingKey === "platform.banner.enabled")?.settingValue, "true");
-+      assert.equal(fakeSupabase.tables.platform_settings.find((row) => row.settingKey === "platform.banner.message")?.settingValue, "Temporary data notice for creators.");
-       assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path === "/rest/v1/platform_settings?on_conflict=key"), true);
-     } finally {
-       await server.close();
+diff --git a/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs b/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
+index 1d3841ca5..f96d02378 100644
+--- a/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
++++ b/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
+@@ -218,9 +218,11 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
+   ]);
+   assert.equal(result.verification.legacyUserRoleDeprecated, true);
+   assert.equal(result.verification.davidqAdminAssignmentPreserved, true);
++  assert.equal(result.verification.davidqOwnerAssignmentPreserved, true);
+   assert.deepEqual(result.verification.roleEvidence, {
+     davidqAdmin: true,
+     davidqCreator: true,
++    davidqOwner: true,
+     user1Creator: true,
+     user2Creator: true,
+     user3Creator: true,
+@@ -239,5 +241,9 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
+   assert.equal(fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com").displayName, "DavidQ");
+   assert.equal(fake.state.users.every((user) => user.authProvider === "supabase-auth"), true);
+   assert.equal(fake.state.roles.find((role) => role.roleSlug === "user").isActive, false);
++  assert.equal(fake.state.roles.find((role) => role.roleSlug === "owner").isActive, true);
++  const ownerRole = fake.state.roles.find((role) => role.roleSlug === "owner");
++  const davidq = fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com");
++  assert.equal(fake.state.user_roles.some((row) => row.userKey === davidq.key && row.roleKey === ownerRole.key), true);
+   assert.equal(fake.calls.some((call) => call.path === "/auth/v1/admin/users?page=1&per_page=100" && call.method === "GET"), true);
+ });
 diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-index 29207f334..62194d80f 100644
+index 62194d80f..618c7affd 100644
 --- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
 +++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-@@ -120,7 +120,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
-       await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(2);
-       if (adminPage.liveSettings) {
-         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
--        await expect(page.locator("[data-platform-banner-enabled]")).toBeVisible();
-+        await expect(page.locator("[data-platform-banner-active]")).toBeVisible();
-         await expect(page.locator("[data-platform-banner-kind]")).toBeVisible();
-         await expect(page.locator("[data-platform-banner-tone]")).toBeVisible();
-         await expect(page.locator("[data-platform-banner-message]")).toBeVisible();
-@@ -174,11 +174,18 @@ test("Platform banner renders active settings under the header", async ({ page }
-           data: {
-             banner: {
-               active: true,
--              enabled: true,
-               kind: "temporary-data",
-               message: "Temporary data notice for creators.",
-+              sourceTable: "platform_settings",
-+              sourceTableRowKey: "01KVRBANNERACTIVE00000001",
-               tone: "warning",
-             },
-+            diagnostics: {
-+              active: true,
-+              message: "Temporary data notice for creators.",
-+              sourceTable: "platform_settings",
-+              sourceTableRowKey: "01KVRBANNERACTIVE00000001",
-+            },
-             sourceTable: "platform_settings",
-           },
-           ok: true,
-@@ -190,6 +197,12 @@ test("Platform banner renders active settings under the header", async ({ page }
-     await expect(page.locator("[data-platform-banner]")).toHaveCount(1);
-     await expect(page.locator("[data-platform-banner]")).toContainText("Temporary data notice for creators.");
-     await expect(page.locator("[data-platform-banner]")).toHaveClass(/platform-banner--warning/);
-+    await expect.poll(async () => page.evaluate(() => window.GameFoundryPlatformBannerDiagnostics)).toEqual({
-+      active: true,
-+      message: "Temporary data notice for creators.",
-+      sourceTable: "platform_settings",
-+      sourceTableRowKey: "01KVRBANNERACTIVE00000001",
-+    });
+@@ -92,15 +92,16 @@ async function expectNoPageFailures(failures) {
+
+ async function expectAdminHeaderMenu(page) {
+   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveAttribute("href", /admin\/site-setup\.html$/);
++  await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveText("Owner \u25BE");
++  const ownerSubmenu = page.locator("nav.nav-links > .nav-item[data-owner-menu] > .sub-menu");
++  await expect(ownerSubmenu.locator("a")).toHaveText(["DB Viewer", "Design System", "Grouping Colors", "Notes"]);
+   const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
+   await expect(adminSubmenu.locator(":scope > a[data-route='admin-environments']")).toHaveText("Environments");
+   await expect(adminSubmenu.locator(":scope > a[data-route='admin-users']")).toHaveText("Users");
+   await expect(adminSubmenu.locator(":scope > a[data-route='admin-game-migration']")).toHaveText("Game Migration");
+   await expect(adminSubmenu.locator(":scope > a[data-route='admin-platform-settings']")).toHaveText("Platform Settings");
+   await expect(adminSubmenu.locator(":scope > a[data-route='admin-site-setup']")).toHaveText("Site Setup");
+-  const myStuffLabels = await adminSubmenu.locator("[data-admin-my-stuff-submenu] a").allTextContents();
+-  expect(myStuffLabels).not.toContain("Environments");
+-  expect(myStuffLabels).not.toContain("Game Migration");
++  await expect(adminSubmenu.locator("[data-owner-menu], [data-admin-my-stuff-menu], [data-admin-notes-local-menu]")).toHaveCount(0);
+ }
+
+ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+@@ -151,7 +152,7 @@ test("Grouping Colors uses current group color model copy", async ({ page }) =>
+   }
+ });
+
+-test("Platform banner renders active settings under the header", async ({ page }) => {
++test("Platform banner renders active settings under the header and above the footer", async ({ page }) => {
+   const server = await startRepoServer();
+   try {
+     await page.route("**/api/session/current", async (route) => {
+@@ -194,9 +195,11 @@ test("Platform banner renders active settings under the header", async ({ page }
+     });
+
+     await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
+-    await expect(page.locator("[data-platform-banner]")).toHaveCount(1);
+-    await expect(page.locator("[data-platform-banner]")).toContainText("Temporary data notice for creators.");
+-    await expect(page.locator("[data-platform-banner]")).toHaveClass(/platform-banner--warning/);
++    await expect(page.locator("[data-platform-banner]")).toHaveCount(2);
++    await expect(page.locator("[data-platform-banner-placement='header']")).toContainText("Temporary data notice for creators.");
++    await expect(page.locator("[data-platform-banner-placement='header']")).toHaveClass(/platform-banner--warning/);
++    await expect(page.locator("[data-platform-banner-placement='footer']")).toContainText("Temporary data notice for creators.");
++    await expect(page.locator("[data-platform-banner-placement='footer']")).toHaveClass(/platform-banner--warning/);
+     await expect.poll(async () => page.evaluate(() => window.GameFoundryPlatformBannerDiagnostics)).toEqual({
+       active: true,
+       message: "Temporary data notice for creators.",
+@@ -205,25 +208,36 @@ test("Platform banner renders active settings under the header", async ({ page }
+     });
      const layout = await page.evaluate(() => {
        const header = document.querySelector("header.site-header");
-       const banner = document.querySelector("[data-platform-banner]");
-@@ -220,9 +233,10 @@ test("Platform Settings Admin controls update banner through the service route",
-   const server = await startRepoServer();
-   let publicBanner = {
-     active: false,
--    enabled: false,
-     kind: "general",
-     message: "",
-+    sourceTable: "platform_settings",
-+    sourceTableRowKey: "01KVRBANNERACTIVE00000001",
-     tone: "info",
-   };
-   const adminPosts = [];
-@@ -262,6 +276,12 @@ test("Platform Settings Admin controls update banner through the service route",
-         body: JSON.stringify({
-           data: {
-             banner: publicBanner,
-+            diagnostics: {
-+              active: publicBanner.active,
-+              message: publicBanner.message,
-+              sourceTable: "platform_settings",
-+              sourceTableRowKey: publicBanner.sourceTableRowKey,
-+            },
-             sourceTable: "platform_settings",
-           },
-           ok: true,
-@@ -273,10 +293,11 @@ test("Platform Settings Admin controls update banner through the service route",
-         const body = route.request().postDataJSON();
-         adminPosts.push(body);
-         publicBanner = {
--          active: body.enabled === true && Boolean(body.message),
--          enabled: body.enabled === true,
-+          active: body.active === true && Boolean(body.message),
-           kind: body.kind,
-           message: body.message,
-+          sourceTable: "platform_settings",
-+          sourceTableRowKey: "01KVRBANNERACTIVE00000001",
-           tone: body.tone,
-         };
-       }
-@@ -285,6 +306,12 @@ test("Platform Settings Admin controls update banner through the service route",
-         body: JSON.stringify({
-           data: {
-             banner: publicBanner,
-+            diagnostics: {
-+              active: publicBanner.active,
-+              message: publicBanner.message,
-+              sourceTable: "platform_settings",
-+              sourceTableRowKey: publicBanner.sourceTableRowKey,
-+            },
-             recordsWritten: route.request().method() === "POST" ? 4 : 0,
-             sourceTable: "platform_settings",
-           },
-@@ -295,7 +322,9 @@ test("Platform Settings Admin controls update banner through the service route",
-
-     await page.goto(`${server.baseUrl}/admin/platform-settings.html`, { waitUntil: "networkidle" });
-     await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings loaded.");
--    await page.locator("[data-platform-banner-enabled]").check();
-+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: false.");
-+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Source row: 01KVRBANNERACTIVE00000001.");
-+    await page.locator("[data-platform-banner-active]").check();
-     await page.locator("[data-platform-banner-kind]").selectOption("outage");
-     await page.locator("[data-platform-banner-tone]").selectOption("danger");
-     await page.locator("[data-platform-banner-message]").fill("Outage notice for creators.");
-@@ -305,13 +334,36 @@ test("Platform Settings Admin controls update banner through the service route",
-     await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings saved.");
-     expect(adminPosts).toEqual([
-       {
--        enabled: true,
-+        active: true,
-         kind: "outage",
-         message: "Outage notice for creators.",
-         tone: "danger",
-       },
-     ]);
-+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: true.");
-+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Message: Outage notice for creators.");
-     await expect(page.locator("[data-platform-banner]")).toContainText("Outage notice for creators.");
-+
-+    await page.locator("[data-platform-banner-active]").uncheck();
-+    await page.locator("[data-platform-banner-save]").click();
-+    await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings saved.");
-+    expect(adminPosts).toEqual([
-+      {
-+        active: true,
-+        kind: "outage",
-+        message: "Outage notice for creators.",
-+        tone: "danger",
-+      },
-+      {
-+        active: false,
-+        kind: "outage",
-+        message: "Outage notice for creators.",
-+        tone: "danger",
-+      },
-+    ]);
-+    await expect(page.locator("[data-platform-banner-preview]")).toContainText("No active banner.");
-+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: false.");
-+    await expect(page.locator("[data-platform-banner]")).toHaveCount(0);
+-      const banner = document.querySelector("[data-platform-banner]");
++      const headerBanner = document.querySelector("[data-platform-banner-placement='header']");
++      const footerBanner = document.querySelector("[data-platform-banner-placement='footer']");
+       const main = document.querySelector("main");
++      const footer = document.querySelector("footer.footer");
+       const headerBox = header?.getBoundingClientRect();
+-      const bannerBox = banner?.getBoundingClientRect();
++      const headerBannerBox = headerBanner?.getBoundingClientRect();
++      const footerBannerBox = footerBanner?.getBoundingClientRect();
+       const mainBox = main?.getBoundingClientRect();
++      const footerBox = footer?.getBoundingClientRect();
+       return {
+-        bannerBeforeMain: Boolean(banner && main && banner.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING),
+-        bannerTop: Math.round(bannerBox?.top || 0),
+-        bannerWidth: Math.round(bannerBox?.width || 0),
++        footerBannerAboveFooter: Boolean(footerBanner && footer && footerBanner.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING),
++        footerBannerBottom: Math.round(footerBannerBox?.bottom || 0),
++        footerBannerWidth: Math.round(footerBannerBox?.width || 0),
++        footerTop: Math.round(footerBox?.top || 0),
++        headerBannerBeforeMain: Boolean(headerBanner && main && headerBanner.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING),
++        headerBannerTop: Math.round(headerBannerBox?.top || 0),
++        headerBannerWidth: Math.round(headerBannerBox?.width || 0),
+         clientWidth: document.documentElement.clientWidth,
+         headerBottom: Math.round(headerBox?.bottom || 0),
+         mainTop: Math.round(mainBox?.top || 0),
+         viewportWidth: window.innerWidth,
+       };
+     });
+-    expect(layout.bannerBeforeMain).toBe(true);
+-    expect(layout.bannerTop).toBeGreaterThanOrEqual(layout.headerBottom - 2);
+-    expect(layout.mainTop).toBeGreaterThanOrEqual(layout.bannerTop);
+-    expect(layout.bannerWidth).toBe(layout.clientWidth);
++    expect(layout.headerBannerBeforeMain).toBe(true);
++    expect(layout.headerBannerTop).toBeGreaterThanOrEqual(layout.headerBottom - 2);
++    expect(layout.mainTop).toBeGreaterThanOrEqual(layout.headerBannerTop);
++    expect(layout.headerBannerWidth).toBe(layout.clientWidth);
++    expect(layout.footerBannerAboveFooter).toBe(true);
++    expect(layout.footerTop).toBeGreaterThanOrEqual(layout.footerBannerBottom - 2);
++    expect(layout.footerBannerWidth).toBe(layout.clientWidth);
    } finally {
      await server.close();
    }
+@@ -264,7 +278,7 @@ test("Platform Settings Admin controls update banner through the service route",
+               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+               { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
+             ],
+-            localAdminMyStuffItems: [],
++            ownerMenuItems: [],
+           },
+           ok: true,
+         }),
+@@ -342,7 +356,9 @@ test("Platform Settings Admin controls update banner through the service route",
+     ]);
+     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: true.");
+     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Message: Outage notice for creators.");
+-    await expect(page.locator("[data-platform-banner]")).toContainText("Outage notice for creators.");
++    await expect(page.locator("[data-platform-banner]")).toHaveCount(2);
++    await expect(page.locator("[data-platform-banner-placement='header']")).toContainText("Outage notice for creators.");
++    await expect(page.locator("[data-platform-banner-placement='footer']")).toContainText("Outage notice for creators.");
 
+     await page.locator("[data-platform-banner-active]").uncheck();
+     await page.locator("[data-platform-banner-save]").click();
+@@ -369,6 +385,84 @@ test("Platform Settings Admin controls update banner through the service route",
+   }
+ });
 
-diff --git a/docs_build/dev/reports/PR_26167_188-platform-banner-display-fix.md b/docs_build/dev/reports/PR_26167_188-platform-banner-display-fix.md
++test("Owner menu is role-gated separately from Admin menu", async ({ page }) => {
++  const server = await startRepoServer();
++  let authenticated = true;
++  const sessionRoles = [];
++  try {
++    await page.route("**/api/session/current", async (route) => {
++      await route.fulfill({
++        contentType: "application/json",
++        body: JSON.stringify({
++          data: {
++            authenticated,
++            displayName: "DavidQ",
++            roleSlugs: sessionRoles.slice(),
++            userKey: MOCK_DB_KEYS.users.admin,
++          },
++          ok: true,
++        }),
++      });
++    });
++    await page.route("**/api/navigation/admin-menu", async (route) => {
++      await route.fulfill({
++        contentType: "application/json",
++        body: JSON.stringify({
++          data: {
++            adminMainItems: [
++              { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
++              { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
++            ],
++            ownerMenuItems: [
++              { label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" },
++              { label: "Design System", path: "admin/design-system.html", route: "admin-design-system" },
++              { label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" },
++              { href: "/admin/admin-notes.html", label: "Notes", localNotes: true },
++            ],
++          },
++          ok: true,
++        }),
++      });
++    });
++    await page.route("**/api/platform-settings/banner", async (route) => {
++      await route.fulfill({
++        contentType: "application/json",
++        body: JSON.stringify({ data: { banner: { active: false, message: "", tone: "info" } }, ok: true }),
++      });
++    });
++
++    authenticated = false;
++    sessionRoles.splice(0, sessionRoles.length, "owner", "admin", "creator");
++    await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
++    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
++    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toHaveCount(0);
++
++    authenticated = true;
++    sessionRoles.splice(0, sessionRoles.length, "admin", "creator");
++    await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:data-changed")));
++    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
++    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toHaveCount(0);
++
++    sessionRoles.splice(0, sessionRoles.length, "owner", "creator");
++    await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:data-changed")));
++    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
++    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toBeVisible();
++    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu] > .sub-menu a")).toHaveText([
++      "DB Viewer",
++      "Design System",
++      "Grouping Colors",
++      "Notes",
++    ]);
++
++    sessionRoles.splice(0, sessionRoles.length, "owner", "admin", "creator");
++    await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:data-changed")));
++    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
++    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toBeVisible();
++  } finally {
++    await server.close();
++  }
++});
++
+ test("Tool Votes side menu includes Admin platform wireframes", async ({ page }) => {
+   const failures = await startAdminPage(page, "/admin/tool-votes.html");
+
+diff --git a/tests/playwright/tools/LoginSessionMode.spec.mjs b/tests/playwright/tools/LoginSessionMode.spec.mjs
+index 1a892992e..6f0ba93c1 100644
+--- a/tests/playwright/tools/LoginSessionMode.spec.mjs
++++ b/tests/playwright/tools/LoginSessionMode.spec.mjs
+@@ -390,30 +390,12 @@ async function closeFixedLocalApiPage(page, failures) {
+   }
+ }
+
+-async function expectLocalAdminMyStuffMenu(page) {
++async function expectOwnerMenu(page) {
++  const ownerMenu = page.locator("nav.nav-links > .nav-item[data-owner-menu]");
++  const ownerSubmenu = ownerMenu.locator(":scope > .sub-menu");
+   const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
+-  const myStuffMenu = adminSubmenu.locator(":scope > [data-admin-my-stuff-menu]");
+-  const separator = adminSubmenu.locator(":scope > [data-admin-my-stuff-separator]");
+-  await expect(myStuffMenu).toBeVisible();
+-  await expect(separator).toBeVisible();
+-  await expect(separator).toHaveAttribute("role", "separator");
+-  await expect(separator).toHaveAttribute("aria-disabled", "true");
+-  const firstAdminChildren = await adminSubmenu.evaluate((menu) => {
+-    return Array.from(menu.children).slice(0, 2).map((child) => {
+-      if (child.matches("[data-admin-my-stuff-menu]")) return "my-stuff";
+-      if (child.matches("[data-admin-my-stuff-separator]")) return "separator";
+-      return child.textContent?.trim() || "";
+-    });
+-  });
+-  expect(firstAdminChildren).toEqual(["my-stuff", "separator"]);
+-  const separatorFillsWidth = await separator.evaluate((node) => {
+-    const parent = node.parentElement;
+-    if (!parent) return false;
+-    const separatorBox = node.getBoundingClientRect();
+-    const parentBox = parent.getBoundingClientRect();
+-    return separatorBox.width >= parentBox.width * 0.85;
+-  });
+-  expect(separatorFillsWidth).toBe(true);
++  await expect(ownerMenu.locator(":scope > a[data-route='owner']")).toContainText("Owner");
++  await expect(ownerSubmenu).toBeVisible();
+
+   const mainAdminLabels = await adminSubmenu.evaluate((menu) => {
+     return Array.from(menu.children)
+@@ -421,12 +403,10 @@ async function expectLocalAdminMyStuffMenu(page) {
+       .map((child) => child.textContent?.trim() || "");
+   });
+   expect(mainAdminLabels).toEqual(UAT_PROD_ADMIN_LABELS);
++  await expect(adminSubmenu.locator("[data-owner-menu], [data-admin-my-stuff-menu], [data-admin-notes-local-menu]")).toHaveCount(0);
+
+-  await expect(adminSubmenu.locator("[data-admin-my-stuff-label]")).toContainText("My Stuff");
+-  await myStuffMenu.hover();
+-  const myStuffSubmenu = myStuffMenu.locator("[data-admin-my-stuff-submenu]");
+-  await expect(myStuffSubmenu).toBeVisible();
+-  await expect(myStuffSubmenu.locator("a")).toHaveText(DEV_ONLY_ADMIN_LABELS);
++  await ownerMenu.hover();
++  await expect(ownerSubmenu.locator("a")).toHaveText(DEV_ONLY_ADMIN_LABELS);
+   await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Notes");
+   await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
+   await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
+@@ -939,6 +919,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
+     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
+     await expect(page.locator("[data-account-logout]")).toBeVisible();
+     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
++    await expect(page.locator("[data-owner-menu]")).toHaveCount(0);
+     await expect(page.locator("[data-admin-my-stuff-menu]")).toHaveCount(0);
+     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveCount(0);
+     await expectNoPageFailures(failures);
+@@ -959,7 +940,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
+     await expect(page.locator("[data-account-logout]")).toBeVisible();
+     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
+     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
+-    await expectLocalAdminMyStuffMenu(page);
++    await expectOwnerMenu(page);
+     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
+     await expect(page).toHaveURL(/\/admin\/admin-notes\.html$/);
+     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
+@@ -1073,7 +1054,7 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
+     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("DavidQ");
+     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
+     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
+-    await expectLocalAdminMyStuffMenu(page);
++    await expectOwnerMenu(page);
+     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
+     await expect(page).toHaveURL("http://127.0.0.1:5501/admin/admin-notes.html");
+     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
+diff --git a/docs_build/dev/reports/PR_26167_189-owner-role-branding-and-footer-banner.md b/docs_build/dev/reports/PR_26167_189-owner-role-branding-and-footer-banner.md
 new file mode 100644
-index 000000000..1fc2af803
+index 000000000..1406b0f17
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26167_188-platform-banner-display-fix.md
-@@ -0,0 +1,153 @@
-+# PR_26167_188-platform-banner-display-fix
++++ b/docs_build/dev/reports/PR_26167_189-owner-role-branding-and-footer-banner.md
+@@ -0,0 +1,100 @@
++# PR_26167_189-owner-role-branding-and-footer-banner
 +
-+## Root Cause
-+
-+The platform banner contract mixed `enabled` and `active` names. The live table had the banner message saved, but the active setting row was still `false`, so `/api/platform-settings/banner` correctly returned inactive data and both the Admin preview and header banner displayed no active banner.
-+
-+Fix: make `active` the single browser/API contract name, keep the existing `platform.banner.enabled` table setting key for row continuity, and add diagnostics that expose active state, message, and source table row key.
++## Summary
++- Extended the platform banner renderer so one active platform-settings banner renders under the header and another renders directly above the footer.
++- Added the `owner` role to DEV identity seeds and synced DavidQ as owner, admin, and creator while keeping User 1, User 2, and User 3 creator-only.
++- Moved the former Admin My Stuff navigation items into a role-gated top-level Owner menu.
++- Replaced user-facing compact company/legal text in active page HTML from `GameFoundryStudio` to `Game Foundry Studio LLC`.
 +
 +## Branch Validation
-+
-+PASS - current branch is `main`.
++- PASS: current branch is `main`.
++- Expected branch: `main`.
 +
 +## Requirement Checklist
++- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
++- PASS: Hard stop branch guard satisfied on `main`.
++- PASS: Active banner renders directly under `header.site-header`.
++- PASS: Active banner renders directly above `footer.footer`.
++- PASS: Platform banner data remains API/service-backed from `/api/platform-settings/banner`; no browser-owned banner data was added.
++- PASS: User-facing company/legal page text now uses `Game Foundry Studio LLC` in changed active HTML surfaces.
++- PASS: Technical identifiers, filenames, package names, and routes were not renamed except the required internal Admin My Stuff to Owner navigation data contract.
++- PASS: Added `owner` role slug to DEV identity role definitions and seed manifests.
++- PASS: DavidQ has owner, admin, and creator roles.
++- PASS: User 1, User 2, and User 3 remain creator-only.
++- PASS: Admin > My Stuff items now render under top-level Owner menu.
++- PASS: Owner menu displays only when `/api/session/current` resolves a signed-in user with `owner`.
++- PASS: Admin menu still displays for signed-in users with `admin`.
++- PASS: Changed HTML files contain no inline scripts, style blocks, or inline event handlers.
++- PASS: No DEV/UAT/PROD browser branching was added.
++- PASS: No local-db/mock-db/SQLite fallback was added.
++- PASS: No secrets or `.env.local` changes are included.
 +
-+| Requirement | Status | Evidence |
-+| --- | --- | --- |
-+| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first | PASS | Read before implementation. |
-+| Hard stop unless current branch is `main` | PASS | `git branch --show-current` returned `main`. |
-+| Investigate Admin Preferences save | PASS | Found Admin save used an `enabled` payload name instead of the public `active` banner contract. |
-+| Investigate platform settings table write | PASS | Live DB row evidence confirmed message row existed while active row value was `false` before the fix. |
-+| Investigate `/api/platform-settings/banner` response | PASS | Before payload had `active: false`, populated message, and source row key; after save had `active: true`. |
-+| Investigate `requestPlatformBanner()` | PASS | Confirmed it reads `/api/platform-settings/banner` and normalizes the public banner payload. |
-+| Investigate `renderPlatformBanner()` | PASS | Confirmed it removes the banner when `active` is false or message is empty, and renders under header when active. |
-+| Determine if active flag was not being saved | PASS | Live before state showed active row `false`; fixed Admin save sends `active: true/false`. |
-+| Determine if API returns inactive banner | PASS | Before payload returned inactive; after fixed save returned active. |
-+| Determine if API shape mismatched `normalizedPlatformBanner()` | PASS | Fixed contract to use `active` consistently; tests now use active-only mocked API payloads. |
-+| Determine if banner message stored in wrong field | PASS | Message was stored in `platform.banner.message`; not the root cause. |
-+| Determine if read path differs from save path | PASS | Both read and save use `platform_settings`; diagnostics now expose the source row key. |
-+| Fix root cause | PASS | Admin payload, Admin UI hook, server update normalization, public normalization, and tests now use `active`. |
-+| Add diagnostics showing active state, message, source table row key | PASS | API returns `diagnostics`; Admin page shows visible diagnostics; renderer exposes `window.GameFoundryPlatformBannerDiagnostics`. |
-+| Keep platform-settings as SSoT | PASS | Reads/writes remain through `platform_settings` API/service contract only. |
-+| No browser-owned banner data | PASS | Browser code calls server API; no local persistence or page-owned banner records. |
-+| No silent fallback | PASS | API errors throw/report status; inactive banners are explicit `active: false`, not fallback data. |
-+| Save banner `banner is active!@!!` | PASS | Live validation saved exact message with active true. |
-+| Verify row exists in DB | PASS | Live DB row evidence listed active/message/tone/kind `platform_settings` rows. |
-+| Verify GET returns active=true and message populated | PASS | Live public API after active save returned `active: true` and exact message. |
-+| Verify banner renders under header | PASS | Live browser validation found header before banner and banner before main with exact message. |
-+| Verify banner removed when active=false | PASS | Live public API returned `active: false`; browser validation found rendered banner count 0. |
-+| Run targeted platform-settings Playwright | PASS | 2/2 targeted Playwright tests passed. |
-+| Do not run full samples smoke | PASS | Full samples smoke was not run. |
++## DavidQ Role Evidence
++- PASS: DEV identity sync result status `PASS`.
++- PASS: before/after Auth user count: 4 -> 4.
++- PASS: before/after public.users count: 4 -> 4.
++- PASS: identity initialization wrote roles: 5, user_roles: 6, users: 4.
++- PASS: required roles active: admin=true, creator=true, guest=true, owner=true.
++- PASS: role evidence from sync:
++  - User 1 creator: true.
++  - User 2 creator: true.
++  - User 3 creator: true.
++  - DavidQ creator: true.
++  - DavidQ admin: true.
++  - DavidQ owner: true.
++- PASS: no non-DavidQ admin assignments.
++- PASS: no non-DavidQ owner assignments.
++- PASS: live API sign-in for `qbytes.dq@gmail.com` returned HTTP 200.
++- PASS: live `/api/session/current` returned authenticated DavidQ with roleSlugs `admin`, `creator`, and `owner`.
 +
-+## Before API Payload
++## Footer Banner Render Evidence
++- PASS: Targeted Playwright asserted `[data-platform-banner]` count is 2 for an active banner.
++- PASS: Targeted Playwright asserted `[data-platform-banner-placement='header']` contains the active message and is directly after the header/before main.
++- PASS: Targeted Playwright asserted `[data-platform-banner-placement='footer']` contains the active message and is directly above the footer.
++- PASS: Targeted Playwright asserted both rendered banner placements are full document width.
++- PASS: Targeted Playwright asserted disabling the banner removes all `[data-platform-banner]` elements.
 +
-+`GET /api/platform-settings/banner` before the fix returned:
++## Owner Menu Evidence
++- PASS: API navigation response now exposes `ownerMenuItems` for DB Viewer, Design System, Grouping Colors, and Notes.
++- PASS: Browser partial renders a top-level Owner menu from `ownerMenuItems`.
++- PASS: Admin submenu no longer nests Owner/My Stuff items.
++- PASS: Targeted Playwright role-gating evidence:
++  - unauthenticated with owner/admin/creator roleSlugs in mocked payload: Owner hidden, Admin hidden.
++  - `admin`, `creator`: Admin visible, Owner hidden.
++  - `owner`, `creator`: Owner visible, Admin hidden.
++  - `owner`, `admin`, `creator`: Owner visible, Admin visible.
 +
-+```json
-+{
-+  "status": 200,
-+  "banner": {
-+    "active": false,
-+    "kind": "general",
-+    "message": "banner is active!@!!",
-+    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18",
-+    "sourceTable": "platform_settings",
-+    "tone": "info"
-+  },
-+  "diagnostics": {
-+    "active": false,
-+    "message": "banner is active!@!!",
-+    "sourceTable": "platform_settings",
-+    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18"
-+  }
-+}
-+```
-+
-+## After API Payload
-+
-+After saving `active: true` with message `banner is active!@!!`, `GET /api/platform-settings/banner` returned:
-+
-+```json
-+{
-+  "status": 200,
-+  "banner": {
-+    "active": true,
-+    "kind": "temporary-data",
-+    "message": "banner is active!@!!",
-+    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18",
-+    "sourceTable": "platform_settings",
-+    "tone": "warning"
-+  },
-+  "diagnostics": {
-+    "active": true,
-+    "message": "banner is active!@!!",
-+    "sourceTable": "platform_settings",
-+    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18"
-+  }
-+}
-+```
-+
-+After saving `active: false`, the public API returned `active: false` with the same message and source row key.
-+
-+## DB Row Evidence
-+
-+After active save:
-+
-+| Setting key | Row key | Value | Active row |
-+| --- | --- | --- | --- |
-+| `platform.banner.enabled` | `01KV8W32ZERK6CD5W270QPBC18` | `true` | true |
-+| `platform.banner.message` | `01KV8W32ZE2XZMG1HY8XJM09Q7` | `banner is active!@!!` | true |
-+| `platform.banner.tone` | `01KV8W32ZE3ZC91PRWECZX16H4` | `warning` | true |
-+| `platform.banner.kind` | `01KV8W32ZE870AYSVT62X4JTY5` | `temporary-data` | true |
-+
-+After inactive save:
-+
-+| Setting key | Row key | Value | Active row |
-+| --- | --- | --- | --- |
-+| `platform.banner.enabled` | `01KV8W32ZERK6CD5W270QPBC18` | `false` | true |
-+| `platform.banner.message` | `01KV8W32ZE2XZMG1HY8XJM09Q7` | `banner is active!@!!` | true |
-+
-+## Rendered Banner Evidence
-+
-+Live browser validation after active save:
-+
-+```json
-+{
-+  "message": "banner is active!@!!",
-+  "headerBeforeBanner": true,
-+  "bannerBeforeMain": true,
-+  "diagnostics": {
-+    "active": true,
-+    "message": "banner is active!@!!",
-+    "sourceTable": "platform_settings",
-+    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18"
-+  }
-+}
-+```
-+
-+Live browser validation after inactive save:
-+
-+```json
-+{
-+  "renderedInactiveBannerCount": 0
-+}
-+```
++## Brand Text Replacement Evidence
++- PASS: Changed active HTML surfaces replaced compact `GameFoundryStudio` page/legal display text with `Game Foundry Studio LLC`.
++- PASS: `rg -n "GameFoundryStudio|LLC LLC" index.html account admin assets/theme-v2/partials src/dev-runtime/admin -g "*.html"` returned no matches.
++- PASS: UTF-8 BOM cleanup check returned no changed files starting with a BOM.
 +
 +## Validation Lane Report
-+
-+| Lane | Result | Notes |
-+| --- | --- | --- |
-+| Static syntax | PASS | `node --check` for changed JS/MJS files passed. |
-+| HTML restriction scan | PASS | No inline script/style/event handlers found in `admin/platform-settings.html`. |
-+| Contract/API test | PASS | `node --test --test-name-pattern="Platform banner reads and writes through platform settings service routes" tests/dev-runtime/SupabaseProductDataCutover.test.mjs`. |
-+| Targeted Playwright | PASS | `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Platform banner renders|Platform Settings Admin controls" --workers=1` passed 2/2. |
-+| Live manual validation | PASS | Saved exact banner message, verified DB rows, verified public API active true, verified render, then verified active false removes banner. |
-+| Playwright V8 coverage | PASS | PR188-scoped report written to `docs_build/dev/reports/playwright_v8_coverage_report.txt`; server-side route module reported as browser V8 WARN. |
-+| Full samples smoke | SKIP | Explicitly excluded by request. |
++- contract lane:
++  - PASS: `node --check` for changed JS/MJS files.
++  - PASS: `node --test tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs`.
++  - PASS: changed HTML inline script/style/event-handler guard.
++  - PASS: `git diff --check`.
++- runtime lane:
++  - PASS: `npm run validate:supabase-dev`.
++  - WARN: direct PostgreSQL TLS check reported `SELF_SIGNED_CERT_IN_CHAIN`; REST/API identity readiness passed and the command overall result was PASS.
++  - PASS: `node --use-system-ca .\scripts\sync-supabase-dev-creator-identities.mjs --json`.
++  - PASS: live API sign-in and `/api/session/current` role resolution for DavidQ.
++- integration lane:
++  - PASS: `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Platform banner renders|Platform Settings Admin controls|Owner menu is role-gated" --workers=1`.
++  - PASS: `npm run validate:browser-env-agnostic`.
++- skipped lanes:
++  - SKIP: full samples smoke, per request.
++  - SKIP: `npm run test:workspace-v2`; no Project Workspace runtime, API/session toolState behavior, or workspace contract behavior changed. The command name remains legacy and user-facing language is Project Workspace.
 +
 +## Manual Validation Notes
++- Live DavidQ sign-in was validated through `POST /api/auth/sign-in` using the configured DEV account connection. The password was not printed, logged in the report, or committed.
++- Live `/api/session/current` returned HTTP 200 with authenticated DavidQ and roleSlugs `admin`, `creator`, and `owner`.
++- No UAT or PROD resources were touched.
++- No validation-only Supabase test records were created. DEV identity sync reported `testDataCreated: 0`, `testDataDeleted: 0`, and `deletedRecords: []`.
 +
-+- DavidQ sign-in for the live validation returned creator/admin roles; the password value was not printed or written to files.
-+- Final live banner state after validation is inactive (`active: false`) with the message retained in `platform_settings`; the header banner does not render while inactive.
-+- No `.log` or `.txt` files were created under repo `tmp`.
-+
++## Playwright V8 Coverage
++- PASS: `docs_build/dev/reports/playwright_v8_coverage_report.txt` generated.
++- PASS: `(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 734/734; executed functions 51/65`.
++- PASS: `(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 90/90; executed functions 15/15`.
++- WARN: server-side dev-runtime JS files are listed as advisory missing browser V8 coverage because Playwright/Chromium does not collect Node-side modules.

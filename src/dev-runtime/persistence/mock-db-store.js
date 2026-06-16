@@ -240,6 +240,7 @@ function sanitizeState(source = {}) {
       MOCK_DB_KEYS.userRoles.user3User,
       MOCK_DB_KEYS.userRoles.adminUser,
       MOCK_DB_KEYS.userRoles.adminAdmin,
+      MOCK_DB_KEYS.userRoles.adminOwner,
     ]);
     const allowedUserKeys = new Set((state.tables.users || []).map((user) => user?.key));
     const allowedRoleKeys = new Set((state.tables.roles || []).map((role) => role?.key));
@@ -722,13 +723,22 @@ export function getStandaloneMockDbSeedTables() {
         ...standaloneAudit(7),
       },
       {
+        key: MOCK_DB_KEYS.roles.owner,
+        roleSlug: "owner",
+        name: "owner",
+        description: "Owner account with platform-level stewardship access.",
+        isSystemRole: false,
+        isActive: true,
+        ...standaloneAudit(8),
+      },
+      {
         key: MOCK_DB_KEYS.roles.creator,
         roleSlug: "creator",
         name: "creator",
         description: "Creator role for authenticated makers.",
         isSystemRole: false,
         isActive: true,
-        ...standaloneAudit(8),
+        ...standaloneAudit(9),
       },
       {
         key: MOCK_DB_KEYS.roles.guest,
@@ -737,7 +747,7 @@ export function getStandaloneMockDbSeedTables() {
         description: "Guest role for unauthenticated browsing and starter flows.",
         isSystemRole: false,
         isActive: true,
-        ...standaloneAudit(9),
+        ...standaloneAudit(10),
       },
     ],
     user_roles: [
@@ -746,6 +756,7 @@ export function getStandaloneMockDbSeedTables() {
       { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: MOCK_DB_KEYS.roles.creator, ...standaloneAudit(13) },
       { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.creator, ...standaloneAudit(14) },
       { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...standaloneAudit(15) },
+      { key: MOCK_DB_KEYS.userRoles.adminOwner, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.owner, ...standaloneAudit(16) },
     ],
     platform_settings: [
       {

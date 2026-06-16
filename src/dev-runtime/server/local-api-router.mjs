@@ -180,7 +180,7 @@ const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
   Object.freeze({ label: "Users", path: "admin/users.html", route: "admin-users" }),
 ]);
-const LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS = Object.freeze([
+const OWNER_NAVIGATION_ITEMS = Object.freeze([
   Object.freeze({ label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" }),
   Object.freeze({ label: "Design System", path: "admin/design-system.html", route: "admin-design-system" }),
   Object.freeze({ label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" }),
@@ -1286,7 +1286,7 @@ class ApiRuntimeDataSource {
     const roles = tables.roles || [];
     const userRoles = tables.user_roles || [];
     const roleSlugs = new Set(roles.map((role) => role.roleSlug).filter(Boolean));
-    const missingDefaultRoles = ["admin", "creator", "guest"].filter((roleSlug) => !roleSlugs.has(roleSlug));
+    const missingDefaultRoles = ["admin", "creator", "guest", "owner"].filter((roleSlug) => !roleSlugs.has(roleSlug));
     const adminRoleKeys = new Set(roles
       .filter((role) => role.roleSlug === "admin")
       .map((role) => role.key));
@@ -2334,10 +2334,10 @@ class ApiRuntimeDataSource {
   adminNavigationMenu() {
     return {
       adminMainItems: clone(ADMIN_NAVIGATION_MAIN_ITEMS),
-      localAdminMyStuffItems: clone(LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS),
+      ownerMenuItems: clone(OWNER_NAVIGATION_ITEMS),
       ownership: {
         adminMainItems: "navigation config",
-        localAdminMyStuffItems: "server connection config",
+        ownerMenuItems: "owner navigation config",
         routeMap: "static shell route resolution",
       },
       source: "server-api",

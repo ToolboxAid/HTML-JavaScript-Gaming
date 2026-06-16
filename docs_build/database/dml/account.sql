@@ -94,7 +94,8 @@ BEGIN
         VALUES
             ('admin'),
             ('creator'),
-            ('guest')
+            ('guest'),
+            ('owner')
     ) AS required_roles(role_slug)
     LEFT JOIN roles ON roles."roleSlug" = required_roles.role_slug
     WHERE roles.key IS NULL;
@@ -110,7 +111,8 @@ WITH user_role_seed (user_role_key, user_key, role_slug) AS (
         ('01K2GFSJ0Y0000000000000083', '01K2GFSJ0Y0000000000000052', 'creator'),
         ('01K2GFSJ0Y0000000000000084', '01K2GFSJ0Y0000000000000053', 'creator'),
         ('01K2GFSJ0Y0000000000000085', '01K2GFSJ0Y0000000000000054', 'creator'),
-        ('01K2GFSJ0Y0000000000000086', '01K2GFSJ0Y0000000000000054', 'admin')
+        ('01K2GFSJ0Y0000000000000086', '01K2GFSJ0Y0000000000000054', 'admin'),
+        ('01K2GFSJ0Y0000000000000089', '01K2GFSJ0Y0000000000000054', 'owner')
 ),
 resolved_user_roles AS (
     SELECT

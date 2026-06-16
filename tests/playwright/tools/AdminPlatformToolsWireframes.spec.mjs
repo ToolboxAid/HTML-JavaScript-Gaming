@@ -92,15 +92,16 @@ async function expectNoPageFailures(failures) {
 
 async function expectAdminHeaderMenu(page) {
   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveAttribute("href", /admin\/site-setup\.html$/);
+  await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveText("Owner \u25BE");
+  const ownerSubmenu = page.locator("nav.nav-links > .nav-item[data-owner-menu] > .sub-menu");
+  await expect(ownerSubmenu.locator("a")).toHaveText(["DB Viewer", "Design System", "Grouping Colors", "Notes"]);
   const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-environments']")).toHaveText("Environments");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-users']")).toHaveText("Users");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-game-migration']")).toHaveText("Game Migration");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-platform-settings']")).toHaveText("Platform Settings");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-site-setup']")).toHaveText("Site Setup");
-  const myStuffLabels = await adminSubmenu.locator("[data-admin-my-stuff-submenu] a").allTextContents();
-  expect(myStuffLabels).not.toContain("Environments");
-  expect(myStuffLabels).not.toContain("Game Migration");
+  await expect(adminSubmenu.locator("[data-owner-menu], [data-admin-my-stuff-menu], [data-admin-notes-local-menu]")).toHaveCount(0);
 }
 
 for (const adminPage of ADMIN_WIREFRAME_PAGES) {
@@ -151,7 +152,7 @@ test("Grouping Colors uses current group color model copy", async ({ page }) => 
   }
 });
 
-test("Platform banner renders active settings under the header", async ({ page }) => {
+test("Platform banner renders active settings under the header and above the footer", async ({ page }) => {
   const server = await startRepoServer();
   try {
     await page.route("**/api/session/current", async (route) => {
@@ -194,9 +195,11 @@ test("Platform banner renders active settings under the header", async ({ page }
     });
 
     await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("[data-platform-banner]")).toHaveCount(1);
-    await expect(page.locator("[data-platform-banner]")).toContainText("Temporary data notice for creators.");
-    await expect(page.locator("[data-platform-banner]")).toHaveClass(/platform-banner--warning/);
+    await expect(page.locator("[data-platform-banner]")).toHaveCount(2);
+    await expect(page.locator("[data-platform-banner-placement='header']")).toContainText("Temporary data notice for creators.");
+    await expect(page.locator("[data-platform-banner-placement='header']")).toHaveClass(/platform-banner--warning/);
+    await expect(page.locator("[data-platform-banner-placement='footer']")).toContainText("Temporary data notice for creators.");
+    await expect(page.locator("[data-platform-banner-placement='footer']")).toHaveClass(/platform-banner--warning/);
     await expect.poll(async () => page.evaluate(() => window.GameFoundryPlatformBannerDiagnostics)).toEqual({
       active: true,
       message: "Temporary data notice for creators.",
@@ -205,25 +208,36 @@ test("Platform banner renders active settings under the header", async ({ page }
     });
     const layout = await page.evaluate(() => {
       const header = document.querySelector("header.site-header");
-      const banner = document.querySelector("[data-platform-banner]");
+      const headerBanner = document.querySelector("[data-platform-banner-placement='header']");
+      const footerBanner = document.querySelector("[data-platform-banner-placement='footer']");
       const main = document.querySelector("main");
+      const footer = document.querySelector("footer.footer");
       const headerBox = header?.getBoundingClientRect();
-      const bannerBox = banner?.getBoundingClientRect();
+      const headerBannerBox = headerBanner?.getBoundingClientRect();
+      const footerBannerBox = footerBanner?.getBoundingClientRect();
       const mainBox = main?.getBoundingClientRect();
+      const footerBox = footer?.getBoundingClientRect();
       return {
-        bannerBeforeMain: Boolean(banner && main && banner.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING),
-        bannerTop: Math.round(bannerBox?.top || 0),
-        bannerWidth: Math.round(bannerBox?.width || 0),
+        footerBannerAboveFooter: Boolean(footerBanner && footer && footerBanner.compareDocumentPosition(footer) & Node.DOCUMENT_POSITION_FOLLOWING),
+        footerBannerBottom: Math.round(footerBannerBox?.bottom || 0),
+        footerBannerWidth: Math.round(footerBannerBox?.width || 0),
+        footerTop: Math.round(footerBox?.top || 0),
+        headerBannerBeforeMain: Boolean(headerBanner && main && headerBanner.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING),
+        headerBannerTop: Math.round(headerBannerBox?.top || 0),
+        headerBannerWidth: Math.round(headerBannerBox?.width || 0),
         clientWidth: document.documentElement.clientWidth,
         headerBottom: Math.round(headerBox?.bottom || 0),
         mainTop: Math.round(mainBox?.top || 0),
         viewportWidth: window.innerWidth,
       };
     });
-    expect(layout.bannerBeforeMain).toBe(true);
-    expect(layout.bannerTop).toBeGreaterThanOrEqual(layout.headerBottom - 2);
-    expect(layout.mainTop).toBeGreaterThanOrEqual(layout.bannerTop);
-    expect(layout.bannerWidth).toBe(layout.clientWidth);
+    expect(layout.headerBannerBeforeMain).toBe(true);
+    expect(layout.headerBannerTop).toBeGreaterThanOrEqual(layout.headerBottom - 2);
+    expect(layout.mainTop).toBeGreaterThanOrEqual(layout.headerBannerTop);
+    expect(layout.headerBannerWidth).toBe(layout.clientWidth);
+    expect(layout.footerBannerAboveFooter).toBe(true);
+    expect(layout.footerTop).toBeGreaterThanOrEqual(layout.footerBannerBottom - 2);
+    expect(layout.footerBannerWidth).toBe(layout.clientWidth);
   } finally {
     await server.close();
   }
@@ -264,7 +278,7 @@ test("Platform Settings Admin controls update banner through the service route",
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
               { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
             ],
-            localAdminMyStuffItems: [],
+            ownerMenuItems: [],
           },
           ok: true,
         }),
@@ -342,7 +356,9 @@ test("Platform Settings Admin controls update banner through the service route",
     ]);
     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: true.");
     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Message: Outage notice for creators.");
-    await expect(page.locator("[data-platform-banner]")).toContainText("Outage notice for creators.");
+    await expect(page.locator("[data-platform-banner]")).toHaveCount(2);
+    await expect(page.locator("[data-platform-banner-placement='header']")).toContainText("Outage notice for creators.");
+    await expect(page.locator("[data-platform-banner-placement='footer']")).toContainText("Outage notice for creators.");
 
     await page.locator("[data-platform-banner-active]").uncheck();
     await page.locator("[data-platform-banner-save]").click();
@@ -364,6 +380,84 @@ test("Platform Settings Admin controls update banner through the service route",
     await expect(page.locator("[data-platform-banner-preview]")).toContainText("No active banner.");
     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: false.");
     await expect(page.locator("[data-platform-banner]")).toHaveCount(0);
+  } finally {
+    await server.close();
+  }
+});
+
+test("Owner menu is role-gated separately from Admin menu", async ({ page }) => {
+  const server = await startRepoServer();
+  let authenticated = true;
+  const sessionRoles = [];
+  try {
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            authenticated,
+            displayName: "DavidQ",
+            roleSlugs: sessionRoles.slice(),
+            userKey: MOCK_DB_KEYS.users.admin,
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/navigation/admin-menu", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            adminMainItems: [
+              { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+              { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
+            ],
+            ownerMenuItems: [
+              { label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" },
+              { label: "Design System", path: "admin/design-system.html", route: "admin-design-system" },
+              { label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" },
+              { href: "/admin/admin-notes.html", label: "Notes", localNotes: true },
+            ],
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ data: { banner: { active: false, message: "", tone: "info" } }, ok: true }),
+      });
+    });
+
+    authenticated = false;
+    sessionRoles.splice(0, sessionRoles.length, "owner", "admin", "creator");
+    await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
+    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toHaveCount(0);
+
+    authenticated = true;
+    sessionRoles.splice(0, sessionRoles.length, "admin", "creator");
+    await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:data-changed")));
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
+    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toHaveCount(0);
+
+    sessionRoles.splice(0, sessionRoles.length, "owner", "creator");
+    await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:data-changed")));
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
+    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toBeVisible();
+    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu] > .sub-menu a")).toHaveText([
+      "DB Viewer",
+      "Design System",
+      "Grouping Colors",
+      "Notes",
+    ]);
+
+    sessionRoles.splice(0, sessionRoles.length, "owner", "admin", "creator");
+    await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:data-changed")));
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
+    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toBeVisible();
   } finally {
     await server.close();
   }

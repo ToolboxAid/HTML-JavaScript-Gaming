@@ -19,6 +19,7 @@ export const SEED_DB_KEYS = Object.freeze({
     beta: makeSeedUlid(75),
     creator: makeSeedUlid(76),
     guest: makeSeedUlid(77),
+    owner: makeSeedUlid(78),
   }),
   userRoles: Object.freeze({
     user1User: makeSeedUlid(82),
@@ -28,6 +29,7 @@ export const SEED_DB_KEYS = Object.freeze({
     adminAdmin: makeSeedUlid(86),
     forgeBotSystem: makeSeedUlid(87),
     user2Beta: makeSeedUlid(88),
+    adminOwner: makeSeedUlid(89),
   }),
 });
 

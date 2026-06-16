@@ -1,14 +1,22 @@
 Changed Runtime JS Coverage Guardrail
 
-PR: PR_26167_188-platform-banner-display-fix
 Status: advisory only.
 Thresholds: none enforced.
-Missing browser V8 coverage is WARN, not FAIL.
+Missing changed runtime JS files are WARN, not FAIL.
+Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: server-side route module is outside browser V8 collection; covered by node contract and live API validation
-(73%) assets/theme-v2/js/gamefoundry-partials.js - targeted Playwright covered banner request/render/remove behavior
-(100%) assets/theme-v2/js/admin-platform-settings.js - targeted Playwright covered Admin load/save/diagnostics behavior
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 734/734; executed functions 51/65
+(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 90/90; executed functions 15/15
 
 Guardrail warnings:
-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: browser V8 does not collect server-side modules
+(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

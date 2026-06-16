@@ -218,9 +218,11 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
   ]);
   assert.equal(result.verification.legacyUserRoleDeprecated, true);
   assert.equal(result.verification.davidqAdminAssignmentPreserved, true);
+  assert.equal(result.verification.davidqOwnerAssignmentPreserved, true);
   assert.deepEqual(result.verification.roleEvidence, {
     davidqAdmin: true,
     davidqCreator: true,
+    davidqOwner: true,
     user1Creator: true,
     user2Creator: true,
     user3Creator: true,
@@ -239,5 +241,9 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
   assert.equal(fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com").displayName, "DavidQ");
   assert.equal(fake.state.users.every((user) => user.authProvider === "supabase-auth"), true);
   assert.equal(fake.state.roles.find((role) => role.roleSlug === "user").isActive, false);
+  assert.equal(fake.state.roles.find((role) => role.roleSlug === "owner").isActive, true);
+  const ownerRole = fake.state.roles.find((role) => role.roleSlug === "owner");
+  const davidq = fake.state.users.find((user) => user.email === "qbytes.dq@gmail.com");
+  assert.equal(fake.state.user_roles.some((row) => row.userKey === davidq.key && row.roleKey === ownerRole.key), true);
   assert.equal(fake.calls.some((call) => call.path === "/auth/v1/admin/users?page=1&per_page=100" && call.method === "GET"), true);
 });

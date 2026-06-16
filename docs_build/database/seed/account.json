@@ -30,7 +30,8 @@
       "01K2GFSJ0Y0000000000000083",
       "01K2GFSJ0Y0000000000000084",
       "01K2GFSJ0Y0000000000000085",
-      "01K2GFSJ0Y0000000000000086"
+      "01K2GFSJ0Y0000000000000086",
+      "01K2GFSJ0Y0000000000000089"
     ]
   },
   "tables": {
@@ -41,7 +42,7 @@
     },
     "roles": {
       "mode": "server-api-generated-keys",
-      "requiredRoleSlugs": ["admin", "creator", "guest"],
+      "requiredRoleSlugs": ["admin", "creator", "guest", "owner"],
       "deprecatedRoleSlugs": ["user"]
     },
     "user_roles": {

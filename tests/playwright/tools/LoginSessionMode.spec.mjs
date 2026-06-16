@@ -390,30 +390,12 @@ async function closeFixedLocalApiPage(page, failures) {
   }
 }
 
-async function expectLocalAdminMyStuffMenu(page) {
+async function expectOwnerMenu(page) {
+  const ownerMenu = page.locator("nav.nav-links > .nav-item[data-owner-menu]");
+  const ownerSubmenu = ownerMenu.locator(":scope > .sub-menu");
   const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
-  const myStuffMenu = adminSubmenu.locator(":scope > [data-admin-my-stuff-menu]");
-  const separator = adminSubmenu.locator(":scope > [data-admin-my-stuff-separator]");
-  await expect(myStuffMenu).toBeVisible();
-  await expect(separator).toBeVisible();
-  await expect(separator).toHaveAttribute("role", "separator");
-  await expect(separator).toHaveAttribute("aria-disabled", "true");
-  const firstAdminChildren = await adminSubmenu.evaluate((menu) => {
-    return Array.from(menu.children).slice(0, 2).map((child) => {
-      if (child.matches("[data-admin-my-stuff-menu]")) return "my-stuff";
-      if (child.matches("[data-admin-my-stuff-separator]")) return "separator";
-      return child.textContent?.trim() || "";
-    });
-  });
-  expect(firstAdminChildren).toEqual(["my-stuff", "separator"]);
-  const separatorFillsWidth = await separator.evaluate((node) => {
-    const parent = node.parentElement;
-    if (!parent) return false;
-    const separatorBox = node.getBoundingClientRect();
-    const parentBox = parent.getBoundingClientRect();
-    return separatorBox.width >= parentBox.width * 0.85;
-  });
-  expect(separatorFillsWidth).toBe(true);
+  await expect(ownerMenu.locator(":scope > a[data-route='owner']")).toContainText("Owner");
+  await expect(ownerSubmenu).toBeVisible();
 
   const mainAdminLabels = await adminSubmenu.evaluate((menu) => {
     return Array.from(menu.children)
@@ -421,12 +403,10 @@ async function expectLocalAdminMyStuffMenu(page) {
       .map((child) => child.textContent?.trim() || "");
   });
   expect(mainAdminLabels).toEqual(UAT_PROD_ADMIN_LABELS);
+  await expect(adminSubmenu.locator("[data-owner-menu], [data-admin-my-stuff-menu], [data-admin-notes-local-menu]")).toHaveCount(0);
 
-  await expect(adminSubmenu.locator("[data-admin-my-stuff-label]")).toContainText("My Stuff");
-  await myStuffMenu.hover();
-  const myStuffSubmenu = myStuffMenu.locator("[data-admin-my-stuff-submenu]");
-  await expect(myStuffSubmenu).toBeVisible();
-  await expect(myStuffSubmenu.locator("a")).toHaveText(DEV_ONLY_ADMIN_LABELS);
+  await ownerMenu.hover();
+  await expect(ownerSubmenu.locator("a")).toHaveText(DEV_ONLY_ADMIN_LABELS);
   await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveText("Notes");
   await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toBeVisible();
   await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveAttribute(
@@ -939,6 +919,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='account'])").hover();
     await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
+    await expect(page.locator("[data-owner-menu]")).toHaveCount(0);
     await expect(page.locator("[data-admin-my-stuff-menu]")).toHaveCount(0);
     await expect(page.locator("nav.nav-links a[data-admin-notes-local-menu]")).toHaveCount(0);
     await expectNoPageFailures(failures);
@@ -959,7 +940,7 @@ test("Local users unlock their allowed Account and Admin pages", async ({ page }
     await expect(page.locator("[data-account-logout]")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
-    await expectLocalAdminMyStuffMenu(page);
+    await expectOwnerMenu(page);
     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
     await expect(page).toHaveURL(/\/admin\/admin-notes\.html$/);
     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
@@ -1073,7 +1054,7 @@ test("API-backed 5501 login page shows the local Admin Notes menu route for Admi
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toContainText("DavidQ");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])").hover();
-    await expectLocalAdminMyStuffMenu(page);
+    await expectOwnerMenu(page);
     await page.locator("nav.nav-links a[data-admin-notes-local-menu]").click();
     await expect(page).toHaveURL("http://127.0.0.1:5501/admin/admin-notes.html");
     await expect(page.getByRole("heading", { name: "Admin Notes", level: 1 })).toBeVisible();
