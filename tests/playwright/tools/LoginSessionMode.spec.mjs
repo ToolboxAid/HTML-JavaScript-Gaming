@@ -501,21 +501,24 @@ test("Sign-in page uses a production-safe account form without public Local DB c
     await page.getByLabel("Email").fill("user@example.invalid");
     await page.getByLabel("Password").fill("not-stored");
     await expect(page.getByRole("button", { name: "Sign In" })).toBeDisabled();
-    await expect(page.locator("[data-login-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+    await expect(page.locator("[data-login-status]")).toHaveText("Sign In is not available in this preview. You can continue browsing.");
+    await expect(page.locator("main")).not.toContainText("The site is currently unavailable. Please try again later.");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
 
     await page.getByRole("link", { name: "Create Account" }).click();
     await expect(page).toHaveURL(/\/account\/create-account\.html$/);
     await expect(page.getByRole("heading", { name: "Create Account", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+    await expect(page.locator("[data-account-auth-status]")).toHaveText("Create Account is not available in this preview. Please try again later.");
     await expect(page.locator("main")).toContainText("account service");
+    await expect(page.locator("main")).not.toContainText("The site is currently unavailable. Please try again later.");
     await expect(page.locator("main")).not.toContainText("configured account provider");
     await page.goto(`${failures.server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
     await page.getByRole("link", { name: "Password Reset" }).click();
     await expect(page).toHaveURL(/\/account\/password-reset\.html$/);
     await expect(page.getByRole("heading", { name: "Password Reset", level: 1 })).toBeVisible();
-    await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+    await expect(page.locator("[data-account-auth-status]")).toHaveText("Password Reset is not available in this preview. Please try again later.");
     await expect(page.locator("main")).toContainText("account service");
+    await expect(page.locator("main")).not.toContainText("The site is currently unavailable. Please try again later.");
     await expect(page.locator("main")).not.toContainText("configured account provider");
 
     await expectNoPageFailures(failures);

@@ -6,6 +6,7 @@ const statusField = document.querySelector("[data-login-status]");
 const submitButton = document.querySelector("[data-login-submit]");
 const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
+const SIGN_IN_PLACEHOLDER_MESSAGE = "Sign In is not available in this preview. You can continue browsing.";
 let authStatus = null;
 
 function rootPrefix() {
@@ -91,15 +92,15 @@ async function requestCurrentSession() {
   return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
 }
 
-function unavailableMessage(status) {
-  return status?.message || AUTH_UNAVAILABLE_MESSAGE;
+function unavailableStatusMessage() {
+  return SIGN_IN_PLACEHOLDER_MESSAGE;
 }
 
 async function refreshAccountAuthStatus() {
   if (isStaticOnlyLocalEntrypoint()) {
     authStatus = {
       ready: false,
-      message: AUTH_UNAVAILABLE_MESSAGE,
+      message: SIGN_IN_PLACEHOLDER_MESSAGE,
     };
     setFormEnabled(false);
     setStatus(authStatus.message);
@@ -116,11 +117,11 @@ async function refreshAccountAuthStatus() {
       }
     }
     setFormEnabled(Boolean(authStatus.ready));
-    setStatus(authStatus.ready ? "Account service is available." : unavailableMessage(authStatus));
-  } catch (error) {
+    setStatus(authStatus.ready ? "Account service is available." : unavailableStatusMessage());
+  } catch {
     authStatus = {
       ready: false,
-      message: error instanceof Error ? error.message : AUTH_UNAVAILABLE_MESSAGE,
+      message: SIGN_IN_PLACEHOLDER_MESSAGE,
     };
     setFormEnabled(false);
     setStatus(authStatus.message);
@@ -137,7 +138,7 @@ form?.addEventListener("submit", (event) => {
   Promise.resolve(refreshAccountAuthStatus())
     .then((status) => {
       if (!status?.ready) {
-        setStatus(unavailableMessage(status));
+        setStatus(unavailableStatusMessage());
         return null;
       }
       return requestAccountAuth("sign-in", {

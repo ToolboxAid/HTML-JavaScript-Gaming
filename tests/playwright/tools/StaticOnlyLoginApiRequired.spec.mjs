@@ -115,7 +115,8 @@ test("static sign-in page renders production-safe account actions without API di
     await expect(page.locator("main")).not.toContainText("reseed");
     await expect(page.locator("main")).not.toContainText("Local DB");
     await expect(page.getByRole("button", { name: "Sign In" })).toBeDisabled();
-    await expect(page.locator("[data-login-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+    await expect(page.locator("[data-login-status]")).toHaveText("Sign In is not available in this preview. You can continue browsing.");
+    await expect(page.locator("main")).not.toContainText("The site is currently unavailable. Please try again later.");
 
     expect(requests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
     expect(requests.filter((request) => request.includes("/api/session/"))).toEqual([]);

@@ -1696,3 +1696,37 @@ Required reports:
 - `docs_build/dev/reports/PR_26166_175-dev-admin-bootstrap-password-reset_report.md`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26167_174-account-auth-page-unavailable-message
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Investigated Sign In, Create Account, Password Reset, and legacy Lost Password account page flows.
+- Replaced page-load/static-preview account auth status copy with scoped production-safe placeholders.
+- Preserved the generic unavailable message for real provider/network action failures.
+- Updated focused Playwright coverage for account auth placeholder and provider-failure behavior.
+- Did not add inline script/style/event handlers, fake login, browser-owned auth/provider logic, silent fallbacks, hidden defaults, password tables, secrets, or `.env.local` changes.
+
+Validation:
+- `node --check assets/theme-v2/js/login-session.js`
+- `node --check assets/theme-v2/js/account-auth-actions.js`
+- `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
+- `node --check tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs`
+- HTML restriction scan for changed/inspected account auth HTML files.
+- `npx playwright test --config=playwright.config.cjs --project=playwright tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs tests/playwright/tools/LoginSessionMode.spec.mjs -g "static sign-in page renders|Sign-in page uses|Configured account auth actions|Create Account shows generic provider failure|Password Reset maps upstream rate limit"`
+- Manual browser page-load validation for `/account/sign-in.html`, `/account/create-account.html`, and `/account/password-reset.html`.
+- `npm run test:workspace-v2`
+- `git diff --check`
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_174-account-auth-page-unavailable-message.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_174-account-auth-page-unavailable-message_delta.zip`

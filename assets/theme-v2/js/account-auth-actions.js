@@ -7,6 +7,8 @@ const action = form?.getAttribute("data-account-auth-form") || "";
 const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
 const PASSWORD_RESET_RATE_LIMIT_MESSAGE = "Too many reset requests. Please wait and try again later.";
+const CREATE_ACCOUNT_PLACEHOLDER_MESSAGE = "Create Account is not available in this preview. Please try again later.";
+const PASSWORD_RESET_PLACEHOLDER_MESSAGE = "Password Reset is not available in this preview. Please try again later.";
 let authStatus = null;
 
 function setStatus(message) {
@@ -54,15 +56,21 @@ async function requestAccountAuth(path, options = {}) {
   return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
 }
 
-function unavailableMessage(status) {
-  return status?.message || AUTH_UNAVAILABLE_MESSAGE;
+function unavailableStatusMessage() {
+  if (action === "create-account") {
+    return CREATE_ACCOUNT_PLACEHOLDER_MESSAGE;
+  }
+  if (action === "password-reset") {
+    return PASSWORD_RESET_PLACEHOLDER_MESSAGE;
+  }
+  return "Account action is not available in this preview. Please try again later.";
 }
 
 async function refreshAccountAuthStatus() {
   if (isStaticOnlyLocalEntrypoint()) {
     authStatus = {
       ready: false,
-      message: AUTH_UNAVAILABLE_MESSAGE,
+      message: unavailableStatusMessage(),
     };
     setFormEnabled(false);
     setStatus(authStatus.message);
@@ -71,11 +79,11 @@ async function refreshAccountAuthStatus() {
   try {
     authStatus = await requestAccountAuth("status");
     setFormEnabled(Boolean(authStatus.ready));
-    setStatus(authStatus.ready ? "Account service is available." : unavailableMessage(authStatus));
-  } catch (error) {
+    setStatus(authStatus.ready ? "Account service is available." : unavailableStatusMessage());
+  } catch {
     authStatus = {
       ready: false,
-      message: error instanceof Error ? error.message : AUTH_UNAVAILABLE_MESSAGE,
+      message: unavailableStatusMessage(),
     };
     setFormEnabled(false);
     setStatus(authStatus.message);
@@ -98,7 +106,7 @@ form?.addEventListener("submit", (event) => {
   Promise.resolve(authStatus || refreshAccountAuthStatus())
     .then((status) => {
       if (!status?.ready) {
-        setStatus(unavailableMessage(status));
+        setStatus(unavailableStatusMessage());
         return null;
       }
       const endpoint = actionEndpoint();
