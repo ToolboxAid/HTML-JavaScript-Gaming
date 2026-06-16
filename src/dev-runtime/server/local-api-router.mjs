@@ -82,6 +82,7 @@ import {
   LOCAL_DATABASE_PROVIDER_ID,
   SUPABASE_AUTH_PROVIDER_ID,
   SUPABASE_POSTGRES_PROVIDER_ID,
+  SUPABASE_POSTGRES_PRODUCT_TABLES,
   SupabaseAuthProviderAdapter,
   SupabasePostgresProviderAdapter,
   createProviderContractSnapshot,
@@ -94,6 +95,7 @@ const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
 const AUTH_READY_MESSAGE = "Account service is available.";
 const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
+const PASSWORD_RESET_RATE_LIMIT_MESSAGE = "Too many reset requests. Please wait and try again later.";
 const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
   description: "Default creator/player account role.",
   isSystemRole: false,
@@ -781,6 +783,17 @@ function authIdentitySetupError(action, diagnostic = "") {
   return error;
 }
 
+function authPasswordResetRateLimitError(diagnostic = "", upstreamError = null) {
+  const error = new Error(PASSWORD_RESET_RATE_LIMIT_MESSAGE);
+  error.statusCode = 429;
+  error.upstreamStatusCode = 429;
+  error.safeErrorCode = upstreamError?.safeErrorCode || "";
+  error.operatorDiagnostic = diagnostic
+    ? `Password reset: ${diagnostic}`
+    : "Password reset: Supabase Auth request failed with HTTP 429.";
+  return error;
+}
+
 function sanitizedSupabaseAuthActionResult(action, email, payload = {}, session = null) {
   const user = payload.user && typeof payload.user === "object" ? payload.user : {};
   const resolvedSession = session && session.authenticated ? session : null;
@@ -945,6 +958,20 @@ function tagsTables(repository) {
 
 function assetTables(repository) {
   return normalizeOwnedTables("asset", repository.getTables());
+}
+
+function productTableNamesForSnapshot() {
+  const schemaTableNames = Object.keys(getMockDbTableSchemas());
+  return SUPABASE_POSTGRES_PRODUCT_TABLES
+    .filter((tableName) => schemaTableNames.includes(tableName));
+}
+
+function productTablesFromSnapshot(snapshot) {
+  const tables = snapshot?.tables && typeof snapshot.tables === "object" ? snapshot.tables : {};
+  return Object.fromEntries(productTableNamesForSnapshot().map((tableName) => [
+    tableName,
+    Array.isArray(tables[tableName]) ? tables[tableName] : [],
+  ]));
 }
 
 class LocalDbAdapter {
@@ -1182,6 +1209,39 @@ class LocalDevDataSource {
     }
   }
 
+  assertSupabaseDatabaseProvider(action) {
+    const providerContract = this.providerContract();
+    const providerId = providerContract.activeProviders.databaseProviderId;
+    if (providerId !== SUPABASE_POSTGRES_PROVIDER_ID) {
+      throw new Error(`${action} requires the Supabase Postgres database provider. Selected database provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
+    }
+  }
+
+  selectedDatabaseProviderId() {
+    return this.providerContract().activeProviders.databaseProviderId;
+  }
+
+  supabaseDatabaseAdapter(action) {
+    this.assertSupabaseDatabaseProvider(action);
+    const adapter = new SupabasePostgresProviderAdapter();
+    adapter.connect();
+    return adapter;
+  }
+
+  assertProductDatabaseProvider(action) {
+    const providerId = this.selectedDatabaseProviderId();
+    if (providerId === LOCAL_DATABASE_PROVIDER_ID) {
+      this.assertConfiguredAdapter(action);
+      return providerId;
+    }
+    if (providerId === SUPABASE_POSTGRES_PROVIDER_ID) {
+      this.supabaseDatabaseAdapter(action);
+      return providerId;
+    }
+    const providerContract = this.providerContract();
+    throw new Error(`${action} requires a supported product database provider. Selected database provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
+  }
+
   assertLocalRuntimeProviders(action) {
     this.assertLocalAuthProvider(action);
     this.assertLocalDatabaseProvider(action);
@@ -1193,7 +1253,7 @@ class LocalDevDataSource {
   }
 
   async readSupabaseIdentityTablesUnchecked(action) {
-    this.assertLocalDatabaseProvider(action);
+    this.assertSupabaseDatabaseProvider(action);
     const adapter = new SupabasePostgresProviderAdapter();
     const [users, roles, userRoles] = await Promise.all([
       adapter.getUsers(),
@@ -1213,7 +1273,7 @@ class LocalDevDataSource {
   }
 
   async readSupabaseIdentityTables(action) {
-    this.assertLocalDatabaseProvider(action);
+    this.assertSupabaseDatabaseProvider(action);
     const authStatus = await this.authStatusForRoute();
     if (!authStatus.ready) {
       if (authStatus.identityTablesReady === false) {
@@ -1222,6 +1282,31 @@ class LocalDevDataSource {
       throw authUnavailableError(action, `Supabase Auth identity ownership is not ready. ${authStatus.operatorDiagnostic || authStatus.status}`);
     }
     return this.readSupabaseIdentityTablesUnchecked(action);
+  }
+
+  async readSupabaseProductTables(action) {
+    const adapter = this.supabaseDatabaseAdapter(action);
+    const productTables = await adapter.getProductTables(productTableNamesForSnapshot());
+    this.supabaseProductTablesCache = {
+      providerId: SUPABASE_POSTGRES_PROVIDER_ID,
+      tables: productTables,
+    };
+    return productTables;
+  }
+
+  async upsertSupabaseProductTables(tables, action) {
+    const adapter = this.supabaseDatabaseAdapter(action);
+    const productTables = productTablesFromSnapshot({ tables });
+    const result = await adapter.upsertProductTables(productTables);
+    this.supabaseProductTablesCache = {
+      providerId: SUPABASE_POSTGRES_PROVIDER_ID,
+      tables: productTables,
+    };
+    return result;
+  }
+
+  async persistSupabaseProductSnapshot(action) {
+    return this.upsertSupabaseProductTables(this.snapshot({ skipAdapterCheck: true }).tables, action);
   }
 
   async supabaseIdentityReadinessCheck() {
@@ -1268,9 +1353,9 @@ class LocalDevDataSource {
   }
 
   async currentSessionForRoute() {
-    this.assertLocalDatabaseProvider("Reading current session");
     const providerId = this.providerContract().activeProviders.authProviderId;
     if (providerId === LOCAL_AUTH_PROVIDER_ID) {
+      this.assertLocalDatabaseProvider("Reading current session");
       return this.localAuthSession("Reading current session");
     }
     if (providerId === SUPABASE_AUTH_PROVIDER_ID) {
@@ -1288,9 +1373,9 @@ class LocalDevDataSource {
   }
 
   async sessionUsersForRoute() {
-    this.assertLocalDatabaseProvider("Reading session users");
     const providerId = this.providerContract().activeProviders.authProviderId;
     if (providerId === LOCAL_AUTH_PROVIDER_ID) {
+      this.assertLocalDatabaseProvider("Reading session users");
       return this.sessionUsers();
     }
     if (providerId !== SUPABASE_AUTH_PROVIDER_ID) {
@@ -1310,9 +1395,9 @@ class LocalDevDataSource {
   }
 
   async setUserForRoute(userKey) {
-    this.assertLocalDatabaseProvider("Selecting a session user");
     const providerId = this.providerContract().activeProviders.authProviderId;
     if (providerId === LOCAL_AUTH_PROVIDER_ID) {
+      this.assertLocalDatabaseProvider("Selecting a session user");
       return this.setUser(userKey);
     }
     this.sessionUserKey = String(userKey || "");
@@ -1322,9 +1407,9 @@ class LocalDevDataSource {
   }
 
   async clearSessionUserForRoute() {
-    this.assertLocalDatabaseProvider("Clearing a session user");
     const providerId = this.providerContract().activeProviders.authProviderId;
     if (providerId === LOCAL_AUTH_PROVIDER_ID) {
+      this.assertLocalDatabaseProvider("Clearing a session user");
       return this.clearSessionUser();
     }
     this.sessionUserKey = "";
@@ -1420,6 +1505,17 @@ class LocalDevDataSource {
     this.currentAdapter().writeState(action, this.currentStateSnapshot());
   }
 
+  async persistProductProviderState(action) {
+    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
+      return this.persistSupabaseProductSnapshot(action);
+    }
+    this.persistCurrentAdapterState(action);
+    return {
+      providerId: LOCAL_DATABASE_PROVIDER_ID,
+      status: "PASS",
+    };
+  }
+
   seed(options = {}) {
     const action = "Reseeding Local DB state";
     if (!options.initial) {
@@ -1456,8 +1552,8 @@ class LocalDevDataSource {
     return database.initializeIdentity(body);
   }
 
-  adminSetupStatus() {
-    const snapshot = this.snapshot();
+  async adminSetupStatus() {
+    const snapshot = await this.snapshotForRoute();
     const tables = snapshot.tables || {};
     const users = tables.users || [];
     const roles = tables.roles || [];
@@ -1606,6 +1702,7 @@ class LocalDevDataSource {
     const databaseProviderId = providerContract.activeProviders.databaseProviderId;
     const selected = authProviderId === SUPABASE_AUTH_PROVIDER_ID;
     const localDbProductDataActive = databaseProviderId === LOCAL_DATABASE_PROVIDER_ID;
+    const supabaseProductDataActive = databaseProviderId === SUPABASE_POSTGRES_PROVIDER_ID;
     const configured = providerContract.supabaseAuth.configured === true;
     const failure = providerContract.providerDiagnostics.providerFailures
       .find((candidate) => candidate.providerId === authProviderId || candidate.providerId === SUPABASE_AUTH_PROVIDER_ID);
@@ -1616,11 +1713,11 @@ class LocalDevDataSource {
 
     if (!selected) {
       operatorDiagnostic = configured
-        ? `Supabase Auth configuration is present, but selected auth provider is ${authProviderId}. Set GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth to activate external account authentication while keeping GAMEFOUNDRY_DB_PROVIDER=local-db for product data.`
+        ? `Supabase Auth configuration is present, but selected auth provider is ${authProviderId}. Set GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth and GAMEFOUNDRY_DB_PROVIDER=supabase-postgres to activate the DEV Supabase Auth and product data path.`
         : `Supabase Auth provider is not selected. Selected auth provider is ${authProviderId}; Supabase Auth configuration is not complete.`;
       status = "provider-not-selected";
-    } else if (!localDbProductDataActive) {
-      operatorDiagnostic = "Supabase Auth activation keeps Local DB active for product data; the selected database provider is not Local DB.";
+    } else if (!supabaseProductDataActive) {
+      operatorDiagnostic = `DEV Supabase Auth requires Supabase Postgres for identity and product data. Selected database provider is ${databaseProviderId}.`;
       status = "unavailable";
     } else if (!configured) {
       operatorDiagnostic = providerContract.supabaseAuth.diagnostic || "Supabase Auth is missing required browser-safe environment configuration.";
@@ -1629,7 +1726,7 @@ class LocalDevDataSource {
       operatorDiagnostic = failure.remediation || providerContract.supabaseAuth.diagnostic || "Supabase Auth provider is not ready.";
       status = "unavailable";
     } else {
-      operatorDiagnostic = "Supabase Auth is configured. Account actions use the external auth provider while product data remains Local DB.";
+      operatorDiagnostic = "Supabase Auth is configured. Account actions use the external auth provider and DEV product data uses Supabase Postgres.";
       status = "ready";
     }
     const message = status === "ready" ? AUTH_READY_MESSAGE : AUTH_UNAVAILABLE_MESSAGE;
@@ -1654,6 +1751,7 @@ class LocalDevDataSource {
       selected,
       supabaseConfigPresent: configured,
       supabaseConnectivityStatus: connectivityStatus,
+      supabaseProductDataActive,
       supabaseProviderNotSelected: !selected,
       supabaseProviderSelected: selected,
       status,
@@ -1695,7 +1793,7 @@ class LocalDevDataSource {
 
   async authStatusForRoute() {
     const status = this.authStatus();
-    if (!status.selected || !status.configured || !status.localDbProductDataActive || status.status !== "ready") {
+    if (!status.selected || !status.configured || !status.supabaseProductDataActive || status.status !== "ready") {
       return status;
     }
     const connectivity = await this.authConnectivityCheck(status);
@@ -1737,7 +1835,7 @@ class LocalDevDataSource {
       identityBootstrapReady: true,
       identityTableRecords: identity.identityTableRecords,
       identityTablesReady: true,
-      operatorDiagnostic: "Supabase Auth is selected, configured, reachable, identity tables are available, and product data remains Local DB.",
+      operatorDiagnostic: "Supabase Auth is selected, configured, reachable, identity tables are available, and DEV product data uses Supabase Postgres.",
       ready: true,
       status: "ready",
       supabaseConnectivityStatus: "healthy",
@@ -1762,11 +1860,11 @@ class LocalDevDataSource {
           : `Selected auth provider is ${status.authProviderId}; Supabase Auth is not selected.`,
       },
       {
-        id: "local-db-product-data",
-        status: status.localDbProductDataActive ? "PASS" : "FAIL",
-        summary: status.localDbProductDataActive
-          ? "Product data remains on Local DB for this preflight."
-          : `Product data provider is ${status.databaseProviderId}; expected ${LOCAL_DATABASE_PROVIDER_ID}.`,
+        id: "supabase-product-data",
+        status: status.supabaseProductDataActive ? "PASS" : "FAIL",
+        summary: status.supabaseProductDataActive
+          ? "DEV product data uses Supabase Postgres for this preflight."
+          : `Product data provider is ${status.databaseProviderId}; expected ${SUPABASE_POSTGRES_PROVIDER_ID}.`,
       },
     ];
     const connectivity = await this.authConnectivityCheck(status);
@@ -1805,6 +1903,7 @@ class LocalDevDataSource {
       connectivityStatus: connectivity.connectivityStatus,
       databaseProviderId: status.databaseProviderId,
       localDbProductDataActive: status.localDbProductDataActive,
+      supabaseProductDataActive: status.supabaseProductDataActive,
       identityTableRecords: identity.identityTableRecords,
       identityTablesReady: identity.identityTablesReady,
       noAutomaticFallback: true,
@@ -2091,12 +2190,37 @@ class LocalDevDataSource {
   }
 
   async authPasswordReset(body = {}, redirectTo = "") {
-    const adapter = await this.authAdapterForAction("Password reset");
+    const operatorStatus = await this.authStatusForRoute();
+    logAuthActionOperatorDiagnostic({
+      phase: "start",
+      route: "POST /api/auth/password-reset",
+      safeMessage: "ready-check-complete",
+      status: operatorStatus,
+    });
+    let adapter = null;
+    try {
+      adapter = await this.authAdapterForAction("Password reset", operatorStatus);
+    } catch (error) {
+      logAuthActionOperatorDiagnostic({
+        error,
+        phase: "provider-not-ready",
+        route: "POST /api/auth/password-reset",
+        status: operatorStatus,
+      });
+      throw error;
+    }
     const email = normalizedAuthEmail(body.email || body.identity);
     try {
       const payload = await adapter.requestPasswordReset({
         email,
         redirectTo,
+      });
+      logAuthActionOperatorDiagnostic({
+        payload,
+        phase: "success",
+        route: "POST /api/auth/password-reset",
+        safeMessage: "password-reset-requested",
+        status: operatorStatus,
       });
       return {
         ...sanitizedSupabaseAuthActionResult("password-reset", email, payload),
@@ -2104,24 +2228,35 @@ class LocalDevDataSource {
         redirectToIncluded: Boolean(redirectTo),
       };
     } catch (error) {
+      const diagnostic = sanitizedAuthErrorDiagnostic(error);
+      const upstreamStatusCode = Number(error?.upstreamStatusCode || error?.status || error?.statusCode || 0);
+      logAuthActionOperatorDiagnostic({
+        error,
+        phase: upstreamStatusCode === 429 ? "upstream-rate-limited" : "upstream-failed",
+        route: "POST /api/auth/password-reset",
+        status: operatorStatus,
+      });
       if (error?.statusCode === 503) {
         throw error;
       }
-      const diagnostic = sanitizedAuthErrorDiagnostic(error);
+      if (upstreamStatusCode === 429) {
+        throw authPasswordResetRateLimitError(diagnostic.message, error);
+      }
       throw authUnavailableError("Password reset", diagnostic.message);
     }
   }
 
   currentSession() {
-    this.assertLocalDatabaseProvider("Reading current session");
     const providerContract = this.providerContract();
     const providerId = providerContract.activeProviders.authProviderId;
     if (providerId === SUPABASE_AUTH_PROVIDER_ID) {
+      this.assertSupabaseDatabaseProvider("Reading current session");
       return this.cachedSupabaseIdentitySession();
     }
     if (providerId !== LOCAL_AUTH_PROVIDER_ID) {
       return guestSession(this.currentMode(), `Selected auth provider is ${providerId}; no session provider contract is available.`);
     }
+    this.assertLocalDatabaseProvider("Reading current session");
     return this.localAuthSession("Reading current session");
   }
 
@@ -2346,6 +2481,49 @@ class LocalDevDataSource {
     return rows;
   }
 
+  async supabaseToolboxToolPlanningRows() {
+    const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox tool planning");
+    const rows = await adapter.getProductTableRows("toolbox_tool_planning");
+    const activeTools = getActiveToolRegistry();
+    const rowsByToolKey = new Map(rows.map((row) => [row.toolKey, row]));
+    const missingRows = activeTools
+      .filter((tool) => !rowsByToolKey.has(tool.id))
+      .map((tool, index) => ({
+        key: this.toolboxToolPlanningKey(tool.id),
+        ...this.defaultToolboxPlanning(tool),
+        ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+      }));
+    if (missingRows.length) {
+      await adapter.upsertProductTable("toolbox_tool_planning", missingRows);
+      return adapter.getProductTableRows("toolbox_tool_planning");
+    }
+    return rows;
+  }
+
+  async supabaseToolboxToolMetadataRows() {
+    const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox tool metadata");
+    const rows = await adapter.getProductTableRows("toolbox_tool_metadata");
+    const activeTools = getActiveToolRegistry();
+    const existingToolKeys = new Set(rows.map((row) => row.toolKey || row.toolId));
+    const missingRows = activeTools
+      .filter((tool) => !existingToolKeys.has(tool.id))
+      .map((tool, index) => ({
+        key: this.toolboxToolMetadataKey(tool.id),
+        ...this.defaultToolboxMetadata(tool, index),
+        ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+      }));
+    if (missingRows.length) {
+      await adapter.upsertProductTable("toolbox_tool_metadata", missingRows);
+      return adapter.getProductTableRows("toolbox_tool_metadata");
+    }
+    return rows;
+  }
+
+  async supabaseToolboxVoteRows() {
+    const adapter = this.supabaseDatabaseAdapter("Reading Supabase Toolbox votes");
+    return adapter.getProductTableRows("toolbox_votes");
+  }
+
   toolboxVoteSnapshot() {
     const session = this.currentSession();
     const voterKey = session.userKey || "";
@@ -2385,6 +2563,50 @@ class LocalDevDataSource {
     };
   }
 
+  async toolboxVoteSnapshotForRoute() {
+    if (this.selectedDatabaseProviderId() !== SUPABASE_POSTGRES_PROVIDER_ID) {
+      return this.toolboxVoteSnapshot();
+    }
+    const session = await this.currentSessionForRoute();
+    const voterKey = session.userKey || "";
+    const votes = await this.supabaseToolboxVoteRows();
+    const metadataRows = await this.supabaseToolboxToolMetadataRows();
+    return {
+      currentUserKey: session.userKey || "",
+      currentUserName: session.displayName || "Guest",
+      providerId: SUPABASE_POSTGRES_PROVIDER_ID,
+      rows: metadataRows
+        .filter((metadata) => metadata.active !== false)
+        .map((metadata, index) => {
+          const toolKey = normalizedToolKey(metadata);
+          const releaseChannel = getToolReleaseChannel(metadata.status || metadata.releaseChannel);
+          const toolVotes = votes.filter((row) => row.toolId === toolKey);
+          const up = toolVotes.filter((row) => row.direction === "up").length;
+          const down = toolVotes.filter((row) => row.direction === "down").length;
+          const totalVotes = up + down;
+          return {
+            currentUserVote: toolVotes.find((row) => row.userKey === voterKey)?.direction || "",
+            down,
+            downPercent: votePercent(down, totalVotes),
+            group: metadata.group || "",
+            order: Math.max(1, Math.round(Number(metadata.order) || index + 1)),
+            path: metadata.path || "",
+            status: releaseChannel,
+            toolKey,
+            releaseChannel,
+            releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+            toolId: toolKey,
+            toolName: metadata.toolName || toolKey,
+            totalVotes,
+            up,
+            upPercent: votePercent(up, totalVotes),
+          };
+        })
+        .sort((left, right) => left.order - right.order || left.toolName.localeCompare(right.toolName)),
+      source: "supabase-postgres",
+    };
+  }
+
   toolRegistrySnapshot() {
     const planningRows = this.ensureToolboxToolPlanningRows();
     const planningByToolKey = new Map(planningRows.map((row) => [row.toolKey, row]));
@@ -2417,11 +2639,43 @@ class LocalDevDataSource {
     };
   }
 
-  castToolboxVote(toolId, direction) {
+  async castToolboxVote(toolId, direction) {
     const normalizedToolId = String(toolId || "");
     const normalizedDirection = String(direction || "").toLowerCase();
     if (!["up", "down"].includes(normalizedDirection)) {
       throw new Error("Toolbox vote direction must be up or down.");
+    }
+    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
+      const session = await this.currentSessionForRoute();
+      if (!session.userKey) {
+        throw new Error("Sign in required to record Toolbox votes.");
+      }
+      const metadataRows = await this.supabaseToolboxToolMetadataRows();
+      if (!metadataRows.some((row) => normalizedToolKey(row) === normalizedToolId)) {
+        throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
+      }
+      const rows = await this.supabaseToolboxVoteRows();
+      const existingRow = rows.find((row) => row.toolId === normalizedToolId && row.userKey === session.userKey);
+      if (existingRow?.direction !== normalizedDirection) {
+        const audit = createMockDbAuditFields(0, session.userKey);
+        const nextRow = existingRow
+          ? {
+            ...existingRow,
+            direction: normalizedDirection,
+            updatedAt: audit.updatedAt,
+            updatedBy: audit.updatedBy,
+          }
+          : {
+            key: this.toolboxVoteKey(normalizedToolId, session.userKey),
+            toolId: normalizedToolId,
+            userKey: session.userKey,
+            direction: normalizedDirection,
+            ...audit,
+          };
+        const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox vote");
+        await adapter.upsertProductTable("toolbox_votes", [nextRow]);
+      }
+      return this.toolboxVoteSnapshotForRoute();
     }
     const metadataRows = this.ensureToolboxToolMetadataRows();
     if (!metadataRows.some((row) => normalizedToolKey(row) === normalizedToolId)) {
@@ -2453,7 +2707,32 @@ class LocalDevDataSource {
     return this.toolboxVoteSnapshot();
   }
 
-  updateToolboxVoteOrder(toolId, orderValue) {
+  async updateToolboxVoteOrder(toolId, orderValue) {
+    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
+      const session = await this.currentSessionForRoute();
+      if (!session.isAdmin || !session.userKey) {
+        throw new Error("Admin role required to update Toolbox vote order.");
+      }
+      const normalizedToolId = String(toolId || "");
+      const rows = await this.supabaseToolboxToolMetadataRows();
+      const existingRow = rows.find((row) => normalizedToolKey(row) === normalizedToolId);
+      if (!existingRow) {
+        throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
+      }
+      const rawOrder = Number(orderValue);
+      if (!Number.isFinite(rawOrder)) {
+        throw new Error("Toolbox vote order must be a number.");
+      }
+      const audit = createMockDbAuditFields(0, session.userKey);
+      const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox tool metadata order");
+      await adapter.upsertProductTable("toolbox_tool_metadata", [{
+        ...existingRow,
+        order: Math.max(1, Math.round(rawOrder)),
+        updatedAt: audit.updatedAt,
+        updatedBy: audit.updatedBy,
+      }]);
+      return this.toolboxVoteSnapshotForRoute();
+    }
     const session = this.currentSession();
     if (!session.isAdmin || !session.userKey) {
       throw new Error("Admin role required to update Toolbox vote order.");
@@ -2479,7 +2758,44 @@ class LocalDevDataSource {
     return this.toolboxVoteSnapshot();
   }
 
-  updateToolboxToolMetadata(toolId, updates = {}) {
+  async updateToolboxToolMetadata(toolId, updates = {}) {
+    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
+      const session = await this.currentSessionForRoute();
+      if (!session.isAdmin || !session.userKey) {
+        throw new Error("Admin role required to update Toolbox tool metadata.");
+      }
+      const normalizedToolId = String(toolId || "");
+      const rows = await this.supabaseToolboxToolMetadataRows();
+      const row = rows.find((candidate) => normalizedToolKey(candidate) === normalizedToolId);
+      if (!row) {
+        throw new Error(`Toolbox metadata row missing for ${normalizedToolId}.`);
+      }
+      const group = String(updates.group || "").trim();
+      const pathValue = String(updates.path || "").trim().replace(/^\/+/, "");
+      const releaseChannel = getToolReleaseChannel(updates.status || updates.releaseChannel);
+      if (!group) {
+        throw new Error("Toolbox metadata group is required.");
+      }
+      if (!pathValue) {
+        throw new Error("Toolbox metadata path is required.");
+      }
+      const audit = createMockDbAuditFields(0, session.userKey);
+      const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox tool metadata");
+      await adapter.upsertProductTable("toolbox_tool_metadata", [{
+        ...row,
+        group,
+        category: group,
+        path: pathValue,
+        status: releaseChannel,
+        toolKey: row.toolKey || row.toolId || normalizedToolId,
+        toolId: row.toolId || row.toolKey || normalizedToolId,
+        releaseChannel,
+        releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+        updatedAt: audit.updatedAt,
+        updatedBy: audit.updatedBy,
+      }]);
+      return this.toolboxVoteSnapshotForRoute();
+    }
     const session = this.currentSession();
     if (!session.isAdmin || !session.userKey) {
       throw new Error("Admin role required to update Toolbox tool metadata.");
@@ -2515,7 +2831,41 @@ class LocalDevDataSource {
     return this.toolboxVoteSnapshot();
   }
 
-  reorderToolboxVoteRows(toolIds) {
+  async reorderToolboxVoteRows(toolIds) {
+    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
+      const session = await this.currentSessionForRoute();
+      if (!session.isAdmin || !session.userKey) {
+        throw new Error("Admin role required to reorder Toolbox vote rows.");
+      }
+      if (!Array.isArray(toolIds)) {
+        throw new Error("Toolbox vote reorder requires an ordered tool list.");
+      }
+      const metadataRows = (await this.supabaseToolboxToolMetadataRows()).filter((row) => row.active !== false);
+      const visibleToolIds = metadataRows.map((row) => normalizedToolKey(row));
+      const visibleToolIdSet = new Set(visibleToolIds);
+      const orderedToolIds = toolIds.map((toolId) => String(toolId || "")).filter(Boolean);
+      const uniqueToolIds = [...new Set(orderedToolIds)];
+      if (uniqueToolIds.length !== visibleToolIds.length) {
+        throw new Error("Toolbox vote reorder must include each visible Toolbox tool exactly once.");
+      }
+      const unknownToolId = uniqueToolIds.find((candidate) => !visibleToolIdSet.has(candidate));
+      if (unknownToolId) {
+        throw new Error(`Unknown Toolbox vote tool: ${unknownToolId}.`);
+      }
+      const audit = createMockDbAuditFields(0, session.userKey);
+      const updatedRows = uniqueToolIds.map((toolId, index) => {
+        const existingRow = metadataRows.find((row) => (row.toolKey || row.toolId) === toolId);
+        return {
+          ...existingRow,
+          order: index + 1,
+          updatedAt: audit.updatedAt,
+          updatedBy: audit.updatedBy,
+        };
+      });
+      const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox tool metadata row order");
+      await adapter.upsertProductTable("toolbox_tool_metadata", updatedRows);
+      return this.toolboxVoteSnapshotForRoute();
+    }
     const session = this.currentSession();
     if (!session.isAdmin || !session.userKey) {
       throw new Error("Admin role required to reorder Toolbox vote rows.");
@@ -2553,7 +2903,7 @@ class LocalDevDataSource {
   }
 
   repositoryForTool(toolId) {
-    this.assertConfiguredAdapter(`Opening ${toolId} repository`);
+    this.assertProductDatabaseProvider(`Opening ${toolId} repository`);
     if (toolId === "workspace") return this.gameWorkspaceRepository;
     if (toolId === "game-workspace") return this.gameWorkspaceRepository;
     if (toolId === "game-design") return this.gameDesignRepository;
@@ -2570,7 +2920,6 @@ class LocalDevDataSource {
   }
 
   constantsForTool(toolId) {
-    this.assertConfiguredAdapter(`Reading ${toolId} constants`);
     if (toolId === "game-workspace") {
       return {
         GAME_WORKSPACE_MEMBER_ROLES,
@@ -2645,7 +2994,6 @@ class LocalDevDataSource {
   }
 
   callFunction(toolId, functionName, args) {
-    this.assertConfiguredAdapter(`Calling ${toolId}.${functionName}`);
     if ((toolId === "palette" || toolId === "colors") && functionName === "normalizePaletteSwatchInput") {
       return normalizePaletteSwatchInput(...args);
     }
@@ -2659,7 +3007,7 @@ class LocalDevDataSource {
   }
 
   createRepository(toolId, options = {}) {
-    this.assertConfiguredAdapter(`Creating ${toolId} repository`);
+    this.assertProductDatabaseProvider(`Creating ${toolId} repository`);
     const hasCustomOptions = options && typeof options === "object" && Object.keys(options).length > 0;
     let repository = this.repositoryForTool(toolId);
     if (hasCustomOptions && (toolId === "palette" || toolId === "colors")) {
@@ -2676,8 +3024,8 @@ class LocalDevDataSource {
     return repositoryId;
   }
 
-  callRepositoryMethod(repositoryId, methodName, args) {
-    this.assertConfiguredAdapter(`Calling repository method ${methodName}`);
+  async callRepositoryMethod(repositoryId, methodName, args) {
+    this.assertProductDatabaseProvider(`Calling repository method ${methodName}`);
     const repository = this.repositoryById.get(repositoryId);
     if (!repository) {
       throw new Error(`Server repository ${repositoryId} is missing.`);
@@ -2700,7 +3048,7 @@ class LocalDevDataSource {
       this.assetReadyInitialized = true;
     }
     const result = method(...args);
-    this.persistCurrentAdapterState(`Persisting ${methodName} result`);
+    await this.persistProductProviderState(`Persisting ${methodName} result`);
     return result;
   }
 
@@ -2777,6 +3125,65 @@ class LocalDevDataSource {
       toolGroups,
       viewerGroups: dbViewerGroupsForSnapshot(tables, owners),
       version: 3,
+    };
+  }
+
+  async toolRegistrySnapshotForRoute() {
+    if (this.selectedDatabaseProviderId() !== SUPABASE_POSTGRES_PROVIDER_ID) {
+      return this.toolRegistrySnapshot();
+    }
+    const planningRows = await this.supabaseToolboxToolPlanningRows();
+    const planningByToolKey = new Map(planningRows.map((row) => [row.toolKey, row]));
+    const metadataRows = await this.supabaseToolboxToolMetadataRows();
+    const tools = metadataRows
+      .map((row, index) => serverRegistryTool({
+        ...row,
+        ...planningByToolKey.get(normalizedToolKey(row)),
+      }, index))
+      .sort((left, right) => left.order - right.order || left.displayName.localeCompare(right.displayName));
+    const activeTools = tools.filter((tool) => tool.active !== false);
+    return {
+      activeTools,
+      imageFallback: TOOL_IMAGE_FALLBACK,
+      providerId: SUPABASE_POSTGRES_PROVIDER_ID,
+      readinessByStatus: Object.fromEntries(TOOL_STATUS_MODEL.map((status) => [status, getToolProgressReadiness(status)])),
+      source: "supabase-postgres",
+      toolboxContract: toolboxContractForTools(activeTools),
+      tools,
+    };
+  }
+
+  async snapshotForRoute() {
+    const providerId = this.selectedDatabaseProviderId();
+    if (providerId === LOCAL_DATABASE_PROVIDER_ID) {
+      return this.snapshot();
+    }
+    if (providerId !== SUPABASE_POSTGRES_PROVIDER_ID) {
+      const providerContract = this.providerContract();
+      throw new Error(`Reading database state requires a supported database provider. Selected database provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
+    }
+
+    const adapter = this.supabaseDatabaseAdapter("Reading Supabase product database state");
+    const providerSnapshot = await adapter.getDbViewerSnapshot();
+    const baseline = this.snapshot({ skipAdapterCheck: true });
+    const schemas = getMockDbTableSchemas();
+    const tables = Object.fromEntries(Object.keys(schemas).map((tableName) => [
+      tableName,
+      Array.isArray(providerSnapshot.tables?.[tableName]) ? providerSnapshot.tables[tableName] : [],
+    ]));
+    return {
+      cleared: false,
+      owners: baseline.owners,
+      provider: {
+        databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+        source: "supabase-postgres",
+      },
+      schemas,
+      source: "supabase-postgres",
+      tables,
+      toolGroups: baseline.toolGroups,
+      viewerGroups: dbViewerGroupsForSnapshot(tables, baseline.owners),
+      version: 4,
     };
   }
 }
@@ -2863,7 +3270,7 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "local-db" || parts[1] === "mock-db") {
         if (request.method === "GET" && parts[2] === "snapshot") {
-          ok(response, dataSource.snapshot());
+          ok(response, await dataSource.snapshotForRoute());
           return true;
         }
         if (request.method === "POST" && parts[2] === "clear") {
@@ -2872,7 +3279,7 @@ export function createLocalApiRouter() {
         }
         if (request.method === "POST" && parts[2] === "seed") {
           dataSource.seed();
-          ok(response, dataSource.snapshot());
+          ok(response, await dataSource.snapshotForRoute());
           return true;
         }
       }
@@ -2883,7 +3290,7 @@ export function createLocalApiRouter() {
       }
 
       if (parts[1] === "admin" && parts[2] === "setup" && request.method === "GET" && parts[3] === "status") {
-        ok(response, dataSource.adminSetupStatus());
+        ok(response, await dataSource.adminSetupStatus());
         return true;
       }
 
@@ -2921,31 +3328,31 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "toolbox") {
         if (request.method === "GET" && parts[2] === "votes" && parts[3] === "snapshot") {
-          ok(response, dataSource.toolboxVoteSnapshot());
+          ok(response, await dataSource.toolboxVoteSnapshotForRoute());
           return true;
         }
         if (request.method === "POST" && parts[2] === "votes" && parts[3] === "cast") {
           const body = await readRequestJson(request);
-          ok(response, dataSource.castToolboxVote(body.toolId, body.direction));
+          ok(response, await dataSource.castToolboxVote(body.toolId, body.direction));
           return true;
         }
         if (request.method === "POST" && parts[2] === "votes" && parts[3] === "order") {
           const body = await readRequestJson(request);
-          ok(response, dataSource.updateToolboxVoteOrder(body.toolId, body.order));
+          ok(response, await dataSource.updateToolboxVoteOrder(body.toolId, body.order));
           return true;
         }
         if (request.method === "POST" && parts[2] === "votes" && parts[3] === "order-list") {
           const body = await readRequestJson(request);
-          ok(response, dataSource.reorderToolboxVoteRows(body.toolIds));
+          ok(response, await dataSource.reorderToolboxVoteRows(body.toolIds));
           return true;
         }
         if (request.method === "POST" && parts[2] === "votes" && parts[3] === "metadata") {
           const body = await readRequestJson(request);
-          ok(response, dataSource.updateToolboxToolMetadata(body.toolId, body));
+          ok(response, await dataSource.updateToolboxToolMetadata(body.toolId, body));
           return true;
         }
         if (request.method === "GET" && parts[2] === "registry" && parts[3] === "snapshot") {
-          ok(response, dataSource.toolRegistrySnapshot());
+          ok(response, await dataSource.toolRegistrySnapshotForRoute());
           return true;
         }
         const toolId = parts[2];
@@ -2963,14 +3370,14 @@ export function createLocalApiRouter() {
         if (request.method === "POST" && parts[3] === "repositories" && parts.length === 4) {
           const body = await readRequestJson(request);
           ok(response, {
-            repositoryId: dataSource.createRepository(toolId, body.options || {}),
+            repositoryId: await dataSource.createRepository(toolId, body.options || {}),
           });
           return true;
         }
         if (request.method === "POST" && parts[3] === "repositories" && parts[5] === "methods") {
           const body = await readRequestJson(request);
           ok(response, {
-            result: dataSource.callRepositoryMethod(parts[4], parts[6], body.args || []),
+            result: await dataSource.callRepositoryMethod(parts[4], parts[6], body.args || []),
           });
           return true;
         }

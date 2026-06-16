@@ -1,22 +1,22 @@
 # Dependency Hydration Reuse Report
 
-Generated: 2026-06-15T22:43:47.145Z
+Generated: 2026-06-16T03:15:28.886Z
 Status: PASS
 
 ## Summary
 
-Reused dependency hydration: 0
-Invalidated dependency hydration: 1
+Reused dependency hydration: 1
+Invalidated dependency hydration: 0
 Generated dependency hydration: 0
-Prevented dependency graph hydration: 0
-Prevented helper resolution passes: 0
+Prevented dependency graph hydration: 1
+Prevented helper resolution passes: 4
 Prevented fixture ownership traversal: 0
 
 ## Hydration Decisions
 
 | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 3dd25974f5e07bca | Dependency hydration was refreshed after warm-start invalidation. |
+| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | eaf8ee3caa6ad189 | Dependency hydration reused from validated warm-start state. |
 
 ## Safeguards
 

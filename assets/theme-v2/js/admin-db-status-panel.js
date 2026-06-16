@@ -29,7 +29,14 @@ function renderAdminDbStatus() {
   const session = sessionResponse.payload?.data || {};
   const mode = session.mode || "unknown";
   const persistence = session.persistence || "unknown persistence";
-  setText(fields.serverMode, `PASS: ${mode} (${persistence}).`);
+  const providerResponse = safeRequestServerApi("/providers/contract");
+  if (providerResponse.ok) {
+    const authProviderId = providerResponse.payload?.data?.activeProviders?.authProviderId || mode;
+    const providerLabel = authProviderId === "supabase-auth" ? "Supabase Auth" : persistence;
+    setText(fields.serverMode, `PASS: ${authProviderId} (${providerLabel}).`);
+  } else {
+    setText(fields.serverMode, `PASS: ${mode} (${persistence}).`);
+  }
   setText(fields.api, "PASS: /api/session/current responded.");
 }
 

@@ -1,12 +1,12 @@
 {
   "commandsHash": "39e16c9d480a1e51",
-  "dependencyGraphHash": "e9aeebecc701948e",
+  "dependencyGraphHash": "ab0c00563257bd69",
   "dependencyHydration": {
-    "dependencyHydrationHash": "3dd25974f5e07bca",
+    "dependencyHydrationHash": "eaf8ee3caa6ad189",
     "fixtureHashes": {},
     "fixtures": [],
     "helperHashes": {
-      "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
+      "tests/helpers/playwrightRepoServer.mjs": "87ac1fbd2e53b3ba",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
@@ -21,8 +21,8 @@
       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
       "src/dev-runtime/persistence/mock-db-store.js": "fac0d9d7d550522c",
-      "src/dev-runtime/server/local-api-router.mjs": "2cc9923f5bff0265",
-      "tests/helpers/playwrightRepoServer.mjs": "8b5dcd76dcf6f115",
+      "src/dev-runtime/server/local-api-router.mjs": "2cc0bc14b7ae67d9",
+      "tests/helpers/playwrightRepoServer.mjs": "87ac1fbd2e53b3ba",
       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
       "tests/helpers/workspaceV2CoverageReporter.mjs": "2cf6bcedc7e43c85"
@@ -38,16 +38,16 @@
       "tests/helpers/workspaceV2CoverageReporter.mjs"
     ]
   },
-  "dependencyHydrationHash": "3dd25974f5e07bca",
-  "inputHash": "987ed91a2a4f7836",
+  "dependencyHydrationHash": "eaf8ee3caa6ad189",
+  "inputHash": "64c03eae2d937ba4",
   "lane": "workspace-contract",
   "laneConfigHash": "3d8db02cddc33911",
   "laneDefinitionHash": "fde48767b345621c",
-  "manifestHash": "2cb8e551681bdd04",
+  "manifestHash": "2660bc047e25cfdf",
   "ownership": "tools",
-  "warmStartHash": "5691f520f7b71b56",
+  "warmStartHash": "d427c1ca5fcf0582",
   "version": 1,
-  "generatedAt": "2026-06-15T22:43:46.137Z",
+  "generatedAt": "2026-06-16T03:08:53.504Z",
   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
   "sourceManifest": "generated"
 }

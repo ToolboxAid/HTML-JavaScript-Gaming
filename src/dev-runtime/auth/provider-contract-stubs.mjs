@@ -16,7 +16,13 @@ export const POSTGRES_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "getUsers",
   "getRoles",
   "getUserRoles",
+  "getTableRows",
+  "getTables",
+  "getProductTableRows",
+  "getProductTables",
   "initializeIdentity",
+  "upsertProductTable",
+  "upsertProductTables",
   "deleteUserByKey",
   "deleteUserRolesForUserKey",
   "reassignRoleAuditReferences",
@@ -49,7 +55,44 @@ const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
   ...SUPABASE_POSTGRES_CONFIG_KEYS,
   "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
 ]);
-const SUPABASE_POSTGRES_TABLES = Object.freeze(["users", "roles", "user_roles"]);
+export const SUPABASE_POSTGRES_IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
+export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
+  "platform_settings",
+  "game_workspace_games",
+  "game_workspace_progress",
+  "game_design_documents",
+  "game_design_validation_items",
+  "game_configuration_records",
+  "game_configuration_validation_items",
+  "object_definition_records",
+  "game_input_mappings",
+  "player_controller_profiles",
+  "player_input_device_selections",
+  "input_custom_action_records",
+  "game_journey_note_types",
+  "game_journey_notes",
+  "game_journey_templates",
+  "game_journey_items",
+  "game_journey_activity",
+  "palette_colors",
+  "palette_source_swatches",
+  "palette_swatch_usages",
+  "project_workspace_palette_globals",
+  "workspace_tag_records",
+  "asset_role_definitions",
+  "asset_library_items",
+  "asset_storage_objects",
+  "asset_import_events",
+  "asset_validation_items",
+  "toolbox_tool_metadata",
+  "toolbox_tool_planning",
+  "toolbox_votes",
+  "support_categories",
+]);
+export const SUPABASE_POSTGRES_TABLES = Object.freeze([
+  ...SUPABASE_POSTGRES_IDENTITY_TABLES,
+  ...SUPABASE_POSTGRES_PRODUCT_TABLES,
+]);
 const RUNTIME_ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 const DEV_STATIC_USER_KEYS = Object.freeze([
   MOCK_DB_KEYS.users.user1,
@@ -67,7 +110,7 @@ export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
 const SUPPORTED_AUTH_PROVIDERS = Object.freeze([LOCAL_AUTH_PROVIDER_ID, SUPABASE_AUTH_PROVIDER_ID]);
 const SUPPORTED_DATABASE_PROVIDERS = Object.freeze([LOCAL_DATABASE_PROVIDER_ID, SUPABASE_POSTGRES_PROVIDER_ID]);
 const DEFAULT_AUTH_PROVIDER_ID = SUPABASE_AUTH_PROVIDER_ID;
-const DEFAULT_DATABASE_PROVIDER_ID = LOCAL_DATABASE_PROVIDER_ID;
+const DEFAULT_DATABASE_PROVIDER_ID = SUPABASE_POSTGRES_PROVIDER_ID;
 
 export const PROVIDER_SELECTION_CONTROLS = Object.freeze({
   auth: Object.freeze({
@@ -418,6 +461,7 @@ export function createSupabasePostgresReadiness(env = process.env) {
     configured,
     dbViewerReady: configured,
     providerId: SUPABASE_POSTGRES_PROVIDER_ID,
+    productTables: Object.fromEntries(SUPABASE_POSTGRES_PRODUCT_TABLES.map((tableName) => [tableName, configured])),
     records: {
       roles: configured,
       user_roles: configured,
@@ -675,6 +719,65 @@ export class SupabasePostgresProviderAdapter {
     });
   }
 
+  getTableRows(tableName) {
+    return this.requestTable(tableName);
+  }
+
+  async getTables(tableNames = SUPABASE_POSTGRES_TABLES) {
+    const pairs = await Promise.all(tableNames.map(async (tableName) => [
+      requireTableName(tableName),
+      await this.getTableRows(tableName),
+    ]));
+    return Object.fromEntries(pairs);
+  }
+
+  getProductTableRows(tableName) {
+    const table = requireTableName(tableName);
+    if (!SUPABASE_POSTGRES_PRODUCT_TABLES.includes(table)) {
+      throw new Error(`Supabase Postgres product data adapter cannot read non-product table ${table}.`);
+    }
+    return this.getTableRows(table);
+  }
+
+  getProductTables(tableNames = SUPABASE_POSTGRES_PRODUCT_TABLES) {
+    tableNames.forEach((tableName) => {
+      if (!SUPABASE_POSTGRES_PRODUCT_TABLES.includes(requireTableName(tableName))) {
+        throw new Error(`Supabase Postgres product data adapter cannot read non-product table ${tableName}.`);
+      }
+    });
+    return this.getTables(tableNames);
+  }
+
+  upsertProductTable(tableName, rows = []) {
+    const table = requireTableName(tableName);
+    if (!SUPABASE_POSTGRES_PRODUCT_TABLES.includes(table)) {
+      throw new Error(`Supabase Postgres product data adapter cannot write non-product table ${table}.`);
+    }
+    return this.upsertTable(table, rows.map((row) => ({
+      key: optionalString(row?.key) || this.createRecordKey(),
+      ...row,
+    })));
+  }
+
+  async upsertProductTables(tables = {}) {
+    const written = {};
+    for (const tableName of SUPABASE_POSTGRES_PRODUCT_TABLES) {
+      const rows = Array.isArray(tables[tableName]) ? tables[tableName] : [];
+      if (rows.length) {
+        const result = await this.upsertProductTable(tableName, rows);
+        written[tableName] = Array.isArray(result) ? result.length : rows.length;
+      } else {
+        written[tableName] = 0;
+      }
+    }
+    return {
+      boundary: PROVIDER_DATA_BOUNDARY_RULE,
+      providerId: this.providerId,
+      serverApiOwnsKeyGeneration: true,
+      written,
+    };
+  }
+
   deleteUserByKey(userKey) {
     return this.requestTable("users", {
       method: "DELETE",
@@ -758,9 +861,36 @@ export class SupabasePostgresProviderAdapter {
       createdBy: optionalString(user.createdBy) || setupActorKey,
       updatedBy: optionalString(user.updatedBy) || setupActorKey,
     }));
-    const normalizedRoles = roles.map((role) => this.normalizeRoleRecord(role, setupActorKey, timestamp));
-    const roleKeyBySlug = new Map(normalizedRoles.map((role) => [role.roleSlug, role.key]));
-    const normalizedUserRoles = userRoles.map((userRole) => this.normalizeUserRoleRecord(userRole, roleKeyBySlug, setupActorKey, timestamp));
+    const existingRoles = roles.length ? await this.getRoles() : [];
+    const existingRoleKeyBySlug = new Map(existingRoles
+      .map((role) => [optionalString(role.roleSlug), optionalString(role.key)])
+      .filter(([roleSlug, key]) => roleSlug && key));
+    const normalizedRoles = roles.map((role) => {
+      const roleSlug = optionalString(role.roleSlug || role.slug);
+      return this.normalizeRoleRecord({
+        ...role,
+        key: optionalString(role.key) || existingRoleKeyBySlug.get(roleSlug),
+      }, setupActorKey, timestamp);
+    });
+    const roleKeyBySlug = new Map([
+      ...existingRoleKeyBySlug,
+      ...normalizedRoles.map((role) => [role.roleSlug, role.key]),
+    ]);
+    const existingUserRoles = userRoles.length ? await this.getUserRoles() : [];
+    const existingUserRoleKeyByUserAndRole = new Map(existingUserRoles
+      .map((userRole) => [
+        `${optionalString(userRole.userKey)}\u0000${optionalString(userRole.roleKey)}`,
+        optionalString(userRole.key),
+      ])
+      .filter(([userRoleKey, key]) => userRoleKey !== "\u0000" && key));
+    const normalizedUserRoles = userRoles.map((userRole) => {
+      const roleKey = optionalString(userRole.roleKey) || roleKeyBySlug.get(optionalString(userRole.roleSlug || userRole.slug));
+      return this.normalizeUserRoleRecord({
+        ...userRole,
+        key: optionalString(userRole.key) || existingUserRoleKeyByUserAndRole.get(`${optionalString(userRole.userKey)}\u0000${optionalString(roleKey)}`),
+        roleKey,
+      }, roleKeyBySlug, setupActorKey, timestamp);
+    });
 
     const writtenUsers = await this.upsertTable("users", finalizedUsers);
     const writtenRoles = await this.upsertTable("roles", normalizedRoles);
@@ -806,20 +936,12 @@ export class SupabasePostgresProviderAdapter {
 
   async getDbViewerSnapshot() {
     this.assertConfigured();
-    const [users, roles, userRoles] = await Promise.all([
-      this.getUsers(),
-      this.getRoles(),
-      this.getUserRoles(),
-    ]);
+    const tables = await this.getTables();
     return {
       boundary: PROVIDER_DATA_BOUNDARY_RULE,
       providerId: this.providerId,
       readiness: this.readiness(),
-      tables: {
-        roles,
-        user_roles: userRoles,
-        users,
-      },
+      tables,
     };
   }
 }
@@ -911,7 +1033,7 @@ export function createProviderContractSnapshot(env = process.env) {
     identityOwnership: {
       auditFields: ["createdAt", "updatedAt", "createdBy", "updatedBy"],
       browserAuthoritativeKeysAllowed: false,
-      dataMigrationActive: false,
+      dataMigrationActive: supabasePostgresSelected,
       identityConfigured,
       ownerProviderId: identityOwnerProviderId,
       ownershipFields: ["key", "createdAt", "updatedAt", "createdBy", "updatedBy"],
@@ -921,7 +1043,7 @@ export function createProviderContractSnapshot(env = process.env) {
       selectedDatabaseProviderId: database.id,
       serverApiOwnsKeyGeneration: true,
       staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ admin only.",
-      tables: SUPABASE_POSTGRES_TABLES.slice(),
+      tables: SUPABASE_POSTGRES_IDENTITY_TABLES.slice(),
       temporaryDevOnlyException: "Static ULIDs are allowed only for the four seeded DEV user records and required user_roles references.",
       userKeyAuthority: "users.key",
     },
@@ -961,6 +1083,7 @@ export function createProviderContractSnapshot(env = process.env) {
       apiBoundary: PROVIDER_DATA_BOUNDARY_RULE,
       browserReceivesServiceRoleSecrets: false,
       localDbSelected: auth.id === LOCAL_AUTH_PROVIDER_ID && database.id === LOCAL_DATABASE_PROVIDER_ID,
+      productDataProviderId: database.id,
       selectedProvidersCanServeRuntime: selectedProvidersReady,
       selectedProvidersFailed: !selectedProvidersReady,
       supabaseAuthSelected,
@@ -999,7 +1122,7 @@ export function createProviderContractSnapshot(env = process.env) {
         keyGenerationOwner: "server-api",
         staticUlidsAllowedOnlyForDevSeedUsers: true,
       },
-      dataMigrationActive: false,
+      dataMigrationActive: supabasePostgresSelected,
       diagnostic: supabasePostgresSelected ? supabasePostgresDiagnostic(env) : "Supabase Postgres provider adapter is inactive.",
       readiness: supabasePostgresReadiness,
       executionOwnership: {
@@ -1012,7 +1135,8 @@ export function createProviderContractSnapshot(env = process.env) {
         auditFields: ["createdAt", "updatedAt", "createdBy", "updatedBy"],
         serverApiOwnsKeyGeneration: true,
         staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ admin only.",
-        tables: SUPABASE_POSTGRES_TABLES.slice(),
+        productTables: SUPABASE_POSTGRES_PRODUCT_TABLES.slice(),
+        tables: SUPABASE_POSTGRES_IDENTITY_TABLES.slice(),
       },
       migrationSequence: [
         "Supabase Auth",

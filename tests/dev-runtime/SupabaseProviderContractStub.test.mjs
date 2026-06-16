@@ -155,6 +155,11 @@ function startFakeSupabaseAuthServer(options = {}) {
     response.statusCode = 200;
     response.setHeader("Content-Type", "application/json; charset=utf-8");
     if (requestUrl.pathname === "/auth/v1/recover") {
+      if (options.failPasswordReset) {
+        response.statusCode = options.failPasswordReset.status || 500;
+        response.end(JSON.stringify(options.failPasswordReset.payload || { message: "Password reset failed" }));
+        return;
+      }
       response.end(JSON.stringify({ ok: true }));
       return;
     }
@@ -394,7 +399,13 @@ test("Supabase provider contract stubs keep explicitly selected Local DB active"
     "getUsers",
     "getRoles",
     "getUserRoles",
+    "getTableRows",
+    "getTables",
+    "getProductTableRows",
+    "getProductTables",
     "initializeIdentity",
+    "upsertProductTable",
+    "upsertProductTables",
     "deleteUserByKey",
     "deleteUserRolesForUserKey",
     "reassignRoleAuditReferences",
@@ -464,7 +475,7 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
   ]);
 });
 
-test("Default startup selects Supabase Auth and Local DB product data without falling back", async () => {
+test("Default startup selects Supabase Auth and Supabase Postgres product data without falling back", async () => {
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: undefined,
     GAMEFOUNDRY_DB_PROVIDER: undefined,
@@ -474,22 +485,23 @@ test("Default startup selects Supabase Auth and Local DB product data without fa
   }, async () => {
     const snapshot = createProviderContractSnapshot({});
     assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
-    assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
+    assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
     assert.equal(snapshot.activeProviders.status, "failed");
     assert.equal(snapshot.requestedProviders.authProviderId, "supabase-auth");
-    assert.equal(snapshot.requestedProviders.databaseProviderId, "local-db");
+    assert.equal(snapshot.requestedProviders.databaseProviderId, "supabase-postgres");
     assert.equal(snapshot.identityOwnership.ownerProviderId, "supabase-auth");
-    assert.equal(snapshot.identityOwnership.productDatabaseProviderId, "local-db");
+    assert.equal(snapshot.identityOwnership.productDatabaseProviderId, "supabase-postgres");
+    assert.equal(snapshot.identityOwnership.dataMigrationActive, true);
     assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
     assert.equal(snapshot.supabaseAuth.status, "not-configured");
     assert.equal(snapshot.supabaseAuth.adapter.activeByDefault, true);
-    assert.equal(snapshot.supabasePostgres.dataMigrationActive, false);
+    assert.equal(snapshot.supabasePostgres.dataMigrationActive, true);
 
     const server = await startApiServer();
     try {
       const status = await apiJson(server.baseUrl, "/api/auth/status");
       assert.equal(status.authProviderId, "supabase-auth");
-      assert.equal(status.databaseProviderId, "local-db");
+      assert.equal(status.databaseProviderId, "supabase-postgres");
       assert.equal(status.ready, false);
       assert.equal(status.status, "unavailable");
       assert.equal(status.noAutomaticFallback, true);
@@ -515,31 +527,32 @@ test("Default startup selects Supabase Auth and Local DB product data without fa
   });
 });
 
-test("Provider contract assigns users roles and user_roles ownership to Supabase Auth while product data stays Local DB", () => {
+test("Provider contract assigns identity and product data ownership to Supabase providers", () => {
   const snapshot = createProviderContractSnapshot({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-safe-anon-key",
+    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "server-only-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test",
   });
 
   assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
-  assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
+  assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
   assert.equal(snapshot.activeProviders.status, "ready");
-  assert.equal(snapshot.supabasePostgres.dataMigrationActive, false);
+  assert.equal(snapshot.supabasePostgres.dataMigrationActive, true);
   assert.equal(snapshot.identityOwnership.ownerProviderId, "supabase-auth");
   assert.equal(snapshot.identityOwnership.readerProviderId, "supabase-postgres");
-  assert.equal(snapshot.identityOwnership.productDatabaseProviderId, "local-db");
+  assert.equal(snapshot.identityOwnership.productDatabaseProviderId, "supabase-postgres");
   assert.equal(snapshot.identityOwnership.identityConfigured, true);
-  assert.equal(snapshot.identityOwnership.dataMigrationActive, false);
+  assert.equal(snapshot.identityOwnership.dataMigrationActive, true);
   assert.equal(snapshot.identityOwnership.userKeyAuthority, "users.key");
   assert.equal(snapshot.identityOwnership.browserAuthoritativeKeysAllowed, false);
   assert.deepEqual(snapshot.identityOwnership.ownershipFields, ["key", "createdAt", "updatedAt", "createdBy", "updatedBy"]);
   assert.deepEqual(snapshot.identityOwnership.tables, ["users", "roles", "user_roles"]);
   assert.match(snapshot.identityOwnership.staticDevUserUlidException, /DavidQ admin only/);
   assert.equal(snapshot.runtimeActivation.supabaseAuthSelected, true);
-  assert.equal(snapshot.runtimeActivation.supabasePostgresSelected, false);
+  assert.equal(snapshot.runtimeActivation.supabasePostgresSelected, true);
   assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
   assert.equal(JSON.stringify(snapshot).includes("server-only-service-role-key"), false);
 });
@@ -568,7 +581,7 @@ test("Auth status distinguishes configured Supabase when Local DB auth remains s
       assert.equal(status.databaseProviderId, "local-db");
       assert.match(status.operatorDiagnostic, /selected auth provider is local-db/);
       assert.match(status.operatorDiagnostic, /GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth/);
-      assert.match(status.operatorDiagnostic, /GAMEFOUNDRY_DB_PROVIDER=local-db/);
+      assert.match(status.operatorDiagnostic, /GAMEFOUNDRY_DB_PROVIDER=supabase-postgres/);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.operatorOnly, true);
@@ -577,10 +590,12 @@ test("Auth status distinguishes configured Supabase when Local DB auth remains s
       assert.equal(preflight.supabaseProviderSelected, false);
       assert.equal(preflight.supabaseProviderNotSelected, true);
       assert.equal(preflight.localDbProductDataActive, true);
+      assert.equal(preflight.supabaseProductDataActive, false);
       assert.equal(preflight.connectivityStatus, "healthy");
       assert.equal(preflight.connectivityHealthy, true);
       assert.equal(preflight.status, "healthy");
       assert.equal(preflight.checks.find((check) => check.id === "supabase-provider-selected").status, "WARN");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-product-data").status, "FAIL");
       assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "PASS");
       assert.equal(JSON.stringify(preflight).includes("test-anon-key"), false);
     } finally {
@@ -590,7 +605,7 @@ test("Auth status distinguishes configured Supabase when Local DB auth remains s
   await fakeSupabase.close();
 });
 
-test("Selected Supabase providers keep diagnostics available and block Local DB runtime routes when not configured", async () => {
+test("Selected Supabase providers keep diagnostics available and block product data routes when not configured", async () => {
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
@@ -606,23 +621,22 @@ test("Selected Supabase providers keep diagnostics available and block Local DB 
       assert.equal(providerContract.supabasePreflight.fallbackAllowed, false);
 
       const session = await apiPayload(server.baseUrl, "/api/session/current");
-      assert.equal(session.status, 500);
-      assert.equal(session.payload.ok, false);
-      assert.match(session.payload.error, /requires the Local DB database provider/);
-      assert.match(session.payload.error, /Selected database provider is supabase-postgres/);
+      assert.equal(session.status, 200);
+      assert.equal(session.payload.ok, true);
+      assert.equal(session.payload.data.authenticated, false);
+      assert.match(session.payload.data.diagnostic, /Supabase Auth provider selected but not configured/);
 
       const snapshot = await apiPayload(server.baseUrl, "/api/local-db/snapshot");
       assert.equal(snapshot.status, 500);
       assert.equal(snapshot.payload.ok, false);
-      assert.match(snapshot.payload.error, /requires the Local DB database provider/);
-      assert.match(snapshot.payload.error, /Selected database provider is supabase-postgres/);
+      assert.match(snapshot.payload.error, /Supabase Postgres provider selected but not configured/);
     } finally {
       await server.close();
     }
   });
 });
 
-test("Supabase Auth selection keeps Local DB product data active and fails auth actions safely when config is missing", async () => {
+test("Supabase Auth selection with Local DB product data fails auth actions safely", async () => {
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "local-db",
@@ -642,23 +656,26 @@ test("Supabase Auth selection keeps Local DB product data active and fails auth 
       assert.equal(status.connectivityHealthy, null);
       assert.equal(status.databaseProviderId, "local-db");
       assert.equal(status.localDbProductDataActive, true);
+      assert.equal(status.supabaseProductDataActive, false);
       assert.equal(status.noAutomaticFallback, true);
       assert.equal(status.message, "The site is currently unavailable. Please try again later.");
-      assert.match(status.operatorDiagnostic, /Supabase Auth provider selected but not configured/);
+      assert.match(status.operatorDiagnostic, /requires Supabase Postgres/);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, false);
       assert.equal(preflight.supabaseProviderSelected, true);
+      assert.equal(preflight.supabaseProductDataActive, false);
       assert.equal(preflight.connectivityStatus, "not-configured");
       assert.equal(preflight.connectivityHealthy, false);
       assert.equal(preflight.checks.find((check) => check.id === "supabase-config-present").status, "FAIL");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-product-data").status, "FAIL");
       assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "SKIP");
 
       const session = await apiPayload(server.baseUrl, "/api/session/current");
       assert.equal(session.status, 200);
       assert.equal(session.payload.ok, true);
       assert.equal(session.payload.data.authenticated, false);
-      assert.match(session.payload.data.diagnostic, /Supabase Auth provider selected but not configured/);
+      assert.match(session.payload.data.diagnostic, /requires Supabase Postgres/);
 
       const snapshot = await apiPayload(server.baseUrl, "/api/local-db/snapshot");
       assert.equal(snapshot.status, 200);
@@ -684,7 +701,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -694,7 +711,8 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       const status = await apiJson(server.baseUrl, "/api/auth/status");
       assert.equal(status.ready, true);
       assert.equal(status.configured, true);
-      assert.equal(status.localDbProductDataActive, true);
+      assert.equal(status.localDbProductDataActive, false);
+      assert.equal(status.supabaseProductDataActive, true);
       assert.equal(status.message, "Account service is available.");
       assert.equal(status.supabaseConfigPresent, true);
       assert.equal(status.supabaseProviderSelected, true);
@@ -705,7 +723,8 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, true);
       assert.equal(preflight.supabaseProviderSelected, true);
-      assert.equal(preflight.localDbProductDataActive, true);
+      assert.equal(preflight.localDbProductDataActive, false);
+      assert.equal(preflight.supabaseProductDataActive, true);
       assert.equal(preflight.connectivityStatus, "healthy");
       assert.equal(preflight.connectivityHealthy, true);
       assert.equal(preflight.checks.find((check) => check.id === "supabase-provider-selected").status, "PASS");
@@ -786,7 +805,7 @@ test("Create account provisions Supabase identity user default role and user_rol
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -862,7 +881,7 @@ test("Create account provider failure returns generic browser error and logs saf
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -911,7 +930,7 @@ test("Create account identity provisioning failure returns support message after
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -943,6 +962,98 @@ test("Create account identity provisioning failure returns support message after
   await fakeSupabase.close();
 });
 
+test("Password reset rate limit returns safe message and logs upstream HTTP 429", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    failPasswordReset: {
+      payload: {
+        code: "over_email_send_rate_limit",
+        message: "Email rate limit exceeded for reset429@example.test",
+      },
+      status: 429,
+    },
+    identityTables: fakeSupabaseIdentityTables(),
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      await withCapturedConsoleWarn(async (warnings) => {
+        const reset = await postApiPayload(server.baseUrl, "/api/auth/password-reset", {
+          email: "reset429@example.test",
+        });
+        assert.equal(reset.status, 429);
+        assert.equal(reset.payload.ok, false);
+        assert.equal(reset.payload.error, "Too many reset requests. Please wait and try again later.");
+        assert.equal(JSON.stringify(reset.payload).includes("Email rate limit exceeded"), false);
+        assert.equal(JSON.stringify(reset.payload).includes("reset429@example.test"), false);
+        assert.equal(warnings.length, 3);
+        assert.match(warnings[0], /\[auth\/operator\] POST \/api\/auth\/password-reset diagnostic phase=start/);
+        assert.match(warnings[1], /\[auth\/operator\] POST \/api\/auth\/password-reset diagnostic phase=upstream-rate-limited/);
+        assert.match(warnings[1], /upstreamStatusCode=429/);
+        assert.match(warnings[1], /safeErrorCode=over_email_send_rate_limit/);
+        assert.match(warnings[1], /safeMessage=Supabase Auth request failed with HTTP 429\./);
+        assert.match(warnings[2], /\[auth\/operator\] POST \/api\/auth\/password-reset failed:/);
+        assert.match(warnings[2], /Password reset: Supabase Auth request failed with HTTP 429\./);
+        assert.equal(warnings.join("\n").includes("Email rate limit exceeded"), false);
+        assert.equal(warnings.join("\n").includes("reset429@example.test"), false);
+      });
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
+test("Password reset non-429 provider failure returns generic unavailable message", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    failPasswordReset: {
+      payload: {
+        message: "Provider outage for reset500@example.test",
+      },
+      status: 500,
+    },
+    identityTables: fakeSupabaseIdentityTables(),
+  });
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      await withCapturedConsoleWarn(async (warnings) => {
+        const reset = await postApiPayload(server.baseUrl, "/api/auth/password-reset", {
+          email: "reset500@example.test",
+        });
+        assert.equal(reset.status, 503);
+        assert.equal(reset.payload.ok, false);
+        assert.equal(reset.payload.error, "The site is currently unavailable. Please try again later.");
+        assert.equal(JSON.stringify(reset.payload).includes("Provider outage"), false);
+        assert.equal(JSON.stringify(reset.payload).includes("reset500@example.test"), false);
+        assert.equal(warnings.length, 3);
+        assert.match(warnings[1], /\[auth\/operator\] POST \/api\/auth\/password-reset diagnostic phase=upstream-failed/);
+        assert.match(warnings[1], /upstreamStatusCode=500/);
+        assert.match(warnings[1], /safeMessage=Supabase Auth request failed with HTTP 500\./);
+        assert.match(warnings[2], /Password reset: Supabase Auth request failed with HTTP 500\./);
+        assert.equal(warnings.join("\n").includes("Provider outage"), false);
+        assert.equal(warnings.join("\n").includes("reset500@example.test"), false);
+      });
+      assert.equal(fakeSupabase.calls.some((call) => call.path === "/auth/v1/recover"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
 test("Supabase sign in fails visibly when the Auth user has no app identity row", async () => {
   const fakeSupabase = await startFakeSupabaseAuthServer({
     identityTables: {
@@ -953,7 +1064,7 @@ test("Supabase sign in fails visibly when the Auth user has no app identity row"
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -997,7 +1108,7 @@ test("Supabase account actions fail actionably when identity tables are missing"
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -1041,8 +1152,9 @@ test("Default Supabase Auth routes sign in create account and password reset thr
       const status = await apiJson(server.baseUrl, "/api/auth/status");
       assert.equal(status.ready, true);
       assert.equal(status.authProviderId, "supabase-auth");
-      assert.equal(status.databaseProviderId, "local-db");
-      assert.equal(status.localDbProductDataActive, true);
+      assert.equal(status.databaseProviderId, "supabase-postgres");
+      assert.equal(status.localDbProductDataActive, false);
+      assert.equal(status.supabaseProductDataActive, true);
       assert.equal(status.message, "Account service is available.");
       assert.equal(status.noAutomaticFallback, true);
       assert.equal(status.selected, true);
@@ -1096,13 +1208,13 @@ test("Default Supabase Auth routes sign in create account and password reset thr
   await fakeSupabase.close();
 });
 
-test("Supabase Auth selected path reads users roles and user_roles through the provider contract while product data stays Local DB", async () => {
+test("Supabase Auth selected path reads users roles user_roles and product data through Supabase providers", async () => {
   const fakeSupabase = await startFakeSupabaseAuthServer({
     identityTables: fakeSupabaseIdentityTables(),
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -1111,10 +1223,11 @@ test("Supabase Auth selected path reads users roles and user_roles through the p
     try {
       const contract = await apiJson(server.baseUrl, "/api/providers/contract");
       assert.equal(contract.activeProviders.authProviderId, "supabase-auth");
-      assert.equal(contract.activeProviders.databaseProviderId, "local-db");
+      assert.equal(contract.activeProviders.databaseProviderId, "supabase-postgres");
       assert.equal(contract.identityOwnership.ownerProviderId, "supabase-auth");
       assert.equal(contract.identityOwnership.readerProviderId, "supabase-postgres");
-      assert.equal(contract.identityOwnership.productDatabaseProviderId, "local-db");
+      assert.equal(contract.identityOwnership.productDatabaseProviderId, "supabase-postgres");
+      assert.equal(contract.identityOwnership.dataMigrationActive, true);
       assert.equal(contract.identityOwnership.userKeyAuthority, "users.key");
       assert.deepEqual(contract.identityOwnership.tables, ["users", "roles", "user_roles"]);
 
@@ -1163,7 +1276,7 @@ test("Supabase identity session lookup fails visibly when the selected user is m
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -1202,7 +1315,7 @@ test("Supabase identity session lookup fails visibly when user_roles references 
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -1230,7 +1343,7 @@ test("Operator auth preflight reports failed Supabase connectivity for wrong ano
   });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "wrong-anon-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
   }, async () => {
@@ -1414,12 +1527,15 @@ test("Supabase Postgres adapter supports identity tables and readiness when conf
   });
 
   const snapshot = await database.getDbViewerSnapshot();
-  assert.deepEqual(Object.keys(snapshot.tables).sort(), ["roles", "user_roles", "users"]);
-  assert.deepEqual(calls.map((call) => call.url), [
-    "https://supabase-dev.example.test/rest/v1/users?select=*",
-    "https://supabase-dev.example.test/rest/v1/roles?select=*",
-    "https://supabase-dev.example.test/rest/v1/user_roles?select=*",
-  ]);
+  assert.equal(Object.keys(snapshot.tables).includes("users"), true);
+  assert.equal(Object.keys(snapshot.tables).includes("toolbox_tool_metadata"), true);
+  assert.equal(Object.keys(snapshot.tables).includes("asset_library_items"), true);
+  const urls = calls.map((call) => call.url);
+  assert.equal(urls.includes("https://supabase-dev.example.test/rest/v1/users?select=*"), true);
+  assert.equal(urls.includes("https://supabase-dev.example.test/rest/v1/roles?select=*"), true);
+  assert.equal(urls.includes("https://supabase-dev.example.test/rest/v1/user_roles?select=*"), true);
+  assert.equal(urls.includes("https://supabase-dev.example.test/rest/v1/toolbox_tool_metadata?select=*"), true);
+  assert.equal(urls.includes("https://supabase-dev.example.test/rest/v1/asset_library_items?select=*"), true);
   assert.equal(calls.every((call) => call.options.headers.apikey === "not-a-real-service-role-test-value"), true);
 });
 
@@ -1540,19 +1656,21 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
   });
 
   assert.deepEqual(calls.map((call) => `${call.method} ${call.url}`), [
+    "GET https://supabase-dev.example.test/rest/v1/roles?select=*",
+    "GET https://supabase-dev.example.test/rest/v1/user_roles?select=*",
     "POST https://supabase-dev.example.test/rest/v1/users?on_conflict=key",
     "POST https://supabase-dev.example.test/rest/v1/roles?on_conflict=key",
     "POST https://supabase-dev.example.test/rest/v1/user_roles?on_conflict=key",
   ]);
-  assert.equal(calls.every((call) => call.headers.prefer === "resolution=merge-duplicates,return=representation"), true);
-  assert.equal(calls[0].body[0].key, MOCK_DB_KEYS.users.admin);
-  assert.equal(calls[0].body[0].createdBy, MOCK_DB_KEYS.users.admin);
-  assert.equal(calls[0].body[0].updatedBy, MOCK_DB_KEYS.users.admin);
-  assert.equal(calls[1].body[0].key, "01J000000000000000000ROLE1");
-  assert.equal(calls[1].body[0].roleSlug, "admin");
-  assert.equal(calls[2].body[0].key, "01J000000000000000USERROLE1");
-  assert.equal(calls[2].body[0].userKey, MOCK_DB_KEYS.users.admin);
-  assert.equal(calls[2].body[0].roleKey, "01J000000000000000000ROLE1");
+  assert.equal(calls.slice(2).every((call) => call.headers.prefer === "resolution=merge-duplicates,return=representation"), true);
+  assert.equal(calls[2].body[0].key, MOCK_DB_KEYS.users.admin);
+  assert.equal(calls[2].body[0].createdBy, MOCK_DB_KEYS.users.admin);
+  assert.equal(calls[2].body[0].updatedBy, MOCK_DB_KEYS.users.admin);
+  assert.equal(calls[3].body[0].key, "01J000000000000000000ROLE1");
+  assert.equal(calls[3].body[0].roleSlug, "admin");
+  assert.equal(calls[4].body[0].key, "01J000000000000000USERROLE1");
+  assert.equal(calls[4].body[0].userKey, MOCK_DB_KEYS.users.admin);
+  assert.equal(calls[4].body[0].roleKey, "01J000000000000000000ROLE1");
   assert.deepEqual(result.identityKeyModel, {
     roleKeyField: "roles.key",
     userKeyField: "users.key",
@@ -1566,6 +1684,81 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
   });
   assert.equal(result.serverApiOwnsKeyGeneration, true);
   assert.equal(result.staticDevUserUlidExceptionUsed, true);
+});
+
+test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys during identity initialization", async () => {
+  const calls = [];
+  const database = new SupabasePostgresProviderAdapter({
+    env: {
+      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+      GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+      GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+    },
+    fetchImpl: async (url, options) => {
+      const body = options.body ? JSON.parse(options.body) : null;
+      calls.push({
+        body,
+        headers: options.headers,
+        method: options.method,
+        url,
+      });
+      if (url.endsWith("/rest/v1/roles?select=*")) {
+        return {
+          json: async () => [{
+            key: "01J000000000000000EXISTROLE",
+            roleSlug: "admin",
+          }],
+          ok: true,
+          status: 200,
+        };
+      }
+      if (url.endsWith("/rest/v1/user_roles?select=*")) {
+        return {
+          json: async () => [{
+            key: "01J000000000000EXISTUSERROLE",
+            roleKey: "01J000000000000000EXISTROLE",
+            userKey: MOCK_DB_KEYS.users.admin,
+          }],
+          ok: true,
+          status: 200,
+        };
+      }
+      return {
+        json: async () => (body || []),
+        ok: true,
+        status: 200,
+      };
+    },
+    keyFactory: () => "01J000000000000UNUSEDKEY",
+  });
+
+  await database.initializeIdentity({
+    actorKey: MOCK_DB_KEYS.users.admin,
+    roles: [
+      {
+        roleSlug: "admin",
+        name: "Admin",
+      },
+    ],
+    userRoles: [
+      {
+        userKey: MOCK_DB_KEYS.users.admin,
+        roleSlug: "admin",
+      },
+    ],
+    users: [
+      {
+        key: MOCK_DB_KEYS.users.admin,
+        displayName: "DavidQ admin",
+      },
+    ],
+  });
+
+  assert.equal(calls[3].body[0].key, "01J000000000000000EXISTROLE");
+  assert.equal(calls[3].body[0].roleSlug, "admin");
+  assert.equal(calls[4].body[0].key, "01J000000000000EXISTUSERROLE");
+  assert.equal(calls[4].body[0].roleKey, "01J000000000000000EXISTROLE");
+  assert.equal(calls[4].body[0].userKey, MOCK_DB_KEYS.users.admin);
 });
 
 test("Admin identity setup API fails visibly when Supabase Postgres is selected without config", async () => {
@@ -1652,10 +1845,10 @@ test("Unsupported selected providers fail without falling back to Local DB", () 
   assert.equal(JSON.stringify(snapshot).includes("rollback"), false);
 });
 
-test(".env.example documents future Supabase DEV variables without values", async () => {
+test(".env.example documents Supabase DEV variables without values", async () => {
   const contents = await readFile(".env.example", "utf8");
   assert.match(contents, /^GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth$/m);
-  assert.match(contents, /^GAMEFOUNDRY_DB_PROVIDER=local-db$/m);
+  assert.match(contents, /^GAMEFOUNDRY_DB_PROVIDER=supabase-postgres$/m);
   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_URL=$/m);
   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_ANON_KEY=$/m);
   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=$/m);

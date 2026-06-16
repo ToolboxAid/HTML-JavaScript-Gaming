@@ -142,6 +142,11 @@ async function startFakeSupabaseAuthServer(options = {}) {
       return;
     }
     if (requestUrl.pathname === "/auth/v1/recover") {
+      if (options.failPasswordReset) {
+        response.statusCode = options.failPasswordReset.status || 500;
+        response.end(JSON.stringify(options.failPasswordReset.payload || { message: "Password reset failed" }));
+        return;
+      }
       response.end(JSON.stringify({ ok: true }));
       return;
     }
@@ -525,7 +530,7 @@ test("Configured account auth actions use external Auth and resolve the app sess
   });
   await withSupabaseEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -604,7 +609,7 @@ test("Account auth actions show actionable identity setup failures without expos
   });
   await withSupabaseEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -639,7 +644,7 @@ test("Create Account shows generic provider failure and support message for iden
   });
   await withSupabaseEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: providerFailureSupabase.baseUrl,
@@ -675,7 +680,7 @@ test("Create Account shows generic provider failure and support message for iden
   });
   await withSupabaseEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: identityFailureSupabase.baseUrl,
@@ -696,6 +701,73 @@ test("Create Account shows generic provider failure and support message for iden
     }
   });
   await identityFailureSupabase.close();
+});
+
+test("Password Reset maps upstream rate limit safely and keeps provider failures generic", async ({ page }) => {
+  const rateLimitSupabase = await startFakeSupabaseAuthServer({
+    failPasswordReset: {
+      payload: {
+        code: "over_email_send_rate_limit",
+        message: "Email rate limit exceeded for browser429@example.test",
+      },
+      status: 429,
+    },
+    identityTables: fakeSupabaseIdentityTables(),
+  });
+  await withSupabaseEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: rateLimitSupabase.baseUrl,
+  }, async () => {
+    const failures = await openRepoPage(page, "/account/password-reset.html");
+    try {
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
+      await page.getByLabel("Email").fill("browser429@example.test");
+      await page.getByRole("button", { name: "Request Password Reset" }).click();
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Too many reset requests. Please wait and try again later.");
+      await expect(page.locator("main")).not.toContainText("Email rate limit exceeded");
+      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/password-reset"))).toHaveLength(1);
+      expect(failures.pageErrors).toEqual([]);
+      expect(failures.consoleErrors.filter((entry) => !entry.includes("429"))).toEqual([]);
+    } finally {
+      await closeWithCoverage(page, failures);
+    }
+  });
+  await rateLimitSupabase.close();
+
+  const providerFailureSupabase = await startFakeSupabaseAuthServer({
+    failPasswordReset: {
+      payload: {
+        message: "Provider outage for browser500@example.test",
+      },
+      status: 500,
+    },
+    identityTables: fakeSupabaseIdentityTables(),
+  });
+  await withSupabaseEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "browser-test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: providerFailureSupabase.baseUrl,
+  }, async () => {
+    const failures = await openRepoPage(page, "/account/password-reset.html");
+    try {
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
+      await page.getByLabel("Email").fill("browser500@example.test");
+      await page.getByRole("button", { name: "Request Password Reset" }).click();
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+      await expect(page.locator("main")).not.toContainText("Provider outage");
+      expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/password-reset"))).toHaveLength(1);
+      expect(failures.pageErrors).toEqual([]);
+      expect(failures.consoleErrors.filter((entry) => !entry.includes("503"))).toEqual([]);
+    } finally {
+      await closeWithCoverage(page, failures);
+    }
+  });
+  await providerFailureSupabase.close();
 });
 
 test("Protected pages block direct URL access without the required Local session role", async ({ page }) => {

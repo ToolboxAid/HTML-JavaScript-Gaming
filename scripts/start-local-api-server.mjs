@@ -2,8 +2,8 @@ import process from "node:process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import {
-  LOCAL_DATABASE_PROVIDER_ID,
   SUPABASE_AUTH_PROVIDER_ID,
+  SUPABASE_POSTGRES_PROVIDER_ID,
 } from "../src/dev-runtime/auth/provider-contract-stubs.mjs";
 import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
 
@@ -52,7 +52,7 @@ function configureLocalApiProviders() {
     process.env.GAMEFOUNDRY_AUTH_PROVIDER = SUPABASE_AUTH_PROVIDER_ID;
   }
   if (!process.env.GAMEFOUNDRY_DB_PROVIDER) {
-    process.env.GAMEFOUNDRY_DB_PROVIDER = LOCAL_DATABASE_PROVIDER_ID;
+    process.env.GAMEFOUNDRY_DB_PROVIDER = SUPABASE_POSTGRES_PROVIDER_ID;
   }
   return {
     authProvider: process.env.GAMEFOUNDRY_AUTH_PROVIDER || "",

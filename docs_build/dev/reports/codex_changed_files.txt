@@ -1,31 +1,138 @@
 # git status --short
-M docs_build/dev/codex_commands.md
+M .env.example
+ M admin/db-viewer.html
+ M admin/db-viewer.js
+ M assets/theme-v2/js/account-auth-actions.js
+ M assets/theme-v2/js/admin-db-status-panel.js
+ M docs_build/dev/codex_commands.md
  M docs_build/dev/commit_comment.txt
- A docs_build/dev/reports/PR_26166_165-auth-test-user-cleanup_cleanup_report.md
- A docs_build/dev/reports/PR_26166_165-auth-test-user-cleanup_report.md
+ A docs_build/dev/reports/PR_26166_166-dev-supabase-auth-closeout-audit_cleanup_report.md
+ A docs_build/dev/reports/PR_26166_166-dev-supabase-auth-closeout-audit_report.md
+ A docs_build/dev/reports/PR_26166_167-product-data-provider-contract-hardening_report.md
+ A docs_build/dev/reports/PR_26166_168-supabase-product-ddl_report.md
+ A docs_build/dev/reports/PR_26166_169-supabase-dev-seed-bootstrap_cleanup_report.md
+ A docs_build/dev/reports/PR_26166_169-supabase-dev-seed-bootstrap_report.md
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/dependency_gating_report.md
+ M docs_build/dev/reports/dependency_hydration_reuse_report.md
+ M docs_build/dev/reports/execution_graph_reuse_report.md
+ M docs_build/dev/reports/failure_fingerprint_report.md
+ M docs_build/dev/reports/filesystem_scan_reduction_report.md
+ M docs_build/dev/reports/incremental_validation_report.md
+ M docs_build/dev/reports/lane_compilation_report.md
+ M docs_build/dev/reports/lane_deduplication_report.md
+ M docs_build/dev/reports/lane_input_validation_report.md
+ M docs_build/dev/reports/lane_manifests/workspace-contract.json
+ M docs_build/dev/reports/lane_runtime_optimization_report.md
+ M docs_build/dev/reports/lane_snapshot_report.md
+ M docs_build/dev/reports/lane_snapshots/workspace-contract.json
+ M docs_build/dev/reports/lane_warm_start_report.md
+ M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+ M docs_build/dev/reports/monolith_trigger_removal_report.md
+ M docs_build/dev/reports/persistent_lane_manifest_report.md
+ M docs_build/dev/reports/playwright_discovery_ownership_report.md
+ M docs_build/dev/reports/playwright_discovery_scope_report.md
+ M docs_build/dev/reports/playwright_structure_audit.md
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M package.json
- A scripts/cleanup-supabase-dev-auth-test-users.mjs
+ M docs_build/dev/reports/retry_suppression_report.md
+ M docs_build/dev/reports/slow_path_pruning_report.md
+ M docs_build/dev/reports/static_validation_report.md
+ M docs_build/dev/reports/targeted_file_manifest_report.md
+ M docs_build/dev/reports/test_cleanup_performance_report.md
+ M docs_build/dev/reports/test_cleanup_routing_report.md
+ M docs_build/dev/reports/testing_lane_execution_report.md
+ M docs_build/dev/reports/validation_cache_report.md
+ M docs_build/dev/reports/zero_browser_preflight_report.md
+ M scripts/start-local-api-server.mjs
  M src/dev-runtime/auth/provider-contract-stubs.mjs
- A src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs
- A tests/dev-runtime/SupabaseDevAuthTestUserCleanup.test.mjs
+ M src/dev-runtime/server/local-api-router.mjs
+ M src/engine/api/local-db-viewer-ui.js
+ A tests/dev-runtime/ProductDataProviderContractHardening.test.mjs
  M tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+ M tests/helpers/playwrightRepoServer.mjs
+ M tests/playwright/account/SupabaseSignInSession.spec.mjs
+ M tests/playwright/tools/AdminDbViewer.spec.mjs
+ M tests/playwright/tools/LoginSessionMode.spec.mjs
+ M toolbox/tool-registry-api-client.js
+?? docs_build/dev/reports/PR_26166_170-dev-product-data-cutover_cleanup_report.md
+?? docs_build/dev/reports/PR_26166_170-dev-product-data-cutover_report.md
+?? docs_build/dev/reports/PR_26166_171-admin-db-viewer-provider-sources_cleanup_report.md
+?? docs_build/dev/reports/PR_26166_171-admin-db-viewer-provider-sources_report.md
+?? docs_build/dev/reports/PR_26166_172-dev-db-migration-closeout-audit_cleanup_report.md
+?? docs_build/dev/reports/PR_26166_172-dev-db-migration-closeout-audit_report.md
+?? docs_build/dev/reports/PR_26166_173-password-reset-rate-limit-message_report.md
+?? scripts/apply-supabase-dev-ddl.mjs
+?? tests/dev-runtime/SupabaseProductDataCutover.test.mjs
 
 # git ls-files --others --exclude-standard
-(no output)
+docs_build/dev/reports/PR_26166_170-dev-product-data-cutover_cleanup_report.md
+docs_build/dev/reports/PR_26166_170-dev-product-data-cutover_report.md
+docs_build/dev/reports/PR_26166_171-admin-db-viewer-provider-sources_cleanup_report.md
+docs_build/dev/reports/PR_26166_171-admin-db-viewer-provider-sources_report.md
+docs_build/dev/reports/PR_26166_172-dev-db-migration-closeout-audit_cleanup_report.md
+docs_build/dev/reports/PR_26166_172-dev-db-migration-closeout-audit_report.md
+docs_build/dev/reports/PR_26166_173-password-reset-rate-limit-message_report.md
+scripts/apply-supabase-dev-ddl.mjs
+tests/dev-runtime/SupabaseProductDataCutover.test.mjs
 
 # git diff --stat
-docs_build/dev/codex_commands.md                   |  36 +++
- docs_build/dev/commit_comment.txt                  |   2 +-
- ...66_165-auth-test-user-cleanup_cleanup_report.md |  67 +++++
- .../PR_26166_165-auth-test-user-cleanup_report.md  |  97 ++++++++
- .../dev/reports/coverage_changed_js_guardrail.txt  |   2 +
- .../dev/reports/playwright_v8_coverage_report.txt  |   5 +
- package.json                                       |   1 +
- scripts/cleanup-supabase-dev-auth-test-users.mjs   | 110 +++++++++
- src/dev-runtime/auth/provider-contract-stubs.mjs   |  84 +++++++
- .../supabase-dev-auth-test-user-cleanup.mjs        | 232 ++++++++++++++++++
- .../SupabaseDevAuthTestUserCleanup.test.mjs        | 272 +++++++++++++++++++++
- .../SupabaseProviderContractStub.test.mjs          |  78 +++++-
- 12 files changed, 983 insertions(+), 3 deletions(-)
+.env.example                                       |    10 +-
+ admin/db-viewer.html                               |     2 +
+ admin/db-viewer.js                                 |     4 +-
+ assets/theme-v2/js/account-auth-actions.js         |     4 +
+ assets/theme-v2/js/admin-db-status-panel.js        |     9 +-
+ docs_build/dev/codex_commands.md                   |   253 +
+ docs_build/dev/commit_comment.txt                  |     2 +-
+ ...-supabase-auth-closeout-audit_cleanup_report.md |    31 +
+ ..._166-dev-supabase-auth-closeout-audit_report.md |   104 +
+ ...duct-data-provider-contract-hardening_report.md |   100 +
+ .../PR_26166_168-supabase-product-ddl_report.md    |    94 +
+ ...9-supabase-dev-seed-bootstrap_cleanup_report.md |    38 +
+ ...26166_169-supabase-dev-seed-bootstrap_report.md |   102 +
+ docs_build/dev/reports/codex_changed_files.txt     |   145 +-
+ docs_build/dev/reports/codex_review.diff           | 27302 ++++++++++++++++++-
+ .../dev/reports/coverage_changed_js_guardrail.txt  |     9 +
+ docs_build/dev/reports/dependency_gating_report.md |     2 +-
+ .../reports/dependency_hydration_reuse_report.md   |    12 +-
+ .../dev/reports/execution_graph_reuse_report.md    |    16 +-
+ .../dev/reports/failure_fingerprint_report.md      |     2 +-
+ .../reports/filesystem_scan_reduction_report.md    |     2 +-
+ .../dev/reports/incremental_validation_report.md   |    14 +-
+ docs_build/dev/reports/lane_compilation_report.md  |     2 +-
+ .../dev/reports/lane_deduplication_report.md       |     2 +-
+ .../dev/reports/lane_input_validation_report.md    |     2 +-
+ .../reports/lane_manifests/workspace-contract.json |    12 +-
+ .../reports/lane_runtime_optimization_report.md    |    14 +-
+ docs_build/dev/reports/lane_snapshot_report.md     |    12 +-
+ .../reports/lane_snapshots/workspace-contract.json |    30 +-
+ docs_build/dev/reports/lane_warm_start_report.md   |    12 +-
+ .../lane_warm_starts/workspace-contract.json       |    20 +-
+ .../dev/reports/monolith_trigger_removal_report.md |     2 +-
+ .../dev/reports/persistent_lane_manifest_report.md |    12 +-
+ .../playwright_discovery_ownership_report.md       |     2 +-
+ .../reports/playwright_discovery_scope_report.md   |     2 +-
+ .../dev/reports/playwright_structure_audit.md      |     2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |    36 +-
+ docs_build/dev/reports/retry_suppression_report.md |     2 +-
+ docs_build/dev/reports/slow_path_pruning_report.md |    18 +-
+ docs_build/dev/reports/static_validation_report.md |    12 +-
+ .../dev/reports/targeted_file_manifest_report.md   |     8 +-
+ .../dev/reports/test_cleanup_performance_report.md |    24 +-
+ .../dev/reports/test_cleanup_routing_report.md     |     2 +-
+ .../dev/reports/testing_lane_execution_report.md   |    54 +-
+ docs_build/dev/reports/validation_cache_report.md  |    30 +-
+ .../dev/reports/zero_browser_preflight_report.md   |    10 +-
+ scripts/start-local-api-server.mjs                 |     4 +-
+ src/dev-runtime/auth/provider-contract-stubs.mjs   |   162 +-
+ src/dev-runtime/server/local-api-router.mjs        |   495 +-
+ src/engine/api/local-db-viewer-ui.js               |    49 +-
+ .../ProductDataProviderContractHardening.test.mjs  |   143 +
+ .../SupabaseProviderContractStub.test.mjs          |   309 +-
+ tests/helpers/playwrightRepoServer.mjs             |    24 +
+ .../account/SupabaseSignInSession.spec.mjs         |     2 +-
+ tests/playwright/tools/AdminDbViewer.spec.mjs      |   258 +
+ tests/playwright/tools/LoginSessionMode.spec.mjs   |    80 +-
+ toolbox/tool-registry-api-client.js                |    32 +-
+ 57 files changed, 28872 insertions(+), 1265 deletions(-)

@@ -1,4 +1,5 @@
 import fs from "node:fs/promises";
+import http from "node:http";
 import path from "node:path";
 import process from "node:process";
 import { expect, test } from "@playwright/test";
@@ -30,6 +31,14 @@ const standaloneSeedState = {
 };
 let localDbRunId = 0;
 
+const SUPABASE_ENV_KEYS = Object.freeze([
+  "GAMEFOUNDRY_AUTH_PROVIDER",
+  "GAMEFOUNDRY_DB_PROVIDER",
+  "GAMEFOUNDRY_SUPABASE_ANON_KEY",
+  "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+  "GAMEFOUNDRY_SUPABASE_URL",
+]);
+
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
     lane: "admin-db-viewer",
@@ -48,6 +57,148 @@ test.afterAll(async () => {
 function nextLocalDbStoragePath() {
   localDbRunId += 1;
   return path.join(process.cwd(), "tmp", "local-db", `admin-db-viewer-${process.pid}-${localDbRunId}.sqlite`);
+}
+
+async function withSupabaseEnv(baseUrl, callback) {
+  const previousEnv = Object.fromEntries(SUPABASE_ENV_KEYS.map((key) => [key, process.env[key]]));
+  process.env.GAMEFOUNDRY_AUTH_PROVIDER = "supabase-auth";
+  process.env.GAMEFOUNDRY_DB_PROVIDER = "supabase-postgres";
+  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "admin-db-viewer-anon-key";
+  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "admin-db-viewer-service-role-key";
+  process.env.GAMEFOUNDRY_SUPABASE_URL = baseUrl;
+  try {
+    return await callback();
+  } finally {
+    for (const [key, value] of Object.entries(previousEnv)) {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    }
+  }
+}
+
+function createSupabaseAdminDbTables() {
+  const timestamp = "2026-06-15T00:00:00.000Z";
+  const audit = {
+    createdAt: timestamp,
+    createdBy: MOCK_DB_KEYS.users.admin,
+    updatedAt: timestamp,
+    updatedBy: MOCK_DB_KEYS.users.admin,
+  };
+  return {
+    roles: [{
+      key: MOCK_DB_KEYS.roles.admin,
+      roleSlug: "admin",
+      name: "Admin",
+      description: "Administrative account.",
+      isActive: true,
+      isSystemRole: false,
+      ...audit,
+    }],
+    toolbox_tool_metadata: [{
+      key: "01KDBVIEWER000000000000001",
+      toolKey: "colors",
+      toolName: "Colors",
+      shortLabel: "Colors",
+      group: "Design",
+      category: "Design",
+      path: "toolbox/colors/index.html",
+      order: 1,
+      status: "beta",
+      ...audit,
+    }],
+    toolbox_tool_planning: [{
+      key: "01KDBVIEWER000000000000002",
+      toolKey: "colors",
+      progressChecklist: ["Palette contract"],
+      readiness: "ready",
+      requiredForPlayable: true,
+      requiredForPublish: true,
+      requiredForTestable: true,
+      requires: [],
+      ...audit,
+    }],
+    toolbox_votes: [],
+    user_roles: [{
+      key: MOCK_DB_KEYS.userRoles.adminAdmin,
+      userKey: MOCK_DB_KEYS.users.admin,
+      roleKey: MOCK_DB_KEYS.roles.admin,
+      ...audit,
+    }],
+    users: [{
+      key: MOCK_DB_KEYS.users.admin,
+      displayName: "DavidQ admin",
+      email: "admin@example.invalid",
+      authProvider: "supabase-auth",
+      authProviderUserId: "supabase-admin",
+      isActive: true,
+      ...audit,
+    }],
+  };
+}
+
+function startFakeSupabaseAdminDbServer() {
+  const tables = createSupabaseAdminDbTables();
+  const calls = [];
+  const server = http.createServer(async (request, response) => {
+    const chunks = [];
+    for await (const chunk of request) {
+      chunks.push(chunk);
+    }
+    const rawBody = Buffer.concat(chunks).toString("utf8");
+    const body = rawBody ? JSON.parse(rawBody) : {};
+    const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
+    calls.push({
+      body,
+      headers: request.headers,
+      method: request.method,
+      path: `${requestUrl.pathname}${requestUrl.search}`,
+    });
+    response.setHeader("Content-Type", "application/json; charset=utf-8");
+    if (requestUrl.pathname === "/auth/v1/health") {
+      response.end(JSON.stringify({ status: "ok" }));
+      return;
+    }
+    if (requestUrl.pathname === "/auth/v1/token") {
+      response.end(JSON.stringify({
+        access_token: "admin-db-viewer-access-token",
+        refresh_token: "admin-db-viewer-refresh-token",
+        user: {
+          email: body.email || "admin@example.invalid",
+          id: "supabase-admin",
+        },
+      }));
+      return;
+    }
+    if (requestUrl.pathname.startsWith("/rest/v1/")) {
+      const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
+      tables[tableName] = tables[tableName] || [];
+      response.end(JSON.stringify(tables[tableName]));
+      return;
+    }
+    response.statusCode = 404;
+    response.end(JSON.stringify({ message: "Unknown fake Supabase route." }));
+  });
+  return new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        reject(new Error("Unable to start fake Supabase Admin DB server."));
+        return;
+      }
+      resolve({
+        baseUrl: `http://127.0.0.1:${address.port}`,
+        calls,
+        close: () => new Promise((closeResolve) => {
+          server.closeAllConnections?.();
+          server.close(closeResolve);
+        }),
+      });
+    });
+  });
 }
 
 async function openRepoPage(page, pathName, options = {}) {
@@ -120,6 +271,49 @@ async function openRepoPage(page, pathName, options = {}) {
     previousLocalDbStoragePath,
     server,
   };
+}
+
+async function openSupabaseAdminDbViewer(page) {
+  const server = await startRepoServer();
+  const failedRequests = [];
+  const pageErrors = [];
+  const consoleErrors = [];
+
+  page.on("pageerror", (error) => {
+    const text = error.stack || error.message;
+    if (!isBrowserExtensionNoise(text)) {
+      pageErrors.push(error.message);
+    }
+  });
+  page.on("console", (message) => {
+    if (message.type() === "error" && !isBrowserExtensionNoise(message.text())) {
+      consoleErrors.push(message.text());
+    }
+  });
+  page.on("response", (response) => {
+    if (response.status() >= 400) {
+      failedRequests.push(`${response.status()} ${response.url()}`);
+    }
+  });
+  page.on("requestfailed", (request) => {
+    failedRequests.push(`FAILED ${request.url()}`);
+  });
+
+  const signInResponse = await fetch(`${server.baseUrl}/api/auth/sign-in`, {
+    body: JSON.stringify({
+      identity: "admin@example.invalid",
+      password: "not-stored-locally",
+    }),
+    headers: { "content-type": "application/json" },
+    method: "POST",
+  });
+  const signInPayload = await signInResponse.json();
+  expect(signInResponse.ok, JSON.stringify(signInPayload)).toBe(true);
+  expect(signInPayload.ok, JSON.stringify(signInPayload)).toBe(true);
+
+  await workspaceV2CoverageReporter.start(page);
+  await page.goto(`${server.baseUrl}/admin/db-viewer.html`, { waitUntil: "networkidle" });
+  return { consoleErrors, failedRequests, pageErrors, server };
 }
 
 function expectNoPageFailures(failures) {
@@ -229,6 +423,8 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await expect(page.locator("[data-admin-db-local-status-card]")).toBeVisible();
     await expect(page.locator("[data-admin-db-status-current-url]")).toContainText(`${failures.server.baseUrl}/admin/db-viewer.html`);
     await expect(page.locator("[data-admin-db-status-server-mode]")).toHaveText("PASS: local-db (Local DB).");
+    await expect(page.locator("[data-admin-db-status-provider]")).toHaveText("local-db (Local DB)");
+    await expect(page.locator("[data-admin-db-status-source]")).toHaveText("Local DB");
     await expect(page.locator("[data-admin-db-status-api]")).toHaveText("PASS: /api/session/current responded.");
     await expect(page.locator("[data-admin-db-status-endpoint]")).toHaveText("/api/session/current");
     await expect(page.locator("[data-admin-db-status-setup-endpoint]")).toHaveText("/api/admin/setup/reseed");
@@ -496,6 +692,68 @@ test("Admin DB Viewer shows current read-only Local DB tables, filters, users, r
     await expectNoPageFailures(failures);
   } finally {
     await closeAdminDbPage(page, failures);
+  }
+});
+
+test("Admin DB Viewer labels Supabase provider/source and shows Supabase-backed tables", async ({ page }) => {
+  const fakeSupabase = await startFakeSupabaseAdminDbServer();
+  try {
+    await withSupabaseEnv(fakeSupabase.baseUrl, async () => {
+      const failures = await openSupabaseAdminDbViewer(page);
+      try {
+        await expect(page.getByRole("heading", { name: "Supabase Postgres", level: 1 })).toBeVisible();
+        await expect(page.locator("[data-admin-db-mode-kicker]").first()).toHaveText("Admin Only / Supabase Postgres");
+        await expect(page.locator("[data-admin-db-status]")).toHaveText(/Supabase Postgres loaded \d+ tables and \d+ records for All\./);
+        await expect(page.locator("[data-admin-db-status-server-mode]")).toHaveText("PASS: supabase-auth (Supabase Auth).");
+        await expect(page.locator("[data-admin-db-status-provider]")).toHaveText("supabase-postgres (Supabase Postgres)");
+        await expect(page.locator("[data-admin-db-status-source]")).toHaveText("Supabase product DB");
+        await expect(page.locator("[data-admin-db-filter]")).toHaveText([
+          "All",
+          "Asset",
+          "Controls",
+          "Game Configuration",
+          "Game Design",
+          "Game Journey",
+          "Game Workspace",
+          "Objects",
+          "Palette",
+          "Tags",
+          "Tool Metadata",
+          "Tool Planning",
+          "Tool State Samples",
+          "Toolbox Votes",
+          "User Roles",
+          "Platform Settings",
+          "Support Categories",
+        ]);
+        await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ admin");
+        await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
+        await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("Colors");
+        await expect(page.locator("[data-admin-db-table='toolbox_tool_planning']")).toContainText("requiredForTestable");
+        await expect(page.locator("[data-admin-db-table='toolbox_votes']")).toContainText("No records in this table.");
+        await expect(page.locator("[data-admin-db-table='palette_colors']")).toContainText("Supabase Postgres read-only inspection still shows schema headers.");
+        await page.getByRole("button", { name: "Tool Metadata" }).click();
+        await expect(page.locator("[data-admin-db-status]")).toHaveText(/for Tool Metadata\./);
+        await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toBeVisible();
+        await expect(page.locator("[data-admin-db-table='toolbox_tool_planning']")).toHaveCount(0);
+        await page.getByRole("button", { name: "User Roles" }).click();
+        expect(await page.locator("[data-admin-db-tables] > details").evaluateAll((details) =>
+          details.map((item) => item.dataset.adminDbTable),
+        )).toEqual(["users", "user_roles", "roles"]);
+        await expectNoPageFailures(failures);
+        expect(fakeSupabase.calls.some((call) => call.path === "/rest/v1/toolbox_tool_metadata?select=*")).toBe(true);
+        expect(fakeSupabase.calls.some((call) => call.path === "/rest/v1/toolbox_tool_planning?select=*")).toBe(true);
+      } finally {
+        await closeAdminDbPage(page, {
+          ...failures,
+          localDbStoragePath: "",
+          previousLocalDbDisable: process.env.GAMEFOUNDRY_LOCAL_DB_DISABLE,
+          previousLocalDbStoragePath: process.env.GAMEFOUNDRY_LOCAL_DB_PATH,
+        });
+      }
+    });
+  } finally {
+    await fakeSupabase.close();
   }
 });
 

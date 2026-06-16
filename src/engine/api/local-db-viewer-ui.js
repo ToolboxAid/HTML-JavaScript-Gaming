@@ -15,9 +15,13 @@ class AdminDbViewer {
     this.diagnostics = documentRef.querySelector("[data-admin-db-diagnostics]");
     this.relationships = documentRef.querySelector("[data-admin-db-relationships]");
     this.tablesRoot = documentRef.querySelector("[data-admin-db-tables]");
+    this.providerFields = Array.from(documentRef.querySelectorAll("[data-admin-db-status-provider]"));
+    this.sourceFields = Array.from(documentRef.querySelectorAll("[data-admin-db-status-source]"));
     this.session = options.session || {};
     this.modeId = this.session.mode || "local-db";
     this.modeLabel = "Local DB";
+    this.providerId = "local-db";
+    this.sourceLabel = "Local DB";
     this.canWrite = false;
   }
 
@@ -36,8 +40,40 @@ class AdminDbViewer {
     this.clearButton = null;
   }
 
-  renderModeChrome() {
-    const modeLabel = this.modeLabel;
+  providerInfo(snapshot = {}) {
+    const provider = snapshot.provider && typeof snapshot.provider === "object" ? snapshot.provider : {};
+    const databaseProviderId = provider.databaseProviderId || snapshot.databaseProviderId || (snapshot.source === "supabase-postgres" ? "supabase-postgres" : "local-db");
+    const source = provider.source || snapshot.source || databaseProviderId;
+    if (databaseProviderId === "supabase-postgres") {
+      return {
+        modeLabel: "Supabase Postgres",
+        providerId: databaseProviderId,
+        providerLabel: "supabase-postgres (Supabase Postgres)",
+        source,
+        sourceLabel: source === "supabase-postgres" ? "Supabase product DB" : source,
+      };
+    }
+    return {
+      modeLabel: "Local DB",
+      providerId: databaseProviderId,
+      providerLabel: `${databaseProviderId} (Local DB)`,
+      source,
+      sourceLabel: source === "local-db" ? "Local DB" : source,
+    };
+  }
+
+  applyProviderInfo(providerInfo) {
+    this.modeLabel = providerInfo.modeLabel;
+    this.providerId = providerInfo.providerId;
+    this.sourceLabel = providerInfo.sourceLabel;
+  }
+
+  renderModeChrome(providerInfo = {
+    modeLabel: this.modeLabel,
+    providerLabel: `${this.providerId} (${this.modeLabel})`,
+    sourceLabel: this.sourceLabel,
+  }) {
+    const modeLabel = providerInfo.modeLabel;
     this.document.querySelectorAll("[data-admin-db-mode-title]").forEach((element) => {
       element.textContent = modeLabel;
     });
@@ -52,6 +88,12 @@ class AdminDbViewer {
     });
     this.filterRoot?.setAttribute("aria-label", `${modeLabel} table filters`);
     this.tablesRoot?.setAttribute("aria-label", `${modeLabel} tables`);
+    this.providerFields.forEach((element) => {
+      element.textContent = providerInfo.providerLabel;
+    });
+    this.sourceFields.forEach((element) => {
+      element.textContent = providerInfo.sourceLabel;
+    });
     this.document.title = `${modeLabel} - GameFoundryStudio`;
   }
 
@@ -149,6 +191,7 @@ class AdminDbViewer {
     return {
       cleared: Boolean(snapshot.cleared),
       groups,
+      providerInfo: this.providerInfo(snapshot),
       schemas,
       tables,
     };
@@ -488,6 +531,8 @@ class AdminDbViewer {
       this.renderLoadError(error);
       return;
     }
+    this.applyProviderInfo(snapshot.providerInfo);
+    this.renderModeChrome(snapshot.providerInfo);
     const group = this.activeGroup(snapshot.groups);
     const visibleTables = Object.fromEntries(
       group.tableNames

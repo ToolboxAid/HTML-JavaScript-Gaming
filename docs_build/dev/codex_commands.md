@@ -1419,3 +1419,256 @@ Required reports:
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_166-dev-supabase-auth-closeout-audit
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before audit work.
+- Audited live DEV Supabase Auth readiness after PR_165 cleanup tooling.
+- Validated Create Account, Sign In, `/api/session/current`, Sign Out, `users`, `roles`, and `user_roles`.
+- Confirmed Codex-created validation account cleanup.
+- Confirmed product data provider stayed `local-db`.
+- Added PR-specific audit and cleanup reports.
+- Did not change runtime code, DDL, product-data cutover behavior, UAT/PROD resources, `.env.local`, or secrets.
+
+Validation:
+- Live DEV local API auth lifecycle audit with one `codex-pr166-audit-* @example.test` account.
+- `npm run validate:supabase-dev`
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `npx playwright test tests/playwright/account/SupabaseSignInSession.spec.mjs --project=playwright --workers=1 --reporter=list`
+- `npm run cleanup:supabase-dev-auth-test-users -- --dry-run --json`
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_166-dev-supabase-auth-closeout-audit_report.md`
+- `docs_build/dev/reports/PR_26166_166-dev-supabase-auth-closeout-audit_cleanup_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_167-product-data-provider-contract-hardening
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Hardened the Toolbox registry browser API client so missing `/api/toolbox/registry/snapshot` data fails visibly.
+- Removed the synthesized empty `activeTools`/`tools` browser-owned metadata fallback.
+- Preserved missing-image display fallback as static asset behavior only.
+- Added focused contract tests for API-backed browser product-data entrypoints.
+- Did not introduce a product table cutover, Supabase data changes, UAT/PROD resources, `.env.local`, secrets, password tables, or browser-owned auth/provider logic.
+
+Validation:
+- `node --check toolbox/tool-registry-api-client.js`
+- `node --check tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
+- `node --test tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `GAMEFOUNDRY_AUTH_PROVIDER=local-db GAMEFOUNDRY_DB_PROVIDER=local-db npx playwright test tests/playwright/tools/ToolImageRegistry.spec.mjs tests/playwright/tools/ToolboxAdminMetadataSsot.spec.mjs --project=playwright --workers=1 --reporter=list`
+- `GAMEFOUNDRY_AUTH_PROVIDER=local-db GAMEFOUNDRY_DB_PROVIDER=local-db npm run test:workspace-v2`
+- `npm run validate:supabase-dev` skipped because PR_167 does not touch Supabase setup or Supabase data.
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_167-product-data-provider-contract-hardening_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_168-supabase-product-ddl
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before DDL audit work.
+- Audited the requested Supabase/Postgres product-area DDL set under `docs_build/database/ddl/`.
+- Confirmed requested grouped product DDL files were already present in the repo before PR_168 edits.
+- Confirmed required ownership fields are present.
+- Confirmed no DDL exists under `src/` or `docs/`.
+- Did not introduce runtime cutover, Supabase data writes, validation seed records, UAT/PROD resources, `.env.local`, or secrets.
+
+Validation:
+- Static DDL audit for required files, `CREATE TABLE IF NOT EXISTS` statements, ownership fields, `users(key)` ownership references, and forbidden SQL under `src/` or `docs/`.
+- `npm run validate:supabase-dev`
+- Targeted Playwright skipped because PR_168 is DDL-only.
+- `npm run test:workspace-v2` skipped because no Project Workspace, toolState, runtime/API/session, or toolState behavior changed. The command name is legacy and user-facing language remains Project Workspace.
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_168-supabase-product-ddl_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_169-supabase-dev-seed-bootstrap
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before seed/bootstrap validation.
+- Validated DEV seed/bootstrap server ownership for Local DB pre-cutover state.
+- Confirmed setup and reseed paths use server APIs.
+- Confirmed guest seed packages are read-only and not written into authoritative seed tables.
+- Confirmed default roles, first admin, tool metadata bootstrap, starter platform settings, and support categories are included in server-owned setup diagnostics.
+- Did not introduce product data cutover, UAT/PROD resources, `.env.local`, secrets, password tables, or browser-owned auth/provider logic.
+
+Validation:
+- `node --check src/dev-runtime/seed/server-seed-loader.mjs`
+- `node --check assets/theme-v2/js/admin-setup-actions.js`
+- `node --check src/engine/api/admin-setup-api-client.js`
+- `GAMEFOUNDRY_AUTH_PROVIDER=local-db GAMEFOUNDRY_DB_PROVIDER=local-db node --test tests/dev-runtime/DbSeedIntegrity.test.mjs`
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `npm run validate:supabase-dev`
+- `GAMEFOUNDRY_AUTH_PROVIDER=local-db GAMEFOUNDRY_DB_PROVIDER=local-db npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --project=playwright --workers=1 --reporter=list -g "Admin Site Setup"`
+- `npm run test:workspace-v2` skipped because no Project Workspace, toolState, runtime/API/session, or toolState behavior changed. The command name is legacy and user-facing language remains Project Workspace.
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_169-supabase-dev-seed-bootstrap_report.md`
+- `docs_build/dev/reports/PR_26166_169-supabase-dev-seed-bootstrap_cleanup_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_170-dev-product-data-cutover
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Changed DEV default database provider selection to `supabase-postgres`.
+- Added Supabase Postgres product table read/upsert provider operations.
+- Routed server-owned product snapshots, Toolbox registry metadata/planning, Toolbox votes, and toolbox repository opening through the selected product provider.
+- Added DEV-only DDL apply helper for reviewed Supabase DDL files.
+- Made identity setup idempotent for existing `roles.roleSlug` and `user_roles(userKey, roleKey)` rows.
+- Updated targeted auth/session and Project Workspace Playwright fixtures for explicit provider selection.
+- Did not touch UAT/PROD, `.env.local`, secrets, password tables, or browser-owned provider logic.
+
+Validation:
+- `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check scripts/start-local-api-server.mjs`
+- `node --check scripts/apply-supabase-dev-ddl.mjs`
+- `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `node --check tests/dev-runtime/SupabaseProductDataCutover.test.mjs`
+- `node --check tests/helpers/playwrightRepoServer.mjs`
+- `node --check tests/playwright/account/SupabaseSignInSession.spec.mjs`
+- `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs tests/dev-runtime/SupabaseProductDataCutover.test.mjs tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
+- `node --use-system-ca ./scripts/apply-supabase-dev-ddl.mjs`
+- `npm run validate:supabase-dev`
+- `GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth GAMEFOUNDRY_DB_PROVIDER=supabase-postgres npm run dev:local-api`
+- Live probes for `/api/providers/contract`, `/api/auth/status`, `/api/toolbox/registry/snapshot`, `/api/local-db/snapshot`, and `POST /api/toolbox/game-workspace/repositories`
+- `npx playwright test tests/playwright/account/SupabaseSignInSession.spec.mjs --project=playwright --workers=1 --reporter=list`
+- `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --project=playwright --workers=1 --reporter=list -g "Configured account auth actions|Account auth actions show actionable identity setup failures|Create Account shows generic provider failure"`
+- `npm run test:workspace-v2`
+- `npm run cleanup:supabase-dev-auth-test-users`
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_170-dev-product-data-cutover_report.md`
+- `docs_build/dev/reports/PR_26166_170-dev-product-data-cutover_cleanup_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_171-admin-db-viewer-provider-sources
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Updated Admin DB Viewer access so authenticated Supabase-backed DEV admins can inspect provider-owned data.
+- Added Admin DB Viewer provider/source labels.
+- Updated Admin DB status diagnostics to show the selected auth provider from the server provider contract.
+- Made DB Viewer chrome/status/empty-table text reflect Supabase Postgres snapshots.
+- Added targeted Admin DB Viewer Playwright coverage for Supabase-backed tables and preserved Local DB coverage.
+- Did not touch UAT/PROD, `.env.local`, secrets, password tables, browser-owned provider logic, or full samples smoke.
+
+Validation:
+- `node --check assets/theme-v2/js/admin-db-status-panel.js`
+- `node --check admin/db-viewer.js`
+- `node --check src/engine/api/local-db-viewer-ui.js`
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check tests/playwright/tools/AdminDbViewer.spec.mjs`
+- `npx playwright test tests/playwright/tools/AdminDbViewer.spec.mjs --project=playwright --workers=1 --reporter=list`
+- `npm run validate:supabase-dev`
+- `npx playwright test tests/playwright/account/SupabaseSignInSession.spec.mjs --project=playwright --workers=1 --reporter=list`
+- `npm run test:workspace-v2`
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `npm run cleanup:supabase-dev-auth-test-users`
+- `npx playwright test tests/playwright/tools/AdminDbViewer.spec.mjs --project=playwright --workers=1 --reporter=list -g "Admin DB Viewer shows current read-only Local DB tables, filters|Admin DB Viewer labels Supabase provider/source"`
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_171-admin-db-viewer-provider-sources_report.md`
+- `docs_build/dev/reports/PR_26166_171-admin-db-viewer-provider-sources_cleanup_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_172-dev-db-migration-closeout-audit
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before audit work.
+- Audited DEV DB migration closeout after PR_166 through PR_171.
+- Confirmed Supabase Auth is active.
+- Confirmed Supabase Postgres product DB is active.
+- Confirmed `/api/local-db/snapshot` compatibility route is sourced from Supabase Postgres under the DEV provider pair.
+- Confirmed SQLite/Local DB no longer owns migrated product data under the DEV provider pair.
+- Confirmed Codex-created test records are cleaned.
+- Confirmed no `.env.local`, secrets, or UAT/PROD resources were created.
+
+Validation:
+- `npm run validate:supabase-dev`
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs tests/dev-runtime/SupabaseProductDataCutover.test.mjs tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
+- `npx playwright test tests/playwright/account/SupabaseSignInSession.spec.mjs --project=playwright --workers=1 --reporter=list`
+- `npm run test:workspace-v2`
+- `GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth GAMEFOUNDRY_DB_PROVIDER=supabase-postgres npm run dev:local-api`
+- Live probes for `/api/providers/contract`, `/api/auth/status`, `/api/local-db/snapshot`, `/api/toolbox/registry/snapshot`, and `POST /api/toolbox/game-workspace/repositories`
+- `npm run cleanup:supabase-dev-auth-test-users`
+- `.env.local` tracking check and non-empty Supabase key/database value diff scan
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_172-dev-db-migration-closeout-audit_report.md`
+- `docs_build/dev/reports/PR_26166_172-dev-db-migration-closeout-audit_cleanup_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_173-password-reset-rate-limit-message
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Handled Supabase password reset upstream HTTP 429 in `POST /api/auth/password-reset`.
+- Returned the production-safe browser message `Too many reset requests. Please wait and try again later.` for upstream 429 only.
+- Preserved the generic unavailable message for non-429 provider failures.
+- Added safe operator diagnostics with upstream HTTP status and safe error code context.
+- Added targeted Node and Playwright validation for password reset 429 and non-429 provider-failure behavior.
+- Did not change auth provider selection, Supabase settings, `.env.local`, secrets, password tables, or browser-owned auth/provider logic.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check assets/theme-v2/js/account-auth-actions.js`
+- `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
+- `node --test --test-name-pattern "Password reset" tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `node --test --test-name-pattern "Default Supabase Auth routes sign in create account and password reset|Password reset" tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --project=playwright --workers=1 --reporter=list -g "Password Reset maps upstream rate limit"`
+- `npx playwright test tests/playwright/tools/LoginSessionMode.spec.mjs --project=playwright --workers=1 --reporter=list -g "Configured account auth actions|Password Reset maps upstream rate limit"`
+- `git diff --check`
+- `.env.local` tracking check
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_173-password-reset-rate-limit-message_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

@@ -40,8 +40,8 @@ async function loadLocalDbViewer() {
     return;
   }
   const session = currentSession();
-  if (session.mode !== "local-db") {
-    showGatewayStatus(session.diagnostic || "DB Viewer is available only in Local DB mode.");
+  if (!session.authenticated) {
+    showGatewayStatus(session.diagnostic || "Sign in with an admin account to open DB Viewer.");
     return;
   }
   const module = await import("../src/engine/api/local-db-viewer-ui.js");

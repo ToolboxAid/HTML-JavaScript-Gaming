@@ -54,6 +54,16 @@ function resolveBrowserRoutePath(decodedPath) {
 }
 
 export async function startRepoServer() {
+  const previousAuthProvider = process.env.GAMEFOUNDRY_AUTH_PROVIDER;
+  const previousDbProvider = process.env.GAMEFOUNDRY_DB_PROVIDER;
+  const defaultAuthProvider = !previousAuthProvider && (!previousDbProvider || previousDbProvider === "local-db");
+  const defaultDbProvider = !previousDbProvider && (!previousAuthProvider || previousAuthProvider === "local-db");
+  if (defaultAuthProvider) {
+    process.env.GAMEFOUNDRY_AUTH_PROVIDER = "local-db";
+  }
+  if (defaultDbProvider) {
+    process.env.GAMEFOUNDRY_DB_PROVIDER = "local-db";
+  }
   const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
   let localDbPath = "";
   if (!previousLocalDbPath) {
@@ -123,6 +133,20 @@ export async function startRepoServer() {
       if (!previousLocalDbPath) {
         await fs.rm(localDbPath, { force: true });
         delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+      }
+      if (defaultAuthProvider) {
+        if (previousAuthProvider === undefined) {
+          delete process.env.GAMEFOUNDRY_AUTH_PROVIDER;
+        } else {
+          process.env.GAMEFOUNDRY_AUTH_PROVIDER = previousAuthProvider;
+        }
+      }
+      if (defaultDbProvider) {
+        if (previousDbProvider === undefined) {
+          delete process.env.GAMEFOUNDRY_DB_PROVIDER;
+        } else {
+          process.env.GAMEFOUNDRY_DB_PROVIDER = previousDbProvider;
+        }
       }
     }
   };

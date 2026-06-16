@@ -31,7 +31,7 @@ function restoreEnv(previousEnv) {
 function useFakeSupabaseEnv(baseUrl) {
   const previousEnv = Object.fromEntries(AUTH_ENV_KEYS.map((key) => [key, process.env[key]]));
   process.env.GAMEFOUNDRY_AUTH_PROVIDER = "supabase-auth";
-  process.env.GAMEFOUNDRY_DB_PROVIDER = "local-db";
+  process.env.GAMEFOUNDRY_DB_PROVIDER = "supabase-postgres";
   process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "playwright-anon-key";
   process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "playwright-service-role-key";
   process.env.GAMEFOUNDRY_SUPABASE_URL = baseUrl;

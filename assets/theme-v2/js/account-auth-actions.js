@@ -6,6 +6,7 @@ const submitButton = document.querySelector("[data-account-auth-submit]");
 const action = form?.getAttribute("data-account-auth-form") || "";
 const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
+const PASSWORD_RESET_RATE_LIMIT_MESSAGE = "Too many reset requests. Please wait and try again later.";
 let authStatus = null;
 
 function setStatus(message) {
@@ -35,6 +36,9 @@ async function readJson(response, fallbackMessage) {
   if (!response.ok || payload?.ok === false) {
     if (payload?.error === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
       throw new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
+    }
+    if (payload?.error === PASSWORD_RESET_RATE_LIMIT_MESSAGE) {
+      throw new Error(PASSWORD_RESET_RATE_LIMIT_MESSAGE);
     }
     throw new Error(fallbackMessage);
   }

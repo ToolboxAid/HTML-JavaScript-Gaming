@@ -6,8 +6,10 @@ import {
 let registrySnapshot = null;
 let registryDiagnostic = "";
 
+export const TOOL_IMAGE_FALLBACK = "/assets/theme-v2/images/image-missing.svg";
+
 function readToolRegistrySnapshot() {
-  if (registrySnapshot || registryDiagnostic) {
+  if (registrySnapshot) {
     return registrySnapshot;
   }
 
@@ -16,16 +18,21 @@ function readToolRegistrySnapshot() {
       safeRequestServerApi("/toolbox/registry/snapshot"),
       "Toolbox registry snapshot",
     );
+    registryDiagnostic = "";
   } catch (error) {
     registryDiagnostic = error instanceof Error ? error.message : String(error || "Toolbox registry API unavailable.");
-    registrySnapshot = {
-      activeTools: [],
-      imageFallback: "/assets/theme-v2/images/image-missing.svg",
-      tools: [],
-    };
+    registrySnapshot = null;
   }
 
   return registrySnapshot;
+}
+
+function requireToolRegistrySnapshot() {
+  const snapshot = readToolRegistrySnapshot();
+  if (!snapshot) {
+    throw new Error(registryDiagnostic || "Toolbox registry snapshot unavailable. Restore the Browser -> Server API -> Data Source contract.");
+  }
+  return snapshot;
 }
 
 export function getToolRegistryApiDiagnostic() {
@@ -34,20 +41,20 @@ export function getToolRegistryApiDiagnostic() {
 }
 
 export function getToolRegistry() {
-  return readToolRegistrySnapshot().tools.map((tool) => ({ ...tool }));
+  return requireToolRegistrySnapshot().tools.map((tool) => ({ ...tool }));
 }
 
 export function getActiveToolRegistry() {
-  return readToolRegistrySnapshot().activeTools.map((tool) => ({ ...tool }));
+  return requireToolRegistrySnapshot().activeTools.map((tool) => ({ ...tool }));
 }
 
 export function getToolboxContract() {
-  const contract = readToolRegistrySnapshot().toolboxContract || {};
+  const contract = requireToolRegistrySnapshot().toolboxContract || {};
   return JSON.parse(JSON.stringify(contract));
 }
 
 export function getToolProgressReadiness(status) {
-  const snapshot = readToolRegistrySnapshot();
+  const snapshot = requireToolRegistrySnapshot();
   return snapshot.readinessByStatus?.[status] || "No";
 }
 
@@ -56,8 +63,7 @@ export function getToolRoute(tool) {
 }
 
 export function getToolImageSource(tool, kind) {
-  const snapshot = readToolRegistrySnapshot();
-  return tool?.imageSources?.[kind] || snapshot.imageFallback;
+  return tool?.imageSources?.[kind] || TOOL_IMAGE_FALLBACK;
 }
 
 export function getToolImageDiagnostics(tool) {
@@ -177,5 +183,3 @@ export function getToolNavigationTargets(toolSlug) {
     tool,
   };
 }
-
-export const TOOL_IMAGE_FALLBACK = readToolRegistrySnapshot().imageFallback;
