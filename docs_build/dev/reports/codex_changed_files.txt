@@ -1,20 +1,25 @@
-# git status --short
-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/server/local-api-router.mjs
- M tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
- M toolbox/game-workspace/game-workspace.js
-?? .env.uat
-?? docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
-
-# git ls-files --others --exclude-standard
+# PR_26167_193 source commit files (HEAD)
+.env
+.env.example
 .env.uat
-docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
+.gitignore
+scripts/apply-supabase-dev-ddl.mjs
+scripts/start-local-api-server.mjs
+scripts/validate-supabase-dev.mjs
+src/dev-runtime/auth/provider-contract-stubs.mjs
+tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
+
+# git status --short
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+?? docs_build/dev/reports/PR_26167_193-env-runtime-single-file-and-generic-db-url.md
 
 # git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  15 ++-
- .../dev/reports/playwright_v8_coverage_report.txt  |  52 ++++----
- src/dev-runtime/server/local-api-router.mjs        |  31 ++++-
- .../tools/GameWorkspaceMockRepository.spec.mjs     | 133 +++++++++++++++++++++
- toolbox/game-workspace/game-workspace.js           | 115 +++++++++++++++---
- 5 files changed, 299 insertions(+), 47 deletions(-)
+ docs_build/dev/reports/codex_changed_files.txt     |   18 +-
+ docs_build/dev/reports/codex_review.diff           | 1076 ++++++++------------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   20 -
+ .../dev/reports/playwright_v8_coverage_report.txt  |   38 +-
+ 4 files changed, 456 insertions(+), 696 deletions(-)

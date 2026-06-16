@@ -1,653 +1,471 @@
-diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index b0863d98d..a79f341ec 100644
---- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-+++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,22 +6,27 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
- 
- Changed runtime JS files considered:
-+(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 51/65
--(85%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 28/33
--(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 97/97; executed functions 16/16
--(100%) assets/theme-v2/js/owner-operations.js - executed lines 95/95; executed functions 16/16
--(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
-+(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
-+(86%) toolbox/game-workspace/game-workspace.js - executed lines 358/358; executed functions 30/35
- 
- Guardrail warnings:
-+(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
- (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
-+(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
-diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index f00ff9d7b..a778ef12c 100644
---- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
-+++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -12,48 +12,49 @@ Note: entry percentages use function coverage when available, otherwise line cov
- Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
- 
- Exercised tool entry points detected:
--(64%) Toolbox Index - exercised 1 runtime JS files
-+(83%) Toolbox Index - exercised 3 runtime JS files
- (0%) Tool Template V2 - not exercised by this Playwright run
--(85%) Theme V2 Shared JS - exercised 7 runtime JS files
-+(57%) Theme V2 Shared JS - exercised 2 runtime JS files
- 
- Changed runtime JS files covered:
-+(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 51/65
--(85%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 28/33
--(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 97/97; executed functions 16/16
--(100%) assets/theme-v2/js/owner-operations.js - executed lines 95/95; executed functions 16/16
--(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
-+(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
-+(86%) toolbox/game-workspace/game-workspace.js - executed lines 358/358; executed functions 30/35
- 
- Files with executed line/function counts where available:
--(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
--(43%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 6/14
--(61%) admin/tool-votes.js - executed lines 406/406; executed functions 33/54
--(64%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 18/28
--(71%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 5/7
--(75%) src/engine/api/platform-settings-api-client.js - executed lines 25/25; executed functions 3/4
--(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 51/65
--(85%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 28/33
--(86%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 12/14
--(90%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 9/10
--(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 97/97; executed functions 16/16
--(100%) assets/theme-v2/js/owner-operations.js - executed lines 95/95; executed functions 16/16
--(100%) src/engine/api/db-viewer-api-client.js - executed lines 13/13; executed functions 3/3
--(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
-+(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
-+(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
-+(63%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 12/19
-+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-+(79%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 23/29
-+(86%) toolbox/game-workspace/game-workspace.js - executed lines 358/358; executed functions 30/35
-+(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
- 
- Uncovered or low-coverage changed JS files:
-+(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) assets/theme-v2/js/owner-operations.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
- (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+(0%) src/engine/api/owner-operations-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
- 
- Changed JS files considered:
-+(0%) assets/theme-v2/js/admin-platform-settings.js - changed JS file not collected as browser runtime coverage
-+(0%) assets/theme-v2/js/admin-service-page-data.js - changed JS file not collected as browser runtime coverage
-+(0%) assets/theme-v2/js/owner-operations.js - changed JS file not collected as browser runtime coverage
- (0%) scripts/sync-supabase-dev-creator-identities.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
-@@ -61,10 +62,9 @@ Changed JS files considered:
- (0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
- (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - changed JS file not collected as browser runtime coverage
-+(0%) src/engine/api/owner-operations-api-client.js - changed JS file not collected as browser runtime coverage
- (0%) tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs - changed JS file not collected as browser runtime coverage
- (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
--(78%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
--(85%) assets/theme-v2/js/admin-service-page-data.js - changed JS file with browser V8 coverage
--(100%) assets/theme-v2/js/admin-platform-settings.js - changed JS file with browser V8 coverage
--(100%) assets/theme-v2/js/owner-operations.js - changed JS file with browser V8 coverage
--(100%) src/engine/api/owner-operations-api-client.js - changed JS file with browser V8 coverage
-+(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-+(56%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-+(86%) toolbox/game-workspace/game-workspace.js - changed JS file with browser V8 coverage
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index b36ab5eec..c506cd908 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -630,6 +630,32 @@ function fail(response, statusCode, error) {
-   });
- }
- 
-+function repositoryMethodError(message, statusCode = 502) {
-+  const error = new Error(message);
-+  error.statusCode = statusCode;
-+  error.operatorDiagnostic = message;
-+  return error;
-+}
-+
-+function repositoryMethodRequiresPersistence(methodName) {
-+  return !/^(get|list|read)/.test(String(methodName || ""));
-+}
-+
-+function assertRepositoryMethodResult(repositoryId, methodName, result) {
-+  if (result === undefined) {
-+    throw repositoryMethodError(`Server repository ${repositoryId}.${methodName} returned no result. Restore the server API contract for ${methodName}.`);
-+  }
-+  if (result && typeof result === "object" && result.error === true) {
-+    throw repositoryMethodError(result.message || `Server repository ${repositoryId}.${methodName} returned an error payload instead of data.`);
-+  }
-+  if (methodName === "getActiveGame" && result !== null) {
-+    const members = Array.isArray(result?.members) ? result.members : null;
-+    if (!result || typeof result !== "object" || !String(result.id || "").trim() || !members) {
-+      throw repositoryMethodError(`Server repository ${repositoryId}.getActiveGame returned a malformed active game payload. Open or create a Game Workspace game before continuing.`);
-+    }
-+  }
-+}
-+
- function logSafeAuthOperatorDiagnostic(request, requestUrl, error) {
-   const route = `${request?.method || "REQUEST"} ${requestUrl?.pathname || "/api/auth"}`;
-   if (!String(requestUrl?.pathname || "").startsWith("/api/auth/")) {
-@@ -2752,7 +2778,10 @@ class ApiRuntimeDataSource {
-       this.assetReadyInitialized = true;
-     }
-     const result = method(...args);
--    await this.persistProductProviderState(`Persisting ${methodName} result`);
-+    assertRepositoryMethodResult(repositoryId, methodName, result);
-+    if (repositoryMethodRequiresPersistence(methodName)) {
-+      await this.persistProductProviderState(`Persisting ${methodName} result`);
-+    }
-     return result;
-   }
- 
-diff --git a/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs b/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
-index a6338b6a2..2171ebb80 100644
---- a/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
-+++ b/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
-@@ -1,6 +1,100 @@
- ﻿import { expect, test } from "@playwright/test";
-+import http from "node:http";
-+import process from "node:process";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
- import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
-+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-+
-+const SUPABASE_ENV_KEYS = Object.freeze([
-+  "GAMEFOUNDRY_SUPABASE_ANON_KEY",
-+  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
-+  "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
-+  "GAMEFOUNDRY_SUPABASE_URL",
-+]);
-+let fakeSupabaseServer;
-+let previousSupabaseEnv;
-+
-+function startFakeSupabaseServer() {
-+  const tables = {
-+    roles: [],
-+    user_roles: [],
-+    users: [],
-+  };
-+  const server = http.createServer(async (request, response) => {
-+    const chunks = [];
-+    for await (const chunk of request) {
-+      chunks.push(chunk);
-+    }
-+    const rawBody = Buffer.concat(chunks).toString("utf8");
-+    const body = rawBody ? JSON.parse(rawBody) : {};
-+    const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
-+
-+    if (requestUrl.pathname === "/auth/v1/health") {
-+      response.statusCode = 200;
-+      response.setHeader("Content-Type", "application/json; charset=utf-8");
-+      response.end(JSON.stringify({ status: "ok" }));
-+      return;
-+    }
-+
-+    if (requestUrl.pathname.startsWith("/rest/v1/")) {
-+      const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
-+      tables[tableName] = tables[tableName] || [];
-+      if (request.method === "POST") {
-+        const rows = Array.isArray(body) ? body : [body];
-+        rows.forEach((row) => {
-+          const index = tables[tableName].findIndex((existing) => existing.key === row.key);
-+          if (index >= 0) {
-+            tables[tableName][index] = {
-+              ...tables[tableName][index],
-+              ...row,
-+            };
-+          } else {
-+            tables[tableName].push(row);
-+          }
-+        });
-+        response.statusCode = 200;
-+        response.setHeader("Content-Type", "application/json; charset=utf-8");
-+        response.end(JSON.stringify(rows));
-+        return;
-+      }
-+      response.statusCode = 200;
-+      response.setHeader("Content-Type", "application/json; charset=utf-8");
-+      response.end(JSON.stringify(tables[tableName]));
-+      return;
-+    }
-+
-+    response.statusCode = 404;
-+    response.setHeader("Content-Type", "application/json; charset=utf-8");
-+    response.end(JSON.stringify({ message: "Unknown fake Supabase route." }));
-+  });
-+
-+  return new Promise((resolve, reject) => {
-+    server.once("error", reject);
-+    server.listen(0, "127.0.0.1", () => {
-+      const address = server.address();
-+      if (!address || typeof address === "string") {
-+        reject(new Error("Unable to start fake Supabase server."));
-+        return;
-+      }
-+      resolve({
-+        baseUrl: `http://127.0.0.1:${address.port}`,
-+        close: () => new Promise((closeResolve) => {
-+          server.closeAllConnections?.();
-+          server.close(closeResolve);
-+        }),
-+      });
-+    });
-+  });
-+}
-+
-+test.beforeAll(async () => {
-+  previousSupabaseEnv = Object.fromEntries(SUPABASE_ENV_KEYS.map((key) => [key, process.env[key]]));
-+  fakeSupabaseServer = await startFakeSupabaseServer();
-+  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "game-workspace-anon-key";
-+  process.env.GAMEFOUNDRY_SUPABASE_DATABASE_URL = "postgres://game-workspace:test@127.0.0.1:5432/game_workspace";
-+  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "game-workspace-service-role-key";
-+  process.env.GAMEFOUNDRY_SUPABASE_URL = fakeSupabaseServer.baseUrl;
-+});
- 
- test.beforeEach(async ({ page }) => {
-   await installPlaywrightStorageIsolation(page, {
-@@ -10,9 +104,22 @@ test.beforeEach(async ({ page }) => {
- });
- 
- test.afterEach(async ({ page }) => {
-+  await workspaceV2CoverageReporter.stop(page);
-   await clearPlaywrightStorage(page);
- });
- 
-+test.afterAll(async () => {
-+  await workspaceV2CoverageReporter.writeReport();
-+  await fakeSupabaseServer?.close();
-+  SUPABASE_ENV_KEYS.forEach((key) => {
-+    if (previousSupabaseEnv[key] === undefined) {
-+      delete process.env[key];
-+    } else {
-+      process.env[key] = previousSupabaseEnv[key];
-+    }
-+  });
-+});
-+
- async function openRepoPage(page, pathName) {
-   const server = await startRepoServer();
-   const failedRequests = [];
-@@ -36,6 +143,7 @@ async function openRepoPage(page, pathName) {
-     failedRequests.push(`FAILED ${request.url()}`);
-   });
- 
-+  await workspaceV2CoverageReporter.start(page);
-   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
-   return { failedRequests, pageErrors, consoleErrors, server };
- }
-@@ -108,6 +216,31 @@ test("Game Workspace creates, opens, and deletes mock games", async ({ page }) =
-   }
- });
- 
-+test("Game Workspace shows active-game API diagnostics without throwing", async ({ page }) => {
-+  await page.route("**/api/toolbox/game-workspace/repositories/*/methods/getActiveGame", async (route) => {
-+    await route.fulfill({
-+      body: JSON.stringify({
-+        error: "Active game unavailable for validation.",
-+        ok: false,
-+        rule: "Browser -> Server API -> Data Source",
-+      }),
-+      contentType: "application/json; charset=utf-8",
-+      status: 502,
-+    });
-+  });
-+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
-+
-+  try {
-+    expect(failures.failedRequests.some((request) => request.includes("502") && request.includes("/methods/getActiveGame"))).toBe(true);
-+    await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
-+    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game unavailable for validation.");
-+    expect(failures.pageErrors).toEqual([]);
-+    expect(failures.consoleErrors.filter((message) => !message.includes("status of 502"))).toEqual([]);
-+  } finally {
-+    await failures.server.close();
-+  }
-+});
-+
- test("Game Workspace displays and edits game purpose and member role", async ({ page }) => {
-   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
- 
-diff --git a/toolbox/game-workspace/game-workspace.js b/toolbox/game-workspace/game-workspace.js
-index c08a8c0b1..cf71b72d4 100644
---- a/toolbox/game-workspace/game-workspace.js
-+++ b/toolbox/game-workspace/game-workspace.js
-@@ -7,7 +7,6 @@ import {
- import { getSessionCurrent } from "../../src/engine/api/session-api-client.js";
- 
- const repository = createGameWorkspaceApiRepository();
--repository.resetGameData();
- 
- const elements = {
-   activeGameName: document.querySelector("[data-active-game-name]"),
-@@ -51,6 +50,70 @@ function setStatusLog(message) {
-   setText(elements.statusLog, message);
- }
- 
-+function isRecord(value) {
-+  return Boolean(value && typeof value === "object");
-+}
-+
-+function isRepositoryErrorResult(value) {
-+  return isRecord(value) && value.error === true;
-+}
-+
-+function repositoryErrorMessage(value, context) {
-+  return String(value?.message || value?.error || `${context} failed through the server API contract.`).trim();
-+}
-+
-+function reportRepositoryError(value, context) {
-+  if (isRepositoryErrorResult(value)) {
-+    setStatusLog(repositoryErrorMessage(value, context));
-+    return true;
-+  }
-+  return false;
-+}
-+
-+function activeGameMembers(activeGame) {
-+  return Array.isArray(activeGame?.members) ? activeGame.members : [];
-+}
-+
-+function normalizeActiveGame(value, context = "Active game") {
-+  if (reportRepositoryError(value, context)) {
-+    return null;
-+  }
-+  if (!value) {
-+    return null;
-+  }
-+  if (!isRecord(value) || !Array.isArray(value.members)) {
-+    setStatusLog(`${context} response is malformed. Reload Game Workspace after the server API contract is restored.`);
-+    return null;
-+  }
-+  return value;
-+}
-+
-+function normalizeProgress(value) {
-+  if (reportRepositoryError(value, "Game progress")) {
-+    return {
-+      gameStatus: "No Game",
-+      gameProgress: "Blocked by server API error",
-+      publishingProgress: "Blocked",
-+      currentFocus: "Resolve the server API diagnostic",
-+      recommendedNextTool: "Game Workspace",
-+      progressChecklist: [
-+        { label: "Restore server API contract", status: "Blocked" },
-+      ],
-+    };
-+  }
-+  if (!isRecord(value)) {
-+    setStatusLog("Game progress response is malformed. Reload Game Workspace after the server API contract is restored.");
-+  }
-+  return isRecord(value) ? value : {
-+    gameStatus: "No Game",
-+    gameProgress: "No active game",
-+    publishingProgress: "Not started",
-+    currentFocus: "Create or seed a game",
-+    recommendedNextTool: "Game Workspace",
-+    progressChecklist: [],
-+  };
-+}
-+
- function currentSessionUserKey() {
-   try {
-     const session = getSessionCurrent();
-@@ -76,15 +139,16 @@ function populateSelect(select, options) {
- 
- function currentGameUserKey(activeGame) {
-   const sessionUserKey = currentSessionUserKey();
--  if (sessionUserKey && (!activeGame || activeGame.members.some((member) => member.userKey === sessionUserKey))) {
-+  const members = activeGameMembers(activeGame);
-+  if (sessionUserKey && (!activeGame || members.some((member) => member.userKey === sessionUserKey))) {
-     return sessionUserKey;
-   }
--  return activeGame?.ownerKey || activeGame?.members.find((member) => member.permission === "Owner")?.userKey || "";
-+  return activeGame?.ownerKey || members.find((member) => member.permission === "Owner")?.userKey || "";
- }
- 
- function currentGameMember(activeGame) {
-   const userKey = currentGameUserKey(activeGame);
--  return activeGame?.members.find((member) => member.userKey === userKey) || null;
-+  return activeGameMembers(activeGame).find((member) => member.userKey === userKey) || null;
- }
- 
- function createGameButton(game, isActive) {
-@@ -105,9 +169,13 @@ function renderGameList() {
-     return;
-   }
- 
--  const activeGame = repository.getActiveGame();
-+  const activeGame = normalizeActiveGame(repository.getActiveGame());
-   const gameUserKey = currentGameUserKey(activeGame);
--  const games = repository.listGames(gameUserKey ? { userKey: gameUserKey } : {});
-+  const listResult = repository.listGames(gameUserKey ? { userKey: gameUserKey } : {});
-+  const games = Array.isArray(listResult) ? listResult : [];
-+  if (!Array.isArray(listResult) && !reportRepositoryError(listResult, "Game list")) {
-+    setStatusLog("Game list response is malformed. Reload Game Workspace after the server API contract is restored.");
-+  }
- 
-   elements.gameList.replaceChildren();
- 
-@@ -154,7 +222,7 @@ function renderMembersTable(activeGame) {
-     return;
-   }
- 
--  activeGame.members.forEach((member) => {
-+  activeGameMembers(activeGame).forEach((member) => {
-     const row = document.createElement("tr");
-     const name = document.createElement("td");
-     const userKey = document.createElement("td");
-@@ -176,11 +244,17 @@ function renderTableCounts() {
-     return;
-   }
- 
--  const tables = repository.getTables();
-+  const tableResult = repository.getTables();
-+  const tables = isRecord(tableResult) && !isRepositoryErrorResult(tableResult)
-+    ? tableResult
-+    : { users: [], games: [], game_members: [] };
-+  if ((!isRecord(tableResult) || isRepositoryErrorResult(tableResult)) && !reportRepositoryError(tableResult, "Repository tables")) {
-+    setStatusLog("Repository tables response is malformed. Reload Game Workspace after the server API contract is restored.");
-+  }
-   const rows = [
--    ["users", tables.users.length],
--    ["games", tables.games.length],
--    ["game_members", tables.game_members.length],
-+    ["users", Array.isArray(tables.users) ? tables.users.length : 0],
-+    ["games", Array.isArray(tables.games) ? tables.games.length : 0],
-+    ["game_members", Array.isArray(tables.game_members) ? tables.game_members.length : 0],
-   ];
- 
-   elements.tableCounts.replaceChildren();
-@@ -205,7 +279,8 @@ function renderChecklist(progress) {
- 
-   elements.progressChecklist.replaceChildren();
- 
--  progress.progressChecklist.forEach((item) => {
-+  const checklist = Array.isArray(progress?.progressChecklist) ? progress.progressChecklist : [];
-+  checklist.forEach((item) => {
-     const row = document.createElement("li");
-     row.textContent = `${item.label}: ${item.status}`;
-     elements.progressChecklist.append(row);
-@@ -213,8 +288,8 @@ function renderChecklist(progress) {
- }
- 
- function renderWorkspace() {
--  const activeGame = repository.getActiveGame();
--  const progress = repository.getGameProgress();
-+  const activeGame = normalizeActiveGame(repository.getActiveGame());
-+  const progress = normalizeProgress(repository.getGameProgress());
-   const currentMember = currentGameMember(activeGame);
- 
-   setText(elements.activeGameName, activeGame?.name || "No game open");
-@@ -254,13 +329,22 @@ function renderWorkspace() {
- 
- elements.form?.addEventListener("submit", (event) => {
-   event.preventDefault();
-+  const activeGame = normalizeActiveGame(repository.getActiveGame());
-   const game = repository.createGame({
-     name: elements.nameInput?.value,
--    ownerKey: currentGameUserKey(repository.getActiveGame()),
-+    ownerKey: currentGameUserKey(activeGame),
-     purpose: elements.purposeInput?.value,
-     status: elements.gameStatusInput?.value,
-   });
- 
-+  if (reportRepositoryError(game, "Create Game") || !isRecord(game) || !String(game.name || "").trim()) {
-+    if (!isRepositoryErrorResult(game)) {
-+      setStatusLog("Create Game did not return a valid game. Restore the server API contract and try again.");
-+    }
-+    renderWorkspace();
-+    return;
-+  }
-+
-   if (elements.nameInput) {
-     elements.nameInput.value = "";
-   }
-@@ -334,4 +418,5 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
- populateSelect(elements.purposeInput, GAME_WORKSPACE_GAME_PURPOSES);
- populateSelect(elements.gameStatusInput, GAME_WORKSPACE_GAME_STATUSES);
- populateSelect(elements.currentUserRoleInput, GAME_WORKSPACE_MEMBER_ROLES);
-+reportRepositoryError(repository.resetGameData(), "Reset Game Workspace data");
- renderWorkspace();
-diff --git a/.env.uat b/.env.uat
-new file mode 100644
-index 000000000..7a79dfd2c
---- /dev/null
-+++ b/.env.uat
-@@ -0,0 +1,9 @@
-+# Game Foundry Studio UAT connection environment
-+
-+# Populate reviewed UAT connection values outside commits before starting UAT.
-+# Do not paste secrets into reports, screenshots, browser code, or PR notes.
-+
+# PR_26167_193 source commit patch (HEAD)
+commit 24d9ae19148d89244872cd1e51d999e57f1f6348
+Author:     DavidQ <qbytes.dq@gmail.com>
+AuthorDate: Tue Jun 16 17:23:25 2026 -0400
+Commit:     DavidQ <qbytes.dq@gmail.com>
+CommitDate: Tue Jun 16 17:23:25 2026 -0400
+
+    Use single runtime env file and generic database URL - PR_26167_193-env-runtime-single-file-and-generic-db-url
+---
+ .env                                                |  6 ++++--
+ .env.example                                        |  6 +++---
+ .env.uat                                            |  2 +-
+ .gitignore                                          |  1 +
+ scripts/apply-supabase-dev-ddl.mjs                  |  8 ++++----
+ scripts/start-local-api-server.mjs                  | 21 ++++++++++++---------
+ scripts/validate-supabase-dev.mjs                   | 18 +++++++++---------
+ src/dev-runtime/auth/provider-contract-stubs.mjs    |  4 ++--
+ .../SupabaseProviderContractStub.test.mjs           | 18 +++++++++---------
+ .../tools/GameWorkspaceMockRepository.spec.mjs      |  4 ++--
+ 10 files changed, 47 insertions(+), 41 deletions(-)
+
+diff --git a/.env b/.env
+index 017d323d3..385a27d5c 100644
+--- a/.env
++++ b/.env
+@@ -1,2 +1,4 @@
+-TEST_VAR=hello_world
+-API_URL=http://localhost:3000
+\ No newline at end of file
 +GAMEFOUNDRY_SUPABASE_URL=
 +GAMEFOUNDRY_SUPABASE_ANON_KEY=
 +GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=
-+GAMEFOUNDRY_SUPABASE_DATABASE_URL=
-diff --git a/docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md b/docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
-new file mode 100644
-index 000000000..f18ecba2e
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
-@@ -0,0 +1,87 @@
-+# PR_26167_192-env-config-and-game-workspace-create-fix
++GAMEFOUNDRY_DATABASE_URL=
+diff --git a/.env.example b/.env.example
+index 9e10bad49..4156edf83 100644
+--- a/.env.example
++++ b/.env.example
+@@ -1,14 +1,14 @@
+ # Game Foundry Studio local development environment
+ 
+-# Configure the local API account and product-data connections here.
++# Configure the runtime auth and database connections here.
+ # Missing connection configuration reports diagnostics instead of falling back.
+ 
+ # Browser-safe account connection configuration.
+-# Leave values empty in this example; local values belong in .env.local.
++# Leave values empty in this example; local values belong in user-managed copy files.
+ GAMEFOUNDRY_SUPABASE_URL=
+ GAMEFOUNDRY_SUPABASE_ANON_KEY=
+ 
+ # Server-only product-data and account administration connection configuration.
+ # Do not expose these values to browser JavaScript, HTML, reports, or screenshots.
+ GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=
+-GAMEFOUNDRY_SUPABASE_DATABASE_URL=
++GAMEFOUNDRY_DATABASE_URL=
+diff --git a/.env.uat b/.env.uat
+index 7a79dfd2c..5f395b3a3 100644
+--- a/.env.uat
++++ b/.env.uat
+@@ -6,4 +6,4 @@
+ GAMEFOUNDRY_SUPABASE_URL=
+ GAMEFOUNDRY_SUPABASE_ANON_KEY=
+ GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=
+-GAMEFOUNDRY_SUPABASE_DATABASE_URL=
++GAMEFOUNDRY_DATABASE_URL=
+diff --git a/.gitignore b/.gitignore
+index dd2fb3bf3..f6558e4d1 100644
+--- a/.gitignore
++++ b/.gitignore
+@@ -37,4 +37,5 @@ docs/dev/reports/playwright_v8_coverage_report.txt
+ *.mp4
+ *.mkv
+ 
++.env
+ .env.local
+diff --git a/scripts/apply-supabase-dev-ddl.mjs b/scripts/apply-supabase-dev-ddl.mjs
+index c1607d9dc..76f3ee8b7 100644
+--- a/scripts/apply-supabase-dev-ddl.mjs
++++ b/scripts/apply-supabase-dev-ddl.mjs
+@@ -89,13 +89,13 @@ function envValue(key) {
+ }
+ 
+ function parseDatabaseUrl() {
+-  const value = envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL");
++  const value = envValue("GAMEFOUNDRY_DATABASE_URL");
+   if (!value) {
+-    throw new Error("GAMEFOUNDRY_SUPABASE_DATABASE_URL is required to apply DEV DDL.");
++    throw new Error("GAMEFOUNDRY_DATABASE_URL is required to apply DEV DDL.");
+   }
+   const databaseUrl = new URL(value);
+   if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
+-    throw new Error("GAMEFOUNDRY_SUPABASE_DATABASE_URL must use postgres:// or postgresql://.");
++    throw new Error("GAMEFOUNDRY_DATABASE_URL must use postgres:// or postgresql://.");
+   }
+   return {
+     database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
+@@ -431,7 +431,7 @@ async function main() {
+   const envLoad = loadEnvLocal();
+   const config = parseDatabaseUrl();
+   if (!config.user || !config.password) {
+-    throw new Error("GAMEFOUNDRY_SUPABASE_DATABASE_URL must include username and password.");
++    throw new Error("GAMEFOUNDRY_DATABASE_URL must include username and password.");
+   }
+   const socket = await openPostgresTlsConnection(config);
+   try {
+diff --git a/scripts/start-local-api-server.mjs b/scripts/start-local-api-server.mjs
+index 7895b6f18..03cb15762 100644
+--- a/scripts/start-local-api-server.mjs
++++ b/scripts/start-local-api-server.mjs
+@@ -3,8 +3,10 @@ import { existsSync, readFileSync } from "node:fs";
+ import path from "node:path";
+ import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
+ 
+-function loadEnvLocal() {
+-  const envPath = path.resolve(process.cwd(), ".env.local");
++const RUNTIME_ENV_FILE = ".env";
 +
-+## Branch Validation
-+
-+- PASS - Current branch is `main`.
-+- PASS - Worktree was clean before PR_26167_192 edits began.
-+
-+## Requirement Checklist
-+
-+- PASS - Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before changes.
-+- PASS - Hard stop guard passed on `main`.
-+- PASS - Active env examples/templates and runtime paths do not depend on `GAMEFOUNDRY_AUTH_PROVIDER` or `GAMEFOUNDRY_DB_PROVIDER`.
-+- PASS - Account and product-data runtime remains fixed to configured Supabase Auth/Postgres connections.
-+- PASS - Added `.env.uat` with the same four connection keys as `.env.local` structure and no populated values.
-+- PASS - Reports do not include secret values.
-+- PASS - Fixed Game Workspace `currentGameUserKey` so missing or malformed active-game payloads do not throw.
-+- PASS - Repository read methods such as `getActiveGame` no longer trigger product-data persistence writes.
-+- PASS - Server repository methods now reject undefined, error-shaped, or malformed `getActiveGame` results with visible API errors instead of malformed success payloads.
-+- PASS - Game Workspace Create Game handles API and malformed result diagnostics visibly.
-+- PASS - No silent fallback, browser-owned product data, or runtime DEV/UAT/PROD behavior branching was added.
-+
-+## Provider Env Removal Evidence
-+
-+- PASS - `.env.example` contains only Supabase connection keys and no provider selector variables.
-+- PASS - `.env.uat` contains only Supabase connection keys and no provider selector variables.
-+- PASS - `scripts/start-local-api-server.mjs` startup output uses configured account/product-data connection wording.
-+- PASS - `src/dev-runtime/server/local-api-router.mjs` and `src/dev-runtime/auth/provider-contract-stubs.mjs` do not require provider selector environment variables.
-+- PASS - Targeted scan returned no `GAMEFOUNDRY_AUTH_PROVIDER` or `GAMEFOUNDRY_DB_PROVIDER` matches in active PR files.
-+
-+## .env.uat Evidence
-+
-+- PASS - `.env.uat` exists.
-+- PASS - Keys present: `GAMEFOUNDRY_SUPABASE_URL`, `GAMEFOUNDRY_SUPABASE_ANON_KEY`, `GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY`, `GAMEFOUNDRY_SUPABASE_DATABASE_URL`.
-+- PASS - Structural validation found 4 expected keys, 0 missing keys, 0 extra keys, and 0 populated values.
-+
-+## Game Workspace Fix Evidence
-+
-+- PASS - `repositoryMethodRequiresPersistence()` skips read-only repository methods prefixed with `get`, `list`, or `read`, preventing `getActiveGame` from forcing a product-data write.
-+- PASS - `assertRepositoryMethodResult()` fails visibly when repository methods return no result, error-shaped data, or malformed `getActiveGame` payloads.
-+- PASS - `currentGameUserKey()` now reads active-game members through an array guard.
-+- PASS - Game Workspace render/create paths normalize API diagnostics and malformed responses into visible status messages.
-+- PASS - Targeted Playwright validated Create Game create/open/delete behavior.
-+- PASS - Targeted Playwright validated forced `getActiveGame` API 502 renders a visible diagnostic and does not throw a page exception.
-+
-+## Validation Lane Report
-+
-+- PASS - `node --check src/dev-runtime/server/local-api-router.mjs`
-+- PASS - `node --check toolbox/game-workspace/game-workspace.js`
-+- PASS - `node --check tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs`
-+- PASS - `npm run validate:supabase-dev`
-+  - Overall PASS.
-+  - Existing direct PostgreSQL TLS advisory remained WARN while REST/API identity readiness passed.
-+- PASS - Manual `.env.uat` structural validation command.
-+- PASS - `npm run dev:local-api` on alternate port `5512`.
-+  - Port `5501` was already in use on first attempt.
-+  - Successful startup used configured connection wording and no provider selector variables.
-+- PASS - Targeted Game Workspace create/API validation:
-+  - `npx playwright test tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list -g "Game Workspace creates|active-game API"`
-+  - Result: 2 passed.
-+- PASS - `npm run validate:browser-env-agnostic`
-+- WARN - Broader initial Game Workspace spec run was wider than required and returned 7 passed / 2 failed.
-+  - One failure was the new diagnostic test expecting no console 502 message; fixed before targeted rerun.
-+  - One failure was an older Toolbox role-count assertion outside this PR's create/API scope.
-+- SKIP - `npm run test:workspace-v2` was not run because PR_26167_192 did not change Project Workspace/session/toolState UI behavior; the changed API behavior was covered by targeted Game Workspace API/browser validation. The command name remains legacy and the user-facing language is Project Workspace.
-+- SKIP - Full samples smoke was not run per request.
-+
-+## Playwright V8 Coverage
-+
-+- PASS - `docs_build/dev/reports/playwright_v8_coverage_report.txt` generated.
-+- PASS - `toolbox/game-workspace/game-workspace.js` collected browser V8 coverage.
-+- WARN - `src/dev-runtime/server/local-api-router.mjs` is server runtime and was not collected by browser V8 coverage; advisory only.
-+
-+## Manual Validation Notes
-+
-+- Manual interactive browser validation was not run against live DEV data.
-+- Automated browser validation opened `/toolbox/game-workspace/index.html`, created/opened/deleted a game through the server API contract, and validated the visible active-game API diagnostic path.
-+- Local API startup was verified through `npm run dev:local-api` on port `5512`; the process was stopped after startup output was captured.
-+- `.env.uat` was validated structurally without populating or reporting secrets.
-+
-+## Files Changed
-+
-+- `.env.uat`
-+- `src/dev-runtime/server/local-api-router.mjs`
-+- `toolbox/game-workspace/game-workspace.js`
-+- `tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs`
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++function loadRuntimeEnv() {
++  const envPath = path.resolve(process.cwd(), RUNTIME_ENV_FILE);
+   if (!existsSync(envPath)) {
+     return {
+       loaded: false,
+@@ -35,7 +37,7 @@ function loadEnvLocal() {
+   };
+ }
+ 
+-const envLocal = loadEnvLocal();
++const runtimeEnv = loadRuntimeEnv();
+ 
+ function connectionStatus(requiredKeys) {
+   const missingKeys = requiredKeys.filter((key) => !String(process.env[key] || "").trim());
+@@ -49,9 +51,10 @@ const accountConnection = connectionStatus([
+   "GAMEFOUNDRY_SUPABASE_URL",
+   "GAMEFOUNDRY_SUPABASE_ANON_KEY",
+ ]);
+-const productDataConnection = connectionStatus([
++const databaseConnection = connectionStatus([
+   "GAMEFOUNDRY_SUPABASE_URL",
+   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
++  "GAMEFOUNDRY_DATABASE_URL",
+ ]);
+ const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || "127.0.0.1";
+ const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
+@@ -59,11 +62,11 @@ const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
+ const localServer = await startLocalApiServer({ host, port });
+ 
+ console.log(`GameFoundry API runtime server running at ${localServer.baseUrl}/account/sign-in.html`);
+-console.log(envLocal.loaded
+-  ? `.env.local loaded for API runtime (${envLocal.loadedKeys} key(s) applied).`
+-  : ".env.local was not found for API runtime.");
+-console.log(`Configured account connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
+-console.log(`Configured product data connection: ${productDataConnection.ready ? "configured" : `missing ${productDataConnection.missingKeys.join(", ")}`}.`);
++console.log(runtimeEnv.loaded
++  ? `.env loaded for API runtime (${runtimeEnv.loadedKeys} key(s) applied).`
++  : ".env was not found for API runtime.");
++console.log(`Configured auth connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
++console.log(`Configured database connection: ${databaseConnection.ready ? "configured" : `missing ${databaseConnection.missingKeys.join(", ")}`}.`);
+ console.log("Press Ctrl+C to stop.");
+ 
+ for (const signal of ["SIGINT", "SIGTERM"]) {
+diff --git a/scripts/validate-supabase-dev.mjs b/scripts/validate-supabase-dev.mjs
+index 28be2f882..b1cdff075 100644
+--- a/scripts/validate-supabase-dev.mjs
++++ b/scripts/validate-supabase-dev.mjs
+@@ -11,19 +11,19 @@ const ENV_FILE = ".env.local";
+ const REQUIRED_ENV = Object.freeze([
+   {
+     key: "GAMEFOUNDRY_SUPABASE_URL",
+-    label: "URL configured",
++    label: "Auth connection URL configured",
+   },
+   {
+     key: "GAMEFOUNDRY_SUPABASE_ANON_KEY",
+-    label: "Publishable key configured",
++    label: "Auth anon key configured",
+   },
+   {
+     key: "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+-    label: "Service role key configured",
++    label: "Auth service role key configured",
+   },
+   {
+-    key: "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
+-    label: "Database URL configured",
++    key: "GAMEFOUNDRY_DATABASE_URL",
++    label: "Database connection URL configured",
+   },
+ ]);
+ 
+@@ -119,7 +119,7 @@ function sanitizeDiagnostic(value) {
+     }
+   });
+   try {
+-    const databaseUrl = new URL(envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL"));
++    const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
+     if (databaseUrl.password) {
+       text = text.split(databaseUrl.password).join(maskValue(databaseUrl.password));
+     }
+@@ -283,7 +283,7 @@ async function checkTlsValidation() {
+ }
+ 
+ function parseDatabaseUrl() {
+-  const databaseUrl = new URL(envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL"));
++  const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
+   if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
+     throw new Error("Database URL must use postgres:// or postgresql://.");
+   }
+@@ -638,8 +638,8 @@ async function main() {
+   const envLoad = loadEnvLocal();
+   const results = [];
+   results.push(envLoad.loaded
+-    ? pass(".env.local loaded", `${envLoad.loadedKeys.length} key(s) loaded`)
+-    : fail(".env.local loaded", `${ENV_FILE} was not found`));
++    ? pass("Explicit .env.local DEV validation load", `${envLoad.loadedKeys.length} key(s) loaded`)
++    : fail("Explicit .env.local DEV validation load", `${ENV_FILE} was not found`));
+ 
+   REQUIRED_ENV.forEach(({ key, label }) => {
+     const value = envValue(key);
+diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
+index c31f060c4..d54b7758b 100644
+--- a/src/dev-runtime/auth/provider-contract-stubs.mjs
++++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
+@@ -51,7 +51,7 @@ const BROWSER_SAFE_SUPABASE_ENV_KEYS = Object.freeze([
+ 
+ const SERVER_ONLY_SUPABASE_SECRET_KEYS = Object.freeze([
+   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+-  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
++  "GAMEFOUNDRY_DATABASE_URL",
+ ]);
+ const SUPABASE_POSTGRES_CONFIG_KEYS = Object.freeze([
+   "GAMEFOUNDRY_SUPABASE_URL",
+@@ -59,7 +59,7 @@ const SUPABASE_POSTGRES_CONFIG_KEYS = Object.freeze([
+ ]);
+ const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
+   ...SUPABASE_POSTGRES_CONFIG_KEYS,
+-  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
++  "GAMEFOUNDRY_DATABASE_URL",
+ ]);
+ export const SUPABASE_POSTGRES_IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
+ export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
+diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+index 2e6ecab97..e75cc5d16 100644
+--- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
++++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+@@ -522,7 +522,7 @@ test("Provider contract assigns identity and product data ownership to Supabase
+     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+     GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-safe-anon-key",
+-    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
++    GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
+     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "server-only-service-role-key",
+     GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test",
+   });
+@@ -1371,7 +1371,7 @@ test("Supabase stubs do not expose server-only secret names or values through th
+   await withEnv({
+     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+-    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
++    GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
+     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+   }, async () => {
+     const server = await startApiServer();
+@@ -1396,7 +1396,7 @@ test("Supabase stubs do not expose server-only secret names or values through th
+       assert.equal(providerText.includes("not-a-real-service-role-test-value"), false);
+       assert.equal(providerText.includes("server-only-database-url-placeholder"), false);
+       assert.equal(providerText.includes("GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY"), false);
+-      assert.equal(providerText.includes("GAMEFOUNDRY_SUPABASE_DATABASE_URL"), false);
++      assert.equal(providerText.includes("GAMEFOUNDRY_DATABASE_URL"), false);
+       assert.equal(adapterText.includes("not-a-real-service-role-test-value"), false);
+       assert.equal(adapterText.includes("server-only-database-url-placeholder"), false);
+     } finally {
+@@ -1490,7 +1490,7 @@ test("Supabase Postgres adapter supports identity tables and readiness when conf
+   const calls = [];
+   const database = new SupabasePostgresProviderAdapter({
+     env: {
+-      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
++      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
+       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+     },
+@@ -1539,7 +1539,7 @@ test("Supabase Postgres adapter supports DEV cleanup deletes and audit reassignm
+   const calls = [];
+   const database = new SupabasePostgresProviderAdapter({
+     env: {
+-      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
++      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
+       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+     },
+@@ -1604,7 +1604,7 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
+   ];
+   const database = new SupabasePostgresProviderAdapter({
+     env: {
+-      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
++      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
+       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+     },
+@@ -1686,7 +1686,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
+   const calls = [];
+   const database = new SupabasePostgresProviderAdapter({
+     env: {
+-      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
++      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
+       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+     },
+@@ -1781,7 +1781,7 @@ test("Supabase activation diagnostics report readiness for fixed providers", ()
+     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
+     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
+     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+-    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
++    GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
+     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+     GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+   });
+@@ -1845,6 +1845,6 @@ test(".env.example documents Supabase DEV variables without values", async () =>
+   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_URL=$/m);
+   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_ANON_KEY=$/m);
+   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=$/m);
+-  assert.match(contents, /^GAMEFOUNDRY_SUPABASE_DATABASE_URL=$/m);
++  assert.match(contents, /^GAMEFOUNDRY_DATABASE_URL=$/m);
+   assert.equal(/supabase\.co|sbp_|eyJ[A-Za-z0-9_-]{20,}/.test(contents), false);
+ });
+diff --git a/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs b/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
+index 2171ebb80..fcb560147 100644
+--- a/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
++++ b/tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
+@@ -7,7 +7,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
+ 
+ const SUPABASE_ENV_KEYS = Object.freeze([
+   "GAMEFOUNDRY_SUPABASE_ANON_KEY",
+-  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
++  "GAMEFOUNDRY_DATABASE_URL",
+   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+   "GAMEFOUNDRY_SUPABASE_URL",
+ ]);
+@@ -91,7 +91,7 @@ test.beforeAll(async () => {
+   previousSupabaseEnv = Object.fromEntries(SUPABASE_ENV_KEYS.map((key) => [key, process.env[key]]));
+   fakeSupabaseServer = await startFakeSupabaseServer();
+   process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "game-workspace-anon-key";
+-  process.env.GAMEFOUNDRY_SUPABASE_DATABASE_URL = "postgres://game-workspace:test@127.0.0.1:5432/game_workspace";
++  process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://game-workspace:test@127.0.0.1:5432/game_workspace";
+   process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "game-workspace-service-role-key";
+   process.env.GAMEFOUNDRY_SUPABASE_URL = fakeSupabaseServer.baseUrl;
+ });
+
+# Current report/artifact working-tree diff
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index bb4f6e438..59c5a9d4c 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,20 +1,12 @@
+ # git status --short
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+- M src/dev-runtime/server/local-api-router.mjs
+- M tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
+- M toolbox/game-workspace/game-workspace.js
+-?? .env.uat
+-?? docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
++?? docs_build/dev/reports/PR_26167_193-env-runtime-single-file-and-generic-db-url.md
+ 
+ # git ls-files --others --exclude-standard
+-.env.uat
+-docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
++docs_build/dev/reports/PR_26167_193-env-runtime-single-file-and-generic-db-url.md
+ 
+ # git diff --stat
+-.../dev/reports/coverage_changed_js_guardrail.txt  |  15 ++-
+- .../dev/reports/playwright_v8_coverage_report.txt  |  52 ++++----
+- src/dev-runtime/server/local-api-router.mjs        |  31 ++++-
+- .../tools/GameWorkspaceMockRepository.spec.mjs     | 133 +++++++++++++++++++++
+- toolbox/game-workspace/game-workspace.js           | 115 +++++++++++++++---
+- 5 files changed, 299 insertions(+), 47 deletions(-)
+\ No newline at end of file
++.../dev/reports/coverage_changed_js_guardrail.txt  | 20 ------------
++ .../dev/reports/playwright_v8_coverage_report.txt  | 38 +++-------------------
++ 2 files changed, 4 insertions(+), 54 deletions(-)
+\ No newline at end of file
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index a79f341ec..aa88fe50b 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,27 +6,7 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+ 
+ Changed runtime JS files considered:
+-(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
+-(86%) toolbox/game-workspace/game-workspace.js - executed lines 358/358; executed functions 30/35
+ 
+ Guardrail warnings:
+-(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index a778ef12c..aa7322329 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -17,18 +17,7 @@ Exercised tool entry points detected:
+ (57%) Theme V2 Shared JS - exercised 2 runtime JS files
+ 
+ Changed runtime JS files covered:
+-(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
+-(86%) toolbox/game-workspace/game-workspace.js - executed lines 358/358; executed functions 30/35
+ 
+ Files with executed line/function counts where available:
+ (25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+@@ -40,31 +29,12 @@ Files with executed line/function counts where available:
+ (100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
+ 
+ Uncovered or low-coverage changed JS files:
+-(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/engine/api/owner-operations-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+ 
+ Changed JS files considered:
+-(0%) assets/theme-v2/js/admin-platform-settings.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/admin-service-page-data.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/owner-operations.js - changed JS file not collected as browser runtime coverage
+-(0%) scripts/sync-supabase-dev-creator-identities.mjs - changed JS file not collected as browser runtime coverage
++(0%) scripts/apply-supabase-dev-ddl.mjs - changed JS file not collected as browser runtime coverage
++(0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
++(0%) scripts/validate-supabase-dev.mjs - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/engine/api/owner-operations-api-client.js - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+-(56%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+-(86%) toolbox/game-workspace/game-workspace.js - changed JS file with browser V8 coverage
