@@ -19,6 +19,7 @@ Exercised tool entry points detected:
 Changed runtime JS files covered:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Files with executed line/function counts where available:
 (25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
@@ -31,9 +32,13 @@ Files with executed line/function counts where available:
 Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) scripts/cleanup-supabase-dev-auth-test-users.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/SupabaseDevAuthTestUserCleanup.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/account/SupabaseSignInSession.spec.mjs - changed JS file not collected as browser runtime coverage

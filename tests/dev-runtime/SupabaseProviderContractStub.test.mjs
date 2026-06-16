@@ -343,6 +343,7 @@ test("Supabase provider contract stubs keep explicitly selected Local DB active"
     "signIn",
     "signOut",
     "createAccount",
+    "deleteTestAccount",
     "requestPasswordReset",
     "requireRole",
   ]);
@@ -394,6 +395,10 @@ test("Supabase provider contract stubs keep explicitly selected Local DB active"
     "getRoles",
     "getUserRoles",
     "initializeIdentity",
+    "deleteUserByKey",
+    "deleteUserRolesForUserKey",
+    "reassignRoleAuditReferences",
+    "reassignUserRoleAuditReferences",
     "runSiteSetup",
     "getDbViewerSnapshot",
   ]);
@@ -1332,6 +1337,7 @@ test("Supabase Auth adapter uses service role only for server-owned account crea
 
   await auth.signIn({ email: "creator@example.test", password: "test-password" });
   await auth.createAccount({ email: "new@example.test", password: "new-password" });
+  await auth.deleteTestAccount({ authProviderUserId: "supabase-test-user-id" });
   await auth.requestPasswordReset({ email: "reset@example.test", redirectTo: "http://127.0.0.1:5501/account/password-reset.html" });
   await auth.getCurrentUser({ accessToken: "user-access-token" });
   await auth.signOut({ accessToken: "user-access-token" });
@@ -1339,6 +1345,7 @@ test("Supabase Auth adapter uses service role only for server-owned account crea
   assert.deepEqual(calls.map((call) => call.url), [
     "https://supabase-dev.example.test/auth/v1/token?grant_type=password",
     "https://supabase-dev.example.test/auth/v1/admin/users",
+    "https://supabase-dev.example.test/auth/v1/admin/users/supabase-test-user-id",
     "https://supabase-dev.example.test/auth/v1/recover",
     "https://supabase-dev.example.test/auth/v1/user",
     "https://supabase-dev.example.test/auth/v1/logout",
@@ -1346,11 +1353,13 @@ test("Supabase Auth adapter uses service role only for server-owned account crea
   assert.equal(calls[0].options.headers.apikey, "test-anon-key");
   assert.equal(calls[1].options.headers.apikey, "not-a-real-service-role-test-value");
   assert.equal(calls[1].options.headers.authorization, "Bearer not-a-real-service-role-test-value");
-  assert.equal(calls[2].options.headers.apikey, "test-anon-key");
+  assert.equal(calls[2].options.headers.apikey, "not-a-real-service-role-test-value");
+  assert.equal(calls[2].options.headers.authorization, "Bearer not-a-real-service-role-test-value");
   assert.equal(calls[3].options.headers.apikey, "test-anon-key");
   assert.equal(calls[4].options.headers.apikey, "test-anon-key");
-  assert.equal(calls[3].options.headers.authorization, "Bearer user-access-token");
+  assert.equal(calls[5].options.headers.apikey, "test-anon-key");
   assert.equal(calls[4].options.headers.authorization, "Bearer user-access-token");
+  assert.equal(calls[5].options.headers.authorization, "Bearer user-access-token");
 });
 
 test("Supabase Postgres adapter fails visibly when selected without configuration", async () => {
@@ -1360,6 +1369,10 @@ test("Supabase Postgres adapter fails visibly when selected without configuratio
   await assert.rejects(() => database.getRoles(), /Supabase Postgres provider selected but not configured/);
   await assert.rejects(() => database.getUserRoles(), /Supabase Postgres provider selected but not configured/);
   await assert.rejects(() => database.initializeIdentity(), /Supabase Postgres provider selected but not configured/);
+  await assert.rejects(() => database.deleteUserByKey("user-key"), /Supabase Postgres provider selected but not configured/);
+  await assert.rejects(() => database.deleteUserRolesForUserKey("user-key"), /Supabase Postgres provider selected but not configured/);
+  await assert.rejects(() => database.reassignRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres provider selected but not configured/);
+  await assert.rejects(() => database.reassignUserRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres provider selected but not configured/);
   assert.throws(() => database.runSiteSetup(), /Supabase Postgres provider selected but not configured/);
   await assert.rejects(() => database.getDbViewerSnapshot(), /Supabase Postgres provider selected but not configured/);
 });
@@ -1408,6 +1421,67 @@ test("Supabase Postgres adapter supports identity tables and readiness when conf
     "https://supabase-dev.example.test/rest/v1/user_roles?select=*",
   ]);
   assert.equal(calls.every((call) => call.options.headers.apikey === "not-a-real-service-role-test-value"), true);
+});
+
+test("Supabase Postgres adapter supports DEV cleanup deletes and audit reassignment", async () => {
+  const calls = [];
+  const database = new SupabasePostgresProviderAdapter({
+    env: {
+      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+      GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
+      GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
+    },
+    fetchImpl: async (url, options) => {
+      calls.push({
+        body: options.body ? JSON.parse(options.body) : null,
+        method: options.method,
+        url,
+      });
+      return {
+        json: async () => [{ key: "changed-row" }],
+        ok: true,
+        status: 200,
+      };
+    },
+  });
+
+  await database.deleteUserRolesForUserKey("from-user");
+  await database.deleteUserByKey("from-user");
+  await database.reassignRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" });
+  await database.reassignUserRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" });
+
+  assert.deepEqual(calls, [
+    {
+      body: null,
+      method: "DELETE",
+      url: "https://supabase-dev.example.test/rest/v1/user_roles?userKey=eq.from-user",
+    },
+    {
+      body: null,
+      method: "DELETE",
+      url: "https://supabase-dev.example.test/rest/v1/users?key=eq.from-user",
+    },
+    {
+      body: { createdBy: "to-user" },
+      method: "PATCH",
+      url: "https://supabase-dev.example.test/rest/v1/roles?createdBy=eq.from-user",
+    },
+    {
+      body: { updatedBy: "to-user" },
+      method: "PATCH",
+      url: "https://supabase-dev.example.test/rest/v1/roles?updatedBy=eq.from-user",
+    },
+    {
+      body: { createdBy: "to-user" },
+      method: "PATCH",
+      url: "https://supabase-dev.example.test/rest/v1/user_roles?createdBy=eq.from-user",
+    },
+    {
+      body: { updatedBy: "to-user" },
+      method: "PATCH",
+      url: "https://supabase-dev.example.test/rest/v1/user_roles?updatedBy=eq.from-user",
+    },
+  ]);
 });
 
 test("Supabase Postgres adapter initializes key-based users roles and user_roles", async () => {

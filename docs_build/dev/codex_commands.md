@@ -1383,3 +1383,39 @@ Required reports:
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_165-auth-test-user-cleanup
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before edits.
+- Added DEV-only Supabase Auth test-account cleanup for matching `codex-*` and `playwright-*` `@example.test` accounts only.
+- Added server/dev-runtime cleanup operations to delete matching Supabase Auth users, `users` rows, and `user_roles` rows.
+- Added explicit shared account audit-reference reassignment requiring a surviving non-test DEV audit user key.
+- Added reusable cleanup script `npm run cleanup:supabase-dev-auth-test-users`.
+- Added focused cleanup/provider contract tests.
+- Preserved `GAMEFOUNDRY_DB_PROVIDER=local-db` and did not add any product-data cutover.
+- Did not touch UAT/PROD, `.env.local`, secrets, password tables, browser-owned provider logic, or full samples smoke.
+
+Validation:
+- `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
+- `node --check src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs`
+- `node --check scripts/cleanup-supabase-dev-auth-test-users.mjs`
+- `node --check tests/dev-runtime/SupabaseDevAuthTestUserCleanup.test.mjs`
+- `node --test tests/dev-runtime/SupabaseDevAuthTestUserCleanup.test.mjs`
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `npm run validate:supabase-dev`
+- `node --use-system-ca ./scripts/cleanup-supabase-dev-auth-test-users.mjs --dry-run --json`
+- `node --use-system-ca ./scripts/cleanup-supabase-dev-auth-test-users.mjs --json --audit-user-key 01KV6R2GKPZDAWNKM1N65SHZY5`
+- `npm run cleanup:supabase-dev-auth-test-users -- --dry-run --json`
+- `npx playwright test tests/playwright/account/SupabaseSignInSession.spec.mjs --project=playwright --workers=1 --reporter=list`
+- Full samples smoke skipped by request and because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_165-auth-test-user-cleanup_report.md`
+- `docs_build/dev/reports/PR_26166_165-auth-test-user-cleanup_cleanup_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`

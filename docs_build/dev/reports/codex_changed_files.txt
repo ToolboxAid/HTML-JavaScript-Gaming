@@ -1,25 +1,31 @@
 # git status --short
- M docs_build/dev/codex_commands.md
+M docs_build/dev/codex_commands.md
  M docs_build/dev/commit_comment.txt
- A docs_build/dev/reports/PR_26166_164-live-sign-in-runtime-fix_report.md
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
+ A docs_build/dev/reports/PR_26166_165-auth-test-user-cleanup_cleanup_report.md
+ A docs_build/dev/reports/PR_26166_165-auth-test-user-cleanup_report.md
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/server/local-api-router.mjs
+ M package.json
+ A scripts/cleanup-supabase-dev-auth-test-users.mjs
+ M src/dev-runtime/auth/provider-contract-stubs.mjs
+ A src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs
+ A tests/dev-runtime/SupabaseDevAuthTestUserCleanup.test.mjs
  M tests/dev-runtime/SupabaseProviderContractStub.test.mjs
- A tests/playwright/account/SupabaseSignInSession.spec.mjs
 
 # git ls-files --others --exclude-standard
 (no output)
 
 # git diff --stat
- docs_build/dev/codex_commands.md                   |   29 +
- docs_build/dev/commit_comment.txt                  |    2 +-
- ...PR_26166_164-live-sign-in-runtime-fix_report.md |   82 +
- docs_build/dev/reports/codex_changed_files.txt     |   89 +-
- docs_build/dev/reports/codex_review.diff           | 3473 ++++++++++++++------
- .../dev/reports/playwright_v8_coverage_report.txt  |   29 +-
- src/dev-runtime/server/local-api-router.mjs        |   96 +-
- .../SupabaseProviderContractStub.test.mjs          |   47 +-
- .../account/SupabaseSignInSession.spec.mjs         |  217 ++
- 9 files changed, 2887 insertions(+), 1177 deletions(-)
+docs_build/dev/codex_commands.md                   |  36 +++
+ docs_build/dev/commit_comment.txt                  |   2 +-
+ ...66_165-auth-test-user-cleanup_cleanup_report.md |  67 +++++
+ .../PR_26166_165-auth-test-user-cleanup_report.md  |  97 ++++++++
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   2 +
+ .../dev/reports/playwright_v8_coverage_report.txt  |   5 +
+ package.json                                       |   1 +
+ scripts/cleanup-supabase-dev-auth-test-users.mjs   | 110 +++++++++
+ src/dev-runtime/auth/provider-contract-stubs.mjs   |  84 +++++++
+ .../supabase-dev-auth-test-user-cleanup.mjs        | 232 ++++++++++++++++++
+ .../SupabaseDevAuthTestUserCleanup.test.mjs        | 272 +++++++++++++++++++++
+ .../SupabaseProviderContractStub.test.mjs          |  78 +++++-
+ 12 files changed, 983 insertions(+), 3 deletions(-)

@@ -6,6 +6,7 @@ export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "signIn",
   "signOut",
   "createAccount",
+  "deleteTestAccount",
   "requestPasswordReset",
   "requireRole",
 ]);
@@ -16,6 +17,10 @@ export const POSTGRES_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "getRoles",
   "getUserRoles",
   "initializeIdentity",
+  "deleteUserByKey",
+  "deleteUserRolesForUserKey",
+  "reassignRoleAuditReferences",
+  "reassignUserRoleAuditReferences",
   "runSiteSetup",
   "getDbViewerSnapshot",
 ]);
@@ -521,6 +526,27 @@ export class SupabaseAuthProviderAdapter {
     return attachSupabaseAuthOperatorMetadata(payload, response);
   }
 
+  async deleteTestAccount({ authProviderUserId } = {}) {
+    this.assertConfigured();
+    const serviceRoleKey = supabaseServiceRoleKey(this.env);
+    if (!serviceRoleKey) {
+      throw new Error("Supabase Auth deleteTestAccount requires the server-only service role key.");
+    }
+    const response = await this.fetchImpl(`${supabaseUrl(this.env)}/auth/v1/admin/users/${encodeURIComponent(requireString(authProviderUserId, "authProviderUserId"))}`, {
+      headers: authAdminHeaders(this.env),
+      method: "DELETE",
+    });
+    const payload = await readResponseJson(response);
+    if (!response.ok && response.status !== 404) {
+      throw supabaseAuthUpstreamError("deleteTestAccount", response, payload);
+    }
+    return attachSupabaseAuthOperatorMetadata({
+      deleted: response.status !== 404,
+      notFound: response.status === 404,
+      ...payload,
+    }, response);
+  }
+
   async requestPasswordReset({ email, redirectTo = "" } = {}) {
     this.assertConfigured();
     const body = { email: requireString(email, "email") };
@@ -647,6 +673,64 @@ export class SupabasePostgresProviderAdapter {
       prefer: "resolution=merge-duplicates,return=representation",
       query: "on_conflict=key",
     });
+  }
+
+  deleteUserByKey(userKey) {
+    return this.requestTable("users", {
+      method: "DELETE",
+      prefer: "return=representation",
+      query: `key=eq.${encodeURIComponent(requireIdentityString(userKey, "userKey"))}`,
+    });
+  }
+
+  deleteUserRolesForUserKey(userKey) {
+    return this.requestTable("user_roles", {
+      method: "DELETE",
+      prefer: "return=representation",
+      query: `userKey=eq.${encodeURIComponent(requireIdentityString(userKey, "userKey"))}`,
+    });
+  }
+
+  async reassignRoleAuditReferences({ fromUserKey, toUserKey } = {}) {
+    const fromKey = requireIdentityString(fromUserKey, "fromUserKey");
+    const toKey = requireIdentityString(toUserKey, "toUserKey");
+    if (fromKey === toKey) {
+      throw new Error("Supabase role audit reassignment requires distinct fromUserKey and toUserKey values.");
+    }
+    const createdBy = await this.requestTable("roles", {
+      body: { createdBy: toKey },
+      method: "PATCH",
+      prefer: "return=representation",
+      query: `createdBy=eq.${encodeURIComponent(fromKey)}`,
+    });
+    const updatedBy = await this.requestTable("roles", {
+      body: { updatedBy: toKey },
+      method: "PATCH",
+      prefer: "return=representation",
+      query: `updatedBy=eq.${encodeURIComponent(fromKey)}`,
+    });
+    return { createdBy, updatedBy };
+  }
+
+  async reassignUserRoleAuditReferences({ fromUserKey, toUserKey } = {}) {
+    const fromKey = requireIdentityString(fromUserKey, "fromUserKey");
+    const toKey = requireIdentityString(toUserKey, "toUserKey");
+    if (fromKey === toKey) {
+      throw new Error("Supabase user_roles audit reassignment requires distinct fromUserKey and toUserKey values.");
+    }
+    const createdBy = await this.requestTable("user_roles", {
+      body: { createdBy: toKey },
+      method: "PATCH",
+      prefer: "return=representation",
+      query: `createdBy=eq.${encodeURIComponent(fromKey)}`,
+    });
+    const updatedBy = await this.requestTable("user_roles", {
+      body: { updatedBy: toKey },
+      method: "PATCH",
+      prefer: "return=representation",
+      query: `updatedBy=eq.${encodeURIComponent(fromKey)}`,
+    });
+    return { createdBy, updatedBy };
   }
 
   getUsers() {
