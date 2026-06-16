@@ -33,8 +33,6 @@ export const POSTGRES_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
 
 export const PROVIDER_DATA_BOUNDARY_RULE = "Browser -> API/Service Contract -> Database";
 
-export const LOCAL_AUTH_PROVIDER_ID = "local-db";
-export const LOCAL_DATABASE_PROVIDER_ID = "local-db";
 export const SUPABASE_AUTH_PROVIDER_ID = "supabase-auth";
 export const SUPABASE_POSTGRES_PROVIDER_ID = "supabase-postgres";
 
@@ -103,7 +101,6 @@ const DEV_STATIC_USER_KEYS = Object.freeze([
 
 export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
   browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS,
-  ignoredRuntimeSelectors: Object.freeze(["GAMEFOUNDRY_AUTH_PROVIDER", "GAMEFOUNDRY_DB_PROVIDER"]),
   serverOnlySupabaseCount: SERVER_ONLY_SUPABASE_SECRET_KEYS.length,
 });
 
@@ -128,15 +125,15 @@ function missingEnvKeys(env, keys) {
 export function supabaseAuthDiagnostic(env = process.env) {
   const missing = missingEnvKeys(env, BROWSER_SAFE_SUPABASE_ENV_KEYS);
   return missing.length
-    ? `Supabase Auth provider is not configured. Missing browser-safe environment variables: ${missing.join(", ")}.`
-    : "Supabase Auth provider adapter is configured for the fixed runtime path.";
+    ? `Supabase Auth connection is not configured. Missing browser-safe environment variables: ${missing.join(", ")}.`
+    : "Supabase Auth connection adapter is configured for the fixed runtime path.";
 }
 
 export function supabasePostgresDiagnostic(env = process.env) {
   const missing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
   return missing.length
-    ? "Supabase Postgres provider is not configured. Add the Supabase URL and server-only database credentials on the server; server-only details are not exposed through browser APIs."
-    : "Supabase Postgres provider adapter is configured for the fixed runtime path.";
+    ? "Supabase Postgres connection is not configured. Add the Supabase URL and server-only database credentials on the server; server-only details are not exposed through browser APIs."
+    : "Supabase Postgres connection adapter is configured for the fixed runtime path.";
 }
 
 function supabaseUrl(env) {
@@ -212,7 +209,7 @@ function normalizeAuditFields(source, actorKey, timestamp) {
 function requireTableName(tableName) {
   const normalized = String(tableName || "").trim();
   if (!SUPABASE_POSTGRES_TABLES.includes(normalized)) {
-    throw new Error(`Supabase Postgres provider only supports ${SUPABASE_POSTGRES_TABLES.join(", ")} in this adapter surface.`);
+    throw new Error(`Supabase Postgres connection only supports ${SUPABASE_POSTGRES_TABLES.join(", ")} in this adapter surface.`);
   }
   return normalized;
 }
@@ -268,19 +265,6 @@ function createRuntimeUlid(now = Date.now()) {
     remaining /= 32n;
   }
   return encoded + Array.from(randomBytes(16), (byte) => RUNTIME_ULID_ALPHABET[byte % 32]).join("").slice(0, 16);
-}
-
-function ignoredRuntimeSelectorDiagnostics(env) {
-  return PROVIDER_ENVIRONMENT_VARIABLES.ignoredRuntimeSelectors
-    .map((key) => ({
-      environmentVariable: key,
-      ignoredValue: envValue(env, key),
-    }))
-    .filter((entry) => entry.ignoredValue)
-    .map((entry) => ({
-      ...entry,
-      remediation: `${entry.environmentVariable} is ignored by the runtime. The server uses Supabase Auth and Supabase Postgres only.`,
-    }));
 }
 
 function supabaseMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing) {
@@ -340,20 +324,20 @@ function createSupabasePreflight({
   const checks = [
     {
       id: "runtime-auth-provider",
-      label: "Runtime auth provider",
+      label: "Runtime account connection",
       providerId: auth.id,
       status: auth.supported ? "PASS" : "FAIL",
       summary: auth.supported
-        ? `Runtime auth provider path is ${auth.id}.`
+        ? `Runtime account connection path is ${auth.id}.`
         : auth.diagnostic,
     },
     {
       id: "runtime-database-provider",
-      label: "Runtime database provider",
+      label: "Runtime product data connection",
       providerId: database.id,
       status: database.supported ? "PASS" : "FAIL",
       summary: database.supported
-        ? `Runtime database provider path is ${database.id}.`
+        ? `Runtime product data connection path is ${database.id}.`
         : database.diagnostic,
     },
     {
@@ -480,7 +464,7 @@ export class SupabaseAuthProviderAdapter {
       throw new Error(supabaseAuthDiagnostic(this.env));
     }
     if (typeof this.fetchImpl !== "function") {
-      throw new Error("Supabase Auth provider requires a server fetch implementation.");
+      throw new Error("Supabase Auth connection requires a server fetch implementation.");
     }
   }
 
@@ -621,7 +605,7 @@ export class SupabasePostgresProviderAdapter {
       throw new Error(this.diagnostic());
     }
     if (typeof this.fetchImpl !== "function") {
-      throw new Error("Supabase Postgres provider requires a server fetch implementation.");
+      throw new Error("Supabase Postgres connection requires a server fetch implementation.");
     }
   }
 
@@ -947,8 +931,8 @@ export function createProviderContractSnapshot(env = process.env) {
     id: DEFAULT_DATABASE_PROVIDER_ID,
     supported: SUPPORTED_DATABASE_PROVIDERS.includes(DEFAULT_DATABASE_PROVIDER_ID),
   };
-  const ignoredRuntimeSelectors = ignoredRuntimeSelectorDiagnostics(env);
-  const diagnostics = ignoredRuntimeSelectors.map((entry) => entry.remediation);
+  const ignoredRuntimeSelectors = [];
+  const diagnostics = [];
   const supabaseAuthMissing = missingEnvKeys(env, BROWSER_SAFE_SUPABASE_ENV_KEYS);
   const supabasePostgresMissing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
   const supabasePostgresReadiness = createSupabasePostgresReadiness(env);
@@ -993,7 +977,7 @@ export function createProviderContractSnapshot(env = process.env) {
     activeProviders: {
       authProviderId: SUPABASE_AUTH_PROVIDER_ID,
       databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
-      diagnostic: "Runtime provider path is fixed to Supabase Auth and Supabase Postgres. Legacy provider selector environment variables are ignored.",
+      diagnostic: "Runtime account and product data connections are fixed to the configured server services.",
       status: runtimeProviderPathReady ? "ready" : "failed",
     },
     activationReadiness: {
@@ -1042,7 +1026,6 @@ export function createProviderContractSnapshot(env = process.env) {
       providerFailures,
       requiredEnvironmentVariables: {
         browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS.slice(),
-        ignoredRuntimeSelectors: PROVIDER_ENVIRONMENT_VARIABLES.ignoredRuntimeSelectors.slice(),
         serverOnlySupabaseCount: PROVIDER_ENVIRONMENT_VARIABLES.serverOnlySupabaseCount,
       },
       secretValuesExposed: false,

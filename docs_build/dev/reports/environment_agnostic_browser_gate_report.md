@@ -30,7 +30,6 @@ Status: PASS
 - `admin/site-setup.html` - Admin setup still contains controlled Local DB reseed diagnostics for transition validation. Follow-up: Remove reseed wording once DEV setup bootstrap no longer needs Local DB transition checks.
 - `assets/theme-v2/js/local-db-page-data.js` - Legacy Admin Local DB page renderer remains for Admin diagnostic pages only. Follow-up: Delete after Admin identity/status pages use service-contract renderers.
 - `src/engine/api/local-db-api-client.js` - Legacy Admin DB Viewer client wraps server API endpoints and is not an Account/product browser data source. Follow-up: Rename or replace when DB Viewer routes are no longer named local-db.
-- `src/dev-runtime/server/local-api-router.mjs` - Server retains lazy SQLite/Local DB helpers for legacy Admin/test endpoints, not for active product-data fallback. Follow-up: Remove the legacy adapter when Admin DB Viewer and old tests finish the service-contract migration.
 - `toolbox/toolRegistry.js` - Compatibility registry wrapper still imports dev-runtime seed metadata for older tests/scripts, while active Toolbox UI uses the registry service API. Follow-up: Delete after legacy registry consumers move to the server registry service contract.
 
 ## Non-Branching Deployment Mentions Reviewed

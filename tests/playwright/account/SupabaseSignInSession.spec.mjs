@@ -4,8 +4,6 @@ import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const AUTH_ENV_KEYS = Object.freeze([
-  "GAMEFOUNDRY_AUTH_PROVIDER",
-  "GAMEFOUNDRY_DB_PROVIDER",
   "GAMEFOUNDRY_SUPABASE_ANON_KEY",
   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
   "GAMEFOUNDRY_SUPABASE_URL",
@@ -30,8 +28,6 @@ function restoreEnv(previousEnv) {
 
 function useFakeSupabaseEnv(baseUrl) {
   const previousEnv = Object.fromEntries(AUTH_ENV_KEYS.map((key) => [key, process.env[key]]));
-  process.env.GAMEFOUNDRY_AUTH_PROVIDER = "supabase-auth";
-  process.env.GAMEFOUNDRY_DB_PROVIDER = "supabase-postgres";
   process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "playwright-anon-key";
   process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "playwright-service-role-key";
   process.env.GAMEFOUNDRY_SUPABASE_URL = baseUrl;

@@ -20,8 +20,6 @@ Changed runtime JS files covered:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(13%) assets/theme-v2/js/local-db-page-data.js - executed lines 237/237; executed functions 3/23
-(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
 
 Files with executed line/function counts where available:
 (13%) assets/theme-v2/js/local-db-page-data.js - executed lines 237/237; executed functions 3/23
@@ -49,8 +47,6 @@ Uncovered or low-coverage changed JS files:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) toolbox/assets/assets.js - WARNING: uncovered changed runtime JS file; advisory only
-(13%) assets/theme-v2/js/local-db-page-data.js - WARNING: advisory low coverage; executed lines 237/237
-(18%) assets/theme-v2/js/account-page-data.js - WARNING: advisory low coverage; executed lines 150/150
 
 Changed JS files considered:
 (0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
@@ -59,8 +55,7 @@ Changed JS files considered:
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/SupabaseProductDataCutover.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/account/SupabaseSignInSession.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) toolbox/assets/assets.js - changed JS file not collected as browser runtime coverage
-(13%) assets/theme-v2/js/local-db-page-data.js - changed JS file with browser V8 coverage
-(18%) assets/theme-v2/js/account-page-data.js - changed JS file with browser V8 coverage

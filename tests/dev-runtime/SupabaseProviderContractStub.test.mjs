@@ -310,11 +310,8 @@ function fakeSupabaseIdentityTables(overrides = {}) {
   };
 }
 
-test("Supabase provider contract ignores legacy Local DB selector variables", () => {
-  const snapshot = createProviderContractSnapshot({
-    GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
-  });
+test("Supabase provider contract does not require provider selector variables", () => {
+  const snapshot = createProviderContractSnapshot({});
   assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
   assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
   assert.equal(snapshot.activeProviders.status, "failed");
@@ -358,14 +355,7 @@ test("Supabase provider contract ignores legacy Local DB selector variables", ()
     "missing-configuration",
     "missing-configuration",
   ]);
-  assert.deepEqual(snapshot.providerDiagnostics.ignoredRuntimeSelectors.map((entry) => entry.environmentVariable), [
-    "GAMEFOUNDRY_AUTH_PROVIDER",
-    "GAMEFOUNDRY_DB_PROVIDER",
-  ]);
-  assert.deepEqual(snapshot.providerDiagnostics.ignoredRuntimeSelectors.map((entry) => entry.ignoredValue), [
-    "local-db",
-    "local-db",
-  ]);
+  assert.deepEqual(snapshot.providerDiagnostics.ignoredRuntimeSelectors, []);
   assert.equal(snapshot.runtimeActivation.browserReceivesServiceRoleSecrets, false);
   assert.equal(snapshot.runtimeActivation.runtimeProviderPathFixed, true);
   assert.equal(snapshot.runtimeActivation.runtimeProviderPathReady, false);
@@ -425,10 +415,7 @@ test("Supabase provider contract ignores legacy Local DB selector variables", ()
 });
 
 test("Supabase stubs fail visibly when selected without configuration", () => {
-  const env = {
-    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
-  };
+  const env = {};
   const snapshot = createProviderContractSnapshot(env);
   assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
   assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
@@ -466,8 +453,8 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
     "supabase-postgres",
   ]);
   assert.equal(JSON.stringify(snapshot).includes("rollback"), false);
-  assert.match(snapshot.supabaseAuth.diagnostic, /Supabase Auth provider is not configured/);
-  assert.match(snapshot.supabasePostgres.diagnostic, /Supabase Postgres provider is not configured/);
+  assert.match(snapshot.supabaseAuth.diagnostic, /Supabase Auth connection is not configured/);
+  assert.match(snapshot.supabasePostgres.diagnostic, /Supabase Postgres connection is not configured/);
   assert.deepEqual(snapshot.supabaseAuth.missingBrowserSafeEnvironmentVariables, [
     "GAMEFOUNDRY_SUPABASE_URL",
     "GAMEFOUNDRY_SUPABASE_ANON_KEY",
@@ -503,13 +490,13 @@ test("Default startup selects Supabase Auth and Supabase Postgres product data w
       assert.equal(status.status, "unavailable");
       assert.equal(status.noAutomaticFallback, true);
       assert.equal(status.message, "The site is currently unavailable. Please try again later.");
-      assert.match(status.operatorDiagnostic, /Supabase Auth provider is not configured/);
+      assert.match(status.operatorDiagnostic, /Supabase Auth connection is not configured/);
 
       const session = await apiPayload(server.baseUrl, "/api/session/current");
       assert.equal(session.status, 200);
       assert.equal(session.payload.ok, true);
       assert.equal(session.payload.data.authenticated, false);
-      assert.match(session.payload.data.diagnostic, /Supabase Auth provider is not configured/);
+      assert.match(session.payload.data.diagnostic, /Supabase Auth connection is not configured/);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "creator@example.test",
@@ -620,22 +607,20 @@ test("Fixed Supabase providers keep diagnostics available and block product data
       assert.equal(session.status, 200);
       assert.equal(session.payload.ok, true);
       assert.equal(session.payload.data.authenticated, false);
-      assert.match(session.payload.data.diagnostic, /Supabase Auth provider is not configured/);
+      assert.match(session.payload.data.diagnostic, /Supabase Auth connection is not configured/);
 
-      const snapshot = await apiPayload(server.baseUrl, "/api/local-db/snapshot");
+      const snapshot = await apiPayload(server.baseUrl, "/api/product-data/snapshot");
       assert.equal(snapshot.status, 500);
       assert.equal(snapshot.payload.ok, false);
-      assert.match(snapshot.payload.error, /Supabase Postgres provider is not configured/);
+      assert.match(snapshot.payload.error, /Supabase Postgres connection is not configured/);
     } finally {
       await server.close();
     }
   });
 });
 
-test("Legacy Local DB product data selector is ignored and missing Supabase config fails safely", async () => {
+test("Missing Supabase config fails safely without product data fallback", async () => {
   await withEnv({
-    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
     GAMEFOUNDRY_SUPABASE_URL: undefined,
   }, async () => {
@@ -654,7 +639,7 @@ test("Legacy Local DB product data selector is ignored and missing Supabase conf
       assert.equal(status.supabaseProductDataActive, true);
       assert.equal(status.noAutomaticFallback, true);
       assert.equal(status.message, "The site is currently unavailable. Please try again later.");
-      assert.match(status.operatorDiagnostic, /Supabase Auth provider is not configured/);
+      assert.match(status.operatorDiagnostic, /Supabase Auth connection is not configured/);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, false);
@@ -670,12 +655,12 @@ test("Legacy Local DB product data selector is ignored and missing Supabase conf
       assert.equal(session.status, 200);
       assert.equal(session.payload.ok, true);
       assert.equal(session.payload.data.authenticated, false);
-      assert.match(session.payload.data.diagnostic, /Supabase Auth provider is not configured/);
+      assert.match(session.payload.data.diagnostic, /Supabase Auth connection is not configured/);
 
-      const snapshot = await apiPayload(server.baseUrl, "/api/local-db/snapshot");
+      const snapshot = await apiPayload(server.baseUrl, "/api/product-data/snapshot");
       assert.equal(snapshot.status, 500);
       assert.equal(snapshot.payload.ok, false);
-      assert.match(snapshot.payload.error, /Supabase Postgres provider is not configured/);
+      assert.match(snapshot.payload.error, /Supabase Postgres connection is not configured/);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "creator@example.test",
@@ -1243,7 +1228,7 @@ test("Supabase Auth selected path reads users roles user_roles and product data 
       assert.equal(current.authenticated, true);
       assert.equal(current.userKey, MOCK_DB_KEYS.users.user1);
 
-      const snapshot = await apiJson(server.baseUrl, "/api/local-db/snapshot");
+      const snapshot = await apiJson(server.baseUrl, "/api/product-data/snapshot");
       assert.equal(Array.isArray(snapshot.tables.asset_library_items), true);
       assert.equal(Array.isArray(snapshot.tables.game_input_mappings), true);
 
@@ -1416,11 +1401,11 @@ test("Supabase stubs do not expose server-only secret names or values through th
 
 test("Supabase Auth adapter fails visibly when selected without configuration", async () => {
   const auth = new SupabaseAuthProviderStub({ env: { GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth" } });
-  await assert.rejects(() => auth.getCurrentUser(), /Supabase Auth provider is not configured/);
-  await assert.rejects(() => auth.signIn(), /Supabase Auth provider is not configured/);
-  await assert.rejects(() => auth.signOut(), /Supabase Auth provider is not configured/);
-  await assert.rejects(() => auth.createAccount(), /Supabase Auth provider is not configured/);
-  await assert.rejects(() => auth.requestPasswordReset(), /Supabase Auth provider is not configured/);
+  await assert.rejects(() => auth.getCurrentUser(), /Supabase Auth connection is not configured/);
+  await assert.rejects(() => auth.signIn(), /Supabase Auth connection is not configured/);
+  await assert.rejects(() => auth.signOut(), /Supabase Auth connection is not configured/);
+  await assert.rejects(() => auth.createAccount(), /Supabase Auth connection is not configured/);
+  await assert.rejects(() => auth.requestPasswordReset(), /Supabase Auth connection is not configured/);
   assert.throws(() => auth.requireRole(), /future app user mapping adapter/);
 });
 
@@ -1471,17 +1456,17 @@ test("Supabase Auth adapter uses service role only for server-owned account crea
 
 test("Supabase Postgres adapter fails visibly when selected without configuration", async () => {
   const database = new SupabasePostgresProviderStub({ env: { GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres" } });
-  assert.throws(() => database.connect(), /Supabase Postgres provider is not configured/);
-  await assert.rejects(() => database.getUsers(), /Supabase Postgres provider is not configured/);
-  await assert.rejects(() => database.getRoles(), /Supabase Postgres provider is not configured/);
-  await assert.rejects(() => database.getUserRoles(), /Supabase Postgres provider is not configured/);
-  await assert.rejects(() => database.initializeIdentity(), /Supabase Postgres provider is not configured/);
-  await assert.rejects(() => database.deleteUserByKey("user-key"), /Supabase Postgres provider is not configured/);
-  await assert.rejects(() => database.deleteUserRolesForUserKey("user-key"), /Supabase Postgres provider is not configured/);
-  await assert.rejects(() => database.reassignRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres provider is not configured/);
-  await assert.rejects(() => database.reassignUserRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres provider is not configured/);
-  assert.throws(() => database.runSiteSetup(), /Supabase Postgres provider is not configured/);
-  await assert.rejects(() => database.getDbViewerSnapshot(), /Supabase Postgres provider is not configured/);
+  assert.throws(() => database.connect(), /Supabase Postgres connection is not configured/);
+  await assert.rejects(() => database.getUsers(), /Supabase Postgres connection is not configured/);
+  await assert.rejects(() => database.getRoles(), /Supabase Postgres connection is not configured/);
+  await assert.rejects(() => database.getUserRoles(), /Supabase Postgres connection is not configured/);
+  await assert.rejects(() => database.initializeIdentity(), /Supabase Postgres connection is not configured/);
+  await assert.rejects(() => database.deleteUserByKey("user-key"), /Supabase Postgres connection is not configured/);
+  await assert.rejects(() => database.deleteUserRolesForUserKey("user-key"), /Supabase Postgres connection is not configured/);
+  await assert.rejects(() => database.reassignRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres connection is not configured/);
+  await assert.rejects(() => database.reassignUserRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres connection is not configured/);
+  assert.throws(() => database.runSiteSetup(), /Supabase Postgres connection is not configured/);
+  await assert.rejects(() => database.getDbViewerSnapshot(), /Supabase Postgres connection is not configured/);
 });
 
 test("Supabase Postgres adapter supports identity tables and readiness when configured", async () => {
@@ -1767,7 +1752,7 @@ test("Admin identity setup API fails visibly when Supabase Postgres is selected 
       });
       assert.equal(response.status, 500);
       assert.equal(response.payload.ok, false);
-      assert.match(response.payload.error, /Supabase Postgres provider is not configured/);
+      assert.match(response.payload.error, /Supabase Postgres connection is not configured/);
     } finally {
       await server.close();
     }
@@ -1817,11 +1802,8 @@ test("Supabase activation diagnostics report readiness for fixed providers", () 
   assert.equal(JSON.stringify(snapshot).includes("server-only-database-url-placeholder"), false);
 });
 
-test("Unsupported legacy provider selector values are ignored without falling back to Local DB", () => {
-  const snapshot = createProviderContractSnapshot({
-    GAMEFOUNDRY_AUTH_PROVIDER: "unknown-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "unknown-db",
-  });
+test("Unsupported provider selector values are not contract inputs", () => {
+  const snapshot = createProviderContractSnapshot({});
 
   assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
   assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
@@ -1835,10 +1817,7 @@ test("Unsupported legacy provider selector values are ignored without falling ba
     "missing-configuration",
     "missing-configuration",
   ]);
-  assert.deepEqual(snapshot.providerDiagnostics.ignoredRuntimeSelectors.map((entry) => entry.ignoredValue), [
-    "unknown-auth",
-    "unknown-db",
-  ]);
+  assert.deepEqual(snapshot.providerDiagnostics.ignoredRuntimeSelectors, []);
   assert.equal(JSON.stringify(snapshot).includes("rollback"), false);
 });
 

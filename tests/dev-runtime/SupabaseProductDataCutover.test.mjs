@@ -224,8 +224,6 @@ async function apiJson(baseUrl, pathName, options = {}) {
 test("Supabase-selected product routes bootstrap Toolbox metadata and read DB snapshot from Supabase", async () => {
   const fakeSupabase = await startFakeSupabaseProductServer();
   await withEnv({
-    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -241,7 +239,7 @@ test("Supabase-selected product routes bootstrap Toolbox metadata and read DB sn
       assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path === "/rest/v1/toolbox_tool_metadata?on_conflict=key"), true);
       assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path === "/rest/v1/toolbox_tool_planning?on_conflict=key"), true);
 
-      const snapshot = await apiJson(server.baseUrl, "/api/local-db/snapshot");
+      const snapshot = await apiJson(server.baseUrl, "/api/product-data/snapshot");
       assert.equal(snapshot.source, "supabase-postgres");
       assert.equal(snapshot.provider.databaseProviderId, "supabase-postgres");
       assert.equal(snapshot.tables.toolbox_tool_metadata.length, fakeSupabase.tables.toolbox_tool_metadata.length);
@@ -253,10 +251,23 @@ test("Supabase-selected product routes bootstrap Toolbox metadata and read DB sn
   await fakeSupabase.close();
 });
 
-test("Legacy Local DB provider selectors are ignored by Toolbox vote data routes", async () => {
+test("Deprecated local-db and mock-db endpoints fail visibly without product data fallback", async () => {
+  const server = await startApiServer();
+  try {
+    for (const pathName of ["/api/local-db/snapshot", "/api/mock-db/snapshot"]) {
+      const response = await fetch(`${server.baseUrl}${pathName}`);
+      const payload = await response.json();
+      assert.equal(response.status, 410);
+      assert.equal(payload.ok, false);
+      assert.match(payload.error, /Deprecated database endpoint is disabled/);
+    }
+  } finally {
+    await server.close();
+  }
+});
+
+test("Missing product data connection fails visibly for Toolbox vote data routes", async () => {
   await withEnv({
-    GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
-    GAMEFOUNDRY_DB_PROVIDER: "local-db",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: undefined,
     GAMEFOUNDRY_SUPABASE_URL: undefined,
@@ -267,7 +278,7 @@ test("Legacy Local DB provider selectors are ignored by Toolbox vote data routes
       const payload = await response.json();
       assert.equal(response.status, 500);
       assert.equal(payload.ok, false);
-      assert.match(payload.error, /Supabase Postgres provider is not configured/);
+      assert.match(payload.error, /Supabase Postgres connection is not configured/);
     } finally {
       await server.close();
     }
@@ -277,8 +288,6 @@ test("Legacy Local DB provider selectors are ignored by Toolbox vote data routes
 test("Supabase-selected Toolbox vote writes use server-owned keys and Supabase tables", async () => {
   const fakeSupabase = await startFakeSupabaseProductServer();
   await withEnv({
-    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
@@ -313,8 +322,6 @@ test("Supabase-selected Toolbox vote writes use server-owned keys and Supabase t
 test("Supabase-selected toolbox repositories open and persist through product tables", async () => {
   const fakeSupabase = await startFakeSupabaseProductServer();
   await withEnv({
-    GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
-    GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,

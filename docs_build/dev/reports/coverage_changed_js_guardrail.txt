@@ -9,12 +9,8 @@ Changed runtime JS files considered:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(13%) assets/theme-v2/js/local-db-page-data.js - executed lines 237/237; executed functions 3/23
-(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
 
 Guardrail warnings:
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) toolbox/assets/assets.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(13%) assets/theme-v2/js/local-db-page-data.js - WARNING: advisory low coverage below 50%; executed lines 237/237; executed functions 3/23
-(18%) assets/theme-v2/js/account-page-data.js - WARNING: advisory low coverage below 50%; executed lines 150/150; executed functions 3/17

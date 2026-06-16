@@ -1,10 +1,6 @@
 import process from "node:process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
-import {
-  SUPABASE_AUTH_PROVIDER_ID,
-  SUPABASE_POSTGRES_PROVIDER_ID,
-} from "../src/dev-runtime/auth/provider-contract-stubs.mjs";
 import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
 
 function loadEnvLocal() {
@@ -41,26 +37,22 @@ function loadEnvLocal() {
 
 const envLocal = loadEnvLocal();
 
-function configureLocalApiProviders() {
-  const previousAuthProvider = process.env.GAMEFOUNDRY_AUTH_PROVIDER || "";
-  const previousDbProvider = process.env.GAMEFOUNDRY_DB_PROVIDER || "";
-  process.env.GAMEFOUNDRY_AUTH_PROVIDER = SUPABASE_AUTH_PROVIDER_ID;
-  process.env.GAMEFOUNDRY_DB_PROVIDER = SUPABASE_POSTGRES_PROVIDER_ID;
+function connectionStatus(requiredKeys) {
+  const missingKeys = requiredKeys.filter((key) => !String(process.env[key] || "").trim());
   return {
-    authProvider: process.env.GAMEFOUNDRY_AUTH_PROVIDER || "",
-    dbProvider: process.env.GAMEFOUNDRY_DB_PROVIDER || "",
-    ignoredAuthProvider:
-      previousAuthProvider && previousAuthProvider !== SUPABASE_AUTH_PROVIDER_ID
-        ? previousAuthProvider
-        : "",
-    ignoredDbProvider:
-      previousDbProvider && previousDbProvider !== SUPABASE_POSTGRES_PROVIDER_ID
-        ? previousDbProvider
-        : "",
+    ready: missingKeys.length === 0,
+    missingKeys,
   };
 }
 
-const providerSelection = configureLocalApiProviders();
+const accountConnection = connectionStatus([
+  "GAMEFOUNDRY_SUPABASE_URL",
+  "GAMEFOUNDRY_SUPABASE_ANON_KEY",
+]);
+const productDataConnection = connectionStatus([
+  "GAMEFOUNDRY_SUPABASE_URL",
+  "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+]);
 const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || "127.0.0.1";
 const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
 
@@ -70,14 +62,8 @@ console.log(`GameFoundry API-backed local server running at ${localServer.baseUr
 console.log(envLocal.loaded
   ? `.env.local loaded for local API runtime (${envLocal.loadedKeys} key(s) applied).`
   : ".env.local was not found for local API runtime.");
-console.log(`Local API auth provider: ${providerSelection.authProvider || "(unset)"}.`);
-console.log(`Local API product data provider: ${providerSelection.dbProvider || "(unset)"}.`);
-if (providerSelection.ignoredAuthProvider) {
-  console.log(`Local API ignored unsupported auth provider ${providerSelection.ignoredAuthProvider}; Supabase Auth is required.`);
-}
-if (providerSelection.ignoredDbProvider) {
-  console.log(`Local API ignored unsupported product data provider ${providerSelection.ignoredDbProvider}; Supabase Postgres is required.`);
-}
+console.log(`Local API account connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
+console.log(`Local API product data connection: ${productDataConnection.ready ? "configured" : `missing ${productDataConnection.missingKeys.join(", ")}`}.`);
 console.log("Press Ctrl+C to stop.");
 
 for (const signal of ["SIGINT", "SIGTERM"]) {

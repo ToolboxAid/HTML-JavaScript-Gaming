@@ -1,7 +1,6 @@
 import fs from "node:fs/promises";
 import path from "node:path";
 import http from "node:http";
-import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { handleAdminNotesDirectoryRequest } from "../../src/dev-runtime/admin/admin-notes-directory.mjs";
 import { localAdminNotesHeaderPartialPath } from "../../src/dev-runtime/admin/admin-notes-menu.mjs";
@@ -10,7 +9,6 @@ import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-rou
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
-let repoServerRunId = 0;
 
 function contentTypeForPath(filePath) {
   const extension = path.extname(filePath).toLowerCase();
@@ -54,23 +52,6 @@ function resolveBrowserRoutePath(decodedPath) {
 }
 
 export async function startRepoServer() {
-  const previousAuthProvider = process.env.GAMEFOUNDRY_AUTH_PROVIDER;
-  const previousDbProvider = process.env.GAMEFOUNDRY_DB_PROVIDER;
-  const defaultAuthProvider = !previousAuthProvider && (!previousDbProvider || previousDbProvider === "local-db");
-  const defaultDbProvider = !previousDbProvider && (!previousAuthProvider || previousAuthProvider === "local-db");
-  if (defaultAuthProvider) {
-    process.env.GAMEFOUNDRY_AUTH_PROVIDER = "local-db";
-  }
-  if (defaultDbProvider) {
-    process.env.GAMEFOUNDRY_DB_PROVIDER = "local-db";
-  }
-  const previousLocalDbPath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
-  let localDbPath = "";
-  if (!previousLocalDbPath) {
-    repoServerRunId += 1;
-    localDbPath = path.join(repoRoot, "tmp", "local-db", `playwright-repo-server-${process.pid}-${repoServerRunId}.sqlite`);
-    process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbPath;
-  }
   const handleLocalApiRequest = createLocalApiRouter();
   const server = http.createServer(async (request, response) => {
     try {
@@ -130,24 +111,6 @@ export async function startRepoServer() {
         });
         server.closeIdleConnections?.();
       });
-      if (!previousLocalDbPath) {
-        await fs.rm(localDbPath, { force: true });
-        delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
-      }
-      if (defaultAuthProvider) {
-        if (previousAuthProvider === undefined) {
-          delete process.env.GAMEFOUNDRY_AUTH_PROVIDER;
-        } else {
-          process.env.GAMEFOUNDRY_AUTH_PROVIDER = previousAuthProvider;
-        }
-      }
-      if (defaultDbProvider) {
-        if (previousDbProvider === undefined) {
-          delete process.env.GAMEFOUNDRY_DB_PROVIDER;
-        } else {
-          process.env.GAMEFOUNDRY_DB_PROVIDER = previousDbProvider;
-        }
-      }
     }
   };
 }

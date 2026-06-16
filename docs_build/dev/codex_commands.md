@@ -2072,3 +2072,48 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26167_183-single-service-contract-validation_delta.zip`
+
+
+## PR_26167_184-delete-sqlite-local-db-runtime-debt
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Removed active SQLite/Local DB adapter code from `src/dev-runtime/server/local-api-router.mjs`.
+- Replaced active `/api/local-db`, `/api/mock-db`, setup reseed, and mock-db-state mutations with visible deprecated endpoint responses.
+- Added `/api/product-data/snapshot` for server product-data snapshots.
+- Removed local API startup provider-selector env writes and switched startup output to configured connection wording.
+- Removed provider selector env reads from the auth/provider contract snapshot.
+- Updated `.env.example` to describe configured account/product-data connections.
+- Updated browser-env validation, targeted API tests, and account Playwright setup for the single connection path.
+
+Validation:
+- `node --check scripts/start-local-api-server.mjs`
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
+- `node --check scripts/validate-browser-env-agnostic.mjs`
+- `node --check tests/dev-runtime/SupabaseProductDataCutover.test.mjs`
+- `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `node --check tests/helpers/playwrightRepoServer.mjs`
+- `node --check tests/playwright/account/SupabaseSignInSession.spec.mjs`
+- `node --test tests/dev-runtime/SupabaseProductDataCutover.test.mjs`
+- `node --test --test-name-pattern "provider contract does not require|Supabase stubs fail visibly|Fixed Supabase providers keep diagnostics|Missing Supabase config fails safely|selected path reads users|Unsupported provider selector" tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- Initial full-file `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs` attempt timed out; the PR-impacted subset passed.
+- `npm run validate:supabase-dev`
+- `npm run dev:local-api` startup capture passed; output had connection status lines and no SQLite/provider-selection wording.
+- `npm run validate:browser-env-agnostic`
+- `npx playwright test tests/playwright/account/SupabaseSignInSession.spec.mjs --config=playwright.config.cjs`
+- `npx playwright test tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs --config=playwright.config.cjs`
+- `npm run test:workspace-v2` passed. Command name is legacy and user-facing language is Project Workspace.
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_184-delete-sqlite-local-db-runtime-debt.md`
+- `docs_build/dev/reports/environment_agnostic_browser_gate_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_184-delete-sqlite-local-db-runtime-debt_delta.zip`

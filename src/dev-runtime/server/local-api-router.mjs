@@ -1,6 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { mkdirSync, readFileSync, readdirSync } from "node:fs";
-import { createRequire } from "node:module";
+import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import {
@@ -69,7 +68,6 @@ import {
 } from "../persistence/tool-repositories/game-workspace-mock-repository.js";
 import {
   MOCK_DB_KEYS,
-  MOCK_DB_SESSION_MODES,
   createMockDbAuditFields,
   getMockDbTableSchemas,
   getMockDbToolGroups,
@@ -78,8 +76,6 @@ import {
 import { createServerSeedTables } from "../seed/server-seed-loader.mjs";
 import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
 import {
-  LOCAL_AUTH_PROVIDER_ID,
-  LOCAL_DATABASE_PROVIDER_ID,
   SUPABASE_AUTH_PROVIDER_ID,
   SUPABASE_POSTGRES_PROVIDER_ID,
   SUPABASE_POSTGRES_PRODUCT_TABLES,
@@ -90,8 +86,6 @@ import {
 
 export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
-const LOCAL_DB_MODE_ID = "local-db";
-const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
 const FIXED_ACCOUNT_SESSION_MODE = Object.freeze({
   adapterId: "supabase-postgres",
   adapterName: "SupabasePostgresProviderAdapter",
@@ -107,6 +101,7 @@ const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try 
 const AUTH_READY_MESSAGE = "Account service is available.";
 const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
 const PASSWORD_RESET_RATE_LIMIT_MESSAGE = "Too many reset requests. Please wait and try again later.";
+const DEPRECATED_LOCAL_DB_ENDPOINT_MESSAGE = "Deprecated database endpoint is disabled. Use the server API service contract routes.";
 const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
   description: "Default creator/player account role.",
   isSystemRole: false,
@@ -196,30 +191,22 @@ const LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS = Object.freeze([
 const DB_ADAPTER_CONTRACT = Object.freeze({
   contract: "GameFoundryDbAdapter",
   rule: SERVER_DATA_BOUNDARY_RULE,
-  environments: Object.freeze([
+  connections: Object.freeze([
     Object.freeze({
-      adapterId: "local-db",
-      adapterName: "LocalDbAdapter",
-      environment: "Local DB",
-      persistence: "Local DB",
-      selectableOnLocalLogin: true,
+      adapterId: "account-session",
+      adapterName: "SupabaseAuthProviderAdapter",
+      connection: "account",
+      persistence: "server account session",
+      selectableOnLocalLogin: false,
       status: "configured",
     }),
     Object.freeze({
-      adapterId: "uat-db",
-      adapterName: "ServerDbAdapter",
-      environment: "UAT",
-      persistence: "Physical DB",
+      adapterId: "product-data",
+      adapterName: "SupabasePostgresProviderAdapter",
+      connection: "product data",
+      persistence: "server product data",
       selectableOnLocalLogin: false,
-      status: "deployment-only",
-    }),
-    Object.freeze({
-      adapterId: "prod-db",
-      adapterName: "ServerDbAdapter",
-      environment: "Prod",
-      persistence: "Physical DB",
-      selectableOnLocalLogin: false,
-      status: "deployment-only",
+      status: "configured",
     }),
   ]),
 });
@@ -234,7 +221,7 @@ function providerFailureMessage(providerContract, providerId) {
   if (failure?.remediation) {
     return failure.remediation;
   }
-  return `Runtime provider path is fixed to Supabase Auth and Supabase Postgres; ${providerId} is not available for this server API route.`;
+  return `Runtime connections are fixed to the configured account and product data services; ${providerId} is not available for this server API route.`;
 }
 
 function readDocsBuildGuestSeedPackages() {
@@ -477,47 +464,6 @@ function runtimeGeneratedKeyForSource(source) {
   return RUNTIME_SOURCE_KEYS.get(keySource);
 }
 
-function localDbStoragePath() {
-  return process.env.GAMEFOUNDRY_LOCAL_DB_PATH ||
-    path.join(process.cwd(), "tmp", "local-db", "local-db-state.sqlite");
-}
-
-function sqliteIdentifier(value) {
-  const identifier = String(value || "");
-  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(identifier)) {
-    throw new Error(`Unsafe SQLite identifier: ${identifier || "missing"}.`);
-  }
-  return `"${identifier}"`;
-}
-
-let DatabaseSyncConstructor = null;
-
-function databaseSyncConstructor() {
-  if (!DatabaseSyncConstructor) {
-    const require = createRequire(import.meta.url);
-    DatabaseSyncConstructor = require("node:sqlite").DatabaseSync;
-  }
-  return DatabaseSyncConstructor;
-}
-
-function serializeSqliteValue(value) {
-  if (value === undefined) {
-    return null;
-  }
-  return JSON.stringify(value);
-}
-
-function deserializeSqliteValue(value) {
-  if (value === null || value === undefined) {
-    return undefined;
-  }
-  try {
-    return JSON.parse(value);
-  } catch {
-    return value;
-  }
-}
-
 function sendJson(response, statusCode, payload) {
   response.statusCode = statusCode;
   response.setHeader("Content-Type", "application/json; charset=utf-8");
@@ -547,6 +493,12 @@ function fail(response, statusCode, error) {
   });
 }
 
+function deprecatedDatabaseEndpointError(pathname = "") {
+  const error = new Error(`${DEPRECATED_LOCAL_DB_ENDPOINT_MESSAGE}${pathname ? ` (${pathname})` : ""}`);
+  error.statusCode = 410;
+  return error;
+}
+
 function logSafeAuthOperatorDiagnostic(request, requestUrl, error) {
   const route = `${request?.method || "REQUEST"} ${requestUrl?.pathname || "/api/auth"}`;
   if (!String(requestUrl?.pathname || "").startsWith("/api/auth/")) {
@@ -570,16 +522,6 @@ async function readRequestJson(request) {
   return raw ? JSON.parse(raw) : {};
 }
 
-function roleSlugsForUserKey(tables, userKey) {
-  const roleByKey = new Map((tables.roles || [])
-    .filter((role) => role.isActive !== false)
-    .map((role) => [role.key, role.roleSlug || role.name]));
-  return (tables.user_roles || [])
-    .filter((row) => row.userKey === userKey && roleByKey.has(row.roleKey))
-    .map((row) => roleByKey.get(row.roleKey))
-    .filter(Boolean);
-}
-
 function roleSlugsAndDiagnosticsForUserKey(tables, userKey) {
   const roleByKey = new Map((tables.roles || [])
     .filter((role) => role.isActive !== false)
@@ -596,12 +538,6 @@ function roleSlugsAndDiagnosticsForUserKey(tables, userKey) {
       .map((row) => roleByKey.get(row.roleKey))
       .filter(Boolean),
   };
-}
-
-function modeById(modeId) {
-  return MOCK_DB_SESSION_MODES.find((mode) => mode.id === modeId) ||
-    MOCK_DB_SESSION_MODES.find((mode) => mode.id === LOCAL_DB_MODE_ID) ||
-    MOCK_DB_SESSION_MODES[0];
 }
 
 function sessionModeMetadata(mode) {
@@ -650,39 +586,6 @@ function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
   }
   if (!roleSlugs.length || roleSlugs.includes("system")) {
     return guestSession(mode, `Selected ${providerLabel} user ${user.displayName || key} has no human login role.`);
-  }
-
-  return {
-    ...sessionModeMetadata(mode),
-    authenticated: true,
-    diagnostic: "",
-    displayName: user.displayName || key,
-    id: key,
-    isAdmin: roleSlugs.includes("admin"),
-    label: user.displayName || key,
-    roleSlugs,
-    userKey: key,
-  };
-}
-
-function sessionUserFromKey(tables, userKey, modeId) {
-  const mode = modeById(modeId);
-  const key = String(userKey || "");
-  if (mode.id !== LOCAL_DB_MODE_ID) {
-    return guestSession(mode, mode.diagnostic || LOCAL_DB_NOT_CONFIGURED);
-  }
-  if (!isUlidKey(key)) {
-    return guestSession(mode);
-  }
-
-  const user = (tables.users || []).find((record) => record.key === key && record.isActive !== false);
-  if (!user) {
-    return guestSession(mode, `Selected Local user key ${key} is missing from server Local DB users.`);
-  }
-
-  const roleSlugs = roleSlugsForUserKey(tables, key);
-  if (!roleSlugs.length || roleSlugs.includes("system")) {
-    return guestSession(mode, `Selected Local user ${user.displayName || key} has no human login role.`);
   }
 
   return {
@@ -768,8 +671,8 @@ function logAuthActionOperatorDiagnostic({
   const diagnostic = error ? sanitizedAuthErrorDiagnostic(error) : null;
   const fields = [
     `phase=${safeOperatorDiagnosticValue(phase, "unknown")}`,
-    `runtimeAuthProvider=${safeOperatorDiagnosticValue(status.authProviderId || status.providerId || "unknown")}`,
-    `runtimeDbProvider=${safeOperatorDiagnosticValue(status.databaseProviderId || "unknown")}`,
+    `runtimeAccountConnection=${safeOperatorDiagnosticValue(status.authProviderId || status.providerId || "unknown")}`,
+    `runtimeProductDataConnection=${safeOperatorDiagnosticValue(status.databaseProviderId || "unknown")}`,
     `supabaseConfigured=${operatorYesNo(status.configured ?? status.supabaseConfigPresent)}`,
     `identityTablesReady=${operatorYesNo(status.identityTablesReady)}`,
     `upstreamStatusCode=${authActionUpstreamStatusCode(payload, error)}`,
@@ -992,199 +895,13 @@ function productTablesFromSnapshot(snapshot) {
   ]));
 }
 
-class LocalDbAdapter {
-  constructor(mode) {
-    this.mode = mode;
-    this.storagePath = localDbStoragePath();
-  }
-
-  diagnostic(action, reason) {
-    return `${LOCAL_DB_NOT_CONFIGURED}. ${action} requires server local SQLite storage at ${this.storagePath}. ${reason}`;
-  }
-
-  ensureStorage(action) {
-    if (process.env.GAMEFOUNDRY_LOCAL_DB_DISABLE === "1") {
-      throw new Error(this.diagnostic(action, "Storage initialization is disabled by GAMEFOUNDRY_LOCAL_DB_DISABLE."));
-    }
-    try {
-      mkdirSync(path.dirname(this.storagePath), { recursive: true });
-    } catch (error) {
-      const reason = error instanceof Error ? error.message : String(error || "Unable to create storage directory.");
-      throw new Error(this.diagnostic(action, reason));
-    }
-  }
-
-  openDatabase(action) {
-    this.ensureStorage(action);
-    try {
-      const DatabaseSync = databaseSyncConstructor();
-      const db = new DatabaseSync(this.storagePath);
-      db.exec("PRAGMA foreign_keys = ON");
-      return db;
-    } catch (error) {
-      const reason = error instanceof Error ? error.message : String(error || "Unable to open SQLite database.");
-      throw new Error(this.diagnostic(action, reason));
-    }
-  }
-
-  tableColumns(db, tableName) {
-    const rows = db.prepare(`PRAGMA table_info(${sqliteIdentifier(tableName)})`).all();
-    return rows.map((row) => row.name);
-  }
-
-  fieldsForTable(tableName, records = []) {
-    const schemas = getMockDbTableSchemas();
-    const fields = [...(schemas[tableName] || [])];
-    records.forEach((record) => {
-      Object.keys(record || {}).forEach((field) => {
-        if (!fields.includes(field)) {
-          fields.push(field);
-        }
-      });
-    });
-    return fields;
-  }
-
-  ensureLogicalTable(db, tableName, records = []) {
-    const fields = this.fieldsForTable(tableName, records);
-    const columns = fields.map((field) => {
-      const fieldSql = sqliteIdentifier(field);
-      return field === "key" ? `${fieldSql} TEXT PRIMARY KEY` : `${fieldSql} TEXT`;
-    });
-    db.exec(`CREATE TABLE IF NOT EXISTS ${sqliteIdentifier(tableName)} (${columns.join(", ")})`);
-    const existingColumns = new Set(this.tableColumns(db, tableName));
-    fields.forEach((field) => {
-      if (!existingColumns.has(field)) {
-        db.exec(`ALTER TABLE ${sqliteIdentifier(tableName)} ADD COLUMN ${sqliteIdentifier(field)} TEXT`);
-      }
-    });
-    return fields;
-  }
-
-  ensureSchema(db, state = {}) {
-    db.exec("CREATE TABLE IF NOT EXISTS __gf_metadata (key TEXT PRIMARY KEY, value TEXT)");
-    const schemas = getMockDbTableSchemas();
-    Object.keys(schemas).sort().forEach((tableName) => {
-      this.ensureLogicalTable(db, tableName, state.tables?.[tableName] || []);
-    });
-  }
-
-  readMetadata(db, key) {
-    const row = db.prepare("SELECT value FROM __gf_metadata WHERE key = ?").get(key);
-    return row ? deserializeSqliteValue(row.value) : undefined;
-  }
-
-  writeMetadata(db, key, value) {
-    db.prepare("INSERT OR REPLACE INTO __gf_metadata (key, value) VALUES (?, ?)").run(key, serializeSqliteValue(value));
-  }
-
-  readState(action, fallbackState) {
-    let db;
-    try {
-      db = this.openDatabase(action);
-      this.ensureSchema(db, fallbackState);
-      if (this.readMetadata(db, "initialized") !== true) {
-        db.close();
-        db = null;
-        this.writeState(action, fallbackState);
-        return this.readState(action, fallbackState);
-      }
-      const schemas = getMockDbTableSchemas();
-      const tables = {};
-      Object.keys(schemas).sort().forEach((tableName) => {
-        const fields = this.tableColumns(db, tableName);
-        const selectableFields = fields.map(sqliteIdentifier).join(", ");
-        const rows = db.prepare(`SELECT ${selectableFields} FROM ${sqliteIdentifier(tableName)} ORDER BY ${sqliteIdentifier("key")}`).all();
-        tables[tableName] = rows.map((row) => {
-          const record = {};
-          fields.forEach((field) => {
-            const value = deserializeSqliteValue(row[field]);
-            if (value !== undefined) {
-              record[field] = value;
-            }
-          });
-          return record;
-        });
-      });
-      return {
-        ...clone(fallbackState || {}),
-        cleared: this.readMetadata(db, "cleared") === true,
-        tables,
-        version: 3,
-      };
-    } catch (error) {
-      if (error instanceof Error && error.message.includes(LOCAL_DB_NOT_CONFIGURED)) {
-        throw error;
-      }
-      const reason = error instanceof Error ? error.message : String(error || "Unable to read SQLite state.");
-      throw new Error(this.diagnostic(action, reason));
-    } finally {
-      if (db) {
-        db.close();
-      }
-    }
-  }
-
-  writeState(action, state) {
-    let db;
-    try {
-      db = this.openDatabase(action);
-      this.ensureSchema(db, state);
-      db.exec("BEGIN IMMEDIATE");
-      try {
-        const schemas = getMockDbTableSchemas();
-        Object.keys(schemas).sort().forEach((tableName) => {
-          const records = Array.isArray(state.tables?.[tableName]) ? state.tables[tableName] : [];
-          const fields = this.ensureLogicalTable(db, tableName, records);
-          db.exec(`DELETE FROM ${sqliteIdentifier(tableName)}`);
-          if (!records.length) {
-            return;
-          }
-          const fieldSql = fields.map(sqliteIdentifier).join(", ");
-          const placeholders = fields.map(() => "?").join(", ");
-          const insert = db.prepare(`INSERT OR REPLACE INTO ${sqliteIdentifier(tableName)} (${fieldSql}) VALUES (${placeholders})`);
-          records.forEach((record) => {
-            insert.run(...fields.map((field) => serializeSqliteValue(record?.[field])));
-          });
-        });
-        this.writeMetadata(db, "cleared", Boolean(state.cleared));
-        this.writeMetadata(db, "initialized", true);
-        this.writeMetadata(db, "version", 3);
-        db.exec("COMMIT");
-      } catch (error) {
-        try {
-          db.exec("ROLLBACK");
-        } catch {}
-        throw error;
-      }
-    } catch (error) {
-      if (error instanceof Error && error.message.includes(LOCAL_DB_NOT_CONFIGURED)) {
-        throw error;
-      }
-      const reason = error instanceof Error ? error.message : String(error || "Unable to write SQLite state.");
-      throw new Error(this.diagnostic(action, reason));
-    } finally {
-      if (db) {
-        db.close();
-      }
-    }
-  }
-
-  assertConfigured(action) {
-    this.ensureStorage(action);
-  }
-}
-
 class LocalDevDataSource {
   constructor() {
     this.repositoryCounter = 1;
     this.repositoryById = new Map();
-    this.sessionModeId = LOCAL_DB_MODE_ID;
+    this.sessionModeId = FIXED_ACCOUNT_SESSION_MODE.id;
     this.sessionUserKey = "";
     this.identityTablesCache = null;
-    this.adapterByModeId = new Map(
-      MOCK_DB_SESSION_MODES.map((mode) => [mode.id, new LocalDbAdapter(mode)]),
-    );
     this.applyStateSnapshot({
       cleared: false,
       tables: createServerSeedTables(),
@@ -1192,7 +909,7 @@ class LocalDevDataSource {
   }
 
   currentMode() {
-    return modeById(this.sessionModeId);
+    return FIXED_ACCOUNT_SESSION_MODE;
   }
 
   adapterContract() {
@@ -1206,19 +923,11 @@ class LocalDevDataSource {
     return createProviderContractSnapshot();
   }
 
-  assertLocalAuthProvider(action) {
-    throw new Error(`${action} is a legacy Local DB auth helper and is not available on the fixed Supabase runtime path.`);
-  }
-
-  assertLocalDatabaseProvider(action) {
-    throw new Error(`${action} is a legacy Local DB database helper and is not available on the fixed Supabase runtime path.`);
-  }
-
   assertSupabaseDatabaseProvider(action) {
     const providerContract = this.providerContract();
     const providerId = providerContract.activeProviders.databaseProviderId;
     if (providerId !== SUPABASE_POSTGRES_PROVIDER_ID) {
-      throw new Error(`${action} requires the fixed Supabase Postgres database provider. ${providerFailureMessage(providerContract, providerId)}`);
+      throw new Error(`${action} requires the configured product data connection. ${providerFailureMessage(providerContract, providerId)}`);
     }
   }
 
@@ -1232,16 +941,6 @@ class LocalDevDataSource {
   assertProductDatabaseProvider(action) {
     this.supabaseDatabaseAdapter(action);
     return SUPABASE_POSTGRES_PROVIDER_ID;
-  }
-
-  assertLocalRuntimeProviders(action) {
-    this.assertLocalAuthProvider(action);
-    this.assertLocalDatabaseProvider(action);
-  }
-
-  localAuthSession(action) {
-    this.assertLocalAuthProvider(action);
-    return sessionUserFromKey(this.standaloneTables, this.sessionUserKey, this.sessionModeId);
   }
 
   async readSupabaseIdentityTablesUnchecked(action) {
@@ -1298,14 +997,14 @@ class LocalDevDataSource {
   }
 
   async persistSupabaseProductSnapshot(action) {
-    return this.upsertSupabaseProductTables(this.snapshot({ skipAdapterCheck: true }).tables, action);
+    return this.upsertSupabaseProductTables(this.snapshot().tables, action);
   }
 
   async supabaseIdentityReadinessCheck() {
     try {
       const tables = await this.readSupabaseIdentityTablesUnchecked("Validating Supabase identity tables");
       return {
-        diagnostic: "Supabase identity tables are reachable through the server-side provider contract.",
+        diagnostic: "Supabase identity tables are reachable through the server-side service contract.",
         identityBootstrapReady: true,
         identityTableRecords: identityTableCounts(tables),
         identityTablesReady: true,
@@ -1381,21 +1080,8 @@ class LocalDevDataSource {
     return this.currentSessionForRoute();
   }
 
-  currentAdapter() {
-    this.assertLocalDatabaseProvider("Opening Local DB adapter");
-    const adapter = this.adapterByModeId.get(this.currentMode().id);
-    if (!adapter) {
-      throw new Error(`${LOCAL_DB_NOT_CONFIGURED}. Unknown DEV database mode: ${this.currentMode().id || "missing"}.`);
-    }
-    return adapter;
-  }
-
-  assertConfiguredAdapter(action) {
-    this.currentAdapter().assertConfigured(action);
-  }
-
   currentStateSnapshot() {
-    return this.snapshot({ skipAdapterCheck: true });
+    return this.snapshot();
   }
 
   applyStateSnapshot(state = {}) {
@@ -1464,38 +1150,8 @@ class LocalDevDataSource {
     this.repositoryById.clear();
   }
 
-  persistCurrentAdapterState(action) {
-    this.currentAdapter().writeState(action, this.currentStateSnapshot());
-  }
-
   async persistProductProviderState(action) {
     return this.persistSupabaseProductSnapshot(action);
-  }
-
-  seed(options = {}) {
-    const action = "Reseeding Local DB state";
-    if (!options.initial) {
-      this.assertConfiguredAdapter(action);
-    }
-    this.applyStateSnapshot({
-      cleared: false,
-      tables: createServerSeedTables(),
-    });
-    this.persistCurrentAdapterState(action);
-    return this.snapshot();
-  }
-
-  adminReseed() {
-    const session = this.currentSession();
-    if (!session.isAdmin || !session.userKey) {
-      throw new Error("Admin role required to run Local DB setup reseed.");
-    }
-    const snapshot = this.seed();
-    return {
-      message: "Local DB reseed completed through Admin setup.",
-      snapshot,
-      status: "PASS",
-    };
   }
 
   adminInitializeIdentity(body = {}) {
@@ -1577,7 +1233,7 @@ class LocalDevDataSource {
       areas,
       message: `Site Setup status checked ${areas.length} setup areas.`,
       ownership: "Admin -> Site Setup",
-      provider: this.providerContract().activeProviders,
+      connection: this.providerContract().activeProviders,
       status,
       statusCounts,
     };
@@ -1595,27 +1251,6 @@ class LocalDevDataSource {
     };
   }
 
-  clear() {
-    this.assertConfiguredAdapter("Clearing Local DB state");
-    this.cleared = true;
-    this.standaloneTables = clone(createServerSeedTables());
-    Object.keys(this.standaloneTables).forEach((tableName) => {
-      this.standaloneTables[tableName] = [];
-    });
-    this.sharedOptions.memoryDbTables = this.standaloneTables;
-    const snapshot = this.snapshot();
-    this.persistCurrentAdapterState("Clearing Local DB state");
-    return snapshot;
-  }
-
-  replaceTestingState(state = {}) {
-    this.assertConfiguredAdapter("Replacing Local DB testing state");
-    this.applyStateSnapshot(state);
-    const snapshot = this.snapshot();
-    this.persistCurrentAdapterState("Replacing Local DB testing state");
-    return snapshot;
-  }
-
   setMode(modeId) {
     return {
       ...clone(FIXED_ACCOUNT_SESSION_MODE),
@@ -1624,7 +1259,6 @@ class LocalDevDataSource {
   }
 
   setUser(userKey) {
-    this.assertLocalRuntimeProviders("Selecting a session user");
     this.sessionUserKey = String(userKey || "");
     this.sharedOptions.sessionMode = this.sessionModeId;
     this.sharedOptions.sessionUserKey = this.sessionUserKey;
@@ -1632,7 +1266,6 @@ class LocalDevDataSource {
   }
 
   clearSessionUser() {
-    this.assertLocalRuntimeProviders("Clearing a session user");
     this.sessionUserKey = "";
     this.sharedOptions.sessionMode = this.sessionModeId;
     this.sharedOptions.sessionUserKey = this.sessionUserKey;
@@ -1657,10 +1290,10 @@ class LocalDevDataSource {
       operatorDiagnostic = providerContract.supabaseAuth.diagnostic || "Supabase Auth is missing required browser-safe environment configuration.";
       status = "unavailable";
     } else if (failure) {
-      operatorDiagnostic = failure.remediation || providerContract.supabaseAuth.diagnostic || "Supabase Auth provider is not ready.";
+      operatorDiagnostic = failure.remediation || providerContract.supabaseAuth.diagnostic || "Account connection is not ready.";
       status = "unavailable";
     } else {
-      operatorDiagnostic = "Supabase Auth is configured. Account actions use the external auth provider and DEV product data uses Supabase Postgres.";
+      operatorDiagnostic = "Account and product data connections are configured for server API runtime.";
       status = "ready";
     }
     const message = status === "ready" ? AUTH_READY_MESSAGE : AUTH_UNAVAILABLE_MESSAGE;
@@ -1768,7 +1401,7 @@ class LocalDevDataSource {
       identityBootstrapReady: true,
       identityTableRecords: identity.identityTableRecords,
       identityTablesReady: true,
-      operatorDiagnostic: "Supabase Auth is configured, reachable, identity tables are available, and DEV product data uses Supabase Postgres.",
+      operatorDiagnostic: "Account connection is configured, reachable, identity tables are available, and product data uses the configured server connection.",
       ready: true,
       status: "ready",
       supabaseConnectivityStatus: "healthy",
@@ -1788,14 +1421,14 @@ class LocalDevDataSource {
       {
         id: "supabase-runtime-provider",
         status: "PASS",
-        summary: "Supabase Auth is the fixed runtime auth provider.",
+        summary: "Account actions use the configured server account connection.",
       },
       {
         id: "supabase-product-data",
         status: status.supabaseProductDataActive ? "PASS" : "FAIL",
         summary: status.supabaseProductDataActive
-          ? "DEV product data uses Supabase Postgres for this preflight."
-          : `Product data provider is ${status.databaseProviderId}; expected ${SUPABASE_POSTGRES_PROVIDER_ID}.`,
+          ? "Product data uses the configured server data connection for this preflight."
+          : `Product data connection is ${status.databaseProviderId}; expected ${SUPABASE_POSTGRES_PROVIDER_ID}.`,
       },
     ];
     const connectivity = await this.authConnectivityCheck(status);
@@ -1908,7 +1541,7 @@ class LocalDevDataSource {
     }
     const matchingUser = matchingByProviderId || matchingByEmail || null;
     if (matchingUser?.authProvider && matchingUser.authProvider !== SUPABASE_AUTH_PROVIDER_ID) {
-      throw authIdentitySetupError(action, "Existing users record is owned by a different account provider.");
+      throw authIdentitySetupError(action, "Existing users record is owned by a different account connection.");
     }
     if (matchingUser?.authProviderUserId && String(matchingUser.authProviderUserId) !== authUserId) {
       throw authIdentitySetupError(action, "Existing users record is linked to a different account identity.");
@@ -1979,7 +1612,7 @@ class LocalDevDataSource {
     } catch (error) {
       logAuthActionOperatorDiagnostic({
         error,
-        phase: "provider-not-ready",
+        phase: "connection-not-ready",
         route: "POST /api/auth/sign-in",
         status: operatorStatus,
       });
@@ -2050,7 +1683,7 @@ class LocalDevDataSource {
     } catch (error) {
       logAuthActionOperatorDiagnostic({
         error,
-        phase: "provider-not-ready",
+        phase: "connection-not-ready",
         route: "POST /api/auth/create-account",
         status: operatorStatus,
       });
@@ -2133,7 +1766,7 @@ class LocalDevDataSource {
     } catch (error) {
       logAuthActionOperatorDiagnostic({
         error,
-        phase: "provider-not-ready",
+        phase: "connection-not-ready",
         route: "POST /api/auth/password-reset",
         status: operatorStatus,
       });
@@ -2186,17 +1819,7 @@ class LocalDevDataSource {
   }
 
   sessionUsers() {
-    this.assertLocalRuntimeProviders("Reading session users");
-    if (this.sessionModeId !== LOCAL_DB_MODE_ID) {
-      return [sessionUserFromKey(this.standaloneTables, "", this.sessionModeId)];
-    }
-    const guest = sessionUserFromKey(this.standaloneTables, "", this.sessionModeId);
-    return [
-      guest,
-      ...(this.standaloneTables.users || [])
-        .map((user) => sessionUserFromKey(this.standaloneTables, user.key, this.sessionModeId))
-        .filter((user) => user.authenticated && !user.roleSlugs.includes("system")),
-    ];
+    return [guestSession(FIXED_ACCOUNT_SESSION_MODE)];
   }
 
   toolboxVoteRows() {
@@ -2545,12 +2168,9 @@ class LocalDevDataSource {
   }
 
   adminNavigationMenu() {
-    const localAdminMyStuffItems = this.currentMode().id === LOCAL_DB_MODE_ID
-      ? clone(LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS)
-      : [];
     return {
       adminMainItems: clone(ADMIN_NAVIGATION_MAIN_ITEMS),
-      localAdminMyStuffItems,
+      localAdminMyStuffItems: clone(LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS),
       ownership: {
         adminMainItems: "navigation config",
         localAdminMyStuffItems: "server connection config",
@@ -2848,10 +2468,7 @@ class LocalDevDataSource {
     return result;
   }
 
-  snapshot(options = {}) {
-    if (!options.skipAdapterCheck) {
-      this.assertConfiguredAdapter("Reading Local DB state");
-    }
+  snapshot() {
     const schemas = getMockDbTableSchemas();
     const toolGroups = getMockDbToolGroups();
     const owners = {
@@ -2950,7 +2567,7 @@ class LocalDevDataSource {
   async snapshotForRoute() {
     const adapter = this.supabaseDatabaseAdapter("Reading Supabase product database state");
     const providerSnapshot = await adapter.getDbViewerSnapshot();
-    const baseline = this.snapshot({ skipAdapterCheck: true });
+    const baseline = this.snapshot();
     const schemas = getMockDbTableSchemas();
     const tables = Object.fromEntries(Object.keys(schemas).map((tableName) => [
       tableName,
@@ -3053,24 +2670,18 @@ export function createLocalApiRouter() {
         }
       }
 
+      if (parts[1] === "product-data" && request.method === "GET" && parts[2] === "snapshot") {
+        ok(response, await dataSource.snapshotForRoute());
+        return true;
+      }
+
       if (parts[1] === "local-db" || parts[1] === "mock-db") {
-        if (request.method === "GET" && parts[2] === "snapshot") {
-          ok(response, await dataSource.snapshotForRoute());
-          return true;
-        }
-        if (request.method === "POST" && parts[2] === "clear") {
-          ok(response, dataSource.clear());
-          return true;
-        }
-        if (request.method === "POST" && parts[2] === "seed") {
-          dataSource.seed();
-          ok(response, await dataSource.snapshotForRoute());
-          return true;
-        }
+        fail(response, 410, deprecatedDatabaseEndpointError(requestUrl.pathname));
+        return true;
       }
 
       if (parts[1] === "admin" && parts[2] === "setup" && request.method === "POST" && parts[3] === "reseed") {
-        ok(response, dataSource.adminReseed());
+        fail(response, 410, deprecatedDatabaseEndpointError(requestUrl.pathname));
         return true;
       }
 
@@ -3106,8 +2717,7 @@ export function createLocalApiRouter() {
       }
 
       if (parts[1] === "dev" && parts[2] === "testing" && parts[3] === "mock-db-state" && request.method === "POST") {
-        const body = await readRequestJson(request);
-        ok(response, dataSource.replaceTestingState(body.state || {}));
+        fail(response, 410, deprecatedDatabaseEndpointError(requestUrl.pathname));
         return true;
       }
 
