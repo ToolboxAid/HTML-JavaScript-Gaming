@@ -11,8 +11,8 @@ Changed runtime JS files considered:
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 734/734; executed functions 51/65
-(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 90/90; executed functions 15/15
+(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 750/750; executed functions 49/66
+(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 112/112; executed functions 17/17
 
 Guardrail warnings:
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only

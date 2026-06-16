@@ -39,29 +39,6 @@
                                     <a class="btn btn--compact primary" aria-current="page" href="/admin/platform-settings.html">Platform Settings</a>
                                 </nav>
                             </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Banner Controls</summary>
-                                <div class="accordion-body content-stack">
-                                    <label class="field-inline">
-                                        <input type="checkbox" data-platform-banner-active>
-                                        <span>Show banner</span>
-                                    </label>
-                                    <label class="field-group">Notice kind
-                                        <select data-platform-banner-kind>
-                                            <option value="general">General notice</option>
-                                            <option value="temporary-data">Temporary data notice</option>
-                                            <option value="outage">Outage notice</option>
-                                        </select>
-                                    </label>
-                                    <label class="field-group">Tone
-                                        <select data-platform-banner-tone>
-                                            <option value="info">Info</option>
-                                            <option value="warning">Warning</option>
-                                            <option value="danger">Urgent</option>
-                                        </select>
-                                    </label>
-                                </div>
-                            </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-platform-settings" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
@@ -74,10 +51,30 @@
                         <label class="field-group">Banner message
                             <textarea data-platform-banner-message maxlength="240" rows="5"></textarea>
                         </label>
-                        <div class="callout" data-platform-banner-preview role="status">No active banner.</div>
-                        <div class="content-cluster">
-                            <button class="btn primary" type="button" data-platform-banner-save>Save Banner</button>
+                        <div class="content-stack content-stack--compact">
+                            <label class="field-inline">
+                                <input type="checkbox" data-platform-banner-active>
+                                <span>Show banner</span>
+                            </label>
+                            <label class="field-group">Notice kind
+                                <select data-platform-banner-kind>
+                                    <option value="general">General notice</option>
+                                    <option value="temporary-data">Temporary data notice</option>
+                                    <option value="outage">Outage notice</option>
+                                </select>
+                            </label>
+                            <label class="field-group">Tone
+                                <select data-platform-banner-tone>
+                                    <option value="info">Info</option>
+                                    <option value="warning">Warning</option>
+                                    <option value="danger">Urgent</option>
+                                </select>
+                            </label>
+                            <div class="content-cluster">
+                                <button class="btn primary" type="button" data-platform-banner-save>Save Banner</button>
+                            </div>
                         </div>
+                        <div class="platform-banner-preview platform-banner--info" data-platform-banner-preview role="status">No active banner.</div>
                     </section>
                     <aside class="tool-column tool-group-platform">
                         <div class="tool-column-header">

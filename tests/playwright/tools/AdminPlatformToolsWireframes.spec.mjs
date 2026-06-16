@@ -40,19 +40,6 @@ test.afterEach(async ({ page }) => {
   await clearPlaywrightStorage(page);
 });
 
-async function setServerSession(server, userKey) {
-  await fetch(`${server.baseUrl}/api/session/mode`, {
-    body: JSON.stringify({ modeId: "local-db" }),
-    headers: { "content-type": "application/json" },
-    method: "POST",
-  });
-  await fetch(`${server.baseUrl}/api/session/user`, {
-    body: JSON.stringify({ userKey }),
-    headers: { "content-type": "application/json" },
-    method: "POST",
-  });
-}
-
 async function startAdminPage(page, pathName) {
   const server = await startRepoServer();
   const failedRequests = [];
@@ -79,7 +66,124 @@ async function startAdminPage(page, pathName) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
-  await setServerSession(server, MOCK_DB_KEYS.users.admin);
+  await page.route("**/api/session/current", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          authenticated: true,
+          displayName: "DavidQ",
+          roleSlugs: ["owner", "admin", "creator"],
+          userKey: MOCK_DB_KEYS.users.admin,
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/navigation/admin-menu", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          adminMainItems: [
+            { label: "Environments", path: "admin/environments.html", route: "admin-environments" },
+            { label: "Game Migration", path: "admin/game-migration.html", route: "admin-game-migration" },
+            { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+            { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
+            { label: "Users", path: "admin/users.html", route: "admin-users" },
+          ],
+          ownerMenuItems: [
+            { label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" },
+            { label: "Design System", path: "admin/design-system.html", route: "admin-design-system" },
+            { label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" },
+            { href: "/admin/admin-notes.html", label: "Notes", localNotes: true },
+          ],
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/platform-settings/banner", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          banner: {
+            active: false,
+            kind: "general",
+            message: "",
+            sourceTable: "platform_settings",
+            sourceTableRowKey: "01KVRBANNERACTIVE00000001",
+            tone: "info",
+          },
+          diagnostics: {
+            active: false,
+            message: "",
+            sourceTable: "platform_settings",
+            sourceTableRowKey: "01KVRBANNERACTIVE00000001",
+          },
+          sourceTable: "platform_settings",
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/admin/platform-settings/banner", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          banner: {
+            active: false,
+            kind: "general",
+            message: "",
+            sourceTable: "platform_settings",
+            sourceTableRowKey: "01KVRBANNERACTIVE00000001",
+            tone: "info",
+          },
+          diagnostics: {
+            active: false,
+            message: "",
+            sourceTable: "platform_settings",
+            sourceTableRowKey: "01KVRBANNERACTIVE00000001",
+          },
+          recordsWritten: 0,
+          sourceTable: "platform_settings",
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+    const tool = {
+      active: true,
+      displayName: "Platform Settings",
+      folderName: "admin-platform-settings",
+      id: "admin-platform-settings",
+      imageSources: {
+        badge: "/assets/theme-v2/images/image-missing.svg",
+        tool: "/assets/theme-v2/images/image-missing.svg",
+      },
+      name: "Platform Settings",
+      path: "admin/platform-settings.html",
+      route: "admin/platform-settings.html",
+      status: "wireframe",
+    };
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          activeTools: [tool],
+          readinessByStatus: {
+            wireframe: "No",
+          },
+          tools: [tool],
+          toolboxContract: {},
+        },
+        ok: true,
+      }),
+    });
+  });
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { consoleErrors, failedRequests, pageErrors, server };
 }
@@ -117,7 +221,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
       await expect(page.locator(".tool-center-panel")).toBeVisible();
       await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(adminPage.menuLabels || ADMIN_TOOL_MENU_LABELS);
       await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText(adminPage.heading);
-      await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(2);
+      await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(adminPage.liveSettings ? 1 : 2);
       await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(2);
       if (adminPage.liveSettings) {
         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
@@ -126,6 +230,27 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("[data-platform-banner-tone]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-message]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-save]")).toBeEnabled();
+        const controlLayout = await page.evaluate(() => {
+          const center = document.querySelector(".tool-center-panel");
+          const message = center?.querySelector("[data-platform-banner-message]");
+          const messageLabel = message?.closest("label");
+          const controls = messageLabel?.nextElementSibling;
+          const preview = controls?.nextElementSibling;
+          return {
+            activeInControls: Boolean(controls?.querySelector("[data-platform-banner-active]")),
+            kindInControls: Boolean(controls?.querySelector("[data-platform-banner-kind]")),
+            previewAfterControls: Boolean(preview?.matches("[data-platform-banner-preview]")),
+            saveInControls: Boolean(controls?.querySelector("[data-platform-banner-save]")),
+            toneInControls: Boolean(controls?.querySelector("[data-platform-banner-tone]")),
+          };
+        });
+        expect(controlLayout).toEqual({
+          activeInControls: true,
+          kindInControls: true,
+          previewAfterControls: true,
+          saveInControls: true,
+          toneInControls: true,
+        });
       } else {
         await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
         await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
@@ -197,11 +322,14 @@ test("Platform banner renders active settings under the header and above the foo
     await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-platform-banner]")).toHaveCount(2);
     await expect(page.locator("[data-platform-banner-placement='header']")).toContainText("Temporary data notice for creators.");
+    await expect(page.locator("[data-platform-banner-placement='header'] .platform-banner__kind")).toHaveText("Data notice");
     await expect(page.locator("[data-platform-banner-placement='header']")).toHaveClass(/platform-banner--warning/);
     await expect(page.locator("[data-platform-banner-placement='footer']")).toContainText("Temporary data notice for creators.");
+    await expect(page.locator("[data-platform-banner-placement='footer'] .platform-banner__kind")).toHaveText("Data notice");
     await expect(page.locator("[data-platform-banner-placement='footer']")).toHaveClass(/platform-banner--warning/);
     await expect.poll(async () => page.evaluate(() => window.GameFoundryPlatformBannerDiagnostics)).toEqual({
       active: true,
+      kind: "temporary-data",
       message: "Temporary data notice for creators.",
       sourceTable: "platform_settings",
       sourceTableRowKey: "01KVRBANNERACTIVE00000001",
@@ -238,6 +366,74 @@ test("Platform banner renders active settings under the header and above the foo
     expect(layout.footerBannerAboveFooter).toBe(true);
     expect(layout.footerTop).toBeGreaterThanOrEqual(layout.footerBannerBottom - 2);
     expect(layout.footerBannerWidth).toBe(layout.clientWidth);
+  } finally {
+    await server.close();
+  }
+});
+
+test("Platform banner tones render distinct Theme V2 highlights", async ({ page }) => {
+  const server = await startRepoServer();
+  const banner = {
+    active: true,
+    kind: "general",
+    message: "Info tone notice.",
+    sourceTable: "platform_settings",
+    sourceTableRowKey: "01KVRBANNERACTIVE00000001",
+    tone: "info",
+  };
+  try {
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            authenticated: false,
+            displayName: "Sign In",
+            roleSlugs: [],
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            banner: { ...banner },
+            diagnostics: {
+              active: banner.active,
+              message: banner.message,
+              sourceTable: "platform_settings",
+              sourceTableRowKey: banner.sourceTableRowKey,
+            },
+            sourceTable: "platform_settings",
+          },
+          ok: true,
+        }),
+      });
+    });
+
+    await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
+    const toneMetrics = {};
+    for (const tone of ["info", "warning", "danger"]) {
+      banner.tone = tone;
+      banner.kind = tone === "danger" ? "outage" : "general";
+      banner.message = `${tone} tone notice.`;
+      await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:platform-settings-changed")));
+      await expect(page.locator("[data-platform-banner-placement='header']")).toHaveClass(new RegExp(`platform-banner--${tone}`));
+      toneMetrics[tone] = await page.locator("[data-platform-banner-placement='header']").evaluate((element) => {
+        const bannerStyle = window.getComputedStyle(element);
+        const kindStyle = window.getComputedStyle(element.querySelector(".platform-banner__kind"));
+        return {
+          backgroundColor: bannerStyle.backgroundColor,
+          borderBottomColor: bannerStyle.borderBottomColor,
+          kindBackgroundColor: kindStyle.backgroundColor,
+        };
+      });
+    }
+    expect(new Set(Object.values(toneMetrics).map((metric) => metric.backgroundColor)).size).toBe(3);
+    expect(new Set(Object.values(toneMetrics).map((metric) => metric.kindBackgroundColor)).size).toBe(3);
   } finally {
     await server.close();
   }
@@ -338,11 +534,34 @@ test("Platform Settings Admin controls update banner through the service route",
     await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings loaded.");
     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: false.");
     await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Source row: 01KVRBANNERACTIVE00000001.");
+    const controlLayout = await page.evaluate(() => {
+      const center = document.querySelector(".tool-center-panel");
+      const message = center?.querySelector("[data-platform-banner-message]");
+      const messageLabel = message?.closest("label");
+      const controls = messageLabel?.nextElementSibling;
+      const preview = controls?.nextElementSibling;
+      return {
+        activeInControls: Boolean(controls?.querySelector("[data-platform-banner-active]")),
+        kindInControls: Boolean(controls?.querySelector("[data-platform-banner-kind]")),
+        previewAfterControls: Boolean(preview?.matches("[data-platform-banner-preview]")),
+        saveInControls: Boolean(controls?.querySelector("[data-platform-banner-save]")),
+        toneInControls: Boolean(controls?.querySelector("[data-platform-banner-tone]")),
+      };
+    });
+    expect(controlLayout).toEqual({
+      activeInControls: true,
+      kindInControls: true,
+      previewAfterControls: true,
+      saveInControls: true,
+      toneInControls: true,
+    });
     await page.locator("[data-platform-banner-active]").check();
     await page.locator("[data-platform-banner-kind]").selectOption("outage");
     await page.locator("[data-platform-banner-tone]").selectOption("danger");
     await page.locator("[data-platform-banner-message]").fill("Outage notice for creators.");
     await expect(page.locator("[data-platform-banner-preview]")).toContainText("Outage notice for creators.");
+    await expect(page.locator("[data-platform-banner-preview] .platform-banner__kind")).toHaveText("Outage");
+    await expect(page.locator("[data-platform-banner-preview]")).toHaveClass(/platform-banner--danger/);
 
     await page.locator("[data-platform-banner-save]").click();
     await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings saved.");

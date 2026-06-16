@@ -16,6 +16,21 @@ class AdminPlatformSettingsController {
         this.saveButton = root.querySelector("[data-platform-banner-save]");
     }
 
+    platformBannerKindLabel(kind) {
+        if (kind === "temporary-data") {
+            return "Data notice";
+        }
+        if (kind === "outage") {
+            return "Outage";
+        }
+        return "Notice";
+    }
+
+    updatePreviewTone(tone) {
+        this.preview.classList.remove("platform-banner--info", "platform-banner--warning", "platform-banner--danger");
+        this.preview.classList.add("platform-banner--" + (["info", "warning", "danger"].includes(tone) ? tone : "info"));
+    }
+
     init() {
         if (!this.activeInput || !this.kindInput || !this.diagnostics || !this.messageInput || !this.preview || !this.status || !this.toneInput || !this.saveButton) {
             return;
@@ -62,9 +77,18 @@ class AdminPlatformSettingsController {
 
     renderPreview(banner) {
         this.preview.dataset.platformBannerPreviewTone = banner.tone || "info";
-        this.preview.textContent = banner.active && banner.message
-            ? banner.message
-            : "No active banner.";
+        this.updatePreviewTone(banner.tone);
+        if (!banner.active || !banner.message) {
+            this.preview.textContent = "No active banner.";
+            return;
+        }
+        const kind = document.createElement("span");
+        kind.className = "platform-banner__kind";
+        kind.textContent = this.platformBannerKindLabel(banner.kind);
+        const message = document.createElement("span");
+        message.className = "platform-banner__message";
+        message.textContent = banner.message;
+        this.preview.replaceChildren(kind, message);
     }
 
     load() {

@@ -392,13 +392,25 @@
     function normalizedPlatformBanner(data) {
         const banner = data?.banner && typeof data.banner === "object" ? data.banner : {};
         const tone = ["info", "warning", "danger"].includes(banner.tone) ? banner.tone : "info";
+        const kind = ["general", "temporary-data", "outage"].includes(banner.kind) ? banner.kind : "general";
         return {
             active: banner.active === true,
+            kind,
             message: typeof banner.message === "string" ? banner.message.trim() : "",
             sourceTable: typeof banner.sourceTable === "string" ? banner.sourceTable : data?.sourceTable || "",
             sourceTableRowKey: typeof banner.sourceTableRowKey === "string" ? banner.sourceTableRowKey : "",
             tone
         };
+    }
+
+    function platformBannerKindLabel(kind) {
+        if (kind === "temporary-data") {
+            return "Data notice";
+        }
+        if (kind === "outage") {
+            return "Outage";
+        }
+        return "Notice";
     }
 
     async function requestPlatformBanner() {
@@ -429,10 +441,13 @@
         section.setAttribute("aria-label", "Platform notice");
         const inner = document.createElement("div");
         inner.className = "platform-banner__inner";
+        const kind = document.createElement("span");
+        kind.className = "platform-banner__kind";
+        kind.textContent = platformBannerKindLabel(banner.kind);
         const message = document.createElement("p");
         message.className = "platform-banner__message";
         message.textContent = banner.message;
-        inner.append(message);
+        inner.append(kind, message);
         section.append(inner);
         return section;
     }
@@ -442,6 +457,7 @@
             const banner = await requestPlatformBanner();
             window.GameFoundryPlatformBannerDiagnostics = {
                 active: banner.active,
+                kind: banner.kind,
                 message: banner.message,
                 sourceTable: banner.sourceTable,
                 sourceTableRowKey: banner.sourceTableRowKey
@@ -468,6 +484,7 @@
             removePlatformBanner();
             window.GameFoundryPlatformBannerDiagnostics = {
                 active: false,
+                kind: "",
                 message: "",
                 sourceTable: "",
                 sourceTableRowKey: ""

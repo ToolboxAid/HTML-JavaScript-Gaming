@@ -46,7 +46,21 @@
   width: var(--container-width);
   margin: var(--space-0) auto;
   padding: var(--space-12) var(--space-0);
-  text-align: center
+  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-10)
+}
+
+.platform-banner__kind {
+  border: var(--border-standard);
+  border-radius: var(--radius-pill);
+  color: var(--bg);
+  display: inline-flex;
+  font-weight: var(--font-weight-heavy);
+  padding: var(--space-3) var(--space-10)
 }
 
 .platform-banner__message {
@@ -54,14 +68,50 @@
   overflow-wrap: anywhere
 }
 
+.platform-banner--info {
+  background: color-mix(in srgb, var(--green) 14%, var(--panel));
+  border-bottom-color: var(--green)
+}
+
+.platform-banner--info .platform-banner__kind {
+  background: var(--green);
+  border-color: var(--green)
+}
+
 .platform-banner--warning {
   background: var(--gold-soft);
   border-bottom-color: var(--gold-border-muted)
 }
 
+.platform-banner--warning .platform-banner__kind {
+  background: var(--gold);
+  border-color: var(--gold)
+}
+
 .platform-banner--danger {
   background: color-mix(in srgb, var(--red) 14%, var(--panel));
   border-bottom-color: var(--red)
+}
+
+.platform-banner--danger .platform-banner__kind {
+  background: var(--red);
+  border-color: var(--red);
+  color: var(--white)
+}
+
+.platform-banner-preview {
+  border: var(--border-standard);
+  border-radius: var(--radius-lg);
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: var(--space-10);
+  min-height: var(--space-44);
+  overflow-wrap: anywhere;
+  padding: var(--space-12);
+  text-align: center
 }
 
 .swatch-label {
