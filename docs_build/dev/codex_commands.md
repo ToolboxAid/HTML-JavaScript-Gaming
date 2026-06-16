@@ -1672,3 +1672,27 @@ Required reports:
 - `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 - `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/codex_review.diff`
+
+
+## PR_26166_175-dev-admin-bootstrap-password-reset
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main` before DEV admin bootstrap work.
+- Ran DEV Supabase readiness validation.
+- Performed safe server-side service-role reads for the requested Auth account, app `users` row, requested `roles` row, and Auth/user mapping.
+- Hard-stopped before writes because the app `users` row and requested `roles` row were missing.
+- Did not create `user_roles`, reset the Auth password, change `.env.local`, change UAT/PROD resources, add browser-owned auth logic, or expose the password value.
+
+Validation:
+- `npm run validate:supabase-dev`
+- Safe service-role/Auth Admin lookup for the requested Auth account.
+- Safe service-role/PostgREST lookup for app `users` by email and Auth user id mapping.
+- Safe service-role/PostgREST lookup for the requested admin role key.
+- Admin role assignment, updated-password sign-in, `/api/session/current`, and Playwright validation were skipped because required DEV identity rows were missing.
+- Full samples smoke skipped by request.
+
+Required reports:
+- `docs_build/dev/reports/PR_26166_175-dev-admin-bootstrap-password-reset_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
