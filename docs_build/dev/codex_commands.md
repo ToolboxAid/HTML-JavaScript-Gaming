@@ -1929,3 +1929,146 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26167_180-account-pages-remove-local-db-browser-contract_delta.zip`
+
+
+## PR_26167_180-remove-sqlite-runtime-provider
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Removed Local DB from the supported runtime product-data provider selection.
+- Forced local API startup product data to `supabase-postgres`, ignoring stale `local-db` product-data configuration.
+- Removed Local DB fallback branches from server product-data assertions, persistence, Toolbox registry snapshots, and DB snapshot routing.
+- Lazy-loaded SQLite behind legacy local adapter endpoints so startup no longer imports or opens SQLite.
+- Updated targeted provider contract validation for the unsupported Local DB product-data path.
+
+Validation:
+- `node --check scripts/start-local-api-server.mjs`
+- `node --check src/dev-runtime/auth/provider-contract-stubs.mjs`
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- Bare `node .\scripts\validate-supabase-dev.mjs` reached validation but failed local TLS trust before app-level checks.
+- `$env:NODE_OPTIONS='--use-system-ca'; node .\scripts\validate-supabase-dev.mjs`
+- `npm run dev:local-api` startup capture on temporary port `5580`.
+- Static sanity scan for removed Local DB product-data branch patterns.
+- `git diff --check`
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_180-remove-sqlite-runtime-provider.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_180-remove-sqlite-runtime-provider_delta.zip`
+
+
+## PR_26167_181-supabase-postgres-single-product-data-path
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Removed active Local DB fallback branches from Toolbox vote snapshot/write/order/metadata APIs.
+- Kept product-data registry, DB snapshot, Toolbox vote, and repository API paths on Supabase Postgres through server-side contracts.
+- Added targeted regression coverage that Local DB-selected Toolbox vote routes fail visibly.
+- Updated the Project Workspace Playwright harness to use fake configured Supabase/Postgres instead of forcing `local-db`.
+
+Validation:
+- `node --check scripts\start-local-api-server.mjs`
+- `node --check src\dev-runtime\auth\provider-contract-stubs.mjs`
+- `node --check src\dev-runtime\server\local-api-router.mjs`
+- `node --check tests\dev-runtime\SupabaseProductDataCutover.test.mjs`
+- `node --check tests\playwright\tools\RootToolsFutureState.spec.mjs`
+- `node --test tests\dev-runtime\SupabaseProductDataCutover.test.mjs`
+- `node --test tests\dev-runtime\ProductDataProviderContractHardening.test.mjs`
+- `node --test tests\dev-runtime\SupabaseProviderContractStub.test.mjs`
+- Bare `node .\scripts\validate-supabase-dev.mjs` reached validation but failed local TLS trust before app-level checks.
+- `$env:NODE_OPTIONS='--use-system-ca'; node .\scripts\validate-supabase-dev.mjs`
+- `npm run test:workspace-v2` initially failed due a local-db Playwright harness; after harness update, rerun passed. Command name is legacy and user-facing language is Project Workspace.
+- Static scan for removed Toolbox vote Local DB fallback patterns.
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_181-supabase-postgres-single-product-data-path.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_181-supabase-postgres-single-product-data-path_delta.zip`
+
+
+## PR_26167_182-remove-provider-selection-runtime
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Removed runtime provider selector controls from the provider contract snapshot.
+- Fixed the runtime path to Supabase Auth plus Supabase Postgres.
+- Ignored legacy `GAMEFOUNDRY_AUTH_PROVIDER` and `GAMEFOUNDRY_DB_PROVIDER` values with safe diagnostics.
+- Removed Local DB/auth mode switching branches from local API session and provider runtime paths.
+- Preserved Admin DB Viewer source labels as diagnostic-only metadata.
+
+Validation:
+- `node --check src\dev-runtime\auth\provider-contract-stubs.mjs`
+- `node --check src\dev-runtime\server\local-api-router.mjs`
+- `node --check scripts\start-local-api-server.mjs`
+- `node --check tests\dev-runtime\SupabaseProviderContractStub.test.mjs`
+- `node --check tests\dev-runtime\SupabaseProductDataCutover.test.mjs`
+- `node --check tests\playwright\tools\RootToolsFutureState.spec.mjs`
+- `node --test tests\dev-runtime\SupabaseProviderContractStub.test.mjs`
+- `node --test tests\dev-runtime\SupabaseProductDataCutover.test.mjs`
+- `node --test tests\dev-runtime\ProductDataProviderContractHardening.test.mjs`
+- Bare `node .\scripts\validate-supabase-dev.mjs` reached validation but failed local TLS trust before app-level checks.
+- `$env:NODE_OPTIONS='--use-system-ca'; node .\scripts\validate-supabase-dev.mjs`
+- `npm run test:workspace-v2` passed. Command name is legacy and user-facing language is Project Workspace.
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_182-remove-provider-selection-runtime.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_182-remove-provider-selection-runtime_delta.zip`
+
+
+## PR_26167_183-single-service-contract-validation
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Extended `scripts/validate-browser-env-agnostic.mjs` to validate Account auth page service contracts, product API/service contracts, product-data fallback prevention, user-facing implementation wording, and deprecated Local DB/SQLite technical debt.
+- Reworded AI Assistant wireframe provider copy to provider-neutral AI connection copy.
+- Reworded an Assets upload diagnostic to avoid Local DB wording in product UI.
+
+Validation:
+- `node --check scripts\validate-browser-env-agnostic.mjs`
+- `node --check toolbox\assets\assets.js`
+- `node --check assets\theme-v2\js\account-auth-service.js`
+- `node --check assets\theme-v2\js\account-auth-actions.js`
+- `node --check assets\theme-v2\js\login-session.js`
+- `npm run validate:browser-env-agnostic`
+- `node --test tests\dev-runtime\ProductDataProviderContractHardening.test.mjs`
+- `node --test tests\dev-runtime\SupabaseProductDataCutover.test.mjs`
+- `node --test tests\dev-runtime\SupabaseProviderContractStub.test.mjs`
+- Bare `node .\scripts\validate-supabase-dev.mjs` reached validation but failed local TLS trust before app-level checks.
+- `npm run validate:supabase-dev`
+- `npx playwright test tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs tests/playwright/account/SupabaseSignInSession.spec.mjs`
+- `npm run test:workspace-v2` passed. Command name is legacy and user-facing language is Project Workspace.
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_183-single-service-contract-validation.md`
+- `docs_build/dev/reports/environment_agnostic_browser_gate_report.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_183-single-service-contract-validation_delta.zip`

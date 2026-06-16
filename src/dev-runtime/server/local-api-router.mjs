@@ -1,8 +1,8 @@
 import { randomBytes } from "node:crypto";
 import { mkdirSync, readFileSync, readdirSync } from "node:fs";
+import { createRequire } from "node:module";
 import path from "node:path";
 import process from "node:process";
-import { DatabaseSync } from "node:sqlite";
 import {
   createAssetToolMockRepository,
   pickerDiagnosticForRole,
@@ -92,6 +92,17 @@ export const SERVER_DATA_BOUNDARY_RULE = "Browser -> Server API -> Data Source";
 
 const LOCAL_DB_MODE_ID = "local-db";
 const LOCAL_DB_NOT_CONFIGURED = "Local DB adapter not configured";
+const FIXED_ACCOUNT_SESSION_MODE = Object.freeze({
+  adapterId: "supabase-postgres",
+  adapterName: "SupabasePostgresProviderAdapter",
+  configured: true,
+  environment: "Account",
+  id: "account-session",
+  label: "Account",
+  persistence: "Server account session",
+  selectableOnLocalLogin: false,
+  status: "fixed-runtime",
+});
 const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
 const AUTH_READY_MESSAGE = "Account service is available.";
 const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
@@ -223,7 +234,7 @@ function providerFailureMessage(providerContract, providerId) {
   if (failure?.remediation) {
     return failure.remediation;
   }
-  return `Selected provider ${providerId} is not available for this server API route yet.`;
+  return `Runtime provider path is fixed to Supabase Auth and Supabase Postgres; ${providerId} is not available for this server API route.`;
 }
 
 function readDocsBuildGuestSeedPackages() {
@@ -479,6 +490,16 @@ function sqliteIdentifier(value) {
   return `"${identifier}"`;
 }
 
+let DatabaseSyncConstructor = null;
+
+function databaseSyncConstructor() {
+  if (!DatabaseSyncConstructor) {
+    const require = createRequire(import.meta.url);
+    DatabaseSyncConstructor = require("node:sqlite").DatabaseSync;
+  }
+  return DatabaseSyncConstructor;
+}
+
 function serializeSqliteValue(value) {
   if (value === undefined) {
     return null;
@@ -609,11 +630,8 @@ function guestSession(mode, diagnostic = "") {
 }
 
 function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
-  const mode = modeById(modeId);
+  const mode = FIXED_ACCOUNT_SESSION_MODE;
   const key = String(userKey || "");
-  if (mode.id !== LOCAL_DB_MODE_ID) {
-    return guestSession(mode, mode.diagnostic || LOCAL_DB_NOT_CONFIGURED);
-  }
   if (!isUlidKey(key)) {
     return guestSession(mode);
   }
@@ -750,8 +768,8 @@ function logAuthActionOperatorDiagnostic({
   const diagnostic = error ? sanitizedAuthErrorDiagnostic(error) : null;
   const fields = [
     `phase=${safeOperatorDiagnosticValue(phase, "unknown")}`,
-    `selectedAuthProvider=${safeOperatorDiagnosticValue(status.authProviderId || status.providerId || "unknown")}`,
-    `dbProvider=${safeOperatorDiagnosticValue(status.databaseProviderId || "unknown")}`,
+    `runtimeAuthProvider=${safeOperatorDiagnosticValue(status.authProviderId || status.providerId || "unknown")}`,
+    `runtimeDbProvider=${safeOperatorDiagnosticValue(status.databaseProviderId || "unknown")}`,
     `supabaseConfigured=${operatorYesNo(status.configured ?? status.supabaseConfigPresent)}`,
     `identityTablesReady=${operatorYesNo(status.identityTablesReady)}`,
     `upstreamStatusCode=${authActionUpstreamStatusCode(payload, error)}`,
@@ -999,6 +1017,7 @@ class LocalDbAdapter {
   openDatabase(action) {
     this.ensureStorage(action);
     try {
+      const DatabaseSync = databaseSyncConstructor();
       const db = new DatabaseSync(this.storagePath);
       db.exec("PRAGMA foreign_keys = ON");
       return db;
@@ -1170,12 +1189,6 @@ class LocalDevDataSource {
       cleared: false,
       tables: createServerSeedTables(),
     });
-    const startupAdapter = this.adapterByModeId.get(this.currentMode().id);
-    if (!startupAdapter) {
-      throw new Error(`${LOCAL_DB_NOT_CONFIGURED}. Unknown DEV database mode: ${this.currentMode().id || "missing"}.`);
-    }
-    const adapterState = startupAdapter.readState("Starting Local DB", this.currentStateSnapshot());
-    this.applyStateSnapshot(adapterState);
   }
 
   currentMode() {
@@ -1194,31 +1207,19 @@ class LocalDevDataSource {
   }
 
   assertLocalAuthProvider(action) {
-    const providerContract = this.providerContract();
-    const providerId = providerContract.activeProviders.authProviderId;
-    if (providerId !== LOCAL_AUTH_PROVIDER_ID) {
-      throw new Error(`${action} requires the Local DB auth provider. Selected auth provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
-    }
+    throw new Error(`${action} is a legacy Local DB auth helper and is not available on the fixed Supabase runtime path.`);
   }
 
   assertLocalDatabaseProvider(action) {
-    const providerContract = this.providerContract();
-    const providerId = providerContract.activeProviders.databaseProviderId;
-    if (providerId !== LOCAL_DATABASE_PROVIDER_ID) {
-      throw new Error(`${action} requires the Local DB database provider. Selected database provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
-    }
+    throw new Error(`${action} is a legacy Local DB database helper and is not available on the fixed Supabase runtime path.`);
   }
 
   assertSupabaseDatabaseProvider(action) {
     const providerContract = this.providerContract();
     const providerId = providerContract.activeProviders.databaseProviderId;
     if (providerId !== SUPABASE_POSTGRES_PROVIDER_ID) {
-      throw new Error(`${action} requires the Supabase Postgres database provider. Selected database provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
+      throw new Error(`${action} requires the fixed Supabase Postgres database provider. ${providerFailureMessage(providerContract, providerId)}`);
     }
-  }
-
-  selectedDatabaseProviderId() {
-    return this.providerContract().activeProviders.databaseProviderId;
   }
 
   supabaseDatabaseAdapter(action) {
@@ -1229,17 +1230,8 @@ class LocalDevDataSource {
   }
 
   assertProductDatabaseProvider(action) {
-    const providerId = this.selectedDatabaseProviderId();
-    if (providerId === LOCAL_DATABASE_PROVIDER_ID) {
-      this.assertConfiguredAdapter(action);
-      return providerId;
-    }
-    if (providerId === SUPABASE_POSTGRES_PROVIDER_ID) {
-      this.supabaseDatabaseAdapter(action);
-      return providerId;
-    }
-    const providerContract = this.providerContract();
-    throw new Error(`${action} requires a supported product database provider. Selected database provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
+    this.supabaseDatabaseAdapter(action);
+    return SUPABASE_POSTGRES_PROVIDER_ID;
   }
 
   assertLocalRuntimeProviders(action) {
@@ -1353,37 +1345,18 @@ class LocalDevDataSource {
   }
 
   async currentSessionForRoute() {
-    const providerId = this.providerContract().activeProviders.authProviderId;
-    if (providerId === LOCAL_AUTH_PROVIDER_ID) {
-      this.assertLocalDatabaseProvider("Reading current session");
-      return this.localAuthSession("Reading current session");
+    const status = await this.authStatusForRoute();
+    if (!status.ready) {
+      return guestSession(FIXED_ACCOUNT_SESSION_MODE, status.operatorDiagnostic || AUTH_UNAVAILABLE_MESSAGE);
     }
-    if (providerId === SUPABASE_AUTH_PROVIDER_ID) {
-      const status = await this.authStatusForRoute();
-      if (!status.ready) {
-        return guestSession(this.currentMode(), status.operatorDiagnostic || AUTH_UNAVAILABLE_MESSAGE);
-      }
-      if (!this.sessionUserKey) {
-        return guestSession(this.currentMode());
-      }
-      const tables = await this.readSupabaseIdentityTables("Reading current session");
-      return sessionUserFromIdentityTables(tables, this.sessionUserKey, this.sessionModeId, "Supabase identity");
+    if (!this.sessionUserKey) {
+      return guestSession(FIXED_ACCOUNT_SESSION_MODE);
     }
-    return guestSession(this.currentMode(), `Selected auth provider is ${providerId}; no session provider contract is available.`);
+    const tables = await this.readSupabaseIdentityTables("Reading current session");
+    return sessionUserFromIdentityTables(tables, this.sessionUserKey, this.sessionModeId, "Supabase identity");
   }
 
   async sessionUsersForRoute() {
-    const providerId = this.providerContract().activeProviders.authProviderId;
-    if (providerId === LOCAL_AUTH_PROVIDER_ID) {
-      this.assertLocalDatabaseProvider("Reading session users");
-      return this.sessionUsers();
-    }
-    if (providerId !== SUPABASE_AUTH_PROVIDER_ID) {
-      return [guestSession(this.currentMode(), `Selected auth provider is ${providerId}; no session user provider contract is available.`)];
-    }
-    if (this.sessionModeId !== LOCAL_DB_MODE_ID) {
-      return [guestSession(this.currentMode(), this.currentMode().diagnostic || LOCAL_DB_NOT_CONFIGURED)];
-    }
     const tables = await this.readSupabaseIdentityTables("Reading session users");
     const guest = sessionUserFromIdentityTables(tables, "", this.sessionModeId, "Supabase identity");
     return [
@@ -1395,11 +1368,6 @@ class LocalDevDataSource {
   }
 
   async setUserForRoute(userKey) {
-    const providerId = this.providerContract().activeProviders.authProviderId;
-    if (providerId === LOCAL_AUTH_PROVIDER_ID) {
-      this.assertLocalDatabaseProvider("Selecting a session user");
-      return this.setUser(userKey);
-    }
     this.sessionUserKey = String(userKey || "");
     this.sharedOptions.sessionMode = this.sessionModeId;
     this.sharedOptions.sessionUserKey = this.sessionUserKey;
@@ -1407,11 +1375,6 @@ class LocalDevDataSource {
   }
 
   async clearSessionUserForRoute() {
-    const providerId = this.providerContract().activeProviders.authProviderId;
-    if (providerId === LOCAL_AUTH_PROVIDER_ID) {
-      this.assertLocalDatabaseProvider("Clearing a session user");
-      return this.clearSessionUser();
-    }
     this.sessionUserKey = "";
     this.sharedOptions.sessionMode = this.sessionModeId;
     this.sharedOptions.sessionUserKey = this.sessionUserKey;
@@ -1506,14 +1469,7 @@ class LocalDevDataSource {
   }
 
   async persistProductProviderState(action) {
-    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
-      return this.persistSupabaseProductSnapshot(action);
-    }
-    this.persistCurrentAdapterState(action);
-    return {
-      providerId: LOCAL_DATABASE_PROVIDER_ID,
-      status: "PASS",
-    };
+    return this.persistSupabaseProductSnapshot(action);
   }
 
   seed(options = {}) {
@@ -1543,11 +1499,6 @@ class LocalDevDataSource {
   }
 
   adminInitializeIdentity(body = {}) {
-    const providerContract = this.providerContract();
-    const providerId = providerContract.activeProviders.databaseProviderId;
-    if (providerId !== SUPABASE_POSTGRES_PROVIDER_ID) {
-      throw new Error(`Admin identity setup requires selected database provider ${SUPABASE_POSTGRES_PROVIDER_ID}. Selected database provider is ${providerId}.`);
-    }
     const database = new SupabasePostgresProviderAdapter();
     return database.initializeIdentity(body);
   }
@@ -1666,18 +1617,10 @@ class LocalDevDataSource {
   }
 
   setMode(modeId) {
-    this.assertLocalRuntimeProviders("Selecting a local session mode");
-    const nextMode = MOCK_DB_SESSION_MODES.find((mode) => mode.id === modeId);
-    if (!nextMode) {
-      throw new Error(`Unknown local login environment: ${modeId || "missing"}.`);
-    }
-    this.persistCurrentAdapterState("Saving current local data source before mode switch");
-    const currentFallbackState = this.currentStateSnapshot();
-    const nextAdapter = this.adapterByModeId.get(nextMode.id);
-    const nextState = nextAdapter.readState("Selecting Local DB", currentFallbackState);
-    this.sessionModeId = nextMode.id;
-    this.applyStateSnapshot(nextState);
-    return clone(nextMode);
+    return {
+      ...clone(FIXED_ACCOUNT_SESSION_MODE),
+      diagnostic: "Session mode switching is disabled; account sessions use the fixed server-owned auth session.",
+    };
   }
 
   setUser(userKey) {
@@ -1700,9 +1643,8 @@ class LocalDevDataSource {
     const providerContract = this.providerContract();
     const authProviderId = providerContract.activeProviders.authProviderId;
     const databaseProviderId = providerContract.activeProviders.databaseProviderId;
-    const selected = authProviderId === SUPABASE_AUTH_PROVIDER_ID;
-    const localDbProductDataActive = databaseProviderId === LOCAL_DATABASE_PROVIDER_ID;
-    const supabaseProductDataActive = databaseProviderId === SUPABASE_POSTGRES_PROVIDER_ID;
+    const localDbProductDataActive = false;
+    const supabaseProductDataActive = true;
     const configured = providerContract.supabaseAuth.configured === true;
     const failure = providerContract.providerDiagnostics.providerFailures
       .find((candidate) => candidate.providerId === authProviderId || candidate.providerId === SUPABASE_AUTH_PROVIDER_ID);
@@ -1711,15 +1653,7 @@ class LocalDevDataSource {
     let operatorDiagnostic = "";
     let status = "unavailable";
 
-    if (!selected) {
-      operatorDiagnostic = configured
-        ? `Supabase Auth configuration is present, but selected auth provider is ${authProviderId}. Set GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth and GAMEFOUNDRY_DB_PROVIDER=supabase-postgres to activate the DEV Supabase Auth and product data path.`
-        : `Supabase Auth provider is not selected. Selected auth provider is ${authProviderId}; Supabase Auth configuration is not complete.`;
-      status = "provider-not-selected";
-    } else if (!supabaseProductDataActive) {
-      operatorDiagnostic = `DEV Supabase Auth requires Supabase Postgres for identity and product data. Selected database provider is ${databaseProviderId}.`;
-      status = "unavailable";
-    } else if (!configured) {
+    if (!configured) {
       operatorDiagnostic = providerContract.supabaseAuth.diagnostic || "Supabase Auth is missing required browser-safe environment configuration.";
       status = "unavailable";
     } else if (failure) {
@@ -1748,12 +1682,11 @@ class LocalDevDataSource {
       passwordStorage: "external-provider",
       providerId: SUPABASE_AUTH_PROVIDER_ID,
       ready: status === "ready",
-      selected,
+      active: true,
       supabaseConfigPresent: configured,
       supabaseConnectivityStatus: connectivityStatus,
       supabaseProductDataActive,
-      supabaseProviderNotSelected: !selected,
-      supabaseProviderSelected: selected,
+      supabaseProviderActive: true,
       status,
     };
   }
@@ -1793,7 +1726,7 @@ class LocalDevDataSource {
 
   async authStatusForRoute() {
     const status = this.authStatus();
-    if (!status.selected || !status.configured || !status.supabaseProductDataActive || status.status !== "ready") {
+    if (!status.configured || !status.supabaseProductDataActive || status.status !== "ready") {
       return status;
     }
     const connectivity = await this.authConnectivityCheck(status);
@@ -1835,7 +1768,7 @@ class LocalDevDataSource {
       identityBootstrapReady: true,
       identityTableRecords: identity.identityTableRecords,
       identityTablesReady: true,
-      operatorDiagnostic: "Supabase Auth is selected, configured, reachable, identity tables are available, and DEV product data uses Supabase Postgres.",
+      operatorDiagnostic: "Supabase Auth is configured, reachable, identity tables are available, and DEV product data uses Supabase Postgres.",
       ready: true,
       status: "ready",
       supabaseConnectivityStatus: "healthy",
@@ -1853,11 +1786,9 @@ class LocalDevDataSource {
           : "Supabase Auth browser-safe configuration is missing.",
       },
       {
-        id: "supabase-provider-selected",
-        status: status.supabaseProviderSelected ? "PASS" : "WARN",
-        summary: status.supabaseProviderSelected
-          ? "Supabase Auth is the selected auth provider."
-          : `Selected auth provider is ${status.authProviderId}; Supabase Auth is not selected.`,
+        id: "supabase-runtime-provider",
+        status: "PASS",
+        summary: "Supabase Auth is the fixed runtime auth provider.",
       },
       {
         id: "supabase-product-data",
@@ -1910,11 +1841,10 @@ class LocalDevDataSource {
       operatorDiagnostic: status.operatorDiagnostic,
       operatorOnly: true,
       providerId: SUPABASE_AUTH_PROVIDER_ID,
-      selected: status.selected,
+      active: true,
       status: connectivity.connectivityStatus === "healthy" ? "healthy" : connectivity.connectivityStatus,
       supabaseConfigPresent: status.supabaseConfigPresent,
-      supabaseProviderNotSelected: status.supabaseProviderNotSelected,
-      supabaseProviderSelected: status.supabaseProviderSelected,
+      supabaseProviderActive: true,
     };
   }
 
@@ -2247,22 +2177,12 @@ class LocalDevDataSource {
   }
 
   currentSession() {
-    const providerContract = this.providerContract();
-    const providerId = providerContract.activeProviders.authProviderId;
-    if (providerId === SUPABASE_AUTH_PROVIDER_ID) {
-      this.assertSupabaseDatabaseProvider("Reading current session");
-      return this.cachedSupabaseIdentitySession();
-    }
-    if (providerId !== LOCAL_AUTH_PROVIDER_ID) {
-      return guestSession(this.currentMode(), `Selected auth provider is ${providerId}; no session provider contract is available.`);
-    }
-    this.assertLocalDatabaseProvider("Reading current session");
-    return this.localAuthSession("Reading current session");
+    this.assertSupabaseDatabaseProvider("Reading current session");
+    return this.cachedSupabaseIdentitySession();
   }
 
   sessionModes() {
-    this.assertLocalRuntimeProviders("Reading session modes");
-    return clone(MOCK_DB_SESSION_MODES);
+    return [clone(FIXED_ACCOUNT_SESSION_MODE)];
   }
 
   sessionUsers() {
@@ -2564,9 +2484,7 @@ class LocalDevDataSource {
   }
 
   async toolboxVoteSnapshotForRoute() {
-    if (this.selectedDatabaseProviderId() !== SUPABASE_POSTGRES_PROVIDER_ID) {
-      return this.toolboxVoteSnapshot();
-    }
+    this.supabaseDatabaseAdapter("Reading Supabase Toolbox vote snapshot");
     const session = await this.currentSessionForRoute();
     const voterKey = session.userKey || "";
     const votes = await this.supabaseToolboxVoteRows();
@@ -2648,100 +2566,46 @@ class LocalDevDataSource {
     if (!["up", "down"].includes(normalizedDirection)) {
       throw new Error("Toolbox vote direction must be up or down.");
     }
-    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
-      const session = await this.currentSessionForRoute();
-      if (!session.userKey) {
-        throw new Error("Sign in required to record Toolbox votes.");
-      }
-      const metadataRows = await this.supabaseToolboxToolMetadataRows();
-      if (!metadataRows.some((row) => normalizedToolKey(row) === normalizedToolId)) {
-        throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
-      }
-      const rows = await this.supabaseToolboxVoteRows();
-      const existingRow = rows.find((row) => row.toolId === normalizedToolId && row.userKey === session.userKey);
-      if (existingRow?.direction !== normalizedDirection) {
-        const audit = createMockDbAuditFields(0, session.userKey);
-        const nextRow = existingRow
-          ? {
-            ...existingRow,
-            direction: normalizedDirection,
-            updatedAt: audit.updatedAt,
-            updatedBy: audit.updatedBy,
-          }
-          : {
-            key: this.toolboxVoteKey(normalizedToolId, session.userKey),
-            toolId: normalizedToolId,
-            userKey: session.userKey,
-            direction: normalizedDirection,
-            ...audit,
-          };
-        const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox vote");
-        await adapter.upsertProductTable("toolbox_votes", [nextRow]);
-      }
-      return this.toolboxVoteSnapshotForRoute();
+    const session = await this.currentSessionForRoute();
+    if (!session.userKey) {
+      throw new Error("Sign in required to record Toolbox votes.");
     }
-    const metadataRows = this.ensureToolboxToolMetadataRows();
+    const metadataRows = await this.supabaseToolboxToolMetadataRows();
     if (!metadataRows.some((row) => normalizedToolKey(row) === normalizedToolId)) {
       throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
     }
-
-    const voterKey = this.toolboxVoteVoterKey();
-    const rows = this.toolboxVoteRows();
-    const existingRow = rows.find((row) => row.toolId === normalizedToolId && row.userKey === voterKey);
+    const rows = await this.supabaseToolboxVoteRows();
+    const existingRow = rows.find((row) => row.toolId === normalizedToolId && row.userKey === session.userKey);
     if (existingRow?.direction !== normalizedDirection) {
-      const audit = createMockDbAuditFields(0, voterKey);
-      if (existingRow) {
-        existingRow.direction = normalizedDirection;
-        existingRow.updatedAt = audit.updatedAt;
-        existingRow.updatedBy = audit.updatedBy;
-      } else {
-        rows.push({
-          key: this.toolboxVoteKey(normalizedToolId, voterKey),
+      const audit = createMockDbAuditFields(0, session.userKey);
+      const nextRow = existingRow
+        ? {
+          ...existingRow,
+          direction: normalizedDirection,
+          updatedAt: audit.updatedAt,
+          updatedBy: audit.updatedBy,
+        }
+        : {
+          key: this.toolboxVoteKey(normalizedToolId, session.userKey),
           toolId: normalizedToolId,
-          userKey: voterKey,
+          userKey: session.userKey,
           direction: normalizedDirection,
           ...audit,
-        });
-      }
-      this.cleared = false;
-      this.persistCurrentAdapterState("Persisting Toolbox vote");
+        };
+      const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox vote");
+      await adapter.upsertProductTable("toolbox_votes", [nextRow]);
     }
 
-    return this.toolboxVoteSnapshot();
+    return this.toolboxVoteSnapshotForRoute();
   }
 
   async updateToolboxVoteOrder(toolId, orderValue) {
-    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
-      const session = await this.currentSessionForRoute();
-      if (!session.isAdmin || !session.userKey) {
-        throw new Error("Admin role required to update Toolbox vote order.");
-      }
-      const normalizedToolId = String(toolId || "");
-      const rows = await this.supabaseToolboxToolMetadataRows();
-      const existingRow = rows.find((row) => normalizedToolKey(row) === normalizedToolId);
-      if (!existingRow) {
-        throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
-      }
-      const rawOrder = Number(orderValue);
-      if (!Number.isFinite(rawOrder)) {
-        throw new Error("Toolbox vote order must be a number.");
-      }
-      const audit = createMockDbAuditFields(0, session.userKey);
-      const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox tool metadata order");
-      await adapter.upsertProductTable("toolbox_tool_metadata", [{
-        ...existingRow,
-        order: Math.max(1, Math.round(rawOrder)),
-        updatedAt: audit.updatedAt,
-        updatedBy: audit.updatedBy,
-      }]);
-      return this.toolboxVoteSnapshotForRoute();
-    }
-    const session = this.currentSession();
+    const session = await this.currentSessionForRoute();
     if (!session.isAdmin || !session.userKey) {
       throw new Error("Admin role required to update Toolbox vote order.");
     }
     const normalizedToolId = String(toolId || "");
-    const rows = this.ensureToolboxToolMetadataRows();
+    const rows = await this.supabaseToolboxToolMetadataRows();
     const existingRow = rows.find((row) => normalizedToolKey(row) === normalizedToolId);
     if (!existingRow) {
       throw new Error(`Unknown Toolbox vote tool: ${normalizedToolId || "missing"}.`);
@@ -2750,61 +2614,24 @@ class LocalDevDataSource {
     if (!Number.isFinite(rawOrder)) {
       throw new Error("Toolbox vote order must be a number.");
     }
-    const order = Math.max(1, Math.round(rawOrder));
-
     const audit = createMockDbAuditFields(0, session.userKey);
-    existingRow.order = order;
-    existingRow.updatedAt = audit.updatedAt;
-    existingRow.updatedBy = audit.updatedBy;
-    this.cleared = false;
-    this.persistCurrentAdapterState("Persisting Toolbox tool metadata order");
-    return this.toolboxVoteSnapshot();
+    const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox tool metadata order");
+    await adapter.upsertProductTable("toolbox_tool_metadata", [{
+      ...existingRow,
+      order: Math.max(1, Math.round(rawOrder)),
+      updatedAt: audit.updatedAt,
+      updatedBy: audit.updatedBy,
+    }]);
+    return this.toolboxVoteSnapshotForRoute();
   }
 
   async updateToolboxToolMetadata(toolId, updates = {}) {
-    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
-      const session = await this.currentSessionForRoute();
-      if (!session.isAdmin || !session.userKey) {
-        throw new Error("Admin role required to update Toolbox tool metadata.");
-      }
-      const normalizedToolId = String(toolId || "");
-      const rows = await this.supabaseToolboxToolMetadataRows();
-      const row = rows.find((candidate) => normalizedToolKey(candidate) === normalizedToolId);
-      if (!row) {
-        throw new Error(`Toolbox metadata row missing for ${normalizedToolId}.`);
-      }
-      const group = String(updates.group || "").trim();
-      const pathValue = String(updates.path || "").trim().replace(/^\/+/, "");
-      const releaseChannel = getToolReleaseChannel(updates.status || updates.releaseChannel);
-      if (!group) {
-        throw new Error("Toolbox metadata group is required.");
-      }
-      if (!pathValue) {
-        throw new Error("Toolbox metadata path is required.");
-      }
-      const audit = createMockDbAuditFields(0, session.userKey);
-      const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox tool metadata");
-      await adapter.upsertProductTable("toolbox_tool_metadata", [{
-        ...row,
-        group,
-        category: group,
-        path: pathValue,
-        status: releaseChannel,
-        toolKey: row.toolKey || row.toolId || normalizedToolId,
-        toolId: row.toolId || row.toolKey || normalizedToolId,
-        releaseChannel,
-        releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
-        updatedAt: audit.updatedAt,
-        updatedBy: audit.updatedBy,
-      }]);
-      return this.toolboxVoteSnapshotForRoute();
-    }
-    const session = this.currentSession();
+    const session = await this.currentSessionForRoute();
     if (!session.isAdmin || !session.userKey) {
       throw new Error("Admin role required to update Toolbox tool metadata.");
     }
     const normalizedToolId = String(toolId || "");
-    const rows = this.ensureToolboxToolMetadataRows();
+    const rows = await this.supabaseToolboxToolMetadataRows();
     const row = rows.find((candidate) => normalizedToolKey(candidate) === normalizedToolId);
     if (!row) {
       throw new Error(`Toolbox metadata row missing for ${normalizedToolId}.`);
@@ -2819,64 +2646,32 @@ class LocalDevDataSource {
       throw new Error("Toolbox metadata path is required.");
     }
     const audit = createMockDbAuditFields(0, session.userKey);
-    row.group = group;
-    row.category = group;
-    row.path = pathValue;
-    row.status = releaseChannel;
-    row.toolKey = row.toolKey || row.toolId || normalizedToolId;
-    row.toolId = row.toolId || row.toolKey || normalizedToolId;
-    row.releaseChannel = releaseChannel;
-    row.releaseChannelLabel = getToolReleaseChannelLabel(releaseChannel);
-    row.updatedAt = audit.updatedAt;
-    row.updatedBy = audit.updatedBy;
-    this.cleared = false;
-    this.persistCurrentAdapterState("Persisting Toolbox tool metadata");
-    return this.toolboxVoteSnapshot();
+    const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox tool metadata");
+    await adapter.upsertProductTable("toolbox_tool_metadata", [{
+      ...row,
+      group,
+      category: group,
+      path: pathValue,
+      status: releaseChannel,
+      toolKey: row.toolKey || row.toolId || normalizedToolId,
+      toolId: row.toolId || row.toolKey || normalizedToolId,
+      releaseChannel,
+      releaseChannelLabel: getToolReleaseChannelLabel(releaseChannel),
+      updatedAt: audit.updatedAt,
+      updatedBy: audit.updatedBy,
+    }]);
+    return this.toolboxVoteSnapshotForRoute();
   }
 
   async reorderToolboxVoteRows(toolIds) {
-    if (this.selectedDatabaseProviderId() === SUPABASE_POSTGRES_PROVIDER_ID) {
-      const session = await this.currentSessionForRoute();
-      if (!session.isAdmin || !session.userKey) {
-        throw new Error("Admin role required to reorder Toolbox vote rows.");
-      }
-      if (!Array.isArray(toolIds)) {
-        throw new Error("Toolbox vote reorder requires an ordered tool list.");
-      }
-      const metadataRows = (await this.supabaseToolboxToolMetadataRows()).filter((row) => row.active !== false);
-      const visibleToolIds = metadataRows.map((row) => normalizedToolKey(row));
-      const visibleToolIdSet = new Set(visibleToolIds);
-      const orderedToolIds = toolIds.map((toolId) => String(toolId || "")).filter(Boolean);
-      const uniqueToolIds = [...new Set(orderedToolIds)];
-      if (uniqueToolIds.length !== visibleToolIds.length) {
-        throw new Error("Toolbox vote reorder must include each visible Toolbox tool exactly once.");
-      }
-      const unknownToolId = uniqueToolIds.find((candidate) => !visibleToolIdSet.has(candidate));
-      if (unknownToolId) {
-        throw new Error(`Unknown Toolbox vote tool: ${unknownToolId}.`);
-      }
-      const audit = createMockDbAuditFields(0, session.userKey);
-      const updatedRows = uniqueToolIds.map((toolId, index) => {
-        const existingRow = metadataRows.find((row) => (row.toolKey || row.toolId) === toolId);
-        return {
-          ...existingRow,
-          order: index + 1,
-          updatedAt: audit.updatedAt,
-          updatedBy: audit.updatedBy,
-        };
-      });
-      const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox tool metadata row order");
-      await adapter.upsertProductTable("toolbox_tool_metadata", updatedRows);
-      return this.toolboxVoteSnapshotForRoute();
-    }
-    const session = this.currentSession();
+    const session = await this.currentSessionForRoute();
     if (!session.isAdmin || !session.userKey) {
       throw new Error("Admin role required to reorder Toolbox vote rows.");
     }
     if (!Array.isArray(toolIds)) {
       throw new Error("Toolbox vote reorder requires an ordered tool list.");
     }
-    const metadataRows = this.ensureToolboxToolMetadataRows().filter((row) => row.active !== false);
+    const metadataRows = (await this.supabaseToolboxToolMetadataRows()).filter((row) => row.active !== false);
     const visibleToolIds = metadataRows.map((row) => normalizedToolKey(row));
     const visibleToolIdSet = new Set(visibleToolIds);
     const orderedToolIds = toolIds.map((toolId) => String(toolId || "")).filter(Boolean);
@@ -2888,21 +2683,19 @@ class LocalDevDataSource {
     if (unknownToolId) {
       throw new Error(`Unknown Toolbox vote tool: ${unknownToolId}.`);
     }
-
-    const rows = this.ensureToolboxToolMetadataRows();
-    uniqueToolIds.forEach((toolId, index) => {
-      const order = index + 1;
-      const audit = createMockDbAuditFields(0, session.userKey);
-      const existingRow = rows.find((row) => (row.toolKey || row.toolId) === toolId);
-      if (existingRow) {
-        existingRow.order = order;
-        existingRow.updatedAt = audit.updatedAt;
-        existingRow.updatedBy = audit.updatedBy;
-      }
+    const audit = createMockDbAuditFields(0, session.userKey);
+    const updatedRows = uniqueToolIds.map((toolId, index) => {
+      const existingRow = metadataRows.find((row) => (row.toolKey || row.toolId) === toolId);
+      return {
+        ...existingRow,
+        order: index + 1,
+        updatedAt: audit.updatedAt,
+        updatedBy: audit.updatedBy,
+      };
     });
-    this.cleared = false;
-    this.persistCurrentAdapterState("Persisting Toolbox tool metadata row order");
-    return this.toolboxVoteSnapshot();
+    const adapter = this.supabaseDatabaseAdapter("Persisting Supabase Toolbox tool metadata row order");
+    await adapter.upsertProductTable("toolbox_tool_metadata", updatedRows);
+    return this.toolboxVoteSnapshotForRoute();
   }
 
   repositoryForTool(toolId) {
@@ -3132,9 +2925,7 @@ class LocalDevDataSource {
   }
 
   async toolRegistrySnapshotForRoute() {
-    if (this.selectedDatabaseProviderId() !== SUPABASE_POSTGRES_PROVIDER_ID) {
-      return this.toolRegistrySnapshot();
-    }
+    this.supabaseDatabaseAdapter("Reading Toolbox registry");
     const planningRows = await this.supabaseToolboxToolPlanningRows();
     const planningByToolKey = new Map(planningRows.map((row) => [row.toolKey, row]));
     const metadataRows = await this.supabaseToolboxToolMetadataRows();
@@ -3157,15 +2948,6 @@ class LocalDevDataSource {
   }
 
   async snapshotForRoute() {
-    const providerId = this.selectedDatabaseProviderId();
-    if (providerId === LOCAL_DATABASE_PROVIDER_ID) {
-      return this.snapshot();
-    }
-    if (providerId !== SUPABASE_POSTGRES_PROVIDER_ID) {
-      const providerContract = this.providerContract();
-      throw new Error(`Reading database state requires a supported database provider. Selected database provider is ${providerId}. ${providerFailureMessage(providerContract, providerId)}`);
-    }
-
     const adapter = this.supabaseDatabaseAdapter("Reading Supabase product database state");
     const providerSnapshot = await adapter.getDbViewerSnapshot();
     const baseline = this.snapshot({ skipAdapterCheck: true });

@@ -310,36 +310,33 @@ function fakeSupabaseIdentityTables(overrides = {}) {
   };
 }
 
-test("Supabase provider contract stubs keep explicitly selected Local DB active", () => {
+test("Supabase provider contract ignores legacy Local DB selector variables", () => {
   const snapshot = createProviderContractSnapshot({
     GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
     GAMEFOUNDRY_DB_PROVIDER: "local-db",
   });
-  assert.equal(snapshot.activeProviders.authProviderId, "local-db");
-  assert.equal(snapshot.activeProviders.databaseProviderId, "local-db");
-  assert.equal(snapshot.activeProviders.status, "ready");
-  assert.equal(snapshot.activationReadiness.localDbSelected, true);
+  assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
+  assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
+  assert.equal(snapshot.activeProviders.status, "failed");
   assert.equal(snapshot.activationReadiness.readyBeforeActivation, false);
-  assert.equal(snapshot.activationReadiness.selectedProvidersReady, true);
+  assert.equal(snapshot.activationReadiness.runtimeProviderPathReady, false);
   assert.equal(snapshot.activationReadiness.supabaseAuthReady, false);
   assert.equal(snapshot.activationReadiness.supabasePostgresReady, false);
-  assert.equal(snapshot.requestedProviders.authProviderId, "local-db");
-  assert.equal(snapshot.requestedProviders.databaseProviderId, "local-db");
   assert.equal(snapshot.boundary, "Browser -> API/Service Contract -> Database");
-  assert.equal(snapshot.failureContract.selectedProviderAuthoritative, true);
+  assert.equal(snapshot.failureContract.runtimeProviderPathFixed, true);
   assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
   assert.equal(snapshot.failureContract.providerChainingAllowed, false);
   assert.deepEqual(snapshot.identityOwnership.ownershipFields, ["key", "createdAt", "updatedAt", "createdBy", "updatedBy"]);
-  assert.equal(snapshot.identityOwnership.ownerProviderId, "local-db");
-  assert.equal(snapshot.identityOwnership.productDatabaseProviderId, "local-db");
-  assert.equal(snapshot.identityOwnership.readerProviderId, "local-db");
+  assert.equal(snapshot.identityOwnership.ownerProviderId, "supabase-auth");
+  assert.equal(snapshot.identityOwnership.productDatabaseProviderId, "supabase-postgres");
+  assert.equal(snapshot.identityOwnership.readerProviderId, "supabase-postgres");
   assert.equal(snapshot.identityOwnership.userKeyAuthority, "users.key");
   assert.equal(snapshot.identityOwnership.browserAuthoritativeKeysAllowed, false);
   assert.equal(snapshot.identityOwnership.serverApiOwnsKeyGeneration, true);
   assert.match(snapshot.identityOwnership.staticDevUserUlidException, /User 1, User 2, User 3, and DavidQ admin only/);
   assert.match(snapshot.identityOwnership.temporaryDevOnlyException, /Static ULIDs are allowed only/);
   assert.deepEqual(snapshot.identityOwnership.tables, ["users", "roles", "user_roles"]);
-  assert.equal(snapshot.supabaseAuth.status, "adapter-inactive");
+  assert.equal(snapshot.supabaseAuth.status, "not-configured");
   assert.equal(snapshot.supabaseAuth.adapter.activeByDefault, true);
   assert.equal(snapshot.supabaseAuth.adapter.passwordStorage, "external-provider");
   assert.equal(snapshot.supabaseAuth.adapter.serviceRoleSecretsUsed, false);
@@ -355,39 +352,42 @@ test("Supabase provider contract stubs keep explicitly selected Local DB active"
   assert.equal(snapshot.supabaseAuth.userMapping.appUserKeyField, "users.key");
   assert.equal(snapshot.supabaseAuth.userMapping.externalAuthUserIdField, "supabase.auth.user.id");
   assert.equal(snapshot.supabaseAuth.userMapping.browserAuthoritativeUserKeysAllowed, false);
-  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, ["local-db"]);
-  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, ["local-db"]);
-  assert.deepEqual(snapshot.providerDiagnostics.providerFailures, []);
-  assert.deepEqual(snapshot.providerDiagnostics.selectionControls.auth.supportedProviders, [
-    "local-db",
-    "supabase-auth",
+  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, []);
+  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, []);
+  assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.reason), [
+    "missing-configuration",
+    "missing-configuration",
   ]);
-  assert.deepEqual(snapshot.providerDiagnostics.selectionControls.database.supportedProviders, [
-    "local-db",
-    "supabase-postgres",
+  assert.deepEqual(snapshot.providerDiagnostics.ignoredRuntimeSelectors.map((entry) => entry.environmentVariable), [
+    "GAMEFOUNDRY_AUTH_PROVIDER",
+    "GAMEFOUNDRY_DB_PROVIDER",
   ]);
-  assert.equal(snapshot.runtimeActivation.localDbSelected, true);
+  assert.deepEqual(snapshot.providerDiagnostics.ignoredRuntimeSelectors.map((entry) => entry.ignoredValue), [
+    "local-db",
+    "local-db",
+  ]);
   assert.equal(snapshot.runtimeActivation.browserReceivesServiceRoleSecrets, false);
-  assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
-  assert.equal(snapshot.supabasePreflight.overallStatus, "WARN");
+  assert.equal(snapshot.runtimeActivation.runtimeProviderPathFixed, true);
+  assert.equal(snapshot.runtimeActivation.runtimeProviderPathReady, false);
+  assert.equal(snapshot.supabasePreflight.overallStatus, "FAIL");
   assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
-  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, true);
-  assert.equal(snapshot.supabasePreflight.supabaseSelected, false);
+  assert.equal(snapshot.supabasePreflight.runtimeProviderPathReady, false);
+  assert.equal(snapshot.supabasePreflight.supabaseActive, true);
   assert.equal(snapshot.supabasePreflight.secretValuesExposed, false);
   assert.equal(snapshot.supabasePreflight.serverOnlySecretNamesExposed, false);
-  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "PASS");
-  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "PASS");
-  assert.equal(preflightCheck(snapshot, "supabase-url").status, "WARN");
-  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "WARN");
-  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "WARN");
-  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "WARN");
-  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "WARN");
-  assert.match(snapshot.providerDiagnostics.missingConfigWarnings.join("\n"), /Supabase Auth future provider is not configured/);
+  assert.equal(preflightCheck(snapshot, "runtime-auth-provider").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "runtime-database-provider").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "supabase-url").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "identity-tables-readiness").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "FAIL");
+  assert.match(snapshot.providerDiagnostics.missingConfigWarnings.join("\n"), /Supabase Auth is not configured/);
   assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
   assert.equal(snapshot.supabasePostgres.serverOnlySecretsExposed, false);
   assert.equal(snapshot.supabasePostgres.serverOnlySecretNamesExposed, false);
-  assert.equal(snapshot.supabasePostgres.status, "adapter-inactive");
-  assert.equal(snapshot.supabasePostgres.adapter.activeByDefault, false);
+  assert.equal(snapshot.supabasePostgres.status, "not-configured");
+  assert.equal(snapshot.supabasePostgres.adapter.activeByDefault, true);
   assert.equal(snapshot.supabasePostgres.adapter.implementation, "config-gated Supabase Postgres REST adapter");
   assert.equal(snapshot.supabasePostgres.adapter.keyGenerationOwner, "server-api");
   assert.equal(snapshot.supabasePostgres.adapter.staticUlidsAllowedOnlyForDevSeedUsers, true);
@@ -413,7 +413,7 @@ test("Supabase provider contract stubs keep explicitly selected Local DB active"
     "runSiteSetup",
     "getDbViewerSnapshot",
   ]);
-  assert.equal(snapshot.supabasePostgres.dataMigrationActive, false);
+  assert.equal(snapshot.supabasePostgres.dataMigrationActive, true);
   assert.deepEqual(snapshot.supabasePostgres.migrationSequence, [
     "Supabase Auth",
     "Supabase users/roles/user_roles",
@@ -433,23 +433,22 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
   assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
   assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
   assert.equal(snapshot.activeProviders.status, "failed");
-  assert.equal(snapshot.requestedProviders.authProviderId, "supabase-auth");
-  assert.equal(snapshot.requestedProviders.databaseProviderId, "supabase-postgres");
   assert.equal(snapshot.providerDiagnostics.activeProvider.authProviderId, "supabase-auth");
   assert.equal(snapshot.providerDiagnostics.activeProvider.databaseProviderId, "supabase-postgres");
   assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
+  assert.equal(snapshot.failureContract.runtimeProviderPathFixed, true);
   assert.equal(snapshot.supabaseAuth.status, "not-configured");
   assert.equal(snapshot.supabasePostgres.status, "not-configured");
   assert.equal(snapshot.activationReadiness.readyBeforeActivation, false);
-  assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
-  assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, false);
-  assert.equal(snapshot.runtimeActivation.selectedProvidersFailed, true);
+  assert.equal(snapshot.activationReadiness.runtimeProviderPathReady, false);
+  assert.equal(snapshot.runtimeActivation.runtimeProviderPathReady, false);
+  assert.equal(snapshot.runtimeActivation.runtimeProviderPathFailed, true);
   assert.equal(snapshot.supabasePreflight.overallStatus, "FAIL");
-  assert.equal(snapshot.supabasePreflight.supabaseSelected, true);
-  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, false);
+  assert.equal(snapshot.supabasePreflight.supabaseActive, true);
+  assert.equal(snapshot.supabasePreflight.runtimeProviderPathReady, false);
   assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
-  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "PASS");
-  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "runtime-auth-provider").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "runtime-database-provider").status, "PASS");
   assert.equal(preflightCheck(snapshot, "supabase-url").status, "FAIL");
   assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "FAIL");
   assert.equal(preflightCheck(snapshot, "supabase-server-only-credential").status, "FAIL");
@@ -467,8 +466,8 @@ test("Supabase stubs fail visibly when selected without configuration", () => {
     "supabase-postgres",
   ]);
   assert.equal(JSON.stringify(snapshot).includes("rollback"), false);
-  assert.match(snapshot.supabaseAuth.diagnostic, /Supabase Auth provider selected but not configured/);
-  assert.match(snapshot.supabasePostgres.diagnostic, /Supabase Postgres provider selected but not configured/);
+  assert.match(snapshot.supabaseAuth.diagnostic, /Supabase Auth provider is not configured/);
+  assert.match(snapshot.supabasePostgres.diagnostic, /Supabase Postgres provider is not configured/);
   assert.deepEqual(snapshot.supabaseAuth.missingBrowserSafeEnvironmentVariables, [
     "GAMEFOUNDRY_SUPABASE_URL",
     "GAMEFOUNDRY_SUPABASE_ANON_KEY",
@@ -487,8 +486,6 @@ test("Default startup selects Supabase Auth and Supabase Postgres product data w
     assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
     assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
     assert.equal(snapshot.activeProviders.status, "failed");
-    assert.equal(snapshot.requestedProviders.authProviderId, "supabase-auth");
-    assert.equal(snapshot.requestedProviders.databaseProviderId, "supabase-postgres");
     assert.equal(snapshot.identityOwnership.ownerProviderId, "supabase-auth");
     assert.equal(snapshot.identityOwnership.productDatabaseProviderId, "supabase-postgres");
     assert.equal(snapshot.identityOwnership.dataMigrationActive, true);
@@ -506,13 +503,13 @@ test("Default startup selects Supabase Auth and Supabase Postgres product data w
       assert.equal(status.status, "unavailable");
       assert.equal(status.noAutomaticFallback, true);
       assert.equal(status.message, "The site is currently unavailable. Please try again later.");
-      assert.match(status.operatorDiagnostic, /Supabase Auth provider selected but not configured/);
+      assert.match(status.operatorDiagnostic, /Supabase Auth provider is not configured/);
 
       const session = await apiPayload(server.baseUrl, "/api/session/current");
       assert.equal(session.status, 200);
       assert.equal(session.payload.ok, true);
       assert.equal(session.payload.data.authenticated, false);
-      assert.match(session.payload.data.diagnostic, /Supabase Auth provider selected but not configured/);
+      assert.match(session.payload.data.diagnostic, /Supabase Auth provider is not configured/);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "creator@example.test",
@@ -551,51 +548,50 @@ test("Provider contract assigns identity and product data ownership to Supabase 
   assert.deepEqual(snapshot.identityOwnership.ownershipFields, ["key", "createdAt", "updatedAt", "createdBy", "updatedBy"]);
   assert.deepEqual(snapshot.identityOwnership.tables, ["users", "roles", "user_roles"]);
   assert.match(snapshot.identityOwnership.staticDevUserUlidException, /DavidQ admin only/);
-  assert.equal(snapshot.runtimeActivation.supabaseAuthSelected, true);
-  assert.equal(snapshot.runtimeActivation.supabasePostgresSelected, true);
+  assert.equal(snapshot.runtimeActivation.supabaseAuthActive, true);
+  assert.equal(snapshot.runtimeActivation.supabasePostgresActive, true);
   assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
   assert.equal(JSON.stringify(snapshot).includes("server-only-service-role-key"), false);
 });
 
-test("Auth status distinguishes configured Supabase when Local DB auth remains selected", async () => {
-  const fakeSupabase = await startFakeSupabaseAuthServer();
+test("Auth status ignores legacy Local DB selectors when Supabase is configured", async () => {
+  const fakeSupabase = await startFakeSupabaseAuthServer({
+    identityTables: fakeSupabaseIdentityTables(),
+  });
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
     GAMEFOUNDRY_DB_PROVIDER: "local-db",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
   }, async () => {
     const server = await startApiServer();
     try {
       const status = await apiJson(server.baseUrl, "/api/auth/status");
-      assert.equal(status.ready, false);
-      assert.equal(status.status, "provider-not-selected");
-      assert.equal(status.message, "The site is currently unavailable. Please try again later.");
+      assert.equal(status.ready, true);
+      assert.equal(status.status, "ready");
+      assert.equal(status.message, "Account service is available.");
       assert.equal(status.configured, true);
       assert.equal(status.supabaseConfigPresent, true);
-      assert.equal(status.supabaseProviderSelected, false);
-      assert.equal(status.supabaseProviderNotSelected, true);
-      assert.equal(status.supabaseConnectivityStatus, "not-checked");
-      assert.equal(status.connectivityHealthy, null);
-      assert.equal(status.authProviderId, "local-db");
-      assert.equal(status.databaseProviderId, "local-db");
-      assert.match(status.operatorDiagnostic, /selected auth provider is local-db/);
-      assert.match(status.operatorDiagnostic, /GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth/);
-      assert.match(status.operatorDiagnostic, /GAMEFOUNDRY_DB_PROVIDER=supabase-postgres/);
+      assert.equal(status.supabaseProviderActive, true);
+      assert.equal(status.supabaseConnectivityStatus, "healthy");
+      assert.equal(status.connectivityHealthy, true);
+      assert.equal(status.authProviderId, "supabase-auth");
+      assert.equal(status.databaseProviderId, "supabase-postgres");
+      assert.match(status.operatorDiagnostic, /Supabase Auth is configured, reachable/);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.operatorOnly, true);
-      assert.equal(preflight.selected, false);
+      assert.equal(preflight.active, true);
       assert.equal(preflight.supabaseConfigPresent, true);
-      assert.equal(preflight.supabaseProviderSelected, false);
-      assert.equal(preflight.supabaseProviderNotSelected, true);
-      assert.equal(preflight.localDbProductDataActive, true);
-      assert.equal(preflight.supabaseProductDataActive, false);
+      assert.equal(preflight.supabaseProviderActive, true);
+      assert.equal(preflight.localDbProductDataActive, false);
+      assert.equal(preflight.supabaseProductDataActive, true);
       assert.equal(preflight.connectivityStatus, "healthy");
       assert.equal(preflight.connectivityHealthy, true);
       assert.equal(preflight.status, "healthy");
-      assert.equal(preflight.checks.find((check) => check.id === "supabase-provider-selected").status, "WARN");
-      assert.equal(preflight.checks.find((check) => check.id === "supabase-product-data").status, "FAIL");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-runtime-provider").status, "PASS");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-product-data").status, "PASS");
       assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "PASS");
       assert.equal(JSON.stringify(preflight).includes("test-anon-key"), false);
     } finally {
@@ -605,7 +601,7 @@ test("Auth status distinguishes configured Supabase when Local DB auth remains s
   await fakeSupabase.close();
 });
 
-test("Selected Supabase providers keep diagnostics available and block product data routes when not configured", async () => {
+test("Fixed Supabase providers keep diagnostics available and block product data routes when not configured", async () => {
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
@@ -624,19 +620,19 @@ test("Selected Supabase providers keep diagnostics available and block product d
       assert.equal(session.status, 200);
       assert.equal(session.payload.ok, true);
       assert.equal(session.payload.data.authenticated, false);
-      assert.match(session.payload.data.diagnostic, /Supabase Auth provider selected but not configured/);
+      assert.match(session.payload.data.diagnostic, /Supabase Auth provider is not configured/);
 
       const snapshot = await apiPayload(server.baseUrl, "/api/local-db/snapshot");
       assert.equal(snapshot.status, 500);
       assert.equal(snapshot.payload.ok, false);
-      assert.match(snapshot.payload.error, /Supabase Postgres provider selected but not configured/);
+      assert.match(snapshot.payload.error, /Supabase Postgres provider is not configured/);
     } finally {
       await server.close();
     }
   });
 });
 
-test("Supabase Auth selection with Local DB product data fails auth actions safely", async () => {
+test("Legacy Local DB product data selector is ignored and missing Supabase config fails safely", async () => {
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "local-db",
@@ -647,40 +643,39 @@ test("Supabase Auth selection with Local DB product data fails auth actions safe
     try {
       const status = await apiJson(server.baseUrl, "/api/auth/status");
       assert.equal(status.ready, false);
-      assert.equal(status.selected, true);
+      assert.equal(status.active, true);
       assert.equal(status.configured, false);
       assert.equal(status.supabaseConfigPresent, false);
-      assert.equal(status.supabaseProviderSelected, true);
-      assert.equal(status.supabaseProviderNotSelected, false);
+      assert.equal(status.supabaseProviderActive, true);
       assert.equal(status.supabaseConnectivityStatus, "not-configured");
       assert.equal(status.connectivityHealthy, null);
-      assert.equal(status.databaseProviderId, "local-db");
-      assert.equal(status.localDbProductDataActive, true);
-      assert.equal(status.supabaseProductDataActive, false);
+      assert.equal(status.databaseProviderId, "supabase-postgres");
+      assert.equal(status.localDbProductDataActive, false);
+      assert.equal(status.supabaseProductDataActive, true);
       assert.equal(status.noAutomaticFallback, true);
       assert.equal(status.message, "The site is currently unavailable. Please try again later.");
-      assert.match(status.operatorDiagnostic, /requires Supabase Postgres/);
+      assert.match(status.operatorDiagnostic, /Supabase Auth provider is not configured/);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, false);
-      assert.equal(preflight.supabaseProviderSelected, true);
-      assert.equal(preflight.supabaseProductDataActive, false);
+      assert.equal(preflight.supabaseProviderActive, true);
+      assert.equal(preflight.supabaseProductDataActive, true);
       assert.equal(preflight.connectivityStatus, "not-configured");
       assert.equal(preflight.connectivityHealthy, false);
       assert.equal(preflight.checks.find((check) => check.id === "supabase-config-present").status, "FAIL");
-      assert.equal(preflight.checks.find((check) => check.id === "supabase-product-data").status, "FAIL");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-product-data").status, "PASS");
       assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "SKIP");
 
       const session = await apiPayload(server.baseUrl, "/api/session/current");
       assert.equal(session.status, 200);
       assert.equal(session.payload.ok, true);
       assert.equal(session.payload.data.authenticated, false);
-      assert.match(session.payload.data.diagnostic, /requires Supabase Postgres/);
+      assert.match(session.payload.data.diagnostic, /Supabase Auth provider is not configured/);
 
       const snapshot = await apiPayload(server.baseUrl, "/api/local-db/snapshot");
-      assert.equal(snapshot.status, 200);
-      assert.equal(snapshot.payload.ok, true);
-      assert.equal(Array.isArray(snapshot.payload.data.tables.users), true);
+      assert.equal(snapshot.status, 500);
+      assert.equal(snapshot.payload.ok, false);
+      assert.match(snapshot.payload.error, /Supabase Postgres provider is not configured/);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
         email: "creator@example.test",
@@ -715,19 +710,18 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(status.supabaseProductDataActive, true);
       assert.equal(status.message, "Account service is available.");
       assert.equal(status.supabaseConfigPresent, true);
-      assert.equal(status.supabaseProviderSelected, true);
-      assert.equal(status.supabaseProviderNotSelected, false);
+      assert.equal(status.supabaseProviderActive, true);
       assert.equal(status.supabaseConnectivityStatus, "healthy");
       assert.equal(status.connectivityHealthy, true);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, true);
-      assert.equal(preflight.supabaseProviderSelected, true);
+      assert.equal(preflight.supabaseProviderActive, true);
       assert.equal(preflight.localDbProductDataActive, false);
       assert.equal(preflight.supabaseProductDataActive, true);
       assert.equal(preflight.connectivityStatus, "healthy");
       assert.equal(preflight.connectivityHealthy, true);
-      assert.equal(preflight.checks.find((check) => check.id === "supabase-provider-selected").status, "PASS");
+      assert.equal(preflight.checks.find((check) => check.id === "supabase-runtime-provider").status, "PASS");
       assert.equal(preflight.checks.find((check) => check.id === "supabase-connectivity").status, "PASS");
 
       const signIn = await postApiPayload(server.baseUrl, "/api/auth/sign-in", {
@@ -1157,7 +1151,7 @@ test("Default Supabase Auth routes sign in create account and password reset thr
       assert.equal(status.supabaseProductDataActive, true);
       assert.equal(status.message, "Account service is available.");
       assert.equal(status.noAutomaticFallback, true);
-      assert.equal(status.selected, true);
+      assert.equal(status.active, true);
       assert.equal(status.configured, true);
       assert.equal(status.connectivityHealthy, true);
 
@@ -1359,7 +1353,7 @@ test("Operator auth preflight reports failed Supabase connectivity for wrong ano
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, true);
-      assert.equal(preflight.supabaseProviderSelected, true);
+      assert.equal(preflight.supabaseProviderActive, true);
       assert.equal(preflight.connectivityStatus, "failed");
       assert.equal(preflight.connectivityHealthy, false);
       assert.equal(preflight.status, "failed");
@@ -1422,11 +1416,11 @@ test("Supabase stubs do not expose server-only secret names or values through th
 
 test("Supabase Auth adapter fails visibly when selected without configuration", async () => {
   const auth = new SupabaseAuthProviderStub({ env: { GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth" } });
-  await assert.rejects(() => auth.getCurrentUser(), /Supabase Auth provider selected but not configured/);
-  await assert.rejects(() => auth.signIn(), /Supabase Auth provider selected but not configured/);
-  await assert.rejects(() => auth.signOut(), /Supabase Auth provider selected but not configured/);
-  await assert.rejects(() => auth.createAccount(), /Supabase Auth provider selected but not configured/);
-  await assert.rejects(() => auth.requestPasswordReset(), /Supabase Auth provider selected but not configured/);
+  await assert.rejects(() => auth.getCurrentUser(), /Supabase Auth provider is not configured/);
+  await assert.rejects(() => auth.signIn(), /Supabase Auth provider is not configured/);
+  await assert.rejects(() => auth.signOut(), /Supabase Auth provider is not configured/);
+  await assert.rejects(() => auth.createAccount(), /Supabase Auth provider is not configured/);
+  await assert.rejects(() => auth.requestPasswordReset(), /Supabase Auth provider is not configured/);
   assert.throws(() => auth.requireRole(), /future app user mapping adapter/);
 });
 
@@ -1477,17 +1471,17 @@ test("Supabase Auth adapter uses service role only for server-owned account crea
 
 test("Supabase Postgres adapter fails visibly when selected without configuration", async () => {
   const database = new SupabasePostgresProviderStub({ env: { GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres" } });
-  assert.throws(() => database.connect(), /Supabase Postgres provider selected but not configured/);
-  await assert.rejects(() => database.getUsers(), /Supabase Postgres provider selected but not configured/);
-  await assert.rejects(() => database.getRoles(), /Supabase Postgres provider selected but not configured/);
-  await assert.rejects(() => database.getUserRoles(), /Supabase Postgres provider selected but not configured/);
-  await assert.rejects(() => database.initializeIdentity(), /Supabase Postgres provider selected but not configured/);
-  await assert.rejects(() => database.deleteUserByKey("user-key"), /Supabase Postgres provider selected but not configured/);
-  await assert.rejects(() => database.deleteUserRolesForUserKey("user-key"), /Supabase Postgres provider selected but not configured/);
-  await assert.rejects(() => database.reassignRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres provider selected but not configured/);
-  await assert.rejects(() => database.reassignUserRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres provider selected but not configured/);
-  assert.throws(() => database.runSiteSetup(), /Supabase Postgres provider selected but not configured/);
-  await assert.rejects(() => database.getDbViewerSnapshot(), /Supabase Postgres provider selected but not configured/);
+  assert.throws(() => database.connect(), /Supabase Postgres provider is not configured/);
+  await assert.rejects(() => database.getUsers(), /Supabase Postgres provider is not configured/);
+  await assert.rejects(() => database.getRoles(), /Supabase Postgres provider is not configured/);
+  await assert.rejects(() => database.getUserRoles(), /Supabase Postgres provider is not configured/);
+  await assert.rejects(() => database.initializeIdentity(), /Supabase Postgres provider is not configured/);
+  await assert.rejects(() => database.deleteUserByKey("user-key"), /Supabase Postgres provider is not configured/);
+  await assert.rejects(() => database.deleteUserRolesForUserKey("user-key"), /Supabase Postgres provider is not configured/);
+  await assert.rejects(() => database.reassignRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres provider is not configured/);
+  await assert.rejects(() => database.reassignUserRoleAuditReferences({ fromUserKey: "from-user", toUserKey: "to-user" }), /Supabase Postgres provider is not configured/);
+  assert.throws(() => database.runSiteSetup(), /Supabase Postgres provider is not configured/);
+  await assert.rejects(() => database.getDbViewerSnapshot(), /Supabase Postgres provider is not configured/);
 });
 
 test("Supabase Postgres adapter supports identity tables and readiness when configured", async () => {
@@ -1773,14 +1767,14 @@ test("Admin identity setup API fails visibly when Supabase Postgres is selected 
       });
       assert.equal(response.status, 500);
       assert.equal(response.payload.ok, false);
-      assert.match(response.payload.error, /Supabase Postgres provider selected but not configured/);
+      assert.match(response.payload.error, /Supabase Postgres provider is not configured/);
     } finally {
       await server.close();
     }
   });
 });
 
-test("Supabase activation diagnostics report readiness for selected providers", () => {
+test("Supabase activation diagnostics report readiness for fixed providers", () => {
   const snapshot = createProviderContractSnapshot({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
@@ -1793,18 +1787,17 @@ test("Supabase activation diagnostics report readiness for selected providers", 
   assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
   assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
   assert.equal(snapshot.activeProviders.status, "ready");
-  assert.equal(snapshot.activationReadiness.localDbSelected, false);
   assert.equal(snapshot.activationReadiness.readyBeforeActivation, true);
-  assert.equal(snapshot.activationReadiness.selectedProvidersReady, true);
+  assert.equal(snapshot.activationReadiness.runtimeProviderPathReady, true);
   assert.equal(snapshot.activationReadiness.siteSetupReady, true);
   assert.equal(snapshot.activationReadiness.supabaseAuthReady, true);
   assert.equal(snapshot.activationReadiness.supabasePostgresReady, true);
-  assert.equal(snapshot.runtimeActivation.selectedProvidersCanServeRuntime, true);
-  assert.equal(snapshot.runtimeActivation.supabaseAuthSelected, true);
-  assert.equal(snapshot.runtimeActivation.supabasePostgresSelected, true);
+  assert.equal(snapshot.runtimeActivation.runtimeProviderPathReady, true);
+  assert.equal(snapshot.runtimeActivation.supabaseAuthActive, true);
+  assert.equal(snapshot.runtimeActivation.supabasePostgresActive, true);
   assert.equal(snapshot.supabasePreflight.overallStatus, "PASS");
-  assert.equal(snapshot.supabasePreflight.supabaseSelected, true);
-  assert.equal(snapshot.supabasePreflight.selectedProvidersReady, true);
+  assert.equal(snapshot.supabasePreflight.supabaseActive, true);
+  assert.equal(snapshot.supabasePreflight.runtimeProviderPathReady, true);
   assert.equal(snapshot.supabasePreflight.fallbackAllowed, false);
   assert.equal(preflightCheck(snapshot, "supabase-url").status, "PASS");
   assert.equal(preflightCheck(snapshot, "supabase-anon-key").status, "PASS");
@@ -1816,39 +1809,43 @@ test("Supabase activation diagnostics report readiness for selected providers", 
     users: true,
   });
   assert.equal(preflightCheck(snapshot, "site-setup-readiness").status, "PASS");
-  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, ["local-db", "supabase-auth"]);
-  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, ["local-db", "supabase-postgres"]);
+  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.auth, ["supabase-auth"]);
+  assert.deepEqual(snapshot.providerDiagnostics.configuredProviders.database, ["supabase-postgres"]);
   assert.equal(snapshot.supabaseAuth.status, "adapter-ready");
   assert.equal(snapshot.supabasePostgres.status, "adapter-ready");
   assert.equal(JSON.stringify(snapshot).includes("not-a-real-service-role-test-value"), false);
   assert.equal(JSON.stringify(snapshot).includes("server-only-database-url-placeholder"), false);
 });
 
-test("Unsupported selected providers fail without falling back to Local DB", () => {
+test("Unsupported legacy provider selector values are ignored without falling back to Local DB", () => {
   const snapshot = createProviderContractSnapshot({
     GAMEFOUNDRY_AUTH_PROVIDER: "unknown-auth",
     GAMEFOUNDRY_DB_PROVIDER: "unknown-db",
   });
 
-  assert.equal(snapshot.activeProviders.authProviderId, "unknown-auth");
-  assert.equal(snapshot.activeProviders.databaseProviderId, "unknown-db");
+  assert.equal(snapshot.activeProviders.authProviderId, "supabase-auth");
+  assert.equal(snapshot.activeProviders.databaseProviderId, "supabase-postgres");
   assert.equal(snapshot.activeProviders.status, "failed");
   assert.equal(snapshot.failureContract.automaticFallbackAllowed, false);
-  assert.equal(snapshot.activationReadiness.selectedProvidersReady, false);
+  assert.equal(snapshot.activationReadiness.runtimeProviderPathReady, false);
   assert.equal(snapshot.supabasePreflight.overallStatus, "FAIL");
-  assert.equal(preflightCheck(snapshot, "auth-provider-selected").status, "FAIL");
-  assert.equal(preflightCheck(snapshot, "database-provider-selected").status, "FAIL");
+  assert.equal(preflightCheck(snapshot, "runtime-auth-provider").status, "PASS");
+  assert.equal(preflightCheck(snapshot, "runtime-database-provider").status, "PASS");
   assert.deepEqual(snapshot.providerDiagnostics.providerFailures.map((failure) => failure.reason), [
-    "unsupported-provider",
-    "unsupported-provider",
+    "missing-configuration",
+    "missing-configuration",
+  ]);
+  assert.deepEqual(snapshot.providerDiagnostics.ignoredRuntimeSelectors.map((entry) => entry.ignoredValue), [
+    "unknown-auth",
+    "unknown-db",
   ]);
   assert.equal(JSON.stringify(snapshot).includes("rollback"), false);
 });
 
 test(".env.example documents Supabase DEV variables without values", async () => {
   const contents = await readFile(".env.example", "utf8");
-  assert.match(contents, /^GAMEFOUNDRY_AUTH_PROVIDER=supabase-auth$/m);
-  assert.match(contents, /^GAMEFOUNDRY_DB_PROVIDER=supabase-postgres$/m);
+  assert.doesNotMatch(contents, /^GAMEFOUNDRY_AUTH_PROVIDER=/m);
+  assert.doesNotMatch(contents, /^GAMEFOUNDRY_DB_PROVIDER=/m);
   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_URL=$/m);
   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_ANON_KEY=$/m);
   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=$/m);

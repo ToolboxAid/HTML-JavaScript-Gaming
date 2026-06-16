@@ -42,23 +42,21 @@ function loadEnvLocal() {
 const envLocal = loadEnvLocal();
 
 function configureLocalApiProviders() {
-  const hasSupabaseAuthConfig = Boolean(
-    process.env.GAMEFOUNDRY_SUPABASE_URL &&
-    process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY &&
-    process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY,
-  );
   const previousAuthProvider = process.env.GAMEFOUNDRY_AUTH_PROVIDER || "";
-  if (hasSupabaseAuthConfig) {
-    process.env.GAMEFOUNDRY_AUTH_PROVIDER = SUPABASE_AUTH_PROVIDER_ID;
-  }
-  if (!process.env.GAMEFOUNDRY_DB_PROVIDER) {
-    process.env.GAMEFOUNDRY_DB_PROVIDER = SUPABASE_POSTGRES_PROVIDER_ID;
-  }
+  const previousDbProvider = process.env.GAMEFOUNDRY_DB_PROVIDER || "";
+  process.env.GAMEFOUNDRY_AUTH_PROVIDER = SUPABASE_AUTH_PROVIDER_ID;
+  process.env.GAMEFOUNDRY_DB_PROVIDER = SUPABASE_POSTGRES_PROVIDER_ID;
   return {
     authProvider: process.env.GAMEFOUNDRY_AUTH_PROVIDER || "",
     dbProvider: process.env.GAMEFOUNDRY_DB_PROVIDER || "",
-    selectedSupabaseAuthForDev:
-      hasSupabaseAuthConfig && previousAuthProvider !== SUPABASE_AUTH_PROVIDER_ID,
+    ignoredAuthProvider:
+      previousAuthProvider && previousAuthProvider !== SUPABASE_AUTH_PROVIDER_ID
+        ? previousAuthProvider
+        : "",
+    ignoredDbProvider:
+      previousDbProvider && previousDbProvider !== SUPABASE_POSTGRES_PROVIDER_ID
+        ? previousDbProvider
+        : "",
   };
 }
 
@@ -74,8 +72,11 @@ console.log(envLocal.loaded
   : ".env.local was not found for local API runtime.");
 console.log(`Local API auth provider: ${providerSelection.authProvider || "(unset)"}.`);
 console.log(`Local API product data provider: ${providerSelection.dbProvider || "(unset)"}.`);
-if (providerSelection.selectedSupabaseAuthForDev) {
-  console.log("Supabase Auth selected for local API runtime because Supabase DEV auth configuration is present.");
+if (providerSelection.ignoredAuthProvider) {
+  console.log(`Local API ignored unsupported auth provider ${providerSelection.ignoredAuthProvider}; Supabase Auth is required.`);
+}
+if (providerSelection.ignoredDbProvider) {
+  console.log(`Local API ignored unsupported product data provider ${providerSelection.ignoredDbProvider}; Supabase Postgres is required.`);
 }
 console.log("Press Ctrl+C to stop.");
 

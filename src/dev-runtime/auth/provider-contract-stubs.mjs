@@ -103,24 +103,18 @@ const DEV_STATIC_USER_KEYS = Object.freeze([
 
 export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
   browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS,
-  selectors: Object.freeze(["GAMEFOUNDRY_AUTH_PROVIDER", "GAMEFOUNDRY_DB_PROVIDER"]),
+  ignoredRuntimeSelectors: Object.freeze(["GAMEFOUNDRY_AUTH_PROVIDER", "GAMEFOUNDRY_DB_PROVIDER"]),
   serverOnlySupabaseCount: SERVER_ONLY_SUPABASE_SECRET_KEYS.length,
 });
 
-const SUPPORTED_AUTH_PROVIDERS = Object.freeze([LOCAL_AUTH_PROVIDER_ID, SUPABASE_AUTH_PROVIDER_ID]);
-const SUPPORTED_DATABASE_PROVIDERS = Object.freeze([LOCAL_DATABASE_PROVIDER_ID, SUPABASE_POSTGRES_PROVIDER_ID]);
+const SUPPORTED_AUTH_PROVIDERS = Object.freeze([SUPABASE_AUTH_PROVIDER_ID]);
+const SUPPORTED_DATABASE_PROVIDERS = Object.freeze([SUPABASE_POSTGRES_PROVIDER_ID]);
 const DEFAULT_AUTH_PROVIDER_ID = SUPABASE_AUTH_PROVIDER_ID;
 const DEFAULT_DATABASE_PROVIDER_ID = SUPABASE_POSTGRES_PROVIDER_ID;
 
-export const PROVIDER_SELECTION_CONTROLS = Object.freeze({
-  auth: Object.freeze({
-    environmentVariable: "GAMEFOUNDRY_AUTH_PROVIDER",
-    supportedProviders: SUPPORTED_AUTH_PROVIDERS,
-  }),
-  database: Object.freeze({
-    environmentVariable: "GAMEFOUNDRY_DB_PROVIDER",
-    supportedProviders: SUPPORTED_DATABASE_PROVIDERS,
-  }),
+export const FIXED_RUNTIME_PROVIDER_PATH = Object.freeze({
+  authProviderId: SUPABASE_AUTH_PROVIDER_ID,
+  databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
 });
 
 function envValue(env, key) {
@@ -131,29 +125,18 @@ function missingEnvKeys(env, keys) {
   return keys.filter((key) => !envValue(env, key));
 }
 
-function requestedProvider(env, key, fallback, supportedValues) {
-  const requested = envValue(env, key) || fallback;
-  const supported = supportedValues.includes(requested);
-  return {
-    diagnostic: supported ? "" : `${key}=${requested} is not a supported provider. Use ${supportedValues.join(" or ")}.`,
-    id: requested,
-    requested,
-    supported,
-  };
-}
-
 export function supabaseAuthDiagnostic(env = process.env) {
   const missing = missingEnvKeys(env, BROWSER_SAFE_SUPABASE_ENV_KEYS);
   return missing.length
-    ? `Supabase Auth provider selected but not configured. Missing browser-safe environment variables: ${missing.join(", ")}.`
-    : "Supabase Auth provider adapter is configured and ready only when the auth provider selector is switched.";
+    ? `Supabase Auth provider is not configured. Missing browser-safe environment variables: ${missing.join(", ")}.`
+    : "Supabase Auth provider adapter is configured for the fixed runtime path.";
 }
 
 export function supabasePostgresDiagnostic(env = process.env) {
   const missing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
   return missing.length
-    ? "Supabase Postgres provider selected but not configured. Add the Supabase URL and server-only database credentials on the server; server-only details are not exposed through browser APIs."
-    : "Supabase Postgres provider adapter is configured and ready only when the database provider selector is switched.";
+    ? "Supabase Postgres provider is not configured. Add the Supabase URL and server-only database credentials on the server; server-only details are not exposed through browser APIs."
+    : "Supabase Postgres provider adapter is configured for the fixed runtime path.";
 }
 
 function supabaseUrl(env) {
@@ -287,13 +270,26 @@ function createRuntimeUlid(now = Date.now()) {
   return encoded + Array.from(randomBytes(16), (byte) => RUNTIME_ULID_ALPHABET[byte % 32]).join("").slice(0, 16);
 }
 
-function futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing) {
+function ignoredRuntimeSelectorDiagnostics(env) {
+  return PROVIDER_ENVIRONMENT_VARIABLES.ignoredRuntimeSelectors
+    .map((key) => ({
+      environmentVariable: key,
+      ignoredValue: envValue(env, key),
+    }))
+    .filter((entry) => entry.ignoredValue)
+    .map((entry) => ({
+      ...entry,
+      remediation: `${entry.environmentVariable} is ignored by the runtime. The server uses Supabase Auth and Supabase Postgres only.`,
+    }));
+}
+
+function supabaseMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing) {
   const warnings = [];
   if (supabaseAuthMissing.length) {
-    warnings.push(`Supabase Auth future provider is not configured. Missing browser-safe environment variables: ${supabaseAuthMissing.join(", ")}.`);
+    warnings.push(`Supabase Auth is not configured. Missing browser-safe environment variables: ${supabaseAuthMissing.join(", ")}.`);
   }
   if (supabasePostgresMissing.length) {
-    warnings.push("Supabase Postgres future provider is not configured. Missing browser-safe URL or server-only credentials are required; server-only details are not exposed through browser APIs.");
+    warnings.push("Supabase Postgres is not configured. Missing browser-safe URL or server-only credentials are required; server-only details are not exposed through browser APIs.");
   }
   return warnings;
 }
@@ -301,107 +297,99 @@ function futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgr
 function configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing) {
   return {
     auth: supabaseAuthMissing.length === 0
-      ? [LOCAL_AUTH_PROVIDER_ID, SUPABASE_AUTH_PROVIDER_ID]
-      : [LOCAL_AUTH_PROVIDER_ID],
+      ? [SUPABASE_AUTH_PROVIDER_ID]
+      : [],
     database: supabasePostgresMissing.length === 0
-      ? [LOCAL_DATABASE_PROVIDER_ID, SUPABASE_POSTGRES_PROVIDER_ID]
-      : [LOCAL_DATABASE_PROVIDER_ID],
+      ? [SUPABASE_POSTGRES_PROVIDER_ID]
+      : [],
   };
 }
 
-function providerFailure({ configDiagnostic, missingConfig, providerId, selection, supabaseProviderId }) {
-  if (!selection.supported) {
-    return {
-      providerId: selection.requested,
-      reason: "unsupported-provider",
-      remediation: selection.diagnostic,
-      selectedProviderAuthoritative: true,
-    };
-  }
-  if (providerId === supabaseProviderId && missingConfig) {
+function providerFailure({ configDiagnostic, missingConfig, providerId }) {
+  if (missingConfig) {
     return {
       providerId,
       reason: "missing-configuration",
       remediation: configDiagnostic,
-      selectedProviderAuthoritative: true,
+      runtimeProviderPathFixed: true,
     };
   }
   return null;
 }
 
-function preflightStatus({ ready, selected }) {
+function preflightStatus({ active, ready }) {
   if (ready) {
     return "PASS";
   }
-  return selected ? "FAIL" : "WARN";
+  return active ? "FAIL" : "WARN";
 }
 
 function createSupabasePreflight({
   auth,
   database,
-  selectedProvidersReady,
+  runtimeProviderPathReady,
+  supabaseAuthActive,
   supabaseAuthReady,
-  supabaseAuthSelected,
+  supabasePostgresActive,
   supabasePostgresReadiness,
   supabasePostgresReady,
-  supabasePostgresSelected,
   supabaseUrlReady,
   supabaseAnonKeyReady,
   supabaseServiceRoleReady,
 }) {
   const checks = [
     {
-      id: "auth-provider-selected",
-      label: "Auth provider selected",
+      id: "runtime-auth-provider",
+      label: "Runtime auth provider",
       providerId: auth.id,
       status: auth.supported ? "PASS" : "FAIL",
       summary: auth.supported
-        ? `Auth provider selection is ${auth.id}.`
+        ? `Runtime auth provider path is ${auth.id}.`
         : auth.diagnostic,
     },
     {
-      id: "database-provider-selected",
-      label: "DB provider selected",
+      id: "runtime-database-provider",
+      label: "Runtime database provider",
       providerId: database.id,
       status: database.supported ? "PASS" : "FAIL",
       summary: database.supported
-        ? `DB provider selection is ${database.id}.`
+        ? `Runtime database provider path is ${database.id}.`
         : database.diagnostic,
     },
     {
       id: "supabase-url",
       label: "Supabase URL",
       status: preflightStatus({
+        active: supabaseAuthActive || supabasePostgresActive,
         ready: supabaseUrlReady,
-        selected: supabaseAuthSelected || supabasePostgresSelected,
       }),
       summary: supabaseUrlReady
         ? "Supabase URL is configured."
-        : "Supabase URL is required before selecting Supabase Auth or Supabase Postgres.",
+        : "Supabase URL is required for the fixed Supabase Auth and Supabase Postgres path.",
       visibility: "browser-safe",
     },
     {
       id: "supabase-anon-key",
       label: "Supabase anon key",
       status: preflightStatus({
+        active: supabaseAuthActive,
         ready: supabaseAnonKeyReady,
-        selected: supabaseAuthSelected,
       }),
       summary: supabaseAnonKeyReady
         ? "Supabase anon key is configured for browser-safe Auth requests."
-        : "Supabase anon key is required before selecting Supabase Auth.",
+        : "Supabase anon key is required for Supabase Auth.",
       visibility: "browser-safe",
     },
     {
       id: "supabase-server-only-credential",
       label: "Supabase server-only credential",
       status: preflightStatus({
+        active: supabasePostgresActive,
         ready: supabaseServiceRoleReady,
-        selected: supabasePostgresSelected,
       }),
       summary: supabaseServiceRoleReady
         ? "Server-only Supabase database credential is configured on the server."
-        : "Server-only Supabase database credential is required before selecting Supabase Postgres.",
+        : "Server-only Supabase database credential is required for Supabase Postgres.",
       visibility: "server-only",
     },
     {
@@ -413,8 +401,8 @@ function createSupabasePreflight({
         users: supabasePostgresReadiness.records.users,
       },
       status: preflightStatus({
+        active: supabasePostgresActive,
         ready: supabasePostgresReady,
-        selected: supabasePostgresSelected,
       }),
       summary: supabasePostgresReady
         ? "Supabase identity tables are ready for users, roles, and user_roles checks."
@@ -424,8 +412,8 @@ function createSupabasePreflight({
       id: "site-setup-readiness",
       label: "Site Setup readiness",
       status: preflightStatus({
+        active: supabasePostgresActive,
         ready: supabasePostgresReadiness.siteSetupReady,
-        selected: supabasePostgresSelected,
       }),
       summary: supabasePostgresReadiness.siteSetupReady
         ? "Admin Site Setup readiness checks are available for Supabase Postgres."
@@ -438,10 +426,10 @@ function createSupabasePreflight({
     checks,
     fallbackAllowed: false,
     overallStatus: failedChecks.length ? "FAIL" : warningChecks.length ? "WARN" : "PASS",
-    selectedProvidersReady,
+    runtimeProviderPathReady,
     serverOnlySecretNamesExposed: false,
     secretValuesExposed: false,
-    supabaseSelected: supabaseAuthSelected || supabasePostgresSelected,
+    supabaseActive: supabaseAuthActive || supabasePostgresActive,
   };
 }
 
@@ -452,7 +440,7 @@ export function createSupabasePostgresReadiness(env = process.env) {
   const siteSetupReady = siteSetupMissing.length === 0;
   const blockers = [];
   if (!configured) {
-    blockers.push("Add Supabase URL and server-only credentials before selecting Supabase Postgres.");
+    blockers.push("Add Supabase URL and server-only credentials for Supabase Postgres.");
   }
   if (!siteSetupReady) {
     blockers.push("Add server-only direct SQL configuration before Admin Site Setup can run Supabase setup.");
@@ -470,7 +458,7 @@ export function createSupabasePostgresReadiness(env = process.env) {
     serverApiOwnsKeyGeneration: true,
     siteSetupReady,
     staticDevSeedUserUlidsOnly: true,
-    status: configured ? "ready-when-selected" : "not-configured",
+    status: configured ? "ready" : "not-configured",
     blockers,
   };
 }
@@ -949,15 +937,22 @@ export class SupabasePostgresProviderAdapter {
 export const SupabasePostgresProviderStub = SupabasePostgresProviderAdapter;
 
 export function createProviderContractSnapshot(env = process.env) {
-  const auth = requestedProvider(env, "GAMEFOUNDRY_AUTH_PROVIDER", DEFAULT_AUTH_PROVIDER_ID, SUPPORTED_AUTH_PROVIDERS);
-  const database = requestedProvider(env, "GAMEFOUNDRY_DB_PROVIDER", DEFAULT_DATABASE_PROVIDER_ID, SUPPORTED_DATABASE_PROVIDERS);
-  const diagnostics = [auth.diagnostic, database.diagnostic].filter(Boolean);
+  const auth = {
+    diagnostic: "",
+    id: DEFAULT_AUTH_PROVIDER_ID,
+    supported: SUPPORTED_AUTH_PROVIDERS.includes(DEFAULT_AUTH_PROVIDER_ID),
+  };
+  const database = {
+    diagnostic: "",
+    id: DEFAULT_DATABASE_PROVIDER_ID,
+    supported: SUPPORTED_DATABASE_PROVIDERS.includes(DEFAULT_DATABASE_PROVIDER_ID),
+  };
+  const ignoredRuntimeSelectors = ignoredRuntimeSelectorDiagnostics(env);
+  const diagnostics = ignoredRuntimeSelectors.map((entry) => entry.remediation);
   const supabaseAuthMissing = missingEnvKeys(env, BROWSER_SAFE_SUPABASE_ENV_KEYS);
   const supabasePostgresMissing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
   const supabasePostgresReadiness = createSupabasePostgresReadiness(env);
-  const supabaseAuthSelected = auth.id === SUPABASE_AUTH_PROVIDER_ID;
-  const supabasePostgresSelected = database.id === SUPABASE_POSTGRES_PROVIDER_ID;
-  const missingConfigWarnings = futureProviderMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing);
+  const missingConfigWarnings = supabaseMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMissing);
   const supabaseAuthReady = supabaseAuthMissing.length === 0;
   const supabasePostgresReady = supabasePostgresReadiness.configured;
   const supabaseUrlReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_URL"));
@@ -967,58 +962,47 @@ export function createProviderContractSnapshot(env = process.env) {
     providerFailure({
       configDiagnostic: supabaseAuthDiagnostic(env),
       missingConfig: supabaseAuthMissing.length > 0,
-      providerId: auth.id,
-      selection: auth,
-      supabaseProviderId: SUPABASE_AUTH_PROVIDER_ID,
+      providerId: SUPABASE_AUTH_PROVIDER_ID,
     }),
     providerFailure({
       configDiagnostic: supabasePostgresDiagnostic(env),
       missingConfig: supabasePostgresMissing.length > 0,
-      providerId: database.id,
-      selection: database,
-      supabaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+      providerId: SUPABASE_POSTGRES_PROVIDER_ID,
     }),
   ].filter(Boolean);
-  const selectedProvidersReady = providerFailures.length === 0;
-  const identityOwnerProviderId = supabaseAuthSelected ? SUPABASE_AUTH_PROVIDER_ID : LOCAL_AUTH_PROVIDER_ID;
-  const identityReaderProviderId = supabaseAuthSelected ? SUPABASE_POSTGRES_PROVIDER_ID : LOCAL_DATABASE_PROVIDER_ID;
-  const identityConfigured = supabaseAuthSelected ? supabasePostgresReady : auth.id === LOCAL_AUTH_PROVIDER_ID;
+  const runtimeProviderPathReady = providerFailures.length === 0;
+  const identityConfigured = supabasePostgresReady;
   const supabasePreflight = createSupabasePreflight({
     auth,
     database,
-    selectedProvidersReady,
+    runtimeProviderPathReady,
     supabaseAnonKeyReady,
+    supabaseAuthActive: true,
     supabaseAuthReady,
-    supabaseAuthSelected,
+    supabasePostgresActive: true,
     supabasePostgresReadiness,
     supabasePostgresReady,
-    supabasePostgresSelected,
     supabaseServiceRoleReady,
     supabaseUrlReady,
   });
 
-  if (supabaseAuthSelected) {
-    diagnostics.push(supabaseAuthDiagnostic(env));
-  }
-  if (supabasePostgresSelected) {
-    diagnostics.push(supabasePostgresDiagnostic(env));
-  }
+  diagnostics.push(supabaseAuthDiagnostic(env));
+  diagnostics.push(supabasePostgresDiagnostic(env));
 
   return {
     activeProviders: {
-      authProviderId: auth.id,
-      databaseProviderId: database.id,
-      diagnostic: "Selected providers are authoritative. Missing or unsupported selected providers fail visibly; no automatic Local DB fallback is used.",
-      status: selectedProvidersReady ? "ready" : "failed",
+      authProviderId: SUPABASE_AUTH_PROVIDER_ID,
+      databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+      diagnostic: "Runtime provider path is fixed to Supabase Auth and Supabase Postgres. Legacy provider selector environment variables are ignored.",
+      status: runtimeProviderPathReady ? "ready" : "failed",
     },
     activationReadiness: {
       blockers: [
-        ...supabaseAuthMissing.map((key) => `Add browser-safe ${key} before selecting Supabase Auth.`),
+        ...supabaseAuthMissing.map((key) => `Add browser-safe ${key} for Supabase Auth.`),
         ...supabasePostgresReadiness.blockers,
       ],
-      localDbSelected: auth.id === LOCAL_AUTH_PROVIDER_ID && database.id === LOCAL_DATABASE_PROVIDER_ID,
       readyBeforeActivation: supabaseAuthReady && supabasePostgresReady,
-      selectedProvidersReady,
+      runtimeProviderPathReady,
       siteSetupReady: supabasePostgresReadiness.siteSetupReady,
       supabaseAuthReady,
       supabasePostgresReady,
@@ -1028,19 +1012,19 @@ export function createProviderContractSnapshot(env = process.env) {
     failureContract: {
       automaticFallbackAllowed: false,
       providerChainingAllowed: false,
-      selectedProviderAuthoritative: true,
+      runtimeProviderPathFixed: true,
     },
     identityOwnership: {
       auditFields: ["createdAt", "updatedAt", "createdBy", "updatedBy"],
       browserAuthoritativeKeysAllowed: false,
-      dataMigrationActive: supabasePostgresSelected,
+      dataMigrationActive: true,
       identityConfigured,
-      ownerProviderId: identityOwnerProviderId,
+      ownerProviderId: SUPABASE_AUTH_PROVIDER_ID,
       ownershipFields: ["key", "createdAt", "updatedAt", "createdBy", "updatedBy"],
-      productDatabaseProviderId: database.id,
-      readerProviderId: identityReaderProviderId,
-      selectedAuthProviderId: auth.id,
-      selectedDatabaseProviderId: database.id,
+      productDatabaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+      readerProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+      runtimeAuthProviderId: SUPABASE_AUTH_PROVIDER_ID,
+      runtimeDatabaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
       serverApiOwnsKeyGeneration: true,
       staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ admin only.",
       tables: SUPABASE_POSTGRES_IDENTITY_TABLES.slice(),
@@ -1049,45 +1033,30 @@ export function createProviderContractSnapshot(env = process.env) {
     },
     providerDiagnostics: {
       activeProvider: {
-        authProviderId: auth.id,
-        databaseProviderId: database.id,
+        authProviderId: SUPABASE_AUTH_PROVIDER_ID,
+        databaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
       },
       configuredProviders: configuredProviderIds(supabaseAuthMissing, supabasePostgresMissing),
+      ignoredRuntimeSelectors,
       missingConfigWarnings,
       providerFailures,
-      selectionControls: {
-        auth: {
-          environmentVariable: PROVIDER_SELECTION_CONTROLS.auth.environmentVariable,
-          selectedProviderId: auth.id,
-          supportedProviders: PROVIDER_SELECTION_CONTROLS.auth.supportedProviders.slice(),
-        },
-        database: {
-          environmentVariable: PROVIDER_SELECTION_CONTROLS.database.environmentVariable,
-          selectedProviderId: database.id,
-          supportedProviders: PROVIDER_SELECTION_CONTROLS.database.supportedProviders.slice(),
-        },
-      },
       requiredEnvironmentVariables: {
         browserSafeSupabase: BROWSER_SAFE_SUPABASE_ENV_KEYS.slice(),
-        selectors: PROVIDER_ENVIRONMENT_VARIABLES.selectors.slice(),
+        ignoredRuntimeSelectors: PROVIDER_ENVIRONMENT_VARIABLES.ignoredRuntimeSelectors.slice(),
         serverOnlySupabaseCount: PROVIDER_ENVIRONMENT_VARIABLES.serverOnlySupabaseCount,
       },
       secretValuesExposed: false,
       serverOnlyEnvironmentVariableNamesExposed: false,
     },
-    requestedProviders: {
-      authProviderId: auth.requested,
-      databaseProviderId: database.requested,
-    },
     runtimeActivation: {
       apiBoundary: PROVIDER_DATA_BOUNDARY_RULE,
       browserReceivesServiceRoleSecrets: false,
-      localDbSelected: auth.id === LOCAL_AUTH_PROVIDER_ID && database.id === LOCAL_DATABASE_PROVIDER_ID,
-      productDataProviderId: database.id,
-      selectedProvidersCanServeRuntime: selectedProvidersReady,
-      selectedProvidersFailed: !selectedProvidersReady,
-      supabaseAuthSelected,
-      supabasePostgresSelected,
+      productDataProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
+      runtimeProviderPathFixed: true,
+      runtimeProviderPathReady,
+      runtimeProviderPathFailed: !runtimeProviderPathReady,
+      supabaseAuthActive: true,
+      supabasePostgresActive: true,
     },
     supabaseAuth: {
       configured: supabaseAuthMissing.length === 0,
@@ -1097,15 +1066,13 @@ export function createProviderContractSnapshot(env = process.env) {
         passwordStorage: "external-provider",
         serviceRoleSecretsUsed: false,
       },
-      diagnostic: supabaseAuthSelected ? supabaseAuthDiagnostic(env) : "Supabase Auth provider adapter is inactive.",
-      missingBrowserSafeEnvironmentVariables: supabaseAuthSelected ? supabaseAuthMissing : [],
+      diagnostic: supabaseAuthDiagnostic(env),
+      missingBrowserSafeEnvironmentVariables: supabaseAuthMissing,
       operations: AUTH_PROVIDER_CONTRACT_OPERATIONS.slice(),
       providerId: SUPABASE_AUTH_PROVIDER_ID,
-      status: supabaseAuthSelected && supabaseAuthMissing.length
+      status: supabaseAuthMissing.length
         ? "not-configured"
-        : supabaseAuthMissing.length
-          ? "adapter-inactive"
-          : "adapter-ready",
+        : "adapter-ready",
       userMapping: {
         appUserKeyField: "users.key",
         browserAuthoritativeUserKeysAllowed: false,
@@ -1117,13 +1084,13 @@ export function createProviderContractSnapshot(env = process.env) {
     supabasePostgres: {
       configured: supabasePostgresMissing.length === 0,
       adapter: {
-        activeByDefault: false,
+        activeByDefault: true,
         implementation: "config-gated Supabase Postgres REST adapter",
         keyGenerationOwner: "server-api",
         staticUlidsAllowedOnlyForDevSeedUsers: true,
       },
-      dataMigrationActive: supabasePostgresSelected,
-      diagnostic: supabasePostgresSelected ? supabasePostgresDiagnostic(env) : "Supabase Postgres provider adapter is inactive.",
+      dataMigrationActive: true,
+      diagnostic: supabasePostgresDiagnostic(env),
       readiness: supabasePostgresReadiness,
       executionOwnership: {
         dev: "Codex may execute DEV setup/migration only after a dedicated Supabase DEV PR.",
@@ -1147,11 +1114,9 @@ export function createProviderContractSnapshot(env = process.env) {
       providerId: SUPABASE_POSTGRES_PROVIDER_ID,
       serverOnlySecretsExposed: false,
       serverOnlySecretNamesExposed: false,
-      status: supabasePostgresSelected && supabasePostgresMissing.length
+      status: supabasePostgresMissing.length
         ? "not-configured"
-        : supabasePostgresMissing.length
-          ? "adapter-inactive"
-          : "adapter-ready",
+        : "adapter-ready",
     },
   };
 }

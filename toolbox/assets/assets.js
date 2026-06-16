@@ -636,7 +636,7 @@ function conciseUploadIssueMessage(entry) {
     return "Uploaded files must be greater than zero bytes.";
   }
   if (/browser file writes are not supported/i.test(message)) {
-    return "This runtime cannot write upload files. Use Local DB/server storage for upload validation.";
+    return "This runtime cannot write upload files. Use server storage for upload validation.";
   }
   if (/target path must stay under/i.test(message)) {
     return "Upload target path is outside the project asset folder.";

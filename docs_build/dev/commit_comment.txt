@@ -1,1 +1,1 @@
-Remove Account Local DB browser contract - PR_26167_180-account-pages-remove-local-db-browser-contract
+Validate single service contract paths - PR_26167_183-single-service-contract-validation

@@ -1,3 +1,4 @@
+import http from "node:http";
 import { expect, test } from "@playwright/test";
 import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
@@ -5,11 +6,159 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const PRIMARY_NAVIGATION_ORDER = ["Games", "Toolbox", "Marketplace", "Learn", "Sign In"];
-let previousAuthProvider;
+const SUPABASE_ENV_KEYS = [
+  "GAMEFOUNDRY_AUTH_PROVIDER",
+  "GAMEFOUNDRY_DB_PROVIDER",
+  "GAMEFOUNDRY_SUPABASE_ANON_KEY",
+  "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+  "GAMEFOUNDRY_SUPABASE_URL",
+];
+let fakeSupabaseServer;
+let previousSupabaseEnv;
 
-test.beforeAll(() => {
-  previousAuthProvider = process.env.GAMEFOUNDRY_AUTH_PROVIDER;
-  process.env.GAMEFOUNDRY_AUTH_PROVIDER = "local-db";
+function identityTables() {
+  const timestamp = "2026-06-15T00:00:00.000Z";
+  const audit = {
+    createdAt: timestamp,
+    createdBy: MOCK_DB_KEYS.users.admin,
+    updatedAt: timestamp,
+    updatedBy: MOCK_DB_KEYS.users.admin,
+  };
+  return {
+    roles: [
+      {
+        key: MOCK_DB_KEYS.roles.user,
+        roleSlug: "user",
+        name: "User",
+        description: "Creator account.",
+        isActive: true,
+        isSystemRole: false,
+        ...audit,
+      },
+      {
+        key: MOCK_DB_KEYS.roles.admin,
+        roleSlug: "admin",
+        name: "Admin",
+        description: "Administrative account.",
+        isActive: true,
+        isSystemRole: false,
+        ...audit,
+      },
+    ],
+    user_roles: [
+      {
+        key: MOCK_DB_KEYS.userRoles.user1User,
+        userKey: MOCK_DB_KEYS.users.user1,
+        roleKey: MOCK_DB_KEYS.roles.user,
+        ...audit,
+      },
+      {
+        key: MOCK_DB_KEYS.userRoles.adminAdmin,
+        userKey: MOCK_DB_KEYS.users.admin,
+        roleKey: MOCK_DB_KEYS.roles.admin,
+        ...audit,
+      },
+    ],
+    users: [
+      {
+        key: MOCK_DB_KEYS.users.user1,
+        displayName: "User 1",
+        email: "user1@example.invalid",
+        authProvider: "supabase-auth",
+        authProviderUserId: "supabase-user-1",
+        isActive: true,
+        ...audit,
+      },
+      {
+        key: MOCK_DB_KEYS.users.admin,
+        displayName: "DavidQ admin",
+        email: "admin@example.invalid",
+        authProvider: "supabase-auth",
+        authProviderUserId: "supabase-admin",
+        isActive: true,
+        ...audit,
+      },
+    ],
+  };
+}
+
+function startFakeSupabaseServer() {
+  const tables = identityTables();
+  const server = http.createServer(async (request, response) => {
+    const chunks = [];
+    for await (const chunk of request) {
+      chunks.push(chunk);
+    }
+    const rawBody = Buffer.concat(chunks).toString("utf8");
+    const body = rawBody ? JSON.parse(rawBody) : {};
+    const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
+
+    if (requestUrl.pathname === "/auth/v1/health") {
+      response.statusCode = 200;
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.end(JSON.stringify({ status: "ok" }));
+      return;
+    }
+
+    if (requestUrl.pathname.startsWith("/rest/v1/")) {
+      const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
+      tables[tableName] = tables[tableName] || [];
+      if (request.method === "POST") {
+        const rows = Array.isArray(body) ? body : [body];
+        rows.forEach((row) => {
+          const index = tables[tableName].findIndex((existing) => existing.key === row.key);
+          if (index >= 0) {
+            tables[tableName][index] = {
+              ...tables[tableName][index],
+              ...row,
+            };
+          } else {
+            tables[tableName].push(row);
+          }
+        });
+        response.statusCode = 200;
+        response.setHeader("Content-Type", "application/json; charset=utf-8");
+        response.end(JSON.stringify(rows));
+        return;
+      }
+      response.statusCode = 200;
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.end(JSON.stringify(tables[tableName]));
+      return;
+    }
+
+    response.statusCode = 404;
+    response.setHeader("Content-Type", "application/json; charset=utf-8");
+    response.end(JSON.stringify({ message: "Unknown fake Supabase route." }));
+  });
+
+  return new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        reject(new Error("Unable to start fake Supabase server."));
+        return;
+      }
+      resolve({
+        baseUrl: `http://127.0.0.1:${address.port}`,
+        close: () => new Promise((closeResolve) => {
+          server.closeAllConnections?.();
+          server.close(closeResolve);
+        }),
+      });
+    });
+  });
+}
+
+test.beforeAll(async () => {
+  previousSupabaseEnv = Object.fromEntries(SUPABASE_ENV_KEYS.map((key) => [key, process.env[key]]));
+  fakeSupabaseServer = await startFakeSupabaseServer();
+  process.env.GAMEFOUNDRY_AUTH_PROVIDER = "supabase-auth";
+  process.env.GAMEFOUNDRY_DB_PROVIDER = "supabase-postgres";
+  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "test-anon-key";
+  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "test-service-role-key";
+  process.env.GAMEFOUNDRY_SUPABASE_URL = fakeSupabaseServer.baseUrl;
 });
 
 test.beforeEach(async ({ page }) => {
@@ -25,11 +174,14 @@ test.afterEach(async ({ page }) => {
 
 test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
-  if (previousAuthProvider === undefined) {
-    delete process.env.GAMEFOUNDRY_AUTH_PROVIDER;
-  } else {
-    process.env.GAMEFOUNDRY_AUTH_PROVIDER = previousAuthProvider;
-  }
+  await fakeSupabaseServer?.close();
+  SUPABASE_ENV_KEYS.forEach((key) => {
+    if (previousSupabaseEnv[key] === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = previousSupabaseEnv[key];
+    }
+  });
 });
 
 async function openRepoPage(page, pathName) {

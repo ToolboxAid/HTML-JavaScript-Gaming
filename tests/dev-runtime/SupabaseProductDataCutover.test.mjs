@@ -253,6 +253,27 @@ test("Supabase-selected product routes bootstrap Toolbox metadata and read DB sn
   await fakeSupabase.close();
 });
 
+test("Legacy Local DB provider selectors are ignored by Toolbox vote data routes", async () => {
+  await withEnv({
+    GAMEFOUNDRY_AUTH_PROVIDER: "local-db",
+    GAMEFOUNDRY_DB_PROVIDER: "local-db",
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: undefined,
+    GAMEFOUNDRY_SUPABASE_URL: undefined,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const response = await fetch(`${server.baseUrl}/api/toolbox/votes/snapshot`);
+      const payload = await response.json();
+      assert.equal(response.status, 500);
+      assert.equal(payload.ok, false);
+      assert.match(payload.error, /Supabase Postgres provider is not configured/);
+    } finally {
+      await server.close();
+    }
+  });
+});
+
 test("Supabase-selected Toolbox vote writes use server-owned keys and Supabase tables", async () => {
   const fakeSupabase = await startFakeSupabaseProductServer();
   await withEnv({
