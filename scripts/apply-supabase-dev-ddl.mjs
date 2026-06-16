@@ -89,13 +89,13 @@ function envValue(key) {
 }
 
 function parseDatabaseUrl() {
-  const value = envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL");
+  const value = envValue("GAMEFOUNDRY_DATABASE_URL");
   if (!value) {
-    throw new Error("GAMEFOUNDRY_SUPABASE_DATABASE_URL is required to apply DEV DDL.");
+    throw new Error("GAMEFOUNDRY_DATABASE_URL is required to apply DEV DDL.");
   }
   const databaseUrl = new URL(value);
   if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
-    throw new Error("GAMEFOUNDRY_SUPABASE_DATABASE_URL must use postgres:// or postgresql://.");
+    throw new Error("GAMEFOUNDRY_DATABASE_URL must use postgres:// or postgresql://.");
   }
   return {
     database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
@@ -431,7 +431,7 @@ async function main() {
   const envLoad = loadEnvLocal();
   const config = parseDatabaseUrl();
   if (!config.user || !config.password) {
-    throw new Error("GAMEFOUNDRY_SUPABASE_DATABASE_URL must include username and password.");
+    throw new Error("GAMEFOUNDRY_DATABASE_URL must include username and password.");
   }
   const socket = await openPostgresTlsConnection(config);
   try {

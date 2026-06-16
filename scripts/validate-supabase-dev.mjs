@@ -11,19 +11,19 @@ const ENV_FILE = ".env.local";
 const REQUIRED_ENV = Object.freeze([
   {
     key: "GAMEFOUNDRY_SUPABASE_URL",
-    label: "URL configured",
+    label: "Auth connection URL configured",
   },
   {
     key: "GAMEFOUNDRY_SUPABASE_ANON_KEY",
-    label: "Publishable key configured",
+    label: "Auth anon key configured",
   },
   {
     key: "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
-    label: "Service role key configured",
+    label: "Auth service role key configured",
   },
   {
-    key: "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
-    label: "Database URL configured",
+    key: "GAMEFOUNDRY_DATABASE_URL",
+    label: "Database connection URL configured",
   },
 ]);
 
@@ -119,7 +119,7 @@ function sanitizeDiagnostic(value) {
     }
   });
   try {
-    const databaseUrl = new URL(envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL"));
+    const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
     if (databaseUrl.password) {
       text = text.split(databaseUrl.password).join(maskValue(databaseUrl.password));
     }
@@ -283,7 +283,7 @@ async function checkTlsValidation() {
 }
 
 function parseDatabaseUrl() {
-  const databaseUrl = new URL(envValue("GAMEFOUNDRY_SUPABASE_DATABASE_URL"));
+  const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
   if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
     throw new Error("Database URL must use postgres:// or postgresql://.");
   }
@@ -638,8 +638,8 @@ async function main() {
   const envLoad = loadEnvLocal();
   const results = [];
   results.push(envLoad.loaded
-    ? pass(".env.local loaded", `${envLoad.loadedKeys.length} key(s) loaded`)
-    : fail(".env.local loaded", `${ENV_FILE} was not found`));
+    ? pass("Explicit .env.local DEV validation load", `${envLoad.loadedKeys.length} key(s) loaded`)
+    : fail("Explicit .env.local DEV validation load", `${ENV_FILE} was not found`));
 
   REQUIRED_ENV.forEach(({ key, label }) => {
     const value = envValue(key);

@@ -3,8 +3,10 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
 
-function loadEnvLocal() {
-  const envPath = path.resolve(process.cwd(), ".env.local");
+const RUNTIME_ENV_FILE = ".env";
+
+function loadRuntimeEnv() {
+  const envPath = path.resolve(process.cwd(), RUNTIME_ENV_FILE);
   if (!existsSync(envPath)) {
     return {
       loaded: false,
@@ -35,7 +37,7 @@ function loadEnvLocal() {
   };
 }
 
-const envLocal = loadEnvLocal();
+const runtimeEnv = loadRuntimeEnv();
 
 function connectionStatus(requiredKeys) {
   const missingKeys = requiredKeys.filter((key) => !String(process.env[key] || "").trim());
@@ -49,9 +51,10 @@ const accountConnection = connectionStatus([
   "GAMEFOUNDRY_SUPABASE_URL",
   "GAMEFOUNDRY_SUPABASE_ANON_KEY",
 ]);
-const productDataConnection = connectionStatus([
+const databaseConnection = connectionStatus([
   "GAMEFOUNDRY_SUPABASE_URL",
   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+  "GAMEFOUNDRY_DATABASE_URL",
 ]);
 const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || "127.0.0.1";
 const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
@@ -59,11 +62,11 @@ const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
 const localServer = await startLocalApiServer({ host, port });
 
 console.log(`GameFoundry API runtime server running at ${localServer.baseUrl}/account/sign-in.html`);
-console.log(envLocal.loaded
-  ? `.env.local loaded for API runtime (${envLocal.loadedKeys} key(s) applied).`
-  : ".env.local was not found for API runtime.");
-console.log(`Configured account connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
-console.log(`Configured product data connection: ${productDataConnection.ready ? "configured" : `missing ${productDataConnection.missingKeys.join(", ")}`}.`);
+console.log(runtimeEnv.loaded
+  ? `.env loaded for API runtime (${runtimeEnv.loadedKeys} key(s) applied).`
+  : ".env was not found for API runtime.");
+console.log(`Configured auth connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
+console.log(`Configured database connection: ${databaseConnection.ready ? "configured" : `missing ${databaseConnection.missingKeys.join(", ")}`}.`);
 console.log("Press Ctrl+C to stop.");
 
 for (const signal of ["SIGINT", "SIGTERM"]) {

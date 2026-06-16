@@ -522,7 +522,7 @@ test("Provider contract assigns identity and product data ownership to Supabase 
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "browser-safe-anon-key",
-    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+    GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "server-only-service-role-key",
     GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test",
   });
@@ -1371,7 +1371,7 @@ test("Supabase stubs do not expose server-only secret names or values through th
   await withEnv({
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
-    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+    GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
   }, async () => {
     const server = await startApiServer();
@@ -1396,7 +1396,7 @@ test("Supabase stubs do not expose server-only secret names or values through th
       assert.equal(providerText.includes("not-a-real-service-role-test-value"), false);
       assert.equal(providerText.includes("server-only-database-url-placeholder"), false);
       assert.equal(providerText.includes("GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY"), false);
-      assert.equal(providerText.includes("GAMEFOUNDRY_SUPABASE_DATABASE_URL"), false);
+      assert.equal(providerText.includes("GAMEFOUNDRY_DATABASE_URL"), false);
       assert.equal(adapterText.includes("not-a-real-service-role-test-value"), false);
       assert.equal(adapterText.includes("server-only-database-url-placeholder"), false);
     } finally {
@@ -1490,7 +1490,7 @@ test("Supabase Postgres adapter supports identity tables and readiness when conf
   const calls = [];
   const database = new SupabasePostgresProviderAdapter({
     env: {
-      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
     },
@@ -1539,7 +1539,7 @@ test("Supabase Postgres adapter supports DEV cleanup deletes and audit reassignm
   const calls = [];
   const database = new SupabasePostgresProviderAdapter({
     env: {
-      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
     },
@@ -1604,7 +1604,7 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
   ];
   const database = new SupabasePostgresProviderAdapter({
     env: {
-      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
     },
@@ -1686,7 +1686,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
   const calls = [];
   const database = new SupabasePostgresProviderAdapter({
     env: {
-      GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+      GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
       GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
       GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
     },
@@ -1781,7 +1781,7 @@ test("Supabase activation diagnostics report readiness for fixed providers", () 
     GAMEFOUNDRY_AUTH_PROVIDER: "supabase-auth",
     GAMEFOUNDRY_DB_PROVIDER: "supabase-postgres",
     GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
-    GAMEFOUNDRY_SUPABASE_DATABASE_URL: "server-only-database-url-placeholder",
+    GAMEFOUNDRY_DATABASE_URL: "server-only-database-url-placeholder",
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "not-a-real-service-role-test-value",
     GAMEFOUNDRY_SUPABASE_URL: "https://supabase-dev.example.test/",
   });
@@ -1845,6 +1845,6 @@ test(".env.example documents Supabase DEV variables without values", async () =>
   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_URL=$/m);
   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_ANON_KEY=$/m);
   assert.match(contents, /^GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY=$/m);
-  assert.match(contents, /^GAMEFOUNDRY_SUPABASE_DATABASE_URL=$/m);
+  assert.match(contents, /^GAMEFOUNDRY_DATABASE_URL=$/m);
   assert.equal(/supabase\.co|sbp_|eyJ[A-Za-z0-9_-]{20,}/.test(contents), false);
 });

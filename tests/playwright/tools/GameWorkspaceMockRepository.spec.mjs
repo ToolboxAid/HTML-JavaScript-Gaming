@@ -7,7 +7,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 
 const SUPABASE_ENV_KEYS = Object.freeze([
   "GAMEFOUNDRY_SUPABASE_ANON_KEY",
-  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
+  "GAMEFOUNDRY_DATABASE_URL",
   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
   "GAMEFOUNDRY_SUPABASE_URL",
 ]);
@@ -91,7 +91,7 @@ test.beforeAll(async () => {
   previousSupabaseEnv = Object.fromEntries(SUPABASE_ENV_KEYS.map((key) => [key, process.env[key]]));
   fakeSupabaseServer = await startFakeSupabaseServer();
   process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "game-workspace-anon-key";
-  process.env.GAMEFOUNDRY_SUPABASE_DATABASE_URL = "postgres://game-workspace:test@127.0.0.1:5432/game_workspace";
+  process.env.GAMEFOUNDRY_DATABASE_URL = "postgres://game-workspace:test@127.0.0.1:5432/game_workspace";
   process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "game-workspace-service-role-key";
   process.env.GAMEFOUNDRY_SUPABASE_URL = fakeSupabaseServer.baseUrl;
 });
