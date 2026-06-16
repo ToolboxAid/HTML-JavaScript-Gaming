@@ -1,29 +1,16 @@
 # git status --short
-D  .env
-D  .env.uat
-M  .gitignore
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M scripts/validate-browser-env-agnostic.mjs
-?? docs_build/dev/reports/PR_26167_193-env-runtime-single-file-and-generic-db-url-redo.md
-
-# git diff --cached --stat
- .env       | 4 ----
- .env.uat   | 9 ---------
- .gitignore | 5 ++++-
- 3 files changed, 4 insertions(+), 14 deletions(-)
-
-# git diff --stat
- docs_build/dev/reports/codex_changed_files.txt     |  41 +-
- docs_build/dev/reports/codex_review.diff           | 728 ++++++++-------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
- .../environment_agnostic_browser_gate_report.md    |  52 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  11 +-
- scripts/validate-browser-env-agnostic.mjs          |  72 +-
- 6 files changed, 422 insertions(+), 486 deletions(-)
+ M tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
+ M toolbox/game-workspace/game-workspace.js
+?? docs_build/dev/reports/PR_26167_194-env-runtime-real-fix.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26167_193-env-runtime-single-file-and-generic-db-url-redo.md
+docs_build/dev/reports/PR_26167_194-env-runtime-real-fix.md
+
+# git diff --stat
+.../dev/reports/coverage_changed_js_guardrail.txt  |  4 +--
+ .../dev/reports/playwright_v8_coverage_report.txt  | 10 ++++---
+ .../tools/GameWorkspaceMockRepository.spec.mjs     | 33 ++++++++++++++++++++++
+ toolbox/game-workspace/game-workspace.js           |  8 +++---
+ 4 files changed, 45 insertions(+), 10 deletions(-)

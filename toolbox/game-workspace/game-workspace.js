@@ -369,7 +369,7 @@ elements.gameList?.addEventListener("click", (event) => {
 });
 
 elements.deleteOpenGame?.addEventListener("click", () => {
-  const activeGame = repository.getActiveGame();
+  const activeGame = normalizeActiveGame(repository.getActiveGame(), "Delete active game");
 
   if (!activeGame) {
     setStatusLog("No game is open for deletion.");
@@ -383,7 +383,7 @@ elements.deleteOpenGame?.addEventListener("click", () => {
 });
 
 elements.purposeInput?.addEventListener("change", () => {
-  const activeGame = repository.getActiveGame();
+  const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update game purpose");
   if (!activeGame) {
     return;
   }
@@ -394,7 +394,7 @@ elements.purposeInput?.addEventListener("change", () => {
 });
 
 elements.gameStatusInput?.addEventListener("change", () => {
-  const activeGame = repository.getActiveGame();
+  const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update game status");
   if (!activeGame) {
     return;
   }
@@ -405,7 +405,7 @@ elements.gameStatusInput?.addEventListener("change", () => {
 });
 
 elements.currentUserRoleInput?.addEventListener("change", () => {
-  const activeGame = repository.getActiveGame();
+  const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update current user role");
   if (!activeGame) {
     return;
   }

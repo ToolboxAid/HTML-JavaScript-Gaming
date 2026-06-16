@@ -241,6 +241,39 @@ test("Game Workspace shows active-game API diagnostics without throwing", async 
   }
 });
 
+test("Game Workspace reports malformed active-game payloads without throwing", async ({ page }) => {
+  await page.route("**/api/toolbox/game-workspace/repositories/*/methods/getActiveGame", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        data: {
+          result: {
+            id: "malformed-active-game",
+            name: "Malformed Active Game",
+          },
+        },
+        ok: true,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 200,
+    });
+  });
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+
+  try {
+    await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
+    await expect(page.locator("[data-current-user-role]")).toHaveText("Viewer");
+    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game response is malformed.");
+
+    await page.getByLabel("Game Purpose").selectOption("Learning Game");
+    await expect(page.locator("[data-game-workspace-log]")).toContainText("Update game purpose response is malformed.");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
 test("Game Workspace displays and edits game purpose and member role", async ({ page }) => {
   const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
 
