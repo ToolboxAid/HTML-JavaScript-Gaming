@@ -12,8 +12,8 @@ function hasBrowserRequest() {
   return typeof XMLHttpRequest !== "undefined";
 }
 
-function localRouteUnavailableDiagnostic(method, url, status) {
-  return `Local server API route unavailable for ${method} ${url} (${status}). Start the API-backed local server route instead of a static-only server.`;
+function serverRouteUnavailableDiagnostic(method, url, status) {
+  return `Server API route unavailable for ${method} ${url} (${status}). Start the site API route instead of a static-only server.`;
 }
 
 export function getServerApiDiagnostics() {
@@ -48,7 +48,7 @@ export function requestServerApi(path, options = {}) {
 
   if (xhr.status < 200 || xhr.status >= 300 || payload?.ok === false) {
     const message = xhr.status === 404 || xhr.status === 405
-      ? localRouteUnavailableDiagnostic(method, url, xhr.status)
+      ? serverRouteUnavailableDiagnostic(method, url, xhr.status)
       : payload?.error || payload?.message || `Server API request failed: ${method} ${url} (${xhr.status}).`;
     throw new Error(recordDiagnostic(message));
   }

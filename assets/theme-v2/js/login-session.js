@@ -1,12 +1,18 @@
+import {
+  ACCOUNT_SERVICE_READY_MESSAGE,
+  accountActionFailureMessage,
+  accountActionUnavailableMessage,
+  requestAccountAuth,
+  requestCurrentSession,
+} from "./account-auth-service.js";
+
 const continueLink = document.querySelector("[data-login-continue]");
 const form = document.querySelector("[data-login-form]");
 const identityField = document.querySelector("[data-login-identity]");
 const passwordField = document.querySelector("[data-login-password]");
 const statusField = document.querySelector("[data-login-status]");
 const submitButton = document.querySelector("[data-login-submit]");
-const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
-const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
-const SIGN_IN_PLACEHOLDER_MESSAGE = "Sign In is not available in this preview. You can continue browsing.";
+const SIGN_IN_ACTION = "sign-in";
 let authStatus = null;
 
 function rootPrefix() {
@@ -54,62 +60,15 @@ function setFormEnabled(enabled) {
   }
 }
 
-function isStaticOnlyLocalEntrypoint() {
-  return ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
-    window.location.port === "5500";
-}
-
-async function readJson(response, fallbackMessage) {
-  let payload = null;
-  try {
-    payload = await response.json();
-  } catch {
-    payload = null;
-  }
-  if (!response.ok || payload?.ok === false) {
-    if (payload?.error === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
-      throw new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
-    }
-    throw new Error(fallbackMessage);
-  }
-  return payload?.data || {};
-}
-
-async function requestAccountAuth(path, options = {}) {
-  const response = await fetch(`/api/auth/${path}`, {
-    body: options.body ? JSON.stringify(options.body) : undefined,
-    headers: options.body ? { "content-type": "application/json" } : undefined,
-    method: options.method || "GET",
-  });
-  return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
-}
-
-async function requestCurrentSession() {
-  const response = await fetch("/api/session/current", {
-    headers: { "accept": "application/json" },
-    method: "GET",
-  });
-  return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
-}
-
 function unavailableStatusMessage() {
-  return SIGN_IN_PLACEHOLDER_MESSAGE;
+  return accountActionUnavailableMessage(SIGN_IN_ACTION);
 }
 
 async function refreshAccountAuthStatus() {
-  if (isStaticOnlyLocalEntrypoint()) {
-    authStatus = {
-      ready: false,
-      message: SIGN_IN_PLACEHOLDER_MESSAGE,
-    };
-    setFormEnabled(false);
-    setStatus(authStatus.message);
-    return authStatus;
-  }
   try {
-    authStatus = await requestAccountAuth("status");
+    authStatus = await requestAccountAuth("status", {}, unavailableStatusMessage());
     if (authStatus.ready) {
-      const session = await requestCurrentSession();
+      const session = await requestCurrentSession(accountActionFailureMessage(SIGN_IN_ACTION));
       if (session?.authenticated) {
         setFormEnabled(false);
         setStatus(`Signed in as ${session.displayName || session.label || "Account"}.`);
@@ -117,11 +76,11 @@ async function refreshAccountAuthStatus() {
       }
     }
     setFormEnabled(Boolean(authStatus.ready));
-    setStatus(authStatus.ready ? "Account service is available." : unavailableStatusMessage());
+    setStatus(authStatus.ready ? ACCOUNT_SERVICE_READY_MESSAGE : unavailableStatusMessage());
   } catch {
     authStatus = {
       ready: false,
-      message: SIGN_IN_PLACEHOLDER_MESSAGE,
+      message: unavailableStatusMessage(),
     };
     setFormEnabled(false);
     setStatus(authStatus.message);
@@ -141,13 +100,13 @@ form?.addEventListener("submit", (event) => {
         setStatus(unavailableStatusMessage());
         return null;
       }
-      return requestAccountAuth("sign-in", {
+      return requestAccountAuth(SIGN_IN_ACTION, {
         body: {
           identity: identityField?.value || "",
           password: passwordField?.value || "",
         },
         method: "POST",
-      });
+      }, accountActionFailureMessage(SIGN_IN_ACTION));
     })
     .then((result) => {
       if (result) {
@@ -158,7 +117,7 @@ form?.addEventListener("submit", (event) => {
       }
     })
     .catch((error) => {
-      setStatus(error instanceof Error ? error.message : AUTH_UNAVAILABLE_MESSAGE);
+      setStatus(error instanceof Error ? error.message : accountActionFailureMessage(SIGN_IN_ACTION));
     });
 });
 

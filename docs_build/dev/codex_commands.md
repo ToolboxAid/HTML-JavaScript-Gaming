@@ -1730,3 +1730,166 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26167_174-account-auth-page-unavailable-message_delta.zip`
+
+
+## PR_26167_175-runtime-environment-branch-audit
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Audited account/browser/API/auth/data/storage/dev-runtime code for DEV/UAT/PROD/provider branching.
+- Searched requested environment/provider terms.
+- Classified findings as `BLOCKER`, `OK`, and `TEMP`.
+- Did not change runtime behavior.
+
+Validation:
+- Scoped `rg` searches across account, Theme V2 browser JS, engine API/persistence, and dev-runtime code.
+- Manual source review of the account auth pages/modules, shared partial/session helper, server API client, Local DB page helper, Admin DB Viewer UI, and dev-runtime provider/router code.
+- `git diff --check`
+- Playwright skipped because no runtime code or audit tooling changed.
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_175-runtime-environment-branch-audit.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_175-runtime-environment-branch-audit_delta.zip`
+
+
+## PR_26167_176-account-pages-single-auth-contract
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added `assets/theme-v2/js/account-auth-service.js` as the shared account auth browser API helper.
+- Updated Sign In, Create Account, and Password Reset modules to use the shared account service contract.
+- Removed localhost/port/static-local branching from the account auth page modules.
+- Replaced generic unavailable browser fallbacks with action-safe account service messages.
+- Updated targeted account/auth Playwright expectations.
+
+Validation:
+- `node --check assets/theme-v2/js/account-auth-service.js`
+- `node --check assets/theme-v2/js/login-session.js`
+- `node --check assets/theme-v2/js/account-auth-actions.js`
+- `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
+- `node --check tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs`
+- HTML restriction scan for affected account auth HTML pages.
+- Targeted account/auth Playwright for static sign-in, sign-in form, configured account auth actions, create-account failure, and password-reset rate-limit/provider-failure behavior.
+- Manual browser page-load validation for `/account/sign-in.html`, `/account/create-account.html`, and `/account/password-reset.html`.
+- `git diff --check`
+- `npm run test:workspace-v2` skipped because targeted account/auth Playwright exists and passed.
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_176-account-pages-single-auth-contract.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_176-account-pages-single-auth-contract_delta.zip`
+
+
+## PR_26167_177-api-service-connection-only-config
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Removed browser-owned auth provider override/switching from shared partial/session code.
+- Removed browser local-port redirect/static-local session branching from shared partial loading.
+- Kept header/protected-page session behavior on server API calls.
+- Moved Local Admin My Stuff menu gating to the server navigation response.
+- Reworded Local API route diagnostics to neutral server API wording.
+- Documented remaining server-side provider/database selection as connection config.
+
+Validation:
+- `node --check assets/theme-v2/js/gamefoundry-partials.js`
+- `node --check src/engine/api/server-api-client.js`
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
+- `node --check tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs`
+- Static scan for removed browser provider/local route patterns.
+- `node --test tests/dev-runtime/SupabaseProviderContractStub.test.mjs tests/dev-runtime/SupabaseProductDataCutover.test.mjs tests/dev-runtime/ProductDataProviderContractHardening.test.mjs`
+- Targeted account/session Playwright for static sign-in, sign-in form, configured account auth actions, local admin menu, and logout/protected page behavior.
+- `npm run test:workspace-v2` because shared runtime/UI partial behavior changed; command name is legacy and user-facing language is Project Workspace.
+- `git diff --check`
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_177-api-service-connection-only-config.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_177-api-service-connection-only-config_delta.zip`
+
+
+## PR_26167_178-auth-error-message-normalization
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Normalized visible account/auth page errors and statuses to account service/action language.
+- Removed raw session/navigation diagnostics from protected-page and Admin navigation visible UI.
+- Kept diagnostics available through console warnings and validation reports.
+- Updated Admin DB Viewer session gating to use `/api/session/current` instead of a browser auth provider global.
+- Updated targeted account/auth Playwright expectations for normalized visible messages.
+
+Validation:
+- `node --check admin/db-viewer.js`
+- `node --check assets/theme-v2/js/gamefoundry-partials.js`
+- `node --check assets/theme-v2/js/local-db-page-data.js`
+- `node --check assets/theme-v2/js/account-auth-actions.js`
+- `node --check tests/playwright/tools/LoginSessionMode.spec.mjs`
+- HTML restriction scan for changed account HTML files.
+- Static forbidden-term scan for changed account/auth UI surfaces.
+- Targeted account/auth Playwright for static sign-in, sign-in form, create-account failure, password-reset rate-limit/provider-failure behavior, protected-page blocks, and account page statuses.
+- `npm run test:workspace-v2` because shared Theme V2/session UI behavior changed; command name is legacy and user-facing language is Project Workspace.
+- Manual browser spot check for account pages.
+- `git diff --check`
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_178-auth-error-message-normalization.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_178-auth-error-message-normalization_delta.zip`
+
+
+## PR_26167_179-environment-agnostic-validation-gates
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added `scripts/validate-browser-env-agnostic.mjs`.
+- Added `npm run validate:browser-env-agnostic`.
+- Updated the static account auth Playwright test to cover Sign In, Create Account, and Password Reset through the same account API contract.
+- Added `docs_build/dev/reports/environment_agnostic_browser_gate_report.md`.
+
+Validation:
+- `node --check scripts/validate-browser-env-agnostic.mjs`
+- `node --check tests/playwright/tools/StaticOnlyLoginApiRequired.spec.mjs`
+- `npm run validate:browser-env-agnostic`
+- `node --test --test-name-pattern "Auth status|auth status|account auth|Create account|Password reset|password reset|sign-in|Sign-in|session" tests/dev-runtime/SupabaseProviderContractStub.test.mjs`
+- Targeted account/auth Playwright for static account pages, configured account auth actions, create-account failure, password-reset rate-limit/provider-failure behavior, protected-page blocks, and account page statuses.
+- `git diff --check`
+- `npm run test:workspace-v2` skipped because PR179 changed validation/test/reporting only, not runtime JS or UI behavior.
+- Full samples smoke skipped because samples were not in scope.
+
+Required reports:
+- `docs_build/dev/reports/PR_26167_179-environment-agnostic-validation-gates.md`
+- `docs_build/dev/reports/environment_agnostic_browser_gate_report.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26167_179-environment-agnostic-validation-gates_delta.zip`

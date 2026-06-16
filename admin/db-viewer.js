@@ -1,3 +1,5 @@
+import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
+
 function devRuntimeAllowed() {
   const host = window.location.hostname;
   return window.GameFoundryDevRuntime?.enabled === true ||
@@ -8,17 +10,12 @@ function devRuntimeAllowed() {
 
 function currentSession() {
   try {
-    const provider = window.GameFoundryAuthProvider;
-    if (!provider || typeof provider.getCurrentUser !== "function") {
-      return {
-        diagnostic: "Auth provider contract unavailable. Restore the sign-in/session provider before opening DB Viewer.",
-        mode: "",
-      };
-    }
-    return provider.getCurrentUser();
+    return getSessionCurrent();
   } catch (error) {
+    const diagnostic = error instanceof Error ? error.message : String(error || "Unable to read current DB Viewer session.");
+    console.warn("[admin/operator] DB Viewer session unavailable:", diagnostic);
     return {
-      diagnostic: error instanceof Error ? error.message : String(error || "Unable to read current DB Viewer session."),
+      diagnostic: "Sign in with an admin account to open DB Viewer.",
       mode: "",
     };
   }
@@ -36,7 +33,7 @@ async function loadLocalDbViewer() {
     return;
   }
   if (!devRuntimeAllowed()) {
-    showGatewayStatus("DB Viewer is available only in the local dev runtime.");
+    showGatewayStatus("DB Viewer is available only in the approved admin runtime.");
     return;
   }
   const session = currentSession();

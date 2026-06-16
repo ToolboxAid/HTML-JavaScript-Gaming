@@ -1,28 +1,4 @@
 (function () {
-    const localDevExpectedPort = "5501";
-    const localDevHostnames = new Set(["127.0.0.1", "localhost", "::1"]);
-
-    function shouldRedirectLocalDevPort() {
-        return window.location.protocol === "http:" &&
-            localDevHostnames.has(window.location.hostname) &&
-            window.location.port !== localDevExpectedPort &&
-            window.navigator?.webdriver !== true;
-    }
-
-    function redirectLocalDevPort() {
-        if (!shouldRedirectLocalDevPort()) {
-            return false;
-        }
-        const target = new URL(window.location.href);
-        target.port = localDevExpectedPort;
-        window.location.replace(target.href);
-        return true;
-    }
-
-    if (redirectLocalDevPort()) {
-        return;
-    }
-
     const routeMap = {
         home: "index.html",
         toolbox: "toolbox/index.html",
@@ -143,7 +119,6 @@
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
     const assetRoot = currentScript ? new URL("../", currentScript.src) : null;
-    const apiBackedLoginDiagnostic = "Use the API-backed local server for sign-in. Run npm run dev:local-api and open http://127.0.0.1:5501/account/sign-in.html.";
     let navigationAdminMenuCache = null;
 
     function assetUrl(path) {
@@ -176,10 +151,6 @@
     function pathHref(path) {
         const normalizedPath = String(path || "").replace(/^\/+/, "");
         return normalizedPath ? rootPrefix() + normalizedPath : "#";
-    }
-
-    function isLocalDevMode(loginState) {
-        return String(loginState?.mode || "").indexOf("local-") === 0;
     }
 
     function missingNavigationMenu(diagnostic) {
@@ -219,7 +190,7 @@
             const payload = request.responseText ? JSON.parse(request.responseText) : null;
             if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
                 if (request.status === 404 || request.status === 405) {
-                    throw new Error(localRouteUnavailableDiagnostic("GET", "/api/navigation/admin-menu", request.status));
+                    throw new Error(serverRouteUnavailableDiagnostic("GET", "/api/navigation/admin-menu", request.status));
                 }
                 throw new Error(payload?.error || "Navigation API did not return Admin menu data.");
             }
@@ -232,7 +203,11 @@
             };
             return navigationAdminMenuCache;
         } catch (error) {
-            navigationAdminMenuCache = missingNavigationMenu(error instanceof Error ? error.message : "");
+            const diagnostic = error instanceof Error ? error.message : "";
+            if (diagnostic) {
+                console.warn("[navigation/operator] Admin navigation service unavailable:", diagnostic);
+            }
+            navigationAdminMenuCache = missingNavigationMenu(diagnostic);
             return navigationAdminMenuCache;
         }
     }
@@ -289,7 +264,7 @@
         diagnostic.className = "status";
         diagnostic.dataset.adminNavigationDiagnostic = "";
         diagnostic.setAttribute("role", "status");
-        diagnostic.textContent = "Admin navigation unavailable: " + (message || "Start the local server API and refresh.");
+        diagnostic.textContent = "Admin navigation is unavailable. Start the site API and refresh.";
         return diagnostic;
     }
 
@@ -310,7 +285,7 @@
         if (navigationMenu.diagnostic) {
             submenu.append(createAdminNavigationDiagnostic(navigationMenu.diagnostic));
         }
-        if (isLocalDevMode(loginState) && navigationMenu.localAdminMyStuffItems.length) {
+        if (navigationMenu.localAdminMyStuffItems.length) {
             const separator = document.createElement("hr");
             separator.dataset.adminMyStuffSeparator = "";
             separator.setAttribute("role", "separator");
@@ -339,27 +314,19 @@
         }
     }
 
-    function localRouteUnavailableDiagnostic(method, url, status) {
-        return "Local server API route unavailable for " + method + " " + url + " (" + status + "). Start the API-backed local server route instead of a static-only server.";
-    }
-
-    function isStaticLocalEntrypoint() {
-        return ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
-            window.location.port === "5500";
+    function serverRouteUnavailableDiagnostic(method, url, status) {
+        return "Server API route unavailable for " + method + " " + url + " (" + status + "). Start the site API route instead of a static-only server.";
     }
 
     function missingSessionApiLoginState(diagnostic) {
         return {
             authenticated: false,
-            diagnostic: diagnostic || "Server session API is unavailable. Start the local server API before using protected pages.",
+            diagnostic: diagnostic || "Account session service is unavailable. Sign in before using protected pages.",
             displayName: "Sign In",
             mode: "missing-api",
             roleSlugs: []
         };
     }
-
-    const authProviderContractOperations = Object.freeze(["getCurrentUser", "signIn", "signOut", "requireRole"]);
-    let resolvedAuthProvider = null;
 
     function requestSessionApi(method, url, body) {
         const request = new XMLHttpRequest();
@@ -372,12 +339,12 @@
         const payload = request.responseText ? JSON.parse(request.responseText) : null;
         if (request.status < 200 || request.status >= 300 || payload?.ok === false) {
             if (request.status === 404 || request.status === 405) {
-                throw new Error(localRouteUnavailableDiagnostic(method, url, request.status));
+                throw new Error(serverRouteUnavailableDiagnostic(method, url, request.status));
             }
             throw new Error(payload?.error || "Session API did not return a valid auth response.");
         }
         if (!payload || !Object.prototype.hasOwnProperty.call(payload, "data")) {
-            throw new Error("Session API response did not include auth provider data.");
+            throw new Error("Session API response did not include account session data.");
         }
         return payload.data;
     }
@@ -393,68 +360,6 @@
         };
     }
 
-    function createServerSessionAuthProvider() {
-        return {
-            operations: authProviderContractOperations.slice(),
-            providerId: "server-session-api",
-            getCurrentUser: function () {
-                if (isStaticLocalEntrypoint()) {
-                    throw new Error(apiBackedLoginDiagnostic);
-                }
-                return authSessionFromApiData(requestSessionApi("GET", "/api/session/current"));
-            },
-            signIn: function (options) {
-                return authSessionFromApiData(requestSessionApi("POST", "/api/session/user", {
-                    userKey: options?.userKey || ""
-                }));
-            },
-            signOut: function () {
-                return authSessionFromApiData(requestSessionApi("POST", "/api/session/logout"));
-            },
-            requireRole: function (role, session) {
-                const requiredRole = String(role || "").trim();
-                if (!requiredRole) {
-                    return {
-                        allowed: false,
-                        diagnostic: "Auth provider role check requires a role.",
-                        role: "",
-                        session
-                    };
-                }
-                const candidateSession = session || this.getCurrentUser();
-                const roleSlugs = Array.isArray(candidateSession?.roleSlugs) ? candidateSession.roleSlugs : [];
-                const allowed = Boolean(candidateSession?.authenticated && roleSlugs.includes(requiredRole));
-                return {
-                    allowed,
-                    diagnostic: allowed ? "" : "Sign in with the " + requiredRole + " role to continue.",
-                    role: requiredRole,
-                    session: candidateSession
-                };
-            }
-        };
-    }
-
-    function authProviderDiagnostic(provider) {
-        const missing = authProviderContractOperations.filter(function (operation) {
-            return typeof provider?.[operation] !== "function";
-        });
-        return missing.length ? "Auth provider contract missing operations: " + missing.join(", ") + "." : "";
-    }
-
-    function authProvider() {
-        if (resolvedAuthProvider) {
-            return resolvedAuthProvider;
-        }
-        const provider = window.GameFoundryAuthProvider || createServerSessionAuthProvider();
-        const diagnostic = authProviderDiagnostic(provider);
-        if (diagnostic) {
-            throw new Error(diagnostic);
-        }
-        window.GameFoundryAuthProvider = provider;
-        resolvedAuthProvider = provider;
-        return resolvedAuthProvider;
-    }
-
     function rewriteRootedPaths(root) {
         root.querySelectorAll("[data-route]").forEach(function (link) {
             link.setAttribute("href", routeHref(link.dataset.route));
@@ -465,11 +370,15 @@
         });
     }
 
-    function localDevLoginState() {
+    function currentLoginState() {
         try {
-            return authProvider().getCurrentUser();
+            return authSessionFromApiData(requestSessionApi("GET", "/api/session/current"));
         } catch (error) {
-            return missingSessionApiLoginState(error instanceof Error ? error.message : "");
+            const diagnostic = error instanceof Error ? error.message : "";
+            if (diagnostic) {
+                console.warn("[session/operator] Account session service unavailable:", diagnostic);
+            }
+            return missingSessionApiLoginState(diagnostic);
         }
     }
 
@@ -484,8 +393,8 @@
         return link ? link.closest(".nav-item") : null;
     }
 
-    function applyLocalDevLoginState(root) {
-        const loginState = localDevLoginState();
+    function applyCurrentLoginState(root) {
+        const loginState = currentLoginState();
         const accountItem = navItemForRoute(root, "account");
         const accountLink = accountItem?.querySelector(":scope > a[data-route='account']");
         const accountMenu = directSubMenu(accountItem);
@@ -537,11 +446,8 @@
         if (!requirement) {
             return true;
         }
-        try {
-            return authProvider().requireRole(requirement.role, loginState).allowed;
-        } catch {
-            return false;
-        }
+        const roleSlugs = Array.isArray(loginState?.roleSlugs) ? loginState.roleSlugs : [];
+        return Boolean(loginState?.authenticated && roleSlugs.includes(requirement.role));
     }
 
     function createAccessBlockedMain(requirement, pagePath, loginState) {
@@ -577,7 +483,7 @@
         status.dataset.sessionAccessStatus = "";
         status.textContent = [
             `Blocked ${pagePath}. Current session: ${loginState.displayName}.`,
-            loginState.diagnostic ? `Sign-in/session diagnostic: ${loginState.diagnostic}` : ""
+            "Use an account with the required access and try again."
         ].filter(Boolean).join(" ");
         const link = document.createElement("a");
         link.className = "btn primary";
@@ -605,7 +511,7 @@
             };
             return false;
         }
-        const loginState = localDevLoginState();
+        const loginState = currentLoginState();
         const allowed = canUseProtectedPage(requirement, loginState);
         window.GameFoundrySessionGuard = {
             blocked: !allowed,
@@ -698,12 +604,16 @@
 
     function logoutCurrentSession(event) {
         event.preventDefault();
-        try {
-            const session = authProvider().signOut();
-            window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
-                detail: session
-            }));
-        } catch {}
+        const session = (() => {
+            try {
+                return authSessionFromApiData(requestSessionApi("POST", "/api/session/logout"));
+            } catch (error) {
+                return missingSessionApiLoginState(error instanceof Error ? error.message : "");
+            }
+        })();
+        window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
+            detail: session
+        }));
         refreshHeaderLoginState();
     }
 
@@ -727,7 +637,7 @@
         const element = wrapper.firstElementChild;
         rewriteRootedPaths(element);
         if (partialName === "header-nav") {
-            applyLocalDevLoginState(element);
+            applyCurrentLoginState(element);
             markActiveNavigation(element);
             wireAccountLogout(element);
         } else if (partialName === "account-side-nav") {
@@ -763,7 +673,7 @@
         const header = document.querySelector("header.site-header");
         if (header) {
             enforcePageProtection();
-            applyLocalDevLoginState(header);
+            applyCurrentLoginState(header);
             markActiveNavigation(header);
         }
     }
@@ -771,7 +681,7 @@
     function refreshHeaderOnly() {
         const header = document.querySelector("header.site-header");
         if (header) {
-            applyLocalDevLoginState(header);
+            applyCurrentLoginState(header);
             markActiveNavigation(header);
         }
     }

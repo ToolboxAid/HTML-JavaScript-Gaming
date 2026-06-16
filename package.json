@@ -25,6 +25,7 @@
     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
     "dev:local-api": "node --use-system-ca ./scripts/start-local-api-server.mjs",
     "validate:supabase-dev": "node --use-system-ca ./scripts/validate-supabase-dev.mjs",
+    "validate:browser-env-agnostic": "node ./scripts/validate-browser-env-agnostic.mjs",
     "cleanup:supabase-dev-auth-test-users": "node --use-system-ca ./scripts/cleanup-supabase-dev-auth-test-users.mjs",
     "check:shared-extraction-guard": "node docs_build/dev/toolbox/checkSharedExtractionGuard.mjs",
     "check:phase24-closeout-guard": "node docs_build/dev/toolbox/checkPhase24CloseoutExecutionGuard.mjs",

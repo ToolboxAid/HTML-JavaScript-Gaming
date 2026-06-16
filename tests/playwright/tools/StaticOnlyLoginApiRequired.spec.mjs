@@ -65,7 +65,7 @@ test.afterAll(async () => {
   await workspaceV2CoverageReporter.writeReport();
 });
 
-test("static sign-in page renders production-safe account actions without API diagnostics", async ({ page }) => {
+test("static account auth pages render production-safe actions through the account API contract", async ({ page }) => {
   const server = await startStaticOnlyServer();
   const requests = [];
   const failedRequests = [];
@@ -118,11 +118,28 @@ test("static sign-in page renders production-safe account actions without API di
     await expect(page.locator("[data-login-status]")).toHaveText("Sign In is not available in this preview. You can continue browsing.");
     await expect(page.locator("main")).not.toContainText("The site is currently unavailable. Please try again later.");
 
-    expect(requests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
-    expect(requests.filter((request) => request.includes("/api/session/"))).toEqual([]);
+    await page.getByRole("link", { name: "Create Account" }).click();
+    await expect(page).toHaveURL(/\/account\/create-account\.html$/);
+    await expect(page.locator("[data-account-auth-status]")).toHaveText("Create Account is not available in this preview. Please try again later.");
+    await expect(page.locator("main")).not.toContainText("The site is currently unavailable. Please try again later.");
+    await expect(page.getByRole("button", { name: "DEV" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
+
+    await page.goto(`${server.baseUrl}/account/password-reset.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-account-auth-status]")).toHaveText("Password Reset is not available in this preview. Please try again later.");
+    await expect(page.locator("main")).not.toContainText("The site is currently unavailable. Please try again later.");
+    await expect(page.getByRole("button", { name: "DEV" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
+    await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
+
+    expect(requests.filter((request) => request.includes("/api/session/current"))).toHaveLength(3);
+    expect(requests.filter((request) => request.includes("/api/session/") && !request.includes("/api/session/current"))).toEqual([]);
     expect(requests.filter((request) => request.includes("/api/auth/dev/supabase"))).toEqual([]);
-    expect(requests.filter((request) => request.includes("/api/auth/"))).toEqual([]);
-    expect(failedRequests.filter((request) => request.includes("/api/session/current"))).toEqual([]);
+    expect(requests.filter((request) => request.includes("/api/auth/status"))).toHaveLength(3);
+    expect(requests.filter((request) => request.includes("/api/auth/") && !request.includes("/api/auth/status"))).toEqual([]);
+    expect(failedRequests.filter((request) => request.includes("/api/auth/status"))).toHaveLength(3);
+    expect(failedRequests.filter((request) => request.includes("/api/session/current"))).toHaveLength(3);
     expect(failedRequests.filter((request) => request.includes("/api/session/mode"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/users"))).toEqual([]);
     expect(failedRequests.filter((request) => request.includes("/api/session/modes"))).toEqual([]);

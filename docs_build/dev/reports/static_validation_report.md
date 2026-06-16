@@ -1,6 +1,6 @@
 # Static Validation Report
 
-Generated: 2026-06-16T14:22:15.107Z
+Generated: 2026-06-16T14:58:25.707Z
 Status: PASS
 Static only: No
 Dry run: No
@@ -22,13 +22,13 @@ Reason: No deterministic static validation failure was found.
 | invalid filename detection | PASS | Covered by Playwright structure audit. |
 | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
 | missing fixture detection | PASS | No missing fixture findings. |
-| targeted file manifests | PASS | workspace-contract:eba46f6db6cd5d61 |
-| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
-| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
-| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+| targeted file manifests | PASS | workspace-contract:a89f488a7cee69ea |
+| persistent lane manifests | PASS | workspace-contract:REUSED |
+| lane warm-start reuse | PASS | workspace-contract:REUSED |
+| dependency hydration reuse | PASS | workspace-contract:REUSED |
 | lane input graph expansion | PASS | No inputs escaped manifest scope. |
 | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
-| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
 | invalid lane target detection | PASS | No invalid lane target findings. |
 | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
 | duplicate lane registration detection | PASS | No duplicate lane registrations found. |

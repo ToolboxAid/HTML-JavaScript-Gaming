@@ -223,7 +223,7 @@ function providerFailureMessage(providerContract, providerId) {
   if (failure?.remediation) {
     return failure.remediation;
   }
-  return `Selected provider ${providerId} is not available for this Local API route yet.`;
+  return `Selected provider ${providerId} is not available for this server API route yet.`;
 }
 
 function readDocsBuildGuestSeedPackages() {
@@ -2627,12 +2627,15 @@ class LocalDevDataSource {
   }
 
   adminNavigationMenu() {
+    const localAdminMyStuffItems = this.currentMode().id === LOCAL_DB_MODE_ID
+      ? clone(LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS)
+      : [];
     return {
       adminMainItems: clone(ADMIN_NAVIGATION_MAIN_ITEMS),
-      localAdminMyStuffItems: clone(LOCAL_ADMIN_MY_STUFF_NAVIGATION_ITEMS),
+      localAdminMyStuffItems,
       ownership: {
         adminMainItems: "navigation config",
-        localAdminMyStuffItems: "local/dev navigation config",
+        localAdminMyStuffItems: "server connection config",
         routeMap: "static shell route resolution",
       },
       source: "server-api",

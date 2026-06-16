@@ -1,14 +1,16 @@
+import {
+  ACCOUNT_SERVICE_READY_MESSAGE,
+  accountActionFailureMessage,
+  accountActionUnavailableMessage,
+  requestAccountAuth,
+} from "./account-auth-service.js";
+
 const form = document.querySelector("[data-account-auth-form]");
 const emailField = document.querySelector("[data-account-auth-email]");
 const passwordField = document.querySelector("[data-account-auth-password]");
 const statusField = document.querySelector("[data-account-auth-status]");
 const submitButton = document.querySelector("[data-account-auth-submit]");
 const action = form?.getAttribute("data-account-auth-form") || "";
-const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
-const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try again later.";
-const PASSWORD_RESET_RATE_LIMIT_MESSAGE = "Too many reset requests. Please wait and try again later.";
-const CREATE_ACCOUNT_PLACEHOLDER_MESSAGE = "Create Account is not available in this preview. Please try again later.";
-const PASSWORD_RESET_PLACEHOLDER_MESSAGE = "Password Reset is not available in this preview. Please try again later.";
 let authStatus = null;
 
 function setStatus(message) {
@@ -17,69 +19,21 @@ function setStatus(message) {
   }
 }
 
-function isStaticOnlyLocalEntrypoint() {
-  return ["127.0.0.1", "localhost"].includes(window.location.hostname) &&
-    window.location.port === "5500";
-}
-
 function setFormEnabled(enabled) {
   if (submitButton) {
     submitButton.disabled = !enabled;
   }
 }
 
-async function readJson(response, fallbackMessage) {
-  let payload = null;
-  try {
-    payload = await response.json();
-  } catch {
-    payload = null;
-  }
-  if (!response.ok || payload?.ok === false) {
-    if (payload?.error === ACCOUNT_IDENTITY_SETUP_MESSAGE) {
-      throw new Error(ACCOUNT_IDENTITY_SETUP_MESSAGE);
-    }
-    if (payload?.error === PASSWORD_RESET_RATE_LIMIT_MESSAGE) {
-      throw new Error(PASSWORD_RESET_RATE_LIMIT_MESSAGE);
-    }
-    throw new Error(fallbackMessage);
-  }
-  return payload?.data || {};
-}
-
-async function requestAccountAuth(path, options = {}) {
-  const response = await fetch(`/api/auth/${path}`, {
-    body: options.body ? JSON.stringify(options.body) : undefined,
-    headers: options.body ? { "content-type": "application/json" } : undefined,
-    method: options.method || "GET",
-  });
-  return readJson(response, AUTH_UNAVAILABLE_MESSAGE);
-}
-
 function unavailableStatusMessage() {
-  if (action === "create-account") {
-    return CREATE_ACCOUNT_PLACEHOLDER_MESSAGE;
-  }
-  if (action === "password-reset") {
-    return PASSWORD_RESET_PLACEHOLDER_MESSAGE;
-  }
-  return "Account action is not available in this preview. Please try again later.";
+  return accountActionUnavailableMessage(action);
 }
 
 async function refreshAccountAuthStatus() {
-  if (isStaticOnlyLocalEntrypoint()) {
-    authStatus = {
-      ready: false,
-      message: unavailableStatusMessage(),
-    };
-    setFormEnabled(false);
-    setStatus(authStatus.message);
-    return authStatus;
-  }
   try {
-    authStatus = await requestAccountAuth("status");
+    authStatus = await requestAccountAuth("status", {}, unavailableStatusMessage());
     setFormEnabled(Boolean(authStatus.ready));
-    setStatus(authStatus.ready ? "Account service is available." : unavailableStatusMessage());
+    setStatus(authStatus.ready ? ACCOUNT_SERVICE_READY_MESSAGE : unavailableStatusMessage());
   } catch {
     authStatus = {
       ready: false,
@@ -111,7 +65,7 @@ form?.addEventListener("submit", (event) => {
       }
       const endpoint = actionEndpoint();
       if (!endpoint) {
-        throw new Error("Unknown account action.");
+        throw new Error(accountActionFailureMessage(action));
       }
       const body = {
         email: emailField?.value || "",
@@ -122,7 +76,7 @@ form?.addEventListener("submit", (event) => {
       return requestAccountAuth(endpoint, {
         body,
         method: "POST",
-      });
+      }, accountActionFailureMessage(action));
     })
     .then((result) => {
       if (result) {
@@ -130,7 +84,7 @@ form?.addEventListener("submit", (event) => {
       }
     })
     .catch((error) => {
-      setStatus(error instanceof Error ? error.message : AUTH_UNAVAILABLE_MESSAGE);
+      setStatus(error instanceof Error ? error.message : accountActionFailureMessage(action));
     });
 });
 

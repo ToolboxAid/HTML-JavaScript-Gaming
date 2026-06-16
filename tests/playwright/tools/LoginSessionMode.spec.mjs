@@ -279,8 +279,12 @@ async function openRepoPage(page, pathName, options = {}) {
 
 async function openFixedLocalApiLoginPage(page) {
   const fixedBaseUrl = "http://127.0.0.1:5501";
+  const previousAuthProvider = process.env.GAMEFOUNDRY_AUTH_PROVIDER;
+  const previousDatabaseProvider = process.env.GAMEFOUNDRY_DB_PROVIDER;
   const previousLocalDbStoragePath = process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
   const localDbStoragePath = nextLocalDbStoragePath();
+  process.env.GAMEFOUNDRY_AUTH_PROVIDER = "local-db";
+  process.env.GAMEFOUNDRY_DB_PROVIDER = "local-db";
   process.env.GAMEFOUNDRY_LOCAL_DB_PATH = localDbStoragePath;
   let server;
   try {
@@ -336,7 +340,16 @@ async function openFixedLocalApiLoginPage(page) {
 
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${fixedBaseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
-  return { consoleErrors, failedRequests, localDbStoragePath, pageErrors, previousLocalDbStoragePath, server };
+  return {
+    consoleErrors,
+    failedRequests,
+    localDbStoragePath,
+    pageErrors,
+    previousAuthProvider,
+    previousDatabaseProvider,
+    previousLocalDbStoragePath,
+    server,
+  };
 }
 
 function expectNoPageFailures(failures) {
@@ -353,6 +366,16 @@ async function closeWithCoverage(page, failures) {
     process.env.GAMEFOUNDRY_LOCAL_DB_PATH = failures.previousLocalDbStoragePath;
   } else {
     delete process.env.GAMEFOUNDRY_LOCAL_DB_PATH;
+  }
+  if (failures.previousAuthProvider) {
+    process.env.GAMEFOUNDRY_AUTH_PROVIDER = failures.previousAuthProvider;
+  } else {
+    delete process.env.GAMEFOUNDRY_AUTH_PROVIDER;
+  }
+  if (failures.previousDatabaseProvider) {
+    process.env.GAMEFOUNDRY_DB_PROVIDER = failures.previousDatabaseProvider;
+  } else {
+    delete process.env.GAMEFOUNDRY_DB_PROVIDER;
   }
 }
 
@@ -464,27 +487,10 @@ test("Sign-in page uses a production-safe account form without public Local DB c
     await expect(page.locator("main")).not.toContainText("local-mem");
     await expect(page.locator("main")).not.toContainText("reseed");
     await expect(page.locator("main")).not.toContainText("Session mode");
-    const authContract = await page.evaluate(() => {
-      const provider = window.GameFoundryAuthProvider;
-      return {
-        canRequireUser: provider.requireRole("user").allowed,
-        hasGetCurrentUser: typeof provider.getCurrentUser === "function",
-        hasRequireRole: typeof provider.requireRole === "function",
-        hasSignIn: typeof provider.signIn === "function",
-        hasSignOut: typeof provider.signOut === "function",
-        operations: provider.operations,
-        providerId: provider.providerId,
-      };
-    });
-    expect(authContract).toEqual({
-      canRequireUser: false,
-      hasGetCurrentUser: true,
-      hasRequireRole: true,
-      hasSignIn: true,
-      hasSignOut: true,
-      operations: ["getCurrentUser", "signIn", "signOut", "requireRole"],
-      providerId: "server-session-api",
-    });
+    const hasBrowserAuthProvider = await page.evaluate(() =>
+      Object.prototype.hasOwnProperty.call(window, "GameFoundryAuthProvider")
+    );
+    expect(hasBrowserAuthProvider).toBe(false);
     await expect(page.getByRole("button", { name: "DEV" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "UAT" })).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Prod" })).toHaveCount(0);
@@ -637,7 +643,7 @@ test("Account auth actions show actionable identity setup failures without expos
   await fakeSupabase.close();
 });
 
-test("Create Account shows generic provider failure and support message for identity provisioning failure", async ({ page }) => {
+test("Create Account shows action-safe service failure and support message for identity provisioning failure", async ({ page }) => {
   const providerFailureSupabase = await startFakeSupabaseAuthServer({
     failAdminCreateAccount: {
       payload: { message: "User already registered" },
@@ -658,7 +664,7 @@ test("Create Account shows generic provider failure and support message for iden
       await page.getByLabel("Email").fill("existing@example.test");
       await page.getByLabel("Password").fill("not-stored-locally");
       await page.getByRole("button", { name: "Create Account" }).click();
-      await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Create Account could not be completed. Please try again later.");
       await expect(page.locator("main")).not.toContainText("User already registered");
       expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/create-account"))).toHaveLength(1);
       expect(failures.pageErrors).toEqual([]);
@@ -706,7 +712,7 @@ test("Create Account shows generic provider failure and support message for iden
   await identityFailureSupabase.close();
 });
 
-test("Password Reset maps upstream rate limit safely and keeps provider failures generic", async ({ page }) => {
+test("Password Reset maps upstream rate limit safely and keeps service failures action-safe", async ({ page }) => {
   const rateLimitSupabase = await startFakeSupabaseAuthServer({
     failPasswordReset: {
       payload: {
@@ -761,7 +767,7 @@ test("Password Reset maps upstream rate limit safely and keeps provider failures
       await expect(page.locator("[data-account-auth-status]")).toHaveText("Account service is available.");
       await page.getByLabel("Email").fill("browser500@example.test");
       await page.getByRole("button", { name: "Request Password Reset" }).click();
-      await expect(page.locator("[data-account-auth-status]")).toHaveText("The site is currently unavailable. Please try again later.");
+      await expect(page.locator("[data-account-auth-status]")).toHaveText("Password Reset could not be completed. Please try again later.");
       await expect(page.locator("main")).not.toContainText("Provider outage");
       expect(failures.failedRequests.filter((entry) => entry.includes("/api/auth/password-reset"))).toHaveLength(1);
       expect(failures.pageErrors).toEqual([]);
@@ -798,7 +804,8 @@ test("Protected pages block direct URL access without the required Local session
     await expect(page.locator("[data-session-access-blocked='admin']")).toBeVisible();
     await expect(page.getByRole("heading", { name: "Admin role required", level: 1 })).toBeVisible();
     await expect(page.locator("[data-session-access-status]")).toContainText("Current session: Sign In.");
-    await expect(page.locator("[data-session-access-status]")).toContainText("Sign-in/session diagnostic: Selected Local user key");
+    await expect(page.locator("[data-session-access-status]")).toContainText("Use an account with the required access and try again.");
+    await expect(page.locator("[data-session-access-status]")).not.toContainText("Local");
     await expect(page.locator("nav.nav-links > .nav-item > a[data-route='account']")).toHaveText("Sign In");
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toHaveCount(0);
     await expectNoPageFailures(failures);
@@ -1000,7 +1007,7 @@ test("Admin and Account Local DB pages render identity data or actionable migrat
     {
       assertions: async () => {
         await expect(page.getByRole("heading", { name: "Account Home", level: 1 })).toBeVisible();
-        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded account summary from Local DB users, roles, and user_roles.");
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded account summary from the account service.");
         await expect(page.locator("[data-local-db-table='current-user']")).toContainText("User 1");
         await expect(page.locator("[data-local-db-table='current-user']")).toContainText(MOCK_DB_KEYS.users.user1);
       },
@@ -1010,7 +1017,7 @@ test("Admin and Account Local DB pages render identity data or actionable migrat
     {
       assertions: async () => {
         await expect(page.getByRole("heading", { name: "Profile", level: 1 })).toBeVisible();
-        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded profile identity from Local DB users and user_roles.");
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded profile identity from the account service.");
         await expect(page.locator("[data-local-db-table='current-user']")).toContainText("user1@example.invalid");
       },
       path: "/account/profile.html",
@@ -1019,8 +1026,9 @@ test("Admin and Account Local DB pages render identity data or actionable migrat
     {
       assertions: async () => {
         await expect(page.getByRole("heading", { name: "Preferences", level: 1 })).toBeVisible();
-        await expect(page.locator("[data-local-db-status]")).toContainText("Preferences storage requires a future account_preferences table.");
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded current account. Preferences storage is not available yet.");
         await expect(page.locator("[data-local-db-follow-up='account_preferences']")).toContainText("FOLLOW-UP REQUIRED");
+        await expect(page.locator("[data-local-db-follow-up='account_preferences']")).toContainText("Account preferences are not available yet.");
       },
       path: "/account/preferences.html",
       sessionUserKey: MOCK_DB_KEYS.users.user1,
@@ -1028,8 +1036,9 @@ test("Admin and Account Local DB pages render identity data or actionable migrat
     {
       assertions: async () => {
         await expect(page.getByRole("heading", { name: "Security", level: 1 })).toBeVisible();
-        await expect(page.locator("[data-local-db-status]")).toContainText("Security settings require a future provider-backed account security table.");
+        await expect(page.locator("[data-local-db-status]")).toHaveText("Loaded current account. Security settings are not available yet.");
         await expect(page.locator("[data-local-db-follow-up='account_security_settings']")).toContainText("FOLLOW-UP REQUIRED");
+        await expect(page.locator("[data-local-db-follow-up='account_security_settings']")).toContainText("Account security settings are not available yet.");
       },
       path: "/account/security.html",
       sessionUserKey: MOCK_DB_KEYS.users.user1,

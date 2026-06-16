@@ -6,9 +6,14 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+(67%) admin/db-viewer.js - executed lines 45/45; executed functions 4/6
+(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 644/644; executed functions 45/58
+(92%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 12/13
+(95%) assets/theme-v2/js/local-db-page-data.js - executed lines 314/314; executed functions 40/42
+(100%) assets/theme-v2/js/account-auth-actions.js - executed lines 83/83; executed functions 10/10
+(100%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 7/7
 
 Guardrail warnings:
-(0%) assets/theme-v2/js/account-auth-actions.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) assets/theme-v2/js/login-session.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

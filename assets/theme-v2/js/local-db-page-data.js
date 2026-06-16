@@ -2,6 +2,7 @@ import { getLocalDbSnapshot } from "../../../src/engine/api/local-db-api-client.
 import { getSessionCurrent } from "../../../src/engine/api/session-api-client.js";
 
 const LOCAL_DB_START_ACTION = "Start the API-backed local server with npm run dev:local-api, then reload this page.";
+const ACCOUNT_DATA_START_ACTION = "Start the account data API, then reload this page.";
 
 function text(value) {
   if (value === undefined || value === null || value === "") {
@@ -171,7 +172,7 @@ function renderFollowUp(parent, title, tableName, reason, action) {
 function renderUserContext(parent, identity, session) {
   const currentUser = identity.usersByKey.get(session.userKey || session.sessionUser?.id || "");
   const roles = currentUser ? rolesForUser(identity, currentUser.key) : [];
-  renderTable(parent, "Current Local DB User", [
+  renderTable(parent, "Current Account User", [
     "Field",
     "Value",
   ], [
@@ -246,14 +247,14 @@ function renderAccountHome(root, snapshot, session) {
   const identity = identityState(snapshot);
   renderUserContext(content, identity, session);
   renderAudit(content, auditMessage("current identity", identity.users, identity.usersByKey));
-  setStatus(root, "Loaded account summary from Local DB users, roles, and user_roles.");
+  setStatus(root, "Loaded account summary from the account service.");
 }
 
 function renderAccountProfile(root, snapshot, session) {
   const content = clearContent(root);
   const identity = identityState(snapshot);
   renderUserContext(content, identity, session);
-  setStatus(root, "Loaded profile identity from Local DB users and user_roles.");
+  setStatus(root, "Loaded profile identity from the account service.");
 }
 
 function renderAccountPreferences(root, snapshot, session) {
@@ -262,12 +263,12 @@ function renderAccountPreferences(root, snapshot, session) {
   renderUserContext(content, identity, session);
   renderFollowUp(
     content,
-    "Preferences Local DB Contract",
+    "Preferences Service",
     "account_preferences",
-    "No account_preferences table/schema exists for user-owned preferences.",
-    "Add a user-owned preferences table with key/audit fields before this page can save preferences.",
+    "Account preferences are not available yet.",
+    "A future account service update is required before this page can save preferences.",
   );
-  setStatus(root, "Loaded current Local DB user. Preferences storage requires a future account_preferences table.");
+  setStatus(root, "Loaded current account. Preferences storage is not available yet.");
 }
 
 function renderAccountSecurity(root, snapshot, session) {
@@ -276,12 +277,12 @@ function renderAccountSecurity(root, snapshot, session) {
   renderUserContext(content, identity, session);
   renderFollowUp(
     content,
-    "Security Local DB Contract",
+    "Security Service",
     "account_security_settings",
-    "No account_security_settings table/schema exists for user-owned security settings.",
-    "Add an auth-provider-backed security contract before this page can show live security controls.",
+    "Account security settings are not available yet.",
+    "A future account service update is required before this page can show live security controls.",
   );
-  setStatus(root, "Loaded current Local DB user. Security settings require a future provider-backed account security table.");
+  setStatus(root, "Loaded current account. Security settings are not available yet.");
 }
 
 const RENDERERS = Object.freeze({
@@ -298,6 +299,20 @@ function renderFailure(root, error) {
   clearContent(root);
   const content = contentElement(root);
   const message = error instanceof Error ? error.message : String(error || "Local DB data unavailable.");
+  if (root.dataset.localDbPage?.startsWith("account-")) {
+    console.warn("[account/operator] Account data service unavailable:", message);
+    setStatus(root, "Account data is unavailable. Please try again later.");
+    if (content) {
+      renderFollowUp(
+        content,
+        "Account Data Service",
+        "account-data",
+        "Account data could not load.",
+        ACCOUNT_DATA_START_ACTION,
+      );
+    }
+    return;
+  }
   setStatus(root, `Local DB unavailable: ${message}`);
   if (content) {
     renderFollowUp(
