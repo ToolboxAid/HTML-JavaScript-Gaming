@@ -388,6 +388,8 @@
         return {
             active: banner.active === true,
             message: typeof banner.message === "string" ? banner.message.trim() : "",
+            sourceTable: typeof banner.sourceTable === "string" ? banner.sourceTable : data?.sourceTable || "",
+            sourceTableRowKey: typeof banner.sourceTableRowKey === "string" ? banner.sourceTableRowKey : "",
             tone
         };
     }
@@ -430,6 +432,12 @@
     async function renderPlatformBanner() {
         try {
             const banner = await requestPlatformBanner();
+            window.GameFoundryPlatformBannerDiagnostics = {
+                active: banner.active,
+                message: banner.message,
+                sourceTable: banner.sourceTable,
+                sourceTableRowKey: banner.sourceTableRowKey
+            };
             removePlatformBanner();
             if (!banner.active || !banner.message) {
                 return;
@@ -446,6 +454,12 @@
             }
         } catch (error) {
             removePlatformBanner();
+            window.GameFoundryPlatformBannerDiagnostics = {
+                active: false,
+                message: "",
+                sourceTable: "",
+                sourceTableRowKey: ""
+            };
             console.warn("[platform-settings/operator] Platform banner unavailable:", error instanceof Error ? error.message : String(error || ""));
         }
     }

@@ -210,7 +210,7 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
   ]),
 });
 const PLATFORM_BANNER_SETTING_KEYS = Object.freeze({
-  enabled: "platform.banner.enabled",
+  active: "platform.banner.enabled",
   kind: "platform.banner.kind",
   message: "platform.banner.message",
   tone: "platform.banner.tone",
@@ -218,7 +218,7 @@ const PLATFORM_BANNER_SETTING_KEYS = Object.freeze({
 const PLATFORM_BANNER_KINDS = Object.freeze(["general", "temporary-data", "outage"]);
 const PLATFORM_BANNER_TONES = Object.freeze(["info", "warning", "danger"]);
 const PLATFORM_BANNER_DEFAULTS = Object.freeze({
-  enabled: false,
+  active: false,
   kind: "general",
   message: "",
   tone: "info",
@@ -401,7 +401,7 @@ function platformSettingBoolean(rowsByKey, fieldName) {
 
 function normalizedPlatformBanner(rows = []) {
   const rowsByKey = platformSettingBySettingKey(rows);
-  const enabled = platformSettingBoolean(rowsByKey, "enabled");
+  const activeFlag = platformSettingBoolean(rowsByKey, "active");
   const message = platformSettingValue(rowsByKey, "message");
   const tone = PLATFORM_BANNER_TONES.includes(platformSettingValue(rowsByKey, "tone"))
     ? platformSettingValue(rowsByKey, "tone")
@@ -410,17 +410,17 @@ function normalizedPlatformBanner(rows = []) {
     ? platformSettingValue(rowsByKey, "kind")
     : PLATFORM_BANNER_DEFAULTS.kind;
   return {
-    active: enabled && Boolean(message),
-    enabled,
+    active: activeFlag && Boolean(message),
     kind,
     message,
+    sourceTableRowKey: rowsByKey.get(PLATFORM_BANNER_SETTING_KEYS.active)?.key || "",
     sourceTable: "platform_settings",
     tone,
   };
 }
 
 function normalizePlatformBannerUpdate(body = {}) {
-  const enabled = body.enabled === true || String(body.enabled).toLowerCase() === "true";
+  const active = body.active === true || String(body.active).toLowerCase() === "true";
   const message = String(body.message || "").trim();
   const tone = PLATFORM_BANNER_TONES.includes(String(body.tone || "").trim())
     ? String(body.tone).trim()
@@ -428,10 +428,10 @@ function normalizePlatformBannerUpdate(body = {}) {
   const kind = PLATFORM_BANNER_KINDS.includes(String(body.kind || "").trim())
     ? String(body.kind).trim()
     : PLATFORM_BANNER_DEFAULTS.kind;
-  if (enabled && !message) {
+  if (active && !message) {
     throw new Error("Platform banner message is required before enabling the banner.");
   }
-  return { enabled, kind, message, tone };
+  return { active, kind, message, tone };
 }
 
 function platformBannerSettingRows({ actorKey, adapter, banner, existingRows }) {
@@ -440,9 +440,9 @@ function platformBannerSettingRows({ actorKey, adapter, banner, existingRows }) 
   const settingRows = [
     {
       description: "Controls whether the platform banner renders.",
-      settingKey: PLATFORM_BANNER_SETTING_KEYS.enabled,
+      settingKey: PLATFORM_BANNER_SETTING_KEYS.active,
       settingType: "boolean",
-      settingValue: banner.enabled ? "true" : "false",
+      settingValue: banner.active ? "true" : "false",
     },
     {
       description: "Platform banner message text.",
@@ -476,6 +476,15 @@ function platformBannerSettingRows({ actorKey, adapter, banner, existingRows }) 
       updatedBy: actorKey,
     };
   });
+}
+
+function platformBannerDiagnostics(banner) {
+  return {
+    active: banner.active,
+    message: banner.message,
+    sourceTable: banner.sourceTable,
+    sourceTableRowKey: banner.sourceTableRowKey,
+  };
 }
 
 function normalizedToolKey(row) {
@@ -1353,8 +1362,10 @@ class ApiRuntimeDataSource {
   async platformBannerForRoute() {
     const adapter = this.supabaseDatabaseAdapter("Reading platform banner settings");
     const rows = await adapter.getPlatformSettings();
+    const banner = normalizedPlatformBanner(rows);
     return {
-      banner: normalizedPlatformBanner(rows),
+      banner,
+      diagnostics: platformBannerDiagnostics(banner),
       sourceTable: "platform_settings",
     };
   }
@@ -1383,8 +1394,10 @@ class ApiRuntimeDataSource {
     });
     await adapter.upsertPlatformSettings(rows);
     const refreshedRows = await adapter.getPlatformSettings();
+    const refreshedBanner = normalizedPlatformBanner(refreshedRows);
     return {
-      banner: normalizedPlatformBanner(refreshedRows),
+      banner: refreshedBanner,
+      diagnostics: platformBannerDiagnostics(refreshedBanner),
       recordsWritten: rows.length,
       sourceTable: "platform_settings",
     };

@@ -1,2319 +1,841 @@
 ﻿diff --git a/admin/platform-settings.html b/admin/platform-settings.html
-index 4b3f6395b..4567b85ec 100644
+index 4567b85ec..12f9a4f53 100644
 --- a/admin/platform-settings.html
 +++ b/admin/platform-settings.html
-@@ -6,19 +6,19 @@
-     <base href="/">
-     <meta name="viewport" content="width=device-width, initial-scale=1">
-     <title>Platform Settings - GameFoundryStudio</title>
--    <meta name="description" content="Admin wireframe for platform settings, feature flags, and publishing defaults.">
-+    <meta name="description" content="Admin controls for platform settings and operational notice banners.">
-     <link rel="icon" href="/favicon.svg">
-     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
- </head>
- 
- <body class="meaning-molten-orange">
-     <div data-partial="header-nav"></div>
--    <main data-admin-only="true" data-admin-wireframe="platform-settings">
-+    <main data-admin-only="true" data-admin-platform-settings data-admin-wireframe="platform-settings">
-         <section class="page-title">
-             <div class="container">
--                <div class="kicker">Admin Wireframe</div>
-+                <div class="kicker">Admin</div>
-                 <h1>Platform Settings</h1>
--                <p class="lede">Plan platform-wide settings, flags, and release controls without connecting settings persistence.</p>
-+                <p class="lede">Manage platform-wide settings, flags, and operational notice banners.</p>
-             </div>
-         </section>
-         <section class="section">
-@@ -40,11 +40,26 @@
-                                 </nav>
-                             </details>
-                             <details class="vertical-accordion" open>
--                                <summary>Setting Preview</summary>
-+                                <summary>Banner Controls</summary>
+@@ -43,7 +43,7 @@
+                                 <summary>Banner Controls</summary>
                                  <div class="accordion-body content-stack">
--                                    <label>Setting Area <select disabled><option>Feature flags</option><option>Publishing defaults</option><option>Maintenance notices</option></select></label>
--                                    <label>Visibility <select disabled><option>Admin only</option><option>Creator visible</option><option>Public notice</option></select></label>
--                                    <button class="btn btn--compact" type="button" disabled>Preview Setting</button>
-+                                    <label class="field-inline">
-+                                        <input type="checkbox" data-platform-banner-enabled>
-+                                        <span>Show banner</span>
-+                                    </label>
-+                                    <label class="field-group">Notice kind
-+                                        <select data-platform-banner-kind>
-+                                            <option value="general">General notice</option>
-+                                            <option value="temporary-data">Temporary data notice</option>
-+                                            <option value="outage">Outage notice</option>
-+                                        </select>
-+                                    </label>
-+                                    <label class="field-group">Tone
-+                                        <select data-platform-banner-tone>
-+                                            <option value="info">Info</option>
-+                                            <option value="warning">Warning</option>
-+                                            <option value="danger">Urgent</option>
-+                                        </select>
-+                                    </label>
-                                 </div>
-                             </details>
-                         </div>
-@@ -53,25 +68,15 @@
-                     <section class="tool-center-panel content-stack" aria-labelledby="admin-platform-settings-title">
-                         <div>
-                             <div class="kicker">Work Surface</div>
--                            <h2 id="admin-platform-settings-title">Settings Board</h2>
-+                            <h2 id="admin-platform-settings-title">Platform Banner</h2>
-                         </div>
--                        <p>This wireframe reserves the future board for platform defaults, release toggles, and operational notices.</p>
--                        <div class="table-wrapper">
--                            <table class="data-table" aria-label="Platform settings wireframe">
--                                <caption>Platform Settings Planning</caption>
--                                <thead>
--                                    <tr>
--                                        <th scope="col">Area</th>
--                                        <th scope="col">Example Control</th>
--                                        <th scope="col">Current State</th>
--                                    </tr>
--                                </thead>
--                                <tbody>
--                                    <tr><td>Feature Flags</td><td>Enable beta tools</td><td>Wireframe</td></tr>
--                                    <tr><td>Publishing Defaults</td><td>Default public visibility</td><td>Wireframe</td></tr>
--                                    <tr><td>Maintenance</td><td>Notice banner</td><td>Wireframe</td></tr>
--                                </tbody>
--                            </table>
-+                        <p>Publish a platform banner from the shared settings contract.</p>
-+                        <label class="field-group">Banner message
-+                            <textarea data-platform-banner-message maxlength="240" rows="5"></textarea>
-+                        </label>
-+                        <div class="callout" data-platform-banner-preview role="status">No active banner.</div>
-+                        <div class="content-cluster">
-+                            <button class="btn primary" type="button" data-platform-banner-save>Save Banner</button>
-                         </div>
-                     </section>
-                     <aside class="tool-column tool-group-platform">
-@@ -82,13 +87,13 @@
-                             <details class="vertical-accordion" open>
+                                     <label class="field-inline">
+-                                        <input type="checkbox" data-platform-banner-enabled>
++                                        <input type="checkbox" data-platform-banner-active>
+                                         <span>Show banner</span>
+                                     </label>
+                                     <label class="field-group">Notice kind
+@@ -88,6 +88,7 @@
                                  <summary>Status</summary>
                                  <div class="accordion-body content-stack">
--                                    <p class="status" role="status">Wireframe only. Platform settings are not read or written.</p>
-+                                    <p class="status" role="status" data-platform-settings-status>Loading platform banner settings...</p>
+                                     <p class="status" role="status" data-platform-settings-status>Loading platform banner settings...</p>
++                                    <p class="status" role="status" data-platform-banner-diagnostics>Banner diagnostics unavailable.</p>
                                  </div>
                              </details>
                              <details class="vertical-accordion" open>
-                                 <summary>Logging</summary>
-                                 <div class="accordion-body content-stack">
--                                    <p>Future logs will show setting previews, publish gate changes, and audit review entries.</p>
-+                                    <p>Banner updates are saved through the server settings contract.</p>
-                                 </div>
-                             </details>
-                         </div>
-@@ -100,6 +105,7 @@
-     <div data-partial="footer"></div>
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-+    <script type="module" src="assets/theme-v2/js/admin-platform-settings.js"></script>
- </body>
- 
- </html>
-diff --git a/assets/theme-v2/css/status.css b/assets/theme-v2/css/status.css
-index fde17862f..4e9107651 100644
---- a/assets/theme-v2/css/status.css
-+++ b/assets/theme-v2/css/status.css
-@@ -35,6 +35,35 @@
-   line-height: var(--line-height-copy)
- }
- 
-+.platform-banner {
-+  width: 100%;
-+  border-bottom: var(--border-standard);
-+  background: var(--panel-overlay-strong);
-+  color: var(--text)
-+}
+diff --git a/assets/theme-v2/js/admin-platform-settings.js b/assets/theme-v2/js/admin-platform-settings.js
+index 2436f79f8..9502ce936 100644
+--- a/assets/theme-v2/js/admin-platform-settings.js
++++ b/assets/theme-v2/js/admin-platform-settings.js
+@@ -6,8 +6,9 @@ import {
+ class AdminPlatformSettingsController {
+     constructor(root) {
+         this.root = root;
+-        this.enabledInput = root.querySelector("[data-platform-banner-enabled]");
++        this.activeInput = root.querySelector("[data-platform-banner-active]");
+         this.kindInput = root.querySelector("[data-platform-banner-kind]");
++        this.diagnostics = root.querySelector("[data-platform-banner-diagnostics]");
+         this.messageInput = root.querySelector("[data-platform-banner-message]");
+         this.preview = root.querySelector("[data-platform-banner-preview]");
+         this.status = root.querySelector("[data-platform-settings-status]");
+@@ -16,11 +17,11 @@ class AdminPlatformSettingsController {
+     }
+
+     init() {
+-        if (!this.enabledInput || !this.kindInput || !this.messageInput || !this.preview || !this.status || !this.toneInput || !this.saveButton) {
++        if (!this.activeInput || !this.kindInput || !this.diagnostics || !this.messageInput || !this.preview || !this.status || !this.toneInput || !this.saveButton) {
+             return;
+         }
+         this.saveButton.addEventListener("click", () => this.save());
+-        [this.enabledInput, this.kindInput, this.messageInput, this.toneInput].forEach((control) => {
++        [this.activeInput, this.kindInput, this.messageInput, this.toneInput].forEach((control) => {
+             control.addEventListener("input", () => this.renderPreview(this.currentBanner()));
+             control.addEventListener("change", () => this.renderPreview(this.currentBanner()));
+         });
+@@ -33,7 +34,7 @@ class AdminPlatformSettingsController {
+
+     currentBanner() {
+         return {
+-            enabled: this.enabledInput.checked,
++            active: this.activeInput.checked,
+             kind: this.kindInput.value,
+             message: this.messageInput.value.trim(),
+             tone: this.toneInput.value
+@@ -41,16 +42,27 @@ class AdminPlatformSettingsController {
+     }
+
+     applyBanner(banner) {
+-        this.enabledInput.checked = banner.enabled === true;
++        this.activeInput.checked = banner.active === true;
+         this.kindInput.value = banner.kind || "general";
+         this.messageInput.value = banner.message || "";
+         this.toneInput.value = banner.tone || "info";
+         this.renderPreview(this.currentBanner());
+     }
+
++    setDiagnostics(diagnostics = {}) {
++        const active = diagnostics.active === true;
++        const message = typeof diagnostics.message === "string" && diagnostics.message
++            ? diagnostics.message
++            : "(empty)";
++        const sourceTableRowKey = typeof diagnostics.sourceTableRowKey === "string" && diagnostics.sourceTableRowKey
++            ? diagnostics.sourceTableRowKey
++            : "(missing)";
++        this.diagnostics.textContent = `Active: ${active}. Message: ${message}. Source row: ${sourceTableRowKey}.`;
++    }
 +
-+.platform-banner__inner {
-+  width: var(--container-width);
-+  margin: var(--space-0) auto;
-+  padding: var(--space-12) var(--space-0);
-+  text-align: center
-+}
-+
-+.platform-banner__message {
-+  margin: var(--space-0);
-+  overflow-wrap: anywhere
-+}
-+
-+.platform-banner--warning {
-+  background: var(--gold-soft);
-+  border-bottom-color: var(--gold-border-muted)
-+}
-+
-+.platform-banner--danger {
-+  background: color-mix(in srgb, var(--red) 14%, var(--panel));
-+  border-bottom-color: var(--red)
-+}
-+
- .swatch-label {
-   border: var(--border-standard);
-   border-color: var(--swatch-border);
+     renderPreview(banner) {
+         this.preview.dataset.platformBannerPreviewTone = banner.tone || "info";
+-        this.preview.textContent = banner.enabled && banner.message
++        this.preview.textContent = banner.active && banner.message
+             ? banner.message
+             : "No active banner.";
+     }
+@@ -59,6 +71,7 @@ class AdminPlatformSettingsController {
+         try {
+             const payload = readAdminPlatformBanner();
+             this.applyBanner(payload.banner || {});
++            this.setDiagnostics(payload.diagnostics || payload.banner || {});
+             this.setStatus("Platform banner settings loaded.");
+         } catch (error) {
+             this.setStatus(error instanceof Error ? error.message : "Platform banner settings are unavailable.");
+@@ -69,6 +82,7 @@ class AdminPlatformSettingsController {
+         try {
+             const payload = updateAdminPlatformBanner(this.currentBanner());
+             this.applyBanner(payload.banner || {});
++            this.setDiagnostics(payload.diagnostics || payload.banner || {});
+             this.setStatus("Platform banner settings saved.");
+             window.dispatchEvent(new CustomEvent("gamefoundry:platform-settings-changed"));
+         } catch (error) {
 diff --git a/assets/theme-v2/js/gamefoundry-partials.js b/assets/theme-v2/js/gamefoundry-partials.js
-index 5f125396b..2538b2c69 100644
+index 2538b2c69..24b705b47 100644
 --- a/assets/theme-v2/js/gamefoundry-partials.js
 +++ b/assets/theme-v2/js/gamefoundry-partials.js
-@@ -382,6 +382,74 @@
+@@ -388,6 +388,8 @@
+         return {
+             active: banner.active === true,
+             message: typeof banner.message === "string" ? banner.message.trim() : "",
++            sourceTable: typeof banner.sourceTable === "string" ? banner.sourceTable : data?.sourceTable || "",
++            sourceTableRowKey: typeof banner.sourceTableRowKey === "string" ? banner.sourceTableRowKey : "",
+             tone
+         };
+     }
+@@ -430,6 +432,12 @@
+     async function renderPlatformBanner() {
+         try {
+             const banner = await requestPlatformBanner();
++            window.GameFoundryPlatformBannerDiagnostics = {
++                active: banner.active,
++                message: banner.message,
++                sourceTable: banner.sourceTable,
++                sourceTableRowKey: banner.sourceTableRowKey
++            };
+             removePlatformBanner();
+             if (!banner.active || !banner.message) {
+                 return;
+@@ -446,6 +454,12 @@
+             }
+         } catch (error) {
+             removePlatformBanner();
++            window.GameFoundryPlatformBannerDiagnostics = {
++                active: false,
++                message: "",
++                sourceTable: "",
++                sourceTableRowKey: ""
++            };
+             console.warn("[platform-settings/operator] Platform banner unavailable:", error instanceof Error ? error.message : String(error || ""));
          }
      }
- 
-+    function normalizedPlatformBanner(data) {
-+        const banner = data?.banner && typeof data.banner === "object" ? data.banner : {};
-+        const tone = ["info", "warning", "danger"].includes(banner.tone) ? banner.tone : "info";
-+        return {
-+            active: banner.active === true,
-+            message: typeof banner.message === "string" ? banner.message.trim() : "",
-+            tone
-+        };
-+    }
-+
-+    async function requestPlatformBanner() {
-+        const response = await fetch("/api/platform-settings/banner", {
-+            headers: { "Accept": "application/json" },
-+            method: "GET"
-+        });
-+        const payload = await response.json().catch(function () {
-+            return null;
-+        });
-+        if (!response.ok || payload?.ok === false) {
-+            throw new Error(payload?.error || "Platform banner settings are unavailable.");
-+        }
-+        return normalizedPlatformBanner(payload?.data);
-+    }
-+
-+    function removePlatformBanner() {
-+        document.querySelectorAll("[data-platform-banner]").forEach(function (banner) {
-+            banner.remove();
-+        });
-+    }
-+
-+    function createPlatformBanner(banner) {
-+        const section = document.createElement("section");
-+        section.className = "platform-banner platform-banner--" + banner.tone;
-+        section.dataset.platformBanner = "";
-+        section.setAttribute("aria-label", "Platform notice");
-+        const inner = document.createElement("div");
-+        inner.className = "platform-banner__inner";
-+        const message = document.createElement("p");
-+        message.className = "platform-banner__message";
-+        message.textContent = banner.message;
-+        inner.append(message);
-+        section.append(inner);
-+        return section;
-+    }
-+
-+    async function renderPlatformBanner() {
-+        try {
-+            const banner = await requestPlatformBanner();
-+            removePlatformBanner();
-+            if (!banner.active || !banner.message) {
-+                return;
-+            }
-+            const element = createPlatformBanner(banner);
-+            const header = document.querySelector("header.site-header");
-+            if (header) {
-+                header.after(element);
-+                return;
-+            }
-+            const main = document.querySelector("main");
-+            if (main?.parentNode) {
-+                main.parentNode.insertBefore(element, main);
-+            }
-+        } catch (error) {
-+            removePlatformBanner();
-+            console.warn("[platform-settings/operator] Platform banner unavailable:", error instanceof Error ? error.message : String(error || ""));
-+        }
-+    }
-+
-     function directSubMenu(navItem) {
-         return Array.from(navItem?.children || []).find(function (child) {
-             return child.classList?.contains("sub-menu");
-@@ -694,10 +762,11 @@
-             replaceExisting("header-nav", "header.site-header"),
-             replaceExisting("footer", "footer.footer")
-         ];
--        Promise.all(tasks).catch(function (error) {
-+        Promise.all(tasks).then(renderPlatformBanner).catch(function (error) {
-             console.error(error);
-         });
-     });
-     window.addEventListener("gamefoundry:session-user-changed", refreshHeaderLoginState);
-     window.addEventListener("gamefoundry:data-changed", refreshHeaderOnly);
-+    window.addEventListener("gamefoundry:platform-settings-changed", renderPlatformBanner);
- }());
-diff --git a/docs_build/database/dml/admin.sql b/docs_build/database/dml/admin.sql
-index b4056e115..498d34550 100644
---- a/docs_build/database/dml/admin.sql
-+++ b/docs_build/database/dml/admin.sql
-@@ -15,3 +15,7 @@
- -- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
- -- Starter server seed rows:
- --   platform_settings.settingKey = site.setup.status
-+--   platform_settings.settingKey = platform.banner.enabled
-+--   platform_settings.settingKey = platform.banner.message
-+--   platform_settings.settingKey = platform.banner.tone
-+--   platform_settings.settingKey = platform.banner.kind
-diff --git a/docs_build/database/seed/admin.json b/docs_build/database/seed/admin.json
-index 915a29738..5ab2aff73 100644
---- a/docs_build/database/seed/admin.json
-+++ b/docs_build/database/seed/admin.json
-@@ -12,6 +12,26 @@
-           "settingKey": "site.setup.status",
-           "settingType": "string",
-           "settingValue": "ready"
-+        },
-+        {
-+          "settingKey": "platform.banner.enabled",
-+          "settingType": "boolean",
-+          "settingValue": "false"
-+        },
-+        {
-+          "settingKey": "platform.banner.message",
-+          "settingType": "string",
-+          "settingValue": ""
-+        },
-+        {
-+          "settingKey": "platform.banner.tone",
-+          "settingType": "string",
-+          "settingValue": "info"
-+        },
-+        {
-+          "settingKey": "platform.banner.kind",
-+          "settingType": "string",
-+          "settingValue": "general"
-         }
-       ]
-     }
-diff --git a/scripts/sync-supabase-dev-creator-identities.mjs b/scripts/sync-supabase-dev-creator-identities.mjs
-index 16063b13c..dc3733840 100644
---- a/scripts/sync-supabase-dev-creator-identities.mjs
-+++ b/scripts/sync-supabase-dev-creator-identities.mjs
-@@ -84,11 +84,13 @@ try {
-     formatCounts("Before", result.beforeCounts);
-     formatCounts("After", result.afterCounts);
-     formatRecordList("Auth upserts", result.authUpsertRecords, (record) => `${record.email}: ${record.action}`);
-+    formatRecordList("User role repairs", result.userRoleRepair.deletedRecords, (record) => `${record.userKey}: ${record.reason} roleKey=${record.roleKey} action=${record.action}`);
-     formatRecordList("Deleted DEV accounts", result.deletedRecords, (record) => `${record.email || "(no email)"}: ${record.action || "deleted"} userKey=${record.userKey || "(auth-only)"}`);
-     formatRecordList("Auth/public sync evidence", result.verification.identityEvidence, (record) => `${record.email}: auth=${record.authUserPresent ? "present" : "missing"}, public.users=${record.publicUserPresent ? record.publicUserKey : "missing"}, synced=${record.synced ? "yes" : "no"}`);
-     formatRecordList("Creator role assignments", result.verification.creatorAssignments, (record) => `${record.email}: ${record.assigned ? "assigned" : "missing"}`);
-     console.log(`DavidQ role=admin assignment preserved: ${result.verification.davidqAdminAssignmentPreserved ? "yes" : "no"}`);
-     console.log(`Role evidence: User 1 creator=${result.verification.roleEvidence.user1Creator ? "PASS" : "FAIL"}, User 2 creator=${result.verification.roleEvidence.user2Creator ? "PASS" : "FAIL"}, User 3 creator=${result.verification.roleEvidence.user3Creator ? "PASS" : "FAIL"}, DavidQ creator=${result.verification.roleEvidence.davidqCreator ? "PASS" : "FAIL"}, DavidQ admin=${result.verification.roleEvidence.davidqAdmin ? "PASS" : "FAIL"}.`);
-+    console.log(`Known stale role key removed: ${result.userRoleRepair.staleRoleKeyRemoved ? "yes" : "no"}`);
-     console.log(`Legacy user role deprecated: ${result.verification.legacyUserRoleDeprecated ? "yes" : "no"}`);
-     console.log(`Verification failures: ${result.verification.failures.length ? result.verification.failures.join(", ") : "none"}`);
-   }
-diff --git a/src/dev-runtime/auth/provider-contract-stubs.mjs b/src/dev-runtime/auth/provider-contract-stubs.mjs
-index b63685c6f..6801dab12 100644
---- a/src/dev-runtime/auth/provider-contract-stubs.mjs
-+++ b/src/dev-runtime/auth/provider-contract-stubs.mjs
-@@ -1,5 +1,5 @@
- import { randomBytes } from "node:crypto";
--import { MOCK_DB_KEYS } from "../persistence/mock-db-store.js";
-+import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
- 
- export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
-   "getCurrentUser",
-@@ -27,11 +27,14 @@ export const POSTGRES_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
-   "upsertProductTable",
-   "upsertProductTables",
-   "deleteUserByKey",
-+  "deleteUserRoleByKey",
-   "deleteUserRolesForUserKey",
-+  "getPlatformSettings",
-   "reassignRoleAuditReferences",
-   "reassignUserRoleAuditReferences",
-   "runSiteSetup",
-   "getDbViewerSnapshot",
-+  "upsertPlatformSettings",
- ]);
- 
- export const PROVIDER_DATA_BOUNDARY_RULE = "Browser -> API/Service Contract -> Database";
-@@ -96,10 +99,10 @@ export const SUPABASE_POSTGRES_TABLES = Object.freeze([
- ]);
- const RUNTIME_ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
- const DEV_STATIC_USER_KEYS = Object.freeze([
--  MOCK_DB_KEYS.users.user1,
--  MOCK_DB_KEYS.users.user2,
--  MOCK_DB_KEYS.users.user3,
--  MOCK_DB_KEYS.users.admin,
-+  SEED_DB_KEYS.users.user1,
-+  SEED_DB_KEYS.users.user2,
-+  SEED_DB_KEYS.users.user3,
-+  SEED_DB_KEYS.users.admin,
- ]);
- 
- export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
-@@ -847,6 +850,14 @@ export class SupabasePostgresProviderAdapter {
-     });
-   }
- 
-+  deleteUserRoleByKey(userRoleKey) {
-+    return this.requestTable("user_roles", {
-+      method: "DELETE",
-+      prefer: "return=representation",
-+      query: `key=eq.${encodeURIComponent(requireIdentityString(userRoleKey, "userRoleKey"))}`,
-+    });
-+  }
-+
-   async reassignRoleAuditReferences({ fromUserKey, toUserKey } = {}) {
-     const fromKey = requireIdentityString(fromUserKey, "fromUserKey");
-     const toKey = requireIdentityString(toUserKey, "toUserKey");
-@@ -901,6 +912,14 @@ export class SupabasePostgresProviderAdapter {
-     return this.requestTable("user_roles");
-   }
- 
-+  getPlatformSettings() {
-+    return this.getProductTableRows("platform_settings");
-+  }
-+
-+  upsertPlatformSettings(rows = []) {
-+    return this.upsertProductTable("platform_settings", rows);
-+  }
-+
-   async initializeIdentity({ actorKey = "", roles = [], userRoles = [], users = [] } = {}) {
-     this.assertConfigured();
-     const timestamp = new Date().toISOString();
-diff --git a/src/dev-runtime/persistence/mock-db-store.js b/src/dev-runtime/persistence/mock-db-store.js
-index 7abb3e3cc..0c3553fc2 100644
---- a/src/dev-runtime/persistence/mock-db-store.js
-+++ b/src/dev-runtime/persistence/mock-db-store.js
-@@ -1,40 +1,13 @@
-+import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
-+
- const MOCK_DB_STORAGE_KEY = "gamefoundry.mockDb.v1";
- const MOCK_DB_SESSION_STORAGE_KEY = "gamefoundry.mockDb.sessionUser.v1";
- const MOCK_DB_SESSION_MODE_STORAGE_KEY = "gamefoundry.mockDb.sessionMode.v1";
- const MOCK_DB_VERSION = 3;
- 
--function makeMockUlid(sequence) {
--  return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;
--}
-+const makeMockUlid = makeSeedUlid;
- 
--export const MOCK_DB_KEYS = Object.freeze({
--  users: Object.freeze({
--    forgeBot: makeMockUlid(54),
--    user1: makeMockUlid(51),
--    user2: makeMockUlid(52),
--    user3: makeMockUlid(53),
--    admin: makeMockUlid(54),
--    designer: makeMockUlid(51),
--    producer: makeMockUlid(52),
--  }),
--  roles: Object.freeze({
--    user: makeMockUlid(72),
--    admin: makeMockUlid(73),
--    system: makeMockUlid(74),
--    beta: makeMockUlid(75),
--    creator: makeMockUlid(76),
--    guest: makeMockUlid(77),
--  }),
--  userRoles: Object.freeze({
--    user1User: makeMockUlid(82),
--    user2User: makeMockUlid(83),
--    user3User: makeMockUlid(84),
--    adminUser: makeMockUlid(85),
--    adminAdmin: makeMockUlid(86),
--    forgeBotSystem: makeMockUlid(87),
--    user2Beta: makeMockUlid(88),
--  }),
--});
-+export const MOCK_DB_KEYS = SEED_DB_KEYS;
- 
- export const MOCK_DB_SYSTEM_USER = Object.freeze({
-   id: "davidq",
-@@ -784,6 +757,42 @@ export function getStandaloneMockDbSeedTables() {
-         isActive: true,
-         ...standaloneAudit(16),
-       },
-+      {
-+        key: makeMockUlid(111),
-+        settingKey: "platform.banner.enabled",
-+        settingValue: "false",
-+        settingType: "boolean",
-+        description: "Controls whether the platform banner renders.",
-+        isActive: true,
-+        ...standaloneAudit(18),
-+      },
-+      {
-+        key: makeMockUlid(112),
-+        settingKey: "platform.banner.message",
-+        settingValue: "",
-+        settingType: "string",
-+        description: "Platform banner message text.",
-+        isActive: true,
-+        ...standaloneAudit(19),
-+      },
-+      {
-+        key: makeMockUlid(113),
-+        settingKey: "platform.banner.tone",
-+        settingValue: "info",
-+        settingType: "string",
-+        description: "Platform banner visual tone.",
-+        isActive: true,
-+        ...standaloneAudit(20),
-+      },
-+      {
-+        key: makeMockUlid(114),
-+        settingKey: "platform.banner.kind",
-+        settingValue: "general",
-+        settingType: "string",
-+        description: "Platform banner notice kind.",
-+        isActive: true,
-+        ...standaloneAudit(21),
-+      },
-     ],
-     support_categories: [
-       {
-diff --git a/src/dev-runtime/seed/server-seed-loader.mjs b/src/dev-runtime/seed/server-seed-loader.mjs
-index 8814804fc..226826111 100644
---- a/src/dev-runtime/seed/server-seed-loader.mjs
-+++ b/src/dev-runtime/seed/server-seed-loader.mjs
-@@ -9,13 +9,13 @@ import {
-   getToolRoute,
- } from "../guest-seeds/tool-metadata-inventory.js";
- import {
--  MOCK_DB_KEYS,
-   getMockDbTableSchemas,
- } from "../persistence/mock-db-store.js";
-+import { SEED_DB_KEYS } from "./seed-db-keys.mjs";
- 
- const ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
- const SEED_SOURCE_DIRECTORY = path.join("docs_build", "database", "seed");
--const DEV_SEED_AUDIT_USER_KEY = MOCK_DB_KEYS.users.admin;
-+const DEV_SEED_AUDIT_USER_KEY = SEED_DB_KEYS.users.admin;
- 
- function encodeBase32(value, length) {
-   let remaining = BigInt(value);
-@@ -97,7 +97,7 @@ function emptyTables() {
- function userRows() {
-   return [
-     {
--      key: MOCK_DB_KEYS.users.user1,
-+      key: SEED_DB_KEYS.users.user1,
-       displayName: "User 1",
-       email: "user1@example.invalid",
-       authProvider: "supabase-auth",
-@@ -106,7 +106,7 @@ function userRows() {
-       ...auditFields(1),
-     },
-     {
--      key: MOCK_DB_KEYS.users.user2,
-+      key: SEED_DB_KEYS.users.user2,
-       displayName: "User 2",
-       email: "user2@example.invalid",
-       authProvider: "supabase-auth",
-@@ -115,7 +115,7 @@ function userRows() {
-       ...auditFields(2),
-     },
-     {
--      key: MOCK_DB_KEYS.users.user3,
-+      key: SEED_DB_KEYS.users.user3,
-       displayName: "User 3",
-       email: "user3@example.invalid",
-       authProvider: "supabase-auth",
-@@ -124,7 +124,7 @@ function userRows() {
-       ...auditFields(3),
-     },
-     {
--      key: MOCK_DB_KEYS.users.admin,
-+      key: SEED_DB_KEYS.users.admin,
-       displayName: "DavidQ",
-       email: "qbytes.dq@gmail.com",
-       authProvider: "supabase-auth",
-@@ -179,11 +179,11 @@ function roleRows(generateKey) {
- function userRoleRows(roles) {
-   const roleBySlug = new Map(roles.map((role) => [role.roleSlug, role.key]));
-   return [
--    { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: roleBySlug.get("creator") },
--    { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: roleBySlug.get("creator") },
--    { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: roleBySlug.get("creator") },
--    { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: roleBySlug.get("creator") },
--    { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: roleBySlug.get("admin") },
-+    { key: SEED_DB_KEYS.userRoles.user1User, userKey: SEED_DB_KEYS.users.user1, roleKey: roleBySlug.get("creator") },
-+    { key: SEED_DB_KEYS.userRoles.user2User, userKey: SEED_DB_KEYS.users.user2, roleKey: roleBySlug.get("creator") },
-+    { key: SEED_DB_KEYS.userRoles.user3User, userKey: SEED_DB_KEYS.users.user3, roleKey: roleBySlug.get("creator") },
-+    { key: SEED_DB_KEYS.userRoles.adminUser, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("creator") },
-+    { key: SEED_DB_KEYS.userRoles.adminAdmin, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("admin") },
-   ].map((row, index) => ({
-     ...row,
-     ...auditFields(10 + index),
-@@ -252,6 +252,42 @@ function platformSettingRows(generateKey) {
-       isActive: true,
-       ...auditFields(120),
-     },
-+    {
-+      key: generateKey(),
-+      settingKey: "platform.banner.enabled",
-+      settingValue: "false",
-+      settingType: "boolean",
-+      description: "Controls whether the platform banner renders.",
-+      isActive: true,
-+      ...auditFields(121),
-+    },
-+    {
-+      key: generateKey(),
-+      settingKey: "platform.banner.message",
-+      settingValue: "",
-+      settingType: "string",
-+      description: "Platform banner message text.",
-+      isActive: true,
-+      ...auditFields(122),
-+    },
-+    {
-+      key: generateKey(),
-+      settingKey: "platform.banner.tone",
-+      settingValue: "info",
-+      settingType: "string",
-+      description: "Platform banner visual tone.",
-+      isActive: true,
-+      ...auditFields(123),
-+    },
-+    {
-+      key: generateKey(),
-+      settingKey: "platform.banner.kind",
-+      settingValue: "general",
-+      settingType: "string",
-+      description: "Platform banner notice kind.",
-+      isActive: true,
-+      ...auditFields(124),
-+    },
-   ];
- }
- 
-@@ -273,10 +309,10 @@ function humanToolStateSampleRows(generateKey) {
-   const tools = activeToolRows();
-   const toolByKey = new Map(tools.map((tool) => [tool.toolKey, tool]));
-   const users = [
--    { displayName: "User 1", toolKey: "game-journey", userKey: MOCK_DB_KEYS.users.user1 },
--    { displayName: "User 2", toolKey: "palette", userKey: MOCK_DB_KEYS.users.user2 },
--    { displayName: "User 3", toolKey: "asset", userKey: MOCK_DB_KEYS.users.user3 },
--    { displayName: "DavidQ", toolKey: "game-workspace", userKey: MOCK_DB_KEYS.users.admin },
-+    { displayName: "User 1", toolKey: "game-journey", userKey: SEED_DB_KEYS.users.user1 },
-+    { displayName: "User 2", toolKey: "palette", userKey: SEED_DB_KEYS.users.user2 },
-+    { displayName: "User 3", toolKey: "asset", userKey: SEED_DB_KEYS.users.user3 },
-+    { displayName: "DavidQ", toolKey: "game-workspace", userKey: SEED_DB_KEYS.users.admin },
-   ];
-   return users.map((user, index) => {
-     const tool = toolByKey.get(user.toolKey) || tools[index] || {
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index feb46a9b3..60a15566c 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,27 +1,11 @@
+-﻿admin/platform-settings.html
+-assets/theme-v2/css/status.css
++admin/platform-settings.html
+ assets/theme-v2/js/admin-platform-settings.js
+ assets/theme-v2/js/gamefoundry-partials.js
+-docs_build/database/dml/admin.sql
+-docs_build/database/seed/admin.json
+-docs_build/dev/reports/PR_26167_187-live-db-cleanup-and-platform-banner.md
++docs_build/dev/reports/PR_26167_188-platform-banner-display-fix.md
+ docs_build/dev/reports/codex_changed_files.txt
+ docs_build/dev/reports/codex_review.diff
+ docs_build/dev/reports/coverage_changed_js_guardrail.txt
+-docs_build/dev/reports/environment_agnostic_browser_gate_report.md
+ docs_build/dev/reports/playwright_v8_coverage_report.txt
+-scripts/sync-supabase-dev-creator-identities.mjs
+-src/dev-runtime/auth/provider-contract-stubs.mjs
+-src/dev-runtime/persistence/mock-db-store.js
+-src/dev-runtime/seed/seed-db-keys.mjs
+-src/dev-runtime/seed/server-seed-loader.mjs
+ src/dev-runtime/server/local-api-router.mjs
+-src/dev-runtime/server/local-api-server.mjs
+-src/dev-runtime/server/mock-api-router.mjs
+-src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs
+-src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
+-src/engine/api/platform-settings-api-client.js
+-tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
+ tests/dev-runtime/SupabaseProductDataCutover.test.mjs
+-tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+ tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index ff2a4a8fe..311366a9a 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -1,55 +1,14 @@
+ Changed Runtime JS Coverage Guardrail
+
++PR: PR_26167_188-platform-banner-display-fix
+ Status: advisory only.
+ Thresholds: none enforced.
+-Missing changed runtime JS files are WARN, not FAIL.
+-Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
++Missing browser V8 coverage is WARN, not FAIL.
+
+ Changed runtime JS files considered:
+-(0%) admin/db-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/account-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/api/admin-setup-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/api/db-viewer-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/input/GamepadHapticsService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+-(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 707/707; executed functions 44/62
+-(75%) src/engine/api/platform-settings-api-client.js - executed lines 25/25; executed functions 3/4
+-(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 77/77; executed functions 14/14
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: server-side route module is outside browser V8 collection; covered by node contract and live API validation
++(73%) assets/theme-v2/js/gamefoundry-partials.js - targeted Playwright covered banner request/render/remove behavior
++(100%) assets/theme-v2/js/admin-platform-settings.js - targeted Playwright covered Admin load/save/diagnostics behavior
+
+ Guardrail warnings:
+-(0%) admin/db-viewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/account-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/engine/api/admin-setup-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/engine/api/db-viewer-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/engine/api/db-viewer-ui.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/engine/input/GamepadHapticsService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(25%) src/engine/api/session-api-client.js - WARNING: advisory low coverage below 50%; executed lines 68/68; executed functions 3/12
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: browser V8 does not collect server-side modules
+diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+index 120f757b0..3a7be7e35 100644
+--- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
++++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
+@@ -1,113 +1,21 @@
+ Playwright V8 Coverage Report
+
+-PR: generated by current Playwright run.
+-Coverage source: Playwright/Chromium built-in V8 coverage.
+-Coverage scope: all repo-relative browser JavaScript collected by Playwright/Chromium V8 coverage.
+-Dependencies: no new npm packages.
++PR: PR_26167_188-platform-banner-display-fix
++Coverage source: Playwright/Chromium built-in V8 coverage from targeted platform-settings Playwright.
++Command: npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Platform banner renders|Platform Settings Admin controls" --workers=1
+ Thresholds: none enforced.
+-Note: coverage is an advisory baseline only for this PR.
+-Note: missing changed runtime JS coverage is reported as WARN, not FAIL.
+-Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.
+-Note: entry percentages use function coverage when available, otherwise line coverage.
+-Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+-
+-Exercised tool entry points detected:
+-(14%) Toolbox Index - exercised 1 runtime JS files
+-(0%) Tool Template V2 - not exercised by this Playwright run
+-(79%) Theme V2 Shared JS - exercised 7 runtime JS files
++Note: coverage is advisory for changed browser runtime JavaScript.
++Note: server-side runtime JavaScript is not collected by browser V8 coverage and is reported as WARN.
+
+ Changed runtime JS files covered:
+-(0%) admin/db-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/account-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/api/admin-setup-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/api/db-viewer-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/engine/input/GamepadHapticsService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+-(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 707/707; executed functions 44/62
+-(75%) src/engine/api/platform-settings-api-client.js - executed lines 25/25; executed functions 3/4
+-(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 77/77; executed functions 14/14
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: server-side route module validated by node --check, targeted node contract test, and live API validation; browser V8 does not collect it
++(73%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 721/721; executed functions 45/62
++(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 90/90; executed functions 15/15
+
+-Files with executed line/function counts where available:
+-(14%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 3/22
+-(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+-(47%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 9/19
+-(50%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 7/14
+-(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 707/707; executed functions 44/62
++Supporting covered runtime JS:
+ (75%) src/engine/api/platform-settings-api-client.js - executed lines 25/25; executed functions 3/4
+-(87%) assets/theme-v2/js/account-achievements.js - executed lines 117/117; executed functions 13/15
+-(90%) assets/theme-v2/js/account-auth-actions.js - executed lines 83/83; executed functions 9/10
+-(92%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 12/13
+-(100%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 7/7
+-(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 77/77; executed functions 14/14
+-
+-Uncovered or low-coverage changed JS files:
+-(0%) admin/db-viewer.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/account-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/local-api-server.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/server/mock-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/engine/api/admin-setup-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/engine/api/db-viewer-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/engine/api/db-viewer-ui.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) src/engine/input/GamepadHapticsService.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) toolbox/assets/assets.js - WARNING: uncovered changed runtime JS file; advisory only
+-(25%) src/engine/api/session-api-client.js - WARNING: advisory low coverage; executed lines 68/68
+
+-Changed JS files considered:
+-(0%) account/user-controls-page.js - changed JS file not collected as browser runtime coverage
+-(0%) admin/db-viewer.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/account-page-data.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/admin-db-status-panel.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/admin-service-page-data.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/admin-setup-actions.js - changed JS file not collected as browser runtime coverage
+-(0%) scripts/sync-supabase-dev-creator-identities.mjs - changed JS file not collected as browser runtime coverage
+-(0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/seed/seed-db-keys.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/local-api-server.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/server/mock-api-router.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - changed JS file not collected as browser runtime coverage
+-(0%) src/engine/api/admin-setup-api-client.js - changed JS file not collected as browser runtime coverage
+-(0%) src/engine/api/db-viewer-api-client.js - changed JS file not collected as browser runtime coverage
+-(0%) src/engine/api/db-viewer-ui.js - changed JS file not collected as browser runtime coverage
+-(0%) src/engine/audio/SoundFontPreviewEngine.js - changed JS file not collected as browser runtime coverage
+-(0%) src/engine/input/GamepadHapticsService.js - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/SupabaseProductDataCutover.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
+-(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
+-(0%) toolbox/assets/assets.js - changed JS file not collected as browser runtime coverage
+-(25%) src/engine/api/session-api-client.js - changed JS file with browser V8 coverage
+-(71%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+-(75%) src/engine/api/platform-settings-api-client.js - changed JS file with browser V8 coverage
+-(100%) assets/theme-v2/js/admin-platform-settings.js - changed JS file with browser V8 coverage
++Behavior covered:
++(100%) active banner response renders under the header with diagnostics
++(100%) Admin Preferences save sends active=true through the service route
++(100%) Admin Preferences save sends active=false and removes the rendered banner
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 7d51e5943..c061e502f 100644
+index c061e502f..a64919057 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -67,13 +67,13 @@ import {
-   createGameWorkspaceMockRepository,
- } from "../persistence/tool-repositories/game-workspace-mock-repository.js";
- import {
--  MOCK_DB_KEYS,
-   createMockDbAuditFields,
-   getMockDbTableSchemas,
-   getMockDbToolGroups,
-   normalizeMockDbTables,
- } from "../persistence/mock-db-store.js";
- import { createServerSeedTables } from "../seed/server-seed-loader.mjs";
-+import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
- import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
- import {
-   SUPABASE_AUTH_PROVIDER_ID,
-@@ -209,6 +209,20 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
-     }),
+@@ -210,7 +210,7 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
    ]),
  });
-+const PLATFORM_BANNER_SETTING_KEYS = Object.freeze({
-+  enabled: "platform.banner.enabled",
-+  kind: "platform.banner.kind",
-+  message: "platform.banner.message",
-+  tone: "platform.banner.tone",
-+});
-+const PLATFORM_BANNER_KINDS = Object.freeze(["general", "temporary-data", "outage"]);
-+const PLATFORM_BANNER_TONES = Object.freeze(["info", "warning", "danger"]);
-+const PLATFORM_BANNER_DEFAULTS = Object.freeze({
-+  enabled: false,
-+  kind: "general",
-+  message: "",
-+  tone: "info",
-+});
- 
- function clone(value) {
-   return JSON.parse(JSON.stringify(value));
-@@ -360,6 +374,110 @@ function booleanOrDefault(value, fallback) {
-   return typeof value === "boolean" ? value : fallback;
+ const PLATFORM_BANNER_SETTING_KEYS = Object.freeze({
+-  enabled: "platform.banner.enabled",
++  active: "platform.banner.enabled",
+   kind: "platform.banner.kind",
+   message: "platform.banner.message",
+   tone: "platform.banner.tone",
+@@ -218,7 +218,7 @@ const PLATFORM_BANNER_SETTING_KEYS = Object.freeze({
+ const PLATFORM_BANNER_KINDS = Object.freeze(["general", "temporary-data", "outage"]);
+ const PLATFORM_BANNER_TONES = Object.freeze(["info", "warning", "danger"]);
+ const PLATFORM_BANNER_DEFAULTS = Object.freeze({
+-  enabled: false,
++  active: false,
+   kind: "general",
+   message: "",
+   tone: "info",
+@@ -401,7 +401,7 @@ function platformSettingBoolean(rowsByKey, fieldName) {
+
+ function normalizedPlatformBanner(rows = []) {
+   const rowsByKey = platformSettingBySettingKey(rows);
+-  const enabled = platformSettingBoolean(rowsByKey, "enabled");
++  const activeFlag = platformSettingBoolean(rowsByKey, "active");
+   const message = platformSettingValue(rowsByKey, "message");
+   const tone = PLATFORM_BANNER_TONES.includes(platformSettingValue(rowsByKey, "tone"))
+     ? platformSettingValue(rowsByKey, "tone")
+@@ -410,17 +410,17 @@ function normalizedPlatformBanner(rows = []) {
+     ? platformSettingValue(rowsByKey, "kind")
+     : PLATFORM_BANNER_DEFAULTS.kind;
+   return {
+-    active: enabled && Boolean(message),
+-    enabled,
++    active: activeFlag && Boolean(message),
+     kind,
+     message,
++    sourceTableRowKey: rowsByKey.get(PLATFORM_BANNER_SETTING_KEYS.active)?.key || "",
+     sourceTable: "platform_settings",
+     tone,
+   };
  }
- 
-+function normalizePlatformSettingRows(rows = []) {
-+  return Array.isArray(rows)
-+    ? rows.filter((row) => row && typeof row === "object")
-+    : [];
-+}
-+
-+function platformSettingBySettingKey(rows = []) {
-+  return new Map(normalizePlatformSettingRows(rows)
-+    .map((row) => [String(row.settingKey || "").trim(), row])
-+    .filter(([settingKey]) => settingKey));
-+}
-+
-+function platformSettingValue(rowsByKey, fieldName) {
-+  const row = rowsByKey.get(PLATFORM_BANNER_SETTING_KEYS[fieldName]);
-+  if (!row || row.isActive === false) {
-+    return PLATFORM_BANNER_DEFAULTS[fieldName];
-+  }
-+  return String(row.settingValue || "").trim();
-+}
-+
-+function platformSettingBoolean(rowsByKey, fieldName) {
-+  const value = platformSettingValue(rowsByKey, fieldName);
-+  return value === true || String(value).toLowerCase() === "true";
-+}
-+
-+function normalizedPlatformBanner(rows = []) {
-+  const rowsByKey = platformSettingBySettingKey(rows);
-+  const enabled = platformSettingBoolean(rowsByKey, "enabled");
-+  const message = platformSettingValue(rowsByKey, "message");
-+  const tone = PLATFORM_BANNER_TONES.includes(platformSettingValue(rowsByKey, "tone"))
-+    ? platformSettingValue(rowsByKey, "tone")
-+    : PLATFORM_BANNER_DEFAULTS.tone;
-+  const kind = PLATFORM_BANNER_KINDS.includes(platformSettingValue(rowsByKey, "kind"))
-+    ? platformSettingValue(rowsByKey, "kind")
-+    : PLATFORM_BANNER_DEFAULTS.kind;
+
+ function normalizePlatformBannerUpdate(body = {}) {
+-  const enabled = body.enabled === true || String(body.enabled).toLowerCase() === "true";
++  const active = body.active === true || String(body.active).toLowerCase() === "true";
+   const message = String(body.message || "").trim();
+   const tone = PLATFORM_BANNER_TONES.includes(String(body.tone || "").trim())
+     ? String(body.tone).trim()
+@@ -428,10 +428,10 @@ function normalizePlatformBannerUpdate(body = {}) {
+   const kind = PLATFORM_BANNER_KINDS.includes(String(body.kind || "").trim())
+     ? String(body.kind).trim()
+     : PLATFORM_BANNER_DEFAULTS.kind;
+-  if (enabled && !message) {
++  if (active && !message) {
+     throw new Error("Platform banner message is required before enabling the banner.");
+   }
+-  return { enabled, kind, message, tone };
++  return { active, kind, message, tone };
+ }
+
+ function platformBannerSettingRows({ actorKey, adapter, banner, existingRows }) {
+@@ -440,9 +440,9 @@ function platformBannerSettingRows({ actorKey, adapter, banner, existingRows })
+   const settingRows = [
+     {
+       description: "Controls whether the platform banner renders.",
+-      settingKey: PLATFORM_BANNER_SETTING_KEYS.enabled,
++      settingKey: PLATFORM_BANNER_SETTING_KEYS.active,
+       settingType: "boolean",
+-      settingValue: banner.enabled ? "true" : "false",
++      settingValue: banner.active ? "true" : "false",
+     },
+     {
+       description: "Platform banner message text.",
+@@ -478,6 +478,15 @@ function platformBannerSettingRows({ actorKey, adapter, banner, existingRows })
+   });
+ }
+
++function platformBannerDiagnostics(banner) {
 +  return {
-+    active: enabled && Boolean(message),
-+    enabled,
-+    kind,
-+    message,
-+    sourceTable: "platform_settings",
-+    tone,
++    active: banner.active,
++    message: banner.message,
++    sourceTable: banner.sourceTable,
++    sourceTableRowKey: banner.sourceTableRowKey,
 +  };
-+}
-+
-+function normalizePlatformBannerUpdate(body = {}) {
-+  const enabled = body.enabled === true || String(body.enabled).toLowerCase() === "true";
-+  const message = String(body.message || "").trim();
-+  const tone = PLATFORM_BANNER_TONES.includes(String(body.tone || "").trim())
-+    ? String(body.tone).trim()
-+    : PLATFORM_BANNER_DEFAULTS.tone;
-+  const kind = PLATFORM_BANNER_KINDS.includes(String(body.kind || "").trim())
-+    ? String(body.kind).trim()
-+    : PLATFORM_BANNER_DEFAULTS.kind;
-+  if (enabled && !message) {
-+    throw new Error("Platform banner message is required before enabling the banner.");
-+  }
-+  return { enabled, kind, message, tone };
-+}
-+
-+function platformBannerSettingRows({ actorKey, adapter, banner, existingRows }) {
-+  const now = new Date().toISOString();
-+  const rowsByKey = platformSettingBySettingKey(existingRows);
-+  const settingRows = [
-+    {
-+      description: "Controls whether the platform banner renders.",
-+      settingKey: PLATFORM_BANNER_SETTING_KEYS.enabled,
-+      settingType: "boolean",
-+      settingValue: banner.enabled ? "true" : "false",
-+    },
-+    {
-+      description: "Platform banner message text.",
-+      settingKey: PLATFORM_BANNER_SETTING_KEYS.message,
-+      settingType: "string",
-+      settingValue: banner.message,
-+    },
-+    {
-+      description: "Platform banner visual tone.",
-+      settingKey: PLATFORM_BANNER_SETTING_KEYS.tone,
-+      settingType: "string",
-+      settingValue: banner.tone,
-+    },
-+    {
-+      description: "Platform banner notice kind.",
-+      settingKey: PLATFORM_BANNER_SETTING_KEYS.kind,
-+      settingType: "string",
-+      settingValue: banner.kind,
-+    },
-+  ];
-+  return settingRows.map((row) => {
-+    const existing = rowsByKey.get(row.settingKey) || {};
-+    return {
-+      ...existing,
-+      ...row,
-+      createdAt: existing.createdAt || now,
-+      createdBy: existing.createdBy || actorKey,
-+      isActive: true,
-+      key: existing.key || adapter.createRecordKey(),
-+      updatedAt: now,
-+      updatedBy: actorKey,
-+    };
-+  });
 +}
 +
  function normalizedToolKey(row) {
    return String(row?.toolKey || row?.toolId || row?.id || "").trim();
  }
-@@ -716,9 +834,9 @@ function sanitizedSupabaseAuthActionResult(action, email, payload = {}, session
-     action,
-     email: String(user.email || email || "").trim(),
-     externalAuthUserIdPresent: Boolean(user.id),
--    localDbSessionCreated: Boolean(resolvedSession),
-+    serverSessionResolved: Boolean(resolvedSession),
-     message: "Account authentication completed through the account service.",
--    passwordStoredLocally: false,
-+    passwordStoredByBrowser: false,
-     providerId: SUPABASE_AUTH_PROVIDER_ID,
-     refreshTokenExposed: false,
-     roleSlugs: resolvedSession ? resolvedSession.roleSlugs : [],
-@@ -753,7 +871,7 @@ function votePercent(count, total) {
-   return Math.round((resolvedCount / resolvedTotal) * 100);
- }
- 
--function snapshotAuditFields(index = 0, userKey = MOCK_DB_KEYS.users.forgeBot) {
-+function snapshotAuditFields(index = 0, userKey = SEED_DB_KEYS.users.forgeBot) {
-   return createMockDbAuditFields(index, userKey);
- }
- 
-@@ -762,17 +880,17 @@ function gameWorkspaceTables(repository) {
-   const activeGame = repository.getActiveGame();
-   const progress = repository.getGameProgress();
-   const gameWorkspaceGames = tables.games.map((project, index) => ({
--    ...snapshotAuditFields(index + 20, MOCK_DB_KEYS.users.user1),
-+    ...snapshotAuditFields(index + 20, SEED_DB_KEYS.users.user1),
-     key: gameWorkspaceGameKey(project.id),
-     name: project.name,
--    ownerKey: MOCK_DB_KEYS.users.user1,
-+    ownerKey: SEED_DB_KEYS.users.user1,
-     status: project.status,
-   }));
-   const activeGameKey = gameWorkspaceGameKey(activeGame?.id);
-   return normalizeOwnedTables("game-workspace", {
-     game_workspace_games: gameWorkspaceGames,
-     game_workspace_progress: activeGame ? [{
--      ...snapshotAuditFields(80, MOCK_DB_KEYS.users.user1),
-+      ...snapshotAuditFields(80, SEED_DB_KEYS.users.user1),
-       key: runtimeGeneratedKeyForSource(`game-workspace-progress:${activeGameKey}`),
-       gameKey: activeGameKey,
-       currentFocus: progress.currentFocus,
-@@ -787,18 +905,18 @@ function gameDesignTables(repository) {
-   const tables = repository.getTables();
-   return normalizeOwnedTables("game-design", {
-     game_design_documents: (tables.game_design_documents || []).map((record, index) => ({
--      ...snapshotAuditFields(index + 100, MOCK_DB_KEYS.users.user1),
-+      ...snapshotAuditFields(index + 100, SEED_DB_KEYS.users.user1),
-       key: record.key,
-       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
-       status: record.status,
-       title: record.title || `${record.gamePurpose || record.projectPurpose || "Game"} Design`,
-       createdAt: record.createdAt,
-       updatedAt: record.updatedAt,
--      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
--      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
-+      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
-+      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
-     })),
-     game_design_validation_items: (tables.game_design_validation_items || []).map((record, index) => ({
--      ...snapshotAuditFields(index + 140, MOCK_DB_KEYS.users.user1),
-+      ...snapshotAuditFields(index + 140, SEED_DB_KEYS.users.user1),
-       key: record.key,
-       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
-       label: record.label,
-@@ -806,8 +924,8 @@ function gameDesignTables(repository) {
-       action: record.action,
-       createdAt: record.createdAt,
-       updatedAt: record.updatedAt,
--      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
--      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
-+      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
-+      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
-     })),
-   });
- }
-@@ -816,7 +934,7 @@ function gameConfigurationTables(repository) {
-   const tables = repository.getTables();
-   return normalizeOwnedTables("game-configuration", {
-     game_configuration_records: (tables.game_configuration_documents || []).map((record, index) => ({
--      ...snapshotAuditFields(index + 180, MOCK_DB_KEYS.users.user1),
-+      ...snapshotAuditFields(index + 180, SEED_DB_KEYS.users.user1),
-       key: record.key,
-       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
-       playerMode: record.playerMode || "1 Player",
-@@ -829,11 +947,11 @@ function gameConfigurationTables(repository) {
-       ].filter(Boolean).join(", "),
-       createdAt: record.createdAt,
-       updatedAt: record.updatedAt,
--      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
--      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
-+      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
-+      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
-     })),
-     game_configuration_validation_items: (tables.game_configuration_validation_items || []).map((record, index) => ({
--      ...snapshotAuditFields(index + 220, MOCK_DB_KEYS.users.user1),
-+      ...snapshotAuditFields(index + 220, SEED_DB_KEYS.users.user1),
-       key: record.key,
-       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
-       label: record.label,
-@@ -841,8 +959,8 @@ function gameConfigurationTables(repository) {
-       action: record.action,
-       createdAt: record.createdAt,
-       updatedAt: record.updatedAt,
--      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
--      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
-+      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
-+      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
-     })),
-   });
- }
-@@ -888,7 +1006,7 @@ function productTablesFromSnapshot(snapshot) {
-   ]));
- }
- 
--class LocalDevDataSource {
-+class ApiRuntimeDataSource {
-   constructor() {
-     this.repositoryCounter = 1;
-     this.repositoryById = new Map();
-@@ -1195,8 +1313,8 @@ class LocalDevDataSource {
-         label: "Tool Metadata Bootstrap",
-         status: toolMetadataCount ? "PASS" : "FAIL",
-         message: toolMetadataCount
--          ? `${toolMetadataCount} tool metadata rows are available through the Local API.`
--          : "Tool metadata rows are missing from the Local API setup state.",
-+          ? `${toolMetadataCount} tool metadata rows are available through the configured server API.`
-+          : "Tool metadata rows are missing from the configured setup state.",
-       },
-       {
-         action: "Create baseline settings records",
-@@ -1204,8 +1322,8 @@ class LocalDevDataSource {
-         label: "Starter Platform Settings",
-         status: platformSettingsCount ? "PASS" : "FAIL",
-         message: platformSettingsCount
--          ? `${platformSettingsCount} starter platform setting row(s) are available through the Local API.`
--          : "Starter platform settings are missing from the Local API setup state.",
-+          ? `${platformSettingsCount} starter platform setting row(s) are available through the configured server API.`
-+          : "Starter platform settings are missing from the configured setup state.",
-       },
-       {
-         action: "Prepare support category setup",
-@@ -1213,8 +1331,8 @@ class LocalDevDataSource {
-         label: "Support Categories",
-         status: supportCategoriesCount ? "PASS" : "FAIL",
-         message: supportCategoriesCount
--          ? `${supportCategoriesCount} support category row(s) are available through the Local API.`
--          : "Support categories are missing from the Local API setup state.",
-+          ? `${supportCategoriesCount} support category row(s) are available through the configured server API.`
-+          : "Support categories are missing from the configured setup state.",
-       },
-     ];
-     const statusCounts = areas.reduce((counts, area) => {
-@@ -1232,6 +1350,46 @@ class LocalDevDataSource {
+@@ -1353,8 +1362,10 @@ class ApiRuntimeDataSource {
+   async platformBannerForRoute() {
+     const adapter = this.supabaseDatabaseAdapter("Reading platform banner settings");
+     const rows = await adapter.getPlatformSettings();
++    const banner = normalizedPlatformBanner(rows);
+     return {
+-      banner: normalizedPlatformBanner(rows),
++      banner,
++      diagnostics: platformBannerDiagnostics(banner),
+       sourceTable: "platform_settings",
      };
    }
- 
-+  async platformBannerForRoute() {
-+    const adapter = this.supabaseDatabaseAdapter("Reading platform banner settings");
-+    const rows = await adapter.getPlatformSettings();
-+    return {
-+      banner: normalizedPlatformBanner(rows),
-+      sourceTable: "platform_settings",
-+    };
-+  }
-+
-+  async adminPlatformBannerForRoute() {
-+    const session = await this.currentSessionForRoute();
-+    if (!session.isAdmin || !session.userKey) {
-+      throw new Error("Admin role required to read platform banner settings.");
-+    }
-+    return this.platformBannerForRoute();
-+  }
-+
-+  async updateAdminPlatformBanner(body = {}) {
-+    const session = await this.currentSessionForRoute();
-+    if (!session.isAdmin || !session.userKey) {
-+      throw new Error("Admin role required to update platform banner settings.");
-+    }
-+    const adapter = this.supabaseDatabaseAdapter("Updating platform banner settings");
-+    const existingRows = await adapter.getPlatformSettings();
-+    const banner = normalizePlatformBannerUpdate(body);
-+    const rows = platformBannerSettingRows({
-+      actorKey: session.userKey,
-+      adapter,
-+      banner,
-+      existingRows,
-+    });
-+    await adapter.upsertPlatformSettings(rows);
-+    const refreshedRows = await adapter.getPlatformSettings();
-+    return {
-+      banner: normalizedPlatformBanner(refreshedRows),
-+      recordsWritten: rows.length,
-+      sourceTable: "platform_settings",
-+    };
-+  }
-+
-   guestSeedPackages() {
-     const packages = readDocsBuildGuestSeedPackages();
+@@ -1383,8 +1394,10 @@ class ApiRuntimeDataSource {
+     });
+     await adapter.upsertPlatformSettings(rows);
+     const refreshedRows = await adapter.getPlatformSettings();
++    const refreshedBanner = normalizedPlatformBanner(refreshedRows);
      return {
-@@ -1269,7 +1427,7 @@ class LocalDevDataSource {
-     const providerContract = this.providerContract();
-     const authProviderId = providerContract.activeProviders.authProviderId;
-     const databaseProviderId = providerContract.activeProviders.databaseProviderId;
--    const localDbProductDataActive = false;
-+    const browserOwnedProductDataActive = false;
-     const supabaseProductDataActive = true;
-     const configured = providerContract.supabaseAuth.configured === true;
-     const failure = providerContract.providerDiagnostics.providerFailures
-@@ -1299,7 +1457,7 @@ class LocalDevDataSource {
-       connectivityHealthy: null,
-       connectivityStatus,
-       databaseProviderId,
--      localDbProductDataActive,
-+      browserOwnedProductDataActive,
-       message,
-       missingBrowserSafeEnvironmentVariables,
-       noAutomaticFallback: true,
-@@ -1459,7 +1617,7 @@ class LocalDevDataSource {
-       connectivityHealthy: connectivity.connectivityStatus === "healthy",
-       connectivityStatus: connectivity.connectivityStatus,
-       databaseProviderId: status.databaseProviderId,
--      localDbProductDataActive: status.localDbProductDataActive,
-+      browserOwnedProductDataActive: status.browserOwnedProductDataActive,
-       supabaseProductDataActive: status.supabaseProductDataActive,
-       identityTableRecords: identity.identityTableRecords,
-       identityTablesReady: identity.identityTablesReady,
-@@ -1931,7 +2089,7 @@ class LocalDevDataSource {
-         rows.push({
-           key: this.toolboxToolPlanningKey(toolKey),
-           ...normalizedValues,
--          ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
-+          ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
-         });
-         changed = true;
-         return;
-@@ -1961,7 +2119,7 @@ class LocalDevDataSource {
-         rows.push({
-           key: this.toolboxToolMetadataKey(tool.id),
-           ...defaults,
--          ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
-+          ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
-         });
-         changed = true;
-         return;
-@@ -2027,7 +2185,7 @@ class LocalDevDataSource {
-       .map((tool, index) => ({
-         key: this.toolboxToolPlanningKey(tool.id),
-         ...this.defaultToolboxPlanning(tool),
--        ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
-+        ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
-       }));
-     if (missingRows.length) {
-       await adapter.upsertProductTable("toolbox_tool_planning", missingRows);
-@@ -2046,7 +2204,7 @@ class LocalDevDataSource {
-       .map((tool, index) => ({
-         key: this.toolboxToolMetadataKey(tool.id),
-         ...this.defaultToolboxMetadata(tool, index),
--        ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
-+        ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
-       }));
-     if (missingRows.length) {
-       await adapter.upsertProductTable("toolbox_tool_metadata", missingRows);
-@@ -2583,10 +2741,14 @@ class LocalDevDataSource {
-   }
- }
- 
-+/**
-+ * Legacy export name retained for the existing dev:local-api command surface.
-+ * The router itself serves the configured server API contract.
-+ */
- export function createLocalApiRouter() {
--  const dataSource = new LocalDevDataSource();
-+  const dataSource = new ApiRuntimeDataSource();
- 
--  return async function handleLocalApiRequest(request, response, requestUrl) {
-+  return async function handleApiRuntimeRequest(request, response, requestUrl) {
-     if (!requestUrl.pathname.startsWith("/api/")) {
-       return false;
-     }
-@@ -2668,6 +2830,11 @@ export function createLocalApiRouter() {
-         return true;
-       }
- 
-+      if (parts[1] === "platform-settings" && request.method === "GET" && parts[2] === "banner") {
-+        ok(response, await dataSource.platformBannerForRoute());
-+        return true;
-+      }
-+
-       if (parts[1] === "admin" && parts[2] === "setup" && request.method === "POST" && parts[3] === "reseed") {
-         fail(response, 410, new Error("Admin reseed endpoint is removed. Use configured server setup/sync scripts."));
-         return true;
-@@ -2684,6 +2851,17 @@ export function createLocalApiRouter() {
-         return true;
-       }
- 
-+      if (parts[1] === "admin" && parts[2] === "platform-settings" && request.method === "GET" && parts[3] === "banner") {
-+        ok(response, await dataSource.adminPlatformBannerForRoute());
-+        return true;
-+      }
-+
-+      if (parts[1] === "admin" && parts[2] === "platform-settings" && request.method === "POST" && parts[3] === "banner") {
-+        const body = await readRequestJson(request);
-+        ok(response, await dataSource.updateAdminPlatformBanner(body));
-+        return true;
-+      }
-+
-       if (parts[1] === "guest" && parts[2] === "seed" && request.method === "GET") {
-         ok(response, dataSource.guestSeedPackages());
-         return true;
-diff --git a/src/dev-runtime/server/local-api-server.mjs b/src/dev-runtime/server/local-api-server.mjs
-index c42498115..4917579f9 100644
---- a/src/dev-runtime/server/local-api-server.mjs
-+++ b/src/dev-runtime/server/local-api-server.mjs
-@@ -55,11 +55,11 @@ export async function startLocalApiServer({
-   host = "127.0.0.1",
-   port = 5501,
- } = {}) {
--  const handleLocalApiRequest = createLocalApiRouter();
-+  const handleApiRuntimeRequest = createLocalApiRouter();
-   const server = http.createServer(async (request, response) => {
-     try {
-       const requestUrl = new URL(request.url || "/", `http://${host}:${port}`);
--      if (await handleLocalApiRequest(request, response, requestUrl)) {
-+      if (await handleApiRuntimeRequest(request, response, requestUrl)) {
-         return;
-       }
-       if (await handleAdminNotesDirectoryRequest(requestUrl, response, { repoRoot })) {
-diff --git a/src/dev-runtime/server/mock-api-router.mjs b/src/dev-runtime/server/mock-api-router.mjs
-index bb599887d..5f8539420 100644
---- a/src/dev-runtime/server/mock-api-router.mjs
-+++ b/src/dev-runtime/server/mock-api-router.mjs
-@@ -4,8 +4,8 @@ export { createLocalApiRouter } from "./local-api-router.mjs";
- 
- /**
-  * @deprecated Use createLocalApiRouter from local-api-router.mjs.
-- * This compatibility export remains until older tests/helpers finish their
-- * Local DB naming migration.
-+ * This compatibility export remains for older tests/helpers while the API
-+ * runtime keeps its legacy file names.
-  */
- export function createMockApiRouter() {
-   return createLocalApiRouter();
-diff --git a/src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs b/src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs
-index 0dd4bc77b..82f41517b 100644
---- a/src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs
-+++ b/src/dev-runtime/testing/supabase-dev-auth-test-user-cleanup.mjs
-@@ -1,4 +1,4 @@
--import { MOCK_DB_KEYS } from "../persistence/mock-db-store.js";
-+import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
- import {
-   SUPABASE_AUTH_PROVIDER_ID,
-   SupabaseAuthProviderAdapter,
-@@ -8,10 +8,10 @@ import {
- const DEV_ONLY_ENV_VALUES = Object.freeze(["dev", "development", "local", "test", ""]);
- const DEV_TEST_EMAIL_PATTERN = /^(codex|playwright)-[a-z0-9._+-]+@example\.test$/i;
- const STATIC_DEV_USER_KEYS = Object.freeze([
--  MOCK_DB_KEYS.users.admin,
--  MOCK_DB_KEYS.users.user1,
--  MOCK_DB_KEYS.users.user2,
--  MOCK_DB_KEYS.users.user3,
-+  SEED_DB_KEYS.users.admin,
-+  SEED_DB_KEYS.users.user1,
-+  SEED_DB_KEYS.users.user2,
-+  SEED_DB_KEYS.users.user3,
- ]);
- 
- function envMode(env) {
-diff --git a/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs b/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
-index c5e780e0b..d634a7c71 100644
---- a/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
-+++ b/src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
-@@ -1,4 +1,4 @@
--import { MOCK_DB_KEYS } from "../persistence/mock-db-store.js";
-+import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
- import {
-   SUPABASE_AUTH_PROVIDER_ID,
-   SupabaseAuthProviderAdapter,
-@@ -10,25 +10,25 @@ export const DEV_CREATOR_IDENTITIES = Object.freeze([
-   Object.freeze({
-     displayName: "User 1",
-     email: "user1@example.invalid",
--    key: MOCK_DB_KEYS.users.user1,
-+    key: SEED_DB_KEYS.users.user1,
-     passwordSuffix: "1!!",
-   }),
-   Object.freeze({
-     displayName: "User 2",
-     email: "user2@example.invalid",
--    key: MOCK_DB_KEYS.users.user2,
-+    key: SEED_DB_KEYS.users.user2,
-     passwordSuffix: "2!!",
-   }),
-   Object.freeze({
-     displayName: "User 3",
-     email: "user3@example.invalid",
--    key: MOCK_DB_KEYS.users.user3,
-+    key: SEED_DB_KEYS.users.user3,
-     passwordSuffix: "3!!",
-   }),
-   Object.freeze({
-     displayName: "DavidQ",
-     email: "qbytes.dq@gmail.com",
--    key: MOCK_DB_KEYS.users.admin,
-+    key: SEED_DB_KEYS.users.admin,
-     passwordSuffix: "$2026",
-   }),
- ]);
-@@ -37,6 +37,7 @@ const CANONICAL_EMAILS = new Set(DEV_CREATOR_IDENTITIES.map((identity) => identi
- const CANONICAL_KEYS = new Set(DEV_CREATOR_IDENTITIES.map((identity) => identity.key));
- const DEV_PASSWORD_PREFIX = ["GF", "S"].join("");
- const LEGACY_DEV_AUTH_USER_IDS = new Set(["user-1", "user-2", "user-3", "davidq", "davidq-admin"]);
-+const KNOWN_STALE_ROLE_KEYS = Object.freeze(["01KV6FVP0ASR2RRR9WXCBKTV6C"]);
- const DEV_ROLE_DEFINITIONS = Object.freeze([
-   Object.freeze({
-     description: "Authenticated game creator.",
-@@ -186,6 +187,73 @@ function countReassignedFields(result) {
-     + (Array.isArray(result?.updatedBy) ? result.updatedBy.length : 0);
- }
- 
-+function roleBySlug(roles, roleSlug) {
-+  return roles.find((role) => normalizedId(role.roleSlug) === roleSlug && role.isActive !== false) || null;
-+}
-+
-+function canonicalDesiredUserRolePairs(roles) {
-+  const creatorRole = roleBySlug(roles, "creator");
-+  const adminRole = roleBySlug(roles, "admin");
-+  return new Set([
-+    ...DEV_CREATOR_IDENTITIES
-+      .filter(() => creatorRole)
-+      .map((identity) => `${identity.key}\u0000${creatorRole.key}`),
-+    adminRole ? `${SEED_DB_KEYS.users.admin}\u0000${adminRole.key}` : "",
-+  ].filter(Boolean));
-+}
-+
-+function staleCanonicalUserRoleRecords({ roles, userRoles }) {
-+  const validRoleKeys = new Set(roles.map((role) => normalizedId(role.key)).filter(Boolean));
-+  const desiredPairs = canonicalDesiredUserRolePairs(roles);
-+  const staleRoleKeys = new Set(KNOWN_STALE_ROLE_KEYS);
-+  return userRoles
-+    .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
-+    .filter((row) => {
-+      const roleKey = normalizedId(row.roleKey);
-+      return staleRoleKeys.has(roleKey) ||
-+        !validRoleKeys.has(roleKey) ||
-+        !desiredPairs.has(`${normalizedId(row.userKey)}\u0000${roleKey}`);
-+    })
-+    .map((row) => ({
-+      key: normalizedId(row.key),
-+      reason: staleRoleKeys.has(normalizedId(row.roleKey))
-+        ? "known-stale-role-key"
-+        : validRoleKeys.has(normalizedId(row.roleKey))
-+          ? "unexpected-canonical-assignment"
-+          : "missing-role-reference",
-+      roleKey: normalizedId(row.roleKey),
-+      userKey: normalizedId(row.userKey),
-+    }))
-+    .filter((row) => row.key);
-+}
-+
-+async function repairCanonicalUserRoles({ databaseProvider, dryRun, roles, userRoles }) {
-+  const staleRecords = staleCanonicalUserRoleRecords({ roles, userRoles });
-+  const deletedRecords = [];
-+  for (const record of staleRecords) {
-+    if (dryRun) {
-+      deletedRecords.push({
-+        ...record,
-+        action: "dry-run",
-+        deleted: 0,
-+      });
-+      continue;
-+    }
-+    const deleted = await databaseProvider.deleteUserRoleByKey(record.key);
-+    deletedRecords.push({
-+      ...record,
-+      action: "deleted",
-+      deleted: Array.isArray(deleted) ? deleted.length : 0,
-+    });
-+  }
-+  return {
-+    deletedRecords,
-+    knownStaleRoleKeys: KNOWN_STALE_ROLE_KEYS.slice(),
-+    staleRecordsFound: staleRecords.length,
-+    staleRoleKeyRemoved: deletedRecords.some((record) => KNOWN_STALE_ROLE_KEYS.includes(record.roleKey) && record.deleted > 0),
-+  };
-+}
-+
- async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun) {
-   const existingUser = existingByEmail.get(identity.email.toLowerCase());
-   if (dryRun) {
-@@ -353,6 +421,8 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
-   const creatorRole = activeRoleBySlug.get("creator");
-   const adminRole = activeRoleBySlug.get("admin");
-   const userRole = afterRoles.find((role) => role.roleSlug === "user");
-+  const roleSlugByKey = new Map(afterRoles.map((role) => [String(role.key || ""), String(role.roleSlug || "")]));
-+  const desiredPairs = canonicalDesiredUserRolePairs(afterRoles);
-   const identityEvidence = DEV_CREATOR_IDENTITIES.map((identity) => {
-     const auth = authByEmail.get(identity.email.toLowerCase());
-     const appUser = publicByEmail.get(identity.email.toLowerCase());
-@@ -389,6 +459,31 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
-   const nonDavidqAdminAssignments = afterUserRoles
-     .filter((row) => adminRole && row.roleKey === adminRole.key && row.userKey !== davidq?.key)
-     .map((row) => String(row.userKey || ""));
-+  const missingRoleReferenceUserRoles = afterUserRoles
-+    .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
-+    .filter((row) => normalizedId(row.roleKey) && !roleSlugByKey.has(normalizedId(row.roleKey)))
-+    .map((row) => ({
-+      roleKey: normalizedId(row.roleKey),
-+      userKey: normalizedId(row.userKey),
-+      userRoleKey: normalizedId(row.key),
-+    }));
-+  const staleRequestedRoleReferences = afterUserRoles
-+    .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
-+    .filter((row) => KNOWN_STALE_ROLE_KEYS.includes(normalizedId(row.roleKey)))
-+    .map((row) => ({
-+      roleKey: normalizedId(row.roleKey),
-+      userKey: normalizedId(row.userKey),
-+      userRoleKey: normalizedId(row.key),
-+    }));
-+  const unexpectedCanonicalAssignments = afterUserRoles
-+    .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
-+    .filter((row) => !desiredPairs.has(`${normalizedId(row.userKey)}\u0000${normalizedId(row.roleKey)}`))
-+    .map((row) => ({
-+      roleKey: normalizedId(row.roleKey),
-+      roleSlug: roleSlugByKey.get(normalizedId(row.roleKey)) || "",
-+      userKey: normalizedId(row.userKey),
-+      userRoleKey: normalizedId(row.key),
-+    }));
-   const unexpectedManagedAuthUsers = afterAuthUsers
-     .filter((user) => isManagedExtraDevIdentityEmail(authUserEmail(user)))
-     .map((user) => ({ authProviderUserId: maskId(authUserId(user)), email: authUserEmail(user) }));
-@@ -417,12 +512,19 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
-   if (nonDavidqAdminAssignments.length) {
-     failures.push("unexpected-seeded-admin-assignment");
-   }
-+  if (missingRoleReferenceUserRoles.length || staleRequestedRoleReferences.length) {
-+    failures.push("stale-user-role-reference-remaining");
-+  }
-+  if (unexpectedCanonicalAssignments.length) {
-+    failures.push("unexpected-canonical-role-assignment");
-+  }
-   return {
-     creatorAssignments,
-     davidqAdminAssignmentPreserved: davidqAdminAssignment,
-     failures,
-     identityEvidence,
-     legacyUserRoleDeprecated: !userRole || userRole.isActive === false,
-+    missingRoleReferenceUserRoles,
-     requiredRolesActive: {
-       admin: Boolean(adminRole),
-       creator: Boolean(creatorRole),
-@@ -431,6 +533,8 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
-     nonDavidqAdminAssignments,
-     roleEvidence,
-     status: failures.length ? "FAIL" : "PASS",
-+    staleRequestedRoleReferences,
-+    unexpectedCanonicalAssignments,
-     unexpectedManagedAuthUsers,
-     unexpectedManagedPublicUsers,
-   };
-@@ -469,7 +573,7 @@ export async function syncSupabaseDevCreatorIdentities({
-       },
-     }
-     : await databaseProvider.initializeIdentity({
--      actorKey: MOCK_DB_KEYS.users.admin,
-+      actorKey: SEED_DB_KEYS.users.admin,
-       roles: DEV_ROLE_DEFINITIONS,
-       userRoles: [
-         ...DEV_CREATOR_IDENTITIES.map((identity) => ({
-@@ -478,7 +582,7 @@ export async function syncSupabaseDevCreatorIdentities({
-         })),
-         {
-           roleSlug: "admin",
--          userKey: MOCK_DB_KEYS.users.admin,
-+          userKey: SEED_DB_KEYS.users.admin,
-         },
-       ],
-       users: canonicalUserRows(authUsersForIdentity),
-@@ -487,9 +591,15 @@ export async function syncSupabaseDevCreatorIdentities({
-   const usersForCleanup = await databaseProvider.getUsers();
-   const rolesForCleanup = await databaseProvider.getRoles();
-   const userRolesForCleanup = await databaseProvider.getUserRoles();
-+  const userRoleRepair = await repairCanonicalUserRoles({
-+    databaseProvider,
-+    dryRun,
-+    roles: rolesForCleanup,
-+    userRoles: userRolesForCleanup,
-+  });
-   const publicCleanupCandidates = usersForCleanup.filter(isManagedExtraPublicUser);
-   const publicCleanup = await deleteManagedPublicUsers({
--    auditUserKey: MOCK_DB_KEYS.users.admin,
-+    auditUserKey: SEED_DB_KEYS.users.admin,
-     authProvider,
-     candidates: publicCleanupCandidates,
-     databaseProvider,
-@@ -526,6 +636,7 @@ export async function syncSupabaseDevCreatorIdentities({
-     status: dryRun ? "DRY_RUN" : verification.status,
-     testDataCreated: authUpsertRecords.filter((record) => record.action === "created").length,
-     testDataDeleted: publicCleanup.deletedRecords.length + authOnlyDeletedRecords.length,
-+    userRoleRepair,
-     verification,
-   };
- }
-diff --git a/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs b/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
-index acdaf6d92..1d3841ca5 100644
---- a/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
-+++ b/tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
-@@ -1,6 +1,6 @@
- import assert from "node:assert/strict";
- import test from "node:test";
--import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
-+import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
- import {
-   SupabaseAuthProviderAdapter,
-   SupabasePostgresProviderAdapter,
-@@ -26,9 +26,9 @@ function createFakeSupabaseSyncState() {
-   const timestamp = "2026-06-16T00:00:00.000Z";
-   const audit = {
-     createdAt: timestamp,
--    createdBy: MOCK_DB_KEYS.users.admin,
-+    createdBy: SEED_DB_KEYS.users.admin,
-     updatedAt: timestamp,
--    updatedBy: MOCK_DB_KEYS.users.admin,
-+    updatedBy: SEED_DB_KEYS.users.admin,
-   };
-   const state = {
-     authUsers: [
-@@ -43,9 +43,10 @@ function createFakeSupabaseSyncState() {
-       { key: "role-user", roleSlug: "user", name: "User", isActive: true, isSystemRole: false, ...audit },
-     ],
-     user_roles: [
--      { key: "old-user-role", userKey: MOCK_DB_KEYS.users.user1, roleKey: "role-user", ...audit },
-+      { key: "old-user-role", userKey: SEED_DB_KEYS.users.user1, roleKey: "role-user", ...audit },
-+      { key: "missing-role-reference", userKey: SEED_DB_KEYS.users.admin, roleKey: "01KV6FVP0ASR2RRR9WXCBKTV6C", ...audit },
-       { key: "extra-user-role", userKey: "user-extra-codex", roleKey: "role-creator", ...audit },
--      { key: "davidq-admin-role", userKey: MOCK_DB_KEYS.users.admin, roleKey: "role-admin", ...audit },
-+      { key: "davidq-admin-role", userKey: SEED_DB_KEYS.users.admin, roleKey: "role-admin", ...audit },
-     ],
-     users: [
-       {
-@@ -54,7 +55,7 @@ function createFakeSupabaseSyncState() {
-         displayName: "User 1",
-         email: "user1@example.invalid",
-         isActive: true,
--        key: MOCK_DB_KEYS.users.user1,
-+        key: SEED_DB_KEYS.users.user1,
-         ...audit,
-       },
-       {
-@@ -156,7 +157,7 @@ function createFakeSupabaseSyncState() {
-         };
-       }
-       if (method === "DELETE") {
--        const filterField = tableName === "users" ? "key" : "userKey";
-+        const filterField = requestUrl.searchParams.has("key") ? "key" : tableName === "users" ? "key" : "userKey";
-         const filterValue = decodeEqFilter(requestUrl.searchParams, filterField);
-         const deleted = state[tableName].filter((row) => row[filterField] === filterValue);
-         state[tableName] = state[tableName].filter((row) => row[filterField] !== filterValue);
-@@ -226,6 +227,11 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
-   });
-   assert.equal(result.verification.identityEvidence.every((record) => record.synced), true);
-   assert.equal(result.verification.creatorAssignments.every((record) => record.assigned), true);
-+  assert.equal(result.userRoleRepair.staleRecordsFound, 2);
-+  assert.equal(result.userRoleRepair.staleRoleKeyRemoved, true);
-+  assert.deepEqual(result.verification.missingRoleReferenceUserRoles, []);
-+  assert.deepEqual(result.verification.staleRequestedRoleReferences, []);
-+  assert.deepEqual(result.verification.unexpectedCanonicalAssignments, []);
- 
-   const canonicalEmails = DEV_CREATOR_IDENTITIES.map((identity) => identity.email).sort();
-   assert.deepEqual(fake.state.authUsers.map((user) => user.email).sort(), canonicalEmails);
+-      banner: normalizedPlatformBanner(refreshedRows),
++      banner: refreshedBanner,
++      diagnostics: platformBannerDiagnostics(refreshedBanner),
+       recordsWritten: rows.length,
+       sourceTable: "platform_settings",
+     };
 diff --git a/tests/dev-runtime/SupabaseProductDataCutover.test.mjs b/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
-index de80ef45c..54ab780a9 100644
+index 54ab780a9..e28122bb9 100644
 --- a/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
 +++ b/tests/dev-runtime/SupabaseProductDataCutover.test.mjs
-@@ -2,7 +2,7 @@ import http from "node:http";
- import test from "node:test";
- import assert from "node:assert/strict";
- import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
--import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
-+import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
- 
- function withEnv(nextEnv, callback) {
-   const previousEnv = {};
-@@ -65,14 +65,14 @@ function identityTables() {
-   const timestamp = "2026-06-15T00:00:00.000Z";
-   const audit = {
-     createdAt: timestamp,
--    createdBy: MOCK_DB_KEYS.users.admin,
-+    createdBy: SEED_DB_KEYS.users.admin,
-     updatedAt: timestamp,
--    updatedBy: MOCK_DB_KEYS.users.admin,
-+    updatedBy: SEED_DB_KEYS.users.admin,
-   };
-   return {
-     roles: [
-       {
--        key: MOCK_DB_KEYS.roles.creator,
-+        key: SEED_DB_KEYS.roles.creator,
-         roleSlug: "creator",
-         name: "Creator",
-         description: "Creator account.",
-@@ -81,7 +81,7 @@ function identityTables() {
-         ...audit,
-       },
-       {
--        key: MOCK_DB_KEYS.roles.admin,
-+        key: SEED_DB_KEYS.roles.admin,
-         roleSlug: "admin",
-         name: "Admin",
-         description: "Administrative account.",
-@@ -92,21 +92,21 @@ function identityTables() {
-     ],
-     user_roles: [
-       {
--        key: MOCK_DB_KEYS.userRoles.user1User,
--        userKey: MOCK_DB_KEYS.users.user1,
--        roleKey: MOCK_DB_KEYS.roles.creator,
-+        key: SEED_DB_KEYS.userRoles.user1User,
-+        userKey: SEED_DB_KEYS.users.user1,
-+        roleKey: SEED_DB_KEYS.roles.creator,
-         ...audit,
-       },
-       {
--        key: MOCK_DB_KEYS.userRoles.adminAdmin,
--        userKey: MOCK_DB_KEYS.users.admin,
--        roleKey: MOCK_DB_KEYS.roles.admin,
-+        key: SEED_DB_KEYS.userRoles.adminAdmin,
-+        userKey: SEED_DB_KEYS.users.admin,
-+        roleKey: SEED_DB_KEYS.roles.admin,
-         ...audit,
-       },
-     ],
-     users: [
-       {
--        key: MOCK_DB_KEYS.users.user1,
-+        key: SEED_DB_KEYS.users.user1,
-         displayName: "User 1",
-         email: "user1@example.invalid",
-         authProvider: "supabase-auth",
-@@ -115,7 +115,7 @@ function identityTables() {
-         ...audit,
-       },
-       {
--        key: MOCK_DB_KEYS.users.admin,
-+        key: SEED_DB_KEYS.users.admin,
-         displayName: "DavidQ",
-         email: "qbytes.dq@gmail.com",
-         authProvider: "supabase-auth",
-@@ -266,6 +266,52 @@ test("Legacy local-db and mock-db endpoints are not active service routes", asyn
-   }
- });
- 
-+test("Platform banner reads and writes through platform settings service routes", async () => {
-+  const fakeSupabase = await startFakeSupabaseProductServer();
-+  await withEnv({
-+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
-+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
-+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
-+  }, async () => {
-+    const server = await startApiServer();
-+    try {
-+      const initial = await apiJson(server.baseUrl, "/api/platform-settings/banner");
-+      assert.equal(initial.sourceTable, "platform_settings");
-+      assert.equal(initial.banner.active, false);
-+      assert.equal(initial.banner.message, "");
-+
-+      await apiJson(server.baseUrl, "/api/session/user", {
-+        body: { userKey: SEED_DB_KEYS.users.admin },
-+        method: "POST",
-+      });
-+      const saved = await apiJson(server.baseUrl, "/api/admin/platform-settings/banner", {
-+        body: {
-+          enabled: true,
-+          kind: "temporary-data",
-+          message: "Temporary data notice for creators.",
-+          tone: "warning",
-+        },
-+        method: "POST",
-+      });
-+      assert.equal(saved.recordsWritten, 4);
-+      assert.equal(saved.banner.active, true);
-+      assert.equal(saved.banner.kind, "temporary-data");
-+      assert.equal(saved.banner.message, "Temporary data notice for creators.");
-+      assert.equal(saved.banner.tone, "warning");
-+
-+      const publicBanner = await apiJson(server.baseUrl, "/api/platform-settings/banner");
-+      assert.deepEqual(publicBanner.banner, saved.banner);
-+      assert.equal(fakeSupabase.tables.platform_settings.length, 4);
-+      assert.equal(fakeSupabase.tables.platform_settings.every((row) => /^[0-9A-HJKMNP-TV-Z]{26}$/.test(row.key)), true);
-+      assert.equal(fakeSupabase.tables.platform_settings.every((row) => row.createdBy === SEED_DB_KEYS.users.admin), true);
-+      assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path === "/rest/v1/platform_settings?on_conflict=key"), true);
-+    } finally {
-+      await server.close();
-+    }
-+  });
-+  await fakeSupabase.close();
-+});
-+
- test("Missing product data connection fails visibly for Toolbox vote data routes", async () => {
-   await withEnv({
-     GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
-@@ -297,7 +343,7 @@ test("Supabase-selected Toolbox vote writes use server-owned keys and Supabase t
-       const registry = await apiJson(server.baseUrl, "/api/toolbox/registry/snapshot");
-       const toolId = registry.activeTools[0].id;
+@@ -279,6 +279,8 @@ test("Platform banner reads and writes through platform settings service routes"
+       assert.equal(initial.sourceTable, "platform_settings");
+       assert.equal(initial.banner.active, false);
+       assert.equal(initial.banner.message, "");
++      assert.equal(initial.diagnostics.active, false);
++      assert.equal(initial.diagnostics.message, "");
+
        await apiJson(server.baseUrl, "/api/session/user", {
--        body: { userKey: MOCK_DB_KEYS.users.user1 },
-+        body: { userKey: SEED_DB_KEYS.users.user1 },
-         method: "POST",
+         body: { userKey: SEED_DB_KEYS.users.admin },
+@@ -286,7 +288,7 @@ test("Platform banner reads and writes through platform settings service routes"
        });
-       const voteSnapshot = await apiJson(server.baseUrl, "/api/toolbox/votes/cast", {
-@@ -306,7 +352,7 @@ test("Supabase-selected Toolbox vote writes use server-owned keys and Supabase t
-       });
-       const vote = fakeSupabase.tables.toolbox_votes[0];
-       assert.match(vote.key, /^[0-9A-HJKMNP-TV-Z]{26}$/);
--      assert.equal(vote.userKey, MOCK_DB_KEYS.users.user1);
-+      assert.equal(vote.userKey, SEED_DB_KEYS.users.user1);
-       assert.equal(vote.toolId, toolId);
-       assert.equal(vote.direction, "up");
-       assert.equal(voteSnapshot.providerId, "supabase-postgres");
-diff --git a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-index 028ca2c2b..2e6ecab97 100644
---- a/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-+++ b/tests/dev-runtime/SupabaseProviderContractStub.test.mjs
-@@ -9,7 +9,7 @@ import {
-   SupabasePostgresProviderStub,
-   createProviderContractSnapshot,
- } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
--import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
-+import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
- import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
- 
- function withEnv(nextEnv, callback) {
-@@ -248,14 +248,14 @@ function fakeSupabaseIdentityTables(overrides = {}) {
-   const timestamp = "2026-06-15T00:00:00.000Z";
-   const audit = {
-     createdAt: timestamp,
--    createdBy: MOCK_DB_KEYS.users.admin,
-+    createdBy: SEED_DB_KEYS.users.admin,
-     updatedAt: timestamp,
--    updatedBy: MOCK_DB_KEYS.users.admin,
-+    updatedBy: SEED_DB_KEYS.users.admin,
-   };
-   return {
-     roles: overrides.roles || [
-       {
--        key: MOCK_DB_KEYS.roles.creator,
-+        key: SEED_DB_KEYS.roles.creator,
-         roleSlug: "creator",
-         name: "Creator",
-         description: "Creator account.",
-@@ -264,7 +264,7 @@ function fakeSupabaseIdentityTables(overrides = {}) {
-         ...audit,
-       },
-       {
--        key: MOCK_DB_KEYS.roles.admin,
-+        key: SEED_DB_KEYS.roles.admin,
-         roleSlug: "admin",
-         name: "Admin",
-         description: "Administrative account.",
-@@ -275,21 +275,21 @@ function fakeSupabaseIdentityTables(overrides = {}) {
-     ],
-     user_roles: overrides.user_roles || [
-       {
--        key: MOCK_DB_KEYS.userRoles.user1User,
--        userKey: MOCK_DB_KEYS.users.user1,
--        roleKey: MOCK_DB_KEYS.roles.creator,
-+        key: SEED_DB_KEYS.userRoles.user1User,
-+        userKey: SEED_DB_KEYS.users.user1,
-+        roleKey: SEED_DB_KEYS.roles.creator,
-         ...audit,
-       },
-       {
--        key: MOCK_DB_KEYS.userRoles.adminAdmin,
--        userKey: MOCK_DB_KEYS.users.admin,
--        roleKey: MOCK_DB_KEYS.roles.admin,
-+        key: SEED_DB_KEYS.userRoles.adminAdmin,
-+        userKey: SEED_DB_KEYS.users.admin,
-+        roleKey: SEED_DB_KEYS.roles.admin,
-         ...audit,
-       },
-     ],
-     users: overrides.users || [
-       {
--        key: MOCK_DB_KEYS.users.user1,
-+        key: SEED_DB_KEYS.users.user1,
-         displayName: "User 1",
-         email: "user1@example.invalid",
-         authProvider: "supabase-auth",
-@@ -298,7 +298,7 @@ function fakeSupabaseIdentityTables(overrides = {}) {
-         ...audit,
-       },
-       {
--        key: MOCK_DB_KEYS.users.admin,
-+        key: SEED_DB_KEYS.users.admin,
-         displayName: "DavidQ",
-         email: "qbytes.dq@gmail.com",
-         authProvider: "supabase-auth",
-@@ -400,11 +400,14 @@ test("Supabase provider contract does not require provider selector variables",
-     "upsertProductTable",
-     "upsertProductTables",
-     "deleteUserByKey",
-+    "deleteUserRoleByKey",
-     "deleteUserRolesForUserKey",
-+    "getPlatformSettings",
-     "reassignRoleAuditReferences",
-     "reassignUserRoleAuditReferences",
-     "runSiteSetup",
-     "getDbViewerSnapshot",
-+    "upsertPlatformSettings",
-   ]);
-   assert.equal(snapshot.supabasePostgres.dataMigrationActive, true);
-   assert.deepEqual(snapshot.supabasePostgres.migrationSequence, [
-@@ -568,14 +571,14 @@ test("Auth status ignores legacy Local DB selectors when Supabase is configured"
-       assert.equal(status.connectivityHealthy, true);
-       assert.equal(status.authProviderId, "supabase-auth");
-       assert.equal(status.databaseProviderId, "supabase-postgres");
--      assert.match(status.operatorDiagnostic, /Supabase Auth is configured, reachable/);
-+      assert.match(status.operatorDiagnostic, /Account connection is configured, reachable/);
- 
-       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
-       assert.equal(preflight.operatorOnly, true);
-       assert.equal(preflight.active, true);
-       assert.equal(preflight.supabaseConfigPresent, true);
-       assert.equal(preflight.supabaseProviderActive, true);
--      assert.equal(preflight.localDbProductDataActive, false);
-+      assert.equal(preflight.browserOwnedProductDataActive, false);
-       assert.equal(preflight.supabaseProductDataActive, true);
-       assert.equal(preflight.connectivityStatus, "healthy");
-       assert.equal(preflight.connectivityHealthy, true);
-@@ -638,7 +641,7 @@ test("Missing Supabase config fails safely without product data fallback", async
-       assert.equal(status.supabaseConnectivityStatus, "not-configured");
-       assert.equal(status.connectivityHealthy, null);
-       assert.equal(status.databaseProviderId, "supabase-postgres");
--      assert.equal(status.localDbProductDataActive, false);
-+      assert.equal(status.browserOwnedProductDataActive, false);
-       assert.equal(status.supabaseProductDataActive, true);
-       assert.equal(status.noAutomaticFallback, true);
-       assert.equal(status.message, "The site is currently unavailable. Please try again later.");
-@@ -694,7 +697,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
-       const status = await apiJson(server.baseUrl, "/api/auth/status");
-       assert.equal(status.ready, true);
-       assert.equal(status.configured, true);
--      assert.equal(status.localDbProductDataActive, false);
-+      assert.equal(status.browserOwnedProductDataActive, false);
-       assert.equal(status.supabaseProductDataActive, true);
-       assert.equal(status.message, "Account service is available.");
-       assert.equal(status.supabaseConfigPresent, true);
-@@ -705,7 +708,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
-       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
-       assert.equal(preflight.supabaseConfigPresent, true);
-       assert.equal(preflight.supabaseProviderActive, true);
--      assert.equal(preflight.localDbProductDataActive, false);
-+      assert.equal(preflight.browserOwnedProductDataActive, false);
-       assert.equal(preflight.supabaseProductDataActive, true);
-       assert.equal(preflight.connectivityStatus, "healthy");
-       assert.equal(preflight.connectivityHealthy, true);
-@@ -720,10 +723,10 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
-       assert.equal(signIn.payload.ok, true);
-       assert.equal(signIn.payload.data.providerId, "supabase-auth");
-       assert.equal(signIn.payload.data.status, "PASS");
--      assert.equal(signIn.payload.data.passwordStoredLocally, false);
--      assert.equal(signIn.payload.data.localDbSessionCreated, true);
-+      assert.equal(signIn.payload.data.passwordStoredByBrowser, false);
-+      assert.equal(signIn.payload.data.serverSessionResolved, true);
-       assert.equal(signIn.payload.data.sessionResolved, true);
--      assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
-+      assert.equal(signIn.payload.data.userKey, SEED_DB_KEYS.users.user1);
-       assert.deepEqual(signIn.payload.data.roleSlugs, ["creator"]);
-       assert.equal(signIn.payload.data.accessTokenExposed, false);
-       assert.equal(signIn.payload.data.refreshTokenExposed, false);
-@@ -732,7 +735,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
- 
-       const session = await apiJson(server.baseUrl, "/api/session/current");
-       assert.equal(session.authenticated, true);
--      assert.equal(session.userKey, MOCK_DB_KEYS.users.user1);
-+      assert.equal(session.userKey, SEED_DB_KEYS.users.user1);
-       assert.deepEqual(session.roleSlugs, ["creator"]);
- 
-       const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
-@@ -742,7 +745,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
-       assert.equal(createAccount.status, 200);
-       assert.equal(createAccount.payload.data.action, "create-account");
-       assert.equal(createAccount.payload.data.identityProvisioned, true);
--      assert.equal(createAccount.payload.data.localDbSessionCreated, false);
-+      assert.equal(createAccount.payload.data.serverSessionResolved, false);
-       assert.deepEqual(createAccount.payload.data.roleSlugs, ["creator"]);
-       assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
- 
-@@ -814,7 +817,7 @@ test("Create account provisions Supabase identity user default role and user_rol
-       assert.equal(createAccount.payload.data.userRoleCreated, true);
-       assert.deepEqual(createAccount.payload.data.roleSlugs, ["creator"]);
-       assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
--      assert.equal(Object.values(MOCK_DB_KEYS.users).includes(createAccount.payload.data.userKey), false);
-+      assert.equal(Object.values(SEED_DB_KEYS.users).includes(createAccount.payload.data.userKey), false);
-       assert.deepEqual(createAccount.payload.data.identityTableRecords, {
-         roles: 1,
-         user_roles: 1,
-@@ -1135,7 +1138,7 @@ test("Default Supabase Auth routes sign in create account and password reset thr
-       assert.equal(status.ready, true);
-       assert.equal(status.authProviderId, "supabase-auth");
-       assert.equal(status.databaseProviderId, "supabase-postgres");
--      assert.equal(status.localDbProductDataActive, false);
-+      assert.equal(status.browserOwnedProductDataActive, false);
-       assert.equal(status.supabaseProductDataActive, true);
-       assert.equal(status.message, "Account service is available.");
-       assert.equal(status.noAutomaticFallback, true);
-@@ -1150,10 +1153,10 @@ test("Default Supabase Auth routes sign in create account and password reset thr
-       assert.equal(signIn.status, 200);
-       assert.equal(signIn.payload.data.action, "sign-in");
-       assert.equal(signIn.payload.data.providerId, "supabase-auth");
--      assert.equal(signIn.payload.data.passwordStoredLocally, false);
--      assert.equal(signIn.payload.data.localDbSessionCreated, true);
-+      assert.equal(signIn.payload.data.passwordStoredByBrowser, false);
-+      assert.equal(signIn.payload.data.serverSessionResolved, true);
-       assert.equal(signIn.payload.data.sessionResolved, true);
--      assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
-+      assert.equal(signIn.payload.data.userKey, SEED_DB_KEYS.users.user1);
- 
-       const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
-         email: "default-create@example.test",
-@@ -1218,18 +1221,18 @@ test("Supabase Auth selected path reads users roles user_roles and product data
-       assert.equal(users.some((user) => user.displayName === "DavidQ" && user.isAdmin), true);
- 
-       const signIn = await postApiPayload(server.baseUrl, "/api/session/user", {
--        userKey: MOCK_DB_KEYS.users.user1,
-+        userKey: SEED_DB_KEYS.users.user1,
-       });
-       assert.equal(signIn.status, 200);
-       assert.equal(signIn.payload.ok, true);
-       assert.equal(signIn.payload.data.authenticated, true);
--      assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
-+      assert.equal(signIn.payload.data.userKey, SEED_DB_KEYS.users.user1);
-       assert.equal(signIn.payload.data.displayName, "User 1");
-       assert.deepEqual(signIn.payload.data.roleSlugs, ["creator"]);
- 
-       const current = await apiJson(server.baseUrl, "/api/session/current");
-       assert.equal(current.authenticated, true);
--      assert.equal(current.userKey, MOCK_DB_KEYS.users.user1);
-+      assert.equal(current.userKey, SEED_DB_KEYS.users.user1);
- 
-       const snapshot = await apiJson(server.baseUrl, "/api/product-data/snapshot");
-       assert.equal(Array.isArray(snapshot.tables.asset_library_items), true);
-@@ -1284,13 +1287,13 @@ test("Supabase identity session lookup fails visibly when user_roles references
-     identityTables: fakeSupabaseIdentityTables({
-       user_roles: [
-         {
--          key: MOCK_DB_KEYS.userRoles.user1User,
--          userKey: MOCK_DB_KEYS.users.user1,
-+          key: SEED_DB_KEYS.userRoles.user1User,
-+          userKey: SEED_DB_KEYS.users.user1,
-           roleKey: "01K2GFSJ0Y0000000000000199",
-           createdAt: "2026-06-15T00:00:00.000Z",
--          createdBy: MOCK_DB_KEYS.users.admin,
-+          createdBy: SEED_DB_KEYS.users.admin,
-           updatedAt: "2026-06-15T00:00:00.000Z",
--          updatedBy: MOCK_DB_KEYS.users.admin,
-+          updatedBy: SEED_DB_KEYS.users.admin,
-         },
-       ],
-     }),
-@@ -1305,7 +1308,7 @@ test("Supabase identity session lookup fails visibly when user_roles references
-     const server = await startApiServer();
-     try {
-       const response = await postApiPayload(server.baseUrl, "/api/session/user", {
--        userKey: MOCK_DB_KEYS.users.user1,
-+        userKey: SEED_DB_KEYS.users.user1,
-       });
-       assert.equal(response.status, 200);
-       assert.equal(response.payload.ok, true);
-@@ -1622,7 +1625,7 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
-   });
- 
-   const result = await database.initializeIdentity({
--    actorKey: MOCK_DB_KEYS.users.admin,
-+    actorKey: SEED_DB_KEYS.users.admin,
-     roles: [
-       {
-         roleSlug: "admin",
-@@ -1633,13 +1636,13 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
-     ],
-     userRoles: [
-       {
--        userKey: MOCK_DB_KEYS.users.admin,
-+        userKey: SEED_DB_KEYS.users.admin,
-         roleSlug: "admin",
-       },
-     ],
-     users: [
-       {
--        key: MOCK_DB_KEYS.users.admin,
-+        key: SEED_DB_KEYS.users.admin,
-         displayName: "DavidQ",
-         email: "qbytes.dq@gmail.com",
-         authProvider: "supabase-auth",
-@@ -1656,13 +1659,13 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
-     "POST https://supabase-dev.example.test/rest/v1/user_roles?on_conflict=key",
-   ]);
-   assert.equal(calls.slice(2).every((call) => call.headers.prefer === "resolution=merge-duplicates,return=representation"), true);
--  assert.equal(calls[2].body[0].key, MOCK_DB_KEYS.users.admin);
--  assert.equal(calls[2].body[0].createdBy, MOCK_DB_KEYS.users.admin);
--  assert.equal(calls[2].body[0].updatedBy, MOCK_DB_KEYS.users.admin);
-+  assert.equal(calls[2].body[0].key, SEED_DB_KEYS.users.admin);
-+  assert.equal(calls[2].body[0].createdBy, SEED_DB_KEYS.users.admin);
-+  assert.equal(calls[2].body[0].updatedBy, SEED_DB_KEYS.users.admin);
-   assert.equal(calls[3].body[0].key, "01J000000000000000000ROLE1");
-   assert.equal(calls[3].body[0].roleSlug, "admin");
-   assert.equal(calls[4].body[0].key, "01J000000000000000USERROLE1");
--  assert.equal(calls[4].body[0].userKey, MOCK_DB_KEYS.users.admin);
-+  assert.equal(calls[4].body[0].userKey, SEED_DB_KEYS.users.admin);
-   assert.equal(calls[4].body[0].roleKey, "01J000000000000000000ROLE1");
-   assert.deepEqual(result.identityKeyModel, {
-     roleKeyField: "roles.key",
-@@ -1710,7 +1713,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
-           json: async () => [{
-             key: "01J000000000000EXISTUSERROLE",
-             roleKey: "01J000000000000000EXISTROLE",
--            userKey: MOCK_DB_KEYS.users.admin,
-+            userKey: SEED_DB_KEYS.users.admin,
-           }],
-           ok: true,
-           status: 200,
-@@ -1726,7 +1729,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
-   });
- 
-   await database.initializeIdentity({
--    actorKey: MOCK_DB_KEYS.users.admin,
-+    actorKey: SEED_DB_KEYS.users.admin,
-     roles: [
-       {
-         roleSlug: "admin",
-@@ -1735,13 +1738,13 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
-     ],
-     userRoles: [
-       {
--        userKey: MOCK_DB_KEYS.users.admin,
-+        userKey: SEED_DB_KEYS.users.admin,
-         roleSlug: "admin",
-       },
-     ],
-     users: [
-       {
--        key: MOCK_DB_KEYS.users.admin,
-+        key: SEED_DB_KEYS.users.admin,
-         displayName: "DavidQ",
-       },
-     ],
-@@ -1751,7 +1754,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
-   assert.equal(calls[3].body[0].roleSlug, "admin");
-   assert.equal(calls[4].body[0].key, "01J000000000000EXISTUSERROLE");
-   assert.equal(calls[4].body[0].roleKey, "01J000000000000000EXISTROLE");
--  assert.equal(calls[4].body[0].userKey, MOCK_DB_KEYS.users.admin);
-+  assert.equal(calls[4].body[0].userKey, SEED_DB_KEYS.users.admin);
- });
- 
- test("Admin identity setup API fails visibly when Supabase Postgres is selected without config", async () => {
-@@ -1762,7 +1765,7 @@ test("Admin identity setup API fails visibly when Supabase Postgres is selected
-     const server = await startApiServer();
-     try {
-       const response = await postApiPayload(server.baseUrl, "/api/admin/setup/identity", {
--        actorKey: MOCK_DB_KEYS.users.admin,
-+        actorKey: SEED_DB_KEYS.users.admin,
-       });
-       assert.equal(response.status, 500);
-       assert.equal(response.payload.ok, false);
+       const saved = await apiJson(server.baseUrl, "/api/admin/platform-settings/banner", {
+         body: {
+-          enabled: true,
++          active: true,
+           kind: "temporary-data",
+           message: "Temporary data notice for creators.",
+           tone: "warning",
+@@ -298,12 +300,18 @@ test("Platform banner reads and writes through platform settings service routes"
+       assert.equal(saved.banner.kind, "temporary-data");
+       assert.equal(saved.banner.message, "Temporary data notice for creators.");
+       assert.equal(saved.banner.tone, "warning");
++      assert.equal(saved.diagnostics.active, true);
++      assert.equal(saved.diagnostics.message, "Temporary data notice for creators.");
++      assert.equal(/^[0-9A-HJKMNP-TV-Z]{26}$/.test(saved.diagnostics.sourceTableRowKey), true);
+
+       const publicBanner = await apiJson(server.baseUrl, "/api/platform-settings/banner");
+       assert.deepEqual(publicBanner.banner, saved.banner);
++      assert.deepEqual(publicBanner.diagnostics, saved.diagnostics);
+       assert.equal(fakeSupabase.tables.platform_settings.length, 4);
+       assert.equal(fakeSupabase.tables.platform_settings.every((row) => /^[0-9A-HJKMNP-TV-Z]{26}$/.test(row.key)), true);
+       assert.equal(fakeSupabase.tables.platform_settings.every((row) => row.createdBy === SEED_DB_KEYS.users.admin), true);
++      assert.equal(fakeSupabase.tables.platform_settings.find((row) => row.settingKey === "platform.banner.enabled")?.settingValue, "true");
++      assert.equal(fakeSupabase.tables.platform_settings.find((row) => row.settingKey === "platform.banner.message")?.settingValue, "Temporary data notice for creators.");
+       assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path === "/rest/v1/platform_settings?on_conflict=key"), true);
+     } finally {
+       await server.close();
 diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-index a370d9e07..29207f334 100644
+index 29207f334..62194d80f 100644
 --- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
 +++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-@@ -3,6 +3,7 @@ import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store
- import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
- import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
- import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
-+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
- 
- const ADMIN_TOOL_MENU_LABELS = [
-   "Tool Votes",
-@@ -21,11 +22,12 @@ const ADMIN_WIREFRAME_PAGES = [
-   { heading: "Environments", path: "/admin/environments.html", slug: "environments" },
-   { heading: "Users", path: "/admin/users.html", slug: "users", statusText: "Read-only Admin view." },
-   { heading: "Game Migration", path: "/admin/game-migration.html", slug: "game-migration" },
--  { heading: "Platform Settings", path: "/admin/platform-settings.html", slug: "platform-settings" },
-+  { heading: "Platform Settings", liveSettings: true, path: "/admin/platform-settings.html", slug: "platform-settings" },
-   { heading: "Site Setup", menuLabels: SITE_SETUP_TOOL_MENU_LABELS, path: "/admin/site-setup.html", slug: "site-setup", statusText: "SKIP: No setup action has been run." },
- ];
- 
- test.beforeEach(async ({ page }) => {
-+  await workspaceV2CoverageReporter.start(page);
-   await installPlaywrightStorageIsolation(page, {
-     lane: "admin-platform-tools-wireframes",
-     surface: "Admin platform wireframe pages",
-@@ -33,6 +35,8 @@ test.beforeEach(async ({ page }) => {
- });
- 
- test.afterEach(async ({ page }) => {
-+  await workspaceV2CoverageReporter.stop(page);
-+  await workspaceV2CoverageReporter.writeReport();
-   await clearPlaywrightStorage(page);
- });
- 
-@@ -114,8 +118,17 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
-       await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText(adminPage.heading);
-       await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(2);
+@@ -120,7 +120,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
        await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(2);
--      await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
--      await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
-+      if (adminPage.liveSettings) {
-+        await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
-+        await expect(page.locator("[data-platform-banner-enabled]")).toBeVisible();
-+        await expect(page.locator("[data-platform-banner-kind]")).toBeVisible();
-+        await expect(page.locator("[data-platform-banner-tone]")).toBeVisible();
-+        await expect(page.locator("[data-platform-banner-message]")).toBeVisible();
-+        await expect(page.locator("[data-platform-banner-save]")).toBeEnabled();
-+      } else {
-+        await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
-+        await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
-+      }
-       await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
- 
-       await expectNoPageFailures(failures);
-@@ -138,6 +151,172 @@ test("Grouping Colors uses current group color model copy", async ({ page }) =>
-   }
- });
- 
-+test("Platform banner renders active settings under the header", async ({ page }) => {
-+  const server = await startRepoServer();
-+  try {
-+    await page.route("**/api/session/current", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: {
-+            authenticated: false,
-+            displayName: "Sign In",
-+            roleSlugs: [],
-+          },
-+          ok: true,
-+        }),
-+      });
-+    });
-+    await page.route("**/api/platform-settings/banner", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: {
-+            banner: {
+       if (adminPage.liveSettings) {
+         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
+-        await expect(page.locator("[data-platform-banner-enabled]")).toBeVisible();
++        await expect(page.locator("[data-platform-banner-active]")).toBeVisible();
+         await expect(page.locator("[data-platform-banner-kind]")).toBeVisible();
+         await expect(page.locator("[data-platform-banner-tone]")).toBeVisible();
+         await expect(page.locator("[data-platform-banner-message]")).toBeVisible();
+@@ -174,11 +174,18 @@ test("Platform banner renders active settings under the header", async ({ page }
+           data: {
+             banner: {
+               active: true,
+-              enabled: true,
+               kind: "temporary-data",
+               message: "Temporary data notice for creators.",
++              sourceTable: "platform_settings",
++              sourceTableRowKey: "01KVRBANNERACTIVE00000001",
+               tone: "warning",
+             },
++            diagnostics: {
 +              active: true,
-+              enabled: true,
-+              kind: "temporary-data",
 +              message: "Temporary data notice for creators.",
-+              tone: "warning",
++              sourceTable: "platform_settings",
++              sourceTableRowKey: "01KVRBANNERACTIVE00000001",
 +            },
-+            sourceTable: "platform_settings",
-+          },
-+          ok: true,
-+        }),
-+      });
+             sourceTable: "platform_settings",
+           },
+           ok: true,
+@@ -190,6 +197,12 @@ test("Platform banner renders active settings under the header", async ({ page }
+     await expect(page.locator("[data-platform-banner]")).toHaveCount(1);
+     await expect(page.locator("[data-platform-banner]")).toContainText("Temporary data notice for creators.");
+     await expect(page.locator("[data-platform-banner]")).toHaveClass(/platform-banner--warning/);
++    await expect.poll(async () => page.evaluate(() => window.GameFoundryPlatformBannerDiagnostics)).toEqual({
++      active: true,
++      message: "Temporary data notice for creators.",
++      sourceTable: "platform_settings",
++      sourceTableRowKey: "01KVRBANNERACTIVE00000001",
 +    });
+     const layout = await page.evaluate(() => {
+       const header = document.querySelector("header.site-header");
+       const banner = document.querySelector("[data-platform-banner]");
+@@ -220,9 +233,10 @@ test("Platform Settings Admin controls update banner through the service route",
+   const server = await startRepoServer();
+   let publicBanner = {
+     active: false,
+-    enabled: false,
+     kind: "general",
+     message: "",
++    sourceTable: "platform_settings",
++    sourceTableRowKey: "01KVRBANNERACTIVE00000001",
+     tone: "info",
+   };
+   const adminPosts = [];
+@@ -262,6 +276,12 @@ test("Platform Settings Admin controls update banner through the service route",
+         body: JSON.stringify({
+           data: {
+             banner: publicBanner,
++            diagnostics: {
++              active: publicBanner.active,
++              message: publicBanner.message,
++              sourceTable: "platform_settings",
++              sourceTableRowKey: publicBanner.sourceTableRowKey,
++            },
+             sourceTable: "platform_settings",
+           },
+           ok: true,
+@@ -273,10 +293,11 @@ test("Platform Settings Admin controls update banner through the service route",
+         const body = route.request().postDataJSON();
+         adminPosts.push(body);
+         publicBanner = {
+-          active: body.enabled === true && Boolean(body.message),
+-          enabled: body.enabled === true,
++          active: body.active === true && Boolean(body.message),
+           kind: body.kind,
+           message: body.message,
++          sourceTable: "platform_settings",
++          sourceTableRowKey: "01KVRBANNERACTIVE00000001",
+           tone: body.tone,
+         };
+       }
+@@ -285,6 +306,12 @@ test("Platform Settings Admin controls update banner through the service route",
+         body: JSON.stringify({
+           data: {
+             banner: publicBanner,
++            diagnostics: {
++              active: publicBanner.active,
++              message: publicBanner.message,
++              sourceTable: "platform_settings",
++              sourceTableRowKey: publicBanner.sourceTableRowKey,
++            },
+             recordsWritten: route.request().method() === "POST" ? 4 : 0,
+             sourceTable: "platform_settings",
+           },
+@@ -295,7 +322,9 @@ test("Platform Settings Admin controls update banner through the service route",
+
+     await page.goto(`${server.baseUrl}/admin/platform-settings.html`, { waitUntil: "networkidle" });
+     await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings loaded.");
+-    await page.locator("[data-platform-banner-enabled]").check();
++    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: false.");
++    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Source row: 01KVRBANNERACTIVE00000001.");
++    await page.locator("[data-platform-banner-active]").check();
+     await page.locator("[data-platform-banner-kind]").selectOption("outage");
+     await page.locator("[data-platform-banner-tone]").selectOption("danger");
+     await page.locator("[data-platform-banner-message]").fill("Outage notice for creators.");
+@@ -305,13 +334,36 @@ test("Platform Settings Admin controls update banner through the service route",
+     await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings saved.");
+     expect(adminPosts).toEqual([
+       {
+-        enabled: true,
++        active: true,
+         kind: "outage",
+         message: "Outage notice for creators.",
+         tone: "danger",
+       },
+     ]);
++    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: true.");
++    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Message: Outage notice for creators.");
+     await expect(page.locator("[data-platform-banner]")).toContainText("Outage notice for creators.");
 +
-+    await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
-+    await expect(page.locator("[data-platform-banner]")).toHaveCount(1);
-+    await expect(page.locator("[data-platform-banner]")).toContainText("Temporary data notice for creators.");
-+    await expect(page.locator("[data-platform-banner]")).toHaveClass(/platform-banner--warning/);
-+    const layout = await page.evaluate(() => {
-+      const header = document.querySelector("header.site-header");
-+      const banner = document.querySelector("[data-platform-banner]");
-+      const main = document.querySelector("main");
-+      const headerBox = header?.getBoundingClientRect();
-+      const bannerBox = banner?.getBoundingClientRect();
-+      const mainBox = main?.getBoundingClientRect();
-+      return {
-+        bannerBeforeMain: Boolean(banner && main && banner.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING),
-+        bannerTop: Math.round(bannerBox?.top || 0),
-+        bannerWidth: Math.round(bannerBox?.width || 0),
-+        clientWidth: document.documentElement.clientWidth,
-+        headerBottom: Math.round(headerBox?.bottom || 0),
-+        mainTop: Math.round(mainBox?.top || 0),
-+        viewportWidth: window.innerWidth,
-+      };
-+    });
-+    expect(layout.bannerBeforeMain).toBe(true);
-+    expect(layout.bannerTop).toBeGreaterThanOrEqual(layout.headerBottom - 2);
-+    expect(layout.mainTop).toBeGreaterThanOrEqual(layout.bannerTop);
-+    expect(layout.bannerWidth).toBe(layout.clientWidth);
-+  } finally {
-+    await server.close();
-+  }
-+});
-+
-+test("Platform Settings Admin controls update banner through the service route", async ({ page }) => {
-+  const server = await startRepoServer();
-+  let publicBanner = {
-+    active: false,
-+    enabled: false,
-+    kind: "general",
-+    message: "",
-+    tone: "info",
-+  };
-+  const adminPosts = [];
-+  try {
-+    await page.route("**/api/session/current", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: {
-+            authenticated: true,
-+            displayName: "Admin",
-+            roleSlugs: ["admin", "creator"],
-+            userKey: MOCK_DB_KEYS.users.admin,
-+          },
-+          ok: true,
-+        }),
-+      });
-+    });
-+    await page.route("**/api/navigation/admin-menu", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: {
-+            adminMainItems: [
-+              { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
-+              { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
-+            ],
-+            localAdminMyStuffItems: [],
-+          },
-+          ok: true,
-+        }),
-+      });
-+    });
-+    await page.route("**/api/platform-settings/banner", async (route) => {
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: {
-+            banner: publicBanner,
-+            sourceTable: "platform_settings",
-+          },
-+          ok: true,
-+        }),
-+      });
-+    });
-+    await page.route("**/api/admin/platform-settings/banner", async (route) => {
-+      if (route.request().method() === "POST") {
-+        const body = route.request().postDataJSON();
-+        adminPosts.push(body);
-+        publicBanner = {
-+          active: body.enabled === true && Boolean(body.message),
-+          enabled: body.enabled === true,
-+          kind: body.kind,
-+          message: body.message,
-+          tone: body.tone,
-+        };
-+      }
-+      await route.fulfill({
-+        contentType: "application/json",
-+        body: JSON.stringify({
-+          data: {
-+            banner: publicBanner,
-+            recordsWritten: route.request().method() === "POST" ? 4 : 0,
-+            sourceTable: "platform_settings",
-+          },
-+          ok: true,
-+        }),
-+      });
-+    });
-+
-+    await page.goto(`${server.baseUrl}/admin/platform-settings.html`, { waitUntil: "networkidle" });
-+    await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings loaded.");
-+    await page.locator("[data-platform-banner-enabled]").check();
-+    await page.locator("[data-platform-banner-kind]").selectOption("outage");
-+    await page.locator("[data-platform-banner-tone]").selectOption("danger");
-+    await page.locator("[data-platform-banner-message]").fill("Outage notice for creators.");
-+    await expect(page.locator("[data-platform-banner-preview]")).toContainText("Outage notice for creators.");
-+
++    await page.locator("[data-platform-banner-active]").uncheck();
 +    await page.locator("[data-platform-banner-save]").click();
 +    await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings saved.");
 +    expect(adminPosts).toEqual([
 +      {
-+        enabled: true,
++        active: true,
++        kind: "outage",
++        message: "Outage notice for creators.",
++        tone: "danger",
++      },
++      {
++        active: false,
 +        kind: "outage",
 +        message: "Outage notice for creators.",
 +        tone: "danger",
 +      },
 +    ]);
-+    await expect(page.locator("[data-platform-banner]")).toContainText("Outage notice for creators.");
-+  } finally {
-+    await server.close();
++    await expect(page.locator("[data-platform-banner-preview]")).toContainText("No active banner.");
++    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: false.");
++    await expect(page.locator("[data-platform-banner]")).toHaveCount(0);
+   } finally {
+     await server.close();
+   }
+
+
+diff --git a/docs_build/dev/reports/PR_26167_188-platform-banner-display-fix.md b/docs_build/dev/reports/PR_26167_188-platform-banner-display-fix.md
+new file mode 100644
+index 000000000..1fc2af803
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26167_188-platform-banner-display-fix.md
+@@ -0,0 +1,153 @@
++# PR_26167_188-platform-banner-display-fix
++
++## Root Cause
++
++The platform banner contract mixed `enabled` and `active` names. The live table had the banner message saved, but the active setting row was still `false`, so `/api/platform-settings/banner` correctly returned inactive data and both the Admin preview and header banner displayed no active banner.
++
++Fix: make `active` the single browser/API contract name, keep the existing `platform.banner.enabled` table setting key for row continuity, and add diagnostics that expose active state, message, and source table row key.
++
++## Branch Validation
++
++PASS - current branch is `main`.
++
++## Requirement Checklist
++
++| Requirement | Status | Evidence |
++| --- | --- | --- |
++| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first | PASS | Read before implementation. |
++| Hard stop unless current branch is `main` | PASS | `git branch --show-current` returned `main`. |
++| Investigate Admin Preferences save | PASS | Found Admin save used an `enabled` payload name instead of the public `active` banner contract. |
++| Investigate platform settings table write | PASS | Live DB row evidence confirmed message row existed while active row value was `false` before the fix. |
++| Investigate `/api/platform-settings/banner` response | PASS | Before payload had `active: false`, populated message, and source row key; after save had `active: true`. |
++| Investigate `requestPlatformBanner()` | PASS | Confirmed it reads `/api/platform-settings/banner` and normalizes the public banner payload. |
++| Investigate `renderPlatformBanner()` | PASS | Confirmed it removes the banner when `active` is false or message is empty, and renders under header when active. |
++| Determine if active flag was not being saved | PASS | Live before state showed active row `false`; fixed Admin save sends `active: true/false`. |
++| Determine if API returns inactive banner | PASS | Before payload returned inactive; after fixed save returned active. |
++| Determine if API shape mismatched `normalizedPlatformBanner()` | PASS | Fixed contract to use `active` consistently; tests now use active-only mocked API payloads. |
++| Determine if banner message stored in wrong field | PASS | Message was stored in `platform.banner.message`; not the root cause. |
++| Determine if read path differs from save path | PASS | Both read and save use `platform_settings`; diagnostics now expose the source row key. |
++| Fix root cause | PASS | Admin payload, Admin UI hook, server update normalization, public normalization, and tests now use `active`. |
++| Add diagnostics showing active state, message, source table row key | PASS | API returns `diagnostics`; Admin page shows visible diagnostics; renderer exposes `window.GameFoundryPlatformBannerDiagnostics`. |
++| Keep platform-settings as SSoT | PASS | Reads/writes remain through `platform_settings` API/service contract only. |
++| No browser-owned banner data | PASS | Browser code calls server API; no local persistence or page-owned banner records. |
++| No silent fallback | PASS | API errors throw/report status; inactive banners are explicit `active: false`, not fallback data. |
++| Save banner `banner is active!@!!` | PASS | Live validation saved exact message with active true. |
++| Verify row exists in DB | PASS | Live DB row evidence listed active/message/tone/kind `platform_settings` rows. |
++| Verify GET returns active=true and message populated | PASS | Live public API after active save returned `active: true` and exact message. |
++| Verify banner renders under header | PASS | Live browser validation found header before banner and banner before main with exact message. |
++| Verify banner removed when active=false | PASS | Live public API returned `active: false`; browser validation found rendered banner count 0. |
++| Run targeted platform-settings Playwright | PASS | 2/2 targeted Playwright tests passed. |
++| Do not run full samples smoke | PASS | Full samples smoke was not run. |
++
++## Before API Payload
++
++`GET /api/platform-settings/banner` before the fix returned:
++
++```json
++{
++  "status": 200,
++  "banner": {
++    "active": false,
++    "kind": "general",
++    "message": "banner is active!@!!",
++    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18",
++    "sourceTable": "platform_settings",
++    "tone": "info"
++  },
++  "diagnostics": {
++    "active": false,
++    "message": "banner is active!@!!",
++    "sourceTable": "platform_settings",
++    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18"
 +  }
-+});
-+
- test("Tool Votes side menu includes Admin platform wireframes", async ({ page }) => {
-   const failures = await startAdminPage(page, "/admin/tool-votes.html");
- 
-
-
-diff --git a/assets/theme-v2/js/admin-platform-settings.js b/assets/theme-v2/js/admin-platform-settings.js
-new file mode 100644
-index 000000000..2436f79f8
---- /dev/null
-+++ b/assets/theme-v2/js/admin-platform-settings.js
-@@ -0,0 +1,86 @@
-+import {
-+    readAdminPlatformBanner,
-+    updateAdminPlatformBanner
-+} from "../../../src/engine/api/platform-settings-api-client.js";
-+
-+class AdminPlatformSettingsController {
-+    constructor(root) {
-+        this.root = root;
-+        this.enabledInput = root.querySelector("[data-platform-banner-enabled]");
-+        this.kindInput = root.querySelector("[data-platform-banner-kind]");
-+        this.messageInput = root.querySelector("[data-platform-banner-message]");
-+        this.preview = root.querySelector("[data-platform-banner-preview]");
-+        this.status = root.querySelector("[data-platform-settings-status]");
-+        this.toneInput = root.querySelector("[data-platform-banner-tone]");
-+        this.saveButton = root.querySelector("[data-platform-banner-save]");
-+    }
-+
-+    init() {
-+        if (!this.enabledInput || !this.kindInput || !this.messageInput || !this.preview || !this.status || !this.toneInput || !this.saveButton) {
-+            return;
-+        }
-+        this.saveButton.addEventListener("click", () => this.save());
-+        [this.enabledInput, this.kindInput, this.messageInput, this.toneInput].forEach((control) => {
-+            control.addEventListener("input", () => this.renderPreview(this.currentBanner()));
-+            control.addEventListener("change", () => this.renderPreview(this.currentBanner()));
-+        });
-+        this.load();
-+    }
-+
-+    setStatus(message) {
-+        this.status.textContent = message;
-+    }
-+
-+    currentBanner() {
-+        return {
-+            enabled: this.enabledInput.checked,
-+            kind: this.kindInput.value,
-+            message: this.messageInput.value.trim(),
-+            tone: this.toneInput.value
-+        };
-+    }
-+
-+    applyBanner(banner) {
-+        this.enabledInput.checked = banner.enabled === true;
-+        this.kindInput.value = banner.kind || "general";
-+        this.messageInput.value = banner.message || "";
-+        this.toneInput.value = banner.tone || "info";
-+        this.renderPreview(this.currentBanner());
-+    }
-+
-+    renderPreview(banner) {
-+        this.preview.dataset.platformBannerPreviewTone = banner.tone || "info";
-+        this.preview.textContent = banner.enabled && banner.message
-+            ? banner.message
-+            : "No active banner.";
-+    }
-+
-+    load() {
-+        try {
-+            const payload = readAdminPlatformBanner();
-+            this.applyBanner(payload.banner || {});
-+            this.setStatus("Platform banner settings loaded.");
-+        } catch (error) {
-+            this.setStatus(error instanceof Error ? error.message : "Platform banner settings are unavailable.");
-+        }
-+    }
-+
-+    save() {
-+        try {
-+            const payload = updateAdminPlatformBanner(this.currentBanner());
-+            this.applyBanner(payload.banner || {});
-+            this.setStatus("Platform banner settings saved.");
-+            window.dispatchEvent(new CustomEvent("gamefoundry:platform-settings-changed"));
-+        } catch (error) {
-+            this.setStatus(error instanceof Error ? error.message : "Platform banner settings could not be saved.");
-+        }
-+    }
 +}
++```
 +
-+document.addEventListener("DOMContentLoaded", () => {
-+    const root = document.querySelector("[data-admin-platform-settings]");
-+    if (!root) {
-+        return;
-+    }
-+    new AdminPlatformSettingsController(root).init();
-+});
-
-
-diff --git a/src/dev-runtime/seed/seed-db-keys.mjs b/src/dev-runtime/seed/seed-db-keys.mjs
-new file mode 100644
-index 000000000..cab6cf023
---- /dev/null
-+++ b/src/dev-runtime/seed/seed-db-keys.mjs
-@@ -0,0 +1,34 @@
-+function makeSeedUlid(sequence) {
-+  return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;
++## After API Payload
++
++After saving `active: true` with message `banner is active!@!!`, `GET /api/platform-settings/banner` returned:
++
++```json
++{
++  "status": 200,
++  "banner": {
++    "active": true,
++    "kind": "temporary-data",
++    "message": "banner is active!@!!",
++    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18",
++    "sourceTable": "platform_settings",
++    "tone": "warning"
++  },
++  "diagnostics": {
++    "active": true,
++    "message": "banner is active!@!!",
++    "sourceTable": "platform_settings",
++    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18"
++  }
 +}
++```
 +
-+export const SEED_DB_KEYS = Object.freeze({
-+  users: Object.freeze({
-+    forgeBot: makeSeedUlid(54),
-+    user1: makeSeedUlid(51),
-+    user2: makeSeedUlid(52),
-+    user3: makeSeedUlid(53),
-+    admin: makeSeedUlid(54),
-+    designer: makeSeedUlid(51),
-+    producer: makeSeedUlid(52),
-+  }),
-+  roles: Object.freeze({
-+    user: makeSeedUlid(72),
-+    admin: makeSeedUlid(73),
-+    system: makeSeedUlid(74),
-+    beta: makeSeedUlid(75),
-+    creator: makeSeedUlid(76),
-+    guest: makeSeedUlid(77),
-+  }),
-+  userRoles: Object.freeze({
-+    user1User: makeSeedUlid(82),
-+    user2User: makeSeedUlid(83),
-+    user3User: makeSeedUlid(84),
-+    adminUser: makeSeedUlid(85),
-+    adminAdmin: makeSeedUlid(86),
-+    forgeBotSystem: makeSeedUlid(87),
-+    user2Beta: makeSeedUlid(88),
-+  }),
-+});
++After saving `active: false`, the public API returned `active: false` with the same message and source row key.
 +
-+export { makeSeedUlid };
-
-
-diff --git a/src/engine/api/platform-settings-api-client.js b/src/engine/api/platform-settings-api-client.js
-new file mode 100644
-index 000000000..b4ee496d6
---- /dev/null
-+++ b/src/engine/api/platform-settings-api-client.js
-@@ -0,0 +1,28 @@
-+import {
-+  requireServerApiData,
-+  safeRequestServerApi,
-+} from "./server-api-client.js";
++## DB Row Evidence
 +
-+export function readPlatformBanner() {
-+  return requireServerApiData(
-+    safeRequestServerApi("/platform-settings/banner"),
-+    "Platform banner",
-+  );
++After active save:
++
++| Setting key | Row key | Value | Active row |
++| --- | --- | --- | --- |
++| `platform.banner.enabled` | `01KV8W32ZERK6CD5W270QPBC18` | `true` | true |
++| `platform.banner.message` | `01KV8W32ZE2XZMG1HY8XJM09Q7` | `banner is active!@!!` | true |
++| `platform.banner.tone` | `01KV8W32ZE3ZC91PRWECZX16H4` | `warning` | true |
++| `platform.banner.kind` | `01KV8W32ZE870AYSVT62X4JTY5` | `temporary-data` | true |
++
++After inactive save:
++
++| Setting key | Row key | Value | Active row |
++| --- | --- | --- | --- |
++| `platform.banner.enabled` | `01KV8W32ZERK6CD5W270QPBC18` | `false` | true |
++| `platform.banner.message` | `01KV8W32ZE2XZMG1HY8XJM09Q7` | `banner is active!@!!` | true |
++
++## Rendered Banner Evidence
++
++Live browser validation after active save:
++
++```json
++{
++  "message": "banner is active!@!!",
++  "headerBeforeBanner": true,
++  "bannerBeforeMain": true,
++  "diagnostics": {
++    "active": true,
++    "message": "banner is active!@!!",
++    "sourceTable": "platform_settings",
++    "sourceTableRowKey": "01KV8W32ZERK6CD5W270QPBC18"
++  }
 +}
++```
 +
-+export function readAdminPlatformBanner() {
-+  return requireServerApiData(
-+    safeRequestServerApi("/admin/platform-settings/banner"),
-+    "Admin platform banner",
-+  );
-+}
++Live browser validation after inactive save:
 +
-+export function updateAdminPlatformBanner(banner) {
-+  return requireServerApiData(
-+    safeRequestServerApi("/admin/platform-settings/banner", {
-+      body: banner,
-+      method: "POST",
-+    }),
-+    "Admin platform banner update",
-+  );
++```json
++{
++  "renderedInactiveBannerCount": 0
 +}
++```
++
++## Validation Lane Report
++
++| Lane | Result | Notes |
++| --- | --- | --- |
++| Static syntax | PASS | `node --check` for changed JS/MJS files passed. |
++| HTML restriction scan | PASS | No inline script/style/event handlers found in `admin/platform-settings.html`. |
++| Contract/API test | PASS | `node --test --test-name-pattern="Platform banner reads and writes through platform settings service routes" tests/dev-runtime/SupabaseProductDataCutover.test.mjs`. |
++| Targeted Playwright | PASS | `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Platform banner renders|Platform Settings Admin controls" --workers=1` passed 2/2. |
++| Live manual validation | PASS | Saved exact banner message, verified DB rows, verified public API active true, verified render, then verified active false removes banner. |
++| Playwright V8 coverage | PASS | PR188-scoped report written to `docs_build/dev/reports/playwright_v8_coverage_report.txt`; server-side route module reported as browser V8 WARN. |
++| Full samples smoke | SKIP | Explicitly excluded by request. |
++
++## Manual Validation Notes
++
++- DavidQ sign-in for the live validation returned creator/admin roles; the password value was not printed or written to files.
++- Final live banner state after validation is inactive (`active: false`) with the message retained in `platform_settings`; the header banner does not render while inactive.
++- No `.log` or `.txt` files were created under repo `tmp`.
++

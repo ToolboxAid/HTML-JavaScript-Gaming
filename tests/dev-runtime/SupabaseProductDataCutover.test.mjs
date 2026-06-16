@@ -279,6 +279,8 @@ test("Platform banner reads and writes through platform settings service routes"
       assert.equal(initial.sourceTable, "platform_settings");
       assert.equal(initial.banner.active, false);
       assert.equal(initial.banner.message, "");
+      assert.equal(initial.diagnostics.active, false);
+      assert.equal(initial.diagnostics.message, "");
 
       await apiJson(server.baseUrl, "/api/session/user", {
         body: { userKey: SEED_DB_KEYS.users.admin },
@@ -286,7 +288,7 @@ test("Platform banner reads and writes through platform settings service routes"
       });
       const saved = await apiJson(server.baseUrl, "/api/admin/platform-settings/banner", {
         body: {
-          enabled: true,
+          active: true,
           kind: "temporary-data",
           message: "Temporary data notice for creators.",
           tone: "warning",
@@ -298,12 +300,18 @@ test("Platform banner reads and writes through platform settings service routes"
       assert.equal(saved.banner.kind, "temporary-data");
       assert.equal(saved.banner.message, "Temporary data notice for creators.");
       assert.equal(saved.banner.tone, "warning");
+      assert.equal(saved.diagnostics.active, true);
+      assert.equal(saved.diagnostics.message, "Temporary data notice for creators.");
+      assert.equal(/^[0-9A-HJKMNP-TV-Z]{26}$/.test(saved.diagnostics.sourceTableRowKey), true);
 
       const publicBanner = await apiJson(server.baseUrl, "/api/platform-settings/banner");
       assert.deepEqual(publicBanner.banner, saved.banner);
+      assert.deepEqual(publicBanner.diagnostics, saved.diagnostics);
       assert.equal(fakeSupabase.tables.platform_settings.length, 4);
       assert.equal(fakeSupabase.tables.platform_settings.every((row) => /^[0-9A-HJKMNP-TV-Z]{26}$/.test(row.key)), true);
       assert.equal(fakeSupabase.tables.platform_settings.every((row) => row.createdBy === SEED_DB_KEYS.users.admin), true);
+      assert.equal(fakeSupabase.tables.platform_settings.find((row) => row.settingKey === "platform.banner.enabled")?.settingValue, "true");
+      assert.equal(fakeSupabase.tables.platform_settings.find((row) => row.settingKey === "platform.banner.message")?.settingValue, "Temporary data notice for creators.");
       assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path === "/rest/v1/platform_settings?on_conflict=key"), true);
     } finally {
       await server.close();

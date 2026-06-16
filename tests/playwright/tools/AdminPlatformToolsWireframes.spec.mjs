@@ -120,7 +120,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
       await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(2);
       if (adminPage.liveSettings) {
         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
-        await expect(page.locator("[data-platform-banner-enabled]")).toBeVisible();
+        await expect(page.locator("[data-platform-banner-active]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-kind]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-tone]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-message]")).toBeVisible();
@@ -174,10 +174,17 @@ test("Platform banner renders active settings under the header", async ({ page }
           data: {
             banner: {
               active: true,
-              enabled: true,
               kind: "temporary-data",
               message: "Temporary data notice for creators.",
+              sourceTable: "platform_settings",
+              sourceTableRowKey: "01KVRBANNERACTIVE00000001",
               tone: "warning",
+            },
+            diagnostics: {
+              active: true,
+              message: "Temporary data notice for creators.",
+              sourceTable: "platform_settings",
+              sourceTableRowKey: "01KVRBANNERACTIVE00000001",
             },
             sourceTable: "platform_settings",
           },
@@ -190,6 +197,12 @@ test("Platform banner renders active settings under the header", async ({ page }
     await expect(page.locator("[data-platform-banner]")).toHaveCount(1);
     await expect(page.locator("[data-platform-banner]")).toContainText("Temporary data notice for creators.");
     await expect(page.locator("[data-platform-banner]")).toHaveClass(/platform-banner--warning/);
+    await expect.poll(async () => page.evaluate(() => window.GameFoundryPlatformBannerDiagnostics)).toEqual({
+      active: true,
+      message: "Temporary data notice for creators.",
+      sourceTable: "platform_settings",
+      sourceTableRowKey: "01KVRBANNERACTIVE00000001",
+    });
     const layout = await page.evaluate(() => {
       const header = document.querySelector("header.site-header");
       const banner = document.querySelector("[data-platform-banner]");
@@ -220,9 +233,10 @@ test("Platform Settings Admin controls update banner through the service route",
   const server = await startRepoServer();
   let publicBanner = {
     active: false,
-    enabled: false,
     kind: "general",
     message: "",
+    sourceTable: "platform_settings",
+    sourceTableRowKey: "01KVRBANNERACTIVE00000001",
     tone: "info",
   };
   const adminPosts = [];
@@ -262,6 +276,12 @@ test("Platform Settings Admin controls update banner through the service route",
         body: JSON.stringify({
           data: {
             banner: publicBanner,
+            diagnostics: {
+              active: publicBanner.active,
+              message: publicBanner.message,
+              sourceTable: "platform_settings",
+              sourceTableRowKey: publicBanner.sourceTableRowKey,
+            },
             sourceTable: "platform_settings",
           },
           ok: true,
@@ -273,10 +293,11 @@ test("Platform Settings Admin controls update banner through the service route",
         const body = route.request().postDataJSON();
         adminPosts.push(body);
         publicBanner = {
-          active: body.enabled === true && Boolean(body.message),
-          enabled: body.enabled === true,
+          active: body.active === true && Boolean(body.message),
           kind: body.kind,
           message: body.message,
+          sourceTable: "platform_settings",
+          sourceTableRowKey: "01KVRBANNERACTIVE00000001",
           tone: body.tone,
         };
       }
@@ -285,6 +306,12 @@ test("Platform Settings Admin controls update banner through the service route",
         body: JSON.stringify({
           data: {
             banner: publicBanner,
+            diagnostics: {
+              active: publicBanner.active,
+              message: publicBanner.message,
+              sourceTable: "platform_settings",
+              sourceTableRowKey: publicBanner.sourceTableRowKey,
+            },
             recordsWritten: route.request().method() === "POST" ? 4 : 0,
             sourceTable: "platform_settings",
           },
@@ -295,7 +322,9 @@ test("Platform Settings Admin controls update banner through the service route",
 
     await page.goto(`${server.baseUrl}/admin/platform-settings.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings loaded.");
-    await page.locator("[data-platform-banner-enabled]").check();
+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: false.");
+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Source row: 01KVRBANNERACTIVE00000001.");
+    await page.locator("[data-platform-banner-active]").check();
     await page.locator("[data-platform-banner-kind]").selectOption("outage");
     await page.locator("[data-platform-banner-tone]").selectOption("danger");
     await page.locator("[data-platform-banner-message]").fill("Outage notice for creators.");
@@ -305,13 +334,36 @@ test("Platform Settings Admin controls update banner through the service route",
     await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings saved.");
     expect(adminPosts).toEqual([
       {
-        enabled: true,
+        active: true,
         kind: "outage",
         message: "Outage notice for creators.",
         tone: "danger",
       },
     ]);
+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: true.");
+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Message: Outage notice for creators.");
     await expect(page.locator("[data-platform-banner]")).toContainText("Outage notice for creators.");
+
+    await page.locator("[data-platform-banner-active]").uncheck();
+    await page.locator("[data-platform-banner-save]").click();
+    await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings saved.");
+    expect(adminPosts).toEqual([
+      {
+        active: true,
+        kind: "outage",
+        message: "Outage notice for creators.",
+        tone: "danger",
+      },
+      {
+        active: false,
+        kind: "outage",
+        message: "Outage notice for creators.",
+        tone: "danger",
+      },
+    ]);
+    await expect(page.locator("[data-platform-banner-preview]")).toContainText("No active banner.");
+    await expect(page.locator("[data-platform-banner-diagnostics]")).toContainText("Active: false.");
+    await expect(page.locator("[data-platform-banner]")).toHaveCount(0);
   } finally {
     await server.close();
   }
