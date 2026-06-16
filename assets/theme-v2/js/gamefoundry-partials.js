@@ -382,6 +382,74 @@
         }
     }
 
+    function normalizedPlatformBanner(data) {
+        const banner = data?.banner && typeof data.banner === "object" ? data.banner : {};
+        const tone = ["info", "warning", "danger"].includes(banner.tone) ? banner.tone : "info";
+        return {
+            active: banner.active === true,
+            message: typeof banner.message === "string" ? banner.message.trim() : "",
+            tone
+        };
+    }
+
+    async function requestPlatformBanner() {
+        const response = await fetch("/api/platform-settings/banner", {
+            headers: { "Accept": "application/json" },
+            method: "GET"
+        });
+        const payload = await response.json().catch(function () {
+            return null;
+        });
+        if (!response.ok || payload?.ok === false) {
+            throw new Error(payload?.error || "Platform banner settings are unavailable.");
+        }
+        return normalizedPlatformBanner(payload?.data);
+    }
+
+    function removePlatformBanner() {
+        document.querySelectorAll("[data-platform-banner]").forEach(function (banner) {
+            banner.remove();
+        });
+    }
+
+    function createPlatformBanner(banner) {
+        const section = document.createElement("section");
+        section.className = "platform-banner platform-banner--" + banner.tone;
+        section.dataset.platformBanner = "";
+        section.setAttribute("aria-label", "Platform notice");
+        const inner = document.createElement("div");
+        inner.className = "platform-banner__inner";
+        const message = document.createElement("p");
+        message.className = "platform-banner__message";
+        message.textContent = banner.message;
+        inner.append(message);
+        section.append(inner);
+        return section;
+    }
+
+    async function renderPlatformBanner() {
+        try {
+            const banner = await requestPlatformBanner();
+            removePlatformBanner();
+            if (!banner.active || !banner.message) {
+                return;
+            }
+            const element = createPlatformBanner(banner);
+            const header = document.querySelector("header.site-header");
+            if (header) {
+                header.after(element);
+                return;
+            }
+            const main = document.querySelector("main");
+            if (main?.parentNode) {
+                main.parentNode.insertBefore(element, main);
+            }
+        } catch (error) {
+            removePlatformBanner();
+            console.warn("[platform-settings/operator] Platform banner unavailable:", error instanceof Error ? error.message : String(error || ""));
+        }
+    }
+
     function directSubMenu(navItem) {
         return Array.from(navItem?.children || []).find(function (child) {
             return child.classList?.contains("sub-menu");
@@ -694,10 +762,11 @@
             replaceExisting("header-nav", "header.site-header"),
             replaceExisting("footer", "footer.footer")
         ];
-        Promise.all(tasks).catch(function (error) {
+        Promise.all(tasks).then(renderPlatformBanner).catch(function (error) {
             console.error(error);
         });
     });
     window.addEventListener("gamefoundry:session-user-changed", refreshHeaderLoginState);
     window.addEventListener("gamefoundry:data-changed", refreshHeaderOnly);
+    window.addEventListener("gamefoundry:platform-settings-changed", renderPlatformBanner);
 }());

@@ -4,7 +4,7 @@ Status: PASS
 
 ## Scope
 - Scanned active browser/page roots: `account`, `admin`, `assets/theme-v2/js`, `toolbox`, `src/engine`
-- Files scanned: 437
+- Files scanned: 439
 - Excluded server/dev/test/archive/report/temp roots: `.git`, `archive`, `docs_build`, `node_modules`, `start_of_day`, `tests`, `tmp`.
 
 ## Deployment-Label Branching Findings

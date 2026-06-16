@@ -3,6 +3,7 @@ import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store
 import { isBrowserExtensionNoise } from "../../helpers/browserExtensionNoise.mjs";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const ADMIN_TOOL_MENU_LABELS = [
   "Tool Votes",
@@ -21,11 +22,12 @@ const ADMIN_WIREFRAME_PAGES = [
   { heading: "Environments", path: "/admin/environments.html", slug: "environments" },
   { heading: "Users", path: "/admin/users.html", slug: "users", statusText: "Read-only Admin view." },
   { heading: "Game Migration", path: "/admin/game-migration.html", slug: "game-migration" },
-  { heading: "Platform Settings", path: "/admin/platform-settings.html", slug: "platform-settings" },
+  { heading: "Platform Settings", liveSettings: true, path: "/admin/platform-settings.html", slug: "platform-settings" },
   { heading: "Site Setup", menuLabels: SITE_SETUP_TOOL_MENU_LABELS, path: "/admin/site-setup.html", slug: "site-setup", statusText: "SKIP: No setup action has been run." },
 ];
 
 test.beforeEach(async ({ page }) => {
+  await workspaceV2CoverageReporter.start(page);
   await installPlaywrightStorageIsolation(page, {
     lane: "admin-platform-tools-wireframes",
     surface: "Admin platform wireframe pages",
@@ -33,6 +35,8 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.afterEach(async ({ page }) => {
+  await workspaceV2CoverageReporter.stop(page);
+  await workspaceV2CoverageReporter.writeReport();
   await clearPlaywrightStorage(page);
 });
 
@@ -114,8 +118,17 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
       await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText(adminPage.heading);
       await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(2);
       await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(2);
-      await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
-      await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
+      if (adminPage.liveSettings) {
+        await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
+        await expect(page.locator("[data-platform-banner-enabled]")).toBeVisible();
+        await expect(page.locator("[data-platform-banner-kind]")).toBeVisible();
+        await expect(page.locator("[data-platform-banner-tone]")).toBeVisible();
+        await expect(page.locator("[data-platform-banner-message]")).toBeVisible();
+        await expect(page.locator("[data-platform-banner-save]")).toBeEnabled();
+      } else {
+        await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
+        await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
+      }
       await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 
       await expectNoPageFailures(failures);
@@ -135,6 +148,172 @@ test("Grouping Colors uses current group color model copy", async ({ page }) => 
     await expectNoPageFailures(failures);
   } finally {
     await failures.server.close();
+  }
+});
+
+test("Platform banner renders active settings under the header", async ({ page }) => {
+  const server = await startRepoServer();
+  try {
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            authenticated: false,
+            displayName: "Sign In",
+            roleSlugs: [],
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            banner: {
+              active: true,
+              enabled: true,
+              kind: "temporary-data",
+              message: "Temporary data notice for creators.",
+              tone: "warning",
+            },
+            sourceTable: "platform_settings",
+          },
+          ok: true,
+        }),
+      });
+    });
+
+    await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-platform-banner]")).toHaveCount(1);
+    await expect(page.locator("[data-platform-banner]")).toContainText("Temporary data notice for creators.");
+    await expect(page.locator("[data-platform-banner]")).toHaveClass(/platform-banner--warning/);
+    const layout = await page.evaluate(() => {
+      const header = document.querySelector("header.site-header");
+      const banner = document.querySelector("[data-platform-banner]");
+      const main = document.querySelector("main");
+      const headerBox = header?.getBoundingClientRect();
+      const bannerBox = banner?.getBoundingClientRect();
+      const mainBox = main?.getBoundingClientRect();
+      return {
+        bannerBeforeMain: Boolean(banner && main && banner.compareDocumentPosition(main) & Node.DOCUMENT_POSITION_FOLLOWING),
+        bannerTop: Math.round(bannerBox?.top || 0),
+        bannerWidth: Math.round(bannerBox?.width || 0),
+        clientWidth: document.documentElement.clientWidth,
+        headerBottom: Math.round(headerBox?.bottom || 0),
+        mainTop: Math.round(mainBox?.top || 0),
+        viewportWidth: window.innerWidth,
+      };
+    });
+    expect(layout.bannerBeforeMain).toBe(true);
+    expect(layout.bannerTop).toBeGreaterThanOrEqual(layout.headerBottom - 2);
+    expect(layout.mainTop).toBeGreaterThanOrEqual(layout.bannerTop);
+    expect(layout.bannerWidth).toBe(layout.clientWidth);
+  } finally {
+    await server.close();
+  }
+});
+
+test("Platform Settings Admin controls update banner through the service route", async ({ page }) => {
+  const server = await startRepoServer();
+  let publicBanner = {
+    active: false,
+    enabled: false,
+    kind: "general",
+    message: "",
+    tone: "info",
+  };
+  const adminPosts = [];
+  try {
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            authenticated: true,
+            displayName: "Admin",
+            roleSlugs: ["admin", "creator"],
+            userKey: MOCK_DB_KEYS.users.admin,
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/navigation/admin-menu", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            adminMainItems: [
+              { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+              { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
+            ],
+            localAdminMyStuffItems: [],
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            banner: publicBanner,
+            sourceTable: "platform_settings",
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/admin/platform-settings/banner", async (route) => {
+      if (route.request().method() === "POST") {
+        const body = route.request().postDataJSON();
+        adminPosts.push(body);
+        publicBanner = {
+          active: body.enabled === true && Boolean(body.message),
+          enabled: body.enabled === true,
+          kind: body.kind,
+          message: body.message,
+          tone: body.tone,
+        };
+      }
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            banner: publicBanner,
+            recordsWritten: route.request().method() === "POST" ? 4 : 0,
+            sourceTable: "platform_settings",
+          },
+          ok: true,
+        }),
+      });
+    });
+
+    await page.goto(`${server.baseUrl}/admin/platform-settings.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings loaded.");
+    await page.locator("[data-platform-banner-enabled]").check();
+    await page.locator("[data-platform-banner-kind]").selectOption("outage");
+    await page.locator("[data-platform-banner-tone]").selectOption("danger");
+    await page.locator("[data-platform-banner-message]").fill("Outage notice for creators.");
+    await expect(page.locator("[data-platform-banner-preview]")).toContainText("Outage notice for creators.");
+
+    await page.locator("[data-platform-banner-save]").click();
+    await expect(page.locator("[data-platform-settings-status]")).toContainText("Platform banner settings saved.");
+    expect(adminPosts).toEqual([
+      {
+        enabled: true,
+        kind: "outage",
+        message: "Outage notice for creators.",
+        tone: "danger",
+      },
+    ]);
+    await expect(page.locator("[data-platform-banner]")).toContainText("Outage notice for creators.");
+  } finally {
+    await server.close();
   }
 });
 

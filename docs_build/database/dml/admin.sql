@@ -15,3 +15,7 @@
 -- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
 -- Starter server seed rows:
 --   platform_settings.settingKey = site.setup.status
+--   platform_settings.settingKey = platform.banner.enabled
+--   platform_settings.settingKey = platform.banner.message
+--   platform_settings.settingKey = platform.banner.tone
+--   platform_settings.settingKey = platform.banner.kind

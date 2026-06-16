@@ -1,40 +1,13 @@
+import { SEED_DB_KEYS, makeSeedUlid } from "../seed/seed-db-keys.mjs";
+
 const MOCK_DB_STORAGE_KEY = "gamefoundry.mockDb.v1";
 const MOCK_DB_SESSION_STORAGE_KEY = "gamefoundry.mockDb.sessionUser.v1";
 const MOCK_DB_SESSION_MODE_STORAGE_KEY = "gamefoundry.mockDb.sessionMode.v1";
 const MOCK_DB_VERSION = 3;
 
-function makeMockUlid(sequence) {
-  return `01K2GFSJ0Y${String(sequence).padStart(16, "0")}`;
-}
+const makeMockUlid = makeSeedUlid;
 
-export const MOCK_DB_KEYS = Object.freeze({
-  users: Object.freeze({
-    forgeBot: makeMockUlid(54),
-    user1: makeMockUlid(51),
-    user2: makeMockUlid(52),
-    user3: makeMockUlid(53),
-    admin: makeMockUlid(54),
-    designer: makeMockUlid(51),
-    producer: makeMockUlid(52),
-  }),
-  roles: Object.freeze({
-    user: makeMockUlid(72),
-    admin: makeMockUlid(73),
-    system: makeMockUlid(74),
-    beta: makeMockUlid(75),
-    creator: makeMockUlid(76),
-    guest: makeMockUlid(77),
-  }),
-  userRoles: Object.freeze({
-    user1User: makeMockUlid(82),
-    user2User: makeMockUlid(83),
-    user3User: makeMockUlid(84),
-    adminUser: makeMockUlid(85),
-    adminAdmin: makeMockUlid(86),
-    forgeBotSystem: makeMockUlid(87),
-    user2Beta: makeMockUlid(88),
-  }),
-});
+export const MOCK_DB_KEYS = SEED_DB_KEYS;
 
 export const MOCK_DB_SYSTEM_USER = Object.freeze({
   id: "davidq",
@@ -783,6 +756,42 @@ export function getStandaloneMockDbSeedTables() {
         description: "Starter Site Setup status setting owned by Admin setup.",
         isActive: true,
         ...standaloneAudit(16),
+      },
+      {
+        key: makeMockUlid(111),
+        settingKey: "platform.banner.enabled",
+        settingValue: "false",
+        settingType: "boolean",
+        description: "Controls whether the platform banner renders.",
+        isActive: true,
+        ...standaloneAudit(18),
+      },
+      {
+        key: makeMockUlid(112),
+        settingKey: "platform.banner.message",
+        settingValue: "",
+        settingType: "string",
+        description: "Platform banner message text.",
+        isActive: true,
+        ...standaloneAudit(19),
+      },
+      {
+        key: makeMockUlid(113),
+        settingKey: "platform.banner.tone",
+        settingValue: "info",
+        settingType: "string",
+        description: "Platform banner visual tone.",
+        isActive: true,
+        ...standaloneAudit(20),
+      },
+      {
+        key: makeMockUlid(114),
+        settingKey: "platform.banner.kind",
+        settingValue: "general",
+        settingType: "string",
+        description: "Platform banner notice kind.",
+        isActive: true,
+        ...standaloneAudit(21),
       },
     ],
     support_categories: [

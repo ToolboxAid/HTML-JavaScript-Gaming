@@ -9,13 +9,13 @@ import {
   getToolRoute,
 } from "../guest-seeds/tool-metadata-inventory.js";
 import {
-  MOCK_DB_KEYS,
   getMockDbTableSchemas,
 } from "../persistence/mock-db-store.js";
+import { SEED_DB_KEYS } from "./seed-db-keys.mjs";
 
 const ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 const SEED_SOURCE_DIRECTORY = path.join("docs_build", "database", "seed");
-const DEV_SEED_AUDIT_USER_KEY = MOCK_DB_KEYS.users.admin;
+const DEV_SEED_AUDIT_USER_KEY = SEED_DB_KEYS.users.admin;
 
 function encodeBase32(value, length) {
   let remaining = BigInt(value);
@@ -97,7 +97,7 @@ function emptyTables() {
 function userRows() {
   return [
     {
-      key: MOCK_DB_KEYS.users.user1,
+      key: SEED_DB_KEYS.users.user1,
       displayName: "User 1",
       email: "user1@example.invalid",
       authProvider: "supabase-auth",
@@ -106,7 +106,7 @@ function userRows() {
       ...auditFields(1),
     },
     {
-      key: MOCK_DB_KEYS.users.user2,
+      key: SEED_DB_KEYS.users.user2,
       displayName: "User 2",
       email: "user2@example.invalid",
       authProvider: "supabase-auth",
@@ -115,7 +115,7 @@ function userRows() {
       ...auditFields(2),
     },
     {
-      key: MOCK_DB_KEYS.users.user3,
+      key: SEED_DB_KEYS.users.user3,
       displayName: "User 3",
       email: "user3@example.invalid",
       authProvider: "supabase-auth",
@@ -124,7 +124,7 @@ function userRows() {
       ...auditFields(3),
     },
     {
-      key: MOCK_DB_KEYS.users.admin,
+      key: SEED_DB_KEYS.users.admin,
       displayName: "DavidQ",
       email: "qbytes.dq@gmail.com",
       authProvider: "supabase-auth",
@@ -179,11 +179,11 @@ function roleRows(generateKey) {
 function userRoleRows(roles) {
   const roleBySlug = new Map(roles.map((role) => [role.roleSlug, role.key]));
   return [
-    { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: roleBySlug.get("creator") },
-    { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: roleBySlug.get("creator") },
-    { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: roleBySlug.get("creator") },
-    { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: roleBySlug.get("creator") },
-    { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: roleBySlug.get("admin") },
+    { key: SEED_DB_KEYS.userRoles.user1User, userKey: SEED_DB_KEYS.users.user1, roleKey: roleBySlug.get("creator") },
+    { key: SEED_DB_KEYS.userRoles.user2User, userKey: SEED_DB_KEYS.users.user2, roleKey: roleBySlug.get("creator") },
+    { key: SEED_DB_KEYS.userRoles.user3User, userKey: SEED_DB_KEYS.users.user3, roleKey: roleBySlug.get("creator") },
+    { key: SEED_DB_KEYS.userRoles.adminUser, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("creator") },
+    { key: SEED_DB_KEYS.userRoles.adminAdmin, userKey: SEED_DB_KEYS.users.admin, roleKey: roleBySlug.get("admin") },
   ].map((row, index) => ({
     ...row,
     ...auditFields(10 + index),
@@ -252,6 +252,42 @@ function platformSettingRows(generateKey) {
       isActive: true,
       ...auditFields(120),
     },
+    {
+      key: generateKey(),
+      settingKey: "platform.banner.enabled",
+      settingValue: "false",
+      settingType: "boolean",
+      description: "Controls whether the platform banner renders.",
+      isActive: true,
+      ...auditFields(121),
+    },
+    {
+      key: generateKey(),
+      settingKey: "platform.banner.message",
+      settingValue: "",
+      settingType: "string",
+      description: "Platform banner message text.",
+      isActive: true,
+      ...auditFields(122),
+    },
+    {
+      key: generateKey(),
+      settingKey: "platform.banner.tone",
+      settingValue: "info",
+      settingType: "string",
+      description: "Platform banner visual tone.",
+      isActive: true,
+      ...auditFields(123),
+    },
+    {
+      key: generateKey(),
+      settingKey: "platform.banner.kind",
+      settingValue: "general",
+      settingType: "string",
+      description: "Platform banner notice kind.",
+      isActive: true,
+      ...auditFields(124),
+    },
   ];
 }
 
@@ -273,10 +309,10 @@ function humanToolStateSampleRows(generateKey) {
   const tools = activeToolRows();
   const toolByKey = new Map(tools.map((tool) => [tool.toolKey, tool]));
   const users = [
-    { displayName: "User 1", toolKey: "game-journey", userKey: MOCK_DB_KEYS.users.user1 },
-    { displayName: "User 2", toolKey: "palette", userKey: MOCK_DB_KEYS.users.user2 },
-    { displayName: "User 3", toolKey: "asset", userKey: MOCK_DB_KEYS.users.user3 },
-    { displayName: "DavidQ", toolKey: "game-workspace", userKey: MOCK_DB_KEYS.users.admin },
+    { displayName: "User 1", toolKey: "game-journey", userKey: SEED_DB_KEYS.users.user1 },
+    { displayName: "User 2", toolKey: "palette", userKey: SEED_DB_KEYS.users.user2 },
+    { displayName: "User 3", toolKey: "asset", userKey: SEED_DB_KEYS.users.user3 },
+    { displayName: "DavidQ", toolKey: "game-workspace", userKey: SEED_DB_KEYS.users.admin },
   ];
   return users.map((user, index) => {
     const tool = toolByKey.get(user.toolKey) || tools[index] || {

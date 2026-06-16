@@ -35,6 +35,35 @@
   line-height: var(--line-height-copy)
 }
 
+.platform-banner {
+  width: 100%;
+  border-bottom: var(--border-standard);
+  background: var(--panel-overlay-strong);
+  color: var(--text)
+}
+
+.platform-banner__inner {
+  width: var(--container-width);
+  margin: var(--space-0) auto;
+  padding: var(--space-12) var(--space-0);
+  text-align: center
+}
+
+.platform-banner__message {
+  margin: var(--space-0);
+  overflow-wrap: anywhere
+}
+
+.platform-banner--warning {
+  background: var(--gold-soft);
+  border-bottom-color: var(--gold-border-muted)
+}
+
+.platform-banner--danger {
+  background: color-mix(in srgb, var(--red) 14%, var(--panel));
+  border-bottom-color: var(--red)
+}
+
 .swatch-label {
   border: var(--border-standard);
   border-color: var(--swatch-border);

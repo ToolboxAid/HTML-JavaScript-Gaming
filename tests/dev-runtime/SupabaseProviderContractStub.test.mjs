@@ -9,7 +9,7 @@ import {
   SupabasePostgresProviderStub,
   createProviderContractSnapshot,
 } from "../../src/dev-runtime/auth/provider-contract-stubs.mjs";
-import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
+import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
 import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
 
 function withEnv(nextEnv, callback) {
@@ -248,14 +248,14 @@ function fakeSupabaseIdentityTables(overrides = {}) {
   const timestamp = "2026-06-15T00:00:00.000Z";
   const audit = {
     createdAt: timestamp,
-    createdBy: MOCK_DB_KEYS.users.admin,
+    createdBy: SEED_DB_KEYS.users.admin,
     updatedAt: timestamp,
-    updatedBy: MOCK_DB_KEYS.users.admin,
+    updatedBy: SEED_DB_KEYS.users.admin,
   };
   return {
     roles: overrides.roles || [
       {
-        key: MOCK_DB_KEYS.roles.creator,
+        key: SEED_DB_KEYS.roles.creator,
         roleSlug: "creator",
         name: "Creator",
         description: "Creator account.",
@@ -264,7 +264,7 @@ function fakeSupabaseIdentityTables(overrides = {}) {
         ...audit,
       },
       {
-        key: MOCK_DB_KEYS.roles.admin,
+        key: SEED_DB_KEYS.roles.admin,
         roleSlug: "admin",
         name: "Admin",
         description: "Administrative account.",
@@ -275,21 +275,21 @@ function fakeSupabaseIdentityTables(overrides = {}) {
     ],
     user_roles: overrides.user_roles || [
       {
-        key: MOCK_DB_KEYS.userRoles.user1User,
-        userKey: MOCK_DB_KEYS.users.user1,
-        roleKey: MOCK_DB_KEYS.roles.creator,
+        key: SEED_DB_KEYS.userRoles.user1User,
+        userKey: SEED_DB_KEYS.users.user1,
+        roleKey: SEED_DB_KEYS.roles.creator,
         ...audit,
       },
       {
-        key: MOCK_DB_KEYS.userRoles.adminAdmin,
-        userKey: MOCK_DB_KEYS.users.admin,
-        roleKey: MOCK_DB_KEYS.roles.admin,
+        key: SEED_DB_KEYS.userRoles.adminAdmin,
+        userKey: SEED_DB_KEYS.users.admin,
+        roleKey: SEED_DB_KEYS.roles.admin,
         ...audit,
       },
     ],
     users: overrides.users || [
       {
-        key: MOCK_DB_KEYS.users.user1,
+        key: SEED_DB_KEYS.users.user1,
         displayName: "User 1",
         email: "user1@example.invalid",
         authProvider: "supabase-auth",
@@ -298,7 +298,7 @@ function fakeSupabaseIdentityTables(overrides = {}) {
         ...audit,
       },
       {
-        key: MOCK_DB_KEYS.users.admin,
+        key: SEED_DB_KEYS.users.admin,
         displayName: "DavidQ",
         email: "qbytes.dq@gmail.com",
         authProvider: "supabase-auth",
@@ -400,11 +400,14 @@ test("Supabase provider contract does not require provider selector variables", 
     "upsertProductTable",
     "upsertProductTables",
     "deleteUserByKey",
+    "deleteUserRoleByKey",
     "deleteUserRolesForUserKey",
+    "getPlatformSettings",
     "reassignRoleAuditReferences",
     "reassignUserRoleAuditReferences",
     "runSiteSetup",
     "getDbViewerSnapshot",
+    "upsertPlatformSettings",
   ]);
   assert.equal(snapshot.supabasePostgres.dataMigrationActive, true);
   assert.deepEqual(snapshot.supabasePostgres.migrationSequence, [
@@ -568,14 +571,14 @@ test("Auth status ignores legacy Local DB selectors when Supabase is configured"
       assert.equal(status.connectivityHealthy, true);
       assert.equal(status.authProviderId, "supabase-auth");
       assert.equal(status.databaseProviderId, "supabase-postgres");
-      assert.match(status.operatorDiagnostic, /Supabase Auth is configured, reachable/);
+      assert.match(status.operatorDiagnostic, /Account connection is configured, reachable/);
 
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.operatorOnly, true);
       assert.equal(preflight.active, true);
       assert.equal(preflight.supabaseConfigPresent, true);
       assert.equal(preflight.supabaseProviderActive, true);
-      assert.equal(preflight.localDbProductDataActive, false);
+      assert.equal(preflight.browserOwnedProductDataActive, false);
       assert.equal(preflight.supabaseProductDataActive, true);
       assert.equal(preflight.connectivityStatus, "healthy");
       assert.equal(preflight.connectivityHealthy, true);
@@ -638,7 +641,7 @@ test("Missing Supabase config fails safely without product data fallback", async
       assert.equal(status.supabaseConnectivityStatus, "not-configured");
       assert.equal(status.connectivityHealthy, null);
       assert.equal(status.databaseProviderId, "supabase-postgres");
-      assert.equal(status.localDbProductDataActive, false);
+      assert.equal(status.browserOwnedProductDataActive, false);
       assert.equal(status.supabaseProductDataActive, true);
       assert.equal(status.noAutomaticFallback, true);
       assert.equal(status.message, "The site is currently unavailable. Please try again later.");
@@ -694,7 +697,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       const status = await apiJson(server.baseUrl, "/api/auth/status");
       assert.equal(status.ready, true);
       assert.equal(status.configured, true);
-      assert.equal(status.localDbProductDataActive, false);
+      assert.equal(status.browserOwnedProductDataActive, false);
       assert.equal(status.supabaseProductDataActive, true);
       assert.equal(status.message, "Account service is available.");
       assert.equal(status.supabaseConfigPresent, true);
@@ -705,7 +708,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       const preflight = await apiJson(server.baseUrl, "/api/auth/operator-preflight");
       assert.equal(preflight.supabaseConfigPresent, true);
       assert.equal(preflight.supabaseProviderActive, true);
-      assert.equal(preflight.localDbProductDataActive, false);
+      assert.equal(preflight.browserOwnedProductDataActive, false);
       assert.equal(preflight.supabaseProductDataActive, true);
       assert.equal(preflight.connectivityStatus, "healthy");
       assert.equal(preflight.connectivityHealthy, true);
@@ -720,10 +723,10 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(signIn.payload.ok, true);
       assert.equal(signIn.payload.data.providerId, "supabase-auth");
       assert.equal(signIn.payload.data.status, "PASS");
-      assert.equal(signIn.payload.data.passwordStoredLocally, false);
-      assert.equal(signIn.payload.data.localDbSessionCreated, true);
+      assert.equal(signIn.payload.data.passwordStoredByBrowser, false);
+      assert.equal(signIn.payload.data.serverSessionResolved, true);
       assert.equal(signIn.payload.data.sessionResolved, true);
-      assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
+      assert.equal(signIn.payload.data.userKey, SEED_DB_KEYS.users.user1);
       assert.deepEqual(signIn.payload.data.roleSlugs, ["creator"]);
       assert.equal(signIn.payload.data.accessTokenExposed, false);
       assert.equal(signIn.payload.data.refreshTokenExposed, false);
@@ -732,7 +735,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
 
       const session = await apiJson(server.baseUrl, "/api/session/current");
       assert.equal(session.authenticated, true);
-      assert.equal(session.userKey, MOCK_DB_KEYS.users.user1);
+      assert.equal(session.userKey, SEED_DB_KEYS.users.user1);
       assert.deepEqual(session.roleSlugs, ["creator"]);
 
       const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
@@ -742,7 +745,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(createAccount.status, 200);
       assert.equal(createAccount.payload.data.action, "create-account");
       assert.equal(createAccount.payload.data.identityProvisioned, true);
-      assert.equal(createAccount.payload.data.localDbSessionCreated, false);
+      assert.equal(createAccount.payload.data.serverSessionResolved, false);
       assert.deepEqual(createAccount.payload.data.roleSlugs, ["creator"]);
       assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
 
@@ -814,7 +817,7 @@ test("Create account provisions Supabase identity user default role and user_rol
       assert.equal(createAccount.payload.data.userRoleCreated, true);
       assert.deepEqual(createAccount.payload.data.roleSlugs, ["creator"]);
       assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
-      assert.equal(Object.values(MOCK_DB_KEYS.users).includes(createAccount.payload.data.userKey), false);
+      assert.equal(Object.values(SEED_DB_KEYS.users).includes(createAccount.payload.data.userKey), false);
       assert.deepEqual(createAccount.payload.data.identityTableRecords, {
         roles: 1,
         user_roles: 1,
@@ -1135,7 +1138,7 @@ test("Default Supabase Auth routes sign in create account and password reset thr
       assert.equal(status.ready, true);
       assert.equal(status.authProviderId, "supabase-auth");
       assert.equal(status.databaseProviderId, "supabase-postgres");
-      assert.equal(status.localDbProductDataActive, false);
+      assert.equal(status.browserOwnedProductDataActive, false);
       assert.equal(status.supabaseProductDataActive, true);
       assert.equal(status.message, "Account service is available.");
       assert.equal(status.noAutomaticFallback, true);
@@ -1150,10 +1153,10 @@ test("Default Supabase Auth routes sign in create account and password reset thr
       assert.equal(signIn.status, 200);
       assert.equal(signIn.payload.data.action, "sign-in");
       assert.equal(signIn.payload.data.providerId, "supabase-auth");
-      assert.equal(signIn.payload.data.passwordStoredLocally, false);
-      assert.equal(signIn.payload.data.localDbSessionCreated, true);
+      assert.equal(signIn.payload.data.passwordStoredByBrowser, false);
+      assert.equal(signIn.payload.data.serverSessionResolved, true);
       assert.equal(signIn.payload.data.sessionResolved, true);
-      assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
+      assert.equal(signIn.payload.data.userKey, SEED_DB_KEYS.users.user1);
 
       const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
         email: "default-create@example.test",
@@ -1218,18 +1221,18 @@ test("Supabase Auth selected path reads users roles user_roles and product data 
       assert.equal(users.some((user) => user.displayName === "DavidQ" && user.isAdmin), true);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/session/user", {
-        userKey: MOCK_DB_KEYS.users.user1,
+        userKey: SEED_DB_KEYS.users.user1,
       });
       assert.equal(signIn.status, 200);
       assert.equal(signIn.payload.ok, true);
       assert.equal(signIn.payload.data.authenticated, true);
-      assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
+      assert.equal(signIn.payload.data.userKey, SEED_DB_KEYS.users.user1);
       assert.equal(signIn.payload.data.displayName, "User 1");
       assert.deepEqual(signIn.payload.data.roleSlugs, ["creator"]);
 
       const current = await apiJson(server.baseUrl, "/api/session/current");
       assert.equal(current.authenticated, true);
-      assert.equal(current.userKey, MOCK_DB_KEYS.users.user1);
+      assert.equal(current.userKey, SEED_DB_KEYS.users.user1);
 
       const snapshot = await apiJson(server.baseUrl, "/api/product-data/snapshot");
       assert.equal(Array.isArray(snapshot.tables.asset_library_items), true);
@@ -1284,13 +1287,13 @@ test("Supabase identity session lookup fails visibly when user_roles references 
     identityTables: fakeSupabaseIdentityTables({
       user_roles: [
         {
-          key: MOCK_DB_KEYS.userRoles.user1User,
-          userKey: MOCK_DB_KEYS.users.user1,
+          key: SEED_DB_KEYS.userRoles.user1User,
+          userKey: SEED_DB_KEYS.users.user1,
           roleKey: "01K2GFSJ0Y0000000000000199",
           createdAt: "2026-06-15T00:00:00.000Z",
-          createdBy: MOCK_DB_KEYS.users.admin,
+          createdBy: SEED_DB_KEYS.users.admin,
           updatedAt: "2026-06-15T00:00:00.000Z",
-          updatedBy: MOCK_DB_KEYS.users.admin,
+          updatedBy: SEED_DB_KEYS.users.admin,
         },
       ],
     }),
@@ -1305,7 +1308,7 @@ test("Supabase identity session lookup fails visibly when user_roles references 
     const server = await startApiServer();
     try {
       const response = await postApiPayload(server.baseUrl, "/api/session/user", {
-        userKey: MOCK_DB_KEYS.users.user1,
+        userKey: SEED_DB_KEYS.users.user1,
       });
       assert.equal(response.status, 200);
       assert.equal(response.payload.ok, true);
@@ -1622,7 +1625,7 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
   });
 
   const result = await database.initializeIdentity({
-    actorKey: MOCK_DB_KEYS.users.admin,
+    actorKey: SEED_DB_KEYS.users.admin,
     roles: [
       {
         roleSlug: "admin",
@@ -1633,13 +1636,13 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
     ],
     userRoles: [
       {
-        userKey: MOCK_DB_KEYS.users.admin,
+        userKey: SEED_DB_KEYS.users.admin,
         roleSlug: "admin",
       },
     ],
     users: [
       {
-        key: MOCK_DB_KEYS.users.admin,
+        key: SEED_DB_KEYS.users.admin,
         displayName: "DavidQ",
         email: "qbytes.dq@gmail.com",
         authProvider: "supabase-auth",
@@ -1656,13 +1659,13 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
     "POST https://supabase-dev.example.test/rest/v1/user_roles?on_conflict=key",
   ]);
   assert.equal(calls.slice(2).every((call) => call.headers.prefer === "resolution=merge-duplicates,return=representation"), true);
-  assert.equal(calls[2].body[0].key, MOCK_DB_KEYS.users.admin);
-  assert.equal(calls[2].body[0].createdBy, MOCK_DB_KEYS.users.admin);
-  assert.equal(calls[2].body[0].updatedBy, MOCK_DB_KEYS.users.admin);
+  assert.equal(calls[2].body[0].key, SEED_DB_KEYS.users.admin);
+  assert.equal(calls[2].body[0].createdBy, SEED_DB_KEYS.users.admin);
+  assert.equal(calls[2].body[0].updatedBy, SEED_DB_KEYS.users.admin);
   assert.equal(calls[3].body[0].key, "01J000000000000000000ROLE1");
   assert.equal(calls[3].body[0].roleSlug, "admin");
   assert.equal(calls[4].body[0].key, "01J000000000000000USERROLE1");
-  assert.equal(calls[4].body[0].userKey, MOCK_DB_KEYS.users.admin);
+  assert.equal(calls[4].body[0].userKey, SEED_DB_KEYS.users.admin);
   assert.equal(calls[4].body[0].roleKey, "01J000000000000000000ROLE1");
   assert.deepEqual(result.identityKeyModel, {
     roleKeyField: "roles.key",
@@ -1710,7 +1713,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
           json: async () => [{
             key: "01J000000000000EXISTUSERROLE",
             roleKey: "01J000000000000000EXISTROLE",
-            userKey: MOCK_DB_KEYS.users.admin,
+            userKey: SEED_DB_KEYS.users.admin,
           }],
           ok: true,
           status: 200,
@@ -1726,7 +1729,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
   });
 
   await database.initializeIdentity({
-    actorKey: MOCK_DB_KEYS.users.admin,
+    actorKey: SEED_DB_KEYS.users.admin,
     roles: [
       {
         roleSlug: "admin",
@@ -1735,13 +1738,13 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
     ],
     userRoles: [
       {
-        userKey: MOCK_DB_KEYS.users.admin,
+        userKey: SEED_DB_KEYS.users.admin,
         roleSlug: "admin",
       },
     ],
     users: [
       {
-        key: MOCK_DB_KEYS.users.admin,
+        key: SEED_DB_KEYS.users.admin,
         displayName: "DavidQ",
       },
     ],
@@ -1751,7 +1754,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
   assert.equal(calls[3].body[0].roleSlug, "admin");
   assert.equal(calls[4].body[0].key, "01J000000000000EXISTUSERROLE");
   assert.equal(calls[4].body[0].roleKey, "01J000000000000000EXISTROLE");
-  assert.equal(calls[4].body[0].userKey, MOCK_DB_KEYS.users.admin);
+  assert.equal(calls[4].body[0].userKey, SEED_DB_KEYS.users.admin);
 });
 
 test("Admin identity setup API fails visibly when Supabase Postgres is selected without config", async () => {
@@ -1762,7 +1765,7 @@ test("Admin identity setup API fails visibly when Supabase Postgres is selected 
     const server = await startApiServer();
     try {
       const response = await postApiPayload(server.baseUrl, "/api/admin/setup/identity", {
-        actorKey: MOCK_DB_KEYS.users.admin,
+        actorKey: SEED_DB_KEYS.users.admin,
       });
       assert.equal(response.status, 500);
       assert.equal(response.payload.ok, false);

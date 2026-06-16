@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
+import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
 import {
   SupabaseAuthProviderAdapter,
   SupabasePostgresProviderAdapter,
@@ -26,9 +26,9 @@ function createFakeSupabaseSyncState() {
   const timestamp = "2026-06-16T00:00:00.000Z";
   const audit = {
     createdAt: timestamp,
-    createdBy: MOCK_DB_KEYS.users.admin,
+    createdBy: SEED_DB_KEYS.users.admin,
     updatedAt: timestamp,
-    updatedBy: MOCK_DB_KEYS.users.admin,
+    updatedBy: SEED_DB_KEYS.users.admin,
   };
   const state = {
     authUsers: [
@@ -43,9 +43,10 @@ function createFakeSupabaseSyncState() {
       { key: "role-user", roleSlug: "user", name: "User", isActive: true, isSystemRole: false, ...audit },
     ],
     user_roles: [
-      { key: "old-user-role", userKey: MOCK_DB_KEYS.users.user1, roleKey: "role-user", ...audit },
+      { key: "old-user-role", userKey: SEED_DB_KEYS.users.user1, roleKey: "role-user", ...audit },
+      { key: "missing-role-reference", userKey: SEED_DB_KEYS.users.admin, roleKey: "01KV6FVP0ASR2RRR9WXCBKTV6C", ...audit },
       { key: "extra-user-role", userKey: "user-extra-codex", roleKey: "role-creator", ...audit },
-      { key: "davidq-admin-role", userKey: MOCK_DB_KEYS.users.admin, roleKey: "role-admin", ...audit },
+      { key: "davidq-admin-role", userKey: SEED_DB_KEYS.users.admin, roleKey: "role-admin", ...audit },
     ],
     users: [
       {
@@ -54,7 +55,7 @@ function createFakeSupabaseSyncState() {
         displayName: "User 1",
         email: "user1@example.invalid",
         isActive: true,
-        key: MOCK_DB_KEYS.users.user1,
+        key: SEED_DB_KEYS.users.user1,
         ...audit,
       },
       {
@@ -156,7 +157,7 @@ function createFakeSupabaseSyncState() {
         };
       }
       if (method === "DELETE") {
-        const filterField = tableName === "users" ? "key" : "userKey";
+        const filterField = requestUrl.searchParams.has("key") ? "key" : tableName === "users" ? "key" : "userKey";
         const filterValue = decodeEqFilter(requestUrl.searchParams, filterField);
         const deleted = state[tableName].filter((row) => row[filterField] === filterValue);
         state[tableName] = state[tableName].filter((row) => row[filterField] !== filterValue);
@@ -226,6 +227,11 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
   });
   assert.equal(result.verification.identityEvidence.every((record) => record.synced), true);
   assert.equal(result.verification.creatorAssignments.every((record) => record.assigned), true);
+  assert.equal(result.userRoleRepair.staleRecordsFound, 2);
+  assert.equal(result.userRoleRepair.staleRoleKeyRemoved, true);
+  assert.deepEqual(result.verification.missingRoleReferenceUserRoles, []);
+  assert.deepEqual(result.verification.staleRequestedRoleReferences, []);
+  assert.deepEqual(result.verification.unexpectedCanonicalAssignments, []);
 
   const canonicalEmails = DEV_CREATOR_IDENTITIES.map((identity) => identity.email).sort();
   assert.deepEqual(fake.state.authUsers.map((user) => user.email).sort(), canonicalEmails);

@@ -1,4 +1,4 @@
-import { MOCK_DB_KEYS } from "../persistence/mock-db-store.js";
+import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
 import {
   SUPABASE_AUTH_PROVIDER_ID,
   SupabaseAuthProviderAdapter,
@@ -8,10 +8,10 @@ import {
 const DEV_ONLY_ENV_VALUES = Object.freeze(["dev", "development", "local", "test", ""]);
 const DEV_TEST_EMAIL_PATTERN = /^(codex|playwright)-[a-z0-9._+-]+@example\.test$/i;
 const STATIC_DEV_USER_KEYS = Object.freeze([
-  MOCK_DB_KEYS.users.admin,
-  MOCK_DB_KEYS.users.user1,
-  MOCK_DB_KEYS.users.user2,
-  MOCK_DB_KEYS.users.user3,
+  SEED_DB_KEYS.users.admin,
+  SEED_DB_KEYS.users.user1,
+  SEED_DB_KEYS.users.user2,
+  SEED_DB_KEYS.users.user3,
 ]);
 
 function envMode(env) {

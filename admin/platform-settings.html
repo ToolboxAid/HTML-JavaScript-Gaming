@@ -6,19 +6,19 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Platform Settings - GameFoundryStudio</title>
-    <meta name="description" content="Admin wireframe for platform settings, feature flags, and publishing defaults.">
+    <meta name="description" content="Admin controls for platform settings and operational notice banners.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
 
 <body class="meaning-molten-orange">
     <div data-partial="header-nav"></div>
-    <main data-admin-only="true" data-admin-wireframe="platform-settings">
+    <main data-admin-only="true" data-admin-platform-settings data-admin-wireframe="platform-settings">
         <section class="page-title">
             <div class="container">
-                <div class="kicker">Admin Wireframe</div>
+                <div class="kicker">Admin</div>
                 <h1>Platform Settings</h1>
-                <p class="lede">Plan platform-wide settings, flags, and release controls without connecting settings persistence.</p>
+                <p class="lede">Manage platform-wide settings, flags, and operational notice banners.</p>
             </div>
         </section>
         <section class="section">
@@ -40,11 +40,26 @@
                                 </nav>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Setting Preview</summary>
+                                <summary>Banner Controls</summary>
                                 <div class="accordion-body content-stack">
-                                    <label>Setting Area <select disabled><option>Feature flags</option><option>Publishing defaults</option><option>Maintenance notices</option></select></label>
-                                    <label>Visibility <select disabled><option>Admin only</option><option>Creator visible</option><option>Public notice</option></select></label>
-                                    <button class="btn btn--compact" type="button" disabled>Preview Setting</button>
+                                    <label class="field-inline">
+                                        <input type="checkbox" data-platform-banner-enabled>
+                                        <span>Show banner</span>
+                                    </label>
+                                    <label class="field-group">Notice kind
+                                        <select data-platform-banner-kind>
+                                            <option value="general">General notice</option>
+                                            <option value="temporary-data">Temporary data notice</option>
+                                            <option value="outage">Outage notice</option>
+                                        </select>
+                                    </label>
+                                    <label class="field-group">Tone
+                                        <select data-platform-banner-tone>
+                                            <option value="info">Info</option>
+                                            <option value="warning">Warning</option>
+                                            <option value="danger">Urgent</option>
+                                        </select>
+                                    </label>
                                 </div>
                             </details>
                         </div>
@@ -53,25 +68,15 @@
                     <section class="tool-center-panel content-stack" aria-labelledby="admin-platform-settings-title">
                         <div>
                             <div class="kicker">Work Surface</div>
-                            <h2 id="admin-platform-settings-title">Settings Board</h2>
+                            <h2 id="admin-platform-settings-title">Platform Banner</h2>
                         </div>
-                        <p>This wireframe reserves the future board for platform defaults, release toggles, and operational notices.</p>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Platform settings wireframe">
-                                <caption>Platform Settings Planning</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Area</th>
-                                        <th scope="col">Example Control</th>
-                                        <th scope="col">Current State</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr><td>Feature Flags</td><td>Enable beta tools</td><td>Wireframe</td></tr>
-                                    <tr><td>Publishing Defaults</td><td>Default public visibility</td><td>Wireframe</td></tr>
-                                    <tr><td>Maintenance</td><td>Notice banner</td><td>Wireframe</td></tr>
-                                </tbody>
-                            </table>
+                        <p>Publish a platform banner from the shared settings contract.</p>
+                        <label class="field-group">Banner message
+                            <textarea data-platform-banner-message maxlength="240" rows="5"></textarea>
+                        </label>
+                        <div class="callout" data-platform-banner-preview role="status">No active banner.</div>
+                        <div class="content-cluster">
+                            <button class="btn primary" type="button" data-platform-banner-save>Save Banner</button>
                         </div>
                     </section>
                     <aside class="tool-column tool-group-platform">
@@ -82,13 +87,13 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" role="status">Wireframe only. Platform settings are not read or written.</p>
+                                    <p class="status" role="status" data-platform-settings-status>Loading platform banner settings...</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
                                 <summary>Logging</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Future logs will show setting previews, publish gate changes, and audit review entries.</p>
+                                    <p>Banner updates are saved through the server settings contract.</p>
                                 </div>
                             </details>
                         </div>
@@ -100,6 +105,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/admin-platform-settings.js"></script>
 </body>
 
 </html>

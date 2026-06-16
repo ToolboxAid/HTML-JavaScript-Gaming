@@ -2,7 +2,7 @@ import http from "node:http";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-router.mjs";
-import { MOCK_DB_KEYS } from "../../src/dev-runtime/persistence/mock-db-store.js";
+import { SEED_DB_KEYS } from "../../src/dev-runtime/seed/seed-db-keys.mjs";
 
 function withEnv(nextEnv, callback) {
   const previousEnv = {};
@@ -65,14 +65,14 @@ function identityTables() {
   const timestamp = "2026-06-15T00:00:00.000Z";
   const audit = {
     createdAt: timestamp,
-    createdBy: MOCK_DB_KEYS.users.admin,
+    createdBy: SEED_DB_KEYS.users.admin,
     updatedAt: timestamp,
-    updatedBy: MOCK_DB_KEYS.users.admin,
+    updatedBy: SEED_DB_KEYS.users.admin,
   };
   return {
     roles: [
       {
-        key: MOCK_DB_KEYS.roles.creator,
+        key: SEED_DB_KEYS.roles.creator,
         roleSlug: "creator",
         name: "Creator",
         description: "Creator account.",
@@ -81,7 +81,7 @@ function identityTables() {
         ...audit,
       },
       {
-        key: MOCK_DB_KEYS.roles.admin,
+        key: SEED_DB_KEYS.roles.admin,
         roleSlug: "admin",
         name: "Admin",
         description: "Administrative account.",
@@ -92,21 +92,21 @@ function identityTables() {
     ],
     user_roles: [
       {
-        key: MOCK_DB_KEYS.userRoles.user1User,
-        userKey: MOCK_DB_KEYS.users.user1,
-        roleKey: MOCK_DB_KEYS.roles.creator,
+        key: SEED_DB_KEYS.userRoles.user1User,
+        userKey: SEED_DB_KEYS.users.user1,
+        roleKey: SEED_DB_KEYS.roles.creator,
         ...audit,
       },
       {
-        key: MOCK_DB_KEYS.userRoles.adminAdmin,
-        userKey: MOCK_DB_KEYS.users.admin,
-        roleKey: MOCK_DB_KEYS.roles.admin,
+        key: SEED_DB_KEYS.userRoles.adminAdmin,
+        userKey: SEED_DB_KEYS.users.admin,
+        roleKey: SEED_DB_KEYS.roles.admin,
         ...audit,
       },
     ],
     users: [
       {
-        key: MOCK_DB_KEYS.users.user1,
+        key: SEED_DB_KEYS.users.user1,
         displayName: "User 1",
         email: "user1@example.invalid",
         authProvider: "supabase-auth",
@@ -115,7 +115,7 @@ function identityTables() {
         ...audit,
       },
       {
-        key: MOCK_DB_KEYS.users.admin,
+        key: SEED_DB_KEYS.users.admin,
         displayName: "DavidQ",
         email: "qbytes.dq@gmail.com",
         authProvider: "supabase-auth",
@@ -266,6 +266,52 @@ test("Legacy local-db and mock-db endpoints are not active service routes", asyn
   }
 });
 
+test("Platform banner reads and writes through platform settings service routes", async () => {
+  const fakeSupabase = await startFakeSupabaseProductServer();
+  await withEnv({
+    GAMEFOUNDRY_SUPABASE_ANON_KEY: "test-anon-key",
+    GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: "test-service-role-key",
+    GAMEFOUNDRY_SUPABASE_URL: fakeSupabase.baseUrl,
+  }, async () => {
+    const server = await startApiServer();
+    try {
+      const initial = await apiJson(server.baseUrl, "/api/platform-settings/banner");
+      assert.equal(initial.sourceTable, "platform_settings");
+      assert.equal(initial.banner.active, false);
+      assert.equal(initial.banner.message, "");
+
+      await apiJson(server.baseUrl, "/api/session/user", {
+        body: { userKey: SEED_DB_KEYS.users.admin },
+        method: "POST",
+      });
+      const saved = await apiJson(server.baseUrl, "/api/admin/platform-settings/banner", {
+        body: {
+          enabled: true,
+          kind: "temporary-data",
+          message: "Temporary data notice for creators.",
+          tone: "warning",
+        },
+        method: "POST",
+      });
+      assert.equal(saved.recordsWritten, 4);
+      assert.equal(saved.banner.active, true);
+      assert.equal(saved.banner.kind, "temporary-data");
+      assert.equal(saved.banner.message, "Temporary data notice for creators.");
+      assert.equal(saved.banner.tone, "warning");
+
+      const publicBanner = await apiJson(server.baseUrl, "/api/platform-settings/banner");
+      assert.deepEqual(publicBanner.banner, saved.banner);
+      assert.equal(fakeSupabase.tables.platform_settings.length, 4);
+      assert.equal(fakeSupabase.tables.platform_settings.every((row) => /^[0-9A-HJKMNP-TV-Z]{26}$/.test(row.key)), true);
+      assert.equal(fakeSupabase.tables.platform_settings.every((row) => row.createdBy === SEED_DB_KEYS.users.admin), true);
+      assert.equal(fakeSupabase.calls.some((call) => call.method === "POST" && call.path === "/rest/v1/platform_settings?on_conflict=key"), true);
+    } finally {
+      await server.close();
+    }
+  });
+  await fakeSupabase.close();
+});
+
 test("Missing product data connection fails visibly for Toolbox vote data routes", async () => {
   await withEnv({
     GAMEFOUNDRY_SUPABASE_ANON_KEY: undefined,
@@ -297,7 +343,7 @@ test("Supabase-selected Toolbox vote writes use server-owned keys and Supabase t
       const registry = await apiJson(server.baseUrl, "/api/toolbox/registry/snapshot");
       const toolId = registry.activeTools[0].id;
       await apiJson(server.baseUrl, "/api/session/user", {
-        body: { userKey: MOCK_DB_KEYS.users.user1 },
+        body: { userKey: SEED_DB_KEYS.users.user1 },
         method: "POST",
       });
       const voteSnapshot = await apiJson(server.baseUrl, "/api/toolbox/votes/cast", {
@@ -306,7 +352,7 @@ test("Supabase-selected Toolbox vote writes use server-owned keys and Supabase t
       });
       const vote = fakeSupabase.tables.toolbox_votes[0];
       assert.match(vote.key, /^[0-9A-HJKMNP-TV-Z]{26}$/);
-      assert.equal(vote.userKey, MOCK_DB_KEYS.users.user1);
+      assert.equal(vote.userKey, SEED_DB_KEYS.users.user1);
       assert.equal(vote.toolId, toolId);
       assert.equal(vote.direction, "up");
       assert.equal(voteSnapshot.providerId, "supabase-postgres");

@@ -1,5 +1,5 @@
 import { randomBytes } from "node:crypto";
-import { MOCK_DB_KEYS } from "../persistence/mock-db-store.js";
+import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
 
 export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "getCurrentUser",
@@ -27,11 +27,14 @@ export const POSTGRES_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "upsertProductTable",
   "upsertProductTables",
   "deleteUserByKey",
+  "deleteUserRoleByKey",
   "deleteUserRolesForUserKey",
+  "getPlatformSettings",
   "reassignRoleAuditReferences",
   "reassignUserRoleAuditReferences",
   "runSiteSetup",
   "getDbViewerSnapshot",
+  "upsertPlatformSettings",
 ]);
 
 export const PROVIDER_DATA_BOUNDARY_RULE = "Browser -> API/Service Contract -> Database";
@@ -96,10 +99,10 @@ export const SUPABASE_POSTGRES_TABLES = Object.freeze([
 ]);
 const RUNTIME_ULID_ALPHABET = "0123456789ABCDEFGHJKMNPQRSTVWXYZ";
 const DEV_STATIC_USER_KEYS = Object.freeze([
-  MOCK_DB_KEYS.users.user1,
-  MOCK_DB_KEYS.users.user2,
-  MOCK_DB_KEYS.users.user3,
-  MOCK_DB_KEYS.users.admin,
+  SEED_DB_KEYS.users.user1,
+  SEED_DB_KEYS.users.user2,
+  SEED_DB_KEYS.users.user3,
+  SEED_DB_KEYS.users.admin,
 ]);
 
 export const PROVIDER_ENVIRONMENT_VARIABLES = Object.freeze({
@@ -847,6 +850,14 @@ export class SupabasePostgresProviderAdapter {
     });
   }
 
+  deleteUserRoleByKey(userRoleKey) {
+    return this.requestTable("user_roles", {
+      method: "DELETE",
+      prefer: "return=representation",
+      query: `key=eq.${encodeURIComponent(requireIdentityString(userRoleKey, "userRoleKey"))}`,
+    });
+  }
+
   async reassignRoleAuditReferences({ fromUserKey, toUserKey } = {}) {
     const fromKey = requireIdentityString(fromUserKey, "fromUserKey");
     const toKey = requireIdentityString(toUserKey, "toUserKey");
@@ -899,6 +910,14 @@ export class SupabasePostgresProviderAdapter {
 
   getUserRoles() {
     return this.requestTable("user_roles");
+  }
+
+  getPlatformSettings() {
+    return this.getProductTableRows("platform_settings");
+  }
+
+  upsertPlatformSettings(rows = []) {
+    return this.upsertProductTable("platform_settings", rows);
   }
 
   async initializeIdentity({ actorKey = "", roles = [], userRoles = [], users = [] } = {}) {

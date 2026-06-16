@@ -12,6 +12,26 @@
           "settingKey": "site.setup.status",
           "settingType": "string",
           "settingValue": "ready"
+        },
+        {
+          "settingKey": "platform.banner.enabled",
+          "settingType": "boolean",
+          "settingValue": "false"
+        },
+        {
+          "settingKey": "platform.banner.message",
+          "settingType": "string",
+          "settingValue": ""
+        },
+        {
+          "settingKey": "platform.banner.tone",
+          "settingType": "string",
+          "settingValue": "info"
+        },
+        {
+          "settingKey": "platform.banner.kind",
+          "settingType": "string",
+          "settingValue": "general"
         }
       ]
     }

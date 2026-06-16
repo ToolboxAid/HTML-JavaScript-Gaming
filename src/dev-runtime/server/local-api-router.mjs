@@ -67,13 +67,13 @@ import {
   createGameWorkspaceMockRepository,
 } from "../persistence/tool-repositories/game-workspace-mock-repository.js";
 import {
-  MOCK_DB_KEYS,
   createMockDbAuditFields,
   getMockDbTableSchemas,
   getMockDbToolGroups,
   normalizeMockDbTables,
 } from "../persistence/mock-db-store.js";
 import { createServerSeedTables } from "../seed/server-seed-loader.mjs";
+import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
 import { createPaletteSourceMockDbRows } from "../guest-seeds/palette-source-mock-db.js";
 import {
   SUPABASE_AUTH_PROVIDER_ID,
@@ -208,6 +208,20 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
       status: "configured",
     }),
   ]),
+});
+const PLATFORM_BANNER_SETTING_KEYS = Object.freeze({
+  enabled: "platform.banner.enabled",
+  kind: "platform.banner.kind",
+  message: "platform.banner.message",
+  tone: "platform.banner.tone",
+});
+const PLATFORM_BANNER_KINDS = Object.freeze(["general", "temporary-data", "outage"]);
+const PLATFORM_BANNER_TONES = Object.freeze(["info", "warning", "danger"]);
+const PLATFORM_BANNER_DEFAULTS = Object.freeze({
+  enabled: false,
+  kind: "general",
+  message: "",
+  tone: "info",
 });
 
 function clone(value) {
@@ -358,6 +372,110 @@ function valueOrDefault(value, fallback) {
 
 function booleanOrDefault(value, fallback) {
   return typeof value === "boolean" ? value : fallback;
+}
+
+function normalizePlatformSettingRows(rows = []) {
+  return Array.isArray(rows)
+    ? rows.filter((row) => row && typeof row === "object")
+    : [];
+}
+
+function platformSettingBySettingKey(rows = []) {
+  return new Map(normalizePlatformSettingRows(rows)
+    .map((row) => [String(row.settingKey || "").trim(), row])
+    .filter(([settingKey]) => settingKey));
+}
+
+function platformSettingValue(rowsByKey, fieldName) {
+  const row = rowsByKey.get(PLATFORM_BANNER_SETTING_KEYS[fieldName]);
+  if (!row || row.isActive === false) {
+    return PLATFORM_BANNER_DEFAULTS[fieldName];
+  }
+  return String(row.settingValue || "").trim();
+}
+
+function platformSettingBoolean(rowsByKey, fieldName) {
+  const value = platformSettingValue(rowsByKey, fieldName);
+  return value === true || String(value).toLowerCase() === "true";
+}
+
+function normalizedPlatformBanner(rows = []) {
+  const rowsByKey = platformSettingBySettingKey(rows);
+  const enabled = platformSettingBoolean(rowsByKey, "enabled");
+  const message = platformSettingValue(rowsByKey, "message");
+  const tone = PLATFORM_BANNER_TONES.includes(platformSettingValue(rowsByKey, "tone"))
+    ? platformSettingValue(rowsByKey, "tone")
+    : PLATFORM_BANNER_DEFAULTS.tone;
+  const kind = PLATFORM_BANNER_KINDS.includes(platformSettingValue(rowsByKey, "kind"))
+    ? platformSettingValue(rowsByKey, "kind")
+    : PLATFORM_BANNER_DEFAULTS.kind;
+  return {
+    active: enabled && Boolean(message),
+    enabled,
+    kind,
+    message,
+    sourceTable: "platform_settings",
+    tone,
+  };
+}
+
+function normalizePlatformBannerUpdate(body = {}) {
+  const enabled = body.enabled === true || String(body.enabled).toLowerCase() === "true";
+  const message = String(body.message || "").trim();
+  const tone = PLATFORM_BANNER_TONES.includes(String(body.tone || "").trim())
+    ? String(body.tone).trim()
+    : PLATFORM_BANNER_DEFAULTS.tone;
+  const kind = PLATFORM_BANNER_KINDS.includes(String(body.kind || "").trim())
+    ? String(body.kind).trim()
+    : PLATFORM_BANNER_DEFAULTS.kind;
+  if (enabled && !message) {
+    throw new Error("Platform banner message is required before enabling the banner.");
+  }
+  return { enabled, kind, message, tone };
+}
+
+function platformBannerSettingRows({ actorKey, adapter, banner, existingRows }) {
+  const now = new Date().toISOString();
+  const rowsByKey = platformSettingBySettingKey(existingRows);
+  const settingRows = [
+    {
+      description: "Controls whether the platform banner renders.",
+      settingKey: PLATFORM_BANNER_SETTING_KEYS.enabled,
+      settingType: "boolean",
+      settingValue: banner.enabled ? "true" : "false",
+    },
+    {
+      description: "Platform banner message text.",
+      settingKey: PLATFORM_BANNER_SETTING_KEYS.message,
+      settingType: "string",
+      settingValue: banner.message,
+    },
+    {
+      description: "Platform banner visual tone.",
+      settingKey: PLATFORM_BANNER_SETTING_KEYS.tone,
+      settingType: "string",
+      settingValue: banner.tone,
+    },
+    {
+      description: "Platform banner notice kind.",
+      settingKey: PLATFORM_BANNER_SETTING_KEYS.kind,
+      settingType: "string",
+      settingValue: banner.kind,
+    },
+  ];
+  return settingRows.map((row) => {
+    const existing = rowsByKey.get(row.settingKey) || {};
+    return {
+      ...existing,
+      ...row,
+      createdAt: existing.createdAt || now,
+      createdBy: existing.createdBy || actorKey,
+      isActive: true,
+      key: existing.key || adapter.createRecordKey(),
+      updatedAt: now,
+      updatedBy: actorKey,
+    };
+  });
 }
 
 function normalizedToolKey(row) {
@@ -716,9 +834,9 @@ function sanitizedSupabaseAuthActionResult(action, email, payload = {}, session 
     action,
     email: String(user.email || email || "").trim(),
     externalAuthUserIdPresent: Boolean(user.id),
-    localDbSessionCreated: Boolean(resolvedSession),
+    serverSessionResolved: Boolean(resolvedSession),
     message: "Account authentication completed through the account service.",
-    passwordStoredLocally: false,
+    passwordStoredByBrowser: false,
     providerId: SUPABASE_AUTH_PROVIDER_ID,
     refreshTokenExposed: false,
     roleSlugs: resolvedSession ? resolvedSession.roleSlugs : [],
@@ -753,7 +871,7 @@ function votePercent(count, total) {
   return Math.round((resolvedCount / resolvedTotal) * 100);
 }
 
-function snapshotAuditFields(index = 0, userKey = MOCK_DB_KEYS.users.forgeBot) {
+function snapshotAuditFields(index = 0, userKey = SEED_DB_KEYS.users.forgeBot) {
   return createMockDbAuditFields(index, userKey);
 }
 
@@ -762,17 +880,17 @@ function gameWorkspaceTables(repository) {
   const activeGame = repository.getActiveGame();
   const progress = repository.getGameProgress();
   const gameWorkspaceGames = tables.games.map((project, index) => ({
-    ...snapshotAuditFields(index + 20, MOCK_DB_KEYS.users.user1),
+    ...snapshotAuditFields(index + 20, SEED_DB_KEYS.users.user1),
     key: gameWorkspaceGameKey(project.id),
     name: project.name,
-    ownerKey: MOCK_DB_KEYS.users.user1,
+    ownerKey: SEED_DB_KEYS.users.user1,
     status: project.status,
   }));
   const activeGameKey = gameWorkspaceGameKey(activeGame?.id);
   return normalizeOwnedTables("game-workspace", {
     game_workspace_games: gameWorkspaceGames,
     game_workspace_progress: activeGame ? [{
-      ...snapshotAuditFields(80, MOCK_DB_KEYS.users.user1),
+      ...snapshotAuditFields(80, SEED_DB_KEYS.users.user1),
       key: runtimeGeneratedKeyForSource(`game-workspace-progress:${activeGameKey}`),
       gameKey: activeGameKey,
       currentFocus: progress.currentFocus,
@@ -787,18 +905,18 @@ function gameDesignTables(repository) {
   const tables = repository.getTables();
   return normalizeOwnedTables("game-design", {
     game_design_documents: (tables.game_design_documents || []).map((record, index) => ({
-      ...snapshotAuditFields(index + 100, MOCK_DB_KEYS.users.user1),
+      ...snapshotAuditFields(index + 100, SEED_DB_KEYS.users.user1),
       key: record.key,
       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
       status: record.status,
       title: record.title || `${record.gamePurpose || record.projectPurpose || "Game"} Design`,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
-      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
-      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
+      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
+      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
     })),
     game_design_validation_items: (tables.game_design_validation_items || []).map((record, index) => ({
-      ...snapshotAuditFields(index + 140, MOCK_DB_KEYS.users.user1),
+      ...snapshotAuditFields(index + 140, SEED_DB_KEYS.users.user1),
       key: record.key,
       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
       label: record.label,
@@ -806,8 +924,8 @@ function gameDesignTables(repository) {
       action: record.action,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
-      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
-      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
+      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
+      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
     })),
   });
 }
@@ -816,7 +934,7 @@ function gameConfigurationTables(repository) {
   const tables = repository.getTables();
   return normalizeOwnedTables("game-configuration", {
     game_configuration_records: (tables.game_configuration_documents || []).map((record, index) => ({
-      ...snapshotAuditFields(index + 180, MOCK_DB_KEYS.users.user1),
+      ...snapshotAuditFields(index + 180, SEED_DB_KEYS.users.user1),
       key: record.key,
       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
       playerMode: record.playerMode || "1 Player",
@@ -829,11 +947,11 @@ function gameConfigurationTables(repository) {
       ].filter(Boolean).join(", "),
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
-      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
-      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
+      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
+      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
     })),
     game_configuration_validation_items: (tables.game_configuration_validation_items || []).map((record, index) => ({
-      ...snapshotAuditFields(index + 220, MOCK_DB_KEYS.users.user1),
+      ...snapshotAuditFields(index + 220, SEED_DB_KEYS.users.user1),
       key: record.key,
       gameKey: gameWorkspaceGameKey(record.gameKey || record.gameId),
       label: record.label,
@@ -841,8 +959,8 @@ function gameConfigurationTables(repository) {
       action: record.action,
       createdAt: record.createdAt,
       updatedAt: record.updatedAt,
-      createdBy: record.createdBy || MOCK_DB_KEYS.users.user1,
-      updatedBy: record.updatedBy || MOCK_DB_KEYS.users.user1,
+      createdBy: record.createdBy || SEED_DB_KEYS.users.user1,
+      updatedBy: record.updatedBy || SEED_DB_KEYS.users.user1,
     })),
   });
 }
@@ -888,7 +1006,7 @@ function productTablesFromSnapshot(snapshot) {
   ]));
 }
 
-class LocalDevDataSource {
+class ApiRuntimeDataSource {
   constructor() {
     this.repositoryCounter = 1;
     this.repositoryById = new Map();
@@ -1195,8 +1313,8 @@ class LocalDevDataSource {
         label: "Tool Metadata Bootstrap",
         status: toolMetadataCount ? "PASS" : "FAIL",
         message: toolMetadataCount
-          ? `${toolMetadataCount} tool metadata rows are available through the Local API.`
-          : "Tool metadata rows are missing from the Local API setup state.",
+          ? `${toolMetadataCount} tool metadata rows are available through the configured server API.`
+          : "Tool metadata rows are missing from the configured setup state.",
       },
       {
         action: "Create baseline settings records",
@@ -1204,8 +1322,8 @@ class LocalDevDataSource {
         label: "Starter Platform Settings",
         status: platformSettingsCount ? "PASS" : "FAIL",
         message: platformSettingsCount
-          ? `${platformSettingsCount} starter platform setting row(s) are available through the Local API.`
-          : "Starter platform settings are missing from the Local API setup state.",
+          ? `${platformSettingsCount} starter platform setting row(s) are available through the configured server API.`
+          : "Starter platform settings are missing from the configured setup state.",
       },
       {
         action: "Prepare support category setup",
@@ -1213,8 +1331,8 @@ class LocalDevDataSource {
         label: "Support Categories",
         status: supportCategoriesCount ? "PASS" : "FAIL",
         message: supportCategoriesCount
-          ? `${supportCategoriesCount} support category row(s) are available through the Local API.`
-          : "Support categories are missing from the Local API setup state.",
+          ? `${supportCategoriesCount} support category row(s) are available through the configured server API.`
+          : "Support categories are missing from the configured setup state.",
       },
     ];
     const statusCounts = areas.reduce((counts, area) => {
@@ -1229,6 +1347,46 @@ class LocalDevDataSource {
       connection: this.providerContract().activeProviders,
       status,
       statusCounts,
+    };
+  }
+
+  async platformBannerForRoute() {
+    const adapter = this.supabaseDatabaseAdapter("Reading platform banner settings");
+    const rows = await adapter.getPlatformSettings();
+    return {
+      banner: normalizedPlatformBanner(rows),
+      sourceTable: "platform_settings",
+    };
+  }
+
+  async adminPlatformBannerForRoute() {
+    const session = await this.currentSessionForRoute();
+    if (!session.isAdmin || !session.userKey) {
+      throw new Error("Admin role required to read platform banner settings.");
+    }
+    return this.platformBannerForRoute();
+  }
+
+  async updateAdminPlatformBanner(body = {}) {
+    const session = await this.currentSessionForRoute();
+    if (!session.isAdmin || !session.userKey) {
+      throw new Error("Admin role required to update platform banner settings.");
+    }
+    const adapter = this.supabaseDatabaseAdapter("Updating platform banner settings");
+    const existingRows = await adapter.getPlatformSettings();
+    const banner = normalizePlatformBannerUpdate(body);
+    const rows = platformBannerSettingRows({
+      actorKey: session.userKey,
+      adapter,
+      banner,
+      existingRows,
+    });
+    await adapter.upsertPlatformSettings(rows);
+    const refreshedRows = await adapter.getPlatformSettings();
+    return {
+      banner: normalizedPlatformBanner(refreshedRows),
+      recordsWritten: rows.length,
+      sourceTable: "platform_settings",
     };
   }
 
@@ -1269,7 +1427,7 @@ class LocalDevDataSource {
     const providerContract = this.providerContract();
     const authProviderId = providerContract.activeProviders.authProviderId;
     const databaseProviderId = providerContract.activeProviders.databaseProviderId;
-    const localDbProductDataActive = false;
+    const browserOwnedProductDataActive = false;
     const supabaseProductDataActive = true;
     const configured = providerContract.supabaseAuth.configured === true;
     const failure = providerContract.providerDiagnostics.providerFailures
@@ -1299,7 +1457,7 @@ class LocalDevDataSource {
       connectivityHealthy: null,
       connectivityStatus,
       databaseProviderId,
-      localDbProductDataActive,
+      browserOwnedProductDataActive,
       message,
       missingBrowserSafeEnvironmentVariables,
       noAutomaticFallback: true,
@@ -1459,7 +1617,7 @@ class LocalDevDataSource {
       connectivityHealthy: connectivity.connectivityStatus === "healthy",
       connectivityStatus: connectivity.connectivityStatus,
       databaseProviderId: status.databaseProviderId,
-      localDbProductDataActive: status.localDbProductDataActive,
+      browserOwnedProductDataActive: status.browserOwnedProductDataActive,
       supabaseProductDataActive: status.supabaseProductDataActive,
       identityTableRecords: identity.identityTableRecords,
       identityTablesReady: identity.identityTablesReady,
@@ -1931,7 +2089,7 @@ class LocalDevDataSource {
         rows.push({
           key: this.toolboxToolPlanningKey(toolKey),
           ...normalizedValues,
-          ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+          ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
         });
         changed = true;
         return;
@@ -1961,7 +2119,7 @@ class LocalDevDataSource {
         rows.push({
           key: this.toolboxToolMetadataKey(tool.id),
           ...defaults,
-          ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+          ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
         });
         changed = true;
         return;
@@ -2027,7 +2185,7 @@ class LocalDevDataSource {
       .map((tool, index) => ({
         key: this.toolboxToolPlanningKey(tool.id),
         ...this.defaultToolboxPlanning(tool),
-        ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+        ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
       }));
     if (missingRows.length) {
       await adapter.upsertProductTable("toolbox_tool_planning", missingRows);
@@ -2046,7 +2204,7 @@ class LocalDevDataSource {
       .map((tool, index) => ({
         key: this.toolboxToolMetadataKey(tool.id),
         ...this.defaultToolboxMetadata(tool, index),
-        ...createMockDbAuditFields(index, MOCK_DB_KEYS.users.forgeBot),
+        ...createMockDbAuditFields(index, SEED_DB_KEYS.users.forgeBot),
       }));
     if (missingRows.length) {
       await adapter.upsertProductTable("toolbox_tool_metadata", missingRows);
@@ -2583,10 +2741,14 @@ class LocalDevDataSource {
   }
 }
 
+/**
+ * Legacy export name retained for the existing dev:local-api command surface.
+ * The router itself serves the configured server API contract.
+ */
 export function createLocalApiRouter() {
-  const dataSource = new LocalDevDataSource();
+  const dataSource = new ApiRuntimeDataSource();
 
-  return async function handleLocalApiRequest(request, response, requestUrl) {
+  return async function handleApiRuntimeRequest(request, response, requestUrl) {
     if (!requestUrl.pathname.startsWith("/api/")) {
       return false;
     }
@@ -2668,6 +2830,11 @@ export function createLocalApiRouter() {
         return true;
       }
 
+      if (parts[1] === "platform-settings" && request.method === "GET" && parts[2] === "banner") {
+        ok(response, await dataSource.platformBannerForRoute());
+        return true;
+      }
+
       if (parts[1] === "admin" && parts[2] === "setup" && request.method === "POST" && parts[3] === "reseed") {
         fail(response, 410, new Error("Admin reseed endpoint is removed. Use configured server setup/sync scripts."));
         return true;
@@ -2681,6 +2848,17 @@ export function createLocalApiRouter() {
       if (parts[1] === "admin" && parts[2] === "setup" && request.method === "POST" && parts[3] === "identity") {
         const body = await readRequestJson(request);
         ok(response, await dataSource.adminInitializeIdentity(body));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "platform-settings" && request.method === "GET" && parts[3] === "banner") {
+        ok(response, await dataSource.adminPlatformBannerForRoute());
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "platform-settings" && request.method === "POST" && parts[3] === "banner") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.updateAdminPlatformBanner(body));
         return true;
       }
 
