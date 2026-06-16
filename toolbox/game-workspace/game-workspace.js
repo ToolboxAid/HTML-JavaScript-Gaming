@@ -7,7 +7,6 @@ import {
 import { getSessionCurrent } from "../../src/engine/api/session-api-client.js";
 
 const repository = createGameWorkspaceApiRepository();
-repository.resetGameData();
 
 const elements = {
   activeGameName: document.querySelector("[data-active-game-name]"),
@@ -51,6 +50,70 @@ function setStatusLog(message) {
   setText(elements.statusLog, message);
 }
 
+function isRecord(value) {
+  return Boolean(value && typeof value === "object");
+}
+
+function isRepositoryErrorResult(value) {
+  return isRecord(value) && value.error === true;
+}
+
+function repositoryErrorMessage(value, context) {
+  return String(value?.message || value?.error || `${context} failed through the server API contract.`).trim();
+}
+
+function reportRepositoryError(value, context) {
+  if (isRepositoryErrorResult(value)) {
+    setStatusLog(repositoryErrorMessage(value, context));
+    return true;
+  }
+  return false;
+}
+
+function activeGameMembers(activeGame) {
+  return Array.isArray(activeGame?.members) ? activeGame.members : [];
+}
+
+function normalizeActiveGame(value, context = "Active game") {
+  if (reportRepositoryError(value, context)) {
+    return null;
+  }
+  if (!value) {
+    return null;
+  }
+  if (!isRecord(value) || !Array.isArray(value.members)) {
+    setStatusLog(`${context} response is malformed. Reload Game Workspace after the server API contract is restored.`);
+    return null;
+  }
+  return value;
+}
+
+function normalizeProgress(value) {
+  if (reportRepositoryError(value, "Game progress")) {
+    return {
+      gameStatus: "No Game",
+      gameProgress: "Blocked by server API error",
+      publishingProgress: "Blocked",
+      currentFocus: "Resolve the server API diagnostic",
+      recommendedNextTool: "Game Workspace",
+      progressChecklist: [
+        { label: "Restore server API contract", status: "Blocked" },
+      ],
+    };
+  }
+  if (!isRecord(value)) {
+    setStatusLog("Game progress response is malformed. Reload Game Workspace after the server API contract is restored.");
+  }
+  return isRecord(value) ? value : {
+    gameStatus: "No Game",
+    gameProgress: "No active game",
+    publishingProgress: "Not started",
+    currentFocus: "Create or seed a game",
+    recommendedNextTool: "Game Workspace",
+    progressChecklist: [],
+  };
+}
+
 function currentSessionUserKey() {
   try {
     const session = getSessionCurrent();
@@ -76,15 +139,16 @@ function populateSelect(select, options) {
 
 function currentGameUserKey(activeGame) {
   const sessionUserKey = currentSessionUserKey();
-  if (sessionUserKey && (!activeGame || activeGame.members.some((member) => member.userKey === sessionUserKey))) {
+  const members = activeGameMembers(activeGame);
+  if (sessionUserKey && (!activeGame || members.some((member) => member.userKey === sessionUserKey))) {
     return sessionUserKey;
   }
-  return activeGame?.ownerKey || activeGame?.members.find((member) => member.permission === "Owner")?.userKey || "";
+  return activeGame?.ownerKey || members.find((member) => member.permission === "Owner")?.userKey || "";
 }
 
 function currentGameMember(activeGame) {
   const userKey = currentGameUserKey(activeGame);
-  return activeGame?.members.find((member) => member.userKey === userKey) || null;
+  return activeGameMembers(activeGame).find((member) => member.userKey === userKey) || null;
 }
 
 function createGameButton(game, isActive) {
@@ -105,9 +169,13 @@ function renderGameList() {
     return;
   }
 
-  const activeGame = repository.getActiveGame();
+  const activeGame = normalizeActiveGame(repository.getActiveGame());
   const gameUserKey = currentGameUserKey(activeGame);
-  const games = repository.listGames(gameUserKey ? { userKey: gameUserKey } : {});
+  const listResult = repository.listGames(gameUserKey ? { userKey: gameUserKey } : {});
+  const games = Array.isArray(listResult) ? listResult : [];
+  if (!Array.isArray(listResult) && !reportRepositoryError(listResult, "Game list")) {
+    setStatusLog("Game list response is malformed. Reload Game Workspace after the server API contract is restored.");
+  }
 
   elements.gameList.replaceChildren();
 
@@ -154,7 +222,7 @@ function renderMembersTable(activeGame) {
     return;
   }
 
-  activeGame.members.forEach((member) => {
+  activeGameMembers(activeGame).forEach((member) => {
     const row = document.createElement("tr");
     const name = document.createElement("td");
     const userKey = document.createElement("td");
@@ -176,11 +244,17 @@ function renderTableCounts() {
     return;
   }
 
-  const tables = repository.getTables();
+  const tableResult = repository.getTables();
+  const tables = isRecord(tableResult) && !isRepositoryErrorResult(tableResult)
+    ? tableResult
+    : { users: [], games: [], game_members: [] };
+  if ((!isRecord(tableResult) || isRepositoryErrorResult(tableResult)) && !reportRepositoryError(tableResult, "Repository tables")) {
+    setStatusLog("Repository tables response is malformed. Reload Game Workspace after the server API contract is restored.");
+  }
   const rows = [
-    ["users", tables.users.length],
-    ["games", tables.games.length],
-    ["game_members", tables.game_members.length],
+    ["users", Array.isArray(tables.users) ? tables.users.length : 0],
+    ["games", Array.isArray(tables.games) ? tables.games.length : 0],
+    ["game_members", Array.isArray(tables.game_members) ? tables.game_members.length : 0],
   ];
 
   elements.tableCounts.replaceChildren();
@@ -205,7 +279,8 @@ function renderChecklist(progress) {
 
   elements.progressChecklist.replaceChildren();
 
-  progress.progressChecklist.forEach((item) => {
+  const checklist = Array.isArray(progress?.progressChecklist) ? progress.progressChecklist : [];
+  checklist.forEach((item) => {
     const row = document.createElement("li");
     row.textContent = `${item.label}: ${item.status}`;
     elements.progressChecklist.append(row);
@@ -213,8 +288,8 @@ function renderChecklist(progress) {
 }
 
 function renderWorkspace() {
-  const activeGame = repository.getActiveGame();
-  const progress = repository.getGameProgress();
+  const activeGame = normalizeActiveGame(repository.getActiveGame());
+  const progress = normalizeProgress(repository.getGameProgress());
   const currentMember = currentGameMember(activeGame);
 
   setText(elements.activeGameName, activeGame?.name || "No game open");
@@ -254,12 +329,21 @@ function renderWorkspace() {
 
 elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
+  const activeGame = normalizeActiveGame(repository.getActiveGame());
   const game = repository.createGame({
     name: elements.nameInput?.value,
-    ownerKey: currentGameUserKey(repository.getActiveGame()),
+    ownerKey: currentGameUserKey(activeGame),
     purpose: elements.purposeInput?.value,
     status: elements.gameStatusInput?.value,
   });
+
+  if (reportRepositoryError(game, "Create Game") || !isRecord(game) || !String(game.name || "").trim()) {
+    if (!isRepositoryErrorResult(game)) {
+      setStatusLog("Create Game did not return a valid game. Restore the server API contract and try again.");
+    }
+    renderWorkspace();
+    return;
+  }
 
   if (elements.nameInput) {
     elements.nameInput.value = "";
@@ -334,4 +418,5 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
 populateSelect(elements.purposeInput, GAME_WORKSPACE_GAME_PURPOSES);
 populateSelect(elements.gameStatusInput, GAME_WORKSPACE_GAME_STATUSES);
 populateSelect(elements.currentUserRoleInput, GAME_WORKSPACE_MEMBER_ROLES);
+reportRepositoryError(repository.resetGameData(), "Reset Game Workspace data");
 renderWorkspace();

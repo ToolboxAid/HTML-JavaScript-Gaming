@@ -12,48 +12,49 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(64%) Toolbox Index - exercised 1 runtime JS files
+(83%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(85%) Theme V2 Shared JS - exercised 7 runtime JS files
+(57%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
+(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 51/65
-(85%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 28/33
-(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 97/97; executed functions 16/16
-(100%) assets/theme-v2/js/owner-operations.js - executed lines 95/95; executed functions 16/16
-(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
+(0%) src/engine/api/owner-operations-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
+(86%) toolbox/game-workspace/game-workspace.js - executed lines 358/358; executed functions 30/35
 
 Files with executed line/function counts where available:
-(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-(43%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 6/14
-(61%) admin/tool-votes.js - executed lines 406/406; executed functions 33/54
-(64%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 18/28
-(71%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 5/7
-(75%) src/engine/api/platform-settings-api-client.js - executed lines 25/25; executed functions 3/4
-(78%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 51/65
-(85%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 28/33
-(86%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 12/14
-(90%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 9/10
-(100%) assets/theme-v2/js/admin-platform-settings.js - executed lines 97/97; executed functions 16/16
-(100%) assets/theme-v2/js/owner-operations.js - executed lines 95/95; executed functions 16/16
-(100%) src/engine/api/db-viewer-api-client.js - executed lines 13/13; executed functions 3/3
-(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
+(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
+(63%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 12/19
+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+(79%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 23/29
+(86%) toolbox/game-workspace/game-workspace.js - executed lines 358/358; executed functions 30/35
+(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
+(0%) assets/theme-v2/js/admin-platform-settings.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) assets/theme-v2/js/owner-operations.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/seed/seed-db-keys.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/api/owner-operations-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
+(0%) assets/theme-v2/js/admin-platform-settings.js - changed JS file not collected as browser runtime coverage
+(0%) assets/theme-v2/js/admin-service-page-data.js - changed JS file not collected as browser runtime coverage
+(0%) assets/theme-v2/js/owner-operations.js - changed JS file not collected as browser runtime coverage
 (0%) scripts/sync-supabase-dev-creator-identities.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/mock-db-store.js - changed JS file not collected as browser runtime coverage
@@ -61,10 +62,9 @@ Changed JS files considered:
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/engine/api/owner-operations-api-client.js - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
-(78%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(85%) assets/theme-v2/js/admin-service-page-data.js - changed JS file with browser V8 coverage
-(100%) assets/theme-v2/js/admin-platform-settings.js - changed JS file with browser V8 coverage
-(100%) assets/theme-v2/js/owner-operations.js - changed JS file with browser V8 coverage
-(100%) src/engine/api/owner-operations-api-client.js - changed JS file with browser V8 coverage
+(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+(56%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(86%) toolbox/game-workspace/game-workspace.js - changed JS file with browser V8 coverage

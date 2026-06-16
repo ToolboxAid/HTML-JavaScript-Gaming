@@ -630,6 +630,32 @@ function fail(response, statusCode, error) {
   });
 }
 
+function repositoryMethodError(message, statusCode = 502) {
+  const error = new Error(message);
+  error.statusCode = statusCode;
+  error.operatorDiagnostic = message;
+  return error;
+}
+
+function repositoryMethodRequiresPersistence(methodName) {
+  return !/^(get|list|read)/.test(String(methodName || ""));
+}
+
+function assertRepositoryMethodResult(repositoryId, methodName, result) {
+  if (result === undefined) {
+    throw repositoryMethodError(`Server repository ${repositoryId}.${methodName} returned no result. Restore the server API contract for ${methodName}.`);
+  }
+  if (result && typeof result === "object" && result.error === true) {
+    throw repositoryMethodError(result.message || `Server repository ${repositoryId}.${methodName} returned an error payload instead of data.`);
+  }
+  if (methodName === "getActiveGame" && result !== null) {
+    const members = Array.isArray(result?.members) ? result.members : null;
+    if (!result || typeof result !== "object" || !String(result.id || "").trim() || !members) {
+      throw repositoryMethodError(`Server repository ${repositoryId}.getActiveGame returned a malformed active game payload. Open or create a Game Workspace game before continuing.`);
+    }
+  }
+}
+
 function logSafeAuthOperatorDiagnostic(request, requestUrl, error) {
   const route = `${request?.method || "REQUEST"} ${requestUrl?.pathname || "/api/auth"}`;
   if (!String(requestUrl?.pathname || "").startsWith("/api/auth/")) {
@@ -2752,7 +2778,10 @@ class ApiRuntimeDataSource {
       this.assetReadyInitialized = true;
     }
     const result = method(...args);
-    await this.persistProductProviderState(`Persisting ${methodName} result`);
+    assertRepositoryMethodResult(repositoryId, methodName, result);
+    if (repositoryMethodRequiresPersistence(methodName)) {
+      await this.persistProductProviderState(`Persisting ${methodName} result`);
+    }
     return result;
   }
 

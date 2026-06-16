@@ -1,6 +1,100 @@
 ﻿import { expect, test } from "@playwright/test";
+import http from "node:http";
+import process from "node:process";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
+import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+
+const SUPABASE_ENV_KEYS = Object.freeze([
+  "GAMEFOUNDRY_SUPABASE_ANON_KEY",
+  "GAMEFOUNDRY_SUPABASE_DATABASE_URL",
+  "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+  "GAMEFOUNDRY_SUPABASE_URL",
+]);
+let fakeSupabaseServer;
+let previousSupabaseEnv;
+
+function startFakeSupabaseServer() {
+  const tables = {
+    roles: [],
+    user_roles: [],
+    users: [],
+  };
+  const server = http.createServer(async (request, response) => {
+    const chunks = [];
+    for await (const chunk of request) {
+      chunks.push(chunk);
+    }
+    const rawBody = Buffer.concat(chunks).toString("utf8");
+    const body = rawBody ? JSON.parse(rawBody) : {};
+    const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
+
+    if (requestUrl.pathname === "/auth/v1/health") {
+      response.statusCode = 200;
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.end(JSON.stringify({ status: "ok" }));
+      return;
+    }
+
+    if (requestUrl.pathname.startsWith("/rest/v1/")) {
+      const tableName = decodeURIComponent(requestUrl.pathname.split("/").pop() || "");
+      tables[tableName] = tables[tableName] || [];
+      if (request.method === "POST") {
+        const rows = Array.isArray(body) ? body : [body];
+        rows.forEach((row) => {
+          const index = tables[tableName].findIndex((existing) => existing.key === row.key);
+          if (index >= 0) {
+            tables[tableName][index] = {
+              ...tables[tableName][index],
+              ...row,
+            };
+          } else {
+            tables[tableName].push(row);
+          }
+        });
+        response.statusCode = 200;
+        response.setHeader("Content-Type", "application/json; charset=utf-8");
+        response.end(JSON.stringify(rows));
+        return;
+      }
+      response.statusCode = 200;
+      response.setHeader("Content-Type", "application/json; charset=utf-8");
+      response.end(JSON.stringify(tables[tableName]));
+      return;
+    }
+
+    response.statusCode = 404;
+    response.setHeader("Content-Type", "application/json; charset=utf-8");
+    response.end(JSON.stringify({ message: "Unknown fake Supabase route." }));
+  });
+
+  return new Promise((resolve, reject) => {
+    server.once("error", reject);
+    server.listen(0, "127.0.0.1", () => {
+      const address = server.address();
+      if (!address || typeof address === "string") {
+        reject(new Error("Unable to start fake Supabase server."));
+        return;
+      }
+      resolve({
+        baseUrl: `http://127.0.0.1:${address.port}`,
+        close: () => new Promise((closeResolve) => {
+          server.closeAllConnections?.();
+          server.close(closeResolve);
+        }),
+      });
+    });
+  });
+}
+
+test.beforeAll(async () => {
+  previousSupabaseEnv = Object.fromEntries(SUPABASE_ENV_KEYS.map((key) => [key, process.env[key]]));
+  fakeSupabaseServer = await startFakeSupabaseServer();
+  process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY = "game-workspace-anon-key";
+  process.env.GAMEFOUNDRY_SUPABASE_DATABASE_URL = "postgres://game-workspace:test@127.0.0.1:5432/game_workspace";
+  process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY = "game-workspace-service-role-key";
+  process.env.GAMEFOUNDRY_SUPABASE_URL = fakeSupabaseServer.baseUrl;
+});
 
 test.beforeEach(async ({ page }) => {
   await installPlaywrightStorageIsolation(page, {
@@ -10,7 +104,20 @@ test.beforeEach(async ({ page }) => {
 });
 
 test.afterEach(async ({ page }) => {
+  await workspaceV2CoverageReporter.stop(page);
   await clearPlaywrightStorage(page);
+});
+
+test.afterAll(async () => {
+  await workspaceV2CoverageReporter.writeReport();
+  await fakeSupabaseServer?.close();
+  SUPABASE_ENV_KEYS.forEach((key) => {
+    if (previousSupabaseEnv[key] === undefined) {
+      delete process.env[key];
+    } else {
+      process.env[key] = previousSupabaseEnv[key];
+    }
+  });
 });
 
 async function openRepoPage(page, pathName) {
@@ -36,6 +143,7 @@ async function openRepoPage(page, pathName) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
+  await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { failedRequests, pageErrors, consoleErrors, server };
 }
@@ -103,6 +211,31 @@ test("Game Workspace creates, opens, and deletes mock games", async ({ page }) =
     await expect(page.locator("[data-game-workspace-log]")).toHaveText("Deleted Launch Test Game.");
 
     await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Game Workspace shows active-game API diagnostics without throwing", async ({ page }) => {
+  await page.route("**/api/toolbox/game-workspace/repositories/*/methods/getActiveGame", async (route) => {
+    await route.fulfill({
+      body: JSON.stringify({
+        error: "Active game unavailable for validation.",
+        ok: false,
+        rule: "Browser -> Server API -> Data Source",
+      }),
+      contentType: "application/json; charset=utf-8",
+      status: 502,
+    });
+  });
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+
+  try {
+    expect(failures.failedRequests.some((request) => request.includes("502") && request.includes("/methods/getActiveGame"))).toBe(true);
+    await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
+    await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game unavailable for validation.");
+    expect(failures.pageErrors).toEqual([]);
+    expect(failures.consoleErrors.filter((message) => !message.includes("status of 502"))).toEqual([]);
   } finally {
     await failures.server.close();
   }

@@ -1,120 +1,20 @@
 # git status --short
-M admin/platform-settings.html
- M admin/site-settings.html
- M admin/tool-votes.html
- M admin/users.html
- M assets/theme-v2/js/admin-platform-settings.js
- M assets/theme-v2/js/admin-service-page-data.js
- M assets/theme-v2/js/gamefoundry-partials.js
- M docs_build/database/dml/admin.sql
- M docs_build/database/seed/account.json
- M docs_build/database/seed/admin.json
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/dependency_gating_report.md
- M docs_build/dev/reports/dependency_hydration_reuse_report.md
- M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
- M docs_build/dev/reports/execution_graph_reuse_report.md
- M docs_build/dev/reports/failure_fingerprint_report.md
- M docs_build/dev/reports/filesystem_scan_reduction_report.md
- M docs_build/dev/reports/incremental_validation_report.md
- M docs_build/dev/reports/lane_compilation_report.md
- M docs_build/dev/reports/lane_deduplication_report.md
- M docs_build/dev/reports/lane_input_validation_report.md
- M docs_build/dev/reports/lane_manifests/workspace-contract.json
- M docs_build/dev/reports/lane_runtime_optimization_report.md
- M docs_build/dev/reports/lane_snapshot_report.md
- M docs_build/dev/reports/lane_snapshots/workspace-contract.json
- M docs_build/dev/reports/lane_warm_start_report.md
- M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
- M docs_build/dev/reports/monolith_trigger_removal_report.md
- M docs_build/dev/reports/persistent_lane_manifest_report.md
- M docs_build/dev/reports/playwright_discovery_ownership_report.md
- M docs_build/dev/reports/playwright_discovery_scope_report.md
- M docs_build/dev/reports/playwright_structure_audit.md
+M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M docs_build/dev/reports/retry_suppression_report.md
- M docs_build/dev/reports/slow_path_pruning_report.md
- M docs_build/dev/reports/static_validation_report.md
- M docs_build/dev/reports/targeted_file_manifest_report.md
- M docs_build/dev/reports/test_cleanup_performance_report.md
- M docs_build/dev/reports/test_cleanup_routing_report.md
- M docs_build/dev/reports/testing_lane_execution_report.md
- M docs_build/dev/reports/validation_cache_report.md
- M docs_build/dev/reports/zero_browser_preflight_report.md
- M scripts/sync-supabase-dev-creator-identities.mjs
- M src/dev-runtime/auth/provider-contract-stubs.mjs
- M src/dev-runtime/persistence/mock-db-store.js
- M src/dev-runtime/seed/seed-db-keys.mjs
- M src/dev-runtime/seed/server-seed-loader.mjs
  M src/dev-runtime/server/local-api-router.mjs
- M src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
- M tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
- M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-?? assets/theme-v2/js/owner-operations.js
-?? docs_build/dev/reports/PR_26167_191-owner-operations-settings-and-role-cleanup.md
-?? owner/
-?? src/engine/api/owner-operations-api-client.js
+ M tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
+ M toolbox/game-workspace/game-workspace.js
+?? .env.uat
+?? docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
 
 # git ls-files --others --exclude-standard
-assets/theme-v2/js/owner-operations.js
-docs_build/dev/reports/PR_26167_191-owner-operations-settings-and-role-cleanup.md
-owner/operations.html
-src/engine/api/owner-operations-api-client.js
+.env.uat
+docs_build/dev/reports/PR_26167_192-env-config-and-game-workspace-create-fix.md
 
 # git diff --stat
-admin/platform-settings.html                       |   11 +-
- admin/site-settings.html                           |    4 -
- admin/tool-votes.html                              |    4 +-
- admin/users.html                                   |    6 +-
- assets/theme-v2/js/admin-platform-settings.js      |   22 +-
- assets/theme-v2/js/admin-service-page-data.js      |    4 +-
- assets/theme-v2/js/gamefoundry-partials.js         |   34 +-
- docs_build/database/dml/admin.sql                  |    8 +-
- docs_build/database/seed/account.json              |    3 +-
- docs_build/database/seed/admin.json                |   12 +-
- docs_build/dev/reports/codex_changed_files.txt     |  124 +-
- docs_build/dev/reports/codex_review.diff           | 3059 ++++++++++++++++----
- .../dev/reports/coverage_changed_js_guardrail.txt  |    9 +-
- docs_build/dev/reports/dependency_gating_report.md |    2 +-
- .../reports/dependency_hydration_reuse_report.md   |    4 +-
- .../environment_agnostic_browser_gate_report.md    |    2 +-
- .../dev/reports/execution_graph_reuse_report.md    |    4 +-
- .../dev/reports/failure_fingerprint_report.md      |    2 +-
- .../reports/filesystem_scan_reduction_report.md    |    2 +-
- .../dev/reports/incremental_validation_report.md   |    2 +-
- docs_build/dev/reports/lane_compilation_report.md  |    2 +-
- .../dev/reports/lane_deduplication_report.md       |    2 +-
- .../dev/reports/lane_input_validation_report.md    |    2 +-
- .../reports/lane_manifests/workspace-contract.json |   12 +-
- .../reports/lane_runtime_optimization_report.md    |    2 +-
- docs_build/dev/reports/lane_snapshot_report.md     |    4 +-
- .../reports/lane_snapshots/workspace-contract.json |   26 +-
- docs_build/dev/reports/lane_warm_start_report.md   |    4 +-
- .../lane_warm_starts/workspace-contract.json       |   18 +-
- .../dev/reports/monolith_trigger_removal_report.md |    2 +-
- .../dev/reports/persistent_lane_manifest_report.md |    6 +-
- .../playwright_discovery_ownership_report.md       |    2 +-
- .../reports/playwright_discovery_scope_report.md   |    2 +-
- .../dev/reports/playwright_structure_audit.md      |    2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   35 +-
- docs_build/dev/reports/retry_suppression_report.md |    2 +-
- docs_build/dev/reports/slow_path_pruning_report.md |    8 +-
- docs_build/dev/reports/static_validation_report.md |    4 +-
- .../dev/reports/targeted_file_manifest_report.md   |    4 +-
- .../dev/reports/test_cleanup_performance_report.md |   10 +-
- .../dev/reports/test_cleanup_routing_report.md     |    2 +-
- .../dev/reports/testing_lane_execution_report.md   |   12 +-
- docs_build/dev/reports/validation_cache_report.md  |   30 +-
- .../dev/reports/zero_browser_preflight_report.md   |    2 +-
- scripts/sync-supabase-dev-creator-identities.mjs   |    7 +-
- src/dev-runtime/auth/provider-contract-stubs.mjs   |   30 +-
- src/dev-runtime/persistence/mock-db-store.js       |   27 -
- src/dev-runtime/seed/seed-db-keys.mjs              |    1 -
- src/dev-runtime/seed/server-seed-loader.mjs        |   27 -
- src/dev-runtime/server/local-api-router.mjs        |  192 +-
- .../supabase-dev-creator-identity-seed-sync.mjs    |   89 +-
- .../SupabaseDevCreatorIdentitySeedSync.test.mjs    |    4 +-
- .../tools/AdminPlatformToolsWireframes.spec.mjs    |  272 +-
- 53 files changed, 3216 insertions(+), 946 deletions(-)
+.../dev/reports/coverage_changed_js_guardrail.txt  |  15 ++-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  52 ++++----
+ src/dev-runtime/server/local-api-router.mjs        |  31 ++++-
+ .../tools/GameWorkspaceMockRepository.spec.mjs     | 133 +++++++++++++++++++++
+ toolbox/game-workspace/game-workspace.js           | 115 +++++++++++++++---
+ 5 files changed, 299 insertions(+), 47 deletions(-)
