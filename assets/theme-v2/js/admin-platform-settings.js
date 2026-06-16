@@ -7,7 +7,6 @@ class AdminPlatformSettingsController {
     constructor(root) {
         this.root = root;
         this.activeInput = root.querySelector("[data-platform-banner-active]");
-        this.kindInput = root.querySelector("[data-platform-banner-kind]");
         this.diagnostics = root.querySelector("[data-platform-banner-diagnostics]");
         this.messageInput = root.querySelector("[data-platform-banner-message]");
         this.preview = root.querySelector("[data-platform-banner-preview]");
@@ -16,27 +15,17 @@ class AdminPlatformSettingsController {
         this.saveButton = root.querySelector("[data-platform-banner-save]");
     }
 
-    platformBannerKindLabel(kind) {
-        if (kind === "temporary-data") {
-            return "Data notice";
-        }
-        if (kind === "outage") {
-            return "Outage";
-        }
-        return "Notice";
-    }
-
     updatePreviewTone(tone) {
         this.preview.classList.remove("platform-banner--info", "platform-banner--warning", "platform-banner--danger");
         this.preview.classList.add("platform-banner--" + (["info", "warning", "danger"].includes(tone) ? tone : "info"));
     }
 
     init() {
-        if (!this.activeInput || !this.kindInput || !this.diagnostics || !this.messageInput || !this.preview || !this.status || !this.toneInput || !this.saveButton) {
+        if (!this.activeInput || !this.diagnostics || !this.messageInput || !this.preview || !this.status || !this.toneInput || !this.saveButton) {
             return;
         }
         this.saveButton.addEventListener("click", () => this.save());
-        [this.activeInput, this.kindInput, this.messageInput, this.toneInput].forEach((control) => {
+        [this.activeInput, this.messageInput, this.toneInput].forEach((control) => {
             control.addEventListener("input", () => this.renderPreview(this.currentBanner()));
             control.addEventListener("change", () => this.renderPreview(this.currentBanner()));
         });
@@ -50,7 +39,6 @@ class AdminPlatformSettingsController {
     currentBanner() {
         return {
             active: this.activeInput.checked,
-            kind: this.kindInput.value,
             message: this.messageInput.value.trim(),
             tone: this.toneInput.value
         };
@@ -58,7 +46,6 @@ class AdminPlatformSettingsController {
 
     applyBanner(banner) {
         this.activeInput.checked = banner.active === true;
-        this.kindInput.value = banner.kind || "general";
         this.messageInput.value = banner.message || "";
         this.toneInput.value = banner.tone || "info";
         this.renderPreview(this.currentBanner());
@@ -82,13 +69,10 @@ class AdminPlatformSettingsController {
             this.preview.textContent = "No active banner.";
             return;
         }
-        const kind = document.createElement("span");
-        kind.className = "platform-banner__kind";
-        kind.textContent = this.platformBannerKindLabel(banner.kind);
         const message = document.createElement("span");
         message.className = "platform-banner__message";
         message.textContent = banner.message;
-        this.preview.replaceChildren(kind, message);
+        this.preview.replaceChildren(message);
     }
 
     load() {

@@ -9,11 +9,6 @@
       "mode": "server-api-generated-keys",
       "starterRows": [
         {
-          "settingKey": "site.setup.status",
-          "settingType": "string",
-          "settingValue": "ready"
-        },
-        {
           "settingKey": "platform.banner.enabled",
           "settingType": "boolean",
           "settingValue": "false"
@@ -27,14 +22,9 @@
           "settingKey": "platform.banner.tone",
           "settingType": "string",
           "settingValue": "info"
-        },
-        {
-          "settingKey": "platform.banner.kind",
-          "settingType": "string",
-          "settingValue": "general"
         }
       ]
     }
   },
-  "note": "Admin Site Setup owns explicit server-side setup/reseed entry points and platform settings bootstrap."
+  "note": "Platform settings seed rows are runtime banner settings keyed by settingKey. Owner Operations owns setup/reseed planning."
 }

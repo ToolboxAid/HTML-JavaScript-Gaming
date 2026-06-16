@@ -1,13 +1,13 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-16T17:57:59.904Z
+Generated: 2026-06-16T20:40:58.196Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 64.30s
+Current measured lane elapsed time: 63.89s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
@@ -31,9 +31,9 @@ Validation cache hits: 18
 | PR_26146_038 | tool-runtime | 19.10s | Asset Manager V2 temporary UAT context |
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
-| current targeted run | workspace-contract | 29.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:630:1 > representative active tool pages align center cleanup and registry group colors |
+| current targeted run | workspace-contract | 29.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:630:1 > representative active tool pages align center cleanup and registry group colors |
 | current targeted run | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
-| current targeted run | workspace-contract | 9.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
+| current targeted run | workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
 | current targeted run | workspace-contract | 6.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages |
 | current targeted run | workspace-contract | 1.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:608:1 > tool template future-state page loads from root Theme V2 paths |
 

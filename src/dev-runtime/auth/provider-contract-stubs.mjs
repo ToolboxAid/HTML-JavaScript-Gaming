@@ -26,8 +26,10 @@ export const POSTGRES_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "initializeIdentity",
   "upsertProductTable",
   "upsertProductTables",
+  "deleteRoleByKey",
   "deleteUserByKey",
   "deleteUserRoleByKey",
+  "deleteUserRolesForRoleKey",
   "deleteUserRolesForUserKey",
   "getPlatformSettings",
   "reassignRoleAuditReferences",
@@ -400,14 +402,14 @@ function createSupabasePreflight({
     },
     {
       id: "site-setup-readiness",
-      label: "Site Setup readiness",
+      label: "Owner Operations readiness",
       status: preflightStatus({
         active: supabasePostgresActive,
         ready: supabasePostgresReadiness.siteSetupReady,
       }),
       summary: supabasePostgresReadiness.siteSetupReady
-        ? "Admin Site Setup readiness checks are available for Supabase Postgres."
-        : "Admin Site Setup for Supabase requires server-only setup configuration.",
+        ? "Owner Operations readiness checks are available for Supabase Postgres."
+        : "Owner Operations for Supabase requires server-only setup configuration.",
     },
   ];
   const failedChecks = checks.filter((check) => check.status === "FAIL");
@@ -433,7 +435,7 @@ export function createSupabasePostgresReadiness(env = process.env) {
     blockers.push("Add Supabase URL and server-only credentials for Supabase Postgres.");
   }
   if (!siteSetupReady) {
-    blockers.push("Add server-only direct SQL configuration before Admin Site Setup can run Supabase setup.");
+    blockers.push("Add server-only direct SQL configuration before Owner Operations can run Supabase setup.");
   }
   return {
     configured,
@@ -858,6 +860,22 @@ export class SupabasePostgresProviderAdapter {
     });
   }
 
+  deleteUserRolesForRoleKey(roleKey) {
+    return this.requestTable("user_roles", {
+      method: "DELETE",
+      prefer: "return=representation",
+      query: `roleKey=eq.${encodeURIComponent(requireIdentityString(roleKey, "roleKey"))}`,
+    });
+  }
+
+  deleteRoleByKey(roleKey) {
+    return this.requestTable("roles", {
+      method: "DELETE",
+      prefer: "return=representation",
+      query: `key=eq.${encodeURIComponent(requireIdentityString(roleKey, "roleKey"))}`,
+    });
+  }
+
   async reassignRoleAuditReferences({ fromUserKey, toUserKey } = {}) {
     const fromKey = requireIdentityString(fromUserKey, "fromUserKey");
     const toKey = requireIdentityString(toUserKey, "toUserKey");
@@ -996,11 +1014,11 @@ export class SupabasePostgresProviderAdapter {
     this.assertConfigured();
     const readiness = this.readiness();
     if (!readiness.siteSetupReady) {
-      throw new Error("Supabase Postgres Site Setup requires server-only direct SQL configuration before setup can run.");
+      throw new Error("Owner Operations setup requires server-only direct SQL configuration before setup can run.");
     }
     return {
       executed: false,
-      owner: "Admin -> Site Setup",
+      owner: "Owner -> Operations",
       providerId: this.providerId,
       ready: true,
     };

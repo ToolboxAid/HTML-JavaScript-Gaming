@@ -139,15 +139,6 @@ function roleRows(generateKey) {
   return [
     {
       key: generateKey(),
-      roleSlug: "user",
-      name: "Deprecated User",
-      description: "Deprecated compatibility role. Authenticated accounts use creator.",
-      isSystemRole: false,
-      isActive: false,
-      ...auditFields(5),
-    },
-    {
-      key: generateKey(),
       roleSlug: "admin",
       name: "Admin",
       description: "Administrative user.",
@@ -255,15 +246,6 @@ function platformSettingRows(generateKey) {
   return [
     {
       key: generateKey(),
-      settingKey: "site.setup.status",
-      settingValue: "ready",
-      settingType: "string",
-      description: "Starter Site Setup status setting owned by Admin setup.",
-      isActive: true,
-      ...auditFields(120),
-    },
-    {
-      key: generateKey(),
       settingKey: "platform.banner.enabled",
       settingValue: "false",
       settingType: "boolean",
@@ -288,15 +270,6 @@ function platformSettingRows(generateKey) {
       description: "Platform banner visual tone.",
       isActive: true,
       ...auditFields(123),
-    },
-    {
-      key: generateKey(),
-      settingKey: "platform.banner.kind",
-      settingValue: "general",
-      settingType: "string",
-      description: "Platform banner notice kind.",
-      isActive: true,
-      ...auditFields(124),
     },
   ];
 }

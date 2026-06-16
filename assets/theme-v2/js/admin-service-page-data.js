@@ -216,8 +216,8 @@ function renderAdminSiteSettings(root, snapshot) {
     content,
     "Site Settings Service Contract",
     "site_settings",
-    "No site_settings table/schema exists in the current service snapshot.",
-    "Create the Admin Site Setup runtime contract before this page can edit or save site-owned settings.",
+    "Editable branding and site identity settings are code/content-owned and deferred from this Admin surface.",
+    "Use Owner Operations for operational planning. Keep Platform Settings focused on banner settings and future runtime toggles.",
   );
 }
 

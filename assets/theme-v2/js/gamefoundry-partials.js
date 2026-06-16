@@ -71,7 +71,9 @@
         mission: "company/mission.html",
         roadmap: "company/roadmap.html",
         "release-notes": "company/release-notes.html",
-        admin: "admin/site-setup.html",
+        admin: "admin/platform-settings.html",
+        owner: "owner/operations.html",
+        "owner-operations": "owner/operations.html",
         "admin-site-settings": "admin/site-settings.html",
         "admin-site-setup": "admin/site-setup.html",
         "admin-branding": "admin/branding.html",
@@ -114,7 +116,7 @@
 
     const rootSegments = new Set([
         "account", "company", "community", "legal",
-        "admin", "docs", "games", "learn", "marketplace", "toolbox"
+        "admin", "docs", "games", "learn", "marketplace", "owner", "toolbox"
     ]);
 
     const currentScript = document.currentScript || document.querySelector("script[src*='gamefoundry-partials.js']");
@@ -245,7 +247,7 @@
         label.dataset.navLink = "";
         label.dataset.route = "owner";
         label.dataset.ownerMenuLabel = "";
-        label.href = items[0] ? menuItemHref(items[0]) : "#";
+        label.href = routeHref("owner");
         label.textContent = "Owner \u25BE";
 
         const submenu = document.createElement("div");
@@ -392,25 +394,13 @@
     function normalizedPlatformBanner(data) {
         const banner = data?.banner && typeof data.banner === "object" ? data.banner : {};
         const tone = ["info", "warning", "danger"].includes(banner.tone) ? banner.tone : "info";
-        const kind = ["general", "temporary-data", "outage"].includes(banner.kind) ? banner.kind : "general";
         return {
             active: banner.active === true,
-            kind,
             message: typeof banner.message === "string" ? banner.message.trim() : "",
             sourceTable: typeof banner.sourceTable === "string" ? banner.sourceTable : data?.sourceTable || "",
             sourceTableRowKey: typeof banner.sourceTableRowKey === "string" ? banner.sourceTableRowKey : "",
             tone
         };
-    }
-
-    function platformBannerKindLabel(kind) {
-        if (kind === "temporary-data") {
-            return "Data notice";
-        }
-        if (kind === "outage") {
-            return "Outage";
-        }
-        return "Notice";
     }
 
     async function requestPlatformBanner() {
@@ -441,13 +431,10 @@
         section.setAttribute("aria-label", "Platform notice");
         const inner = document.createElement("div");
         inner.className = "platform-banner__inner";
-        const kind = document.createElement("span");
-        kind.className = "platform-banner__kind";
-        kind.textContent = platformBannerKindLabel(banner.kind);
         const message = document.createElement("p");
         message.className = "platform-banner__message";
         message.textContent = banner.message;
-        inner.append(kind, message);
+        inner.append(message);
         section.append(inner);
         return section;
     }
@@ -457,7 +444,6 @@
             const banner = await requestPlatformBanner();
             window.GameFoundryPlatformBannerDiagnostics = {
                 active: banner.active,
-                kind: banner.kind,
                 message: banner.message,
                 sourceTable: banner.sourceTable,
                 sourceTableRowKey: banner.sourceTableRowKey
@@ -484,7 +470,6 @@
             removePlatformBanner();
             window.GameFoundryPlatformBannerDiagnostics = {
                 active: false,
-                kind: "",
                 message: "",
                 sourceTable: "",
                 sourceTableRowKey: ""
@@ -530,6 +515,13 @@
     }
 
     function protectedPageRequirement(pagePath) {
+        if (pagePath.indexOf("owner/") === 0) {
+            return {
+                role: "owner",
+                title: "Owner role required",
+                message: "Sign in as Owner to open this Owner page."
+            };
+        }
         if (pagePath.indexOf("admin/") === 0) {
             return {
                 role: "admin",

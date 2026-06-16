@@ -705,15 +705,6 @@ export function getStandaloneMockDbSeedTables() {
     ],
     roles: [
       {
-        key: MOCK_DB_KEYS.roles.user,
-        roleSlug: "user",
-        name: "deprecated user",
-        description: "Deprecated compatibility role. Authenticated accounts use creator.",
-        isSystemRole: false,
-        isActive: false,
-        ...standaloneAudit(6),
-      },
-      {
         key: MOCK_DB_KEYS.roles.admin,
         roleSlug: "admin",
         name: "admin",
@@ -760,15 +751,6 @@ export function getStandaloneMockDbSeedTables() {
     ],
     platform_settings: [
       {
-        key: makeMockUlid(110),
-        settingKey: "site.setup.status",
-        settingValue: "ready",
-        settingType: "string",
-        description: "Starter Site Setup status setting owned by Admin setup.",
-        isActive: true,
-        ...standaloneAudit(16),
-      },
-      {
         key: makeMockUlid(111),
         settingKey: "platform.banner.enabled",
         settingValue: "false",
@@ -794,15 +776,6 @@ export function getStandaloneMockDbSeedTables() {
         description: "Platform banner visual tone.",
         isActive: true,
         ...standaloneAudit(20),
-      },
-      {
-        key: makeMockUlid(114),
-        settingKey: "platform.banner.kind",
-        settingValue: "general",
-        settingType: "string",
-        description: "Platform banner notice kind.",
-        isActive: true,
-        ...standaloneAudit(21),
       },
     ],
     support_categories: [

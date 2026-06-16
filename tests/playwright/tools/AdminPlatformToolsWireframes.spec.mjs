@@ -6,24 +6,14 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const ADMIN_TOOL_MENU_LABELS = [
-  "Tool Votes",
-  "Environments",
-  "Users",
-  "Game Migration",
   "Platform Settings",
-];
-
-const SITE_SETUP_TOOL_MENU_LABELS = [
-  ...ADMIN_TOOL_MENU_LABELS,
-  "Site Setup",
+  "Tool Votes",
+  "Users",
 ];
 
 const ADMIN_WIREFRAME_PAGES = [
-  { heading: "Environments", path: "/admin/environments.html", slug: "environments" },
   { heading: "Users", path: "/admin/users.html", slug: "users", statusText: "Read-only Admin view." },
-  { heading: "Game Migration", path: "/admin/game-migration.html", slug: "game-migration" },
   { heading: "Platform Settings", liveSettings: true, path: "/admin/platform-settings.html", slug: "platform-settings" },
-  { heading: "Site Setup", menuLabels: SITE_SETUP_TOOL_MENU_LABELS, path: "/admin/site-setup.html", slug: "site-setup", statusText: "SKIP: No setup action has been run." },
 ];
 
 test.beforeEach(async ({ page }) => {
@@ -86,10 +76,8 @@ async function startAdminPage(page, pathName) {
       body: JSON.stringify({
         data: {
           adminMainItems: [
-            { label: "Environments", path: "admin/environments.html", route: "admin-environments" },
-            { label: "Game Migration", path: "admin/game-migration.html", route: "admin-game-migration" },
             { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
-            { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
+            { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
             { label: "Users", path: "admin/users.html", route: "admin-users" },
           ],
           ownerMenuItems: [
@@ -97,6 +85,7 @@ async function startAdminPage(page, pathName) {
             { label: "Design System", path: "admin/design-system.html", route: "admin-design-system" },
             { label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" },
             { href: "/admin/admin-notes.html", label: "Notes", localNotes: true },
+            { label: "Operations", path: "owner/operations.html", route: "owner-operations" },
           ],
         },
         ok: true,
@@ -110,7 +99,6 @@ async function startAdminPage(page, pathName) {
         data: {
           banner: {
             active: false,
-            kind: "general",
             message: "",
             sourceTable: "platform_settings",
             sourceTableRowKey: "01KVRBANNERACTIVE00000001",
@@ -135,7 +123,6 @@ async function startAdminPage(page, pathName) {
         data: {
           banner: {
             active: false,
-            kind: "general",
             message: "",
             sourceTable: "platform_settings",
             sourceTableRowKey: "01KVRBANNERACTIVE00000001",
@@ -149,6 +136,76 @@ async function startAdminPage(page, pathName) {
           },
           recordsWritten: 0,
           sourceTable: "platform_settings",
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/product-data/snapshot", async (route) => {
+    const timestamp = "2026-06-16T00:00:00.000Z";
+    const audit = {
+      createdAt: timestamp,
+      createdBy: MOCK_DB_KEYS.users.admin,
+      updatedAt: timestamp,
+      updatedBy: MOCK_DB_KEYS.users.admin,
+    };
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          schemas: {
+            roles: [{ name: "key" }],
+            user_roles: [{ name: "key" }],
+            users: [{ name: "key" }],
+          },
+          tables: {
+            roles: [
+              { key: MOCK_DB_KEYS.roles.creator, roleSlug: "creator", name: "Creator", isActive: true, ...audit },
+              { key: MOCK_DB_KEYS.roles.admin, roleSlug: "admin", name: "Admin", isActive: true, ...audit },
+              { key: MOCK_DB_KEYS.roles.owner, roleSlug: "owner", name: "Owner", isActive: true, ...audit },
+              { key: MOCK_DB_KEYS.roles.guest, roleSlug: "guest", name: "Guest", isActive: true, ...audit },
+            ],
+            user_roles: [
+              { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: MOCK_DB_KEYS.roles.creator, ...audit },
+              { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.creator, ...audit },
+              { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...audit },
+              { key: MOCK_DB_KEYS.userRoles.adminOwner, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.owner, ...audit },
+            ],
+            users: [
+              { key: MOCK_DB_KEYS.users.user1, displayName: "User 1", email: "user1@example.invalid", isActive: true, ...audit },
+              { key: MOCK_DB_KEYS.users.admin, displayName: "DavidQ", email: "qbytes.dq@gmail.com", isActive: true, ...audit },
+            ],
+          },
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/toolbox/votes/snapshot", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          currentUserName: "DavidQ",
+          rows: [
+            {
+              currentUserVote: "",
+              down: 0,
+              downPercent: 0,
+              group: "Platform",
+              order: 1,
+              path: "admin/platform-settings.html",
+              releaseChannel: "wireframe",
+              releaseChannelLabel: "Wireframe",
+              status: "wireframe",
+              toolId: "admin-platform-settings",
+              toolKey: "admin-platform-settings",
+              toolName: "Platform Settings",
+              totalVotes: 0,
+              up: 0,
+              upPercent: 0,
+            },
+          ],
         },
         ok: true,
       }),
@@ -195,16 +252,16 @@ async function expectNoPageFailures(failures) {
 }
 
 async function expectAdminHeaderMenu(page) {
-  await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveAttribute("href", /admin\/site-setup\.html$/);
+  await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveAttribute("href", /admin\/platform-settings\.html$/);
   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveText("Owner \u25BE");
+  await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveAttribute("href", /owner\/operations\.html$/);
   const ownerSubmenu = page.locator("nav.nav-links > .nav-item[data-owner-menu] > .sub-menu");
-  await expect(ownerSubmenu.locator("a")).toHaveText(["DB Viewer", "Design System", "Grouping Colors", "Notes"]);
+  await expect(ownerSubmenu.locator("a")).toHaveText(["DB Viewer", "Design System", "Grouping Colors", "Notes", "Operations"]);
   const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
-  await expect(adminSubmenu.locator(":scope > a[data-route='admin-environments']")).toHaveText("Environments");
-  await expect(adminSubmenu.locator(":scope > a[data-route='admin-users']")).toHaveText("Users");
-  await expect(adminSubmenu.locator(":scope > a[data-route='admin-game-migration']")).toHaveText("Game Migration");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-platform-settings']")).toHaveText("Platform Settings");
-  await expect(adminSubmenu.locator(":scope > a[data-route='admin-site-setup']")).toHaveText("Site Setup");
+  await expect(adminSubmenu.locator(":scope > a[data-route='admin-tool-votes']")).toHaveText("Tool Votes");
+  await expect(adminSubmenu.locator(":scope > a[data-route='admin-users']")).toHaveText("Users");
+  await expect(adminSubmenu.locator(":scope > a[data-route='admin-environments'], :scope > a[data-route='admin-game-migration'], :scope > a[data-route='admin-site-setup']")).toHaveCount(0);
   await expect(adminSubmenu.locator("[data-owner-menu], [data-admin-my-stuff-menu], [data-admin-notes-local-menu]")).toHaveCount(0);
 }
 
@@ -226,7 +283,6 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
       if (adminPage.liveSettings) {
         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-active]")).toBeVisible();
-        await expect(page.locator("[data-platform-banner-kind]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-tone]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-message]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-save]")).toBeEnabled();
@@ -238,7 +294,6 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
           const preview = controls?.nextElementSibling;
           return {
             activeInControls: Boolean(controls?.querySelector("[data-platform-banner-active]")),
-            kindInControls: Boolean(controls?.querySelector("[data-platform-banner-kind]")),
             previewAfterControls: Boolean(preview?.matches("[data-platform-banner-preview]")),
             saveInControls: Boolean(controls?.querySelector("[data-platform-banner-save]")),
             toneInControls: Boolean(controls?.querySelector("[data-platform-banner-tone]")),
@@ -246,7 +301,6 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         });
         expect(controlLayout).toEqual({
           activeInControls: true,
-          kindInControls: true,
           previewAfterControls: true,
           saveInControls: true,
           toneInControls: true,
@@ -300,7 +354,6 @@ test("Platform banner renders active settings under the header and above the foo
           data: {
             banner: {
               active: true,
-              kind: "temporary-data",
               message: "Temporary data notice for creators.",
               sourceTable: "platform_settings",
               sourceTableRowKey: "01KVRBANNERACTIVE00000001",
@@ -322,14 +375,11 @@ test("Platform banner renders active settings under the header and above the foo
     await page.goto(`${server.baseUrl}/account/sign-in.html`, { waitUntil: "networkidle" });
     await expect(page.locator("[data-platform-banner]")).toHaveCount(2);
     await expect(page.locator("[data-platform-banner-placement='header']")).toContainText("Temporary data notice for creators.");
-    await expect(page.locator("[data-platform-banner-placement='header'] .platform-banner__kind")).toHaveText("Data notice");
     await expect(page.locator("[data-platform-banner-placement='header']")).toHaveClass(/platform-banner--warning/);
     await expect(page.locator("[data-platform-banner-placement='footer']")).toContainText("Temporary data notice for creators.");
-    await expect(page.locator("[data-platform-banner-placement='footer'] .platform-banner__kind")).toHaveText("Data notice");
     await expect(page.locator("[data-platform-banner-placement='footer']")).toHaveClass(/platform-banner--warning/);
     await expect.poll(async () => page.evaluate(() => window.GameFoundryPlatformBannerDiagnostics)).toEqual({
       active: true,
-      kind: "temporary-data",
       message: "Temporary data notice for creators.",
       sourceTable: "platform_settings",
       sourceTableRowKey: "01KVRBANNERACTIVE00000001",
@@ -375,7 +425,6 @@ test("Platform banner tones render distinct Theme V2 highlights", async ({ page 
   const server = await startRepoServer();
   const banner = {
     active: true,
-    kind: "general",
     message: "Info tone notice.",
     sourceTable: "platform_settings",
     sourceTableRowKey: "01KVRBANNERACTIVE00000001",
@@ -418,22 +467,19 @@ test("Platform banner tones render distinct Theme V2 highlights", async ({ page 
     const toneMetrics = {};
     for (const tone of ["info", "warning", "danger"]) {
       banner.tone = tone;
-      banner.kind = tone === "danger" ? "outage" : "general";
       banner.message = `${tone} tone notice.`;
       await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:platform-settings-changed")));
       await expect(page.locator("[data-platform-banner-placement='header']")).toHaveClass(new RegExp(`platform-banner--${tone}`));
       toneMetrics[tone] = await page.locator("[data-platform-banner-placement='header']").evaluate((element) => {
         const bannerStyle = window.getComputedStyle(element);
-        const kindStyle = window.getComputedStyle(element.querySelector(".platform-banner__kind"));
         return {
           backgroundColor: bannerStyle.backgroundColor,
           borderBottomColor: bannerStyle.borderBottomColor,
-          kindBackgroundColor: kindStyle.backgroundColor,
         };
       });
     }
     expect(new Set(Object.values(toneMetrics).map((metric) => metric.backgroundColor)).size).toBe(3);
-    expect(new Set(Object.values(toneMetrics).map((metric) => metric.kindBackgroundColor)).size).toBe(3);
+    expect(new Set(Object.values(toneMetrics).map((metric) => metric.borderBottomColor)).size).toBe(3);
   } finally {
     await server.close();
   }
@@ -443,7 +489,6 @@ test("Platform Settings Admin controls update banner through the service route",
   const server = await startRepoServer();
   let publicBanner = {
     active: false,
-    kind: "general",
     message: "",
     sourceTable: "platform_settings",
     sourceTableRowKey: "01KVRBANNERACTIVE00000001",
@@ -472,7 +517,8 @@ test("Platform Settings Admin controls update banner through the service route",
           data: {
             adminMainItems: [
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
-              { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
+              { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
+              { label: "Users", path: "admin/users.html", route: "admin-users" },
             ],
             ownerMenuItems: [],
           },
@@ -504,7 +550,6 @@ test("Platform Settings Admin controls update banner through the service route",
         adminPosts.push(body);
         publicBanner = {
           active: body.active === true && Boolean(body.message),
-          kind: body.kind,
           message: body.message,
           sourceTable: "platform_settings",
           sourceTableRowKey: "01KVRBANNERACTIVE00000001",
@@ -522,7 +567,7 @@ test("Platform Settings Admin controls update banner through the service route",
               sourceTable: "platform_settings",
               sourceTableRowKey: publicBanner.sourceTableRowKey,
             },
-            recordsWritten: route.request().method() === "POST" ? 4 : 0,
+            recordsWritten: route.request().method() === "POST" ? 3 : 0,
             sourceTable: "platform_settings",
           },
           ok: true,
@@ -542,7 +587,6 @@ test("Platform Settings Admin controls update banner through the service route",
       const preview = controls?.nextElementSibling;
       return {
         activeInControls: Boolean(controls?.querySelector("[data-platform-banner-active]")),
-        kindInControls: Boolean(controls?.querySelector("[data-platform-banner-kind]")),
         previewAfterControls: Boolean(preview?.matches("[data-platform-banner-preview]")),
         saveInControls: Boolean(controls?.querySelector("[data-platform-banner-save]")),
         toneInControls: Boolean(controls?.querySelector("[data-platform-banner-tone]")),
@@ -550,17 +594,14 @@ test("Platform Settings Admin controls update banner through the service route",
     });
     expect(controlLayout).toEqual({
       activeInControls: true,
-      kindInControls: true,
       previewAfterControls: true,
       saveInControls: true,
       toneInControls: true,
     });
     await page.locator("[data-platform-banner-active]").check();
-    await page.locator("[data-platform-banner-kind]").selectOption("outage");
     await page.locator("[data-platform-banner-tone]").selectOption("danger");
     await page.locator("[data-platform-banner-message]").fill("Outage notice for creators.");
     await expect(page.locator("[data-platform-banner-preview]")).toContainText("Outage notice for creators.");
-    await expect(page.locator("[data-platform-banner-preview] .platform-banner__kind")).toHaveText("Outage");
     await expect(page.locator("[data-platform-banner-preview]")).toHaveClass(/platform-banner--danger/);
 
     await page.locator("[data-platform-banner-save]").click();
@@ -568,7 +609,6 @@ test("Platform Settings Admin controls update banner through the service route",
     expect(adminPosts).toEqual([
       {
         active: true,
-        kind: "outage",
         message: "Outage notice for creators.",
         tone: "danger",
       },
@@ -585,13 +625,11 @@ test("Platform Settings Admin controls update banner through the service route",
     expect(adminPosts).toEqual([
       {
         active: true,
-        kind: "outage",
         message: "Outage notice for creators.",
         tone: "danger",
       },
       {
         active: false,
-        kind: "outage",
         message: "Outage notice for creators.",
         tone: "danger",
       },
@@ -630,13 +668,15 @@ test("Owner menu is role-gated separately from Admin menu", async ({ page }) => 
           data: {
             adminMainItems: [
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
-              { label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" },
+              { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
+              { label: "Users", path: "admin/users.html", route: "admin-users" },
             ],
             ownerMenuItems: [
               { label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" },
               { label: "Design System", path: "admin/design-system.html", route: "admin-design-system" },
               { label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" },
               { href: "/admin/admin-notes.html", label: "Notes", localNotes: true },
+              { label: "Operations", path: "owner/operations.html", route: "owner-operations" },
             ],
           },
           ok: true,
@@ -671,12 +711,149 @@ test("Owner menu is role-gated separately from Admin menu", async ({ page }) => 
       "Design System",
       "Grouping Colors",
       "Notes",
+      "Operations",
     ]);
 
     sessionRoles.splice(0, sessionRoles.length, "owner", "admin", "creator");
     await page.evaluate(() => window.dispatchEvent(new CustomEvent("gamefoundry:data-changed")));
     await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin'])")).toBeVisible();
     await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toBeVisible();
+  } finally {
+    await server.close();
+  }
+});
+
+test("Owner Operations exposes owner-only connection validation and manual operation actions", async ({ page }) => {
+  const server = await startRepoServer();
+  const ownerActionPosts = [];
+  try {
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            authenticated: true,
+            displayName: "DavidQ",
+            roleSlugs: ["owner", "admin", "creator"],
+            userKey: MOCK_DB_KEYS.users.admin,
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/navigation/admin-menu", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            adminMainItems: [
+              { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+              { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
+              { label: "Users", path: "admin/users.html", route: "admin-users" },
+            ],
+            ownerMenuItems: [
+              { label: "DB Viewer", path: "admin/db-viewer.html", route: "admin-db-viewer" },
+              { label: "Design System", path: "admin/design-system.html", route: "admin-design-system" },
+              { label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" },
+              { href: "/admin/admin-notes.html", label: "Notes", localNotes: true },
+              { label: "Operations", path: "owner/operations.html", route: "owner-operations" },
+            ],
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ data: { banner: { active: false, message: "", tone: "info" } }, ok: true }),
+      });
+    });
+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ data: { activeTools: [], readinessByStatus: {}, tools: [], toolboxContract: {} }, ok: true }),
+      });
+    });
+    await page.route("**/api/owner/operations/status", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            connectionSummary: {
+              account: { configured: true, status: "ready" },
+              environmentSwitching: "manual-env-change-and-server-restart",
+              productData: { configured: true, status: "adapter-ready" },
+              secretsExposed: false,
+            },
+            message: "Owner Operations loaded.",
+            status: "PASS",
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/owner/operations/validate", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            connectionSummary: {
+              account: { configured: true, status: "ready" },
+              environmentSwitching: "manual-env-change-and-server-restart",
+              productData: { configured: true, status: "adapter-ready" },
+              secretsExposed: false,
+            },
+            executed: true,
+            message: "Current configured connections validated.",
+            status: "PASS",
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/owner/operations/action", async (route) => {
+      const body = route.request().postDataJSON();
+      ownerActionPosts.push(body);
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            actionId: body.actionId,
+            executed: false,
+            manualOnly: true,
+            message: "Reseed DEV is staged in Owner Operations but must be executed manually through reviewed server-side scripts, configuration changes, and server restart.",
+            status: "SKIP",
+          },
+          ok: true,
+        }),
+      });
+    });
+
+    await page.goto(`${server.baseUrl}/owner/operations.html`, { waitUntil: "networkidle" });
+    await expect(page.getByRole("heading", { level: 1, name: "Operations" })).toBeVisible();
+    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu] > .sub-menu a")).toHaveText([
+      "DB Viewer",
+      "Design System",
+      "Grouping Colors",
+      "Notes",
+      "Operations",
+    ]);
+    await expect(page.locator("[data-owner-connection-summary]")).toContainText("Account");
+    await expect(page.locator("[data-owner-connection-summary]")).toContainText("not exposed");
+    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Owner Operations loaded.");
+
+    await page.locator("[data-owner-operation-validate]").click();
+    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Current configured connections validated.");
+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("validate-current-connection");
+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
+
+    await page.locator("[data-owner-operation-action='reseed-dev']").click();
+    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Reseed DEV is staged in Owner Operations");
+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("reseed-dev");
+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
+    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }]);
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
   } finally {
     await server.close();
   }
@@ -692,8 +869,7 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
     await expect(page.locator(".tool-center-panel")).toBeVisible();
     await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(ADMIN_TOOL_MENU_LABELS);
     await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText("Tool Votes");
-    await expect(page.locator("[data-admin-tool-menu] a[href='/admin/environments.html']")).toHaveText("Environments");
-    await expect(page.locator("[data-admin-tool-menu] a[href='/admin/game-migration.html']")).toHaveText("Game Migration");
+    await expect(page.locator("[data-admin-tool-menu] a[href='/admin/environments.html'], [data-admin-tool-menu] a[href='/admin/game-migration.html']")).toHaveCount(0);
     await expect(page.locator("[data-admin-tool-menu] a[href='/admin/platform-settings.html']")).toHaveText("Platform Settings");
     await page.getByLabel("Tool Display Mode").click();
     await expect(page.locator("body")).toHaveClass(/tool-focus-mode/);

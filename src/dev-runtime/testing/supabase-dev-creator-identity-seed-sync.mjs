@@ -67,13 +67,6 @@ const DEV_ROLE_DEFINITIONS = Object.freeze([
     name: "Owner",
     roleSlug: "owner",
   }),
-  Object.freeze({
-    description: "Deprecated compatibility role. Authenticated accounts use creator.",
-    isActive: false,
-    isSystemRole: false,
-    name: "Deprecated User",
-    roleSlug: "user",
-  }),
 ]);
 
 function normalizedEmail(value) {
@@ -263,6 +256,56 @@ async function repairCanonicalUserRoles({ databaseProvider, dryRun, roles, userR
   };
 }
 
+async function deleteDeprecatedRoleArtifacts({ databaseProvider, dryRun, roles, userRoles }) {
+  const deprecatedRoles = roles
+    .filter((role) => normalizedId(role.roleSlug) === "user" && normalizedId(role.key))
+    .map((role) => ({
+      key: normalizedId(role.key),
+      roleSlug: "user",
+    }));
+  const deprecatedRoleKeys = new Set(deprecatedRoles.map((role) => role.key));
+  const staleRoleKeys = new Set([...KNOWN_STALE_ROLE_KEYS, ...deprecatedRoleKeys]);
+  const staleUserRoles = userRoles
+    .filter((row) => staleRoleKeys.has(normalizedId(row.roleKey)) && normalizedId(row.key))
+    .map((row) => ({
+      key: normalizedId(row.key),
+      roleKey: normalizedId(row.roleKey),
+      userKey: normalizedId(row.userKey),
+    }));
+  const deletedUserRoles = [];
+  for (const row of staleUserRoles) {
+    if (dryRun) {
+      deletedUserRoles.push({ ...row, action: "dry-run", deleted: 0 });
+      continue;
+    }
+    const deleted = await databaseProvider.deleteUserRoleByKey(row.key);
+    deletedUserRoles.push({
+      ...row,
+      action: "deleted",
+      deleted: Array.isArray(deleted) ? deleted.length : 0,
+    });
+  }
+  const deletedRoles = [];
+  for (const role of deprecatedRoles) {
+    if (dryRun) {
+      deletedRoles.push({ ...role, action: "dry-run", deleted: 0 });
+      continue;
+    }
+    const deleted = await databaseProvider.deleteRoleByKey(role.key);
+    deletedRoles.push({
+      ...role,
+      action: "deleted",
+      deleted: Array.isArray(deleted) ? deleted.length : 0,
+    });
+  }
+  return {
+    deletedRoleRecords: deletedRoles,
+    deletedUserRoleRecords: deletedUserRoles,
+    removedRoleSlugs: ["user"],
+    staleRoleKeysChecked: Array.from(staleRoleKeys),
+  };
+}
+
 async function upsertAuthIdentity(authProvider, identity, existingByEmail, dryRun) {
   const existingUser = existingByEmail.get(identity.email.toLowerCase());
   if (dryRun) {
@@ -432,6 +475,10 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
   const ownerRole = activeRoleBySlug.get("owner");
   const userRole = afterRoles.find((role) => role.roleSlug === "user");
   const roleSlugByKey = new Map(afterRoles.map((role) => [String(role.key || ""), String(role.roleSlug || "")]));
+  const deprecatedRoleKeys = new Set(afterRoles
+    .filter((role) => String(role.roleSlug || "") === "user")
+    .map((role) => normalizedId(role.key))
+    .filter(Boolean));
   const desiredPairs = canonicalDesiredUserRolePairs(afterRoles);
   const identityEvidence = DEV_CREATOR_IDENTITIES.map((identity) => {
     const auth = authByEmail.get(identity.email.toLowerCase());
@@ -475,7 +522,6 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
     .filter((row) => ownerRole && row.roleKey === ownerRole.key && row.userKey !== davidq?.key)
     .map((row) => String(row.userKey || ""));
   const missingRoleReferenceUserRoles = afterUserRoles
-    .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
     .filter((row) => normalizedId(row.roleKey) && !roleSlugByKey.has(normalizedId(row.roleKey)))
     .map((row) => ({
       roleKey: normalizedId(row.roleKey),
@@ -483,8 +529,10 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
       userRoleKey: normalizedId(row.key),
     }));
   const staleRequestedRoleReferences = afterUserRoles
-    .filter((row) => CANONICAL_KEYS.has(normalizedId(row.userKey)))
-    .filter((row) => KNOWN_STALE_ROLE_KEYS.includes(normalizedId(row.roleKey)))
+    .filter((row) => {
+      const roleKey = normalizedId(row.roleKey);
+      return KNOWN_STALE_ROLE_KEYS.includes(roleKey) || deprecatedRoleKeys.has(roleKey);
+    })
     .map((row) => ({
       roleKey: normalizedId(row.roleKey),
       userKey: normalizedId(row.userKey),
@@ -515,8 +563,8 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
   if (!creatorRole || !adminRole || !activeRoleBySlug.get("guest") || !ownerRole) {
     failures.push("required-role-missing");
   }
-  if (userRole && userRole.isActive !== false) {
-    failures.push("legacy-user-role-not-deprecated");
+  if (userRole) {
+    failures.push("legacy-user-role-remaining");
   }
   if (unexpectedManagedAuthUsers.length || unexpectedManagedPublicUsers.length) {
     failures.push("managed-extra-test-identity-remaining");
@@ -545,7 +593,7 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
     davidqOwnerAssignmentPreserved: davidqOwnerAssignment,
     failures,
     identityEvidence,
-    legacyUserRoleDeprecated: !userRole || userRole.isActive === false,
+    legacyUserRoleDeleted: !userRole,
     missingRoleReferenceUserRoles,
     requiredRolesActive: {
       admin: Boolean(adminRole),
@@ -625,6 +673,16 @@ export async function syncSupabaseDevCreatorIdentities({
     roles: rolesForCleanup,
     userRoles: userRolesForCleanup,
   });
+  const rolesForRoleCleanup = dryRun ? rolesForCleanup : await databaseProvider.getRoles();
+  const userRolesForRoleCleanup = dryRun ? userRolesForCleanup : await databaseProvider.getUserRoles();
+  const roleArtifactCleanup = await deleteDeprecatedRoleArtifacts({
+    databaseProvider,
+    dryRun,
+    roles: rolesForRoleCleanup,
+    userRoles: userRolesForRoleCleanup,
+  });
+  const rolesForPublicCleanup = dryRun ? rolesForCleanup : await databaseProvider.getRoles();
+  const userRolesForPublicCleanup = dryRun ? userRolesForCleanup : await databaseProvider.getUserRoles();
   const publicCleanupCandidates = usersForCleanup.filter(isManagedExtraPublicUser);
   const publicCleanup = await deleteManagedPublicUsers({
     auditUserKey: SEED_DB_KEYS.users.admin,
@@ -632,8 +690,8 @@ export async function syncSupabaseDevCreatorIdentities({
     candidates: publicCleanupCandidates,
     databaseProvider,
     dryRun,
-    roles: rolesForCleanup,
-    userRoles: userRolesForCleanup,
+    roles: rolesForPublicCleanup,
+    userRoles: userRolesForPublicCleanup,
   });
 
   const authUsersForCleanup = dryRun ? beforeAuthUsers : await authProvider.listAllAdminUsers();
@@ -661,6 +719,7 @@ export async function syncSupabaseDevCreatorIdentities({
     ],
     dryRun,
     identityInitialization: initialized,
+    roleArtifactCleanup,
     status: dryRun ? "DRY_RUN" : verification.status,
     testDataCreated: authUpsertRecords.filter((record) => record.action === "created").length,
     testDataDeleted: publicCleanup.deletedRecords.length + authOnlyDeletedRecords.length,

@@ -2,20 +2,18 @@
 -- Group: Admin
 -- Ownership: docs_build/database/dml/admin.sql
 -- Runtime setup/seed operations for this group must run through server-side APIs.
--- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
+-- Temporary scope: DEV/review artifact only until Owner Operations/server seed APIs fully own grouped setup.
 -- Browser pages must not directly seed authoritative DB records.
 -- Owned tables: platform_settings
--- Note: Admin Site Setup owns explicit server-side setup/reseed entry points and platform settings bootstrap.
+-- Note: Owner Operations owns explicit setup/reseed planning. Platform Settings owns runtime banner settings.
 
 -- DML status: Server-seed-owned.
--- Setup is performed through the Admin-owned server-side seed API.
+-- Setup is performed through the owner-controlled server-side seed API.
 -- Browser pages must not seed authoritative records.
 -- The server/API layer generates all non-user keys.
 -- This SQL file intentionally has no direct INSERT statements because direct SQL would bypass key/audit ownership.
 -- Direct SQL setup for this group remains deferred until a later migration-runner PR explicitly owns it.
 -- Starter server seed rows:
---   platform_settings.settingKey = site.setup.status
 --   platform_settings.settingKey = platform.banner.enabled
 --   platform_settings.settingKey = platform.banner.message
 --   platform_settings.settingKey = platform.banner.tone
---   platform_settings.settingKey = platform.banner.kind

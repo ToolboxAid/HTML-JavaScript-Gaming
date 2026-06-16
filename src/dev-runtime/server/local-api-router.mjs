@@ -166,17 +166,11 @@ const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
 });
 const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
-  Object.freeze({ label: "Branding", path: "admin/branding.html", route: "admin-branding" }),
   Object.freeze({ label: "Controls", path: "admin/controls.html", route: "admin-controls" }),
-  Object.freeze({ label: "Environments", path: "admin/environments.html", route: "admin-environments" }),
-  Object.freeze({ label: "Game Migration", path: "admin/game-migration.html", route: "admin-game-migration" }),
   Object.freeze({ label: "Moderation", path: "admin/moderation.html", route: "admin-moderation" }),
   Object.freeze({ label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" }),
   Object.freeze({ label: "Ratings", path: "admin/ratings.html", route: "admin-ratings" }),
   Object.freeze({ label: "Roles", path: "admin/roles.html", route: "admin-roles" }),
-  Object.freeze({ label: "Site Settings", path: "admin/site-settings.html", route: "admin-site-settings" }),
-  Object.freeze({ label: "Site Setup", path: "admin/site-setup.html", route: "admin-site-setup" }),
-  Object.freeze({ label: "Themes", path: "admin/themes.html", route: "admin-themes" }),
   Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
   Object.freeze({ label: "Users", path: "admin/users.html", route: "admin-users" }),
 ]);
@@ -185,6 +179,7 @@ const OWNER_NAVIGATION_ITEMS = Object.freeze([
   Object.freeze({ label: "Design System", path: "admin/design-system.html", route: "admin-design-system" }),
   Object.freeze({ label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" }),
   Object.freeze({ href: "/admin/admin-notes.html", label: "Notes", localNotes: true }),
+  Object.freeze({ label: "Operations", path: "owner/operations.html", route: "owner-operations" }),
 ]);
 
 const DB_ADAPTER_CONTRACT = Object.freeze({
@@ -211,18 +206,47 @@ const DB_ADAPTER_CONTRACT = Object.freeze({
 });
 const PLATFORM_BANNER_SETTING_KEYS = Object.freeze({
   active: "platform.banner.enabled",
-  kind: "platform.banner.kind",
   message: "platform.banner.message",
   tone: "platform.banner.tone",
 });
-const PLATFORM_BANNER_KINDS = Object.freeze(["general", "temporary-data", "outage"]);
 const PLATFORM_BANNER_TONES = Object.freeze(["info", "warning", "danger"]);
 const PLATFORM_BANNER_DEFAULTS = Object.freeze({
   active: false,
-  kind: "general",
   message: "",
   tone: "info",
 });
+const OWNER_OPERATION_ACTIONS = Object.freeze([
+  Object.freeze({
+    id: "validate-current-connection",
+    label: "Validate current connection",
+    mode: "live-check",
+  }),
+  Object.freeze({
+    id: "reseed-dev",
+    label: "Reseed DEV",
+    mode: "manual-only",
+  }),
+  Object.freeze({
+    id: "restore-from-backup",
+    label: "Restore from backup",
+    mode: "manual-only",
+  }),
+  Object.freeze({
+    id: "run-migration",
+    label: "Run migration",
+    mode: "manual-only",
+  }),
+  Object.freeze({
+    id: "promote-dev-to-uat",
+    label: "Promote DEV to UAT",
+    mode: "manual-only",
+  }),
+  Object.freeze({
+    id: "promote-uat-to-prod",
+    label: "Promote UAT to PROD",
+    mode: "manual-only",
+  }),
+]);
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
@@ -406,12 +430,8 @@ function normalizedPlatformBanner(rows = []) {
   const tone = PLATFORM_BANNER_TONES.includes(platformSettingValue(rowsByKey, "tone"))
     ? platformSettingValue(rowsByKey, "tone")
     : PLATFORM_BANNER_DEFAULTS.tone;
-  const kind = PLATFORM_BANNER_KINDS.includes(platformSettingValue(rowsByKey, "kind"))
-    ? platformSettingValue(rowsByKey, "kind")
-    : PLATFORM_BANNER_DEFAULTS.kind;
   return {
     active: activeFlag && Boolean(message),
-    kind,
     message,
     sourceTableRowKey: rowsByKey.get(PLATFORM_BANNER_SETTING_KEYS.active)?.key || "",
     sourceTable: "platform_settings",
@@ -425,13 +445,10 @@ function normalizePlatformBannerUpdate(body = {}) {
   const tone = PLATFORM_BANNER_TONES.includes(String(body.tone || "").trim())
     ? String(body.tone).trim()
     : PLATFORM_BANNER_DEFAULTS.tone;
-  const kind = PLATFORM_BANNER_KINDS.includes(String(body.kind || "").trim())
-    ? String(body.kind).trim()
-    : PLATFORM_BANNER_DEFAULTS.kind;
   if (active && !message) {
     throw new Error("Platform banner message is required before enabling the banner.");
   }
-  return { active, kind, message, tone };
+  return { active, message, tone };
 }
 
 function platformBannerSettingRows({ actorKey, adapter, banner, existingRows }) {
@@ -455,12 +472,6 @@ function platformBannerSettingRows({ actorKey, adapter, banner, existingRows }) 
       settingKey: PLATFORM_BANNER_SETTING_KEYS.tone,
       settingType: "string",
       settingValue: banner.tone,
-    },
-    {
-      description: "Platform banner notice kind.",
-      settingKey: PLATFORM_BANNER_SETTING_KEYS.kind,
-      settingType: "string",
-      settingValue: banner.kind,
     },
   ];
   return settingRows.map((row) => {
@@ -679,6 +690,7 @@ function guestSession(mode, diagnostic = "") {
     displayName: "Login",
     id: "guest",
     isAdmin: false,
+    isOwner: false,
     label: "Guest",
     roleSlugs: [],
     userKey: null,
@@ -715,6 +727,7 @@ function sessionUserFromIdentityTables(tables, userKey, modeId, providerLabel) {
     displayName: user.displayName || key,
     id: key,
     isAdmin: roleSlugs.includes("admin"),
+    isOwner: roleSlugs.includes("owner"),
     label: user.displayName || key,
     roleSlugs,
     userKey: key,
@@ -1305,7 +1318,7 @@ class ApiRuntimeDataSource {
         status: firstAdminReady ? "PASS" : "FAIL",
         message: firstAdminReady
           ? "At least one active user has the admin role through user_roles."
-          : "Create or assign the first admin through Admin -> Site Setup before promotion.",
+          : "Create or assign the first admin through Owner Operations before promotion.",
       },
       {
         action: "Create approved role records",
@@ -1351,8 +1364,8 @@ class ApiRuntimeDataSource {
     const status = statusCounts.FAIL ? "FAIL" : (statusCounts.WARN || statusCounts.SKIP ? "WARN" : "PASS");
     return {
       areas,
-      message: `Site Setup status checked ${areas.length} setup areas.`,
-      ownership: "Admin -> Site Setup",
+      message: `Owner Operations setup status checked ${areas.length} setup areas.`,
+      ownership: "Owner -> Operations",
       connection: this.providerContract().activeProviders,
       status,
       statusCounts,
@@ -1400,6 +1413,117 @@ class ApiRuntimeDataSource {
       diagnostics: platformBannerDiagnostics(refreshedBanner),
       recordsWritten: rows.length,
       sourceTable: "platform_settings",
+    };
+  }
+
+  async requireOwnerSession() {
+    const session = await this.currentSessionForRoute();
+    if (!session.isOwner || !session.userKey) {
+      throw new Error("Owner role required to use Owner Operations.");
+    }
+    return session;
+  }
+
+  ownerConnectionSummary() {
+    const providerContract = this.providerContract();
+    const authStatus = this.authStatus();
+    const productStatus = providerContract.supabasePostgres?.status || "unknown";
+    return {
+      account: {
+        configured: authStatus.configured === true,
+        label: "Account connection",
+        status: authStatus.status,
+      },
+      boundary: SERVER_DATA_BOUNDARY_RULE,
+      environmentSwitching: "manual-env-change-and-server-restart",
+      productData: {
+        configured: providerContract.supabasePostgres?.configured === true,
+        label: "Product data connection",
+        status: productStatus,
+      },
+      secretsExposed: false,
+    };
+  }
+
+  async ownerOperationsStatus() {
+    await this.requireOwnerSession();
+    return {
+      actions: clone(OWNER_OPERATION_ACTIONS),
+      connectionSummary: this.ownerConnectionSummary(),
+      message: "Owner Operations loaded. Environment switching remains manual through configuration changes and server restart.",
+      secretEditingAllowed: false,
+      status: "PASS",
+    };
+  }
+
+  async validateOwnerConnection() {
+    await this.requireOwnerSession();
+    const authStatus = await this.authStatusForRoute();
+    let productCheck = {
+      ready: false,
+      status: "unavailable",
+      message: "Product data connection was not validated.",
+    };
+    try {
+      const connection = this.supabaseDatabaseAdapter("Validating Owner Operations product data connection").connect();
+      productCheck = {
+        ready: connection.ready === true,
+        status: connection.ready === true ? "ready" : "unavailable",
+        message: connection.ready === true
+          ? "Product data connection is configured."
+          : "Product data connection did not report ready.",
+      };
+    } catch (error) {
+      productCheck = {
+        ready: false,
+        status: "unavailable",
+        message: error instanceof Error ? error.message : String(error || "Product data connection validation failed."),
+      };
+    }
+    const accountReady = authStatus.ready === true;
+    const status = accountReady && productCheck.ready ? "PASS" : "FAIL";
+    return {
+      checks: [
+        {
+          id: "account-connection",
+          label: "Account connection",
+          status: accountReady ? "PASS" : "FAIL",
+          message: authStatus.operatorDiagnostic || authStatus.message || "Account connection status unavailable.",
+        },
+        {
+          id: "product-data-connection",
+          label: "Product data connection",
+          status: productCheck.ready ? "PASS" : "FAIL",
+          message: productCheck.message,
+        },
+      ],
+      connectionSummary: this.ownerConnectionSummary(),
+      executed: true,
+      message: status === "PASS"
+        ? "Current configured connections validated."
+        : "Current configured connection validation failed.",
+      secretEditingAllowed: false,
+      status,
+    };
+  }
+
+  async runOwnerOperationAction(body = {}) {
+    await this.requireOwnerSession();
+    const actionId = String(body.actionId || "").trim();
+    const action = OWNER_OPERATION_ACTIONS.find((candidate) => candidate.id === actionId);
+    if (!action) {
+      throw new Error(`Unknown Owner Operations action: ${actionId || "missing actionId"}.`);
+    }
+    if (action.id === "validate-current-connection") {
+      return this.validateOwnerConnection();
+    }
+    return {
+      actionId: action.id,
+      executed: false,
+      manualOnly: true,
+      message: `${action.label} is staged in Owner Operations but must be executed manually through reviewed server-side scripts, configuration changes, and server restart.`,
+      secretEditingAllowed: false,
+      status: "SKIP",
     };
   }
 
@@ -2872,6 +2996,22 @@ export function createLocalApiRouter() {
       if (parts[1] === "admin" && parts[2] === "platform-settings" && request.method === "POST" && parts[3] === "banner") {
         const body = await readRequestJson(request);
         ok(response, await dataSource.updateAdminPlatformBanner(body));
+        return true;
+      }
+
+      if (parts[1] === "owner" && parts[2] === "operations" && request.method === "GET" && parts[3] === "status") {
+        ok(response, await dataSource.ownerOperationsStatus());
+        return true;
+      }
+
+      if (parts[1] === "owner" && parts[2] === "operations" && request.method === "POST" && parts[3] === "validate") {
+        ok(response, await dataSource.validateOwnerConnection());
+        return true;
+      }
+
+      if (parts[1] === "owner" && parts[2] === "operations" && request.method === "POST" && parts[3] === "action") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.runOwnerOperationAction(body));
         return true;
       }
 

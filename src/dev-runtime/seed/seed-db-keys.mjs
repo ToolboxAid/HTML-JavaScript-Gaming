@@ -13,7 +13,6 @@ export const SEED_DB_KEYS = Object.freeze({
     producer: makeSeedUlid(52),
   }),
   roles: Object.freeze({
-    user: makeSeedUlid(72),
     admin: makeSeedUlid(73),
     system: makeSeedUlid(74),
     beta: makeSeedUlid(75),
