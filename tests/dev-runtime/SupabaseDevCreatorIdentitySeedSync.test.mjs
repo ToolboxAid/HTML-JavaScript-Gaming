@@ -217,6 +217,13 @@ test("Supabase DEV creator identity sync upserts canonical users and deletes ext
   ]);
   assert.equal(result.verification.legacyUserRoleDeprecated, true);
   assert.equal(result.verification.davidqAdminAssignmentPreserved, true);
+  assert.deepEqual(result.verification.roleEvidence, {
+    davidqAdmin: true,
+    davidqCreator: true,
+    user1Creator: true,
+    user2Creator: true,
+    user3Creator: true,
+  });
   assert.equal(result.verification.identityEvidence.every((record) => record.synced), true);
   assert.equal(result.verification.creatorAssignments.every((record) => record.assigned), true);
 

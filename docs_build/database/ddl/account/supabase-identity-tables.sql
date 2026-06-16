@@ -1,6 +1,6 @@
 -- Game Foundry Studio Supabase identity bootstrap DDL
 -- Scope: Supabase account identity tables only.
--- Product data remains on Local DB for PR_26166_155.
+-- Product data uses the configured server product-data connection.
 -- No password tables are created here; passwords remain owned by Supabase Auth.
 -- users.key is the authoritative ownership reference for app records.
 

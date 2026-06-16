@@ -50,13 +50,13 @@
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-users" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
-                    <section class="tool-center-panel content-stack" aria-labelledby="admin-users-title" data-local-db-page="admin-users">
+                    <section class="tool-center-panel content-stack" aria-labelledby="admin-users-title" data-admin-service-page="admin-users">
                         <div>
-                            <div class="kicker">Local DB</div>
+                            <div class="kicker">Account Service</div>
                             <h2 id="admin-users-title">User Review</h2>
                         </div>
-                        <p class="status" role="status" data-local-db-status>Loading Local DB users.</p>
-                        <div class="content-stack" data-local-db-content></div>
+                        <p class="status" role="status" data-admin-service-status>Loading account users.</p>
+                        <div class="content-stack" data-admin-service-content></div>
                     </section>
                     <aside class="tool-column tool-group-platform">
                         <div class="tool-column-header">
@@ -66,7 +66,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" role="status">Read-only Admin view. User records are loaded from Local DB and are not changed from this page.</p>
+                                    <p class="status" role="status">Read-only Admin view. User records are loaded from the account service and are not changed from this page.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>
@@ -84,7 +84,7 @@
     <div data-partial="footer"></div>
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-    <script type="module" src="assets/theme-v2/js/local-db-page-data.js"></script>
+    <script type="module" src="assets/theme-v2/js/admin-service-page-data.js"></script>
 </body>
 
 </html>

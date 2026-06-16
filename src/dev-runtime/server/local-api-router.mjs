@@ -101,7 +101,6 @@ const AUTH_UNAVAILABLE_MESSAGE = "The site is currently unavailable. Please try 
 const AUTH_READY_MESSAGE = "Account service is available.";
 const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Please contact support.";
 const PASSWORD_RESET_RATE_LIMIT_MESSAGE = "Too many reset requests. Please wait and try again later.";
-const DEPRECATED_LOCAL_DB_ENDPOINT_MESSAGE = "Deprecated database endpoint is disabled. Use the server API service contract routes.";
 const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
   description: "Default authenticated Creator role.",
   isSystemRole: false,
@@ -491,12 +490,6 @@ function fail(response, statusCode, error) {
     ok: false,
     rule: SERVER_DATA_BOUNDARY_RULE,
   });
-}
-
-function deprecatedDatabaseEndpointError(pathname = "") {
-  const error = new Error(`${DEPRECATED_LOCAL_DB_ENDPOINT_MESSAGE}${pathname ? ` (${pathname})` : ""}`);
-  error.statusCode = 410;
-  return error;
 }
 
 function logSafeAuthOperatorDiagnostic(request, requestUrl, error) {
@@ -2675,13 +2668,8 @@ export function createLocalApiRouter() {
         return true;
       }
 
-      if (parts[1] === "local-db" || parts[1] === "mock-db") {
-        fail(response, 410, deprecatedDatabaseEndpointError(requestUrl.pathname));
-        return true;
-      }
-
       if (parts[1] === "admin" && parts[2] === "setup" && request.method === "POST" && parts[3] === "reseed") {
-        fail(response, 410, deprecatedDatabaseEndpointError(requestUrl.pathname));
+        fail(response, 410, new Error("Admin reseed endpoint is removed. Use configured server setup/sync scripts."));
         return true;
       }
 
@@ -2713,11 +2701,6 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "navigation" && request.method === "GET" && parts[2] === "admin-menu") {
         ok(response, dataSource.adminNavigationMenu());
-        return true;
-      }
-
-      if (parts[1] === "dev" && parts[2] === "testing" && parts[3] === "mock-db-state" && request.method === "POST") {
-        fail(response, 410, deprecatedDatabaseEndpointError(requestUrl.pathname));
         return true;
       }
 

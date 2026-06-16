@@ -185,8 +185,7 @@ export class AccountUserControlsPage {
       list.addEventListener("input", (event) => this.handleListInput(event));
       list.addEventListener("dblclick", (event) => this.handleListDoubleClick(event));
     });
-    window.addEventListener("gamefoundry:mock-db-session-user-changed", () => this.refreshForSessionUser());
-    window.addEventListener("gamefoundry:mock-db-session-mode-changed", () => this.refreshForSessionUser());
+    window.addEventListener("gamefoundry:session-user-changed", () => this.refreshForSessionUser());
     this.startDevicePolling();
   }
 

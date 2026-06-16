@@ -5,7 +5,7 @@
 -- Temporary scope: DEV/review artifact only until Admin Site Setup/server seed APIs fully own grouped setup.
 -- Browser pages must not directly seed authoritative DB records.
 -- Owned tables: support_categories
--- Note: Support category setup is active in the Local DB adapter through Admin Site Setup/server seed ownership.
+-- Note: Support category setup is active through Admin Site Setup/server seed ownership.
 
 -- DML status: Server-seed-owned.
 -- Setup is performed through the Admin-owned server-side seed API.

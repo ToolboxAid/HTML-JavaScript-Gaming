@@ -10,10 +10,6 @@ function unwrap(response, context) {
   return response.payload.data;
 }
 
-export function reseedAdminSetup() {
-  return unwrap(safeRequestServerApi("/admin/setup/reseed", { method: "POST" }), "Admin setup reseed");
-}
-
 export function readAdminSetupStatus() {
   return unwrap(safeRequestServerApi("/admin/setup/status"), "Admin setup status");
 }

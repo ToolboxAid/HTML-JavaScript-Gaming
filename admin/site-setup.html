@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Admin Wireframe</div>
                 <h1>Site Setup</h1>
-                <p class="lede">Admin-owned setup actions for controlled Local DB bootstrap and review.</p>
+                <p class="lede">Admin-owned setup actions for controlled bootstrap and review.</p>
             </div>
         </section>
         <section class="section">
@@ -44,8 +44,7 @@
                                 <summary>Setup Actions</summary>
                                 <div class="accordion-body content-stack">
                                     <label>Setup Area <select disabled><option>Default roles</option><option>First admin</option><option>Tool metadata bootstrap</option><option>Starter platform settings</option><option>Ticket categories</option></select></label>
-                                    <label>Review Mode <select disabled><option>Foundation only</option><option>Local DB dry run</option><option>Admin approval</option></select></label>
-                                    <button class="btn btn--compact" type="button" data-admin-setup-reseed>Reseed Local DB</button>
+                                    <label>Review Mode <select disabled><option>Foundation only</option><option>Server setup check</option><option>Admin approval</option></select></label>
                                     <button class="btn btn--compact" type="button" data-admin-setup-refresh>Refresh Setup Status</button>
                                     <p class="status" role="status" data-admin-setup-status>SKIP: No setup action has been run.</p>
                                 </div>
@@ -58,7 +57,7 @@
                             <div class="kicker">Setup Ownership</div>
                             <h2 id="admin-site-setup-title">Controlled Setup Foundation</h2>
                         </div>
-                        <p>This page owns controlled Local DB setup entry points. Reseed actions call admin-gated server APIs and report visible PASS/FAIL/WARN/SKIP status.</p>
+                        <p>This page owns controlled setup entry points. Status actions call admin-gated server APIs and report visible PASS/FAIL/WARN/SKIP status.</p>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Site setup ownership foundation">
                                 <caption>Future Site Setup Ownership</caption>
@@ -95,7 +94,7 @@
                                 <summary>DDL/DML Review</summary>
                                 <div class="accordion-body content-stack">
                                     <p>DDL remains under docs_build/database/ddl/.</p>
-                                    <p>Temporary DEV setup review DML is grouped under docs_build/database/dml/. Local DB reseed runs through the server API.</p>
+                                    <p>Setup review DML is grouped under docs_build/database/dml/. Runtime setup checks run through the server API.</p>
                                 </div>
                             </details>
                         </div>

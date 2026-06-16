@@ -113,14 +113,14 @@ test("browser and UAT/PROD candidate surfaces do not import src/dev-runtime", ()
   );
 });
 
-test("server Local DB seeds, guest package loading, and reseed use dev-runtime modules", () => {
+test("server seed loading and guest package loading use dev-runtime modules without legacy database routes", () => {
   const router = read("src/dev-runtime/server/local-api-router.mjs");
   assert.match(router, /from "\.\.\/seed\/server-seed-loader\.mjs"/);
   assert.match(router, /readDocsBuildGuestSeedPackages\(\)/);
   assert.match(router, /createServerSeedTables\(\)/);
-  assert.match(router, /parts\[1\] === "local-db"/);
-  assert.match(router, /parts\[1\] === "mock-db"/);
-  assert.match(router, /parts\[2\] === "seed"/);
+  assert.doesNotMatch(router, /parts\[1\] === "local-db"/);
+  assert.doesNotMatch(router, /parts\[1\] === "mock-db"/);
+  assert.doesNotMatch(router, /mock-db-state/);
   assert.match(router, /parts\[1\] === "guest"/);
   assert.match(router, /parts\[2\] === "seed"/);
   assert.doesNotMatch(router, /toolbox\/(?:assets|colors|game-configuration|game-design|game-journey|game-workspace)\/.*mock-repository/);

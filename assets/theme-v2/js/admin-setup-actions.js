@@ -1,6 +1,5 @@
-import { readAdminSetupStatus, reseedAdminSetup } from "../../../src/engine/api/admin-setup-api-client.js";
+import { readAdminSetupStatus } from "../../../src/engine/api/admin-setup-api-client.js";
 
-const reseedButtons = Array.from(document.querySelectorAll("[data-admin-setup-reseed]"));
 const refreshButtons = Array.from(document.querySelectorAll("[data-admin-setup-refresh]"));
 const statusFields = Array.from(document.querySelectorAll("[data-admin-setup-status]"));
 const statusRows = Array.from(document.querySelectorAll("[data-admin-setup-status-rows]"));
@@ -13,7 +12,7 @@ function setStatus(message, status = "PASS") {
 }
 
 function setBusy(isBusy) {
-  [...reseedButtons, ...refreshButtons].forEach((button) => {
+  refreshButtons.forEach((button) => {
     button.disabled = isBusy;
     if (isBusy) {
       button.setAttribute("aria-disabled", "true");
@@ -57,27 +56,6 @@ function refreshSetupStatus() {
     setBusy(false);
   }
 }
-
-function runReseed() {
-  setBusy(true);
-  setStatus("Running Local DB reseed through Admin setup.", "WARN");
-  try {
-    const result = reseedAdminSetup();
-    setStatus(result.message || "Local DB reseed completed through Admin setup.", result.status || "PASS");
-    window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-changed", {
-      detail: result.snapshot || null,
-    }));
-  } catch (error) {
-    const message = error instanceof Error ? error.message : String(error || "Admin setup reseed failed.");
-    setStatus(message, "FAIL");
-  } finally {
-    setBusy(false);
-  }
-}
-
-reseedButtons.forEach((button) => {
-  button.addEventListener("click", runReseed);
-});
 
 refreshButtons.forEach((button) => {
   button.addEventListener("click", refreshSetupStatus);

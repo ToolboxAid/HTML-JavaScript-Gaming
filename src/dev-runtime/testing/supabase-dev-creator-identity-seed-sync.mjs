@@ -11,19 +11,19 @@ export const DEV_CREATOR_IDENTITIES = Object.freeze([
     displayName: "User 1",
     email: "user1@example.invalid",
     key: MOCK_DB_KEYS.users.user1,
-    passwordSuffix: "1",
+    passwordSuffix: "1!!",
   }),
   Object.freeze({
     displayName: "User 2",
     email: "user2@example.invalid",
     key: MOCK_DB_KEYS.users.user2,
-    passwordSuffix: "2",
+    passwordSuffix: "2!!",
   }),
   Object.freeze({
     displayName: "User 3",
     email: "user3@example.invalid",
     key: MOCK_DB_KEYS.users.user3,
-    passwordSuffix: "3",
+    passwordSuffix: "3!!",
   }),
   Object.freeze({
     displayName: "DavidQ",
@@ -379,6 +379,16 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
   });
   const davidq = publicByEmail.get("qbytes.dq@gmail.com");
   const davidqAdminAssignment = Boolean(davidq && adminRole && userRolePairs.has(`${davidq.key}\u0000${adminRole.key}`));
+  const roleEvidence = {
+    davidqAdmin: davidqAdminAssignment,
+    davidqCreator: creatorAssignments.find((record) => record.email === "qbytes.dq@gmail.com")?.assigned === true,
+    user1Creator: creatorAssignments.find((record) => record.email === "user1@example.invalid")?.assigned === true,
+    user2Creator: creatorAssignments.find((record) => record.email === "user2@example.invalid")?.assigned === true,
+    user3Creator: creatorAssignments.find((record) => record.email === "user3@example.invalid")?.assigned === true,
+  };
+  const nonDavidqAdminAssignments = afterUserRoles
+    .filter((row) => adminRole && row.roleKey === adminRole.key && row.userKey !== davidq?.key)
+    .map((row) => String(row.userKey || ""));
   const unexpectedManagedAuthUsers = afterAuthUsers
     .filter((user) => isManagedExtraDevIdentityEmail(authUserEmail(user)))
     .map((user) => ({ authProviderUserId: maskId(authUserId(user)), email: authUserEmail(user) }));
@@ -401,6 +411,12 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
   if (unexpectedManagedAuthUsers.length || unexpectedManagedPublicUsers.length) {
     failures.push("managed-extra-test-identity-remaining");
   }
+  if (!davidqAdminAssignment) {
+    failures.push("davidq-admin-role-missing");
+  }
+  if (nonDavidqAdminAssignments.length) {
+    failures.push("unexpected-seeded-admin-assignment");
+  }
   return {
     creatorAssignments,
     davidqAdminAssignmentPreserved: davidqAdminAssignment,
@@ -412,6 +428,8 @@ function syncVerification({ afterAuthUsers, afterPublicUsers, afterRoles, afterU
       creator: Boolean(creatorRole),
       guest: Boolean(activeRoleBySlug.get("guest")),
     },
+    nonDavidqAdminAssignments,
+    roleEvidence,
     status: failures.length ? "FAIL" : "PASS",
     unexpectedManagedAuthUsers,
     unexpectedManagedPublicUsers,
@@ -441,7 +459,7 @@ export async function syncSupabaseDevCreatorIdentities({
       dryRun: true,
       initialized: {
         roles: DEV_ROLE_DEFINITIONS.length,
-        user_roles: DEV_CREATOR_IDENTITIES.length,
+        user_roles: DEV_CREATOR_IDENTITIES.length + 1,
         users: DEV_CREATOR_IDENTITIES.length,
       },
       written: {
@@ -453,10 +471,16 @@ export async function syncSupabaseDevCreatorIdentities({
     : await databaseProvider.initializeIdentity({
       actorKey: MOCK_DB_KEYS.users.admin,
       roles: DEV_ROLE_DEFINITIONS,
-      userRoles: DEV_CREATOR_IDENTITIES.map((identity) => ({
-        roleSlug: "creator",
-        userKey: identity.key,
-      })),
+      userRoles: [
+        ...DEV_CREATOR_IDENTITIES.map((identity) => ({
+          roleSlug: "creator",
+          userKey: identity.key,
+        })),
+        {
+          roleSlug: "admin",
+          userKey: MOCK_DB_KEYS.users.admin,
+        },
+      ],
       users: canonicalUserRows(authUsersForIdentity),
     });
 

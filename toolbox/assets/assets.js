@@ -16,10 +16,10 @@ if (params.get("handoff") === "missing") {
 if (params.get("uploadWrite") === "unsupported") {
   repository.setUploadFileWriteSupport(false);
 }
-if (isLocalDevRuntime() && params.get("uploadPath") === "escape") {
+if (isBrowserValidationHost() && params.get("uploadPath") === "escape") {
   repository.setUnsafeUploadPathForTest(true);
 }
-if (isLocalDevRuntime() && params.get("deletePath") === "escape") {
+if (isBrowserValidationHost() && params.get("deletePath") === "escape") {
   repository.setUnsafeDeletePathForTest(true);
 }
 
@@ -73,13 +73,13 @@ const MAX_UPLOAD_CHUNK_SIZE_BYTES = 1024 * 1024;
 const SERVER_RECEIVE_PROGRESS_INTERVAL_MS = 1000;
 const UPLOAD_WORKER_URL = new URL("./assets-upload-worker.js", import.meta.url);
 
-function isLocalDevRuntime() {
+function isBrowserValidationHost() {
   return ["", "localhost", "127.0.0.1", "::1"].includes(window.location.hostname);
 }
 
-// Local/dev validation hook only; production hosts get no simulated upload delay.
-function devUploadProgressStepMs() {
-  if (!isLocalDevRuntime()) {
+// Validation hook only; hosted pages get no simulated upload delay.
+function validationUploadProgressStepMs() {
+  if (!isBrowserValidationHost()) {
     return 0;
   }
   const requestedDelay = Number(params.get("uploadProgressDelayMs"));
@@ -89,9 +89,9 @@ function devUploadProgressStepMs() {
   return 60;
 }
 
-const UPLOAD_PROGRESS_STEP_MS = devUploadProgressStepMs();
-const UPLOAD_CHUNK_SIZE_BYTES = devUploadChunkSizeBytes();
-const SERVER_RECEIVE_CHUNK_SIZE_BYTES = devServerReceiveChunkSizeBytes();
+const UPLOAD_PROGRESS_STEP_MS = validationUploadProgressStepMs();
+const UPLOAD_CHUNK_SIZE_BYTES = validationUploadChunkSizeBytes();
+const SERVER_RECEIVE_CHUNK_SIZE_BYTES = validationServerReceiveChunkSizeBytes();
 const SOURCE_HELP_BY_ASSET_TYPE = Object.freeze({
   Audio: "Upload music, voices, or sound effects for your game.",
   Data: "Upload .json, .csv, or .txt files for game features.",
@@ -102,8 +102,8 @@ const SOURCE_HELP_BY_ASSET_TYPE = Object.freeze({
   Vectors: "Vector artwork is planned for a later update."
 });
 
-function devUploadChunkSizeBytes() {
-  if (!isLocalDevRuntime()) {
+function validationUploadChunkSizeBytes() {
+  if (!isBrowserValidationHost()) {
     return DEFAULT_UPLOAD_CHUNK_SIZE_BYTES;
   }
   const requestedChunkSize = Number(params.get("uploadChunkSizeBytes"));
@@ -113,8 +113,8 @@ function devUploadChunkSizeBytes() {
   return DEFAULT_UPLOAD_CHUNK_SIZE_BYTES;
 }
 
-function devServerReceiveChunkSizeBytes() {
-  if (!isLocalDevRuntime()) {
+function validationServerReceiveChunkSizeBytes() {
+  if (!isBrowserValidationHost()) {
     return DEFAULT_UPLOAD_CHUNK_SIZE_BYTES;
   }
   const requestedChunkSize = Number(params.get("serverReceiveChunkSizeBytes"));

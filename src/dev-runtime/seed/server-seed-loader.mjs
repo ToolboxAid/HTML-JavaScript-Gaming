@@ -183,6 +183,7 @@ function userRoleRows(roles) {
     { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: roleBySlug.get("creator") },
     { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: roleBySlug.get("creator") },
     { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: roleBySlug.get("creator") },
+    { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: roleBySlug.get("admin") },
   ].map((row, index) => ({
     ...row,
     ...auditFields(10 + index),

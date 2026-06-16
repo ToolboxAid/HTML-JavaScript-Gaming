@@ -16,5 +16,5 @@
       ]
     }
   },
-  "note": "Support category setup is active in the Local DB adapter through Admin Site Setup/server seed ownership."
+  "note": "Support category setup is active through Admin Site Setup/server seed ownership."
 }

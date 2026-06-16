@@ -354,7 +354,7 @@
             authenticated: Boolean(session?.authenticated),
             diagnostic: session?.diagnostic || "",
             displayName: session?.authenticated ? session.displayName || session.label || "Account" : "Sign In",
-            mode: session?.mode || "local-db",
+            mode: session?.mode || "",
             roleSlugs: Array.isArray(session?.roleSlugs) ? session.roleSlugs : [],
             userKey: session?.userKey || null
         };
@@ -398,7 +398,7 @@
         const accountItem = navItemForRoute(root, "account");
         const accountLink = accountItem?.querySelector(":scope > a[data-route='account']");
         const accountMenu = directSubMenu(accountItem);
-        const canUseAccount = loginState.authenticated && loginState.roleSlugs.includes("user");
+        const canUseAccount = loginState.authenticated;
         const canUseAdmin = loginState.authenticated && loginState.roleSlugs.includes("admin");
 
         if (accountLink) {
@@ -434,7 +434,7 @@
         }
         if (pagePath.indexOf("account/") === 0) {
             return {
-                role: "user",
+                role: "creator",
                 title: "Sign-in required",
                 message: "Sign in with your account to open Account pages."
             };
@@ -611,7 +611,7 @@
                 return missingSessionApiLoginState(error instanceof Error ? error.message : "");
             }
         })();
-        window.dispatchEvent(new CustomEvent("gamefoundry:mock-db-session-user-changed", {
+        window.dispatchEvent(new CustomEvent("gamefoundry:session-user-changed", {
             detail: session
         }));
         refreshHeaderLoginState();
@@ -698,7 +698,6 @@
             console.error(error);
         });
     });
-    window.addEventListener("gamefoundry:mock-db-session-user-changed", refreshHeaderLoginState);
-    window.addEventListener("gamefoundry:mock-db-session-mode-changed", refreshHeaderLoginState);
-    window.addEventListener("gamefoundry:mock-db-changed", refreshHeaderOnly);
+    window.addEventListener("gamefoundry:session-user-changed", refreshHeaderLoginState);
+    window.addEventListener("gamefoundry:data-changed", refreshHeaderOnly);
 }());

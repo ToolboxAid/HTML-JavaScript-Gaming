@@ -1,4 +1,4 @@
-import { getLocalDbSnapshot } from "./local-db-api-client.js";
+import { getDbViewerSnapshot } from "./db-viewer-api-client.js";
 
 const AUDIT_FIELDS = ["createdAt", "updatedAt", "createdBy", "updatedBy"];
 const DEPRECATED_TABLE_NOTES = Object.freeze({
@@ -15,13 +15,12 @@ class AdminDbViewer {
     this.diagnostics = documentRef.querySelector("[data-admin-db-diagnostics]");
     this.relationships = documentRef.querySelector("[data-admin-db-relationships]");
     this.tablesRoot = documentRef.querySelector("[data-admin-db-tables]");
-    this.providerFields = Array.from(documentRef.querySelectorAll("[data-admin-db-status-provider]"));
+    this.connectionFields = Array.from(documentRef.querySelectorAll("[data-admin-db-status-connection]"));
     this.sourceFields = Array.from(documentRef.querySelectorAll("[data-admin-db-status-source]"));
     this.session = options.session || {};
-    this.modeId = this.session.mode || "local-db";
-    this.modeLabel = "Local DB";
-    this.providerId = "local-db";
-    this.sourceLabel = "Local DB";
+    this.modeLabel = "Configured Data";
+    this.providerId = "configured";
+    this.sourceLabel = "Configured connection";
     this.canWrite = false;
   }
 
@@ -41,24 +40,12 @@ class AdminDbViewer {
   }
 
   providerInfo(snapshot = {}) {
-    const provider = snapshot.provider && typeof snapshot.provider === "object" ? snapshot.provider : {};
-    const databaseProviderId = provider.databaseProviderId || snapshot.databaseProviderId || (snapshot.source === "supabase-postgres" ? "supabase-postgres" : "local-db");
-    const source = provider.source || snapshot.source || databaseProviderId;
-    if (databaseProviderId === "supabase-postgres") {
-      return {
-        modeLabel: "Supabase Postgres",
-        providerId: databaseProviderId,
-        providerLabel: "supabase-postgres (Supabase Postgres)",
-        source,
-        sourceLabel: source === "supabase-postgres" ? "Supabase product DB" : source,
-      };
-    }
     return {
-      modeLabel: "Local DB",
-      providerId: databaseProviderId,
-      providerLabel: `${databaseProviderId} (Local DB)`,
-      source,
-      sourceLabel: source === "local-db" ? "Local DB" : source,
+      modeLabel: "Configured Data",
+      providerId: snapshot.databaseProviderId || "configured",
+      connectionLabel: "Configured connection",
+      source: snapshot.source || "configured",
+      sourceLabel: "Configured connection",
     };
   }
 
@@ -70,7 +57,7 @@ class AdminDbViewer {
 
   renderModeChrome(providerInfo = {
     modeLabel: this.modeLabel,
-    providerLabel: `${this.providerId} (${this.modeLabel})`,
+    connectionLabel: "Configured connection",
     sourceLabel: this.sourceLabel,
   }) {
     const modeLabel = providerInfo.modeLabel;
@@ -81,15 +68,15 @@ class AdminDbViewer {
       element.textContent = element.closest(".page-title") ? `Admin Only / ${modeLabel}` : modeLabel;
     });
     this.document.querySelectorAll("[data-admin-db-mode-description]").forEach((element) => {
-      element.textContent = `Read-only ${modeLabel} dump for project tables, relationships, and data diagnostics.`;
+      element.textContent = "Read-only project data view for tables, relationships, and diagnostics.";
     });
     this.document.querySelectorAll("[data-admin-db-scope-description]").forEach((element) => {
-      element.textContent = `Current tool ${modeLabel} records are displayed as a read-only human-readable dump.`;
+      element.textContent = "Current tool records are displayed as a read-only human-readable view.";
     });
     this.filterRoot?.setAttribute("aria-label", `${modeLabel} table filters`);
     this.tablesRoot?.setAttribute("aria-label", `${modeLabel} tables`);
-    this.providerFields.forEach((element) => {
-      element.textContent = providerInfo.providerLabel;
+    this.connectionFields.forEach((element) => {
+      element.textContent = providerInfo.connectionLabel;
     });
     this.sourceFields.forEach((element) => {
       element.textContent = providerInfo.sourceLabel;
@@ -101,7 +88,7 @@ class AdminDbViewer {
     if (!this.clearButton || !this.canWrite) {
       return;
     }
-    this.clearButton.textContent = cleared ? "Seed Local DB" : "Clear Local DB";
+    this.clearButton.textContent = cleared ? "Restore Baseline" : "Clear Records";
     this.clearButton.dataset.adminDbClearMode = cleared ? "seed" : "clear";
   }
 
@@ -171,22 +158,22 @@ class AdminDbViewer {
     if (!records.length) {
       return {
         label: "Empty schema-only",
-        note: `Empty schema-only table. ${this.modeLabel} shows headers so missing records and future writes are inspectable.`,
+        note: "Empty schema-only table. Headers remain visible so missing records and future writes are inspectable.",
       };
     }
     return {
       label: "Active runtime data",
-      note: `Active runtime table data from the current ${this.modeLabel} adapter snapshot.`,
+      note: "Active runtime table data from the configured connection snapshot.",
     };
   }
 
   collectSnapshot() {
-    const snapshot = getLocalDbSnapshot();
+    const snapshot = getDbViewerSnapshot();
     const tables = snapshot.tables;
     const schemas = snapshot.schemas || {};
     const groups = Array.isArray(snapshot.viewerGroups) ? snapshot.viewerGroups : [];
     if (!groups.length) {
-      throw new Error("Mock DB snapshot is missing server-provided DB Viewer groups.");
+      throw new Error("DB Viewer snapshot is missing server-provided groups.");
     }
     return {
       cleared: Boolean(snapshot.cleared),
@@ -241,7 +228,7 @@ class AdminDbViewer {
       const row = this.createElement("tr");
       const cell = this.createElement("td", {
         text: this.canWrite
-          ? "No records in this table. Add records from its tool or use Seed Local DB to restore baseline user and role records."
+          ? "No records in this table. Add records from its tool or restore baseline user and role records."
           : `No records in this table. ${this.modeLabel} read-only inspection still shows schema headers.`,
       });
       cell.colSpan = Math.max(1, fields.length + 1);
@@ -457,7 +444,7 @@ class AdminDbViewer {
     if (unownedTables.length) {
       return unownedTables.map((tableName) => `${tableName} has live data but no ${this.modeLabel} filter owner.`);
     }
-    return [`No stale display data detected; tables are rendered from current ${this.modeLabel} snapshots.`];
+    return ["No stale display data detected; tables are rendered from current configured snapshots."];
   }
 
   renderList(messages, dataName) {
@@ -518,8 +505,8 @@ class AdminDbViewer {
     this.tablesRoot?.replaceChildren();
     if (this.status) {
       this.status.textContent = this.canWrite
-        ? `${this.modeLabel} data error. Fix the invalid record ownership or use Clear Local DB, then Seed Local DB.`
-        : `${this.modeLabel} data error. Fix the local DB storage or adapter configuration, then reload DB Viewer.`;
+        ? `${this.modeLabel} data error. Fix the invalid record ownership, then restore baseline records.`
+        : `${this.modeLabel} data error. Fix the configured connection, then reload DB Viewer.`;
     }
   }
 
@@ -551,6 +538,6 @@ class AdminDbViewer {
   }
 }
 
-export function startLocalDbViewer(documentRef = document, options = {}) {
+export function startDbViewer(documentRef = document, options = {}) {
   new AdminDbViewer(documentRef, options).start();
 }

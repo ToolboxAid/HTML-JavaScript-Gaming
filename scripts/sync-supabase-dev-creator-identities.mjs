@@ -88,6 +88,7 @@ try {
     formatRecordList("Auth/public sync evidence", result.verification.identityEvidence, (record) => `${record.email}: auth=${record.authUserPresent ? "present" : "missing"}, public.users=${record.publicUserPresent ? record.publicUserKey : "missing"}, synced=${record.synced ? "yes" : "no"}`);
     formatRecordList("Creator role assignments", result.verification.creatorAssignments, (record) => `${record.email}: ${record.assigned ? "assigned" : "missing"}`);
     console.log(`DavidQ role=admin assignment preserved: ${result.verification.davidqAdminAssignmentPreserved ? "yes" : "no"}`);
+    console.log(`Role evidence: User 1 creator=${result.verification.roleEvidence.user1Creator ? "PASS" : "FAIL"}, User 2 creator=${result.verification.roleEvidence.user2Creator ? "PASS" : "FAIL"}, User 3 creator=${result.verification.roleEvidence.user3Creator ? "PASS" : "FAIL"}, DavidQ creator=${result.verification.roleEvidence.davidqCreator ? "PASS" : "FAIL"}, DavidQ admin=${result.verification.roleEvidence.davidqAdmin ? "PASS" : "FAIL"}.`);
     console.log(`Legacy user role deprecated: ${result.verification.legacyUserRoleDeprecated ? "yes" : "no"}`);
     console.log(`Verification failures: ${result.verification.failures.length ? result.verification.failures.join(", ") : "none"}`);
   }

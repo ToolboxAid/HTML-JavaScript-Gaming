@@ -22,7 +22,7 @@ Use this only for the DEV Supabase project. Identity seeding is server-side only
 - Static DEV identity sync provisions only User 1, User 2, User 3, and DavidQ.
 - Authenticated users receive the `creator` role by default.
 - The `guest` role remains for unauthenticated browsing.
-- The `admin` role is preserved only for actual admin assignments.
+- The `admin` role is assigned to DavidQ only.
 - The legacy `user` role is deprecated and inactive.
 - Static DEV user ULIDs are allowed only for these DEV seed users:
   - User 1: `01K2GFSJ0Y0000000000000051`

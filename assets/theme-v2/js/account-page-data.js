@@ -169,5 +169,5 @@ function renderAll() {
   });
 }
 
-window.addEventListener("gamefoundry:mock-db-session-user-changed", renderAll);
+window.addEventListener("gamefoundry:session-user-changed", renderAll);
 renderAll();

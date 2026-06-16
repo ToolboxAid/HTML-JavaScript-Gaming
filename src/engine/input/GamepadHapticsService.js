@@ -77,7 +77,7 @@ export default class GamepadHapticsService {
             return {
                 ok: false,
                 gamepads: [],
-                message: 'Gamepad API provider is not available.',
+                message: 'Gamepad API service is not available.',
             };
         }
 

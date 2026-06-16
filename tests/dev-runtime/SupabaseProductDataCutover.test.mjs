@@ -251,15 +251,15 @@ test("Supabase-selected product routes bootstrap Toolbox metadata and read DB sn
   await fakeSupabase.close();
 });
 
-test("Deprecated local-db and mock-db endpoints fail visibly without product data fallback", async () => {
+test("Legacy local-db and mock-db endpoints are not active service routes", async () => {
   const server = await startApiServer();
   try {
     for (const pathName of ["/api/local-db/snapshot", "/api/mock-db/snapshot"]) {
       const response = await fetch(`${server.baseUrl}${pathName}`);
       const payload = await response.json();
-      assert.equal(response.status, 410);
+      assert.equal(response.status, 404);
       assert.equal(payload.ok, false);
-      assert.match(payload.error, /Deprecated database endpoint is disabled/);
+      assert.match(payload.error, /Unknown API route/);
     }
   } finally {
     await server.close();

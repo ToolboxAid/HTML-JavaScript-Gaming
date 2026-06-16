@@ -63,48 +63,7 @@ const userFacingUiRoots = Object.freeze(["account", "toolbox"]);
 const nonUiCompatibilityFiles = new Set([
   "toolbox/toolRegistry.js",
 ]);
-const deprecatedLocalDbDebt = Object.freeze([
-  Object.freeze({
-    path: "admin/db-viewer.html",
-    reason: "Admin diagnostic viewer still exposes historical Local DB labels while product paths move to the server service contract.",
-    followUp: "Rename or retire with the Admin DB Viewer provider-source cleanup after migrated data is fully cut over.",
-  }),
-  Object.freeze({
-    path: "admin/users.html",
-    reason: "Admin identity review page still mounts the historical Local DB page-data renderer.",
-    followUp: "Move to the Account/Admin identity service contract and remove data-local-db hooks.",
-  }),
-  Object.freeze({
-    path: "admin/roles.html",
-    reason: "Admin role review page still mounts the historical Local DB page-data renderer.",
-    followUp: "Move to the Account/Admin identity service contract and remove data-local-db hooks.",
-  }),
-  Object.freeze({
-    path: "admin/site-settings.html",
-    reason: "Admin site-settings contract page still mounts the historical Local DB page-data renderer.",
-    followUp: "Replace with server contract diagnostics after site settings get a migrated table owner.",
-  }),
-  Object.freeze({
-    path: "admin/site-setup.html",
-    reason: "Admin setup still contains controlled Local DB reseed diagnostics for transition validation.",
-    followUp: "Remove reseed wording once DEV setup bootstrap no longer needs Local DB transition checks.",
-  }),
-  Object.freeze({
-    path: "assets/theme-v2/js/local-db-page-data.js",
-    reason: "Legacy Admin Local DB page renderer remains for Admin diagnostic pages only.",
-    followUp: "Delete after Admin identity/status pages use service-contract renderers.",
-  }),
-  Object.freeze({
-    path: "src/engine/api/local-db-api-client.js",
-    reason: "Legacy Admin DB Viewer client wraps server API endpoints and is not an Account/product browser data source.",
-    followUp: "Rename or replace when DB Viewer routes are no longer named local-db.",
-  }),
-  Object.freeze({
-    path: "toolbox/toolRegistry.js",
-    reason: "Compatibility registry wrapper still imports dev-runtime seed metadata for older tests/scripts, while active Toolbox UI uses the registry service API.",
-    followUp: "Delete after legacy registry consumers move to the server registry service contract.",
-  }),
-]);
+const deprecatedLocalDbDebt = Object.freeze([]);
 
 function repoPath(absolutePath) {
   return path.relative(repoRoot, absolutePath).replace(/\\/g, "/");
@@ -313,11 +272,10 @@ async function validateProductServiceContract() {
   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "async toolboxVoteSnapshotForRoute() {\n    this.supabaseDatabaseAdapter(\"Reading Supabase Toolbox vote snapshot\");", findings, "Toolbox vote route must require the configured server product-data adapter.");
   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "async snapshotForRoute() {\n    const adapter = this.supabaseDatabaseAdapter(\"Reading Supabase product database state\");", findings, "DB snapshot route must read the configured server product-data adapter.");
   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "if (parts[1] === \"product-data\" && request.method === \"GET\" && parts[2] === \"snapshot\")", findings, "Product data snapshots must use the service-contract route name.");
-  requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "if (parts[1] === \"local-db\" || parts[1] === \"mock-db\") {\n        fail(response, 410, deprecatedDatabaseEndpointError(requestUrl.pathname));", findings, "Deprecated local-db/mock-db routes must fail visibly.");
   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Creating ${toolId} repository`);", findings, "Repository creation must assert the server-owned product-data contract.");
   requireSnippet(router, "src/dev-runtime/server/local-api-router.mjs", "this.assertProductDatabaseProvider(`Calling repository method ${methodName}`);", findings, "Repository method calls must assert the server-owned product-data contract.");
   rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /selectedDatabaseProviderId|selectedAuthProvider|selectedProvidersCanServeRuntime/, findings, "Runtime router must not contain active provider-selection helpers.");
-  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /node:sqlite|DatabaseSync|createRequire|GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER/, findings, "Runtime router must not contain SQLite startup/opening code or provider-selection environment variables.");
+  rejectPattern(router, "src/dev-runtime/server/local-api-router.mjs", /node:sqlite|DatabaseSync|createRequire|GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|parts\[1\] === "local-db"|parts\[1\] === "mock-db"|mock-db-state|deprecatedDatabaseEndpointError/, findings, "Runtime router must not contain SQLite startup/opening code, provider-selection environment variables, or legacy local-db/mock-db routes.");
 
   const startup = await readRequiredRepoFile("scripts/start-local-api-server.mjs", findings, "Local API startup script is missing");
   rejectPattern(startup, "scripts/start-local-api-server.mjs", /GAMEFOUNDRY_AUTH_PROVIDER|GAMEFOUNDRY_DB_PROVIDER|auth provider|product data provider|provider selection/i, findings, "Local API startup must describe configured connections without provider-selection environment variables.");
@@ -326,6 +284,9 @@ async function validateProductServiceContract() {
 }
 
 function formatTechnicalDebt(records) {
+  if (!records.length) {
+    return "- None";
+  }
   return records.map((record) =>
     `- \`${record.path}\` - ${record.reason} Follow-up: ${record.followUp}`
   ).join("\n");

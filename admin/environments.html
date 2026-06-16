@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Environments - GameFoundryStudio</title>
-    <meta name="description" content="Admin wireframe for environment planning, deployment stages, and local/UAT/production readiness.">
+    <meta name="description" content="Admin wireframe for release planning and readiness.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Admin Wireframe</div>
                 <h1>Environments</h1>
-                <p class="lede">Plan environment visibility, promotion gates, and deployment readiness without wiring runtime behavior.</p>
+                <p class="lede">Plan release visibility, promotion gates, and readiness without wiring runtime behavior.</p>
             </div>
         </section>
         <section class="section">
@@ -40,9 +40,9 @@
                                 </nav>
                             </details>
                             <details class="vertical-accordion" open>
-                                <summary>Environment Setup</summary>
+                                <summary>Release Setup</summary>
                                 <div class="accordion-body content-stack">
-                                    <label>Environment <select disabled><option>Local DB</option><option>UAT</option><option>Production</option></select></label>
+                                    <label>Track <select disabled><option>Build Review</option><option>Candidate Review</option><option>Public Launch</option></select></label>
                                     <label>Promotion Gate <select disabled><option>Manifest validation</option><option>Asset readiness</option><option>Public play readiness</option></select></label>
                                     <button class="btn btn--compact" type="button" disabled>Preview Gate</button>
                                 </div>
@@ -55,22 +55,22 @@
                             <div class="kicker">Work Surface</div>
                             <h2 id="admin-environments-title">Environment Matrix</h2>
                         </div>
-                        <p>This wireframe reserves the future review surface for local, UAT, and production deployment states.</p>
+                        <p>This wireframe reserves the future review surface for staged release readiness.</p>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Environment readiness wireframe">
                                 <caption>Environment Readiness</caption>
                                 <thead>
                                     <tr>
-                                        <th scope="col">Environment</th>
-                                        <th scope="col">Data Source</th>
+                                        <th scope="col">Track</th>
+                                        <th scope="col">Data Path</th>
                                         <th scope="col">Publish Gate</th>
                                         <th scope="col">Status</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    <tr><td>Local DB</td><td>SQLite</td><td>Local verification</td><td>Wireframe</td></tr>
-                                    <tr><td>UAT</td><td>Server DB</td><td>Release candidate</td><td>Planned</td></tr>
-                                    <tr><td>Production</td><td>Server DB</td><td>Public play readiness</td><td>Planned</td></tr>
+                                    <tr><td>Build Review</td><td>Server API</td><td>Verification</td><td>Wireframe</td></tr>
+                                    <tr><td>Candidate Review</td><td>Server API</td><td>Release candidate</td><td>Planned</td></tr>
+                                    <tr><td>Public Launch</td><td>Server API</td><td>Public play readiness</td><td>Planned</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -83,7 +83,7 @@
                             <details class="vertical-accordion" open>
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">
-                                    <p class="status" role="status">Wireframe only. No environment data is read or written.</p>
+                                    <p class="status" role="status">Wireframe only. No release data is read or written.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

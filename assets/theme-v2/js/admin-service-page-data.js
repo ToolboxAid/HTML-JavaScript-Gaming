@@ -1,6 +1,6 @@
-import { getLocalDbSnapshot } from "../../../src/engine/api/local-db-api-client.js";
+import { getDbViewerSnapshot } from "../../../src/engine/api/db-viewer-api-client.js";
 
-const LOCAL_DB_START_ACTION = "Start the API-backed local server with npm run dev:local-api, then reload this page.";
+const SERVICE_START_ACTION = "Start the API-backed server, then reload this page.";
 
 function text(value) {
   if (value === undefined || value === null || value === "") {
@@ -10,15 +10,15 @@ function text(value) {
 }
 
 function pageRoots() {
-  return Array.from(document.querySelectorAll("[data-local-db-page]"));
+  return Array.from(document.querySelectorAll("[data-admin-service-page]"));
 }
 
 function statusElement(root) {
-  return root.querySelector("[data-local-db-status]");
+  return root.querySelector("[data-admin-service-status]");
 }
 
 function contentElement(root) {
-  return root.querySelector("[data-local-db-content]");
+  return root.querySelector("[data-admin-service-content]");
 }
 
 function setStatus(root, message) {
@@ -39,7 +39,7 @@ function clearContent(root) {
 function tableRows(snapshot, tableName) {
   const rows = snapshot?.tables?.[tableName];
   if (!Array.isArray(rows)) {
-    throw new Error(`Local DB table ${tableName} is missing. ${LOCAL_DB_START_ACTION}`);
+    throw new Error(`Service table ${tableName} is missing. ${SERVICE_START_ACTION}`);
   }
   return rows;
 }
@@ -47,7 +47,7 @@ function tableRows(snapshot, tableName) {
 function tableSchema(snapshot, tableName) {
   const schema = snapshot?.schemas?.[tableName];
   if (!Array.isArray(schema)) {
-    throw new Error(`Local DB schema ${tableName} is missing. ${LOCAL_DB_START_ACTION}`);
+    throw new Error(`Service schema ${tableName} is missing. ${SERVICE_START_ACTION}`);
   }
   return schema;
 }
@@ -105,7 +105,7 @@ function renderTable(parent, caption, headers, rows, options = {}) {
   wrapper.className = "table-wrapper";
   const table = document.createElement("table");
   table.className = "data-table";
-  table.dataset.localDbTable = options.tableName || caption;
+  table.dataset.adminServiceTable = options.tableName || caption;
 
   const captionElement = document.createElement("caption");
   captionElement.textContent = caption;
@@ -141,7 +141,7 @@ function renderTable(parent, caption, headers, rows, options = {}) {
 function renderAudit(parent, message) {
   const status = document.createElement("p");
   status.className = "status";
-  status.dataset.localDbAudit = "";
+  status.dataset.adminServiceAudit = "";
   status.textContent = message;
   parent.append(status);
 }
@@ -149,7 +149,7 @@ function renderAudit(parent, message) {
 function renderFollowUp(parent, title, tableName, reason, action) {
   const article = document.createElement("article");
   article.className = "callout";
-  article.dataset.localDbFollowUp = tableName;
+  article.dataset.adminServiceFollowUp = tableName;
 
   const heading = document.createElement("h3");
   heading.textContent = title;
@@ -174,7 +174,7 @@ function renderAdminUsers(root, snapshot) {
     user.isActive === false ? "Inactive" : "Active",
     user.updatedAt,
   ]);
-  renderTable(content, "Local DB Users", [
+  renderTable(content, "Account Users", [
     "User",
     "users.key",
     "Email",
@@ -183,7 +183,7 @@ function renderAdminUsers(root, snapshot) {
     "Updated",
   ], rows, { tableName: "users" });
   renderAudit(content, auditMessage("user", identity.users, identity.usersByKey));
-  setStatus(root, `Loaded ${identity.users.length} Local DB users from users, roles, and user_roles.`);
+  setStatus(root, `Loaded ${identity.users.length} users from the account service.`);
 }
 
 function renderAdminRoles(root, snapshot) {
@@ -196,7 +196,7 @@ function renderAdminRoles(root, snapshot) {
     role.isActive === false ? "Inactive" : "Active",
     assignedUsersForRole(identity, role.key).join(", ") || "N/A",
   ]);
-  renderTable(content, "Local DB Roles", [
+  renderTable(content, "Account Roles", [
     "Role",
     "roles.key",
     "Description",
@@ -205,18 +205,18 @@ function renderAdminRoles(root, snapshot) {
   ], rows, { tableName: "roles" });
   renderAudit(content, auditMessage("role", identity.roles, identity.usersByKey));
   renderAudit(content, auditMessage("user_roles", identity.userRoles, identity.usersByKey));
-  setStatus(root, `Loaded ${identity.roles.length} Local DB roles and ${identity.userRoles.length} user-role assignments.`);
+  setStatus(root, `Loaded ${identity.roles.length} roles and ${identity.userRoles.length} user-role assignments.`);
 }
 
 function renderAdminSiteSettings(root, snapshot) {
   const content = clearContent(root);
   identityState(snapshot);
-  setStatus(root, "Local DB identity records loaded. Site Settings runtime table is not configured yet.");
+  setStatus(root, "Account identity records loaded. Site Settings runtime table is not configured yet.");
   renderFollowUp(
     content,
-    "Site Settings Local DB Contract",
+    "Site Settings Service Contract",
     "site_settings",
-    "No site_settings table/schema exists in the current Local DB snapshot.",
+    "No site_settings table/schema exists in the current service snapshot.",
     "Create the Admin Site Setup runtime contract before this page can edit or save site-owned settings.",
   );
 }
@@ -230,27 +230,27 @@ const RENDERERS = Object.freeze({
 function renderFailure(root, error) {
   clearContent(root);
   const content = contentElement(root);
-  const message = error instanceof Error ? error.message : String(error || "Local DB data unavailable.");
-  setStatus(root, `Local DB unavailable: ${message}`);
+  const message = error instanceof Error ? error.message : String(error || "Account service data unavailable.");
+  setStatus(root, `Account service unavailable: ${message}`);
   if (content) {
     renderFollowUp(
       content,
-      "Local DB Configuration",
-      "local-db",
+      "Service Configuration",
+      "service",
       message,
-      LOCAL_DB_START_ACTION,
+      SERVICE_START_ACTION,
     );
   }
 }
 
 function renderRoot(root) {
-  const page = root.dataset.localDbPage || "";
+  const page = root.dataset.adminServicePage || "";
   const renderer = RENDERERS[page];
   if (!renderer) {
     return;
   }
   try {
-    const snapshot = getLocalDbSnapshot();
+    const snapshot = getDbViewerSnapshot();
     renderer(root, snapshot);
   } catch (error) {
     renderFailure(root, error);
@@ -261,8 +261,7 @@ function renderAll() {
   pageRoots().forEach(renderRoot);
 }
 
-window.addEventListener("gamefoundry:mock-db-session-user-changed", renderAll);
-window.addEventListener("gamefoundry:mock-db-session-mode-changed", renderAll);
-window.addEventListener("gamefoundry:mock-db-changed", renderAll);
+window.addEventListener("gamefoundry:session-user-changed", renderAll);
+window.addEventListener("gamefoundry:data-changed", renderAll);
 
 renderAll();

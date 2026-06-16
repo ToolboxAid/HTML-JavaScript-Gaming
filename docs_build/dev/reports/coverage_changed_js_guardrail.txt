@@ -6,15 +6,40 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
+(0%) admin/db-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/api/admin-setup-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/input/GamepadHapticsService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(13%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 3/23
+(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
+(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+(33%) src/engine/api/db-viewer-api-client.js - executed lines 13/13; executed functions 1/3
+(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 643/643; executed functions 42/56
 
 Guardrail warnings:
+(0%) admin/db-viewer.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/engine/api/admin-setup-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/engine/api/db-viewer-ui.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/engine/input/GamepadHapticsService.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(13%) assets/theme-v2/js/admin-service-page-data.js - WARNING: advisory low coverage below 50%; executed lines 236/236; executed functions 3/23
+(18%) assets/theme-v2/js/account-page-data.js - WARNING: advisory low coverage below 50%; executed lines 150/150; executed functions 3/17
+(25%) src/engine/api/session-api-client.js - WARNING: advisory low coverage below 50%; executed lines 68/68; executed functions 3/12
+(33%) src/engine/api/db-viewer-api-client.js - WARNING: advisory low coverage below 50%; executed lines 13/13; executed functions 1/3

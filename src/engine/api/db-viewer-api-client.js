@@ -10,14 +10,6 @@ function unwrap(response, context) {
   return response.payload.data;
 }
 
-export function getLocalDbSnapshot() {
-  return unwrap(safeRequestServerApi("/local-db/snapshot"), "DB Viewer snapshot");
-}
-
-export function clearLocalDb() {
-  return unwrap(safeRequestServerApi("/local-db/clear", { method: "POST" }), "Local DB clear");
-}
-
-export function seedLocalDb() {
-  return unwrap(safeRequestServerApi("/local-db/seed", { method: "POST" }), "Local DB seed");
+export function getDbViewerSnapshot() {
+  return unwrap(safeRequestServerApi("/product-data/snapshot"), "DB Viewer snapshot");
 }

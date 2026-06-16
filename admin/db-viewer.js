@@ -28,7 +28,7 @@ function showGatewayStatus(message) {
   }
 }
 
-async function loadLocalDbViewer() {
+async function loadDbViewer() {
   if (window.GameFoundrySessionGuard?.blocked) {
     return;
   }
@@ -41,10 +41,10 @@ async function loadLocalDbViewer() {
     showGatewayStatus(session.diagnostic || "Sign in with an admin account to open DB Viewer.");
     return;
   }
-  const module = await import("../src/engine/api/local-db-viewer-ui.js");
-  module.startLocalDbViewer(document, { session });
+  const module = await import("../src/engine/api/db-viewer-ui.js");
+  module.startDbViewer(document, { session });
 }
 
-loadLocalDbViewer().catch((error) => {
+loadDbViewer().catch((error) => {
   console.error("Unable to load DB Viewer.", error);
 });

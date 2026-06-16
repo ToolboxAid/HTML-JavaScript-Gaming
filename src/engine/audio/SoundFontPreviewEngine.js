@@ -43,7 +43,7 @@ export const DEFAULT_SOUNDFONT_ASSET_ID = "midi-studio-embedded-general-midi";
 
 export const DEFAULT_SOUNDFONT_ASSETS = [
   {
-    description: "Embedded Web Audio SoundFont bank for MIDI Studio V2 UAT playback and WAV rendering.",
+    description: "Embedded Web Audio SoundFont bank for MIDI Studio V2 playback and WAV rendering.",
     format: "embedded-web-audio-soundfont",
     id: DEFAULT_SOUNDFONT_ASSET_ID,
     label: "MIDI Studio Embedded GM SoundFont",

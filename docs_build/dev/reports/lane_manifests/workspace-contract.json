@@ -1,12 +1,12 @@
 {
   "commandsHash": "39e16c9d480a1e51",
   "dependencies": [],
-  "dependencyGraphHash": "e6f0c0ad3aedd3ff",
+  "dependencyGraphHash": "48d26018b4e148c9",
   "fileHashes": {
     "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
     "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
-    "src/dev-runtime/persistence/mock-db-store.js": "c8b824058fa46e31",
-    "src/dev-runtime/server/local-api-router.mjs": "9b651b7ae11290cf",
+    "src/dev-runtime/persistence/mock-db-store.js": "f88a75345af03c62",
+    "src/dev-runtime/server/local-api-router.mjs": "917f7d73e6cca938",
     "tests/helpers/playwrightRepoServer.mjs": "07b8192ee1199088",
     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
     "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
@@ -30,15 +30,15 @@
     "tests/helpers/playwrightV8CoverageReporter.mjs",
     "tests/helpers/workspaceV2CoverageReporter.mjs"
   ],
-  "inputHash": "566165d181148083",
+  "inputHash": "75c0d042d5e04d7b",
   "lane": "workspace-contract",
   "laneDefinitionHash": "fde48767b345621c",
-  "manifestHash": "14e2862411efb193",
+  "manifestHash": "8780fc084b66a7ae",
   "ownership": "tools",
   "tests": [
     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
   ],
   "version": 1,
-  "generatedAt": "2026-06-16T17:29:27.942Z",
+  "generatedAt": "2026-06-16T17:56:54.729Z",
   "source": "generated"
 }

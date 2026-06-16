@@ -17,25 +17,38 @@ Exercised tool entry points detected:
 (50%) Theme V2 Shared JS - exercised 5 runtime JS files
 
 Changed runtime JS files covered:
+(0%) admin/db-viewer.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/api/admin-setup-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/api/db-viewer-ui.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/engine/input/GamepadHapticsService.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(13%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 3/23
+(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
+(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+(33%) src/engine/api/db-viewer-api-client.js - executed lines 13/13; executed functions 1/3
+(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 643/643; executed functions 42/56
 
 Files with executed line/function counts where available:
-(13%) assets/theme-v2/js/local-db-page-data.js - executed lines 237/237; executed functions 3/23
+(13%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 3/23
 (14%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 1/7
 (18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
-(20%) src/engine/api/local-db-api-client.js - executed lines 19/19; executed functions 1/5
 (25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
 (29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
+(33%) src/engine/api/db-viewer-api-client.js - executed lines 13/13; executed functions 1/3
 (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
 (56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
 (58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (68%) toolbox/game-workspace/game-workspace.js - executed lines 281/281; executed functions 19/28
-(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 644/644; executed functions 42/56
+(75%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 643/643; executed functions 42/56
 (75%) toolbox/controls/controls.js - executed lines 617/617; executed functions 47/63
 (90%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 26/29
 (91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
@@ -46,13 +59,29 @@ Files with executed line/function counts where available:
 (100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 12/12; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
+(0%) admin/db-viewer.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) assets/theme-v2/js/admin-db-status-panel.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) assets/theme-v2/js/admin-setup-actions.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/persistence/mock-db-store.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/api/admin-setup-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/api/db-viewer-ui.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/audio/SoundFontPreviewEngine.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/engine/input/GamepadHapticsService.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) toolbox/assets/assets.js - WARNING: uncovered changed runtime JS file; advisory only
+(13%) assets/theme-v2/js/admin-service-page-data.js - WARNING: advisory low coverage; executed lines 236/236
+(18%) assets/theme-v2/js/account-page-data.js - WARNING: advisory low coverage; executed lines 150/150
+(25%) src/engine/api/session-api-client.js - WARNING: advisory low coverage; executed lines 68/68
+(33%) src/engine/api/db-viewer-api-client.js - WARNING: advisory low coverage; executed lines 13/13
 
 Changed JS files considered:
+(0%) account/user-controls-page.js - changed JS file not collected as browser runtime coverage
+(0%) admin/db-viewer.js - changed JS file not collected as browser runtime coverage
+(0%) assets/theme-v2/js/admin-db-status-panel.js - changed JS file not collected as browser runtime coverage
+(0%) assets/theme-v2/js/admin-setup-actions.js - changed JS file not collected as browser runtime coverage
 (0%) scripts/start-local-api-server.mjs - changed JS file not collected as browser runtime coverage
 (0%) scripts/sync-supabase-dev-creator-identities.mjs - changed JS file not collected as browser runtime coverage
 (0%) scripts/validate-browser-env-agnostic.mjs - changed JS file not collected as browser runtime coverage
@@ -61,11 +90,21 @@ Changed JS files considered:
 (0%) src/dev-runtime/seed/server-seed-loader.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/engine/api/admin-setup-api-client.js - changed JS file not collected as browser runtime coverage
+(0%) src/engine/api/db-viewer-ui.js - changed JS file not collected as browser runtime coverage
+(0%) src/engine/audio/SoundFontPreviewEngine.js - changed JS file not collected as browser runtime coverage
+(0%) src/engine/input/GamepadHapticsService.js - changed JS file not collected as browser runtime coverage
+(0%) tests/dev-runtime/DevRuntimeBoundary.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/SupabaseProductDataCutover.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/SupabaseProviderContractStub.test.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/account/SupabaseSignInSession.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminDbViewer.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/LoginSessionMode.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/RootToolsFutureState.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) toolbox/assets/assets.js - changed JS file not collected as browser runtime coverage
+(13%) assets/theme-v2/js/admin-service-page-data.js - changed JS file with browser V8 coverage
+(18%) assets/theme-v2/js/account-page-data.js - changed JS file with browser V8 coverage
+(25%) src/engine/api/session-api-client.js - changed JS file with browser V8 coverage
+(33%) src/engine/api/db-viewer-api-client.js - changed JS file with browser V8 coverage
+(75%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage

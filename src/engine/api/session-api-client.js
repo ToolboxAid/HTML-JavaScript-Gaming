@@ -64,7 +64,7 @@ export function requireRole(role, session = getCurrentUser()) {
   if (!requiredRole) {
     return {
       allowed: false,
-      diagnostic: "Auth provider role check requires a role.",
+      diagnostic: "Auth role check requires a role.",
       role: "",
       session,
     };
