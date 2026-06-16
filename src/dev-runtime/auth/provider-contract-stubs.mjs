@@ -6,6 +6,9 @@ export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
   "signIn",
   "signOut",
   "createAccount",
+  "listAdminUsers",
+  "listAllAdminUsers",
+  "updateAccount",
   "deleteTestAccount",
   "requestPasswordReset",
   "requireRole",
@@ -542,6 +545,84 @@ export class SupabaseAuthProviderAdapter {
     return attachSupabaseAuthOperatorMetadata(payload, response);
   }
 
+  async listAdminUsers({ page = 1, perPage = 100 } = {}) {
+    this.assertConfigured();
+    const serviceRoleKey = supabaseServiceRoleKey(this.env);
+    if (!serviceRoleKey) {
+      throw new Error("Supabase Auth listAdminUsers requires the server-only service role key.");
+    }
+    const params = new URLSearchParams({
+      page: String(Math.max(1, Number(page) || 1)),
+      per_page: String(Math.max(1, Math.min(1000, Number(perPage) || 100))),
+    });
+    const response = await this.fetchImpl(`${supabaseUrl(this.env)}/auth/v1/admin/users?${params}`, {
+      headers: authAdminHeaders(this.env),
+      method: "GET",
+    });
+    const payload = await readResponseJson(response);
+    if (!response.ok) {
+      throw supabaseAuthUpstreamError("listAdminUsers", response, payload);
+    }
+    return attachSupabaseAuthOperatorMetadata(payload, response);
+  }
+
+  async listAllAdminUsers({ perPage = 100 } = {}) {
+    const users = [];
+    let page = 1;
+    while (true) {
+      const payload = await this.listAdminUsers({ page, perPage });
+      const pageUsers = Array.isArray(payload?.users)
+        ? payload.users
+        : Array.isArray(payload)
+          ? payload
+          : [];
+      users.push(...pageUsers);
+      const totalPages = Number(payload?.total_pages || payload?.last_page || 0);
+      const totalUsers = Number(payload?.total || 0);
+      if (totalPages && page >= totalPages) {
+        break;
+      }
+      if (totalUsers && users.length >= totalUsers) {
+        break;
+      }
+      if (pageUsers.length < Math.max(1, Number(perPage) || 100)) {
+        break;
+      }
+      page += 1;
+    }
+    return users;
+  }
+
+  async updateAccount({ authProviderUserId, email = "", password = "", userMetadata = {} } = {}) {
+    this.assertConfigured();
+    const serviceRoleKey = supabaseServiceRoleKey(this.env);
+    if (!serviceRoleKey) {
+      throw new Error("Supabase Auth updateAccount requires the server-only service role key.");
+    }
+    const body = {
+      email_confirm: true,
+      user_metadata: userMetadata && typeof userMetadata === "object" ? userMetadata : {},
+    };
+    const normalizedEmail = optionalString(email);
+    if (normalizedEmail) {
+      body.email = normalizedEmail;
+    }
+    const normalizedPassword = optionalString(password);
+    if (normalizedPassword) {
+      body.password = normalizedPassword;
+    }
+    const response = await this.fetchImpl(`${supabaseUrl(this.env)}/auth/v1/admin/users/${encodeURIComponent(requireString(authProviderUserId, "authProviderUserId"))}`, {
+      body: JSON.stringify(body),
+      headers: authAdminHeaders(this.env),
+      method: "PUT",
+    });
+    const payload = await readResponseJson(response);
+    if (!response.ok) {
+      throw supabaseAuthUpstreamError("updateAccount", response, payload);
+    }
+    return attachSupabaseAuthOperatorMetadata(payload, response);
+  }
+
   async deleteTestAccount({ authProviderUserId } = {}) {
     this.assertConfigured();
     const serviceRoleKey = supabaseServiceRoleKey(this.env);
@@ -1010,7 +1091,7 @@ export function createProviderContractSnapshot(env = process.env) {
       runtimeAuthProviderId: SUPABASE_AUTH_PROVIDER_ID,
       runtimeDatabaseProviderId: SUPABASE_POSTGRES_PROVIDER_ID,
       serverApiOwnsKeyGeneration: true,
-      staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ admin only.",
+      staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ only.",
       tables: SUPABASE_POSTGRES_IDENTITY_TABLES.slice(),
       temporaryDevOnlyException: "Static ULIDs are allowed only for the four seeded DEV user records and required user_roles references.",
       userKeyAuthority: "users.key",
@@ -1084,7 +1165,7 @@ export function createProviderContractSnapshot(env = process.env) {
         activeByDefault: false,
         auditFields: ["createdAt", "updatedAt", "createdBy", "updatedBy"],
         serverApiOwnsKeyGeneration: true,
-        staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ admin only.",
+        staticDevUserUlidException: "User 1, User 2, User 3, and DavidQ only.",
         productTables: SUPABASE_POSTGRES_PRODUCT_TABLES.slice(),
         tables: SUPABASE_POSTGRES_IDENTITY_TABLES.slice(),
       },

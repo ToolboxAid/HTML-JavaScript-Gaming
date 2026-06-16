@@ -2,11 +2,11 @@
 
 This index classifies each grouped DEV/review DML file.
 
-Direct SQL setup is intentionally narrow. Account DEV users are SQL-executable so local sign-in scripts can target stable seeded users. Non-user setup is server-seed-owned so direct SQL does not bypass server/API key generation or audit ownership.
+Direct SQL setup is intentionally narrow. Account DEV users now require server-side Supabase Auth synchronization so `users.authProviderUserId` matches real `auth.users.id` values. Non-user setup is server-seed-owned so direct SQL does not bypass server/API key generation or audit ownership.
 
 | Group | File | Status | Owner |
 | --- | --- | --- | --- |
-| Account | `account.sql` | SQL-executable | DEV static user seed only |
+| Account | `account.sql` | Review-only | DEV static user shape; execute through server-side sync only |
 | Admin | `admin.sql` | Server-seed-owned | Admin Site Setup/server-side seed API |
 | Asset | `asset.sql` | Server-seed-owned | Server-side seed API |
 | Controls | `controls.sql` | Server-seed-owned | Server-side seed API |
@@ -29,7 +29,7 @@ Static ULIDs are allowed only for these DEV user records and required user-role 
 - User 1
 - User 2
 - User 3
-- DavidQ admin
+- DavidQ
 
 All non-user records must use server/API-generated ULID-style keys.
 

@@ -1,98 +1,52 @@
-# git status --short
-M .env.example
- M docs_build/dev/codex_commands.md
- M docs_build/dev/commit_comment.txt
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/dependency_gating_report.md
- M docs_build/dev/reports/dependency_hydration_reuse_report.md
- M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
- M docs_build/dev/reports/execution_graph_reuse_report.md
- M docs_build/dev/reports/failure_fingerprint_report.md
- M docs_build/dev/reports/filesystem_scan_reduction_report.md
- M docs_build/dev/reports/incremental_validation_report.md
- M docs_build/dev/reports/lane_compilation_report.md
- M docs_build/dev/reports/lane_deduplication_report.md
- M docs_build/dev/reports/lane_input_validation_report.md
- M docs_build/dev/reports/lane_manifests/workspace-contract.json
- M docs_build/dev/reports/lane_runtime_optimization_report.md
- M docs_build/dev/reports/lane_snapshot_report.md
- M docs_build/dev/reports/lane_snapshots/workspace-contract.json
- M docs_build/dev/reports/lane_warm_start_report.md
- M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
- M docs_build/dev/reports/monolith_trigger_removal_report.md
- M docs_build/dev/reports/persistent_lane_manifest_report.md
- M docs_build/dev/reports/playwright_discovery_ownership_report.md
- M docs_build/dev/reports/playwright_discovery_scope_report.md
- M docs_build/dev/reports/playwright_structure_audit.md
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M docs_build/dev/reports/retry_suppression_report.md
- M docs_build/dev/reports/slow_path_pruning_report.md
- M docs_build/dev/reports/static_validation_report.md
- M docs_build/dev/reports/targeted_file_manifest_report.md
- M docs_build/dev/reports/test_cleanup_performance_report.md
- M docs_build/dev/reports/test_cleanup_routing_report.md
- M docs_build/dev/reports/testing_lane_execution_report.md
- M docs_build/dev/reports/validation_cache_report.md
- M docs_build/dev/reports/zero_browser_preflight_report.md
- M scripts/start-local-api-server.mjs
- M scripts/validate-browser-env-agnostic.mjs
- M src/dev-runtime/auth/provider-contract-stubs.mjs
- M src/dev-runtime/server/local-api-router.mjs
- M tests/dev-runtime/SupabaseProductDataCutover.test.mjs
- M tests/dev-runtime/SupabaseProviderContractStub.test.mjs
- M tests/helpers/playwrightRepoServer.mjs
- M tests/playwright/account/SupabaseSignInSession.spec.mjs
-?? docs_build/dev/reports/PR_26167_184-delete-sqlite-local-db-runtime-debt.md
-
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26167_184-delete-sqlite-local-db-runtime-debt.md
-
-# git diff --stat
-.env.example                                       |      8 +-
- docs_build/dev/codex_commands.md                   |     45 +
- docs_build/dev/commit_comment.txt                  |      2 +-
- docs_build/dev/reports/codex_changed_files.txt     |    108 +-
- docs_build/dev/reports/codex_review.diff           | 114544 +-----------------
- .../dev/reports/coverage_changed_js_guardrail.txt  |      4 -
- docs_build/dev/reports/dependency_gating_report.md |      2 +-
- .../reports/dependency_hydration_reuse_report.md   |     12 +-
- .../environment_agnostic_browser_gate_report.md    |      1 -
- .../dev/reports/execution_graph_reuse_report.md    |     16 +-
- .../dev/reports/failure_fingerprint_report.md      |      2 +-
- .../reports/filesystem_scan_reduction_report.md    |      2 +-
- .../dev/reports/incremental_validation_report.md   |     14 +-
- docs_build/dev/reports/lane_compilation_report.md  |      2 +-
- .../dev/reports/lane_deduplication_report.md       |      2 +-
- .../dev/reports/lane_input_validation_report.md    |      2 +-
- .../reports/lane_manifests/workspace-contract.json |     12 +-
- .../reports/lane_runtime_optimization_report.md    |     14 +-
- docs_build/dev/reports/lane_snapshot_report.md     |     12 +-
- .../reports/lane_snapshots/workspace-contract.json |     30 +-
- docs_build/dev/reports/lane_warm_start_report.md   |     12 +-
- .../lane_warm_starts/workspace-contract.json       |     20 +-
- .../dev/reports/monolith_trigger_removal_report.md |      2 +-
- .../dev/reports/persistent_lane_manifest_report.md |     12 +-
- .../playwright_discovery_ownership_report.md       |      2 +-
- .../reports/playwright_discovery_scope_report.md   |      2 +-
- .../dev/reports/playwright_structure_audit.md      |      2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |      9 +-
- docs_build/dev/reports/retry_suppression_report.md |      2 +-
- docs_build/dev/reports/slow_path_pruning_report.md |     18 +-
- docs_build/dev/reports/static_validation_report.md |     12 +-
- .../dev/reports/targeted_file_manifest_report.md   |      8 +-
- .../dev/reports/test_cleanup_performance_report.md |     24 +-
- .../dev/reports/test_cleanup_routing_report.md     |      2 +-
- .../dev/reports/testing_lane_execution_report.md   |     54 +-
- docs_build/dev/reports/validation_cache_report.md  |     30 +-
- .../dev/reports/zero_browser_preflight_report.md   |     10 +-
- scripts/start-local-api-server.mjs                 |     42 +-
- scripts/validate-browser-env-agnostic.mjs          |     11 +-
- src/dev-runtime/auth/provider-contract-stubs.mjs   |     45 +-
- src/dev-runtime/server/local-api-router.mjs        |    494 +-
- .../SupabaseProductDataCutover.test.mjs            |     29 +-
- .../SupabaseProviderContractStub.test.mjs          |     95 +-
- tests/helpers/playwrightRepoServer.mjs             |     37 -
- .../account/SupabaseSignInSession.spec.mjs         |      4 -
- 45 files changed, 2180 insertions(+), 113632 deletions(-)
+﻿docs_build/database/dml/account.sql
+docs_build/database/dml/DML_INDEX.md
+docs_build/database/seed/account.json
+docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
+docs_build/dev/reports/codex_changed_files.txt
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/coverage_changed_js_guardrail.txt
+docs_build/dev/reports/dependency_gating_report.md
+docs_build/dev/reports/dependency_hydration_reuse_report.md
+docs_build/dev/reports/execution_graph_reuse_report.md
+docs_build/dev/reports/failure_fingerprint_report.md
+docs_build/dev/reports/filesystem_scan_reduction_report.md
+docs_build/dev/reports/incremental_validation_report.md
+docs_build/dev/reports/lane_compilation_report.md
+docs_build/dev/reports/lane_deduplication_report.md
+docs_build/dev/reports/lane_input_validation_report.md
+docs_build/dev/reports/lane_manifests/workspace-contract.json
+docs_build/dev/reports/lane_runtime_optimization_report.md
+docs_build/dev/reports/lane_snapshot_report.md
+docs_build/dev/reports/lane_snapshots/workspace-contract.json
+docs_build/dev/reports/lane_warm_start_report.md
+docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+docs_build/dev/reports/monolith_trigger_removal_report.md
+docs_build/dev/reports/persistent_lane_manifest_report.md
+docs_build/dev/reports/playwright_discovery_ownership_report.md
+docs_build/dev/reports/playwright_discovery_scope_report.md
+docs_build/dev/reports/playwright_structure_audit.md
+docs_build/dev/reports/playwright_v8_coverage_report.txt
+docs_build/dev/reports/PR_26167_185-dev-creator-identity-seed-sync.md
+docs_build/dev/reports/retry_suppression_report.md
+docs_build/dev/reports/slow_path_pruning_report.md
+docs_build/dev/reports/static_validation_report.md
+docs_build/dev/reports/targeted_file_manifest_report.md
+docs_build/dev/reports/test_cleanup_performance_report.md
+docs_build/dev/reports/test_cleanup_routing_report.md
+docs_build/dev/reports/testing_lane_execution_report.md
+docs_build/dev/reports/validation_cache_report.md
+docs_build/dev/reports/zero_browser_preflight_report.md
+scripts/start-local-api-server.mjs
+scripts/sync-supabase-dev-creator-identities.mjs
+src/dev-runtime/auth/provider-contract-stubs.mjs
+src/dev-runtime/persistence/mock-db-store.js
+src/dev-runtime/seed/server-seed-loader.mjs
+src/dev-runtime/server/local-api-router.mjs
+src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs
+tests/dev-runtime/SupabaseDevCreatorIdentitySeedSync.test.mjs
+tests/dev-runtime/SupabaseProductDataCutover.test.mjs
+tests/dev-runtime/SupabaseProviderContractStub.test.mjs
+tests/playwright/account/SupabaseSignInSession.spec.mjs
+tests/playwright/tools/AdminDbViewer.spec.mjs
+tests/playwright/tools/LoginSessionMode.spec.mjs
+tests/playwright/tools/RootToolsFutureState.spec.mjs

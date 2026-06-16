@@ -103,10 +103,10 @@ const ACCOUNT_IDENTITY_SETUP_MESSAGE = "Account identity setup is incomplete. Pl
 const PASSWORD_RESET_RATE_LIMIT_MESSAGE = "Too many reset requests. Please wait and try again later.";
 const DEPRECATED_LOCAL_DB_ENDPOINT_MESSAGE = "Deprecated database endpoint is disabled. Use the server API service contract routes.";
 const DEFAULT_SUPABASE_ACCOUNT_ROLE = Object.freeze({
-  description: "Default creator/player account role.",
+  description: "Default authenticated Creator role.",
   isSystemRole: false,
-  name: "User",
-  roleSlug: "user",
+  name: "Creator",
+  roleSlug: "creator",
 });
 const IDENTITY_TABLES = ["users", "roles", "user_roles"];
 const TOOLBOX_TABLES = ["toolbox_tool_metadata", "toolbox_tool_planning", "toolbox_votes"];
@@ -1166,7 +1166,7 @@ class LocalDevDataSource {
     const roles = tables.roles || [];
     const userRoles = tables.user_roles || [];
     const roleSlugs = new Set(roles.map((role) => role.roleSlug).filter(Boolean));
-    const missingDefaultRoles = ["admin", "creator", "guest", "user"].filter((roleSlug) => !roleSlugs.has(roleSlug));
+    const missingDefaultRoles = ["admin", "creator", "guest"].filter((roleSlug) => !roleSlugs.has(roleSlug));
     const adminRoleKeys = new Set(roles
       .filter((role) => role.roleSlug === "admin")
       .map((role) => role.key));

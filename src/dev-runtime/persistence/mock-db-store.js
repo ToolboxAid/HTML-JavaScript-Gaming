@@ -37,12 +37,12 @@ export const MOCK_DB_KEYS = Object.freeze({
 });
 
 export const MOCK_DB_SYSTEM_USER = Object.freeze({
-  id: "davidq-admin",
-  label: "DavidQ admin",
+  id: "davidq",
+  label: "DavidQ",
   authenticated: false,
   isAdmin: false,
   userKey: MOCK_DB_KEYS.users.forgeBot,
-  roleSlugs: Object.freeze(["admin"]),
+  roleSlugs: Object.freeze(["creator"]),
 });
 
 export const MOCK_DB_SESSION_MODES = Object.freeze([
@@ -696,7 +696,7 @@ export function getStandaloneMockDbSeedTables() {
         key: MOCK_DB_KEYS.users.user1,
         displayName: "User 1",
         email: "user1@example.invalid",
-        authProvider: "dev-static-seed",
+        authProvider: "supabase-auth",
         authProviderUserId: "user-1",
         isActive: true,
         ...standaloneAudit(1),
@@ -705,7 +705,7 @@ export function getStandaloneMockDbSeedTables() {
         key: MOCK_DB_KEYS.users.user2,
         displayName: "User 2",
         email: "user2@example.invalid",
-        authProvider: "dev-static-seed",
+        authProvider: "supabase-auth",
         authProviderUserId: "user-2",
         isActive: true,
         ...standaloneAudit(2),
@@ -714,17 +714,17 @@ export function getStandaloneMockDbSeedTables() {
         key: MOCK_DB_KEYS.users.user3,
         displayName: "User 3",
         email: "user3@example.invalid",
-        authProvider: "dev-static-seed",
+        authProvider: "supabase-auth",
         authProviderUserId: "user-3",
         isActive: true,
         ...standaloneAudit(3),
       },
       {
         key: MOCK_DB_KEYS.users.admin,
-        displayName: "DavidQ admin",
-        email: "admin@example.invalid",
-        authProvider: "dev-static-seed",
-        authProviderUserId: "davidq-admin",
+        displayName: "DavidQ",
+        email: "qbytes.dq@gmail.com",
+        authProvider: "supabase-auth",
+        authProviderUserId: "davidq",
         isActive: true,
         ...standaloneAudit(5),
       },
@@ -733,10 +733,10 @@ export function getStandaloneMockDbSeedTables() {
       {
         key: MOCK_DB_KEYS.roles.user,
         roleSlug: "user",
-        name: "user",
-        description: "Standard creator user.",
+        name: "deprecated user",
+        description: "Deprecated compatibility role. Authenticated accounts use creator.",
         isSystemRole: false,
-        isActive: true,
+        isActive: false,
         ...standaloneAudit(6),
       },
       {
@@ -768,11 +768,10 @@ export function getStandaloneMockDbSeedTables() {
       },
     ],
     user_roles: [
-      { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(10) },
-      { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(11) },
-      { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(13) },
-      { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.user, ...standaloneAudit(14) },
-      { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.admin, ...standaloneAudit(15) },
+      { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: MOCK_DB_KEYS.roles.creator, ...standaloneAudit(10) },
+      { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: MOCK_DB_KEYS.roles.creator, ...standaloneAudit(11) },
+      { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: MOCK_DB_KEYS.roles.creator, ...standaloneAudit(13) },
+      { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: MOCK_DB_KEYS.roles.creator, ...standaloneAudit(14) },
     ],
     platform_settings: [
       {

@@ -255,9 +255,9 @@ function fakeSupabaseIdentityTables(overrides = {}) {
   return {
     roles: overrides.roles || [
       {
-        key: MOCK_DB_KEYS.roles.user,
-        roleSlug: "user",
-        name: "User",
+        key: MOCK_DB_KEYS.roles.creator,
+        roleSlug: "creator",
+        name: "Creator",
         description: "Creator account.",
         isActive: true,
         isSystemRole: false,
@@ -277,7 +277,7 @@ function fakeSupabaseIdentityTables(overrides = {}) {
       {
         key: MOCK_DB_KEYS.userRoles.user1User,
         userKey: MOCK_DB_KEYS.users.user1,
-        roleKey: MOCK_DB_KEYS.roles.user,
+        roleKey: MOCK_DB_KEYS.roles.creator,
         ...audit,
       },
       {
@@ -299,8 +299,8 @@ function fakeSupabaseIdentityTables(overrides = {}) {
       },
       {
         key: MOCK_DB_KEYS.users.admin,
-        displayName: "DavidQ admin",
-        email: "admin@example.invalid",
+        displayName: "DavidQ",
+        email: "qbytes.dq@gmail.com",
         authProvider: "supabase-auth",
         authProviderUserId: "supabase-admin",
         isActive: true,
@@ -330,7 +330,7 @@ test("Supabase provider contract does not require provider selector variables", 
   assert.equal(snapshot.identityOwnership.userKeyAuthority, "users.key");
   assert.equal(snapshot.identityOwnership.browserAuthoritativeKeysAllowed, false);
   assert.equal(snapshot.identityOwnership.serverApiOwnsKeyGeneration, true);
-  assert.match(snapshot.identityOwnership.staticDevUserUlidException, /User 1, User 2, User 3, and DavidQ admin only/);
+  assert.match(snapshot.identityOwnership.staticDevUserUlidException, /User 1, User 2, User 3, and DavidQ only/);
   assert.match(snapshot.identityOwnership.temporaryDevOnlyException, /Static ULIDs are allowed only/);
   assert.deepEqual(snapshot.identityOwnership.tables, ["users", "roles", "user_roles"]);
   assert.equal(snapshot.supabaseAuth.status, "not-configured");
@@ -342,6 +342,9 @@ test("Supabase provider contract does not require provider selector variables", 
     "signIn",
     "signOut",
     "createAccount",
+    "listAdminUsers",
+    "listAllAdminUsers",
+    "updateAccount",
     "deleteTestAccount",
     "requestPasswordReset",
     "requireRole",
@@ -534,7 +537,7 @@ test("Provider contract assigns identity and product data ownership to Supabase 
   assert.equal(snapshot.identityOwnership.browserAuthoritativeKeysAllowed, false);
   assert.deepEqual(snapshot.identityOwnership.ownershipFields, ["key", "createdAt", "updatedAt", "createdBy", "updatedBy"]);
   assert.deepEqual(snapshot.identityOwnership.tables, ["users", "roles", "user_roles"]);
-  assert.match(snapshot.identityOwnership.staticDevUserUlidException, /DavidQ admin only/);
+  assert.match(snapshot.identityOwnership.staticDevUserUlidException, /DavidQ only/);
   assert.equal(snapshot.runtimeActivation.supabaseAuthActive, true);
   assert.equal(snapshot.runtimeActivation.supabasePostgresActive, true);
   assert.equal(snapshot.providerDiagnostics.secretValuesExposed, false);
@@ -721,7 +724,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(signIn.payload.data.localDbSessionCreated, true);
       assert.equal(signIn.payload.data.sessionResolved, true);
       assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
-      assert.deepEqual(signIn.payload.data.roleSlugs, ["user"]);
+      assert.deepEqual(signIn.payload.data.roleSlugs, ["creator"]);
       assert.equal(signIn.payload.data.accessTokenExposed, false);
       assert.equal(signIn.payload.data.refreshTokenExposed, false);
       assert.equal(JSON.stringify(signIn.payload).includes("fake-supabase-access-token"), false);
@@ -730,7 +733,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       const session = await apiJson(server.baseUrl, "/api/session/current");
       assert.equal(session.authenticated, true);
       assert.equal(session.userKey, MOCK_DB_KEYS.users.user1);
-      assert.deepEqual(session.roleSlugs, ["user"]);
+      assert.deepEqual(session.roleSlugs, ["creator"]);
 
       const createAccount = await postApiPayload(server.baseUrl, "/api/auth/create-account", {
         email: "new@example.test",
@@ -740,7 +743,7 @@ test("Account auth routes call external Supabase Auth and return sanitized actio
       assert.equal(createAccount.payload.data.action, "create-account");
       assert.equal(createAccount.payload.data.identityProvisioned, true);
       assert.equal(createAccount.payload.data.localDbSessionCreated, false);
-      assert.deepEqual(createAccount.payload.data.roleSlugs, ["user"]);
+      assert.deepEqual(createAccount.payload.data.roleSlugs, ["creator"]);
       assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
 
       const reset = await postApiPayload(server.baseUrl, "/api/auth/password-reset", {
@@ -809,7 +812,7 @@ test("Create account provisions Supabase identity user default role and user_rol
       assert.equal(createAccount.payload.data.identityProvisioned, true);
       assert.equal(createAccount.payload.data.roleCreated, true);
       assert.equal(createAccount.payload.data.userRoleCreated, true);
-      assert.deepEqual(createAccount.payload.data.roleSlugs, ["user"]);
+      assert.deepEqual(createAccount.payload.data.roleSlugs, ["creator"]);
       assert.match(createAccount.payload.data.userKey, /^[0-9A-HJKMNP-TV-Z]{26}$/);
       assert.equal(Object.values(MOCK_DB_KEYS.users).includes(createAccount.payload.data.userKey), false);
       assert.deepEqual(createAccount.payload.data.identityTableRecords, {
@@ -825,12 +828,12 @@ test("Create account provisions Supabase identity user default role and user_rol
       assert.equal(signIn.status, 200);
       assert.equal(signIn.payload.data.sessionResolved, true);
       assert.equal(signIn.payload.data.userKey, createAccount.payload.data.userKey);
-      assert.deepEqual(signIn.payload.data.roleSlugs, ["user"]);
+      assert.deepEqual(signIn.payload.data.roleSlugs, ["creator"]);
 
       const current = await apiJson(server.baseUrl, "/api/session/current");
       assert.equal(current.authenticated, true);
       assert.equal(current.userKey, createAccount.payload.data.userKey);
-      assert.deepEqual(current.roleSlugs, ["user"]);
+      assert.deepEqual(current.roleSlugs, ["creator"]);
 
       const restPosts = fakeSupabase.calls
         .filter((call) => call.method === "POST" && call.path.startsWith("/rest/v1/"))
@@ -1211,8 +1214,8 @@ test("Supabase Auth selected path reads users roles user_roles and product data 
       assert.deepEqual(contract.identityOwnership.tables, ["users", "roles", "user_roles"]);
 
       const users = await apiJson(server.baseUrl, "/api/session/users");
-      assert.equal(users.some((user) => user.displayName === "User 1" && user.roleSlugs.includes("user")), true);
-      assert.equal(users.some((user) => user.displayName === "DavidQ admin" && user.isAdmin), true);
+      assert.equal(users.some((user) => user.displayName === "User 1" && user.roleSlugs.includes("creator")), true);
+      assert.equal(users.some((user) => user.displayName === "DavidQ" && user.isAdmin), true);
 
       const signIn = await postApiPayload(server.baseUrl, "/api/session/user", {
         userKey: MOCK_DB_KEYS.users.user1,
@@ -1222,7 +1225,7 @@ test("Supabase Auth selected path reads users roles user_roles and product data 
       assert.equal(signIn.payload.data.authenticated, true);
       assert.equal(signIn.payload.data.userKey, MOCK_DB_KEYS.users.user1);
       assert.equal(signIn.payload.data.displayName, "User 1");
-      assert.deepEqual(signIn.payload.data.roleSlugs, ["user"]);
+      assert.deepEqual(signIn.payload.data.roleSlugs, ["creator"]);
 
       const current = await apiJson(server.baseUrl, "/api/session/current");
       assert.equal(current.authenticated, true);
@@ -1405,6 +1408,9 @@ test("Supabase Auth adapter fails visibly when selected without configuration", 
   await assert.rejects(() => auth.signIn(), /Supabase Auth connection is not configured/);
   await assert.rejects(() => auth.signOut(), /Supabase Auth connection is not configured/);
   await assert.rejects(() => auth.createAccount(), /Supabase Auth connection is not configured/);
+  await assert.rejects(() => auth.listAdminUsers(), /Supabase Auth connection is not configured/);
+  await assert.rejects(() => auth.listAllAdminUsers(), /Supabase Auth connection is not configured/);
+  await assert.rejects(() => auth.updateAccount(), /Supabase Auth connection is not configured/);
   await assert.rejects(() => auth.requestPasswordReset(), /Supabase Auth connection is not configured/);
   assert.throws(() => auth.requireRole(), /future app user mapping adapter/);
 });
@@ -1429,6 +1435,8 @@ test("Supabase Auth adapter uses service role only for server-owned account crea
 
   await auth.signIn({ email: "creator@example.test", password: "test-password" });
   await auth.createAccount({ email: "new@example.test", password: "new-password" });
+  await auth.listAdminUsers();
+  await auth.updateAccount({ authProviderUserId: "supabase-test-user-id", email: "new@example.test", password: "new-password" });
   await auth.deleteTestAccount({ authProviderUserId: "supabase-test-user-id" });
   await auth.requestPasswordReset({ email: "reset@example.test", redirectTo: "http://127.0.0.1:5501/account/password-reset.html" });
   await auth.getCurrentUser({ accessToken: "user-access-token" });
@@ -1437,6 +1445,8 @@ test("Supabase Auth adapter uses service role only for server-owned account crea
   assert.deepEqual(calls.map((call) => call.url), [
     "https://supabase-dev.example.test/auth/v1/token?grant_type=password",
     "https://supabase-dev.example.test/auth/v1/admin/users",
+    "https://supabase-dev.example.test/auth/v1/admin/users?page=1&per_page=100",
+    "https://supabase-dev.example.test/auth/v1/admin/users/supabase-test-user-id",
     "https://supabase-dev.example.test/auth/v1/admin/users/supabase-test-user-id",
     "https://supabase-dev.example.test/auth/v1/recover",
     "https://supabase-dev.example.test/auth/v1/user",
@@ -1447,11 +1457,15 @@ test("Supabase Auth adapter uses service role only for server-owned account crea
   assert.equal(calls[1].options.headers.authorization, "Bearer not-a-real-service-role-test-value");
   assert.equal(calls[2].options.headers.apikey, "not-a-real-service-role-test-value");
   assert.equal(calls[2].options.headers.authorization, "Bearer not-a-real-service-role-test-value");
-  assert.equal(calls[3].options.headers.apikey, "test-anon-key");
-  assert.equal(calls[4].options.headers.apikey, "test-anon-key");
+  assert.equal(calls[3].options.headers.apikey, "not-a-real-service-role-test-value");
+  assert.equal(calls[3].options.headers.authorization, "Bearer not-a-real-service-role-test-value");
+  assert.equal(calls[4].options.headers.apikey, "not-a-real-service-role-test-value");
+  assert.equal(calls[4].options.headers.authorization, "Bearer not-a-real-service-role-test-value");
   assert.equal(calls[5].options.headers.apikey, "test-anon-key");
-  assert.equal(calls[4].options.headers.authorization, "Bearer user-access-token");
-  assert.equal(calls[5].options.headers.authorization, "Bearer user-access-token");
+  assert.equal(calls[6].options.headers.apikey, "test-anon-key");
+  assert.equal(calls[7].options.headers.apikey, "test-anon-key");
+  assert.equal(calls[6].options.headers.authorization, "Bearer user-access-token");
+  assert.equal(calls[7].options.headers.authorization, "Bearer user-access-token");
 });
 
 test("Supabase Postgres adapter fails visibly when selected without configuration", async () => {
@@ -1626,10 +1640,10 @@ test("Supabase Postgres adapter initializes key-based users roles and user_roles
     users: [
       {
         key: MOCK_DB_KEYS.users.admin,
-        displayName: "DavidQ admin",
-        email: "admin@example.invalid",
-        authProvider: "dev-static-seed",
-        authProviderUserId: "davidq-admin",
+        displayName: "DavidQ",
+        email: "qbytes.dq@gmail.com",
+        authProvider: "supabase-auth",
+        authProviderUserId: "supabase-davidq",
       },
     ],
   });
@@ -1728,7 +1742,7 @@ test("Supabase Postgres adapter reuses existing roleSlug and user_roles keys dur
     users: [
       {
         key: MOCK_DB_KEYS.users.admin,
-        displayName: "DavidQ admin",
+        displayName: "DavidQ",
       },
     ],
   });

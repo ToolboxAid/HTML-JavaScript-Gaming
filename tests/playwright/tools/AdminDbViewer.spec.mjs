@@ -129,8 +129,8 @@ function createSupabaseAdminDbTables() {
     }],
     users: [{
       key: MOCK_DB_KEYS.users.admin,
-      displayName: "DavidQ admin",
-      email: "admin@example.invalid",
+      displayName: "DavidQ",
+      email: "qbytes.dq@gmail.com",
       authProvider: "supabase-auth",
       authProviderUserId: "supabase-admin",
       isActive: true,
@@ -166,7 +166,7 @@ function startFakeSupabaseAdminDbServer() {
         access_token: "admin-db-viewer-access-token",
         refresh_token: "admin-db-viewer-refresh-token",
         user: {
-          email: body.email || "admin@example.invalid",
+          email: body.email || "qbytes.dq@gmail.com",
           id: "supabase-admin",
         },
       }));
@@ -301,7 +301,7 @@ async function openSupabaseAdminDbViewer(page) {
 
   const signInResponse = await fetch(`${server.baseUrl}/api/auth/sign-in`, {
     body: JSON.stringify({
-      identity: "admin@example.invalid",
+      identity: "qbytes.dq@gmail.com",
       password: "not-stored-locally",
     }),
     headers: { "content-type": "application/json" },
@@ -726,7 +726,7 @@ test("Admin DB Viewer labels Supabase provider/source and shows Supabase-backed 
           "Platform Settings",
           "Support Categories",
         ]);
-        await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ admin");
+        await expect(page.locator("[data-admin-db-table='users']")).toContainText("DavidQ");
         await expect(page.locator("[data-admin-db-table='roles']")).toContainText("admin");
         await expect(page.locator("[data-admin-db-table='toolbox_tool_metadata']")).toContainText("Colors");
         await expect(page.locator("[data-admin-db-table='toolbox_tool_planning']")).toContainText("requiredForTestable");

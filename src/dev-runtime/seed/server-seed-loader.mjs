@@ -100,7 +100,7 @@ function userRows() {
       key: MOCK_DB_KEYS.users.user1,
       displayName: "User 1",
       email: "user1@example.invalid",
-      authProvider: "dev-static-seed",
+      authProvider: "supabase-auth",
       authProviderUserId: "user-1",
       isActive: true,
       ...auditFields(1),
@@ -109,7 +109,7 @@ function userRows() {
       key: MOCK_DB_KEYS.users.user2,
       displayName: "User 2",
       email: "user2@example.invalid",
-      authProvider: "dev-static-seed",
+      authProvider: "supabase-auth",
       authProviderUserId: "user-2",
       isActive: true,
       ...auditFields(2),
@@ -118,17 +118,17 @@ function userRows() {
       key: MOCK_DB_KEYS.users.user3,
       displayName: "User 3",
       email: "user3@example.invalid",
-      authProvider: "dev-static-seed",
+      authProvider: "supabase-auth",
       authProviderUserId: "user-3",
       isActive: true,
       ...auditFields(3),
     },
     {
       key: MOCK_DB_KEYS.users.admin,
-      displayName: "DavidQ admin",
-      email: "admin@example.invalid",
-      authProvider: "dev-static-seed",
-      authProviderUserId: "davidq-admin",
+      displayName: "DavidQ",
+      email: "qbytes.dq@gmail.com",
+      authProvider: "supabase-auth",
+      authProviderUserId: "davidq",
       isActive: true,
       ...auditFields(4),
     },
@@ -140,10 +140,10 @@ function roleRows(generateKey) {
     {
       key: generateKey(),
       roleSlug: "user",
-      name: "User",
-      description: "Standard creator user.",
+      name: "Deprecated User",
+      description: "Deprecated compatibility role. Authenticated accounts use creator.",
       isSystemRole: false,
-      isActive: true,
+      isActive: false,
       ...auditFields(5),
     },
     {
@@ -179,11 +179,10 @@ function roleRows(generateKey) {
 function userRoleRows(roles) {
   const roleBySlug = new Map(roles.map((role) => [role.roleSlug, role.key]));
   return [
-    { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: roleBySlug.get("user") },
-    { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: roleBySlug.get("user") },
-    { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: roleBySlug.get("user") },
-    { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: roleBySlug.get("user") },
-    { key: MOCK_DB_KEYS.userRoles.adminAdmin, userKey: MOCK_DB_KEYS.users.admin, roleKey: roleBySlug.get("admin") },
+    { key: MOCK_DB_KEYS.userRoles.user1User, userKey: MOCK_DB_KEYS.users.user1, roleKey: roleBySlug.get("creator") },
+    { key: MOCK_DB_KEYS.userRoles.user2User, userKey: MOCK_DB_KEYS.users.user2, roleKey: roleBySlug.get("creator") },
+    { key: MOCK_DB_KEYS.userRoles.user3User, userKey: MOCK_DB_KEYS.users.user3, roleKey: roleBySlug.get("creator") },
+    { key: MOCK_DB_KEYS.userRoles.adminUser, userKey: MOCK_DB_KEYS.users.admin, roleKey: roleBySlug.get("creator") },
   ].map((row, index) => ({
     ...row,
     ...auditFields(10 + index),
@@ -276,7 +275,7 @@ function humanToolStateSampleRows(generateKey) {
     { displayName: "User 1", toolKey: "game-journey", userKey: MOCK_DB_KEYS.users.user1 },
     { displayName: "User 2", toolKey: "palette", userKey: MOCK_DB_KEYS.users.user2 },
     { displayName: "User 3", toolKey: "asset", userKey: MOCK_DB_KEYS.users.user3 },
-    { displayName: "DavidQ admin", toolKey: "game-workspace", userKey: MOCK_DB_KEYS.users.admin },
+    { displayName: "DavidQ", toolKey: "game-workspace", userKey: MOCK_DB_KEYS.users.admin },
   ];
   return users.map((user, index) => {
     const tool = toolByKey.get(user.toolKey) || tools[index] || {

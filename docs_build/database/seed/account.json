@@ -21,7 +21,7 @@
         "key": "01K2GFSJ0Y0000000000000053"
       },
       {
-        "displayName": "DavidQ admin",
+        "displayName": "DavidQ",
         "key": "01K2GFSJ0Y0000000000000054"
       }
     ],
@@ -29,19 +29,19 @@
       "01K2GFSJ0Y0000000000000082",
       "01K2GFSJ0Y0000000000000083",
       "01K2GFSJ0Y0000000000000084",
-      "01K2GFSJ0Y0000000000000085",
-      "01K2GFSJ0Y0000000000000086"
+      "01K2GFSJ0Y0000000000000085"
     ]
   },
   "tables": {
     "users": {
       "mode": "server-side-upsert",
-      "authProvider": "dev-static-seed",
+      "authProvider": "supabase-auth",
       "passwordStorage": "none"
     },
     "roles": {
       "mode": "server-api-generated-keys",
-      "requiredRoleSlugs": ["admin", "creator", "guest", "user"]
+      "requiredRoleSlugs": ["admin", "creator", "guest"],
+      "deprecatedRoleSlugs": ["user"]
     },
     "user_roles": {
       "mode": "server-side-upsert",

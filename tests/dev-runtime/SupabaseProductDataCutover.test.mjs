@@ -72,9 +72,9 @@ function identityTables() {
   return {
     roles: [
       {
-        key: MOCK_DB_KEYS.roles.user,
-        roleSlug: "user",
-        name: "User",
+        key: MOCK_DB_KEYS.roles.creator,
+        roleSlug: "creator",
+        name: "Creator",
         description: "Creator account.",
         isActive: true,
         isSystemRole: false,
@@ -94,7 +94,7 @@ function identityTables() {
       {
         key: MOCK_DB_KEYS.userRoles.user1User,
         userKey: MOCK_DB_KEYS.users.user1,
-        roleKey: MOCK_DB_KEYS.roles.user,
+        roleKey: MOCK_DB_KEYS.roles.creator,
         ...audit,
       },
       {
@@ -116,8 +116,8 @@ function identityTables() {
       },
       {
         key: MOCK_DB_KEYS.users.admin,
-        displayName: "DavidQ admin",
-        email: "admin@example.invalid",
+        displayName: "DavidQ",
+        email: "qbytes.dq@gmail.com",
         authProvider: "supabase-auth",
         authProviderUserId: "supabase-admin",
         isActive: true,

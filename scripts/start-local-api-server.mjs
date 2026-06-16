@@ -58,12 +58,12 @@ const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
 
 const localServer = await startLocalApiServer({ host, port });
 
-console.log(`GameFoundry API-backed local server running at ${localServer.baseUrl}/account/sign-in.html`);
+console.log(`GameFoundry API runtime server running at ${localServer.baseUrl}/account/sign-in.html`);
 console.log(envLocal.loaded
-  ? `.env.local loaded for local API runtime (${envLocal.loadedKeys} key(s) applied).`
-  : ".env.local was not found for local API runtime.");
-console.log(`Local API account connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
-console.log(`Local API product data connection: ${productDataConnection.ready ? "configured" : `missing ${productDataConnection.missingKeys.join(", ")}`}.`);
+  ? `.env.local loaded for API runtime (${envLocal.loadedKeys} key(s) applied).`
+  : ".env.local was not found for API runtime.");
+console.log(`Configured account connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
+console.log(`Configured product data connection: ${productDataConnection.ready ? "configured" : `missing ${productDataConnection.missingKeys.join(", ")}`}.`);
 console.log("Press Ctrl+C to stop.");
 
 for (const signal of ["SIGINT", "SIGTERM"]) {

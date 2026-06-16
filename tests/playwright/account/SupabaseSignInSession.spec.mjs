@@ -176,7 +176,7 @@ test("account sign in resolves Supabase-backed session through the local API", a
     const createAccountPayload = await (await createAccountResponse).json();
     expect(createAccountPayload.ok).toBe(true);
     expect(createAccountPayload.data.identityProvisioned).toBe(true);
-    expect(createAccountPayload.data.roleSlugs).toEqual(["user"]);
+    expect(createAccountPayload.data.roleSlugs).toEqual(["creator"]);
     await expect(page.locator("[data-account-auth-status]")).toContainText("Account created");
 
     await page.goto(`${server.baseUrl}/account/sign-in.html?returnTo=account/achievements.html`, { waitUntil: "networkidle" });
@@ -194,7 +194,7 @@ test("account sign in resolves Supabase-backed session through the local API", a
     expect(sessionPayload.ok).toBe(true);
     expect(sessionPayload.data.authenticated).toBe(true);
     expect(sessionPayload.data.userKey).toBe(createAccountPayload.data.userKey);
-    expect(sessionPayload.data.roleSlugs).toEqual(["user"]);
+    expect(sessionPayload.data.roleSlugs).toEqual(["creator"]);
 
     expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/token?grant_type=password")).toBe(true);
     expect(fakeSupabase.calls.some((call) => call.path === "/auth/v1/admin/users")).toBe(true);
