@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { createPostgresConnectionClient } from "../persistence/postgres-connection-client.mjs";
 import { SEED_DB_KEYS } from "../seed/seed-db-keys.mjs";
 
 export const AUTH_PROVIDER_CONTRACT_OPERATIONS = Object.freeze([
@@ -54,11 +55,9 @@ const SERVER_ONLY_SUPABASE_SECRET_KEYS = Object.freeze([
   "GAMEFOUNDRY_DATABASE_URL",
 ]);
 const SUPABASE_POSTGRES_CONFIG_KEYS = Object.freeze([
-  "GAMEFOUNDRY_SUPABASE_URL",
-  "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
+  "GAMEFOUNDRY_DATABASE_URL",
 ]);
 const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
-  ...SUPABASE_POSTGRES_CONFIG_KEYS,
   "GAMEFOUNDRY_DATABASE_URL",
 ]);
 export const SUPABASE_POSTGRES_IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
@@ -140,8 +139,8 @@ export function supabaseAuthDiagnostic(env = process.env) {
 export function supabasePostgresDiagnostic(env = process.env) {
   const missing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
   return missing.length
-    ? "Supabase Postgres connection is not configured. Add the Supabase URL and server-only database credentials on the server; server-only details are not exposed through browser APIs."
-    : "Supabase Postgres connection adapter is configured for the fixed runtime path.";
+    ? "Configured database connection is not configured. Add GAMEFOUNDRY_DATABASE_URL on the server; server-only details are not exposed through browser APIs."
+    : "Configured database connection adapter is ready for the fixed runtime path.";
 }
 
 function supabaseUrl(env) {
@@ -172,16 +171,6 @@ function authAdminHeaders(env) {
     apikey: serviceRoleKey,
     authorization: `Bearer ${serviceRoleKey}`,
     "content-type": "application/json",
-  };
-}
-
-function postgresHeaders(env, prefer = "return=representation") {
-  const serviceRoleKey = supabaseServiceRoleKey(env);
-  return {
-    apikey: serviceRoleKey,
-    authorization: `Bearer ${serviceRoleKey}`,
-    "content-type": "application/json",
-    prefer,
   };
 }
 
@@ -281,7 +270,7 @@ function supabaseMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMiss
     warnings.push(`Supabase Auth is not configured. Missing browser-safe environment variables: ${supabaseAuthMissing.join(", ")}.`);
   }
   if (supabasePostgresMissing.length) {
-    warnings.push("Supabase Postgres is not configured. Missing browser-safe URL or server-only credentials are required; server-only details are not exposed through browser APIs.");
+    warnings.push("Configured database connection is not configured. GAMEFOUNDRY_DATABASE_URL is required on the server; server-only details are not exposed through browser APIs.");
   }
   return warnings;
 }
@@ -327,7 +316,7 @@ function createSupabasePreflight({
   supabasePostgresReady,
   supabaseUrlReady,
   supabaseAnonKeyReady,
-  supabaseServiceRoleReady,
+  databaseUrlReady,
 }) {
   const checks = [
     {
@@ -357,7 +346,7 @@ function createSupabasePreflight({
       }),
       summary: supabaseUrlReady
         ? "Supabase URL is configured."
-        : "Supabase URL is required for the fixed Supabase Auth and Supabase Postgres path.",
+        : "Supabase URL is required for Supabase Auth.",
       visibility: "browser-safe",
     },
     {
@@ -373,15 +362,15 @@ function createSupabasePreflight({
       visibility: "browser-safe",
     },
     {
-      id: "supabase-server-only-credential",
-      label: "Supabase server-only credential",
+      id: "database-url",
+      label: "Database connection URL",
       status: preflightStatus({
         active: supabasePostgresActive,
-        ready: supabaseServiceRoleReady,
+        ready: databaseUrlReady,
       }),
-      summary: supabaseServiceRoleReady
-        ? "Server-only Supabase database credential is configured on the server."
-        : "Server-only Supabase database credential is required for Supabase Postgres.",
+      summary: databaseUrlReady
+        ? "Server-only database connection URL is configured on the server."
+        : "GAMEFOUNDRY_DATABASE_URL is required for product data.",
       visibility: "server-only",
     },
     {
@@ -432,10 +421,10 @@ export function createSupabasePostgresReadiness(env = process.env) {
   const siteSetupReady = siteSetupMissing.length === 0;
   const blockers = [];
   if (!configured) {
-    blockers.push("Add Supabase URL and server-only credentials for Supabase Postgres.");
+    blockers.push("Add GAMEFOUNDRY_DATABASE_URL for the configured database connection.");
   }
   if (!siteSetupReady) {
-    blockers.push("Add server-only direct SQL configuration before Owner Operations can run Supabase setup.");
+    blockers.push("Add server-only direct database configuration before Owner Operations can run setup.");
   }
   return {
     configured,
@@ -670,10 +659,10 @@ export class SupabaseAuthProviderAdapter {
 export const SupabaseAuthProviderStub = SupabaseAuthProviderAdapter;
 
 export class SupabasePostgresProviderAdapter {
-  constructor({ env = process.env, fetchImpl = globalThis.fetch, keyFactory = createRuntimeUlid } = {}) {
+  constructor({ env = process.env, keyFactory = createRuntimeUlid, postgresClient = null } = {}) {
     this.env = env;
-    this.fetchImpl = fetchImpl;
     this.keyFactory = keyFactory;
+    this.postgresClient = postgresClient;
     this.providerId = SUPABASE_POSTGRES_PROVIDER_ID;
   }
 
@@ -690,9 +679,10 @@ export class SupabasePostgresProviderAdapter {
     if (!readiness.configured) {
       throw new Error(this.diagnostic());
     }
-    if (typeof this.fetchImpl !== "function") {
-      throw new Error("Supabase Postgres connection requires a server fetch implementation.");
-    }
+  }
+
+  databaseClient() {
+    return this.postgresClient || createPostgresConnectionClient({ env: this.env });
   }
 
   createRecordKey() {
@@ -752,17 +742,16 @@ export class SupabasePostgresProviderAdapter {
   async requestTable(tableName, { body = null, method = "GET", prefer = "return=representation", query = "select=*" } = {}) {
     this.assertConfigured();
     const table = requireTableName(tableName);
-    const response = await this.fetchImpl(`${supabaseUrl(this.env)}/rest/v1/${encodeURIComponent(table)}?${query}`, {
-      body: body === null ? undefined : JSON.stringify(body),
-      headers: postgresHeaders(this.env, prefer),
-      method,
-    });
-    const payload = await readResponseJson(response);
-    if (!response.ok) {
-      const message = payload?.message || payload?.hint || "No Supabase Postgres error message returned.";
-      throw new Error(`Supabase Postgres ${table} request failed with HTTP ${response.status}: ${message}`);
+    try {
+      return await this.databaseClient().requestTable(table, {
+        body,
+        method,
+        prefer,
+        query,
+      });
+    } catch (error) {
+      throw new Error(`Configured database ${table} request failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`);
     }
-    return payload;
   }
 
   upsertTable(tableName, rows) {
@@ -1059,7 +1048,7 @@ export function createProviderContractSnapshot(env = process.env) {
   const supabasePostgresReady = supabasePostgresReadiness.configured;
   const supabaseUrlReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_URL"));
   const supabaseAnonKeyReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_ANON_KEY"));
-  const supabaseServiceRoleReady = Boolean(envValue(env, "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY"));
+  const databaseUrlReady = Boolean(envValue(env, "GAMEFOUNDRY_DATABASE_URL"));
   const providerFailures = [
     providerFailure({
       configDiagnostic: supabaseAuthDiagnostic(env),
@@ -1084,7 +1073,7 @@ export function createProviderContractSnapshot(env = process.env) {
     supabasePostgresActive: true,
     supabasePostgresReadiness,
     supabasePostgresReady,
-    supabaseServiceRoleReady,
+    databaseUrlReady,
     supabaseUrlReady,
   });
 
@@ -1186,7 +1175,7 @@ export function createProviderContractSnapshot(env = process.env) {
       configured: supabasePostgresMissing.length === 0,
       adapter: {
         activeByDefault: true,
-        implementation: "config-gated Supabase Postgres REST adapter",
+        implementation: "config-gated direct Postgres adapter",
         keyGenerationOwner: "server-api",
         staticUlidsAllowedOnlyForDevSeedUsers: true,
       },

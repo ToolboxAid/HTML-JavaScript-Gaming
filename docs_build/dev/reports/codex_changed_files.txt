@@ -1,16 +1,16 @@
 # git status --short
-M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
- M toolbox/game-workspace/game-workspace.js
-?? docs_build/dev/reports/PR_26167_194-env-runtime-real-fix.md
+AM docs_build/dev/reports/PR_26167_195-product-data-uses-database-url.md
+M  docs_build/dev/reports/codex_changed_files.txt
+M  docs_build/dev/reports/codex_review.diff
+M  docs_build/dev/reports/environment_agnostic_browser_gate_report.md
+M  src/dev-runtime/auth/provider-contract-stubs.mjs
+A  src/dev-runtime/persistence/postgres-connection-client.mjs
+A  tests/dev-runtime/ProductDataDatabaseUrl.test.mjs
 
-# git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26167_194-env-runtime-real-fix.md
-
-# git diff --stat
-.../dev/reports/coverage_changed_js_guardrail.txt  |  4 +--
- .../dev/reports/playwright_v8_coverage_report.txt  | 10 ++++---
- .../tools/GameWorkspaceMockRepository.spec.mjs     | 33 ++++++++++++++++++++++
- toolbox/game-workspace/game-workspace.js           |  8 +++---
- 4 files changed, 45 insertions(+), 10 deletions(-)
+# git diff HEAD --stat -- PR195 files
+.../PR_26167_195-product-data-uses-database-url.md |  53 ++
+ .../environment_agnostic_browser_gate_report.md    |   4 +-
+ src/dev-runtime/auth/provider-contract-stubs.mjs   |  77 ++-
+ .../persistence/postgres-connection-client.mjs     | 581 +++++++++++++++++++++
+ tests/dev-runtime/ProductDataDatabaseUrl.test.mjs  |  62 +++
+ 5 files changed, 731 insertions(+), 46 deletions(-)
