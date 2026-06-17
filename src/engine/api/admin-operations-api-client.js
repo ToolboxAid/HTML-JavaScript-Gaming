@@ -10,10 +10,10 @@ export function readAdminOperationsStatus() {
   );
 }
 
-export function runAdminOperationAction(actionId) {
+export function runAdminOperationAction(actionId, options = {}) {
   return requireServerApiData(
     safeRequestServerApi("/admin/operations/action", {
-      body: { actionId },
+      body: { actionId, ...options },
       method: "POST",
     }),
     "Admin Operations action",

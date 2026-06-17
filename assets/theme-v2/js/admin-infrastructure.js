@@ -1,6 +1,5 @@
 import {
-    readAdminInfrastructureStoragePathStatus,
-    runAdminInfrastructureStorageConnectivityAction
+    readAdminInfrastructureStoragePathStatus
 } from "../../../src/engine/api/admin-infrastructure-api-client.js";
 
 const STORAGE_PATH_LANES = Object.freeze([
@@ -13,9 +12,6 @@ const STORAGE_PATH_LANES = Object.freeze([
 class AdminInfrastructureStoragePathStatus {
     constructor(root) {
         this.root = root;
-        this.connectivityActionButtons = Array.from(root.querySelectorAll("[data-admin-storage-connectivity-action]"));
-        this.connectivityRows = root.querySelector("[data-admin-storage-connectivity-result-rows]");
-        this.connectivityStatus = root.querySelector("[data-admin-storage-connectivity-status]");
         this.rows = root.querySelector("[data-admin-storage-path-status-rows]");
     }
 
@@ -23,34 +19,7 @@ class AdminInfrastructureStoragePathStatus {
         if (!this.rows) {
             return;
         }
-        this.connectivityActionButtons.forEach((button) => {
-            button.addEventListener("click", () => this.runStorageConnectivityAction(button.dataset.adminStorageConnectivityAction));
-        });
         this.load();
-    }
-
-    setConnectivityStatus(status, message) {
-        if (this.connectivityStatus) {
-            this.connectivityStatus.textContent = `${status}: ${message}`;
-        }
-    }
-
-    appendConnectivityResult(result = {}) {
-        if (!this.connectivityRows) {
-            return;
-        }
-        const row = document.createElement("tr");
-        [
-            result.actionId || "storage-connectivity",
-            result.status || "WARN",
-            result.executed === true ? "yes" : "no",
-            result.message || "No storage connectivity message returned.",
-        ].forEach((value) => {
-            const cell = document.createElement("td");
-            cell.textContent = value;
-            row.append(cell);
-        });
-        this.connectivityRows.prepend(row);
     }
 
     renderRows(rows) {
@@ -90,15 +59,6 @@ class AdminInfrastructureStoragePathStatus {
         }
     }
 
-    runStorageConnectivityAction(actionId) {
-        try {
-            const result = runAdminInfrastructureStorageConnectivityAction(actionId);
-            this.appendConnectivityResult(result);
-            this.setConnectivityStatus(result.status || "WARN", result.message || "Storage connectivity action returned no message.");
-        } catch (error) {
-            this.setConnectivityStatus("FAIL", error instanceof Error ? error.message : "Storage connectivity action failed.");
-        }
-    }
 }
 
 document.addEventListener("DOMContentLoaded", () => {

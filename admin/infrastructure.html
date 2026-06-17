@@ -90,22 +90,6 @@
                                 </tbody>
                             </table>
                         </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Admin storage connectivity results">
-                                <caption>Storage Connectivity Results</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Action</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Executed</th>
-                                        <th scope="col">Message</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-admin-storage-connectivity-result-rows>
-                                    <tr><td>startup</td><td>SKIP</td><td>no</td><td>No storage connectivity action has been run.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
                     </section>
                     <aside class="tool-column tool-group-platform">
                         <div class="tool-column-header">
@@ -125,17 +109,7 @@
                                 <summary>Guardrails</summary>
                                 <div class="accordion-body content-stack">
                                     <p>Infrastructure status remains a read-only Admin reference.</p>
-                                    <p>Storage connectivity tests run through the Local API and never expose secrets.</p>
-                                </div>
-                            </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Storage Connectivity</summary>
-                                <div class="accordion-body content-stack">
-                                    <button class="btn btn--compact" type="button" data-admin-storage-connectivity-action="storage-list">List</button>
-                                    <button class="btn btn--compact" type="button" data-admin-storage-connectivity-action="storage-write-test-object">Write Test Object</button>
-                                    <button class="btn btn--compact" type="button" data-admin-storage-connectivity-action="storage-read-test-object">Read Test Object</button>
-                                    <button class="btn btn--compact" type="button" data-admin-storage-connectivity-action="storage-delete-test-object">Delete Test Object</button>
-                                    <p class="status" role="status" data-admin-storage-connectivity-status>Storage connectivity not run.</p>
+                                    <p>Storage connectivity tests run from Admin System Health and never expose secrets.</p>
                                 </div>
                             </details>
                         </div>

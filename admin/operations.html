@@ -32,8 +32,8 @@
                             <details class="vertical-accordion" open>
                                 <summary>Project Packaging</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Package actions are routed through the Local API. Full .gfsp execution returns visible not implemented diagnostics until package tooling is completed.</p>
-                                    <p>Import Project Package requires explicit confirmation behavior before any overwrite can proceed.</p>
+                                    <p>Package actions are routed through the Local API. Export, Validate, and Import use the server-owned .gfsp package contract.</p>
+                                    <p>Import Project Package validates first and requires explicit confirmation before Replace Existing can proceed.</p>
                                     <div class="content-stack" data-admin-operation-group="project-packaging">
                                         <p class="status">Loading Project Packaging actions.</p>
                                     </div>
@@ -42,8 +42,8 @@
                             <details class="vertical-accordion" open>
                                 <summary>Backup &amp; Recovery</summary>
                                 <div class="accordion-body content-stack">
-                                    <p>Backup and restore actions are staged for reviewed server-side execution.</p>
-                                    <p>Restore From Backup is risky and requires explicit confirmation messaging before any restore behavior is implemented.</p>
+                                    <p>Backup and restore actions use guarded Local API contracts.</p>
+                                    <p>Restore From Backup reports the current environment lane and requires explicit RESTORE confirmation before runtime state is restored.</p>
                                     <div class="content-stack" data-admin-operation-group="backup-recovery">
                                         <p class="status">Loading Backup &amp; Recovery actions.</p>
                                     </div>

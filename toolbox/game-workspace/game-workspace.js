@@ -152,7 +152,7 @@ function refreshSaveControls() {
   if (!saveAllowed) {
     const currentStatus = String(elements.statusLog?.textContent || "");
     if (!/Blocked|failed|malformed|Restore|Sign in required|unavailable/i.test(currentStatus)) {
-      setStatusLog("Guest browsing enabled; sign in required to save Project Workspace project records through Local API.");
+      setStatusLog("Guest browsing enabled; sign in required to save Project Workspace project records.");
     }
   }
 }
@@ -161,7 +161,7 @@ function ensureProjectRecordsSaveAllowed(action) {
   if (projectRecordsSaveAllowed()) {
     return true;
   }
-  const message = `Sign in required to ${action} Project Workspace project records through Local API.`;
+  const message = `Sign in required to ${action} Project Workspace project records.`;
   setStatusLog(message);
   setProjectRecordStatus(message);
   refreshSaveControls();
@@ -223,11 +223,12 @@ function renderProjectRecords() {
   }
 
   const records = Array.isArray(projectRecordContract.records) ? projectRecordContract.records : [];
-  const source = projectRecordContract.serviceContract || "Web UI -> Local API/Service Contract -> Local DB";
+  const source = projectRecordContract.sourceLabel || "Project records service";
+  const assetReferenceCount = Number(projectRecordContract.assetReferenceCount || 0);
   const saveMode = projectRecordsSaveAllowed()
     ? "signed-in saves enabled"
     : "guest browsing enabled; guest saving blocked";
-  setProjectRecordStatus(`${projectRecordContract.terminology || "Project Workspace"} records loaded from ${projectRecordContract.api || "Local API"} to ${projectRecordContract.database || "Local DB"}/SQLite; API owns authoritative keys; ${saveMode}.`);
+  setProjectRecordStatus(`${projectRecordContract.terminology || "Project Workspace"} records loaded from the project records service; authoritative keys managed by service; asset references linked to storage object keys: ${assetReferenceCount}; ${saveMode}.`);
 
   elements.projectRecordsTable.replaceChildren();
   if (!records.length) {
@@ -247,7 +248,7 @@ function renderProjectRecords() {
       record.projectKey || "missing key",
       record.name || "Untitled project",
       record.status || "No status",
-      record.source || source,
+      `${source}; asset refs ${Number(record.assetReferenceCount || 0)}`,
     ].forEach((value) => {
       const cell = document.createElement("td");
       cell.textContent = value;

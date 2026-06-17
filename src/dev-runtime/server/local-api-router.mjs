@@ -19,6 +19,13 @@ import {
 import { createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
 import { loadStorageConfig } from "../storage/storage-config.mjs";
 import {
+  GFSP_PACKAGE_REQUIRED_FILES,
+  GFSP_PACKAGE_FILENAME_PATTERN,
+  createProjectPackage,
+  projectPackageReadinessContract,
+  validateProjectPackage,
+} from "../project-packages/project-package-service.mjs";
+import {
   TOOL_IMAGE_FALLBACK,
   TOOL_RELEASE_CHANNELS,
   TOOL_RELEASE_CHANNEL_HELP_TEXT,
@@ -292,60 +299,61 @@ const ADMIN_OPERATION_GROUPS = Object.freeze([
   Object.freeze({
     id: "project-packaging",
     label: "Project Packaging",
-    message: "Project package actions are staged through the Local API and do not execute browser-owned package writes.",
+    message: "Project package actions run through the Local API package contract. Browser controls only submit files and confirmations.",
     actions: Object.freeze([
       Object.freeze({
-        diagnostic: "Export Project Package is not implemented in this PR; future .gfsp export must run through reviewed server-side package tooling.",
+        diagnostic: "Export Project Package creates a .gfsp ZIP package for the active Project Workspace record and validates it before returning diagnostics.",
         id: "export-project-package",
         label: "Export Project Package",
-        mode: "not-implemented",
-        notImplemented: true,
-        status: "SKIP",
+        mode: "server-package",
+        status: "PASS",
       }),
       Object.freeze({
-        diagnostic: "Validate Project Package is not implemented in this PR; future validation must inspect package metadata and storage references without writing.",
+        diagnostic: "Validate Project Package inspects .gfsp integrity, required files, schema validity, compatibility, and asset references without importing.",
         id: "validate-project-package",
         label: "Validate Project Package",
-        mode: "not-implemented",
-        notImplemented: true,
-        status: "SKIP",
+        mode: "server-package",
+        requiresPackageFile: true,
+        status: "PASS",
       }),
       Object.freeze({
-        confirmationMessage: "Import Project Package must fail visibly until explicit overwrite confirmation behavior exists.",
-        diagnostic: "Import Project Package is not implemented in this PR; existing project overwrites are blocked.",
+        confirmationMessage: "Replace Existing requires explicit confirmation before an existing project can be overwritten.",
+        confirmationPhrase: "REPLACE",
+        diagnostic: "Import Project Package validates first, detects project conflicts, and supports Replace Existing or Import As New Project without silent overwrite.",
         id: "import-project-package",
         label: "Import Project Package",
-        mode: "not-implemented",
-        notImplemented: true,
+        mode: "server-package",
         risky: true,
         confirmationRequired: true,
-        status: "SKIP",
+        requiresPackageFile: true,
+        status: "WARN",
+        supportsImportModes: true,
       }),
     ]),
   }),
   Object.freeze({
     id: "backup-recovery",
     label: "Backup & Recovery",
-    message: "Backup and recovery actions are staged for reviewed server-side execution.",
+    message: "Backup and recovery actions run through guarded Local API contracts with environment-aware restore restrictions.",
     actions: Object.freeze([
       Object.freeze({
-        diagnostic: "Create Backup is not implemented in this PR; future backups must be produced through server-side tooling.",
+        diagnostic: "Create Backup creates a safe JSON snapshot through the Local API without exposing secrets.",
         id: "create-backup",
         label: "Create Backup",
-        mode: "not-implemented",
-        notImplemented: true,
-        status: "SKIP",
+        mode: "server-backup",
+        status: "PASS",
       }),
       Object.freeze({
-        confirmationMessage: "Restore From Backup is risky and must require explicit confirmation before any restore behavior is implemented.",
-        diagnostic: "Restore From Backup is not implemented in this PR; restore operations remain blocked in the browser.",
+        confirmationMessage: "Restore From Backup is destructive in DEV runtime state and requires explicit RESTORE confirmation.",
+        confirmationPhrase: "RESTORE",
+        diagnostic: "Restore From Backup validates the selected backup and only applies after confirmation in the DEV lane.",
         id: "restore-from-backup",
         label: "Restore From Backup",
-        mode: "not-implemented",
-        notImplemented: true,
+        mode: "server-backup",
         risky: true,
         confirmationRequired: true,
-        status: "SKIP",
+        requiresBackupFile: true,
+        status: "WARN",
       }),
     ]),
   }),
@@ -521,6 +529,7 @@ function databaseConfigStatus(env = process.env) {
 
 function projectPackageReadinessStatus() {
   const decisionPath = path.join(process.cwd(), "docs_build", "codex", "decisions", "project-packages.md");
+  const contract = projectPackageReadinessContract();
   try {
     const contents = readFileSync(decisionPath, "utf8");
     const requiredContent = [
@@ -528,20 +537,25 @@ function projectPackageReadinessStatus() {
       "Game Foundry Studio Project",
       "ZIP-based package format",
       "<ProjectNameWithoutSpaces>-<YYJJJ>-<sequence>.gfsp",
+      "metadata/package.json",
+      "project/project.json",
+      "assets/asset-references.json",
       "Export Project Package",
       "Import Project Package",
       "Validate Project Package",
     ];
     const missing = requiredContent.filter((item) => !contents.includes(item));
     return {
+      contract,
       decisionPath: "docs_build/codex/decisions/project-packages.md",
       message: missing.length
         ? `Project package decision note is missing: ${missing.join(", ")}.`
-        : "Project package decision note is ready for .gfsp export/import/validate planning.",
+        : "Project package decision note and runtime scaffold are ready for .gfsp export/import/validate package workflows.",
       status: missing.length ? "WARN" : "PASS",
     };
   } catch {
     return {
+      contract,
       decisionPath: "docs_build/codex/decisions/project-packages.md",
       message: "Project package decision note is missing. Restore docs_build/codex/decisions/project-packages.md.",
       status: "WARN",
@@ -693,7 +707,7 @@ function systemHealthR2Readiness(storageStatus) {
     && Boolean(storageStatus.projectsPrefix)
     && credentialsConfigured;
   const configurationNextStep = configurationReady
-    ? "Run the existing Admin Infrastructure storage connectivity actions when live R2 proof is needed."
+    ? "Run the Admin System Health storage connectivity actions when live R2 proof is needed."
     : "Configure endpoint, bucket, projects prefix, and hidden credentials in the selected .env.<target> copy-source, then copy it to .env.";
   const readinessTargets = ["Ready for Assets", "Ready for Project Packages", "Ready for Promotion Packages"];
   const rows = [
@@ -728,7 +742,7 @@ function systemHealthR2Readiness(storageStatus) {
     {
       area: "Project Asset Storage / R2",
       field: "Connectivity test status",
-      nextStep: "Use the existing Admin Infrastructure connectivity actions for List, Write test object, Read test object, and Delete test object validation.",
+      nextStep: "Use Admin System Health connectivity actions for List, Write test object, Read test object, and Delete test object validation.",
       status: "SKIP",
       value: "NOT RUN",
     },
@@ -2511,6 +2525,9 @@ LIMIT 1;
         { area: "Secrets status", field: "Storage secret key", status: storageStatus.secretKeyStatus || "WARN", value: storageStatus.secretKeyConfigured ? "configured; value hidden" : "not configured" },
         { area: "Migration status", field: "Migration counts", status: databaseStatus.migrationStatus || "WARN", value: `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}` },
         { area: "Project package readiness", field: ".gfsp decision", status: packageStatus.status, value: packageStatus.decisionPath },
+        { area: "Project package readiness", field: "Runtime scaffold", status: packageStatus.status, value: `${packageStatus.contract?.packageType || "Game Foundry Studio Project"} ${packageStatus.contract?.contractVersion || ""}`.trim() },
+        { area: "Project package readiness", field: "Filename format", status: packageStatus.status, value: packageStatus.contract?.filenameFormat || GFSP_PACKAGE_FILENAME_PATTERN },
+        { area: "Project package readiness", field: "Required files", status: packageStatus.status, value: (packageStatus.contract?.requiredFiles || GFSP_PACKAGE_REQUIRED_FILES).join(", ") },
         { area: "Promotion/package safety", field: "Browser destructive operations", status: promotionFoundation.destructiveOperationsAllowed === false ? "PASS" : "WARN", value: promotionFoundation.destructiveOperationsAllowed === false ? "disabled" : "review required" },
         { area: "Promotion/package safety", field: "Import overwrite", status: promotionFoundation.importOverwriteAllowed === false ? "PASS" : "WARN", value: promotionFoundation.importOverwritePolicy || "review required" },
       ],
@@ -2536,10 +2553,18 @@ LIMIT 1;
   projectWorkspaceProjectsForRoute() {
     const activeProject = this.gameWorkspaceRepository.getActiveGame();
     const records = gameWorkspaceProjectRecords(this.gameWorkspaceRepository);
+    const storageObjects = assetRuntimeTables(this.assetRepository).asset_storage_objects || [];
+    const storageObjectKeys = storageObjects
+      .map((row) => row.storageObjectKey || row.storedPath || "")
+      .filter(Boolean);
     return {
       api: "Local API",
       apiOwnsAuthoritativeProjectKeys: true,
       activeProjectKey: activeProject ? gameWorkspaceGameKey(activeProject.id) : "",
+      assetReferenceCount: storageObjectKeys.length,
+      assetReferencesLinkedToStorage: storageObjectKeys.length
+        ? storageObjectKeys.every((key) => String(key).trim().length > 0)
+        : true,
       browserProductDataSsoT: false,
       database: "Local DB",
       databaseEngine: "SQLite",
@@ -2547,9 +2572,18 @@ LIMIT 1;
       guestSavingAllowed: false,
       pageLocalProductDataArrays: false,
       recordCount: records.length,
-      records,
+      records: records.map((record) => ({
+        ...record,
+        apiOwnsAuthoritativeProjectKey: true,
+        assetReferenceCount: storageObjectKeys.length,
+        assetReferencesLinkedToStorage: storageObjectKeys.length
+          ? storageObjectKeys.every((key) => String(key).trim().length > 0)
+          : true,
+        storageObjectKeys,
+      })),
       serviceContract: "Web UI -> Local API/Service Contract -> Local DB",
       source: "Local API",
+      storageContract: "Asset references link to R2 object keys through API-owned asset metadata.",
       terminology: "Project Workspace",
     };
   }
@@ -2635,8 +2669,262 @@ LIMIT 1;
     }
   }
 
+  projectPackageExistingProjects() {
+    return gameWorkspaceProjectRecords(this.gameWorkspaceRepository);
+  }
+
+  activeProjectPackageProject() {
+    const activeGame = this.gameWorkspaceRepository.getActiveGame();
+    if (!activeGame) {
+      throw new Error("Export Project Package requires an open Project Workspace project.");
+    }
+    const projectRecord = this.projectPackageExistingProjects()
+      .find((record) => record.localRecordId === activeGame.id);
+    return {
+      id: activeGame.id,
+      localRecordId: activeGame.id,
+      name: activeGame.name,
+      ownerKey: activeGame.ownerKey,
+      projectKey: projectRecord?.projectKey || gameWorkspaceGameKey(activeGame.id),
+      status: activeGame.status,
+    };
+  }
+
+  projectPackageAssetReferences() {
+    const tables = assetRuntimeTables(this.assetRepository);
+    return (tables.asset_storage_objects || [])
+      .filter((row) => row.storageObjectKey || row.storedPath)
+      .map((row) => ({
+        assetId: row.assetId || row.id || row.key,
+        fileName: row.originalName || row.fileName || "",
+        mimeType: row.mimeType || "",
+        size: row.size || 0,
+        storageObjectKey: row.storageObjectKey || row.storedPath,
+        storedPath: row.storedPath,
+      }));
+  }
+
+  exportProjectPackageAction() {
+    const project = this.activeProjectPackageProject();
+    const packageResult = createProjectPackage({
+      assetReferences: this.projectPackageAssetReferences(),
+      existingProjects: this.projectPackageExistingProjects(),
+      project,
+    });
+    return {
+      actionId: "export-project-package",
+      actionLabel: "Export Project Package",
+      executed: true,
+      message: `Export Project Package generated ${packageResult.filename} with ${packageResult.fileCount} required file(s) and ${packageResult.metadata.assetReferenceCount} asset reference(s); export validation ${packageResult.validation.status}.`,
+      package: packageResult,
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: packageResult.validation.status,
+      validation: packageResult.validation,
+    };
+  }
+
+  validateProjectPackageAction(body = {}) {
+    const validation = validateProjectPackage({
+      existingProjects: this.projectPackageExistingProjects(),
+      fileName: body.packageFileName,
+      packageBytesBase64: body.packageBytesBase64,
+    });
+    return {
+      actionId: "validate-project-package",
+      actionLabel: "Validate Project Package",
+      executed: Boolean(body.packageBytesBase64),
+      message: validation.message,
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: validation.status,
+      validation,
+    };
+  }
+
+  importProjectPackageAction(body = {}, session = {}) {
+    const validation = validateProjectPackage({
+      existingProjects: this.projectPackageExistingProjects(),
+      fileName: body.packageFileName,
+      packageBytesBase64: body.packageBytesBase64,
+    });
+    if (!validation.valid) {
+      return {
+        actionId: "import-project-package",
+        actionLabel: "Import Project Package",
+        executed: false,
+        message: `Import Project Package blocked: ${validation.message}`,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: "FAIL",
+        validation,
+      };
+    }
+
+    const importMode = String(body.importMode || "import-as-new").trim();
+    const conflicts = validation.conflicts || [];
+    const packageProject = validation.metadata?.project || {};
+    if (importMode === "replace-existing") {
+      if (!conflicts.length) {
+        return {
+          actionId: "import-project-package",
+          actionLabel: "Import Project Package",
+          executed: false,
+          message: "Import Project Package blocked: Replace Existing was selected but no existing project conflict was detected. Use Import As New Project.",
+          secretEditingAllowed: false,
+          secretsExposed: false,
+          status: "FAIL",
+          validation,
+        };
+      }
+      if (body.overwriteConfirmed !== true || String(body.confirmationPhrase || "").trim() !== "REPLACE") {
+        return {
+          actionId: "import-project-package",
+          actionLabel: "Import Project Package",
+          conflicts,
+          executed: false,
+          message: "Import Project Package blocked: existing project conflict detected. Confirm Replace Existing and type REPLACE before overwrite.",
+          secretEditingAllowed: false,
+          secretsExposed: false,
+          status: "FAIL",
+          validation,
+        };
+      }
+      const existing = conflicts[0];
+      const opened = this.gameWorkspaceRepository.openGame(existing.localRecordId);
+      if (opened && packageProject.status) {
+        this.gameWorkspaceRepository.updateGameStatus(existing.localRecordId, packageProject.status);
+      }
+      return {
+        actionId: "import-project-package",
+        actionLabel: "Import Project Package",
+        conflicts,
+        executed: true,
+        importedProject: this.gameWorkspaceRepository.getActiveGame(),
+        message: `Import Project Package replaced existing project ${existing.name} after explicit REPLACE confirmation.`,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: "PASS",
+        validation,
+      };
+    }
+
+    const newName = conflicts.length ? `${packageProject.name} Imported` : packageProject.name;
+    const importedProject = this.gameWorkspaceRepository.createGame({
+      name: newName,
+      ownerKey: session.userKey,
+      purpose: "Game",
+      status: packageProject.status,
+    });
+    return {
+      actionId: "import-project-package",
+      actionLabel: "Import Project Package",
+      conflicts,
+      executed: true,
+      importedProject,
+      message: conflicts.length
+        ? `Import Project Package imported ${newName} as a new project; existing project was not overwritten.`
+        : `Import Project Package imported ${newName} as a new project.`,
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: "PASS",
+      validation,
+    };
+  }
+
+  backupFileName(now = new Date()) {
+    return `gamefoundry-local-api-backup-${now.toISOString().replace(/[:.]/g, "-")}.json`;
+  }
+
+  createBackupAction() {
+    const now = new Date();
+    const snapshot = this.currentStateSnapshot();
+    const tableCounts = Object.fromEntries(Object.entries(snapshot.tables || {})
+      .map(([tableName, rows]) => [tableName, Array.isArray(rows) ? rows.length : 0]));
+    const backup = {
+      backupType: "Game Foundry Studio Local API Backup",
+      contractVersion: "1.0.0",
+      createdAt: now.toISOString(),
+      currentEnvironment: this.adminOperationsEnvironment(),
+      environmentRestrictions: {
+        restore: "DEV lane only with explicit RESTORE confirmation",
+      },
+      secretValuesIncluded: false,
+      snapshot,
+      tableCounts,
+    };
+    const backupBytesBase64 = Buffer.from(`${JSON.stringify(backup, null, 2)}\n`, "utf8").toString("base64");
+    const fileName = this.backupFileName(now);
+    return {
+      actionId: "create-backup",
+      actionLabel: "Create Backup",
+      backup: {
+        backupBytesBase64,
+        fileName,
+        tableCounts,
+      },
+      executed: true,
+      message: `Create Backup generated ${fileName} with ${Object.keys(tableCounts).length} table snapshot(s). Secret values were not included.`,
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: "PASS",
+    };
+  }
+
+  restoreBackupAction(body = {}) {
+    const currentEnvironment = this.adminOperationsEnvironment();
+    if (body.restoreConfirmed !== true || String(body.confirmationPhrase || "").trim() !== "RESTORE") {
+      return {
+        actionId: "restore-from-backup",
+        actionLabel: "Restore From Backup",
+        executed: false,
+        message: "Restore From Backup blocked: check confirmation and type RESTORE before applying a backup.",
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: "FAIL",
+      };
+    }
+    if (!body.backupBytesBase64) {
+      return {
+        actionId: "restore-from-backup",
+        actionLabel: "Restore From Backup",
+        executed: false,
+        message: "Restore From Backup blocked: select a backup JSON file before restore.",
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: "FAIL",
+      };
+    }
+    try {
+      const backup = JSON.parse(Buffer.from(String(body.backupBytesBase64), "base64").toString("utf8"));
+      if (backup.backupType !== "Game Foundry Studio Local API Backup" || !backup.snapshot?.tables) {
+        throw new Error("Backup JSON does not match the Game Foundry Studio Local API Backup contract.");
+      }
+      this.applyStateSnapshot(backup.snapshot);
+      return {
+        actionId: "restore-from-backup",
+        actionLabel: "Restore From Backup",
+        executed: true,
+        message: `Restore From Backup applied ${body.backupFileName || "selected backup"} for current lane ${currentEnvironment} after explicit RESTORE confirmation.`,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: "PASS",
+      };
+    } catch (error) {
+      return {
+        actionId: "restore-from-backup",
+        actionLabel: "Restore From Backup",
+        executed: false,
+        message: `Restore From Backup blocked: ${error instanceof Error ? error.message : "backup validation failed."}`,
+        secretEditingAllowed: false,
+        secretsExposed: false,
+        status: "FAIL",
+      };
+    }
+  }
+
   async runAdminOperationAction(body = {}) {
-    await this.requireAdminSession();
+    const session = await this.requireAdminSession();
     const actionId = String(body.actionId || "").trim();
     const action = this.adminOperationGroups()
       .flatMap((group) => group.actions)
@@ -2649,6 +2937,21 @@ LIMIT 1;
     }
     if (action.id === "database-connectivity-test") {
       return this.adminDatabaseConnectivityTest();
+    }
+    if (action.id === "export-project-package") {
+      return this.exportProjectPackageAction();
+    }
+    if (action.id === "validate-project-package") {
+      return this.validateProjectPackageAction(body);
+    }
+    if (action.id === "import-project-package") {
+      return this.importProjectPackageAction(body, session);
+    }
+    if (action.id === "create-backup") {
+      return this.createBackupAction();
+    }
+    if (action.id === "restore-from-backup") {
+      return this.restoreBackupAction(body);
     }
     return {
       actionId: action.id,

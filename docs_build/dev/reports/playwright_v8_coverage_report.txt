@@ -12,49 +12,54 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(50%) Toolbox Index - exercised 1 runtime JS files
+(73%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(85%) Theme V2 Shared JS - exercised 8 runtime JS files
+(86%) Theme V2 Shared JS - exercised 8 runtime JS files
 
 Changed runtime JS files covered:
 (0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/project-packages/project-package-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 50/65
-(100%) assets/theme-v2/js/admin-operations.js - executed lines 118/118; executed functions 20/20
-(100%) assets/theme-v2/js/admin-system-health.js - executed lines 235/235; executed functions 34/34
+(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 741/741; executed functions 50/65
+(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
+(86%) toolbox/game-workspace/game-workspace.js - executed lines 458/458; executed functions 38/44
+(100%) assets/theme-v2/js/admin-operations.js - executed lines 211/211; executed functions 25/25
 (100%) src/engine/api/admin-operations-api-client.js - executed lines 19/19; executed functions 3/3
-(100%) src/engine/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
 
 Files with executed line/function counts where available:
-(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
-(36%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 5/14
-(50%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 13/26
-(60%) assets/theme-v2/js/admin-infrastructure.js - executed lines 100/100; executed functions 9/15
-(61%) admin/tool-votes.js - executed lines 406/406; executed functions 33/54
+(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
+(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
+(53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (67%) src/engine/api/admin-infrastructure-api-client.js - executed lines 19/19; executed functions 2/3
 (71%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 5/7
-(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 50/65
-(86%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 12/14
+(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 741/741; executed functions 50/65
+(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
+(86%) toolbox/game-workspace/game-workspace.js - executed lines 458/458; executed functions 38/44
 (90%) assets/theme-v2/js/login-session.js - executed lines 113/113; executed functions 9/10
-(100%) assets/theme-v2/js/admin-operations.js - executed lines 118/118; executed functions 20/20
+(100%) assets/theme-v2/js/admin-operations.js - executed lines 211/211; executed functions 25/25
 (100%) assets/theme-v2/js/admin-system-health.js - executed lines 235/235; executed functions 34/34
 (100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
 (100%) src/engine/api/admin-operations-api-client.js - executed lines 19/19; executed functions 3/3
 (100%) src/engine/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
+(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
 (0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/project-packages/project-package-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
 (0%) assets/theme-v2/js/admin-service-page-data.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/auth/provider-contract-stubs.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/project-packages/project-package-service.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (77%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
+(80%) assets/theme-v2/js/admin-infrastructure.js - changed JS file with browser V8 coverage
+(86%) toolbox/game-workspace/game-workspace.js - changed JS file with browser V8 coverage
 (100%) assets/theme-v2/js/admin-operations.js - changed JS file with browser V8 coverage
-(100%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
 (100%) src/engine/api/admin-operations-api-client.js - changed JS file with browser V8 coverage
-(100%) src/engine/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage

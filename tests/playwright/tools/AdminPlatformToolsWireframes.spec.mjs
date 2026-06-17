@@ -156,7 +156,7 @@ async function startAdminPage(page, pathName, options = {}) {
         { area: "Project Asset Storage / R2", field: "Bucket", status: "PASS", value: "gamefoundry-project-assets", nextStep: "Bucket is configured." },
         { area: "Project Asset Storage / R2", field: "Prefix", status: "PASS", value: "/dev/projects/", nextStep: "Prefix is configured." },
         { area: "Project Asset Storage / R2", field: "Credential configured status", status: "PASS", value: "configured; values hidden", nextStep: "Credentials are configured and hidden." },
-        { area: "Project Asset Storage / R2", field: "Connectivity test status", status: "SKIP", value: "NOT RUN", nextStep: "Use the existing Admin Infrastructure connectivity actions for List, Write test object, Read test object, and Delete test object validation." },
+        { area: "Project Asset Storage / R2", field: "Connectivity test status", status: "SKIP", value: "NOT RUN", nextStep: "Use Admin System Health connectivity actions for List, Write test object, Read test object, and Delete test object validation." },
         { area: "R2 operational readiness", field: "Ready for Assets", status: "PASS", value: "Ready", nextStep: "Configuration is ready; collect live connectivity evidence before release or promotion signoff." },
         { area: "R2 operational readiness", field: "Ready for Project Packages", status: "PASS", value: "Ready", nextStep: "Configuration is ready; collect live connectivity evidence before release or promotion signoff." },
         { area: "R2 operational readiness", field: "Ready for Promotion Packages", status: "PASS", value: "Ready", nextStep: "Configuration is ready; collect live connectivity evidence before release or promotion signoff." },
@@ -522,7 +522,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
       await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(adminPage.menuLabels || ADMIN_TOOL_MENU_LABELS);
       await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText(adminPage.heading);
       await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(adminPage.liveSettings ? 1 : (adminPage.systemHealth ? 3 : 2));
-      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(adminPage.systemHealth ? 4 : (adminPage.infrastructure ? 3 : 2));
+      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(adminPage.systemHealth ? 4 : 2);
       if (adminPage.liveSettings) {
         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-active]")).toBeVisible();
@@ -576,11 +576,9 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.getByRole("link", { name: "Storage Status" })).toHaveAttribute("href", /admin\/system-health\.html$/);
         await expect(page.getByRole("link", { name: "Admin Operations" })).toHaveAttribute("href", /admin\/operations\.html$/);
         await expect(page.getByRole("link", { name: "Promotion Foundation" })).toHaveAttribute("href", /admin\/system-health\.html$/);
-        await expect(page.locator("[data-admin-storage-connectivity-action='storage-list']")).toHaveText("List");
-        await expect(page.locator("[data-admin-storage-connectivity-action='storage-write-test-object']")).toHaveText("Write Test Object");
-        await expect(page.locator("[data-admin-storage-connectivity-action='storage-read-test-object']")).toHaveText("Read Test Object");
-        await expect(page.locator("[data-admin-storage-connectivity-action='storage-delete-test-object']")).toHaveText("Delete Test Object");
-        await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("Storage connectivity not run.");
+        await expect(page.locator("[data-admin-storage-connectivity-action]")).toHaveCount(0);
+        await expect(page.locator("[data-admin-storage-connectivity-result-rows]")).toHaveCount(0);
+        await expect(page.locator("body")).toContainText("Storage connectivity tests run from Admin System Health");
       } else if (adminPage.systemHealth) {
         await expect(page.locator("[data-admin-system-health-status]")).toContainText("PASS: Admin System Health loaded safe status only.");
         await expect(page.locator("[data-admin-system-health-summary-rows]")).toContainText("100");
@@ -752,40 +750,6 @@ test("Infrastructure storage path status reports IST match only", async ({ page 
 
   try {
     await expectStoragePathStatusRows(page, ["no", "yes", "no", "no"]);
-    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-    await expectNoPageFailures(failures);
-  } finally {
-    await failures.server.close();
-  }
-});
-
-test("Infrastructure storage connectivity actions call Local API and hide secrets", async ({ page }) => {
-  const failures = await startAdminPage(page, "/admin/infrastructure.html");
-
-  try {
-    await page.locator("[data-admin-storage-connectivity-action='storage-list']").click();
-    await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("PASS: List completed through Local API under /dev/projects/.");
-    await expect(page.locator("[data-admin-storage-connectivity-result-rows] tr").first()).toContainText("storage-list");
-    await expect(page.locator("[data-admin-storage-connectivity-result-rows] tr").first()).toContainText("yes");
-
-    await page.locator("[data-admin-storage-connectivity-action='storage-write-test-object']").click();
-    await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("PASS: Write test object completed through Local API under /dev/projects/.");
-
-    await page.locator("[data-admin-storage-connectivity-action='storage-read-test-object']").click();
-    await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("PASS: Read test object completed through Local API under /dev/projects/.");
-
-    await page.locator("[data-admin-storage-connectivity-action='storage-delete-test-object']").click();
-    await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("PASS: Delete test object completed through Local API under /dev/projects/.");
-    await expect(page.locator("[data-admin-storage-connectivity-result-rows] tr").first()).toContainText("storage-delete-test-object");
-    await expect(page.locator("[data-admin-storage-connectivity-result-rows] tr").first()).toContainText("/dev/projects/connectivity/storage-connectivity-test.txt");
-    await expect(page.locator("[data-admin-storage-connectivity-result-rows]")).not.toContainText("asset-test-secret-key");
-    await expect(page.locator("[data-admin-storage-connectivity-result-rows]")).not.toContainText("asset-test-access-key");
-    expect(failures.adminStorageConnectivityPosts).toEqual([
-      { actionId: "storage-list" },
-      { actionId: "storage-write-test-object" },
-      { actionId: "storage-read-test-object" },
-      { actionId: "storage-delete-test-object" },
-    ]);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expectNoPageFailures(failures);
   } finally {
@@ -1207,17 +1171,17 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
       id: "project-packaging",
       label: "Project Packaging",
       actions: [
-        { id: "export-project-package", label: "Export Project Package", status: "SKIP", diagnostic: "Export Project Package is not implemented in this PR.", notImplemented: true },
-        { id: "validate-project-package", label: "Validate Project Package", status: "SKIP", diagnostic: "Validate Project Package is not implemented in this PR.", notImplemented: true },
-        { id: "import-project-package", label: "Import Project Package", status: "SKIP", diagnostic: "Import Project Package is not implemented in this PR; existing project overwrites are blocked.", confirmationMessage: "Import Project Package must fail visibly until explicit overwrite confirmation behavior exists.", confirmationRequired: true, notImplemented: true, risky: true },
+        { id: "export-project-package", label: "Export Project Package", status: "PASS", diagnostic: "Export Project Package creates a .gfsp ZIP package for the active Project Workspace record." },
+        { id: "validate-project-package", label: "Validate Project Package", status: "PASS", diagnostic: "Validate Project Package checks package integrity without import.", requiresPackageFile: true },
+        { id: "import-project-package", label: "Import Project Package", status: "WARN", diagnostic: "Import Project Package validates first and blocks silent overwrite.", confirmationMessage: "Replace Existing requires explicit confirmation before overwrite.", confirmationPhrase: "REPLACE", confirmationRequired: true, requiresPackageFile: true, risky: true, supportsImportModes: true },
       ],
     },
     {
       id: "backup-recovery",
       label: "Backup & Recovery",
       actions: [
-        { id: "create-backup", label: "Create Backup", status: "SKIP", diagnostic: "Create Backup is not implemented in this PR.", notImplemented: true },
-        { id: "restore-from-backup", label: "Restore From Backup", status: "SKIP", diagnostic: "Restore From Backup is not implemented in this PR.", confirmationMessage: "Restore From Backup is risky and must require explicit confirmation before any restore behavior is implemented.", confirmationRequired: true, notImplemented: true, risky: true },
+        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup creates a safe Local API backup snapshot." },
+        { id: "restore-from-backup", label: "Restore From Backup", status: "WARN", diagnostic: "Restore From Backup validates backup JSON and is DEV-only.", confirmationMessage: "Restore From Backup requires explicit RESTORE confirmation.", confirmationPhrase: "RESTORE", confirmationRequired: true, requiresBackupFile: true, risky: true },
       ],
     },
     {
@@ -1233,8 +1197,11 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
   ];
   const actionLabels = Object.fromEntries(actionGroups.flatMap((group) => group.actions.map((action) => [action.id, action.label])));
   const actionMessages = {
-    "import-project-package": "Import Project Package is not implemented in Admin Operations. Import Project Package must fail visibly until explicit overwrite confirmation behavior exists.",
-    "restore-from-backup": "Restore From Backup is not implemented in Admin Operations. Restore From Backup is risky and must require explicit confirmation before any restore behavior is implemented.",
+    "export-project-package": "Export Project Package generated DemoGame-26168-001.gfsp with 3 required file(s) and 0 asset reference(s); export validation PASS.",
+    "validate-project-package": "Validate Project Package passed integrity, required file, schema, compatibility, and asset reference checks. No import performed.",
+    "import-project-package": "Import Project Package replaced existing project Demo Game after explicit REPLACE confirmation.",
+    "create-backup": "Create Backup generated gamefoundry-local-api-backup.json with 12 table snapshot(s). Secret values were not included.",
+    "restore-from-backup": "Restore From Backup applied selected backup in DEV after explicit RESTORE confirmation.",
     "run-migration": "Run Migration is not implemented in Admin Operations. Run Migration is risky and must require explicit confirmation before migration execution is implemented.",
     "reseed-dev": "Reseed DEV is not implemented in Admin Operations. Reseed DEV is destructive and is only available when the configured project storage lane resolves to DEV.",
   };
@@ -1311,16 +1278,30 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
         "database-connectivity-test": "Database Connectivity Test completed for the configured Local DB.",
         "validate-current-connection": "Current configured connections validated.",
       };
+      const packageMessages = {
+        "export-project-package": { executed: true, status: "PASS" },
+        "validate-project-package": { executed: Boolean(body.packageBytesBase64), status: body.packageBytesBase64 ? "PASS" : "FAIL" },
+        "import-project-package": {
+          executed: body.packageBytesBase64 && body.importMode === "replace-existing" && body.overwriteConfirmed === true && body.confirmationPhrase === "REPLACE",
+          status: body.packageBytesBase64 && body.importMode === "replace-existing" && body.overwriteConfirmed === true && body.confirmationPhrase === "REPLACE" ? "PASS" : "FAIL",
+        },
+        "create-backup": { executed: true, status: "PASS" },
+        "restore-from-backup": {
+          executed: body.backupBytesBase64 && body.restoreConfirmed === true && body.confirmationPhrase === "RESTORE",
+          status: body.backupBytesBase64 && body.restoreConfirmed === true && body.confirmationPhrase === "RESTORE" ? "PASS" : "FAIL",
+        },
+      };
+      const packageResult = packageMessages[body.actionId];
       await route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({
           data: {
             actionId: body.actionId,
             actionLabel,
-            executed: body.actionId === "validate-current-connection" || body.actionId === "database-connectivity-test",
-            manualOnly: body.actionId !== "validate-current-connection" && body.actionId !== "database-connectivity-test",
+            executed: packageResult ? packageResult.executed : body.actionId === "validate-current-connection" || body.actionId === "database-connectivity-test",
+            manualOnly: !packageResult && body.actionId !== "validate-current-connection" && body.actionId !== "database-connectivity-test",
             message: liveMessages[body.actionId] || actionMessages[body.actionId] || `${actionLabel} is not implemented in Admin Operations.`,
-            status: liveMessages[body.actionId] ? "PASS" : "SKIP",
+            status: packageResult?.status || (liveMessages[body.actionId] ? "PASS" : "SKIP"),
           },
           ok: true,
         }),
@@ -1364,31 +1345,81 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
     await expect(page.locator("[data-admin-operation-safety-rows]")).toContainText("Reseed DEV");
     await expect(page.locator("[data-admin-operation-safety-rows]")).toContainText("required before execution");
     await expect(page.locator("[data-admin-operation-safety-rows]")).toContainText("not implemented");
+    await expect(page.locator("[data-admin-operation-package-file='validate-project-package']")).toHaveAttribute("accept", ".gfsp");
+    await expect(page.locator("[data-admin-operation-package-file='import-project-package']")).toHaveAttribute("accept", ".gfsp");
+    await expect(page.locator("[data-admin-operation-import-mode='import-project-package']")).toHaveValue("import-as-new");
+    await expect(page.locator("[data-admin-operation-backup-file='restore-from-backup']")).toHaveAttribute("accept", ".json");
+    await expect(page.locator("[data-admin-operation-confirmation-phrase='import-project-package']")).toHaveAttribute("placeholder", "REPLACE");
+    await expect(page.locator("[data-admin-operation-confirmation-phrase='restore-from-backup']")).toHaveAttribute("placeholder", "RESTORE");
     await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-secret-key");
     await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-access-key");
 
+    await page.locator("[data-admin-operation-action='export-project-package']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Export Project Package generated DemoGame-26168-001.gfsp");
+    await page.locator("[data-admin-operation-package-file='validate-project-package']").setInputFiles({
+      buffer: Buffer.from("fake-gfsp-package"),
+      mimeType: "application/octet-stream",
+      name: "DemoGame-26168-001.gfsp",
+    });
+    await page.locator("[data-admin-operation-action='validate-project-package']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Validate Project Package passed integrity");
+    await page.locator("[data-admin-operation-package-file='import-project-package']").setInputFiles({
+      buffer: Buffer.from("fake-gfsp-package"),
+      mimeType: "application/octet-stream",
+      name: "DemoGame-26168-001.gfsp",
+    });
+    await page.locator("[data-admin-operation-import-mode='import-project-package']").selectOption("replace-existing");
+    await page.locator("[data-admin-operation-confirmation='import-project-package']").check();
+    await page.locator("[data-admin-operation-confirmation-phrase='import-project-package']").fill("REPLACE");
+    await page.locator("[data-admin-operation-action='import-project-package']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Import Project Package replaced existing project Demo Game after explicit REPLACE confirmation.");
+    await page.locator("[data-admin-operation-action='create-backup']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Create Backup generated gamefoundry-local-api-backup.json");
+    await page.locator("[data-admin-operation-backup-file='restore-from-backup']").setInputFiles({
+      buffer: Buffer.from("{\"backupType\":\"Game Foundry Studio Local API Backup\"}"),
+      mimeType: "application/json",
+      name: "gamefoundry-local-api-backup.json",
+    });
+    await page.locator("[data-admin-operation-confirmation='restore-from-backup']").check();
+    await page.locator("[data-admin-operation-confirmation-phrase='restore-from-backup']").fill("RESTORE");
+    await page.locator("[data-admin-operation-action='restore-from-backup']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Restore From Backup applied selected backup in DEV after explicit RESTORE confirmation.");
     await page.locator("[data-admin-operation-action='validate-current-connection']").click();
     await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Current configured connections validated.");
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Validate Current Connection");
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("yes");
     await page.locator("[data-admin-operation-action='database-connectivity-test']").click();
     await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Database Connectivity Test completed for the configured Local DB.");
-    await page.locator("[data-admin-operation-action='import-project-package']").click();
-    await expect(page.locator("[data-admin-operations-status]")).toContainText("SKIP: Import Project Package is not implemented in Admin Operations.");
-    await page.locator("[data-admin-operation-action='restore-from-backup']").click();
-    await expect(page.locator("[data-admin-operations-status]")).toContainText("SKIP: Restore From Backup is not implemented in Admin Operations.");
     await page.locator("[data-admin-operation-action='run-migration']").click();
     await expect(page.locator("[data-admin-operations-status]")).toContainText("SKIP: Run Migration is not implemented in Admin Operations.");
     await page.locator("[data-admin-operation-action='reseed-dev']").click();
     await expect(page.locator("[data-admin-operations-status]")).toContainText("SKIP: Reseed DEV is not implemented in Admin Operations.");
-    expect(adminActionPosts).toEqual([
-      { actionId: "validate-current-connection" },
-      { actionId: "database-connectivity-test" },
-      { actionId: "import-project-package" },
-      { actionId: "restore-from-backup" },
-      { actionId: "run-migration" },
-      { actionId: "reseed-dev" },
+    expect(adminActionPosts.map((post) => post.actionId)).toEqual([
+      "export-project-package",
+      "validate-project-package",
+      "import-project-package",
+      "create-backup",
+      "restore-from-backup",
+      "validate-current-connection",
+      "database-connectivity-test",
+      "run-migration",
+      "reseed-dev",
     ]);
+    expect(adminActionPosts.find((post) => post.actionId === "validate-project-package")).toEqual(expect.objectContaining({
+      packageBytesBase64: Buffer.from("fake-gfsp-package").toString("base64"),
+      packageFileName: "DemoGame-26168-001.gfsp",
+    }));
+    expect(adminActionPosts.find((post) => post.actionId === "import-project-package")).toEqual(expect.objectContaining({
+      confirmationPhrase: "REPLACE",
+      importMode: "replace-existing",
+      overwriteConfirmed: true,
+      packageFileName: "DemoGame-26168-001.gfsp",
+    }));
+    expect(adminActionPosts.find((post) => post.actionId === "restore-from-backup")).toEqual(expect.objectContaining({
+      backupFileName: "gamefoundry-local-api-backup.json",
+      confirmationPhrase: "RESTORE",
+      restoreConfirmed: true,
+    }));
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
   } finally {
     await server.close();

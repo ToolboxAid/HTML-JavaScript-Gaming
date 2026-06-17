@@ -235,10 +235,12 @@ test("Game Workspace creates, opens, and deletes mock games", async ({ page }) =
     await expect(page.getByRole("button", { name: "Create Game" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveClass("btn");
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeEnabled();
-    await expect(page.locator("[data-project-record-status]")).toContainText("Project Workspace records loaded from Local API to Local DB/SQLite");
-    await expect(page.locator("[data-project-record-status]")).toContainText("API owns authoritative keys");
+    await expect(page.locator("[data-project-record-status]")).toContainText("Project Workspace records loaded from the project records service");
+    await expect(page.locator("[data-project-record-status]")).toContainText("authoritative keys managed by service");
+    await expect(page.locator("[data-project-record-status]")).toContainText("asset references linked to storage object keys: 0");
     await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
-    await expect(page.locator("[data-project-records-table]")).toContainText("Local DB");
+    await expect(page.locator("[data-project-records-table]")).toContainText("Project records service");
+    await expect(page.locator("[data-project-records-table]")).toContainText("asset refs 0");
     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
     await expect(page.locator("[data-active-game-purpose]")).toHaveText("Game");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
@@ -286,9 +288,10 @@ test("Project Workspace preserves guest browsing and blocks guest saves", async 
     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
     await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
     await expect(page.locator("[data-project-record-status]")).toContainText("guest browsing enabled; guest saving blocked");
-    await expect(page.locator("[data-project-record-status]")).toContainText("Local API to Local DB/SQLite");
+    await expect(page.locator("[data-project-record-status]")).toContainText("project records service");
+    await expect(page.locator("[data-project-record-status]")).toContainText("asset references linked to storage object keys: 0");
     await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
-    await expect(page.locator("[data-project-records-table]")).toContainText("Local DB");
+    await expect(page.locator("[data-project-records-table]")).toContainText("Project records service");
     await expect(page.getByRole("button", { name: "Create Game" })).toBeDisabled();
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeDisabled();
     await expect(page.getByLabel("Game Name")).toBeDisabled();
@@ -298,7 +301,7 @@ test("Project Workspace preserves guest browsing and blocks guest saves", async 
 
     await page.getByRole("button", { name: "Open Gravity Demo" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Gravity Demo");
-    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Guest browsing enabled; sign in required to save Project Workspace project records through Local API.");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Guest browsing enabled; sign in required to save Project Workspace project records.");
 
     await expectNoPageFailures(failures);
   } finally {

@@ -1,23 +1,54 @@
-﻿ M admin/infrastructure.html
- A admin/operations.html
- M admin/platform-settings.html
- M admin/system-health.html
- M admin/tool-votes.html
- M admin/users.html
- A assets/theme-v2/js/admin-operations.js
- M assets/theme-v2/js/admin-service-page-data.js
+# git status --short
+M admin/infrastructure.html
+ M admin/operations.html
+ M assets/theme-v2/js/admin-infrastructure.js
+ M assets/theme-v2/js/admin-operations.js
  M assets/theme-v2/js/gamefoundry-partials.js
- D assets/theme-v2/js/owner-operations.js
- M docs_build/dev/codex_commands.md
- M docs_build/dev/commit_comment.txt
- A docs_build/dev/reports/PR_26168_236-admin-operations-order-and-safety.md
+ M docs_build/codex/decisions/project-packages.md
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- D owner/operations.html
- M src/dev-runtime/auth/provider-contract-stubs.mjs
  M src/dev-runtime/server/local-api-router.mjs
- A src/engine/api/admin-operations-api-client.js
- D src/engine/api/owner-operations-api-client.js
+ M src/engine/api/admin-operations-api-client.js
  M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+ M tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
+ M toolbox/game-workspace/game-workspace.js
+ M toolbox/game-workspace/index.html
+?? docs_build/dev/reports/PR_26168_237-admin-ia-cleanup.md
+?? docs_build/dev/reports/PR_26168_238-r2-assets-end-to-end-validation.md
+?? docs_build/dev/reports/PR_26168_239-gfsp-package-foundation.md
+?? docs_build/dev/reports/PR_26168_240-project-package-export.md
+?? docs_build/dev/reports/PR_26168_241-project-package-validation.md
+?? docs_build/dev/reports/PR_26168_242-project-package-import.md
+?? docs_build/dev/reports/PR_26168_243-backup-recovery-foundation.md
+?? docs_build/dev/reports/PR_26168_244-project-workspace-real-project-flow.md
+?? src/dev-runtime/project-packages/
+
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26168_237-admin-ia-cleanup.md
+docs_build/dev/reports/PR_26168_238-r2-assets-end-to-end-validation.md
+docs_build/dev/reports/PR_26168_239-gfsp-package-foundation.md
+docs_build/dev/reports/PR_26168_240-project-package-export.md
+docs_build/dev/reports/PR_26168_241-project-package-validation.md
+docs_build/dev/reports/PR_26168_242-project-package-import.md
+docs_build/dev/reports/PR_26168_243-backup-recovery-foundation.md
+docs_build/dev/reports/PR_26168_244-project-workspace-real-project-flow.md
+src/dev-runtime/project-packages/project-package-service.mjs
+
+# git diff --stat
+admin/infrastructure.html                          |   28 +-
+ admin/operations.html                              |    8 +-
+ assets/theme-v2/js/admin-infrastructure.js         |   42 +-
+ assets/theme-v2/js/admin-operations.js             |  107 +-
+ assets/theme-v2/js/gamefoundry-partials.js         |    3 -
+ docs_build/codex/decisions/project-packages.md     |   24 +
+ docs_build/dev/reports/codex_changed_files.txt     |  125 +-
+ docs_build/dev/reports/codex_review.diff           | 4579 +++++++++++---------
+ .../dev/reports/playwright_v8_coverage_report.txt  |   37 +-
+ src/dev-runtime/server/local-api-router.mjs        |  361 +-
+ src/engine/api/admin-operations-api-client.js      |    4 +-
+ .../tools/AdminPlatformToolsWireframes.spec.mjs    |  155 +-
+ .../tools/GameWorkspaceMockRepository.spec.mjs     |   15 +-
+ toolbox/game-workspace/game-workspace.js           |   11 +-
+ toolbox/game-workspace/index.html                  |   10 +-
+ 15 files changed, 3314 insertions(+), 2195 deletions(-)

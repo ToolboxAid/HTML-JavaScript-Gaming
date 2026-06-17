@@ -6,6 +6,30 @@
 
 Game Foundry Studio project packages use an internal ZIP-based package format. The `.gfsp` extension identifies the package as a Game Foundry Studio Project while preserving the operational advantages of a ZIP container for export, import, validation, and inspection.
 
+## Package Metadata Contract
+
+The runtime package scaffold writes these required internal files:
+
+- `metadata/package.json`
+- `project/project.json`
+- `assets/asset-references.json`
+
+`metadata/package.json` owns the package identity and must include:
+
+- `packageType`: `Game Foundry Studio Project`
+- `extension`: `.gfsp`
+- `contractVersion`
+- `filename`
+- `filenameFormat`
+- `createdAt`
+- `project.projectKey`
+- `project.name`
+- `requiredFiles`
+
+`project/project.json` owns the exported Project Workspace project record. It must carry the API-owned project key, local record id, display name, owner key, and status.
+
+`assets/asset-references.json` owns storage references only. Asset binary/object bytes stay in configured project asset storage and are referenced by storage object keys; package metadata must not include storage secrets or browser-owned product data.
+
 ## Filename Format
 
 Project package filenames use:
