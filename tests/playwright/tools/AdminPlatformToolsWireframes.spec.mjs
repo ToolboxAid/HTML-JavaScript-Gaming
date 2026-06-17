@@ -101,11 +101,11 @@ async function startAdminPage(page, pathName, options = {}) {
       { area: "Promotion/package safety", field: "Import overwrite", status: "PASS", value: "fail-visible-until-explicit-confirmation" },
     ],
     limits: [
-      { variableName: "GAMEFOUNDRY_STORAGE_LIMIT_BYTES", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_STORAGE_LIMIT_BYTES in the selected .env.<target> copy-source, copy it to .env, then add safe Project Asset Storage / R2 usage reporting through the Local API." },
-      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY in the selected .env.<target> copy-source, copy it to .env, then add safe Project Asset Storage / R2 usage reporting through the Local API." },
-      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY in the selected .env.<target> copy-source, copy it to .env, then add safe Project Asset Storage / R2 usage reporting through the Local API." },
-      { variableName: "GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES in the selected .env.<target> copy-source, copy it to .env, then add safe Product Data / Local DB usage reporting through the Local API." },
-      { variableName: "GAMEFOUNDRY_DB_CONNECTION_LIMIT", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_DB_CONNECTION_LIMIT in the selected .env.<target> copy-source, copy it to .env, then add safe Product Data / Local DB usage reporting through the Local API." },
+      { variableName: "GAMEFOUNDRY_STORAGE_LIMIT_BYTES", limit: "1073741824", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future R2 provider telemetry can report project asset storage bytes used through the Local API." },
+      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY", limit: "1000000", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future R2 provider telemetry can report monthly Class A operation count through the Local API." },
+      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY", limit: "10000000", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future R2 provider telemetry can report monthly Class B operation count through the Local API." },
+      { variableName: "GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES", limit: "1073741824", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future Local DB storage telemetry can report database bytes used through the Local API." },
+      { variableName: "GAMEFOUNDRY_DB_CONNECTION_LIMIT", limit: "20", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future Local DB pool telemetry can report active connection count through the Local API." },
     ],
     message: "Admin System Health loaded safe status only.",
     overview: [
@@ -114,13 +114,33 @@ async function startAdminPage(page, pathName, options = {}) {
       { area: "Project Asset Storage / R2", status: "PASS", summary: "Project asset storage is configured. Credential values are hidden." },
       { area: "Environment configuration", status: "PASS", summary: "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX matches exactly one project storage lane." },
       { area: "Secrets status", status: "PASS", summary: "Storage credentials are configured; secret values are hidden." },
-      { area: "Environment limits", status: "WARN", summary: "Limits are read from current .env because values may differ by DEV/IST/UAT/PRD; live usage is NOT AVAILABLE until provider usage metrics are exposed safely." },
+      { area: "Environment limits", status: "PASS", summary: "Required limits are configured correctly; live usage is NOT AVAILABLE until provider usage metrics are exposed safely." },
       { area: "Migration status", status: "PASS", summary: "DDL=15; DML=15; last=support-tickets.sql." },
       { area: "Project package readiness", status: "PASS", summary: "Project package decision note is ready for .gfsp export/import/validate planning." },
       { area: "Promotion/package safety", status: "PASS", summary: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists." },
     ],
+    r2Readiness: {
+      rows: [
+        { area: "Project Asset Storage / R2", field: "Endpoint", status: "PASS", value: "https://r2.example.test", nextStep: "Endpoint is configured." },
+        { area: "Project Asset Storage / R2", field: "Bucket", status: "PASS", value: "gamefoundry-project-assets", nextStep: "Bucket is configured." },
+        { area: "Project Asset Storage / R2", field: "Prefix", status: "PASS", value: "/dev/projects/", nextStep: "Prefix is configured." },
+        { area: "Project Asset Storage / R2", field: "Credential configured status", status: "PASS", value: "configured; values hidden", nextStep: "Credentials are configured and hidden." },
+        { area: "Project Asset Storage / R2", field: "Connectivity test status", status: "SKIP", value: "NOT RUN", nextStep: "Use the existing Admin Infrastructure connectivity actions for List, Write test object, Read test object, and Delete test object validation." },
+        { area: "R2 operational readiness", field: "Ready for Assets", status: "PASS", value: "Ready", nextStep: "Configuration is ready; collect live connectivity evidence before release or promotion signoff." },
+        { area: "R2 operational readiness", field: "Ready for Project Packages", status: "PASS", value: "Ready", nextStep: "Configuration is ready; collect live connectivity evidence before release or promotion signoff." },
+        { area: "R2 operational readiness", field: "Ready for Promotion Packages", status: "PASS", value: "Ready", nextStep: "Configuration is ready; collect live connectivity evidence before release or promotion signoff." },
+      ],
+      status: "PASS",
+    },
     secretEditingAllowed: false,
     secretsExposed: false,
+    summary: {
+      counts: { FAIL: 0, PASS: 9, WARN: 0 },
+      lastRefreshAt: "2026-06-17T16:00:00.000Z",
+      score: 100,
+      status: "PASS",
+      total: 9,
+    },
     status: "PASS",
   };
 
@@ -491,6 +511,10 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("Storage connectivity not run.");
       } else if (adminPage.systemHealth) {
         await expect(page.locator("[data-admin-system-health-status]")).toContainText("PASS: Admin System Health loaded safe status only.");
+        await expect(page.locator("[data-admin-system-health-summary-rows]")).toContainText("100");
+        await expect(page.locator("[data-admin-system-health-summary-rows]")).toContainText("2026-06-17T16:00:00.000Z");
+        await expect(page.locator("[data-admin-system-health-summary-rows]")).toContainText("9");
+        await expect(page.locator("[data-admin-system-health-summary-rows]")).toContainText("0");
         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Account/session readiness");
         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Product Data / Local DB");
         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Project Asset Storage / R2");
@@ -500,6 +524,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Migration status");
         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Project package readiness");
         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Promotion/package safety");
+        await expect(page.locator("[data-admin-system-health-overview-rows]").filter({ hasText: "Environment limits" })).toContainText("PASS");
         await expect(page.locator("[data-admin-system-health-detail-rows]")).toContainText("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX");
         await expect(page.locator("[data-admin-system-health-detail-rows]")).toContainText("configured; value hidden");
         await expect(page.locator("[data-admin-system-health-detail-rows]")).not.toContainText("asset-test-secret-key");
@@ -511,7 +536,22 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("GAMEFOUNDRY_DB_CONNECTION_LIMIT");
         await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("NOT AVAILABLE");
         await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("Local API");
+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("1073741824");
+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("20");
         await expect(page.locator("caption").filter({ hasText: "values may differ by DEV/IST/UAT/PRD" })).toBeVisible();
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Endpoint");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Bucket");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Prefix");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Credential configured status");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Connectivity test status");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Ready for Assets");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Ready for Project Packages");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Ready for Promotion Packages");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("configured; values hidden");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("NOT RUN");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("collect live connectivity evidence");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).not.toContainText("asset-test-secret-key");
+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).not.toContainText("asset-test-access-key");
         await expect(page.getByRole("link", { name: "Infrastructure Reference" })).toHaveAttribute("href", /admin\/infrastructure\.html$/);
         await expect(page.getByRole("link", { name: "Owner Operations Actions" })).toHaveAttribute("href", /owner\/operations\.html$/);
       } else {

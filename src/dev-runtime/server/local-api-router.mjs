@@ -256,6 +256,24 @@ const SYSTEM_HEALTH_LIMIT_ENV_KEYS = Object.freeze([
   }),
 ]);
 const SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS = Object.freeze(["OK", "WATCH", "UPGRADE SOON", "RISK"]);
+const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
+const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
+  GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
+    integrationPoint: "Future Local DB pool telemetry can report active connection count through the Local API.",
+  }),
+  GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES: Object.freeze({
+    integrationPoint: "Future Local DB storage telemetry can report database bytes used through the Local API.",
+  }),
+  GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY: Object.freeze({
+    integrationPoint: "Future R2 provider telemetry can report monthly Class A operation count through the Local API.",
+  }),
+  GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY: Object.freeze({
+    integrationPoint: "Future R2 provider telemetry can report monthly Class B operation count through the Local API.",
+  }),
+  GAMEFOUNDRY_STORAGE_LIMIT_BYTES: Object.freeze({
+    integrationPoint: "Future R2 provider telemetry can report project asset storage bytes used through the Local API.",
+  }),
+});
 const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
   Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
   Object.freeze({ lane: "IST", path: "/ist/projects/" }),
@@ -482,35 +500,206 @@ function projectPackageReadinessStatus() {
   }
 }
 
+function parsePositiveIntegerConfig(rawValue) {
+  const value = String(rawValue || "").trim();
+  if (!/^[1-9]\d*$/.test(value)) {
+    return null;
+  }
+  const numberValue = Number(value);
+  return Number.isSafeInteger(numberValue) ? numberValue : null;
+}
+
+function systemHealthConfiguredLimit(limit) {
+  const configuredLimit = dotEnvValue(limit.key);
+  if (!configuredLimit.found || !configuredLimit.value) {
+    return {
+      message: `Set ${limit.key} in the selected .env.<target> copy-source, copy it to .env, and restart validation.`,
+      numericValue: null,
+      status: "WARN",
+      value: "not configured",
+    };
+  }
+  const numericValue = parsePositiveIntegerConfig(configuredLimit.value);
+  if (numericValue === null) {
+    return {
+      message: `${limit.key} must be a positive integer value in bytes, operations, or connection count as applicable.`,
+      numericValue: null,
+      status: "WARN",
+      value: configuredLimit.value,
+    };
+  }
+  return {
+    message: `${limit.key} is configured with a positive integer value.`,
+    numericValue,
+    status: "PASS",
+    value: configuredLimit.value,
+  };
+}
+
+function systemHealthCurrentUsage(limit) {
+  const contract = SYSTEM_HEALTH_USAGE_CONTRACTS[limit.key] || {};
+  return {
+    integrationPoint: contract.integrationPoint || "Future provider telemetry can report usage through the Local API.",
+    numericValue: null,
+    status: SYSTEM_HEALTH_USAGE_NOT_AVAILABLE,
+    value: SYSTEM_HEALTH_USAGE_NOT_AVAILABLE,
+  };
+}
+
+function systemHealthPressure(configuredLimit, currentUsage) {
+  if (configuredLimit.numericValue === null || currentUsage.numericValue === null) {
+    return {
+      calculated: false,
+      label: SYSTEM_HEALTH_USAGE_NOT_AVAILABLE,
+      status: SYSTEM_HEALTH_USAGE_NOT_AVAILABLE,
+    };
+  }
+  const ratio = currentUsage.numericValue / configuredLimit.numericValue;
+  if (ratio >= 0.95) {
+    return { calculated: true, label: "RISK", status: "RISK" };
+  }
+  if (ratio >= 0.85) {
+    return { calculated: true, label: "UPGRADE SOON", status: "UPGRADE SOON" };
+  }
+  if (ratio >= 0.7) {
+    return { calculated: true, label: "WATCH", status: "WATCH" };
+  }
+  return { calculated: true, label: "OK", status: "OK" };
+}
+
 function systemHealthLimitRows() {
   return SYSTEM_HEALTH_LIMIT_ENV_KEYS.map((limit) => {
-    const configuredLimit = dotEnvValue(limit.key);
-    const hasLimitValue = configuredLimit.found && configuredLimit.value;
+    const configuredLimit = systemHealthConfiguredLimit(limit);
+    const currentUsage = systemHealthCurrentUsage(limit);
+    const pressure = systemHealthPressure(configuredLimit, currentUsage);
     return {
       area: limit.service,
+      configuredLimit,
+      currentUsage,
       field: limit.label,
-      limit: hasLimitValue ? configuredLimit.value : "not configured",
-      nextStep: hasLimitValue
-        ? `Add safe ${limit.service} usage reporting through the Local API before calculating pressure.`
-        : `Set ${limit.key} in the selected .env.<target> copy-source, copy it to .env, then add safe ${limit.service} usage reporting through the Local API.`,
-      pressure: "NOT AVAILABLE",
+      limit: configuredLimit.value,
+      nextStep: configuredLimit.status === "PASS"
+        ? currentUsage.integrationPoint
+        : configuredLimit.message,
+      pressure: pressure.label,
+      pressureCalculation: pressure,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
-      status: "WARN",
-      usage: "NOT AVAILABLE",
+      status: configuredLimit.status,
+      usage: currentUsage.value,
       variableName: limit.key,
     };
   });
 }
 
-function overallHealthStatus(rows) {
-  const statuses = rows.map((row) => String(row.status || "").toUpperCase());
-  if (statuses.includes("FAIL") || statuses.includes("ERROR")) {
+function systemHealthLimitStatus(rows) {
+  return rows.some((row) => row.status !== "PASS") ? "WARN" : "PASS";
+}
+
+function normalizeHealthStatus(status) {
+  const normalized = String(status || "").toUpperCase();
+  if (normalized === "ERROR") {
     return "FAIL";
   }
-  if (statuses.includes("WARN") || statuses.includes("SKIP")) {
+  if (normalized === "PASS" || normalized === "WARN" || normalized === "FAIL") {
+    return normalized;
+  }
+  return "WARN";
+}
+
+function systemHealthCounts(rows) {
+  return rows.reduce((counts, row) => {
+    counts[normalizeHealthStatus(row.status)] += 1;
+    return counts;
+  }, { FAIL: 0, PASS: 0, WARN: 0 });
+}
+
+function overallHealthStatus(rows) {
+  const statuses = rows.map((row) => normalizeHealthStatus(row.status));
+  if (statuses.includes("FAIL")) {
+    return "FAIL";
+  }
+  if (statuses.includes("WARN")) {
     return "WARN";
   }
   return "PASS";
+}
+
+function systemHealthSummary(rows) {
+  const counts = systemHealthCounts(rows);
+  const total = counts.PASS + counts.WARN + counts.FAIL;
+  return {
+    counts,
+    lastRefreshAt: new Date().toISOString(),
+    score: total ? Math.round((counts.PASS / total) * 100) : 0,
+    status: overallHealthStatus(rows),
+    total,
+  };
+}
+
+function systemHealthR2Readiness(storageStatus) {
+  const credentialsConfigured = storageStatus.accessKeyConfigured === true && storageStatus.secretKeyConfigured === true;
+  const configurationReady = storageStatus.configured === true
+    && Boolean(storageStatus.endpoint)
+    && Boolean(storageStatus.bucket)
+    && Boolean(storageStatus.projectsPrefix)
+    && credentialsConfigured;
+  const configurationNextStep = configurationReady
+    ? "Run the existing Admin Infrastructure storage connectivity actions when live R2 proof is needed."
+    : "Configure endpoint, bucket, projects prefix, and hidden credentials in the selected .env.<target> copy-source, then copy it to .env.";
+  const readinessTargets = ["Ready for Assets", "Ready for Project Packages", "Ready for Promotion Packages"];
+  const rows = [
+    {
+      area: "Project Asset Storage / R2",
+      field: "Endpoint",
+      nextStep: storageStatus.endpoint ? "Endpoint is configured." : configurationNextStep,
+      status: storageStatus.endpointStatus || "WARN",
+      value: storageStatus.endpoint || "not configured",
+    },
+    {
+      area: "Project Asset Storage / R2",
+      field: "Bucket",
+      nextStep: storageStatus.bucket ? "Bucket is configured." : configurationNextStep,
+      status: storageStatus.bucketStatus || "WARN",
+      value: storageStatus.bucket || "not configured",
+    },
+    {
+      area: "Project Asset Storage / R2",
+      field: "Prefix",
+      nextStep: storageStatus.projectsPrefix ? "Prefix is configured." : configurationNextStep,
+      status: storageStatus.projectsPrefixStatus || "WARN",
+      value: storageStatus.projectsPrefix || "not configured",
+    },
+    {
+      area: "Project Asset Storage / R2",
+      field: "Credential configured status",
+      nextStep: credentialsConfigured ? "Credentials are configured and hidden." : configurationNextStep,
+      status: credentialsConfigured ? "PASS" : "WARN",
+      value: credentialsConfigured ? "configured; values hidden" : "not configured",
+    },
+    {
+      area: "Project Asset Storage / R2",
+      field: "Connectivity test status",
+      nextStep: "Use the existing Admin Infrastructure connectivity actions for List, Write test object, Read test object, and Delete test object validation.",
+      status: "SKIP",
+      value: "NOT RUN",
+    },
+    ...readinessTargets.map((target) => ({
+      area: "R2 operational readiness",
+      field: target,
+      nextStep: configurationReady
+        ? "Configuration is ready; collect live connectivity evidence before release or promotion signoff."
+        : configurationNextStep,
+      status: configurationReady ? "PASS" : "WARN",
+      value: configurationReady ? "Ready" : "Not ready",
+    })),
+  ];
+  return {
+    recommendations: configurationReady
+      ? ["Collect live connectivity evidence before release or promotion signoff."]
+      : [configurationNextStep],
+    rows,
+    status: configurationReady ? "PASS" : "WARN",
+  };
 }
 
 function providerFailureMessage(providerContract, providerId) {
@@ -2185,8 +2374,10 @@ LIMIT 1;
     const storageStatus = this.ownerStorageStatus();
     const environmentStatus = storageProjectsPrefixStatus();
     const limitRows = systemHealthLimitRows();
+    const limitsStatus = systemHealthLimitStatus(limitRows);
     const packageStatus = projectPackageReadinessStatus();
     const promotionFoundation = this.ownerPromotionFoundation();
+    const r2Readiness = systemHealthR2Readiness(storageStatus);
     const importBlocked = promotionFoundation.importOverwriteAllowed === false
       && promotionFoundation.browserExecutionAllowed === false
       && promotionFoundation.destructiveOperationsAllowed === false;
@@ -2226,8 +2417,10 @@ LIMIT 1;
       },
       {
         area: "Environment limits",
-        status: "WARN",
-        summary: "Limits are read from current .env because values may differ by DEV/IST/UAT/PRD; live usage is NOT AVAILABLE until provider usage metrics are exposed safely.",
+        status: limitsStatus,
+        summary: limitsStatus === "PASS"
+          ? "Required limits are configured correctly; live usage is NOT AVAILABLE until provider usage metrics are exposed safely."
+          : "One or more required limits are missing or invalid in current .env.",
       },
       {
         area: "Migration status",
@@ -2270,8 +2463,10 @@ LIMIT 1;
       message: "Admin System Health loaded safe status only.",
       overview,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
+      r2Readiness,
       secretEditingAllowed: false,
       secretsExposed: false,
+      summary: systemHealthSummary(overview),
       status: overallHealthStatus(overview),
     };
   }

@@ -2392,3 +2392,112 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26168_228-system-health-env-limits_delta.zip`
+
+
+## PR_26168_229-system-health-severity-cleanup
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Fixed Admin System Health limit severity so configured limits can be PASS.
+- Kept `NOT AVAILABLE` usage from generating WARN by itself.
+- Preserved exact pressure labels: `OK`, `WATCH`, `UPGRADE SOON`, `RISK`.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check assets/theme-v2/js/admin-system-health.js`
+- `node --check src/engine/api/admin-system-health-api-client.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Static System Health contract validation.
+- `rg -n "LIMIT RISK" . --glob '!node_modules/**' --glob '!tmp/**' --glob '!docs_build/dev/reports/codex_review.diff'`
+- Targeted Admin System Health/Admin navigation/R2 status/Assets regression Playwright.
+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_229-system-health-severity-cleanup.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_229-system-health-severity-cleanup_delta.zip`
+
+
+## PR_26168_230-system-health-live-usage-foundation
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added service-contract separation for configured limits, current usage, and pressure calculation.
+- Documented provider-specific future usage integration points.
+- Avoided Cloudflare billing integration and credential exposure.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check assets/theme-v2/js/admin-system-health.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Static System Health usage-foundation contract validation.
+- Targeted Admin System Health Playwright.
+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_230-system-health-live-usage-foundation.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26168_230-system-health-live-usage-foundation_delta.zip`
+
+
+## PR_26168_231-admin-system-health-consolidation
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added Admin System Health summary status, score, refresh timestamp, and PASS/WARN/FAIL counts.
+- Preserved Admin Infrastructure as reference and Owner Operations as actions.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check assets/theme-v2/js/admin-system-health.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Targeted Admin System Health and Admin navigation Playwright.
+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_231-admin-system-health-consolidation.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+
+Packaging:
+- `tmp/PR_26168_231-admin-system-health-consolidation_delta.zip`
+
+
+## PR_26168_232-r2-operational-readiness
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added read-only R2 Operational Readiness visibility to Admin System Health.
+- Surfaced endpoint, bucket, prefix, hidden credential configured status, connectivity test status, readiness rows, and next steps.
+- Did not add destructive operations.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check assets/theme-v2/js/admin-system-health.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Static R2 readiness contract validation.
+- Targeted Admin System Health/R2 readiness/Admin navigation/Assets R2 regression Playwright.
+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_232-r2-operational-readiness.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_232-r2-operational-readiness_delta.zip`

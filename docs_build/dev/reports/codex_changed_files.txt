@@ -1,20 +1,14 @@
-﻿ M .env.example
- M admin/infrastructure.html
- M admin/platform-settings.html
- M admin/tool-votes.html
- M admin/users.html
- M assets/theme-v2/js/gamefoundry-partials.js
+﻿ M admin/system-health.html
+ M assets/theme-v2/js/admin-system-health.js
  M docs_build/dev/codex_commands.md
  M docs_build/dev/commit_comment.txt
- M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M src/dev-runtime/server/local-api-router.mjs
  M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-?? admin/system-health.html
-?? assets/theme-v2/js/admin-system-health.js
-?? docs_build/dev/reports/PR_26168_226-r2-stack-report-cleanup.md
-?? docs_build/dev/reports/PR_26168_227-admin-system-health-page.md
-?? docs_build/dev/reports/PR_26168_228-system-health-env-limits.md
-?? src/engine/api/admin-system-health-api-client.js
+?? docs_build/codex/decisions/system-health-usage-reporting.md
+?? docs_build/dev/reports/PR_26168_229-system-health-severity-cleanup.md
+?? docs_build/dev/reports/PR_26168_230-system-health-live-usage-foundation.md
+?? docs_build/dev/reports/PR_26168_231-admin-system-health-consolidation.md
+?? docs_build/dev/reports/PR_26168_232-r2-operational-readiness.md

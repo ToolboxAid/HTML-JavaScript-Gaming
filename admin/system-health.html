@@ -57,6 +57,24 @@
                             <h2 id="admin-system-health-title">System Health Overview</h2>
                         </div>
                         <div class="table-wrapper">
+                            <table class="data-table" aria-label="System health dashboard summary">
+                                <caption>System Health Dashboard Summary</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Score</th>
+                                        <th scope="col">PASS</th>
+                                        <th scope="col">WARN</th>
+                                        <th scope="col">FAIL</th>
+                                        <th scope="col">Last Refresh</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-summary-rows>
+                                    <tr><td>Loading</td><td>0</td><td>0</td><td>0</td><td>0</td><td>Loading refresh timestamp.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
                             <table class="data-table" aria-label="System health overview">
                                 <caption>System Health Overview</caption>
                                 <thead>
@@ -68,6 +86,23 @@
                                 </thead>
                                 <tbody data-admin-system-health-overview-rows>
                                     <tr><td>System Health</td><td>Loading</td><td>Loading safe status.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="R2 operational readiness">
+                                <caption>R2 Operational Readiness</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Area</th>
+                                        <th scope="col">Signal</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Value</th>
+                                        <th scope="col">Next Step</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-r2-readiness-rows>
+                                    <tr><td>Project Asset Storage / R2</td><td>Status</td><td>Loading</td><td>Loading</td><td>Loading R2 readiness.</td></tr>
                                 </tbody>
                             </table>
                         </div>

@@ -8,11 +8,13 @@ class AdminSystemHealthController {
         this.details = root.querySelector("[data-admin-system-health-detail-rows]");
         this.limits = root.querySelector("[data-admin-system-health-limit-rows]");
         this.overview = root.querySelector("[data-admin-system-health-overview-rows]");
+        this.r2Readiness = root.querySelector("[data-admin-system-health-r2-readiness-rows]");
         this.status = root.querySelector("[data-admin-system-health-status]");
+        this.summary = root.querySelector("[data-admin-system-health-summary-rows]");
     }
 
     init() {
-        if (!this.details || !this.limits || !this.overview || !this.status) {
+        if (!this.details || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.summary) {
             return;
         }
         this.load();
@@ -43,6 +45,18 @@ class AdminSystemHealthController {
         });
     }
 
+    renderSummary(summary) {
+        this.summary.replaceChildren();
+        this.summary.append(this.createRow([
+            summary.status || "WARN",
+            typeof summary.score === "number" ? `${summary.score}` : "0",
+            `${summary.counts?.PASS || 0}`,
+            `${summary.counts?.WARN || 0}`,
+            `${summary.counts?.FAIL || 0}`,
+            summary.lastRefreshAt || "not available",
+        ]));
+    }
+
     renderDetails(rows) {
         this.details.replaceChildren();
         rows.forEach((row) => {
@@ -68,14 +82,31 @@ class AdminSystemHealthController {
         });
     }
 
+    renderR2Readiness(readiness) {
+        this.r2Readiness.replaceChildren();
+        const rows = Array.isArray(readiness?.rows) ? readiness.rows : [];
+        rows.forEach((row) => {
+            this.r2Readiness.append(this.createRow([
+                row.area || "Project Asset Storage / R2",
+                row.field || "Status",
+                row.status || "WARN",
+                row.value || "not configured",
+                row.nextStep || "Review R2 configuration.",
+            ]));
+        });
+    }
+
     load() {
         try {
             const payload = readAdminSystemHealthStatus();
+            this.renderSummary(payload.summary || {});
             this.renderOverview(Array.isArray(payload.overview) ? payload.overview : []);
             this.renderDetails(Array.isArray(payload.details) ? payload.details : []);
             this.renderLimits(Array.isArray(payload.limits) ? payload.limits : []);
+            this.renderR2Readiness(payload.r2Readiness || {});
             this.setStatus(payload.status || "WARN", payload.message || "Admin System Health loaded.");
         } catch (error) {
+            this.renderSummary({ counts: { FAIL: 1, PASS: 0, WARN: 0 }, lastRefreshAt: "not available", score: 0, status: "FAIL" });
             this.renderOverview([
                 {
                     area: "System Health",
@@ -85,6 +116,7 @@ class AdminSystemHealthController {
             ]);
             this.renderDetails([]);
             this.renderLimits([]);
+            this.renderR2Readiness({ rows: [] });
             this.setStatus("FAIL", error instanceof Error ? error.message : "Admin System Health unavailable.");
         }
     }

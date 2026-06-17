@@ -14,16 +14,12 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
 Exercised tool entry points detected:
 (50%) Toolbox Index - exercised 1 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(78%) Theme V2 Shared JS - exercised 5 runtime JS files
+(79%) Theme V2 Shared JS - exercised 5 runtime JS files
 
 Changed runtime JS files covered:
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 46/65
-(88%) assets/theme-v2/js/admin-infrastructure.js - executed lines 100/100; executed functions 14/16
-(100%) assets/theme-v2/js/admin-system-health.js - executed lines 90/90; executed functions 14/14
-(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 19/19; executed functions 3/3
+(100%) assets/theme-v2/js/admin-system-health.js - executed lines 120/120; executed functions 17/17
 (100%) src/engine/api/admin-system-health-api-client.js - executed lines 10/10; executed functions 2/2
 
 Files with executed line/function counts where available:
@@ -35,23 +31,16 @@ Files with executed line/function counts where available:
 (71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 46/65
 (86%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 12/14
 (88%) assets/theme-v2/js/admin-infrastructure.js - executed lines 100/100; executed functions 14/16
-(100%) assets/theme-v2/js/admin-system-health.js - executed lines 90/90; executed functions 14/14
+(100%) assets/theme-v2/js/admin-system-health.js - executed lines 120/120; executed functions 17/17
 (100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 19/19; executed functions 3/3
 (100%) src/engine/api/admin-system-health-api-client.js - executed lines 10/10; executed functions 2/2
 
 Uncovered or low-coverage changed JS files:
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
 (71%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(88%) assets/theme-v2/js/admin-infrastructure.js - changed JS file with browser V8 coverage
 (100%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
-(100%) src/engine/api/admin-infrastructure-api-client.js - changed JS file with browser V8 coverage
 (100%) src/engine/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage
