@@ -1,34 +1,24 @@
-﻿# git status --short
- M admin/infrastructure.html
- M assets/theme-v2/js/owner-operations.js
+﻿# git status --short --untracked-files=all
  M docs_build/dev/codex_commands.md
  M docs_build/dev/commit_comment.txt
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M owner/operations.html
  M src/dev-runtime/server/local-api-router.mjs
  M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-?? assets/theme-v2/js/admin-infrastructure.js
-?? docs_build/dev/reports/PR_26168_220-promotion-lanes-storage-path-status.md
-?? src/engine/api/admin-infrastructure-api-client.js
+?? docs_build/dev/reports/PR_26168_221-storage-path-error-rule-and-r2-env-ready.md
 
 # git ls-files --others --exclude-standard
-assets/theme-v2/js/admin-infrastructure.js
-docs_build/dev/reports/PR_26168_220-promotion-lanes-storage-path-status.md
-src/engine/api/admin-infrastructure-api-client.js
+docs_build/dev/reports/PR_26168_221-storage-path-error-rule-and-r2-env-ready.md
 
 # git diff --stat
- admin/infrastructure.html                          |  13 +-
- assets/theme-v2/js/owner-operations.js             |   2 +-
- docs_build/dev/codex_commands.md                   |  33 +
+ docs_build/dev/codex_commands.md                   |  30 +
  docs_build/dev/commit_comment.txt                  |   2 +-
- docs_build/dev/reports/codex_changed_files.txt     |  38 +-
- docs_build/dev/reports/codex_review.diff           | 952 +++++++++++++++------
- .../dev/reports/coverage_changed_js_guardrail.txt  |  13 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |  51 +-
- owner/operations.html                              |   4 +-
- src/dev-runtime/server/local-api-router.mjs        | 134 ++-
- .../tools/AdminPlatformToolsWireframes.spec.mjs    | 129 ++-
- 11 files changed, 1030 insertions(+), 341 deletions(-)
+ docs_build/dev/reports/codex_changed_files.txt     |  32 +-
+ docs_build/dev/reports/codex_review.diff           | 879 +++++----------------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |  11 +-
+ src/dev-runtime/server/local-api-router.mjs        |   9 +-
+ .../tools/AdminPlatformToolsWireframes.spec.mjs    |  87 +-
+ 8 files changed, 337 insertions(+), 717 deletions(-)

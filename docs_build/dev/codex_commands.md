@@ -2150,3 +2150,33 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26168_220-promotion-lanes-storage-path-status_delta.zip`
+
+
+## PR_26168_221-storage-path-error-rule-and-r2-env-ready
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Tightened Admin Infrastructure storage path status logic so missing or invalid `GAMEFOUNDRY_ASSET_STORAGE_PATH` values render every lane row as `ERROR`.
+- Preserved exact-match behavior where `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, or `/prod/projects/` activates only the matching lane.
+- Added targeted Playwright coverage for missing, invalid, DEV, and IST storage path cases.
+- Added manual report note that R2 `.env` setup is ready only after this validation passes.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- `node --check assets/theme-v2/js/admin-infrastructure.js`
+- Admin Infrastructure static contract check for exact lane paths, invalid-path all-ERROR logic, and no inline HTML script/style/event handlers.
+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure|Infrastructure storage path status reports missing env path as ERROR|Infrastructure storage path status reports invalid env path as ERROR|Infrastructure storage path status reports DEV match only|Infrastructure storage path status reports IST match only"`
+- `git diff --check`
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_221-storage-path-error-rule-and-r2-env-ready.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_221-storage-path-error-rule-and-r2-env-ready_delta.zip`

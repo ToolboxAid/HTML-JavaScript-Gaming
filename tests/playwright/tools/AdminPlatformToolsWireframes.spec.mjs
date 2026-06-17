@@ -25,13 +25,16 @@ const ADMIN_WIREFRAME_PAGES = [
 ];
 
 function storagePathStatusFor(configuredPath) {
-  const rows = [
+  const lanes = [
     { lane: "DEV", path: "/dev/projects/" },
     { lane: "IST", path: "/ist/projects/" },
     { lane: "UAT", path: "/uat/projects/" },
     { lane: "PROD", path: "/prod/projects/" },
-  ].map((lane) => {
-    if (!configuredPath) {
+  ];
+  const matchedLane = lanes.find((lane) => lane.path === configuredPath);
+  const invalidPath = !matchedLane;
+  const rows = lanes.map((lane) => {
+    if (invalidPath) {
       return {
         ...lane,
         active: false,
@@ -48,11 +51,12 @@ function storagePathStatusFor(configuredPath) {
     };
   });
   return {
-    configured: Boolean(configuredPath),
+    configured: !invalidPath,
+    invalidPath,
     missing: !configuredPath,
     rows,
     secretsExposed: false,
-    status: configuredPath ? "PASS" : "ERROR",
+    status: invalidPath ? "ERROR" : "PASS",
     variableName: "GAMEFOUNDRY_ASSET_STORAGE_PATH",
   };
 }
@@ -303,6 +307,21 @@ async function expectNoPageFailures(failures) {
   expect(failures.consoleErrors).toEqual([]);
 }
 
+async function expectStoragePathStatusRows(page, expectedValues) {
+  const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
+  await expect(storageRows).toHaveCount(4);
+  const lanes = ["DEV", "IST", "UAT", "PROD"];
+  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prod/projects/"];
+  for (let index = 0; index < lanes.length; index += 1) {
+    await expect(storageRows.nth(index).locator("td")).toHaveText([
+      lanes[index],
+      paths[index],
+      expectedValues[index],
+    ]);
+  }
+  await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
+}
+
 async function expectAdminHeaderMenu(page) {
   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveAttribute("href", /admin\/platform-settings\.html$/);
   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveText("Owner \u25BE");
@@ -366,13 +385,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("body")).toContainText("/uat/projects/");
         await expect(page.locator("body")).toContainText("/prod/projects/");
         await expect(page.locator("body")).toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
-        const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
-        await expect(storageRows).toHaveCount(4);
-        await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "yes"]);
-        await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "no"]);
-        await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "no"]);
-        await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "no"]);
-        await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
+        await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
         const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");
         await expect(infrastructureImage).toBeVisible();
         const imageLayout = await infrastructureImage.evaluate((control) => {
@@ -411,13 +424,49 @@ test("Infrastructure storage path status reports missing env path as ERROR", asy
   });
 
   try {
-    const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
-    await expect(storageRows).toHaveCount(4);
-    await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "ERROR"]);
-    await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "ERROR"]);
-    await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "ERROR"]);
-    await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "ERROR"]);
-    await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
+    await expectStoragePathStatusRows(page, ["ERROR", "ERROR", "ERROR", "ERROR"]);
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Infrastructure storage path status reports invalid env path as ERROR", async ({ page }) => {
+  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
+    storagePathStatus: storagePathStatusFor("/qa/projects/"),
+  });
+
+  try {
+    await expectStoragePathStatusRows(page, ["ERROR", "ERROR", "ERROR", "ERROR"]);
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Infrastructure storage path status reports DEV match only", async ({ page }) => {
+  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
+    storagePathStatus: storagePathStatusFor("/dev/projects/"),
+  });
+
+  try {
+    await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Infrastructure storage path status reports IST match only", async ({ page }) => {
+  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
+    storagePathStatus: storagePathStatusFor("/ist/projects/"),
+  });
+
+  try {
+    await expectStoragePathStatusRows(page, ["no", "yes", "no", "no"]);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expectNoPageFailures(failures);
   } finally {

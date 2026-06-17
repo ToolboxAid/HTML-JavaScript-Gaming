@@ -316,8 +316,10 @@ function dotEnvValue(key) {
 
 function projectAssetStoragePathStatus() {
   const currentPath = dotEnvValue(PROJECT_ASSET_STORAGE_PATH_ENV_KEY);
+  const matchedLane = PROJECT_ASSET_STORAGE_PATH_LANES.find((lane) => lane.path === currentPath.value);
+  const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
   const rows = PROJECT_ASSET_STORAGE_PATH_LANES.map((lane) => {
-    if (!currentPath.found || !currentPath.value) {
+    if (invalidPath) {
       return {
         ...lane,
         active: false,
@@ -334,11 +336,12 @@ function projectAssetStoragePathStatus() {
     };
   });
   return {
-    configured: currentPath.found && Boolean(currentPath.value),
+    configured: !invalidPath,
+    invalidPath,
     missing: !currentPath.found || !currentPath.value,
     rows,
     secretsExposed: false,
-    status: currentPath.found && currentPath.value ? "PASS" : "ERROR",
+    status: invalidPath ? "ERROR" : "PASS",
     variableName: PROJECT_ASSET_STORAGE_PATH_ENV_KEY,
   };
 }

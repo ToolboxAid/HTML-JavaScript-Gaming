@@ -1,480 +1,225 @@
-﻿diff --git a/admin/infrastructure.html b/admin/infrastructure.html
-index f75861f68..deb652bbd 100644
---- a/admin/infrastructure.html
-+++ b/admin/infrastructure.html
-@@ -77,14 +77,14 @@
-                                     <tr>
-                                         <th scope="col">Lane</th>
-                                         <th scope="col">Path</th>
--                                        <th scope="col">.env variable</th>
-+                                        <th scope="col">Current .env match</th>
-                                     </tr>
-                                 </thead>
--                                <tbody>
--                                    <tr><td>DEV</td><td>/dev/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
--                                    <tr><td>IST</td><td>/ist/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
--                                    <tr><td>UAT</td><td>/uat/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
--                                    <tr><td>PROD</td><td>/prod/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
-+                                <tbody data-admin-storage-path-status-rows>
-+                                    <tr><td>DEV</td><td>/dev/projects/</td><td>Loading</td></tr>
-+                                    <tr><td>IST</td><td>/ist/projects/</td><td>Loading</td></tr>
-+                                    <tr><td>UAT</td><td>/uat/projects/</td><td>Loading</td></tr>
-+                                    <tr><td>PROD</td><td>/prod/projects/</td><td>Loading</td></tr>
-                                 </tbody>
-                             </table>
-                         </div>
-@@ -120,6 +120,7 @@
-     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
-     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-     <script src="assets/theme-v2/js/image-zoom-dialog.js" defer></script>
-+    <script type="module" src="assets/theme-v2/js/admin-infrastructure.js"></script>
- </body>
+﻿diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
+index acfaee522..350af11b8 100644
+--- a/docs_build/dev/codex_commands.md
++++ b/docs_build/dev/codex_commands.md
+@@ -2150,3 +2150,33 @@ Required reports:
 
- </html>
-diff --git a/assets/theme-v2/js/owner-operations.js b/assets/theme-v2/js/owner-operations.js
-index 19582ed09..bd74397bf 100644
---- a/assets/theme-v2/js/owner-operations.js
-+++ b/assets/theme-v2/js/owner-operations.js
-@@ -107,7 +107,7 @@ class OwnerOperationsController {
-                 `${step.safetyStatus || "WARN"}: ${step.safetyDiagnostic || promotionFoundation.safetyMessage || "Promotion safety validation unavailable."}`,
-                 `${promotionFoundation.ownerOnly === true ? "Owner-only" : "Restricted"}; ${promotionFoundation.browserExecutionAllowed === false ? "browser execution disabled" : "browser execution unknown"}; ${promotionFoundation.destructiveOperationsAllowed === false ? "destructive operations disabled" : "destructive operations unknown"}; ${step.message || promotionFoundation.message || "Promotion foundation planning."}`,
-             ])
--            : [["DEV/UAT/PROD", "Planning", promotionFoundation.status || "WARN", promotionFoundation.safetyMessage || "Promotion safety validation unavailable.", promotionFoundation.message || "Promotion foundation status unavailable."]];
-+            : [["DEV/IST/UAT/PROD", "Planning", promotionFoundation.status || "WARN", promotionFoundation.safetyMessage || "Promotion safety validation unavailable.", promotionFoundation.message || "Promotion foundation status unavailable."]];
-         this.promotionFoundationRows.replaceChildren();
-         rows.forEach((row) => {
-             const tableRow = document.createElement("tr");
+ Packaging:
+ - `tmp/PR_26168_220-promotion-lanes-storage-path-status_delta.zip`
++
++
++## PR_26168_221-storage-path-error-rule-and-r2-env-ready
++
++Changes:
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Verified the current branch is `main`.
++- Tightened Admin Infrastructure storage path status logic so missing or invalid `GAMEFOUNDRY_ASSET_STORAGE_PATH` values render every lane row as `ERROR`.
++- Preserved exact-match behavior where `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, or `/prod/projects/` activates only the matching lane.
++- Added targeted Playwright coverage for missing, invalid, DEV, and IST storage path cases.
++- Added manual report note that R2 `.env` setup is ready only after this validation passes.
++
++Validation:
++- `node --check src/dev-runtime/server/local-api-router.mjs`
++- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
++- `node --check assets/theme-v2/js/admin-infrastructure.js`
++- Admin Infrastructure static contract check for exact lane paths, invalid-path all-ERROR logic, and no inline HTML script/style/event handlers.
++- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure|Infrastructure storage path status reports missing env path as ERROR|Infrastructure storage path status reports invalid env path as ERROR|Infrastructure storage path status reports DEV match only|Infrastructure storage path status reports IST match only"`
++- `git diff --check`
++- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
++
++Required reports:
++- `docs_build/dev/reports/PR_26168_221-storage-path-error-rule-and-r2-env-ready.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++
++Packaging:
++- `tmp/PR_26168_221-storage-path-error-rule-and-r2-env-ready_delta.zip`
+diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
+index fe6108395..49364641d 100644
+--- a/docs_build/dev/commit_comment.txt
++++ b/docs_build/dev/commit_comment.txt
+@@ -1 +1 @@
+-Promotion lanes and storage path status - PR_26168_220-promotion-lanes-storage-path-status
++Storage path error rule and R2 env readiness - PR_26168_221-storage-path-error-rule-and-r2-env-ready
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index e5f5218da..8ec43d5d2 100644
+index 8ec43d5d2..7ef10ba83 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,16 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,11 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(75%) toolbox/game-workspace/game-workspace.js - executed lines 457/457; executed functions 33/44
--(81%) toolbox/tools-page-accordions.js - executed lines 964/964; executed functions 88/108
--(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 3/3
-+(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
-+(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
-+(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
-+(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
+ (80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
+-(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
+-(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
+ (100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
 
  Guardrail warnings:
--(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 03545113d..e87f42604 100644
+index e87f42604..357d9f3f3 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -1,13 +1,46 @@
- Playwright V8 Coverage Report
+@@ -14,13 +14,12 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+ Exercised tool entry points detected:
+ (46%) Toolbox Index - exercised 1 runtime JS files
+ (0%) Tool Template V2 - not exercised by this Playwright run
+-(79%) Theme V2 Shared JS - exercised 5 runtime JS files
++(73%) Theme V2 Shared JS - exercised 4 runtime JS files
 
--PR: PR_26168_219-admin-infrastructure-image-storage-path
--Coverage source: Playwright/Chromium built-in V8 coverage from targeted Admin Infrastructure validation.
--Coverage scope: browser JavaScript collected while running `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs` for the Admin Infrastructure page.
--Thresholds: none enforced; coverage is advisory for this PR.
--Note: missing changed runtime JavaScript files are reported as WARN, not FAIL.
-+PR: generated by current Playwright run.
-+Coverage source: Playwright/Chromium built-in V8 coverage.
-+Coverage scope: all repo-relative browser JavaScript collected by Playwright/Chromium V8 coverage.
-+Dependencies: no new npm packages.
-+Thresholds: none enforced.
-+Note: coverage is an advisory baseline only for this PR.
-+Note: missing changed runtime JS coverage is reported as WARN, not FAIL.
-+Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.
-+Note: entry percentages use function coverage when available, otherwise line coverage.
-+Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+ Changed runtime JS files covered:
++(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
+-(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
+-(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
+ (100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
 
--Changed runtime JavaScript files covered:
--(100%) assets/theme-v2/js/image-zoom-dialog.js - PASS: collected by Playwright V8 coverage; targeted Admin Infrastructure validation opened and closed the zoom dialog.
-+Exercised tool entry points detected:
-+(46%) Toolbox Index - exercised 1 runtime JS files
-+(0%) Tool Template V2 - not exercised by this Playwright run
-+(79%) Theme V2 Shared JS - exercised 5 runtime JS files
+ Files with executed line/function counts where available:
+@@ -30,17 +29,15 @@ Files with executed line/function counts where available:
+ (71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 46/65
+ (80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
+ (100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
+-(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
+ (100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
+-(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
 
--Changed non-runtime validation files:
--tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - not counted as runtime JavaScript; covered by `node --check` and targeted Playwright validation.
-+Changed runtime JS files covered:
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-+(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
-+(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
-+(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
-+(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
-+
-+Files with executed line/function counts where available:
-+(36%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 5/14
-+(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
-+(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
-+(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 46/65
-+(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
-+(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
-+(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
-+(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
-+(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
-+
-+Uncovered or low-coverage changed JS files:
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-+
-+Changed JS files considered:
-+(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
-+(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
-+(80%) assets/theme-v2/js/admin-infrastructure.js - changed JS file with browser V8 coverage
-+(100%) assets/theme-v2/js/image-zoom-dialog.js - changed JS file with browser V8 coverage
-+(100%) assets/theme-v2/js/owner-operations.js - changed JS file with browser V8 coverage
-+(100%) src/engine/api/admin-infrastructure-api-client.js - changed JS file with browser V8 coverage
-diff --git a/owner/operations.html b/owner/operations.html
-index d0a11820d..3f95cd150 100644
---- a/owner/operations.html
-+++ b/owner/operations.html
-@@ -36,7 +36,8 @@
-                                     <button class="btn btn--compact" type="button" data-owner-operation-action="reseed-dev">Reseed DEV</button>
-                                     <button class="btn btn--compact" type="button" data-owner-operation-action="restore-from-backup">Restore from Backup</button>
-                                     <button class="btn btn--compact" type="button" data-owner-operation-action="run-migration">Run Migration</button>
--                                    <button class="btn btn--compact" type="button" data-owner-operation-action="promote-dev-to-uat">Promote DEV to UAT</button>
-+                                    <button class="btn btn--compact" type="button" data-owner-operation-action="promote-dev-to-ist">Promote DEV to IST</button>
-+                                    <button class="btn btn--compact" type="button" data-owner-operation-action="promote-ist-to-uat">Promote IST to UAT</button>
-                                     <button class="btn btn--compact" type="button" data-owner-operation-action="promote-uat-to-prod">Promote UAT to PROD</button>
-                                 </div>
-                             </details>
-@@ -49,6 +50,7 @@
-                             <h2 id="owner-operations-title">Connection Summary</h2>
-                         </div>
-                         <p>Connection details are summarized without exposing secrets. Environment switching remains manual through configuration changes and server restart.</p>
-+                        <p>Promotion planning moves project metadata, asset references, and project asset storage objects between environment lanes through reviewed server-side execution.</p>
-                         <div class="table-wrapper">
-                             <table class="data-table" aria-label="Configured connection summary">
-                                 <caption>Configured Connections</caption>
+ Uncovered or low-coverage changed JS files:
++(0%) assets/theme-v2/js/owner-operations.js - WARNING: uncovered changed runtime JS file; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
+
+ Changed JS files considered:
++(0%) assets/theme-v2/js/owner-operations.js - changed JS file not collected as browser runtime coverage
+ (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+ (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
+ (80%) assets/theme-v2/js/admin-infrastructure.js - changed JS file with browser V8 coverage
+-(100%) assets/theme-v2/js/image-zoom-dialog.js - changed JS file with browser V8 coverage
+-(100%) assets/theme-v2/js/owner-operations.js - changed JS file with browser V8 coverage
+ (100%) src/engine/api/admin-infrastructure-api-client.js - changed JS file with browser V8 coverage
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index d83e48e84..433039e5c 100644
+index 433039e5c..2490e6b1e 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -225,6 +225,13 @@ const PLATFORM_BANNER_DEFAULTS = Object.freeze({
-   message: "",
-   tone: "info",
- });
-+const PROJECT_ASSET_STORAGE_PATH_ENV_KEY = "GAMEFOUNDRY_ASSET_STORAGE_PATH";
-+const PROJECT_ASSET_STORAGE_PATH_LANES = Object.freeze([
-+  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
-+  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
-+  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
-+  Object.freeze({ lane: "PROD", path: "/prod/projects/" }),
-+]);
- const OWNER_OPERATION_ACTIONS = Object.freeze([
-   Object.freeze({
-     id: "validate-current-connection",
-@@ -247,8 +254,13 @@ const OWNER_OPERATION_ACTIONS = Object.freeze([
-     mode: "manual-only",
-   }),
-   Object.freeze({
--    id: "promote-dev-to-uat",
--    label: "Promote DEV to UAT",
-+    id: "promote-dev-to-ist",
-+    label: "Promote DEV to IST",
-+    mode: "manual-only",
-+  }),
-+  Object.freeze({
-+    id: "promote-ist-to-uat",
-+    label: "Promote IST to UAT",
-     mode: "manual-only",
-   }),
-   Object.freeze({
-@@ -262,6 +274,75 @@ function clone(value) {
-   return JSON.parse(JSON.stringify(value));
- }
+@@ -316,8 +316,10 @@ function dotEnvValue(key) {
 
-+function parseEnvValue(value) {
-+  const trimmed = value.trim();
-+  const quote = trimmed[0];
-+  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
-+    return trimmed.slice(1, -1);
-+  }
-+  const commentIndex = trimmed.indexOf(" #");
-+  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
-+}
-+
-+function dotEnvValue(key) {
-+  const envPath = path.resolve(process.cwd(), ".env");
-+  let contents = "";
-+  try {
-+    contents = readFileSync(envPath, "utf8");
-+  } catch {
-+    return { found: false, value: "" };
-+  }
-+  let foundValue = "";
-+  let found = false;
-+  contents.split(/\r?\n/).forEach((line) => {
-+    const trimmed = line.trim();
-+    if (!trimmed || trimmed.startsWith("#")) {
-+      return;
-+    }
-+    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
-+    const separatorIndex = normalized.indexOf("=");
-+    if (separatorIndex <= 0) {
-+      return;
-+    }
-+    const candidateKey = normalized.slice(0, separatorIndex).trim();
-+    if (candidateKey !== key) {
-+      return;
-+    }
-+    found = true;
-+    foundValue = parseEnvValue(normalized.slice(separatorIndex + 1));
-+  });
-+  return { found, value: foundValue.trim() };
-+}
-+
-+function projectAssetStoragePathStatus() {
-+  const currentPath = dotEnvValue(PROJECT_ASSET_STORAGE_PATH_ENV_KEY);
-+  const rows = PROJECT_ASSET_STORAGE_PATH_LANES.map((lane) => {
-+    if (!currentPath.found || !currentPath.value) {
-+      return {
-+        ...lane,
-+        active: false,
-+        status: "ERROR",
-+        value: "ERROR",
-+      };
-+    }
-+    const active = currentPath.value === lane.path;
-+    return {
-+      ...lane,
-+      active,
-+      status: active ? "PASS" : "SKIP",
-+      value: active ? "yes" : "no",
-+    };
-+  });
-+  return {
-+    configured: currentPath.found && Boolean(currentPath.value),
-+    missing: !currentPath.found || !currentPath.value,
-+    rows,
-+    secretsExposed: false,
-+    status: currentPath.found && currentPath.value ? "PASS" : "ERROR",
-+    variableName: PROJECT_ASSET_STORAGE_PATH_ENV_KEY,
-+  };
-+}
-+
- function databaseConfigStatus(env = process.env) {
-   const databaseUrl = String(env.GAMEFOUNDRY_DATABASE_URL || "").trim();
-   const sslMode = String(env.GAMEFOUNDRY_DATABASE_SSL || "").trim().toLowerCase();
-@@ -1640,6 +1721,14 @@ class ApiRuntimeDataSource {
-     return session;
-   }
-
-+  async requireAdminSession() {
-+    const session = await this.currentSessionForRoute();
-+    if (!session.isAdmin || !session.userKey) {
-+      throw new Error("Admin role required to read Infrastructure status.");
-+    }
-+    return session;
-+  }
-+
-   ownerConnectionSummary() {
-     const providerContract = this.providerContract();
-     const authStatus = this.authStatus();
-@@ -1696,10 +1785,28 @@ class ApiRuntimeDataSource {
-         id: "dev-export-plan",
-         stage: "DEV",
-         operation: "Export",
--        safetyDiagnostic: "Read-only export planning only; no project records or storage objects are changed.",
-+        safetyDiagnostic: "Read-only export planning only; no project records, asset references, or storage objects are changed.",
-         safetyStatus: "PASS",
-         status: "PLAN",
--        message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage.",
-+        message: "Plan a read-only DEV export through Local API from Local DB/SQLite metadata, asset references, and configured project asset storage object keys.",
-+      },
-+      {
-+        id: "ist-import-plan",
-+        stage: "IST",
-+        operation: "Import",
-+        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing IST project must fail visibly before any write.",
-+        safetyStatus: "FAIL",
-+        status: "PLAN",
-+        message: "Plan DEV to IST promotion through reviewed server-side tooling; no browser import execution.",
-+      },
-+      {
-+        id: "ist-validate-plan",
-+        stage: "IST",
-+        operation: "Validate",
-+        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying IST.",
-+        safetyStatus: "PASS",
-+        status: "PLAN",
-+        message: "Plan validation of IST project metadata, asset references, and project asset storage objects before UAT promotion.",
-       },
-       {
-         id: "uat-import-plan",
-@@ -1708,7 +1815,7 @@ class ApiRuntimeDataSource {
-         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing UAT project must fail visibly before any write.",
-         safetyStatus: "FAIL",
-         status: "PLAN",
--        message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution.",
-+        message: "Plan IST to UAT promotion through reviewed server-side tooling; no browser import execution.",
-       },
-       {
-         id: "uat-validate-plan",
-@@ -1717,7 +1824,7 @@ class ApiRuntimeDataSource {
-         safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying UAT.",
-         safetyStatus: "PASS",
-         status: "PLAN",
--        message: "Plan validation of imported UAT metadata and storage references before any PROD promotion.",
-+        message: "Plan validation of UAT project metadata, asset references, and project asset storage objects before any PROD promotion.",
-       },
-       {
-         id: "prod-import-plan",
-@@ -1726,7 +1833,7 @@ class ApiRuntimeDataSource {
-         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing PROD project must fail visibly before any write.",
-         safetyStatus: "FAIL",
-         status: "PLAN",
--        message: "Plan a PROD import only after UAT validation evidence is reviewed.",
-+        message: "Plan a PROD import of project metadata, asset references, and project asset storage objects only after UAT validation evidence is reviewed.",
-       },
-       {
-         id: "prod-validate-plan",
-@@ -1744,9 +1851,10 @@ class ApiRuntimeDataSource {
-       exportImportRuntime: "reviewed server-side tooling only",
-       importOverwriteAllowed: false,
-       importOverwritePolicy: "fail-visible-until-explicit-confirmation",
--      message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
-+      message: "Project promotion foundation is planning-only for DEV, IST, UAT, and PROD.",
-       ownerOnly: true,
-       overwriteConfirmationImplemented: false,
-+      promotionScope: "project metadata, asset references, and project asset storage objects",
-       safetyMessage: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists.",
-       secretEditingAllowed: false,
-       status: "PASS",
-@@ -1823,6 +1931,11 @@ LIMIT 1;
+ function projectAssetStoragePathStatus() {
+   const currentPath = dotEnvValue(PROJECT_ASSET_STORAGE_PATH_ENV_KEY);
++  const matchedLane = PROJECT_ASSET_STORAGE_PATH_LANES.find((lane) => lane.path === currentPath.value);
++  const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
+   const rows = PROJECT_ASSET_STORAGE_PATH_LANES.map((lane) => {
+-    if (!currentPath.found || !currentPath.value) {
++    if (invalidPath) {
+       return {
+         ...lane,
+         active: false,
+@@ -334,11 +336,12 @@ function projectAssetStoragePathStatus() {
      };
-   }
-
-+  async adminInfrastructureStoragePathStatus() {
-+    await this.requireAdminSession();
-+    return projectAssetStoragePathStatus();
-+  }
-+
-   projectWorkspaceProjectsForRoute() {
-     const activeProject = this.gameWorkspaceRepository.getActiveGame();
-     const records = gameWorkspaceProjectRecords(this.gameWorkspaceRepository);
-@@ -3407,6 +3520,11 @@ export function createLocalApiRouter() {
-         return true;
-       }
-
-+      if (parts[1] === "admin" && parts[2] === "infrastructure" && request.method === "GET" && parts[3] === "storage-path-status") {
-+        ok(response, await dataSource.adminInfrastructureStoragePathStatus());
-+        return true;
-+      }
-+
-       if (parts[1] === "owner" && parts[2] === "operations" && request.method === "GET" && parts[3] === "status") {
-         ok(response, await dataSource.ownerOperationsStatus());
-         return true;
+   });
+   return {
+-    configured: currentPath.found && Boolean(currentPath.value),
++    configured: !invalidPath,
++    invalidPath,
+     missing: !currentPath.found || !currentPath.value,
+     rows,
+     secretsExposed: false,
+-    status: currentPath.found && currentPath.value ? "PASS" : "ERROR",
++    status: invalidPath ? "ERROR" : "PASS",
+     variableName: PROJECT_ASSET_STORAGE_PATH_ENV_KEY,
+   };
+ }
 diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-index 5133bb743..a88831759 100644
+index a88831759..95cfc4477 100644
 --- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
 +++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-@@ -24,6 +24,39 @@ const ADMIN_WIREFRAME_PAGES = [
-   { heading: "Platform Settings", liveSettings: true, path: "/admin/platform-settings.html", slug: "platform-settings" },
+@@ -25,13 +25,16 @@ const ADMIN_WIREFRAME_PAGES = [
  ];
 
-+function storagePathStatusFor(configuredPath) {
-+  const rows = [
-+    { lane: "DEV", path: "/dev/projects/" },
-+    { lane: "IST", path: "/ist/projects/" },
-+    { lane: "UAT", path: "/uat/projects/" },
-+    { lane: "PROD", path: "/prod/projects/" },
-+  ].map((lane) => {
-+    if (!configuredPath) {
-+      return {
-+        ...lane,
-+        active: false,
-+        status: "ERROR",
-+        value: "ERROR",
-+      };
-+    }
-+    const active = configuredPath === lane.path;
-+    return {
-+      ...lane,
-+      active,
-+      status: active ? "PASS" : "SKIP",
-+      value: active ? "yes" : "no",
-+    };
-+  });
-+  return {
-+    configured: Boolean(configuredPath),
-+    missing: !configuredPath,
-+    rows,
-+    secretsExposed: false,
-+    status: configuredPath ? "PASS" : "ERROR",
-+    variableName: "GAMEFOUNDRY_ASSET_STORAGE_PATH",
-+  };
+ function storagePathStatusFor(configuredPath) {
+-  const rows = [
++  const lanes = [
+     { lane: "DEV", path: "/dev/projects/" },
+     { lane: "IST", path: "/ist/projects/" },
+     { lane: "UAT", path: "/uat/projects/" },
+     { lane: "PROD", path: "/prod/projects/" },
+-  ].map((lane) => {
+-    if (!configuredPath) {
++  ];
++  const matchedLane = lanes.find((lane) => lane.path === configuredPath);
++  const invalidPath = !matchedLane;
++  const rows = lanes.map((lane) => {
++    if (invalidPath) {
+       return {
+         ...lane,
+         active: false,
+@@ -48,11 +51,12 @@ function storagePathStatusFor(configuredPath) {
+     };
+   });
+   return {
+-    configured: Boolean(configuredPath),
++    configured: !invalidPath,
++    invalidPath,
+     missing: !configuredPath,
+     rows,
+     secretsExposed: false,
+-    status: configuredPath ? "PASS" : "ERROR",
++    status: invalidPath ? "ERROR" : "PASS",
+     variableName: "GAMEFOUNDRY_ASSET_STORAGE_PATH",
+   };
+ }
+@@ -303,6 +307,21 @@ async function expectNoPageFailures(failures) {
+   expect(failures.consoleErrors).toEqual([]);
+ }
+
++async function expectStoragePathStatusRows(page, expectedValues) {
++  const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
++  await expect(storageRows).toHaveCount(4);
++  const lanes = ["DEV", "IST", "UAT", "PROD"];
++  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prod/projects/"];
++  for (let index = 0; index < lanes.length; index += 1) {
++    await expect(storageRows.nth(index).locator("td")).toHaveText([
++      lanes[index],
++      paths[index],
++      expectedValues[index],
++    ]);
++  }
++  await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
 +}
 +
- test.beforeEach(async ({ page }) => {
-   await workspaceV2CoverageReporter.start(page);
-   await installPlaywrightStorageIsolation(page, {
-@@ -38,11 +71,12 @@ test.afterEach(async ({ page }) => {
-   await clearPlaywrightStorage(page);
- });
-
--async function startAdminPage(page, pathName) {
-+async function startAdminPage(page, pathName, options = {}) {
-   const server = await startRepoServer();
-   const failedRequests = [];
-   const pageErrors = [];
-   const consoleErrors = [];
-+  const storagePathStatus = options.storagePathStatus || storagePathStatusFor("/dev/projects/");
-
-   page.on("pageerror", (error) => {
-     const text = error.stack || error.message;
-@@ -150,6 +184,15 @@ async function startAdminPage(page, pathName) {
-       }),
-     });
-   });
-+  await page.route("**/api/admin/infrastructure/storage-path-status", async (route) => {
-+    await route.fulfill({
-+      contentType: "application/json",
-+      body: JSON.stringify({
-+        data: storagePathStatus,
-+        ok: true,
-+      }),
-+    });
-+  });
-   await page.route("**/api/product-data/snapshot", async (route) => {
-     const timestamp = "2026-06-16T00:00:00.000Z";
-     const audit = {
-@@ -323,6 +366,13 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+ async function expectAdminHeaderMenu(page) {
+   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveAttribute("href", /admin\/platform-settings\.html$/);
+   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveText("Owner \u25BE");
+@@ -366,13 +385,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
          await expect(page.locator("body")).toContainText("/uat/projects/");
          await expect(page.locator("body")).toContainText("/prod/projects/");
          await expect(page.locator("body")).toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
-+        const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
-+        await expect(storageRows).toHaveCount(4);
-+        await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "yes"]);
-+        await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "no"]);
-+        await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "no"]);
-+        await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "no"]);
-+        await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
+-        const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
+-        await expect(storageRows).toHaveCount(4);
+-        await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "yes"]);
+-        await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "no"]);
+-        await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "no"]);
+-        await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "no"]);
+-        await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
++        await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
          const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");
          await expect(infrastructureImage).toBeVisible();
          const imageLayout = await infrastructureImage.evaluate((control) => {
-@@ -355,6 +405,26 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+@@ -411,13 +424,49 @@ test("Infrastructure storage path status reports missing env path as ERROR", asy
    });
- }
 
-+test("Infrastructure storage path status reports missing env path as ERROR", async ({ page }) => {
-+  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
-+    storagePathStatus: storagePathStatusFor(""),
-+  });
-+
-+  try {
-+    const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
-+    await expect(storageRows).toHaveCount(4);
-+    await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "ERROR"]);
-+    await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "ERROR"]);
-+    await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "ERROR"]);
-+    await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "ERROR"]);
-+    await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
+   try {
+-    const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
+-    await expect(storageRows).toHaveCount(4);
+-    await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "ERROR"]);
+-    await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "ERROR"]);
+-    await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "ERROR"]);
+-    await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "ERROR"]);
+-    await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
++    await expectStoragePathStatusRows(page, ["ERROR", "ERROR", "ERROR", "ERROR"]);
 +    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 +    await expectNoPageFailures(failures);
 +  } finally {
@@ -482,233 +227,41 @@ index 5133bb743..a88831759 100644
 +  }
 +});
 +
- test("Grouping Colors uses current group color model copy", async ({ page }) => {
-   const failures = await startAdminPage(page, "/admin/grouping-colors.html");
-
-@@ -769,9 +839,10 @@ test("Owner Operations exposes owner-only connection validation and manual opera
-     exportImportRuntime: "reviewed server-side tooling only",
-     importOverwriteAllowed: false,
-     importOverwritePolicy: "fail-visible-until-explicit-confirmation",
--    message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
-+    message: "Project promotion foundation is planning-only for DEV, IST, UAT, and PROD.",
-     ownerOnly: true,
-     overwriteConfirmationImplemented: false,
-+    promotionScope: "project metadata, asset references, and project asset storage objects",
-     safetyMessage: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists.",
-     secretEditingAllowed: false,
-     status: "PASS",
-@@ -780,10 +851,28 @@ test("Owner Operations exposes owner-only connection validation and manual opera
-         id: "dev-export-plan",
-         stage: "DEV",
-         operation: "Export",
--        safetyDiagnostic: "Read-only export planning only; no project records or storage objects are changed.",
-+        safetyDiagnostic: "Read-only export planning only; no project records, asset references, or storage objects are changed.",
-         safetyStatus: "PASS",
-         status: "PLAN",
--        message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage.",
-+        message: "Plan a read-only DEV export through Local API from Local DB/SQLite metadata, asset references, and configured project asset storage object keys.",
-+      },
-+      {
-+        id: "ist-import-plan",
-+        stage: "IST",
-+        operation: "Import",
-+        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing IST project must fail visibly before any write.",
-+        safetyStatus: "FAIL",
-+        status: "PLAN",
-+        message: "Plan DEV to IST promotion through reviewed server-side tooling; no browser import execution.",
-+      },
-+      {
-+        id: "ist-validate-plan",
-+        stage: "IST",
-+        operation: "Validate",
-+        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying IST.",
-+        safetyStatus: "PASS",
-+        status: "PLAN",
-+        message: "Plan validation of IST project metadata, asset references, and project asset storage objects before UAT promotion.",
-       },
-       {
-         id: "uat-import-plan",
-@@ -792,7 +881,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
-         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing UAT project must fail visibly before any write.",
-         safetyStatus: "FAIL",
-         status: "PLAN",
--        message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution.",
-+        message: "Plan IST to UAT promotion through reviewed server-side tooling; no browser import execution.",
-       },
-       {
-         id: "uat-validate-plan",
-@@ -801,7 +890,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
-         safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying UAT.",
-         safetyStatus: "PASS",
-         status: "PLAN",
--        message: "Plan validation of imported UAT metadata and storage references before any PROD promotion.",
-+        message: "Plan validation of UAT project metadata, asset references, and project asset storage objects before any PROD promotion.",
-       },
-       {
-         id: "prod-import-plan",
-@@ -810,7 +899,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
-         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing PROD project must fail visibly before any write.",
-         safetyStatus: "FAIL",
-         status: "PLAN",
--        message: "Plan a PROD import only after UAT validation evidence is reviewed.",
-+        message: "Plan a PROD import of project metadata, asset references, and project asset storage objects only after UAT validation evidence is reviewed.",
-       },
-       {
-         id: "prod-validate-plan",
-@@ -988,7 +1077,12 @@ test("Owner Operations exposes owner-only connection validation and manual opera
-     await page.route("**/api/owner/operations/action", async (route) => {
-       const body = route.request().postDataJSON();
-       ownerActionPosts.push(body);
--      const actionLabel = body.actionId === "promote-dev-to-uat" ? "Promote DEV to UAT" : "Reseed DEV";
-+      const actionLabels = {
-+        "promote-dev-to-ist": "Promote DEV to IST",
-+        "promote-ist-to-uat": "Promote IST to UAT",
-+        "reseed-dev": "Reseed DEV",
-+      };
-+      const actionLabel = actionLabels[body.actionId] || body.actionId;
-       await route.fulfill({
-         contentType: "application/json",
-         body: JSON.stringify({
-@@ -1016,6 +1110,11 @@ test("Owner Operations exposes owner-only connection validation and manual opera
-     await expect(page.locator("[data-owner-connection-summary]")).toContainText("Account");
-     await expect(page.locator("[data-owner-connection-summary]")).toContainText("Project Asset Storage");
-     await expect(page.locator("[data-owner-connection-summary]")).toContainText("not exposed");
-+    await expect(page.locator("[data-owner-operation-action='promote-dev-to-uat']")).toHaveCount(0);
-+    await expect(page.locator("[data-owner-operation-action='promote-dev-to-ist']")).toHaveText("Promote DEV to IST");
-+    await expect(page.locator("[data-owner-operation-action='promote-ist-to-uat']")).toHaveText("Promote IST to UAT");
-+    await expect(page.locator("[data-owner-operation-action='promote-uat-to-prod']")).toHaveText("Promote UAT to PROD");
-+    await expect(page.locator("[data-owner-operations]")).toContainText("project metadata, asset references, and project asset storage objects");
-     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Connection Configured");
-     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Host");
-     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("192.168.2.5");
-@@ -1044,10 +1143,12 @@ test("Owner Operations exposes owner-only connection validation and manual opera
-     await expect(page.locator("[data-owner-storage-status-rows]")).not.toContainText("asset-test-access-key");
-     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("DEV");
-     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Export");
-+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("IST");
-     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("UAT");
-     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Import");
-     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Validate");
-     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("PROD");
-+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("project metadata, asset references, and project asset storage objects");
-     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Owner-only");
-     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("browser execution disabled");
-     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("destructive operations disabled");
-@@ -1069,11 +1170,15 @@ test("Owner Operations exposes owner-only connection validation and manual opera
-     await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Reseed DEV is staged in Owner Operations");
-     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("reseed-dev");
-     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
--    await page.locator("[data-owner-operation-action='promote-dev-to-uat']").click();
--    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote DEV to UAT is staged in Owner Operations");
--    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-dev-to-uat");
-+    await page.locator("[data-owner-operation-action='promote-dev-to-ist']").click();
-+    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote DEV to IST is staged in Owner Operations");
-+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-dev-to-ist");
-+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
-+    await page.locator("[data-owner-operation-action='promote-ist-to-uat']").click();
-+    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote IST to UAT is staged in Owner Operations");
-+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-ist-to-uat");
-     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
--    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }, { actionId: "promote-dev-to-uat" }]);
-+    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }, { actionId: "promote-dev-to-ist" }, { actionId: "promote-ist-to-uat" }]);
-     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-   } finally {
-     await server.close();
-
-
-diff --git a/assets/theme-v2/js/admin-infrastructure.js b/assets/theme-v2/js/admin-infrastructure.js
-new file mode 100644
-index 000000000..77c4291f6
---- /dev/null
-+++ b/assets/theme-v2/js/admin-infrastructure.js
-@@ -0,0 +1,69 @@
-+import {
-+    readAdminInfrastructureStoragePathStatus
-+} from "../../../src/engine/api/admin-infrastructure-api-client.js";
++test("Infrastructure storage path status reports invalid env path as ERROR", async ({ page }) => {
++  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
++    storagePathStatus: storagePathStatusFor("/qa/projects/"),
++  });
 +
-+const STORAGE_PATH_LANES = Object.freeze([
-+    Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
-+    Object.freeze({ lane: "IST", path: "/ist/projects/" }),
-+    Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
-+    Object.freeze({ lane: "PROD", path: "/prod/projects/" }),
-+]);
-+
-+class AdminInfrastructureStoragePathStatus {
-+    constructor(root) {
-+        this.root = root;
-+        this.rows = root.querySelector("[data-admin-storage-path-status-rows]");
-+    }
-+
-+    init() {
-+        if (!this.rows) {
-+            return;
-+        }
-+        this.load();
-+    }
-+
-+    renderRows(rows) {
-+        this.rows.replaceChildren();
-+        rows.forEach((row) => {
-+            const tableRow = document.createElement("tr");
-+            [
-+                row.lane || "",
-+                row.path || "",
-+                row.value || "ERROR",
-+            ].forEach((value) => {
-+                const cell = document.createElement("td");
-+                cell.textContent = value;
-+                tableRow.append(cell);
-+            });
-+            this.rows.append(tableRow);
-+        });
-+    }
-+
-+    renderFailure(message) {
-+        this.renderRows(STORAGE_PATH_LANES.map((lane) => ({
-+            ...lane,
-+            value: `ERROR: ${message}`,
-+        })));
-+    }
-+
-+    load() {
-+        try {
-+            const payload = readAdminInfrastructureStoragePathStatus();
-+            const rows = Array.isArray(payload.rows) ? payload.rows : [];
-+            this.renderRows(rows.length ? rows : STORAGE_PATH_LANES.map((lane) => ({
-+                ...lane,
-+                value: "ERROR",
-+            })));
-+        } catch (error) {
-+            this.renderFailure(error instanceof Error ? error.message : "Storage path status unavailable.");
-+        }
-+    }
-+}
-+
-+document.addEventListener("DOMContentLoaded", () => {
-+    const root = document.querySelector("[data-admin-wireframe='infrastructure']");
-+    if (!root) {
-+        return;
-+    }
-+    new AdminInfrastructureStoragePathStatus(root).init();
++  try {
++    await expectStoragePathStatusRows(page, ["ERROR", "ERROR", "ERROR", "ERROR"]);
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    await expectNoPageFailures(failures);
++  } finally {
++    await failures.server.close();
++  }
 +});
-
-
-
-
-diff --git a/src/engine/api/admin-infrastructure-api-client.js b/src/engine/api/admin-infrastructure-api-client.js
-new file mode 100644
-index 000000000..dcd7be763
---- /dev/null
-+++ b/src/engine/api/admin-infrastructure-api-client.js
-@@ -0,0 +1,11 @@
-+import {
-+  requireServerApiData,
-+  safeRequestServerApi,
-+} from "./server-api-client.js";
 +
-+export function readAdminInfrastructureStoragePathStatus() {
-+  return requireServerApiData(
-+    safeRequestServerApi("/admin/infrastructure/storage-path-status"),
-+    "Admin Infrastructure storage path status",
-+  );
-+}
++test("Infrastructure storage path status reports DEV match only", async ({ page }) => {
++  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
++    storagePathStatus: storagePathStatusFor("/dev/projects/"),
++  });
++
++  try {
++    await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    await expectNoPageFailures(failures);
++  } finally {
++    await failures.server.close();
++  }
++});
++
++test("Infrastructure storage path status reports IST match only", async ({ page }) => {
++  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
++    storagePathStatus: storagePathStatusFor("/ist/projects/"),
++  });
++
++  try {
++    await expectStoragePathStatusRows(page, ["no", "yes", "no", "no"]);
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+     await expectNoPageFailures(failures);
+   } finally {
