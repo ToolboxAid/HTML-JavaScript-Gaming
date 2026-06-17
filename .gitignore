@@ -42,3 +42,6 @@ docs/dev/reports/playwright_v8_coverage_report.txt
 !.env.example
 !.env.sample
 !.env.template
+
+# Game Foundry Studio project files
+assets/*.gfsp
