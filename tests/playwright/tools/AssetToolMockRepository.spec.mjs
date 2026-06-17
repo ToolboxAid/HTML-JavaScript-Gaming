@@ -1,5 +1,6 @@
 import { expect, test } from "@playwright/test";
 import { existsSync, readFileSync, readdirSync, rmSync } from "node:fs";
+import http from "node:http";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 import {
@@ -14,6 +15,7 @@ import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
+import { createR2ProjectAssetStorage } from "../../../src/dev-runtime/storage/r2-project-asset-storage.mjs";
 
 const USAGE_VALUES = [
   "Background",
@@ -163,6 +165,81 @@ function cleanupGeneratedProjectFolders() {
 
 function resetLegacyFallbackProjectFolder() {
   rmSync(projectRootPath(LEGACY_FALLBACK_PROJECT_ID), { force: true, recursive: true });
+}
+
+function escapeXml(value) {
+  return String(value)
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&apos;");
+}
+
+async function requestBody(request) {
+  const chunks = [];
+  for await (const chunk of request) {
+    chunks.push(chunk);
+  }
+  return Buffer.concat(chunks);
+}
+
+async function startFakeR2StorageServer(bucket = "asset-test-bucket") {
+  const objects = new Map();
+  const requests = [];
+  const server = http.createServer(async (request, response) => {
+    const requestUrl = new URL(request.url || "/", "http://127.0.0.1");
+    const pathSegments = decodeURIComponent(requestUrl.pathname).split("/").filter(Boolean);
+    const requestBucket = pathSegments[0] || "";
+    const objectKey = `/${pathSegments.slice(1).join("/")}`;
+    requests.push({
+      method: request.method,
+      objectKey,
+      pathname: requestUrl.pathname,
+    });
+    if (requestBucket !== bucket) {
+      response.statusCode = 404;
+      response.end("Unknown bucket");
+      return;
+    }
+    if (request.method === "PUT") {
+      objects.set(objectKey, await requestBody(request));
+      response.statusCode = 200;
+      response.end("");
+      return;
+    }
+    if (request.method === "GET" && requestUrl.searchParams.get("list-type") === "2") {
+      const prefix = requestUrl.searchParams.get("prefix") || "";
+      const keys = Array.from(objects.keys()).filter((key) => key.startsWith(prefix)).sort();
+      response.statusCode = 200;
+      response.setHeader("Content-Type", "application/xml");
+      response.end(`<ListBucketResult>${keys.map((key) => `<Contents><Key>${escapeXml(key)}</Key></Contents>`).join("")}</ListBucketResult>`);
+      return;
+    }
+    if (request.method === "GET" && objects.has(objectKey)) {
+      response.statusCode = 200;
+      response.setHeader("Content-Type", "application/octet-stream");
+      response.end(objects.get(objectKey));
+      return;
+    }
+    response.statusCode = 404;
+    response.end("Missing object");
+  });
+  await new Promise((resolve, reject) => {
+    server.listen(0, "127.0.0.1", resolve);
+    server.on("error", reject);
+  });
+  const address = server.address();
+  if (!address || typeof address === "string") {
+    throw new Error("Fake storage server did not start.");
+  }
+  return {
+    baseUrl: `http://127.0.0.1:${address.port}`,
+    bucket,
+    objects,
+    requests,
+    close: () => new Promise((resolve, reject) => server.close((error) => error ? reject(error) : resolve())),
+  };
 }
 
 async function addSharedTag(page, tagName = "Hero") {
@@ -406,6 +483,157 @@ test("Assets source controls require real upload filenames and valid references"
   } finally {
     await workspaceV2CoverageReporter.stop(page);
     await failures.server.close();
+  }
+});
+
+test("Assets DEV storage upload list and read uses configured projects prefix", async ({ page }) => {
+  const storageServer = await startFakeR2StorageServer();
+  const previousStorageEnv = Object.fromEntries([
+    "GAMEFOUNDRY_STORAGE_ENDPOINT",
+    "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID",
+    "GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY",
+    "GAMEFOUNDRY_STORAGE_BUCKET",
+    "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
+  ].map((key) => [key, process.env[key]]));
+  process.env.GAMEFOUNDRY_STORAGE_ENDPOINT = storageServer.baseUrl;
+  process.env.GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID = "asset-test-access-key";
+  process.env.GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY = "asset-test-secret-key";
+  process.env.GAMEFOUNDRY_STORAGE_BUCKET = storageServer.bucket;
+  process.env.GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX = "/dev/projects/";
+  const storage = createR2ProjectAssetStorage({
+    accessKeyId: "asset-test-access-key",
+    bucket: storageServer.bucket,
+    endpoint: storageServer.baseUrl,
+    projectsPrefix: "/dev/projects/",
+    secretAccessKey: "asset-test-secret-key",
+  });
+  const assetRepository = createAssetToolMockRepository({
+    persist: false,
+    projectAssetStorage: storage,
+  });
+  await page.route("**/api/toolbox/assets/constants", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          ASSET_CATALOG_TYPES: assetRepository.ASSET_CATALOG_TYPES,
+          ASSET_ROLE_DEFINITIONS: assetRepository.ASSET_ROLE_DEFINITIONS,
+          ASSET_TOOL_TABLES: assetRepository.ASSET_TOOL_TABLES,
+          ASSET_TYPES: assetRepository.ASSET_TYPES,
+          ASSET_USAGE_BY_ROLE: assetRepository.ASSET_USAGE_BY_ROLE,
+          ASSET_USAGE_OPTIONS: assetRepository.ASSET_USAGE_OPTIONS,
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/toolbox/assets/repositories", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          repositoryId: "assets-storage-test",
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/toolbox/assets/repositories/assets-storage-test/methods/*", async (route) => {
+    const methodName = new URL(route.request().url()).pathname.split("/").at(-1);
+    const body = route.request().postDataJSON();
+    const result = await assetRepository[methodName](...(body.args || []));
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: { result },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/session/current", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          authenticated: true,
+          displayName: "User 1",
+          roleSlugs: ["creator"],
+          userKey: MOCK_DB_KEYS.users.user1,
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/platform-settings/banner", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ data: { banner: { active: false, message: "", tone: "info" } }, ok: true }),
+    });
+  });
+  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({ data: { activeTools: [], readinessByStatus: {}, tools: [], toolboxContract: {} }, ok: true }),
+    });
+  });
+  const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=0", {
+    sessionModeId: "local-db",
+    sessionUserKey: MOCK_DB_KEYS.users.user1
+  });
+
+  try {
+    await page.getByRole("button", { name: "Add Images" }).click();
+    const newRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
+    await newRow.getByLabel("Usage").selectOption("Character");
+    await newRow.getByLabel("Upload File").setInputFiles(uploadFile("storage-dev-upload.png", "image/png", SMALL_PNG));
+    await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "storage-dev-upload.png" })).toContainText("api/storage/project-assets/read");
+    await expect(page.locator("body")).not.toContainText("asset-test-secret-key");
+    await expect(page.locator("body")).not.toContainText("asset-test-access-key");
+
+    const uploadProjectId = await projectIdFromProjectPath(page);
+    const objectKey = `/dev/projects/${uploadProjectId}/image/storage-dev-upload.png`;
+    expect(storageServer.objects.get(objectKey)).toEqual(SMALL_PNG);
+    expect(storageServer.requests.some((request) => request.method === "PUT" && request.objectKey === objectKey)).toBe(true);
+
+    const listPayload = await page.evaluate(async (projectId) => {
+      const response = await fetch("/api/toolbox/assets/repositories/assets-storage-test/methods/listStoredProjectObjects", {
+        body: JSON.stringify({ args: [projectId] }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+      return response.json();
+    }, uploadProjectId);
+    expect(listPayload.data.result).toEqual(expect.objectContaining({
+      keys: [objectKey],
+      ok: true,
+    }));
+
+    const readPayload = await page.evaluate(async (key) => {
+      const response = await fetch("/api/toolbox/assets/repositories/assets-storage-test/methods/readStoredProjectObject", {
+        body: JSON.stringify({ args: [key] }),
+        headers: { "Content-Type": "application/json" },
+        method: "POST",
+      });
+      return response.json();
+    }, objectKey);
+    expect(readPayload.data.result).toEqual(expect.objectContaining({
+      bytesBase64: SMALL_PNG.toString("base64"),
+      ok: true,
+    }));
+
+    expectNoPageFailures(failures);
+  } finally {
+    await workspaceV2CoverageReporter.stop(page);
+    await failures.server.close();
+    Object.entries(previousStorageEnv).forEach(([key, value]) => {
+      if (value === undefined) {
+        delete process.env[key];
+      } else {
+        process.env[key] = value;
+      }
+    });
+    await storageServer.close();
   }
 });
 

@@ -609,6 +609,7 @@ export function createAssetToolMockRepository(options = {}) {
   let selectedAssetId = "";
   let uploadProjectId = "";
   let uploadFileWritesEnabled = options.uploadFileWritesEnabled !== false;
+  const projectAssetStorage = options.projectAssetStorage || null;
   let unsafeDeletePathForTest = false;
   let unsafeUploadPathForTest = false;
 
@@ -732,6 +733,7 @@ export function createAssetToolMockRepository(options = {}) {
     targetDirectory = "",
     targetDirectoryResult = "",
     targetFilePath = "",
+    viewPath = "",
     writeResult = ""
   } = {}) {
     const normalizedFilePath = normalizeProjectRelativePath(targetFilePath);
@@ -747,10 +749,24 @@ export function createAssetToolMockRepository(options = {}) {
       targetDirectoryResult,
       targetFilePath: normalizedFilePath,
       targetFolder: normalizedTargetDirectory,
-      viewPath: normalizedFilePath,
+      viewPath: normalizeProjectRelativePath(viewPath || normalizedFilePath),
       writeResult,
       message
     };
+  }
+
+  function hasProjectAssetStorage() {
+    return typeof projectAssetStorage?.putObject === "function";
+  }
+
+  function storageObjectKeyForProjectPath(targetFilePath) {
+    return typeof projectAssetStorage?.objectKeyForProjectPath === "function"
+      ? projectAssetStorage.objectKeyForProjectPath(targetFilePath)
+      : normalizeProjectRelativePath(targetFilePath);
+  }
+
+  function storagePrefix() {
+    return normalizeProjectRelativePath(projectAssetStorage?.config?.projectsPrefix || "");
   }
 
   function validateProjectTargetDirectory(targetFilePath, projectId = "") {
@@ -849,6 +865,9 @@ export function createAssetToolMockRepository(options = {}) {
   }
 
   function writeCatalogUploadFile(input, projectId) {
+    if (hasProjectAssetStorage()) {
+      return writeStorageUploadFile(input, projectId);
+    }
     const assetRole = catalogAssetRoleForType(input.assetType);
     const targetFilePath = catalogUploadTargetPath(projectId, assetRole, input.fileName);
     if (!uploadFileWritesEnabled) {
@@ -936,7 +955,99 @@ export function createAssetToolMockRepository(options = {}) {
     }
   }
 
+  async function writeStorageUploadFile(input, projectId) {
+    const assetRole = catalogAssetRoleForType(input.assetType);
+    const targetFilePath = catalogUploadTargetPath(projectId, assetRole, input.fileName);
+    if (!uploadFileWritesEnabled) {
+      return createWriteDiagnostics({
+        message: "Upload file write failed: server storage uploads are disabled for this runtime.",
+        ok: false,
+        projectId,
+        targetFilePath,
+        writeResult: "FAIL: Storage uploads disabled"
+      });
+    }
+    if (input.hasFileBytes !== true || typeof input.fileContentBase64 !== "string") {
+      return createWriteDiagnostics({
+        message: "Upload file write failed: selected file bytes were not provided by the browser.",
+        ok: false,
+        projectId,
+        targetFilePath,
+        writeResult: "FAIL: Missing file bytes"
+      });
+    }
+
+    const resolved = resolveProjectRelativeFile(targetFilePath, projectId);
+    if (resolved.error) {
+      return createWriteDiagnostics({
+        directoryStatus: "failed",
+        message: "Upload file write failed: target path must stay under /projects/<projectId>/.",
+        ok: false,
+        projectId,
+        targetFilePath: resolved.relativePath || targetFilePath,
+        writeResult: "FAIL: Storage path validation"
+      });
+    }
+
+    const objectKey = storageObjectKeyForProjectPath(targetFilePath);
+    const requiredPrefix = storagePrefix();
+    if (requiredPrefix && !normalizeProjectRelativePath(objectKey).startsWith(requiredPrefix)) {
+      return createWriteDiagnostics({
+        directoryStatus: "failed",
+        message: `Upload file write failed: storage object key must stay under ${projectAssetStorage.config.projectsPrefix}.`,
+        ok: false,
+        projectId,
+        targetFilePath: objectKey,
+        writeResult: "FAIL: Storage prefix validation"
+      });
+    }
+
+    const listed = await projectAssetStorage.listProjectObjects(projectId);
+    if (!listed.ok) {
+      return createWriteDiagnostics({
+        directoryStatus: "failed",
+        message: listed.message,
+        ok: false,
+        projectId,
+        targetFilePath: objectKey,
+        writeResult: "FAIL: Storage list"
+      });
+    }
+    if (listed.keys.includes(objectKey)) {
+      return createWriteDiagnostics({
+        directoryStatus: "exists",
+        message: `Upload file blocked: ${objectKey} already exists. Rename the file or remove the existing asset before uploading.`,
+        ok: false,
+        projectId,
+        targetFilePath: objectKey,
+        writeResult: "FAIL: Duplicate storage object"
+      });
+    }
+
+    const fileBytes = Buffer.from(input.fileContentBase64, "base64");
+    const uploaded = await projectAssetStorage.putObject({
+      bytes: fileBytes,
+      contentType: input.mimeType || "application/octet-stream",
+      objectKey,
+    });
+    return createWriteDiagnostics({
+      bytesWritten: uploaded.bytesWritten || 0,
+      directoryStatus: uploaded.ok ? "storage-prefix" : "failed",
+      message: uploaded.ok ? `Uploaded ${input.fileName} to ${objectKey}.` : uploaded.message,
+      ok: uploaded.ok,
+      projectId,
+      targetDirectory: objectKey.split("/").slice(0, -1).join("/"),
+      targetDirectoryResult: listed.message,
+      targetFilePath: objectKey,
+      viewPath: `api/storage/project-assets/read?key=${encodeURIComponent(objectKey)}`,
+      writeResult: uploaded.writeResult || (uploaded.ok ? "Stored" : "FAIL: Storage upload")
+    });
+  }
+
   function verifyExistingCatalogUploadFile(input, projectId) {
+    if (hasProjectAssetStorage()) {
+      return verifyExistingStorageUploadFile(input, projectId);
+    }
     const assetRole = catalogAssetRoleForType(input.assetType);
     const targetFilePath = catalogUploadStoredPath(projectId, assetRole, input.fileName);
     const resolved = resolveProjectRelativeFile(targetFilePath, projectId);
@@ -965,6 +1076,41 @@ export function createAssetToolMockRepository(options = {}) {
       projectId,
       targetFilePath: resolved.relativePath,
       writeResult: "Existing file verified"
+    });
+  }
+
+  async function verifyExistingStorageUploadFile(input, projectId) {
+    const assetRole = catalogAssetRoleForType(input.assetType);
+    const targetFilePath = catalogUploadStoredPath(projectId, assetRole, input.fileName);
+    const resolved = resolveProjectRelativeFile(targetFilePath, projectId);
+    if (resolved.error) {
+      return createWriteDiagnostics({
+        message: resolved.error,
+        ok: false,
+        projectId,
+        targetFilePath: resolved.relativePath || targetFilePath,
+        writeResult: "FAIL: Unsafe target path"
+      });
+    }
+    const objectKey = storageObjectKeyForProjectPath(targetFilePath);
+    const readResult = await projectAssetStorage.readObject(objectKey);
+    if (!readResult.ok) {
+      return createWriteDiagnostics({
+        message: readResult.message,
+        ok: false,
+        projectId,
+        targetFilePath: objectKey,
+        writeResult: "FAIL: Missing storage object"
+      });
+    }
+    return createWriteDiagnostics({
+      bytesWritten: readResult.bytes?.length || Number(input.size) || 0,
+      message: `Verified existing upload at ${objectKey}.`,
+      ok: true,
+      projectId,
+      targetFilePath: objectKey,
+      viewPath: `api/storage/project-assets/read?key=${encodeURIComponent(objectKey)}`,
+      writeResult: "Existing storage object verified"
     });
   }
 
@@ -1714,6 +1860,21 @@ export function createAssetToolMockRepository(options = {}) {
     const writeDiagnostics = validation.asset.source === UPLOAD_SOURCE_MODE
       ? writeCatalogUploadFile(validation.asset, projectId)
       : null;
+    if (writeDiagnostics && typeof writeDiagnostics.then === "function") {
+      return writeDiagnostics.then((resolvedDiagnostics) => finishAddAssetRecord({
+        projectId,
+        validation,
+        writeDiagnostics: resolvedDiagnostics,
+      }));
+    }
+    return finishAddAssetRecord({
+      projectId,
+      validation,
+      writeDiagnostics,
+    });
+  }
+
+  function finishAddAssetRecord({ projectId, validation, writeDiagnostics }) {
     if (writeDiagnostics && !writeDiagnostics.ok) {
       replaceValidationRows(projectId, [
         {
@@ -1823,6 +1984,23 @@ export function createAssetToolMockRepository(options = {}) {
           ? writeCatalogUploadFile(validation.asset, projectId)
           : verifyExistingCatalogUploadFile(validation.asset, projectId))
       : null;
+    if (writeDiagnostics && typeof writeDiagnostics.then === "function") {
+      return writeDiagnostics.then((resolvedDiagnostics) => finishUpdateAssetRecord({
+        asset,
+        projectId,
+        validation,
+        writeDiagnostics: resolvedDiagnostics,
+      }));
+    }
+    return finishUpdateAssetRecord({
+      asset,
+      projectId,
+      validation,
+      writeDiagnostics,
+    });
+  }
+
+  function finishUpdateAssetRecord({ asset, projectId, validation, writeDiagnostics }) {
     if (writeDiagnostics && !writeDiagnostics.ok) {
       replaceValidationRows(projectId, [
         {
@@ -1935,6 +2113,34 @@ export function createAssetToolMockRepository(options = {}) {
       updated: true,
       validation,
       writeDiagnostics: asset.writeDiagnostics
+    };
+  }
+
+  async function listStoredProjectObjects(projectId = "") {
+    if (!hasProjectAssetStorage()) {
+      return {
+        keys: [],
+        message: "Project asset storage is not configured for this repository.",
+        ok: false
+      };
+    }
+    return projectAssetStorage.listProjectObjects(projectId || getConfigurationHandoff().activeProject?.id || "");
+  }
+
+  async function readStoredProjectObject(objectKey = "") {
+    if (!hasProjectAssetStorage()) {
+      return {
+        bytesBase64: "",
+        message: "Project asset storage is not configured for this repository.",
+        ok: false
+      };
+    }
+    const result = await projectAssetStorage.readObject(objectKey);
+    return {
+      contentType: result.contentType || "",
+      bytesBase64: result.bytes ? Buffer.from(result.bytes).toString("base64") : "",
+      message: result.message,
+      ok: result.ok
     };
   }
 
@@ -2322,6 +2528,7 @@ export function createAssetToolMockRepository(options = {}) {
     listAssets,
     listAssetsByType,
     listPaletteSwatches,
+    listStoredProjectObjects,
     listTags,
     makeInvalidGameConfiguration,
     makeMissingGameConfiguration,
@@ -2330,6 +2537,7 @@ export function createAssetToolMockRepository(options = {}) {
     resetAssetLibrary,
     seedDemoAssets,
     seedActiveProjectPalette,
+    readStoredProjectObject,
     selectAsset,
     setUnsafeDeletePathForTest,
     setUnsafeUploadPathForTest,

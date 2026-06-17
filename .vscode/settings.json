@@ -85,5 +85,29 @@
     "javascript.suggest.autoImports": true,
     "typescript.suggest.autoImports": true,
     "html.suggest.angular1": true,
-    "html.suggest.ionic": true
+    "html.suggest.ionic": true,
+    "sqltools.connections": [
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "192.168.2.5",
+            "port": 55433,
+            "driver": "PostgreSQL",
+            "name": "GFS - IST",
+            "database": "gamefoundry_ist",
+            "username": "postgres",
+            "password": "postgres"
+        },
+        {
+            "ssh": "Disabled",
+            "previewLimit": 50,
+            "server": "192.168.2.5",
+            "port": 55431,
+            "driver": "PostgreSQL",
+            "name": "GFS - DEV",
+            "database": "gamefoundry_dev",
+            "username": "postgres",
+            "password": "postgres"
+        }
+    ]
 }

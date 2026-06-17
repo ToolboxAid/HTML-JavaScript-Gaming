@@ -15,6 +15,7 @@ import {
 import {
   createInputMappingToolMockRepository,
 } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
+import { createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
 import {
   TOOL_IMAGE_FALLBACK,
   TOOL_RELEASE_CHANNELS,
@@ -257,6 +258,54 @@ const OWNER_OPERATION_ACTIONS = Object.freeze([
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function databaseConfigStatus(env = process.env) {
+  const databaseUrl = String(env.GAMEFOUNDRY_DATABASE_URL || "").trim();
+  const sslMode = String(env.GAMEFOUNDRY_DATABASE_SSL || "").trim().toLowerCase();
+  if (!databaseUrl) {
+    return {
+      configured: false,
+      databaseName: "not configured",
+      databaseNameStatus: "WARN",
+      host: "not configured",
+      hostStatus: "WARN",
+      port: "",
+      portStatus: "WARN",
+      sslMode: sslMode || "not configured",
+      sslModeStatus: sslMode ? "PASS" : "WARN",
+    };
+  }
+  try {
+    const parsedUrl = new URL(databaseUrl);
+    if (!["postgres:", "postgresql:"].includes(parsedUrl.protocol)) {
+      throw new Error("Database URL must use postgres:// or postgresql://.");
+    }
+    const databaseName = decodeURIComponent(parsedUrl.pathname.replace(/^\/+/, "") || "");
+    return {
+      configured: Boolean(parsedUrl.hostname && databaseName),
+      databaseName: databaseName || "not configured",
+      databaseNameStatus: databaseName ? "PASS" : "WARN",
+      host: parsedUrl.hostname || "not configured",
+      hostStatus: parsedUrl.hostname ? "PASS" : "WARN",
+      port: Number(parsedUrl.port || 5432),
+      portStatus: "PASS",
+      sslMode: sslMode || "not configured",
+      sslModeStatus: sslMode ? "PASS" : "WARN",
+    };
+  } catch {
+    return {
+      configured: false,
+      databaseName: "invalid database URL",
+      databaseNameStatus: "FAIL",
+      host: "invalid database URL",
+      hostStatus: "FAIL",
+      port: "",
+      portStatus: "FAIL",
+      sslMode: sslMode || "not configured",
+      sslModeStatus: sslMode ? "PASS" : "WARN",
+    };
+  }
 }
 
 function providerFailureMessage(providerContract, providerId) {
@@ -619,6 +668,12 @@ function sendNoContent(response, statusCode = 204) {
   response.setHeader("Allow", "GET, POST, HEAD, OPTIONS");
   response.setHeader("Content-Type", "application/json; charset=utf-8");
   response.end();
+}
+
+function sendBinary(response, statusCode, body, contentType = "application/octet-stream") {
+  response.statusCode = statusCode;
+  response.setHeader("Content-Type", contentType);
+  response.end(body);
 }
 
 function ok(response, data) {
@@ -1303,6 +1358,7 @@ class ApiRuntimeDataSource {
       configurationRepository: this.gameConfigurationRepository,
       gameWorkspaceRepository: this.gameWorkspaceRepository,
       paletteRepository: this.paletteRepository,
+      projectAssetStorage: createConfiguredProjectAssetStorage(),
       tagsRepository: this.tagsRepository,
       ...this.sharedOptions,
       sessionUserKey: () => this.sessionUserKey,
@@ -1488,84 +1544,59 @@ class ApiRuntimeDataSource {
     };
   }
 
-  async ownerDatabaseOperationStatus() {
-    let migrationHistory = {
-      command: "schema_migrations",
-      id: "migration-history",
-      label: "Migration History",
-      message: "Migration history is unavailable until the configured database can be read.",
-      mode: "read-only",
+  async ownerDatabaseStatus() {
+    const databaseStatus = {
+      ...databaseConfigStatus(),
+      lastMigration: {
+        appliedAt: "",
+        name: "",
+        type: "",
+      },
+      lastMigrationStatus: "WARN",
+      migrationCounts: {
+        DDL: 0,
+        DML: 0,
+      },
+      migrationStatus: "WARN",
       status: "WARN",
     };
     try {
       const adapter = this.supabaseDatabaseAdapter("Reading Owner Operations migration history");
-      const rows = await adapter.databaseClient().query(`
-SELECT "migrationType", count(*)::int AS count, max("appliedAt") AS "lastAppliedAt"
+      const countRows = await adapter.databaseClient().query(`
+SELECT "migrationType", count(*)::int AS count
 FROM schema_migrations
 GROUP BY "migrationType"
 ORDER BY "migrationType";
 `);
-      const counts = new Map(rows.map((row) => [String(row.migrationType || ""), Number(row.count || 0)]));
-      const total = rows.reduce((sum, row) => sum + Number(row.count || 0), 0);
-      const lastAppliedAt = rows
-        .map((row) => String(row.lastAppliedAt || ""))
-        .filter(Boolean)
-        .sort()
-        .at(-1) || "not recorded";
-      migrationHistory = {
-        ...migrationHistory,
-        message: `schema_migrations records=${total}; DDL=${counts.get("DDL") || 0}; DML=${counts.get("DML") || 0}; last applied=${lastAppliedAt}.`,
-        status: "PASS",
+      const lastRows = await adapter.databaseClient().query(`
+SELECT "migrationType", "migrationName", "appliedAt"
+FROM schema_migrations
+ORDER BY "appliedAt" DESC, key DESC
+LIMIT 1;
+`);
+      const counts = new Map(countRows.map((row) => [String(row.migrationType || ""), Number(row.count || 0)]));
+      const lastRow = lastRows[0] || {};
+      return {
+        ...databaseStatus,
+        lastMigration: {
+          appliedAt: String(lastRow.appliedAt || ""),
+          name: String(lastRow.migrationName || ""),
+          type: String(lastRow.migrationType || ""),
+        },
+        lastMigrationStatus: lastRow.migrationName ? "PASS" : "WARN",
+        migrationCounts: {
+          DDL: counts.get("DDL") || 0,
+          DML: counts.get("DML") || 0,
+        },
+        migrationStatus: "PASS",
+        status: databaseStatus.configured === true ? "PASS" : "WARN",
       };
     } catch (error) {
-      migrationHistory = {
-        ...migrationHistory,
+      return {
+        ...databaseStatus,
         message: `Migration history read failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`,
       };
     }
-    return [
-      {
-        command: "node .\\scripts\\validate-runtime-connections.mjs",
-        id: "validate-connections",
-        label: "Validate Connections",
-        message: "Operator-run validation against the current .env.",
-        mode: "manual script",
-        status: "READY",
-      },
-      {
-        command: "node .\\scripts\\apply-database-ddl.mjs",
-        id: "apply-ddl",
-        label: "Apply DDL",
-        message: "Operator-run DDL apply; schema_migrations tracks applied files.",
-        mode: "manual script",
-        status: "READY",
-      },
-      {
-        command: "node .\\scripts\\apply-database-dml.mjs",
-        id: "apply-dml",
-        label: "Apply DML",
-        message: "Operator-run DML apply; schema_migrations tracks applied files.",
-        mode: "manual script",
-        status: "READY",
-      },
-      {
-        command: "docs_build/database/backup-restore-lane.md",
-        id: "backup",
-        label: "Backup",
-        message: "Manual pg_dump path uses GAMEFOUNDRY_DATABASE_URL from .env without exposing it in the browser.",
-        mode: "operator command",
-        status: "MANUAL",
-      },
-      {
-        command: "docs_build/database/backup-restore-lane.md",
-        id: "restore",
-        label: "Restore",
-        message: "Destructive restore requires the documented checklist and confirmation phrase outside the browser.",
-        mode: "manual confirmation",
-        status: "GUARDED",
-      },
-      migrationHistory,
-    ];
   }
 
   async ownerOperationsStatus() {
@@ -1573,7 +1604,7 @@ ORDER BY "migrationType";
     return {
       actions: clone(OWNER_OPERATION_ACTIONS),
       connectionSummary: this.ownerConnectionSummary(),
-      databaseOperations: await this.ownerDatabaseOperationStatus(),
+      databaseStatus: await this.ownerDatabaseStatus(),
       message: "Owner Operations loaded. Environment switching remains manual through configuration changes and server restart.",
       secretEditingAllowed: false,
       status: "PASS",
@@ -1622,7 +1653,7 @@ ORDER BY "migrationType";
         },
       ],
       connectionSummary: this.ownerConnectionSummary(),
-      databaseOperations: await this.ownerDatabaseOperationStatus(),
+      databaseStatus: await this.ownerDatabaseStatus(),
       executed: true,
       message: status === "PASS"
         ? "Current configured connections validated."
@@ -2876,7 +2907,7 @@ ORDER BY "migrationType";
     if (repository === this.assetRepository && (methodName === "importAsset" || methodName === "addAssetRecord")) {
       this.assetReadyInitialized = true;
     }
-    const result = method(...args);
+    const result = await method(...args);
     assertRepositoryMethodResult(repositoryId, methodName, result);
     if (repositoryMethodRequiresPersistence(methodName)) {
       if (repository === this.gameWorkspaceRepository) {
@@ -3149,6 +3180,23 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "guest" && parts[2] === "seed" && request.method === "GET") {
         ok(response, dataSource.guestSeedPackages());
+        return true;
+      }
+
+      if (parts[1] === "storage" && parts[2] === "project-assets" && parts[3] === "read" && request.method === "GET") {
+        const objectKey = String(requestUrl.searchParams.get("key") || "").trim();
+        const storage = createConfiguredProjectAssetStorage();
+        const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
+        if (!objectKey || !projectsPrefix || !objectKey.startsWith(projectsPrefix)) {
+          fail(response, 400, new Error("Project asset storage read requires an object key under the configured projects prefix."));
+          return true;
+        }
+        const result = await storage.readObject(objectKey);
+        if (!result.ok) {
+          fail(response, 404, new Error(result.message || "Project asset storage object was not found."));
+          return true;
+        }
+        sendBinary(response, 200, result.bytes, result.contentType || "application/octet-stream");
         return true;
       }
 

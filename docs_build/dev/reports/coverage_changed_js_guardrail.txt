@@ -6,8 +6,15 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
+(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(95%) assets/theme-v2/js/owner-operations.js - executed lines 127/127; executed functions 19/20
+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Guardrail warnings:
+(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

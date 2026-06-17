@@ -49,28 +49,22 @@ class OwnerOperationsController {
         });
     }
 
-    renderDatabaseOperations(operations = []) {
-        const rows = Array.isArray(operations) ? operations : [];
+    renderDatabaseStatus(databaseStatus = {}) {
+        const migrationCounts = databaseStatus.migrationCounts || {};
+        const lastMigration = databaseStatus.lastMigration || {};
+        const rows = [
+            ["Connection Configured", databaseStatus.configured === true ? "PASS" : "WARN", databaseStatus.configured === true ? "yes" : "no"],
+            ["Database Host", databaseStatus.hostStatus || "WARN", databaseStatus.host || "not configured"],
+            ["Database Port", databaseStatus.portStatus || "WARN", databaseStatus.port ? String(databaseStatus.port) : "not configured"],
+            ["Database Name", databaseStatus.databaseNameStatus || "WARN", databaseStatus.databaseName || "not configured"],
+            ["SSL Mode", databaseStatus.sslModeStatus || "WARN", databaseStatus.sslMode || "not configured"],
+            ["Migration Counts", databaseStatus.migrationStatus || "WARN", `DDL=${migrationCounts.DDL || 0}; DML=${migrationCounts.DML || 0}`],
+            ["Last Migration", databaseStatus.lastMigrationStatus || "WARN", lastMigration.name && lastMigration.appliedAt ? `${lastMigration.type || "unknown"} ${lastMigration.name} at ${lastMigration.appliedAt}` : "not recorded"],
+        ];
         this.databaseStatusRows.replaceChildren();
-        if (!rows.length) {
-            const emptyRow = document.createElement("tr");
-            ["Database Operations", "WARN", "read-only", "unavailable", "No database operation status was returned."].forEach((value) => {
-                const cell = document.createElement("td");
-                cell.textContent = value;
-                emptyRow.append(cell);
-            });
-            this.databaseStatusRows.append(emptyRow);
-            return;
-        }
-        rows.forEach((operation) => {
+        rows.forEach((row) => {
             const tableRow = document.createElement("tr");
-            [
-                operation.label || operation.id || "Database Operation",
-                operation.status || "WARN",
-                operation.mode || "read-only",
-                operation.command || "not exposed",
-                operation.message || "No database operation message returned.",
-            ].forEach((value) => {
+            row.forEach((value) => {
                 const cell = document.createElement("td");
                 cell.textContent = value;
                 tableRow.append(cell);
@@ -98,7 +92,7 @@ class OwnerOperationsController {
         try {
             const payload = readOwnerOperationsStatus();
             this.renderConnectionSummary(payload.connectionSummary || {});
-            this.renderDatabaseOperations(payload.databaseOperations || []);
+            this.renderDatabaseStatus(payload.databaseStatus || {});
             this.setStatus(payload.status || "PASS", payload.message || "Owner Operations loaded.");
         } catch (error) {
             this.setStatus("FAIL", error instanceof Error ? error.message : "Owner Operations are unavailable.");
@@ -109,7 +103,7 @@ class OwnerOperationsController {
         try {
             const result = validateOwnerOperationsConnection();
             this.renderConnectionSummary(result.connectionSummary || {});
-            this.renderDatabaseOperations(result.databaseOperations || []);
+            this.renderDatabaseStatus(result.databaseStatus || {});
             this.appendResult(result);
             this.setStatus(result.status || "PASS", result.message || "Connection validation finished.");
         } catch (error) {

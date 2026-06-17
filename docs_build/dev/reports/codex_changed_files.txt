@@ -1,11 +1,43 @@
-docs_build/database/backup-restore-lane.md
-docs_build/database/promotion-lane.md
-docs_build/database/runbook.md
-docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
-package.json
-scripts/apply-database-seed.mjs
-scripts/database-migration-runner.mjs
-scripts/validate-database-drift.mjs
-docs_build/dev/reports/PR_26167_207-database-lane-hardening.md
-docs_build/dev/reports/codex_review.diff
-docs_build/dev/reports/codex_changed_files.txt
+# git status --short
+M .env.example
+ M .vscode/settings.json
+ M assets/theme-v2/js/owner-operations.js
+ M docs_build/dev/reports/codex_changed_files.txt
+ M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M owner/operations.html
+ M src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+ M src/dev-runtime/server/local-api-router.mjs
+ M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+ M tests/playwright/tools/AssetToolMockRepository.spec.mjs
+?? docs_build/dev/reports/PR_26167_208-database-idempotency-final-check.md
+?? docs_build/dev/reports/PR_26167_209-owner-database-status-surface.md
+?? docs_build/dev/reports/PR_26167_210-r2-project-assets-dev-storage.md
+?? scripts/validate-storage-config.mjs
+?? src/dev-runtime/storage/
+
+# git ls-files --others --exclude-standard
+docs_build/dev/reports/PR_26167_208-database-idempotency-final-check.md
+docs_build/dev/reports/PR_26167_209-owner-database-status-surface.md
+docs_build/dev/reports/PR_26167_210-r2-project-assets-dev-storage.md
+scripts/validate-storage-config.mjs
+src/dev-runtime/storage/r2-project-asset-storage.mjs
+src/dev-runtime/storage/storage-config.mjs
+
+# git diff --stat
+.env.example                                       |    8 +
+ .vscode/settings.json                              |   26 +-
+ assets/theme-v2/js/owner-operations.js             |   38 +-
+ docs_build/dev/reports/codex_changed_files.txt     |   54 +-
+ docs_build/dev/reports/codex_review.diff           | 4960 +++++++++++++++++---
+ .../dev/reports/coverage_changed_js_guardrail.txt  |    9 +-
+ .../environment_agnostic_browser_gate_report.md    |   10 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   32 +-
+ owner/operations.html                              |   12 +-
+ .../tool-repositories/assets-mock-repository.js    |  210 +-
+ src/dev-runtime/server/local-api-router.mjs        |  184 +-
+ .../tools/AdminPlatformToolsWireframes.spec.mjs    |  116 +-
+ .../tools/AssetToolMockRepository.spec.mjs         |  228 +
+ 13 files changed, 4999 insertions(+), 888 deletions(-)

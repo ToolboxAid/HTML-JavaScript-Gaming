@@ -786,50 +786,29 @@ test("Owner Operations exposes owner-only connection validation and manual opera
               productData: { configured: true, status: "adapter-ready" },
               secretsExposed: false,
             },
-            databaseOperations: [
-              {
-                command: "node .\\scripts\\validate-runtime-connections.mjs",
-                label: "Validate Connections",
-                message: "Operator-run validation against the current .env.",
-                mode: "manual script",
-                status: "READY",
+            databaseStatus: {
+              configured: true,
+              databaseName: "gamefoundry_dev",
+              databaseNameStatus: "PASS",
+              host: "192.168.2.5",
+              hostStatus: "PASS",
+              lastMigration: {
+                appliedAt: "2026-06-17 01:07:30.540517+00",
+                name: "support-tickets.sql",
+                type: "DML",
               },
-              {
-                command: "node .\\scripts\\apply-database-ddl.mjs",
-                label: "Apply DDL",
-                message: "schema_migrations tracks applied DDL files.",
-                mode: "manual script",
-                status: "READY",
+              lastMigrationStatus: "PASS",
+              migrationCounts: {
+                DDL: 15,
+                DML: 15,
               },
-              {
-                command: "node .\\scripts\\apply-database-dml.mjs",
-                label: "Apply DML",
-                message: "schema_migrations tracks applied DML files.",
-                mode: "manual script",
-                status: "READY",
-              },
-              {
-                command: "docs_build/database/backup-restore-lane.md",
-                label: "Backup",
-                message: "Manual backup path uses .env without exposing secrets.",
-                mode: "operator command",
-                status: "MANUAL",
-              },
-              {
-                command: "docs_build/database/backup-restore-lane.md",
-                label: "Restore",
-                message: "Restore requires confirmation outside the browser.",
-                mode: "manual confirmation",
-                status: "GUARDED",
-              },
-              {
-                command: "schema_migrations",
-                label: "Migration History",
-                message: "schema_migrations records=30; DDL=15; DML=15.",
-                mode: "read-only",
-                status: "PASS",
-              },
-            ],
+              migrationStatus: "PASS",
+              port: 55431,
+              portStatus: "PASS",
+              sslMode: "disable",
+              sslModeStatus: "PASS",
+              status: "PASS",
+            },
             message: "Owner Operations loaded.",
             status: "PASS",
           },
@@ -848,15 +827,29 @@ test("Owner Operations exposes owner-only connection validation and manual opera
               productData: { configured: true, status: "adapter-ready" },
               secretsExposed: false,
             },
-            databaseOperations: [
-              {
-                command: "schema_migrations",
-                label: "Migration History",
-                message: "schema_migrations records=30; DDL=15; DML=15.",
-                mode: "read-only",
-                status: "PASS",
+            databaseStatus: {
+              configured: true,
+              databaseName: "gamefoundry_dev",
+              databaseNameStatus: "PASS",
+              host: "192.168.2.5",
+              hostStatus: "PASS",
+              lastMigration: {
+                appliedAt: "2026-06-17 01:07:30.540517+00",
+                name: "support-tickets.sql",
+                type: "DML",
               },
-            ],
+              lastMigrationStatus: "PASS",
+              migrationCounts: {
+                DDL: 15,
+                DML: 15,
+              },
+              migrationStatus: "PASS",
+              port: 55431,
+              portStatus: "PASS",
+              sslMode: "disable",
+              sslModeStatus: "PASS",
+              status: "PASS",
+            },
             executed: true,
             message: "Current configured connections validated.",
             status: "PASS",
@@ -894,20 +887,27 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     ]);
     await expect(page.locator("[data-owner-connection-summary]")).toContainText("Account");
     await expect(page.locator("[data-owner-connection-summary]")).toContainText("not exposed");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Validate Connections");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Apply DDL");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Apply DML");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Backup");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Restore");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Migration History");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("schema_migrations records=30");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Connection Configured");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Host");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("192.168.2.5");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Port");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("55431");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Name");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("gamefoundry_dev");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("SSL Mode");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("disable");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Migration Counts");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("DDL=15; DML=15");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Last Migration");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("DML support-tickets.sql at 2026-06-17 01:07:30.540517+00");
     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("postgres://");
+    await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("password");
     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("SERVICE_ROLE");
     await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Owner Operations loaded.");
 
     await page.locator("[data-owner-operation-validate]").click();
     await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Current configured connections validated.");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("schema_migrations records=30");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("DDL=15; DML=15");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("validate-current-connection");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
 
