@@ -1,6 +1,7 @@
 import process from "node:process";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
 import { startLocalApiServer } from "../src/dev-runtime/server/local-api-server.mjs";
 
 const RUNTIME_ENV_FILE = ".env";
@@ -55,7 +56,15 @@ const databaseConnection = connectionStatus([
   "GAMEFOUNDRY_SUPABASE_URL",
   "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
   "GAMEFOUNDRY_DATABASE_URL",
+  "GAMEFOUNDRY_DATABASE_SSL",
 ]);
+let configuredDatabaseSslMode = "";
+let databaseSslModeError = "";
+try {
+  configuredDatabaseSslMode = databaseSslMode();
+} catch (error) {
+  databaseSslModeError = error instanceof Error ? error.message : String(error || "Unknown database SSL mode error.");
+}
 const host = process.env.GAMEFOUNDRY_LOCAL_API_HOST || "127.0.0.1";
 const port = Number(process.env.GAMEFOUNDRY_LOCAL_API_PORT || 5501);
 
@@ -67,6 +76,7 @@ console.log(runtimeEnv.loaded
   : ".env was not found for API runtime.");
 console.log(`Configured auth connection: ${accountConnection.ready ? "configured" : `missing ${accountConnection.missingKeys.join(", ")}`}.`);
 console.log(`Configured database connection: ${databaseConnection.ready ? "configured" : `missing ${databaseConnection.missingKeys.join(", ")}`}.`);
+console.log(`Database SSL mode: ${configuredDatabaseSslMode || `invalid (${databaseSslModeError})`}`);
 console.log("Press Ctrl+C to stop.");
 
 for (const signal of ["SIGINT", "SIGTERM"]) {

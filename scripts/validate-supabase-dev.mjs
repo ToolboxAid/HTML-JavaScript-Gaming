@@ -6,7 +6,7 @@ import path from "node:path";
 import process from "node:process";
 import tls from "node:tls";
 import { URL } from "node:url";
-import { createPostgresConnectionClient } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
+import { createPostgresConnectionClient, databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
 
 const ENV_FILE = ".env";
 const REQUIRED_ENV = Object.freeze([
@@ -26,6 +26,10 @@ const REQUIRED_ENV = Object.freeze([
     key: "GAMEFOUNDRY_DATABASE_URL",
     label: "Database connection URL configured",
   },
+  {
+    key: "GAMEFOUNDRY_DATABASE_SSL",
+    label: "Database SSL mode configured",
+  },
 ]);
 
 const IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
@@ -41,6 +45,9 @@ function maskValue(value) {
   const normalized = String(value || "").trim();
   if (!normalized) {
     return "missing";
+  }
+  if (normalized === "disable" || normalized === "require") {
+    return normalized;
   }
   if (normalized.length <= 10) {
     return `${normalized.slice(0, Math.min(6, normalized.length))}...`;
@@ -308,6 +315,14 @@ function databaseDiagnostic(config) {
   return `host=${config.host}; port=${config.port}; database=${config.database}`;
 }
 
+function checkDatabaseSslMode() {
+  try {
+    return pass(`Database SSL mode: ${databaseSslMode()}`);
+  } catch (error) {
+    return fail("Database SSL mode", error?.message);
+  }
+}
+
 async function checkDatabaseConnection() {
   try {
     const config = parseDatabaseUrl();
@@ -346,6 +361,7 @@ async function main() {
   for (const tableName of IDENTITY_TABLES) {
     identityTableResults.push(await checkIdentityTable(tableName));
   }
+  results.push(checkDatabaseSslMode());
   results.push(await checkDatabaseConnection());
   results.push(...identityTableResults);
 

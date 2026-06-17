@@ -1,5 +1,9 @@
-﻿scripts/apply-supabase-dev-ddl.mjs
-scripts/validate-local-postgres-runtime.mjs
-docs_build/dev/reports/PR_26167_197-ddl-apply-supports-local-postgres.md
+﻿.env.example
+scripts/apply-supabase-dev-ddl.mjs
+scripts/start-local-api-server.mjs
+scripts/validate-supabase-dev.mjs
+src/dev-runtime/auth/provider-contract-stubs.mjs
+src/dev-runtime/persistence/postgres-connection-client.mjs
+docs_build/dev/reports/PR_26167_198-database-ssl-mode-contract.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

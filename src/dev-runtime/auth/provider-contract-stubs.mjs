@@ -56,9 +56,11 @@ const SERVER_ONLY_SUPABASE_SECRET_KEYS = Object.freeze([
 ]);
 const SUPABASE_POSTGRES_CONFIG_KEYS = Object.freeze([
   "GAMEFOUNDRY_DATABASE_URL",
+  "GAMEFOUNDRY_DATABASE_SSL",
 ]);
 const SUPABASE_POSTGRES_SITE_SETUP_KEYS = Object.freeze([
   "GAMEFOUNDRY_DATABASE_URL",
+  "GAMEFOUNDRY_DATABASE_SSL",
 ]);
 export const SUPABASE_POSTGRES_IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
 export const SUPABASE_POSTGRES_PRODUCT_TABLES = Object.freeze([
@@ -139,7 +141,7 @@ export function supabaseAuthDiagnostic(env = process.env) {
 export function supabasePostgresDiagnostic(env = process.env) {
   const missing = missingEnvKeys(env, SUPABASE_POSTGRES_CONFIG_KEYS);
   return missing.length
-    ? "Configured database connection is not configured. Add GAMEFOUNDRY_DATABASE_URL on the server; server-only details are not exposed through browser APIs."
+    ? `Configured database connection is not configured. Add ${missing.join(", ")} on the server; server-only details are not exposed through browser APIs.`
     : "Configured database connection adapter is ready for the fixed runtime path.";
 }
 
@@ -270,7 +272,7 @@ function supabaseMissingConfigWarnings(supabaseAuthMissing, supabasePostgresMiss
     warnings.push(`Supabase Auth is not configured. Missing browser-safe environment variables: ${supabaseAuthMissing.join(", ")}.`);
   }
   if (supabasePostgresMissing.length) {
-    warnings.push("Configured database connection is not configured. GAMEFOUNDRY_DATABASE_URL is required on the server; server-only details are not exposed through browser APIs.");
+    warnings.push(`Configured database connection is not configured. ${supabasePostgresMissing.join(", ")} required on the server; server-only details are not exposed through browser APIs.`);
   }
   return warnings;
 }
@@ -421,7 +423,7 @@ export function createSupabasePostgresReadiness(env = process.env) {
   const siteSetupReady = siteSetupMissing.length === 0;
   const blockers = [];
   if (!configured) {
-    blockers.push("Add GAMEFOUNDRY_DATABASE_URL for the configured database connection.");
+    blockers.push(`Add ${adapterMissing.join(", ")} for the configured database connection.`);
   }
   if (!siteSetupReady) {
     blockers.push("Add server-only direct database configuration before Owner Operations can run setup.");

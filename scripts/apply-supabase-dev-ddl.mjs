@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
-import { createPostgresConnectionClient } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
+import { createPostgresConnectionClient, databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
 
 const ENV_FILE = ".env";
 const DDL_FILES = Object.freeze([
@@ -22,8 +22,6 @@ const DDL_FILES = Object.freeze([
   "docs_build/database/ddl/toolbox-votes.sql",
   "docs_build/database/ddl/support-tickets.sql",
 ]);
-const LOCAL_HOSTS = new Set(["127.0.0.1", "::1", "localhost"]);
-
 function parseEnvValue(value) {
   const trimmed = value.trim();
   const quote = trimmed[0];
@@ -75,18 +73,6 @@ function envValue(key) {
   return String(process.env[key] || "").trim();
 }
 
-function isPrivateIpv4Host(host) {
-  const parts = String(host || "").split(".").map((part) => Number(part));
-  if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) {
-    return false;
-  }
-  const [first, second] = parts;
-  return first === 10 ||
-    (first === 172 && second >= 16 && second <= 31) ||
-    (first === 192 && second === 168) ||
-    (first === 169 && second === 254);
-}
-
 function parseDatabaseUrl() {
   const value = envValue("GAMEFOUNDRY_DATABASE_URL");
   if (!value) {
@@ -102,7 +88,7 @@ function parseDatabaseUrl() {
     host,
     password: decodeURIComponent(databaseUrl.password || ""),
     port: Number(databaseUrl.port || 5432),
-    sslMode: String(databaseUrl.searchParams.get("sslmode") || (LOCAL_HOSTS.has(host) || isPrivateIpv4Host(host) ? "disable" : "require")).toLowerCase(),
+    sslMode: databaseSslMode(),
     user: decodeURIComponent(databaseUrl.username || ""),
   };
 }
@@ -113,12 +99,9 @@ function databaseDiagnostic(config) {
 
 function connectionModeDiagnostic(config) {
   if (config.sslMode === "disable") {
-    return "plain TCP (sslmode=disable)";
+    return "plain TCP";
   }
-  if (config.sslMode === "prefer") {
-    return "TLS preferred with plain TCP fallback (sslmode=prefer)";
-  }
-  return `TLS requested (sslmode=${config.sslMode})`;
+  return "TLS";
 }
 
 function readDdlFiles() {
@@ -157,9 +140,10 @@ async function main() {
 
   console.log(`PASS - .env loaded for DDL apply (${envLoad.loadedKeys.length} key(s) applied)`);
   console.log(`PASS - Database connection ready (${databaseDiagnostic(config)})`);
-  console.log(`PASS - DDL connection mode selected from GAMEFOUNDRY_DATABASE_URL: ${connectionModeDiagnostic(config)}.`);
+  console.log(`PASS - Database SSL mode: ${config.sslMode}`);
+  console.log(`PASS - DDL connection mode selected from GAMEFOUNDRY_DATABASE_SSL: ${connectionModeDiagnostic(config)}.`);
   console.log(`PASS - Applied ${appliedFiles.length} grouped GFS DDL file(s) through GAMEFOUNDRY_DATABASE_URL.`);
-  console.log("PASS - DDL connection behavior is driven by GAMEFOUNDRY_DATABASE_URL target capabilities and sslmode.");
+  console.log("PASS - DDL connection behavior is driven by GAMEFOUNDRY_DATABASE_URL and GAMEFOUNDRY_DATABASE_SSL.");
   appliedFiles.forEach((filePath) => console.log(`APPLIED - ${filePath}`));
 }
 

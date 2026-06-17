@@ -5,7 +5,7 @@ import tls from "node:tls";
 const POSTGRES_PROTOCOL_VERSION = 196608;
 const POSTGRES_SSL_REQUEST_CODE = 80877103;
 const DEFAULT_TIMEOUT_MS = 15000;
-const LOCAL_HOSTS = new Set(["127.0.0.1", "::1", "localhost"]);
+const DATABASE_SSL_MODES = new Set(["disable", "require"]);
 const BOOL_OID = 16;
 const INT_OIDS = new Set([20, 21, 23]);
 const FLOAT_OIDS = new Set([700, 701, 1700]);
@@ -21,23 +21,18 @@ function pgCString(value) {
   return Buffer.from(`${value}\0`, "utf8");
 }
 
-function isPrivateIpv4Host(host) {
-  const parts = String(host || "").split(".").map((part) => Number(part));
-  if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) {
-    return false;
+export function databaseSslMode(env = process.env) {
+  const value = String(env?.GAMEFOUNDRY_DATABASE_SSL || "").trim().toLowerCase();
+  if (!value) {
+    throw new Error("GAMEFOUNDRY_DATABASE_SSL is required. Use disable for plain TCP Postgres or require for TLS Postgres.");
   }
-  const [first, second] = parts;
-  return first === 10 ||
-    (first === 172 && second >= 16 && second <= 31) ||
-    (first === 192 && second === 168) ||
-    (first === 169 && second === 254);
+  if (!DATABASE_SSL_MODES.has(value)) {
+    throw new Error(`GAMEFOUNDRY_DATABASE_SSL must be one of ${Array.from(DATABASE_SSL_MODES).join(", ")}.`);
+  }
+  return value;
 }
 
-function isLocalConnectionHost(host) {
-  return LOCAL_HOSTS.has(host) || isPrivateIpv4Host(host);
-}
-
-function parseDatabaseUrl(env) {
+function parseDatabaseConfig(env) {
   const value = String(env?.GAMEFOUNDRY_DATABASE_URL || "").trim();
   if (!value) {
     throw new Error("Configured database connection is not configured. Add GAMEFOUNDRY_DATABASE_URL on the server.");
@@ -46,17 +41,26 @@ function parseDatabaseUrl(env) {
   if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
     throw new Error("GAMEFOUNDRY_DATABASE_URL must use postgres:// or postgresql://.");
   }
-  const host = databaseUrl.hostname;
-  const sslMode = String(databaseUrl.searchParams.get("sslmode") || (isLocalConnectionHost(host) ? "disable" : "require")).toLowerCase();
   return {
     database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
-    host,
+    host: databaseUrl.hostname,
     password: decodeURIComponent(databaseUrl.password || ""),
     port: Number(databaseUrl.port || 5432),
-    rejectUnauthorized: sslMode === "verify-ca" || sslMode === "verify-full",
-    sslMode,
+    rejectUnauthorized: false,
+    sslMode: databaseSslMode(env),
     user: decodeURIComponent(databaseUrl.username || ""),
   };
+}
+
+function databaseSslRemediation(sslMode) {
+  return sslMode === "disable"
+    ? "If this database target requires TLS, set GAMEFOUNDRY_DATABASE_SSL=require."
+    : "If this database target is a plain local Postgres listener, set GAMEFOUNDRY_DATABASE_SSL=disable.";
+}
+
+function databaseConnectionError(config, error) {
+  const message = error instanceof Error ? error.message : String(error || "Unknown database connection error.");
+  return new Error(`Database connection failed with GAMEFOUNDRY_DATABASE_SSL=${config.sslMode}: ${message} ${databaseSslRemediation(config.sslMode)}`);
 }
 
 function createReader(socket) {
@@ -294,9 +298,6 @@ async function negotiateSocket(config) {
   });
 
   if (sslResponse !== "S") {
-    if (config.sslMode === "prefer") {
-      return socket;
-    }
     socket.destroy();
     throw new Error("PostgreSQL server did not accept TLS negotiation.");
   }
@@ -559,10 +560,14 @@ class PostgresConnection {
 }
 
 async function withConnection(config, callback) {
-  const socket = await negotiateSocket(config);
+  const socket = await negotiateSocket(config).catch((error) => {
+    throw databaseConnectionError(config, error);
+  });
   const connection = new PostgresConnection(socket, createReader(socket));
   try {
-    await connection.authenticate(config);
+    await connection.authenticate(config).catch((error) => {
+      throw databaseConnectionError(config, error);
+    });
     return await callback(connection);
   } finally {
     connection.close();
@@ -570,7 +575,7 @@ async function withConnection(config, callback) {
 }
 
 export function createPostgresConnectionClient({ env = process.env } = {}) {
-  const config = parseDatabaseUrl(env);
+  const config = parseDatabaseConfig(env);
   if (!config.user || !config.password) {
     throw new Error("GAMEFOUNDRY_DATABASE_URL must include username and password.");
   }
