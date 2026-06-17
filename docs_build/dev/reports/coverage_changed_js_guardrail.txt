@@ -7,9 +7,9 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 46/65
-(100%) assets/theme-v2/js/admin-system-health.js - executed lines 120/120; executed functions 17/17
-(100%) src/engine/api/admin-system-health-api-client.js - executed lines 10/10; executed functions 2/2
+(100%) assets/theme-v2/js/admin-system-health.js - executed lines 235/235; executed functions 34/34
+(100%) assets/theme-v2/js/owner-operations.js - executed lines 125/125; executed functions 20/20
+(100%) src/engine/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
 
 Guardrail warnings:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

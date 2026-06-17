@@ -2501,3 +2501,90 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26168_232-r2-operational-readiness_delta.zip`
+
+
+## PR_26168_233-admin-system-health-operations-merge
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Moved status-only configured connection, database, and project asset storage status visibility from Owner Operations to Admin System Health.
+- Kept secrets hidden and Theme V2-only HTML.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check src/engine/api/admin-system-health-api-client.js`
+- `node --check assets/theme-v2/js/admin-system-health.js`
+- `node --check assets/theme-v2/js/owner-operations.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Static System Health/Owner Operations move contract validation.
+- Targeted Admin System Health, Owner Operations, Admin navigation, Infrastructure storage connectivity, and Assets regression Playwright.
+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_233-admin-system-health-operations-merge.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_233-admin-system-health-operations-merge_delta.zip`
+
+
+## PR_26168_234-system-health-storage-connectivity-startup
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Moved Storage Connectivity controls to Admin System Health.
+- Added System Health startup List, Write Test Object, Read Test Object, and Delete Test Object execution.
+- Kept manual rerun buttons on System Health.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check src/engine/api/admin-system-health-api-client.js`
+- `node --check assets/theme-v2/js/admin-system-health.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Static storage connectivity contract validation.
+- Targeted Playwright for startup connectivity status and manual List/Write/Read/Delete buttons.
+- Targeted Infrastructure storage connectivity regression.
+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_234-system-health-storage-connectivity-startup.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_234-system-health-storage-connectivity-startup_delta.zip`
+
+
+## PR_26168_235-owner-operations-scope-cleanup
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Removed duplicated status-only content from Owner Operations after moving it to System Health.
+- Removed Storage Connectivity controls from Owner Operations.
+- Kept Owner Operations focused on database operations and project package/promotion actions.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check assets/theme-v2/js/owner-operations.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Static Owner Operations scope validation.
+- Targeted Owner Operations and Admin navigation Playwright.
+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_235-owner-operations-scope-cleanup.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_235-owner-operations-scope-cleanup_delta.zip`

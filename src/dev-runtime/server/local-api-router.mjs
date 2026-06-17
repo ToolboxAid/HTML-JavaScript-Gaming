@@ -310,26 +310,6 @@ const OWNER_OPERATION_ACTIONS = Object.freeze([
     mode: "manual-only",
   }),
   Object.freeze({
-    id: "storage-list",
-    label: "Storage list",
-    mode: "storage-connectivity",
-  }),
-  Object.freeze({
-    id: "storage-write-test-object",
-    label: "Storage write test object",
-    mode: "storage-connectivity",
-  }),
-  Object.freeze({
-    id: "storage-read-test-object",
-    label: "Storage read test object",
-    mode: "storage-connectivity",
-  }),
-  Object.freeze({
-    id: "storage-delete-test-object",
-    label: "Storage delete test object",
-    mode: "storage-connectivity",
-  }),
-  Object.freeze({
     id: "promote-dev-to-ist",
     label: "Promote DEV to IST",
     mode: "manual-only",
@@ -2367,6 +2347,11 @@ LIMIT 1;
     return this.runStorageConnectivityAction(String(body.actionId || "").trim());
   }
 
+  async adminSystemHealthStorageConnectivityAction(body = {}) {
+    await this.requireAdminSession();
+    return this.runStorageConnectivityAction(String(body.actionId || "").trim());
+  }
+
   async adminSystemHealthStatus() {
     const session = await this.requireAdminSession();
     const authStatus = this.authStatus();
@@ -2463,9 +2448,12 @@ LIMIT 1;
       message: "Admin System Health loaded safe status only.",
       overview,
       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
+      connectionSummary: this.ownerConnectionSummary(),
+      databaseStatus,
       r2Readiness,
       secretEditingAllowed: false,
       secretsExposed: false,
+      storageStatus,
       summary: systemHealthSummary(overview),
       status: overallHealthStatus(overview),
     };
@@ -2555,9 +2543,6 @@ LIMIT 1;
     }
     if (action.id === "validate-current-connection") {
       return this.validateOwnerConnection();
-    }
-    if (action.mode === "storage-connectivity") {
-      return this.runStorageConnectivityAction(action.id);
     }
     return {
       actionId: action.id,
@@ -4071,6 +4056,12 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "GET" && parts[3] === "status") {
         ok(response, await dataSource.adminSystemHealthStatus());
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "POST" && parts[3] === "storage-connectivity-action") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.adminSystemHealthStorageConnectivityAction(body));
         return true;
       }
 

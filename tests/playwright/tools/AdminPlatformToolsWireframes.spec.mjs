@@ -90,6 +90,36 @@ async function startAdminPage(page, pathName, options = {}) {
   const storagePathStatus = options.storagePathStatus || storagePathStatusFor("/dev/projects/");
   const adminStorageConnectivityPosts = [];
   const systemHealthStatus = options.systemHealthStatus || {
+    connectionSummary: {
+      account: { configured: true, status: "ready" },
+      environmentSwitching: "manual-env-change-and-server-restart",
+      productData: { configured: true, status: "adapter-ready" },
+      projectAssetStorage: { configured: true, status: "configured" },
+      secretsExposed: false,
+    },
+    databaseStatus: {
+      configured: true,
+      databaseName: "gamefoundry_dev",
+      databaseNameStatus: "PASS",
+      host: "192.168.2.5",
+      hostStatus: "PASS",
+      lastMigration: {
+        appliedAt: "2026-06-17 01:07:30.540517+00",
+        name: "support-tickets.sql",
+        type: "DML",
+      },
+      lastMigrationStatus: "PASS",
+      migrationCounts: {
+        DDL: 15,
+        DML: 15,
+      },
+      migrationStatus: "PASS",
+      port: 55431,
+      portStatus: "PASS",
+      sslMode: "disable",
+      sslModeStatus: "PASS",
+      status: "PASS",
+    },
     details: [
       { area: "Account/session readiness", field: "Session", status: "PASS", value: "authenticated" },
       { area: "Product Data / Local DB", field: "Database name", status: "PASS", value: "gamefoundry_dev" },
@@ -134,6 +164,20 @@ async function startAdminPage(page, pathName, options = {}) {
     },
     secretEditingAllowed: false,
     secretsExposed: false,
+    storageStatus: {
+      accessKeyConfigured: true,
+      accessKeyStatus: "PASS",
+      bucket: "gamefoundry-dev-assets",
+      bucketStatus: "PASS",
+      configured: true,
+      endpoint: "https://storage.example.invalid",
+      endpointStatus: "PASS",
+      projectsPrefix: "/dev/projects/",
+      projectsPrefixStatus: "PASS",
+      secretKeyConfigured: true,
+      secretKeyStatus: "PASS",
+      status: "PASS",
+    },
     summary: {
       counts: { FAIL: 0, PASS: 9, WARN: 0 },
       lastRefreshAt: "2026-06-17T16:00:00.000Z",
@@ -270,6 +314,32 @@ async function startAdminPage(page, pathName, options = {}) {
     });
   });
   await page.route("**/api/admin/infrastructure/storage-connectivity-action", async (route) => {
+    const body = route.request().postDataJSON();
+    adminStorageConnectivityPosts.push(body);
+    const actionLabels = {
+      "storage-delete-test-object": "Delete test object",
+      "storage-list": "List",
+      "storage-read-test-object": "Read test object",
+      "storage-write-test-object": "Write test object",
+    };
+    const actionLabel = actionLabels[body.actionId] || body.actionId;
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: {
+          actionId: body.actionId,
+          executed: true,
+          message: `${actionLabel} completed through Local API under /dev/projects/. Test object /dev/projects/connectivity/storage-connectivity-test.txt.`,
+          projectsPrefix: "/dev/projects/",
+          secretsExposed: false,
+          status: "PASS",
+          testObjectKey: "/dev/projects/connectivity/storage-connectivity-test.txt",
+        },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/admin/system-health/storage-connectivity-action", async (route) => {
     const body = route.request().postDataJSON();
     adminStorageConnectivityPosts.push(body);
     const actionLabels = {
@@ -449,8 +519,8 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
       await expect(page.locator(".tool-center-panel")).toBeVisible();
       await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(adminPage.menuLabels || ADMIN_TOOL_MENU_LABELS);
       await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText(adminPage.heading);
-      await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(adminPage.liveSettings ? 1 : 2);
-      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(adminPage.infrastructure || adminPage.systemHealth ? 3 : 2);
+      await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(adminPage.liveSettings ? 1 : (adminPage.systemHealth ? 3 : 2));
+      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(adminPage.systemHealth ? 4 : (adminPage.infrastructure ? 3 : 2));
       if (adminPage.liveSettings) {
         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-active]")).toBeVisible();
@@ -525,6 +595,33 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Project package readiness");
         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Promotion/package safety");
         await expect(page.locator("[data-admin-system-health-overview-rows]").filter({ hasText: "Environment limits" })).toContainText("PASS");
+        await expect(page.locator("[data-admin-system-health-connection-summary]")).toContainText("Account");
+        await expect(page.locator("[data-admin-system-health-connection-summary]")).toContainText("Product Data / Local DB");
+        await expect(page.locator("[data-admin-system-health-connection-summary]")).toContainText("Project Asset Storage / R2");
+        await expect(page.locator("[data-admin-system-health-connection-summary]")).toContainText("not exposed");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Connection Configured");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Database Host");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("192.168.2.5");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Database Port");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("55431");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Database Name");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("gamefoundry_dev");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("SSL Mode");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("disable");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Migration Counts");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("DDL=15; DML=15");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Last Migration");
+        await expect(page.locator("[data-admin-system-health-database-status-rows]")).not.toContainText("postgres://");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("Storage Configured");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("Storage Endpoint");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("https://storage.example.invalid");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("Storage Bucket");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("gamefoundry-dev-assets");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("Projects Prefix");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("/dev/projects/");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("configured; value hidden");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).not.toContainText("asset-test-secret-key");
+        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).not.toContainText("asset-test-access-key");
         await expect(page.locator("[data-admin-system-health-detail-rows]")).toContainText("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX");
         await expect(page.locator("[data-admin-system-health-detail-rows]")).toContainText("configured; value hidden");
         await expect(page.locator("[data-admin-system-health-detail-rows]")).not.toContainText("asset-test-secret-key");
@@ -552,6 +649,43 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("collect live connectivity evidence");
         await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).not.toContainText("asset-test-secret-key");
         await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).not.toContainText("asset-test-access-key");
+        await expect(page.locator("[data-admin-system-health-storage-action='storage-list']")).toHaveText("List");
+        await expect(page.locator("[data-admin-system-health-storage-action='storage-write-test-object']")).toHaveText("Write Test Object");
+        await expect(page.locator("[data-admin-system-health-storage-action='storage-read-test-object']")).toHaveText("Read Test Object");
+        await expect(page.locator("[data-admin-system-health-storage-action='storage-delete-test-object']")).toHaveText("Delete Test Object");
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: Storage connectivity startup completed List, Write Test Object, Read Test Object, and Delete Test Object.");
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).toContainText("storage-list");
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).toContainText("storage-write-test-object");
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).toContainText("storage-read-test-object");
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).toContainText("storage-delete-test-object");
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).not.toContainText("asset-test-secret-key");
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).not.toContainText("asset-test-access-key");
+        expect(failures.adminStorageConnectivityPosts).toEqual([
+          { actionId: "storage-list" },
+          { actionId: "storage-write-test-object" },
+          { actionId: "storage-read-test-object" },
+          { actionId: "storage-delete-test-object" },
+        ]);
+        await page.locator("[data-admin-system-health-storage-action='storage-list']").click();
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: List completed through Local API under /dev/projects/.");
+        await page.locator("[data-admin-system-health-storage-action='storage-write-test-object']").click();
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: Write test object completed through Local API under /dev/projects/.");
+        await page.locator("[data-admin-system-health-storage-action='storage-read-test-object']").click();
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: Read test object completed through Local API under /dev/projects/.");
+        await page.locator("[data-admin-system-health-storage-action='storage-delete-test-object']").click();
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: Delete test object completed through Local API under /dev/projects/.");
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows] tr").first()).toContainText("storage-delete-test-object");
+        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows] tr").first()).toContainText("yes");
+        expect(failures.adminStorageConnectivityPosts).toEqual([
+          { actionId: "storage-list" },
+          { actionId: "storage-write-test-object" },
+          { actionId: "storage-read-test-object" },
+          { actionId: "storage-delete-test-object" },
+          { actionId: "storage-list" },
+          { actionId: "storage-write-test-object" },
+          { actionId: "storage-read-test-object" },
+          { actionId: "storage-delete-test-object" },
+        ]);
         await expect(page.getByRole("link", { name: "Infrastructure Reference" })).toHaveAttribute("href", /admin\/infrastructure\.html$/);
         await expect(page.getByRole("link", { name: "Owner Operations Actions" })).toHaveAttribute("href", /owner\/operations\.html$/);
       } else {
@@ -1316,30 +1450,8 @@ test("Owner Operations exposes owner-only connection validation and manual opera
         "promote-dev-to-ist": "Promote DEV to IST",
         "promote-ist-to-uat": "Promote IST to UAT",
         "reseed-dev": "Reseed DEV",
-        "storage-delete-test-object": "Delete test object",
-        "storage-list": "List",
-        "storage-read-test-object": "Read test object",
-        "storage-write-test-object": "Write test object",
       };
       const actionLabel = actionLabels[body.actionId] || body.actionId;
-      if (String(body.actionId || "").startsWith("storage-")) {
-        await route.fulfill({
-          contentType: "application/json",
-          body: JSON.stringify({
-            data: {
-              actionId: body.actionId,
-              executed: true,
-              message: `${actionLabel} completed through configured storage under /dev/projects/. Test object /dev/projects/connectivity/storage-connectivity-test.txt.`,
-              projectsPrefix: "/dev/projects/",
-              secretsExposed: false,
-              status: "PASS",
-              testObjectKey: "/dev/projects/connectivity/storage-connectivity-test.txt",
-            },
-            ok: true,
-          }),
-        });
-        return;
-      }
       await route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({
@@ -1364,17 +1476,16 @@ test("Owner Operations exposes owner-only connection validation and manual opera
       "Notes",
       "Operations",
     ]);
-    await expect(page.locator("[data-owner-connection-summary]")).toContainText("Account");
-    await expect(page.locator("[data-owner-connection-summary]")).toContainText("Project Asset Storage");
-    await expect(page.locator("[data-owner-connection-summary]")).toContainText("not exposed");
+    await expect(page.locator("[data-owner-connection-summary]")).toHaveCount(0);
+    await expect(page.locator("[data-owner-storage-status-rows]")).toHaveCount(0);
     await expect(page.locator("[data-owner-operation-action='promote-dev-to-uat']")).toHaveCount(0);
     await expect(page.locator("[data-owner-operation-action='promote-dev-to-ist']")).toHaveText("Promote DEV to IST");
     await expect(page.locator("[data-owner-operation-action='promote-ist-to-uat']")).toHaveText("Promote IST to UAT");
     await expect(page.locator("[data-owner-operation-action='promote-uat-to-prod']")).toHaveText("Promote UAT to PROD");
-    await expect(page.locator("[data-owner-operation-action='storage-list']")).toHaveText("List");
-    await expect(page.locator("[data-owner-operation-action='storage-write-test-object']")).toHaveText("Write Test Object");
-    await expect(page.locator("[data-owner-operation-action='storage-read-test-object']")).toHaveText("Read Test Object");
-    await expect(page.locator("[data-owner-operation-action='storage-delete-test-object']")).toHaveText("Delete Test Object");
+    await expect(page.locator("[data-owner-operation-action='storage-list']")).toHaveCount(0);
+    await expect(page.locator("[data-owner-operation-action='storage-write-test-object']")).toHaveCount(0);
+    await expect(page.locator("[data-owner-operation-action='storage-read-test-object']")).toHaveCount(0);
+    await expect(page.locator("[data-owner-operation-action='storage-delete-test-object']")).toHaveCount(0);
     await expect(page.locator("[data-owner-operations]")).toContainText("project metadata, asset references, and project asset storage objects");
     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Connection Configured");
     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Host");
@@ -1392,16 +1503,6 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("postgres://");
     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("password");
     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("SERVICE_ROLE");
-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Storage Configured");
-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Storage Endpoint");
-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("https://storage.example.invalid");
-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Storage Bucket");
-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("gamefoundry-dev-assets");
-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Projects Prefix");
-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("/dev/projects/");
-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("configured; value hidden");
-    await expect(page.locator("[data-owner-storage-status-rows]")).not.toContainText("asset-test-secret-key");
-    await expect(page.locator("[data-owner-storage-status-rows]")).not.toContainText("asset-test-access-key");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("DEV");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Export");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("IST");
@@ -1422,23 +1523,10 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await page.locator("[data-owner-operation-validate]").click();
     await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Current configured connections validated.");
     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("DDL=15; DML=15");
-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("/dev/projects/");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Local API");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("validate-current-connection");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
 
-    await page.locator("[data-owner-operation-action='storage-list']").click();
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: List completed through configured storage under /dev/projects/.");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("storage-list");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
-    await page.locator("[data-owner-operation-action='storage-write-test-object']").click();
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Write test object completed through configured storage under /dev/projects/.");
-    await page.locator("[data-owner-operation-action='storage-read-test-object']").click();
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Read test object completed through configured storage under /dev/projects/.");
-    await page.locator("[data-owner-operation-action='storage-delete-test-object']").click();
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Delete test object completed through configured storage under /dev/projects/.");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("storage-delete-test-object");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("/dev/projects/connectivity/storage-connectivity-test.txt");
     await expect(page.locator("[data-owner-operation-result-rows]")).not.toContainText("asset-test-secret-key");
     await expect(page.locator("[data-owner-operation-result-rows]")).not.toContainText("asset-test-access-key");
 
@@ -1455,10 +1543,6 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-ist-to-uat");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
     expect(ownerActionPosts).toEqual([
-      { actionId: "storage-list" },
-      { actionId: "storage-write-test-object" },
-      { actionId: "storage-read-test-object" },
-      { actionId: "storage-delete-test-object" },
       { actionId: "reseed-dev" },
       { actionId: "promote-dev-to-ist" },
       { actionId: "promote-ist-to-uat" },

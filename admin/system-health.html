@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Admin</div>
                 <h1>System Health</h1>
-                <p class="lede">Review safe runtime readiness across account, Local DB, R2 storage, migrations, package planning, and promotion safety.</p>
+                <p class="lede">Review safe runtime readiness across account, Local DB, R2 storage, migrations, package planning, promotion safety, and storage connectivity.</p>
             </div>
         </section>
         <section class="section">
@@ -46,6 +46,15 @@
                                     <p>Product Data / Local DB</p>
                                     <p>Project Asset Storage / R2</p>
                                     <p>Project package readiness</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Storage Connectivity</summary>
+                                <div class="accordion-body content-stack">
+                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-list">List</button>
+                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-write-test-object">Write Test Object</button>
+                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-read-test-object">Read Test Object</button>
+                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-delete-test-object">Delete Test Object</button>
                                 </div>
                             </details>
                         </div>
@@ -90,6 +99,51 @@
                             </table>
                         </div>
                         <div class="table-wrapper">
+                            <table class="data-table" aria-label="Configured connection summary">
+                                <caption>Configured Connections</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Connection</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Mode</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-connection-summary>
+                                    <tr><td>Account</td><td>Loading</td><td>Loading configured connection summary.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="System health database status">
+                                <caption>Database Status</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-database-status-rows>
+                                    <tr><td>Connection Configured</td><td>Loading</td><td>Loading database status.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="System health storage status">
+                                <caption>Project Asset Storage Status</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-storage-status-rows>
+                                    <tr><td>Storage Configured</td><td>Loading</td><td>Loading storage status.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
                             <table class="data-table" aria-label="R2 operational readiness">
                                 <caption>R2 Operational Readiness</caption>
                                 <thead>
@@ -103,6 +157,22 @@
                                 </thead>
                                 <tbody data-admin-system-health-r2-readiness-rows>
                                     <tr><td>Project Asset Storage / R2</td><td>Status</td><td>Loading</td><td>Loading</td><td>Loading R2 readiness.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="System health storage connectivity results">
+                                <caption>Storage Connectivity Results</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Action</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Executed</th>
+                                        <th scope="col">Message</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-storage-connectivity-result-rows>
+                                    <tr><td>startup</td><td>SKIP</td><td>no</td><td>Storage connectivity startup has not run yet.</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -149,6 +219,12 @@
                                 <summary>Status</summary>
                                 <div class="accordion-body content-stack">
                                     <p class="status" role="status" data-admin-system-health-status>Loading Admin System Health.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Storage Connectivity Status</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status" role="status" data-admin-system-health-storage-connectivity-status>Storage connectivity startup pending.</p>
                                 </div>
                             </details>
                             <details class="vertical-accordion" open>

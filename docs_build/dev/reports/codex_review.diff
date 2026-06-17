@@ -1,756 +1,1070 @@
 ﻿diff --git a/admin/system-health.html b/admin/system-health.html
-index 05a426850..31c8f0706 100644
+index 31c8f0706..74c42421e 100644
 --- a/admin/system-health.html
 +++ b/admin/system-health.html
-@@ -56,6 +56,24 @@
-                             <div class="kicker">Read-only Status</div>
-                             <h2 id="admin-system-health-title">System Health Overview</h2>
+@@ -18,7 +18,7 @@
+             <div class="container">
+                 <div class="kicker">Admin</div>
+                 <h1>System Health</h1>
+-                <p class="lede">Review safe runtime readiness across account, Local DB, R2 storage, migrations, package planning, and promotion safety.</p>
++                <p class="lede">Review safe runtime readiness across account, Local DB, R2 storage, migrations, package planning, promotion safety, and storage connectivity.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -48,6 +48,15 @@
+                                     <p>Project package readiness</p>
+                                 </div>
+                             </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Storage Connectivity</summary>
++                                <div class="accordion-body content-stack">
++                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-list">List</button>
++                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-write-test-object">Write Test Object</button>
++                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-read-test-object">Read Test Object</button>
++                                    <button class="btn btn--compact" type="button" data-admin-system-health-storage-action="storage-delete-test-object">Delete Test Object</button>
++                                </div>
++                            </details>
                          </div>
-+                        <div class="table-wrapper">
-+                            <table class="data-table" aria-label="System health dashboard summary">
-+                                <caption>System Health Dashboard Summary</caption>
-+                                <thead>
-+                                    <tr>
-+                                        <th scope="col">Status</th>
-+                                        <th scope="col">Score</th>
-+                                        <th scope="col">PASS</th>
-+                                        <th scope="col">WARN</th>
-+                                        <th scope="col">FAIL</th>
-+                                        <th scope="col">Last Refresh</th>
-+                                    </tr>
-+                                </thead>
-+                                <tbody data-admin-system-health-summary-rows>
-+                                    <tr><td>Loading</td><td>0</td><td>0</td><td>0</td><td>0</td><td>Loading refresh timestamp.</td></tr>
-+                                </tbody>
-+                            </table>
-+                        </div>
-                         <div class="table-wrapper">
-                             <table class="data-table" aria-label="System health overview">
-                                 <caption>System Health Overview</caption>
-@@ -71,6 +89,23 @@
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-system-health" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+@@ -89,6 +98,51 @@
                                  </tbody>
                              </table>
                          </div>
 +                        <div class="table-wrapper">
-+                            <table class="data-table" aria-label="R2 operational readiness">
-+                                <caption>R2 Operational Readiness</caption>
++                            <table class="data-table" aria-label="Configured connection summary">
++                                <caption>Configured Connections</caption>
 +                                <thead>
 +                                    <tr>
-+                                        <th scope="col">Area</th>
-+                                        <th scope="col">Signal</th>
++                                        <th scope="col">Connection</th>
 +                                        <th scope="col">Status</th>
-+                                        <th scope="col">Value</th>
-+                                        <th scope="col">Next Step</th>
++                                        <th scope="col">Mode</th>
 +                                    </tr>
 +                                </thead>
-+                                <tbody data-admin-system-health-r2-readiness-rows>
-+                                    <tr><td>Project Asset Storage / R2</td><td>Status</td><td>Loading</td><td>Loading</td><td>Loading R2 readiness.</td></tr>
++                                <tbody data-admin-system-health-connection-summary>
++                                    <tr><td>Account</td><td>Loading</td><td>Loading configured connection summary.</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="System health database status">
++                                <caption>Database Status</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Field</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Value</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-system-health-database-status-rows>
++                                    <tr><td>Connection Configured</td><td>Loading</td><td>Loading database status.</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="System health storage status">
++                                <caption>Project Asset Storage Status</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Field</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Value</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-system-health-storage-status-rows>
++                                    <tr><td>Storage Configured</td><td>Loading</td><td>Loading storage status.</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="R2 operational readiness">
+                                 <caption>R2 Operational Readiness</caption>
+@@ -106,6 +160,22 @@
+                                 </tbody>
+                             </table>
+                         </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="System health storage connectivity results">
++                                <caption>Storage Connectivity Results</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Action</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Executed</th>
++                                        <th scope="col">Message</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-system-health-storage-connectivity-result-rows>
++                                    <tr><td>startup</td><td>SKIP</td><td>no</td><td>Storage connectivity startup has not run yet.</td></tr>
 +                                </tbody>
 +                            </table>
 +                        </div>
                          <div class="table-wrapper">
                              <table class="data-table" aria-label="System health details">
                                  <caption>System Health Details</caption>
+@@ -151,6 +221,12 @@
+                                     <p class="status" role="status" data-admin-system-health-status>Loading Admin System Health.</p>
+                                 </div>
+                             </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Storage Connectivity Status</summary>
++                                <div class="accordion-body content-stack">
++                                    <p class="status" role="status" data-admin-system-health-storage-connectivity-status>Storage connectivity startup pending.</p>
++                                </div>
++                            </details>
+                             <details class="vertical-accordion" open>
+                                 <summary>Related Pages</summary>
+                                 <div class="accordion-body content-stack">
 diff --git a/assets/theme-v2/js/admin-system-health.js b/assets/theme-v2/js/admin-system-health.js
-index 7a1bc0f44..d6c524dad 100644
+index d6c524dad..fc0ac886e 100644
 --- a/assets/theme-v2/js/admin-system-health.js
 +++ b/assets/theme-v2/js/admin-system-health.js
-@@ -8,11 +8,13 @@ class AdminSystemHealthController {
+@@ -1,22 +1,39 @@
+ import {
+-    readAdminSystemHealthStatus
++    readAdminSystemHealthStatus,
++    runAdminSystemHealthStorageConnectivityAction
+ } from "../../../src/engine/api/admin-system-health-api-client.js";
+
++const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
++    "storage-list",
++    "storage-write-test-object",
++    "storage-read-test-object",
++    "storage-delete-test-object",
++]);
++
+ class AdminSystemHealthController {
+     constructor(root) {
+         this.root = root;
++        this.connectionSummary = root.querySelector("[data-admin-system-health-connection-summary]");
++        this.databaseStatusRows = root.querySelector("[data-admin-system-health-database-status-rows]");
          this.details = root.querySelector("[data-admin-system-health-detail-rows]");
          this.limits = root.querySelector("[data-admin-system-health-limit-rows]");
          this.overview = root.querySelector("[data-admin-system-health-overview-rows]");
-+        this.r2Readiness = root.querySelector("[data-admin-system-health-r2-readiness-rows]");
+         this.r2Readiness = root.querySelector("[data-admin-system-health-r2-readiness-rows]");
          this.status = root.querySelector("[data-admin-system-health-status]");
-+        this.summary = root.querySelector("[data-admin-system-health-summary-rows]");
++        this.storageActionButtons = Array.from(root.querySelectorAll("[data-admin-system-health-storage-action]"));
++        this.storageConnectivityRows = root.querySelector("[data-admin-system-health-storage-connectivity-result-rows]");
++        this.storageConnectivityStatus = root.querySelector("[data-admin-system-health-storage-connectivity-status]");
++        this.storageStatusRows = root.querySelector("[data-admin-system-health-storage-status-rows]");
+         this.summary = root.querySelector("[data-admin-system-health-summary-rows]");
      }
 
      init() {
--        if (!this.details || !this.limits || !this.overview || !this.status) {
-+        if (!this.details || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.summary) {
+-        if (!this.details || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.summary) {
++        if (!this.connectionSummary || !this.databaseStatusRows || !this.details || !this.limits || !this.overview || !this.r2Readiness || !this.status || !this.storageConnectivityRows || !this.storageConnectivityStatus || !this.storageStatusRows || !this.summary) {
              return;
          }
++        this.storageActionButtons.forEach((button) => {
++            button.addEventListener("click", () => this.runStorageConnectivityAction(button.dataset.adminSystemHealthStorageAction));
++        });
          this.load();
-@@ -43,6 +45,18 @@ class AdminSystemHealthController {
-         });
      }
 
-+    renderSummary(summary) {
-+        this.summary.replaceChildren();
-+        this.summary.append(this.createRow([
-+            summary.status || "WARN",
-+            typeof summary.score === "number" ? `${summary.score}` : "0",
-+            `${summary.counts?.PASS || 0}`,
-+            `${summary.counts?.WARN || 0}`,
-+            `${summary.counts?.FAIL || 0}`,
-+            summary.lastRefreshAt || "not available",
-+        ]));
+@@ -24,6 +41,10 @@ class AdminSystemHealthController {
+         this.status.textContent = `${status}: ${message}`;
+     }
+
++    setStorageConnectivityStatus(status, message) {
++        this.storageConnectivityStatus.textContent = `${status}: ${message}`;
++    }
++
+     createRow(values) {
+         const row = document.createElement("tr");
+         values.forEach((value) => {
+@@ -57,6 +78,36 @@ class AdminSystemHealthController {
+         ]));
+     }
+
++    renderConnectionSummary(summary = {}) {
++        this.connectionSummary.replaceChildren();
++        [
++            ["Account", summary.account?.status || "unknown", summary.account?.configured === true ? "configured" : "not configured"],
++            ["Product Data / Local DB", summary.productData?.status || "unknown", summary.productData?.configured === true ? "configured" : "not configured"],
++            ["Project Asset Storage / R2", summary.projectAssetStorage?.status || "unknown", summary.projectAssetStorage?.configured === true ? "configured" : "not configured"],
++            ["Environment Switching", summary.environmentSwitching || "manual-env-change-and-server-restart", "manual"],
++            ["Secrets", summary.secretsExposed === true ? "exposed" : "not exposed", "read-only summary"],
++        ].forEach((row) => {
++            this.connectionSummary.append(this.createRow(row));
++        });
++    }
++
++    renderDatabaseStatus(databaseStatus = {}) {
++        const migrationCounts = databaseStatus.migrationCounts || {};
++        const lastMigration = databaseStatus.lastMigration || {};
++        this.databaseStatusRows.replaceChildren();
++        [
++            ["Connection Configured", databaseStatus.configured === true ? "PASS" : "WARN", databaseStatus.configured === true ? "yes" : "no"],
++            ["Database Host", databaseStatus.hostStatus || "WARN", databaseStatus.host || "not configured"],
++            ["Database Port", databaseStatus.portStatus || "WARN", databaseStatus.port ? String(databaseStatus.port) : "not configured"],
++            ["Database Name", databaseStatus.databaseNameStatus || "WARN", databaseStatus.databaseName || "not configured"],
++            ["SSL Mode", databaseStatus.sslModeStatus || "WARN", databaseStatus.sslMode || "not configured"],
++            ["Migration Counts", databaseStatus.migrationStatus || "WARN", `DDL=${migrationCounts.DDL || 0}; DML=${migrationCounts.DML || 0}`],
++            ["Last Migration", databaseStatus.lastMigrationStatus || "WARN", lastMigration.name && lastMigration.appliedAt ? `${lastMigration.type || "unknown"} ${lastMigration.name} at ${lastMigration.appliedAt}` : "not recorded"],
++        ].forEach((row) => {
++            this.databaseStatusRows.append(this.createRow(row));
++        });
 +    }
 +
      renderDetails(rows) {
          this.details.replaceChildren();
          rows.forEach((row) => {
-@@ -68,14 +82,31 @@ class AdminSystemHealthController {
+@@ -69,6 +120,20 @@ class AdminSystemHealthController {
          });
      }
 
-+    renderR2Readiness(readiness) {
-+        this.r2Readiness.replaceChildren();
-+        const rows = Array.isArray(readiness?.rows) ? readiness.rows : [];
-+        rows.forEach((row) => {
-+            this.r2Readiness.append(this.createRow([
-+                row.area || "Project Asset Storage / R2",
-+                row.field || "Status",
-+                row.status || "WARN",
-+                row.value || "not configured",
-+                row.nextStep || "Review R2 configuration.",
-+            ]));
++    renderStorageStatus(storageStatus = {}) {
++        this.storageStatusRows.replaceChildren();
++        [
++            ["Storage Configured", storageStatus.configured === true ? "PASS" : "WARN", storageStatus.configured === true ? "yes" : "no"],
++            ["Storage Endpoint", storageStatus.endpointStatus || "WARN", storageStatus.endpoint || "not configured"],
++            ["Storage Bucket", storageStatus.bucketStatus || "WARN", storageStatus.bucket || "not configured"],
++            ["Projects Prefix", storageStatus.projectsPrefixStatus || "WARN", storageStatus.projectsPrefix || "not configured"],
++            ["Access Key", storageStatus.accessKeyStatus || "WARN", storageStatus.accessKeyConfigured === true ? "configured; value hidden" : "not configured"],
++            ["Secret Key", storageStatus.secretKeyStatus || "WARN", storageStatus.secretKeyConfigured === true ? "configured; value hidden" : "not configured"],
++        ].forEach((row) => {
++            this.storageStatusRows.append(this.createRow(row));
 +        });
++    }
++
+     renderLimits(rows) {
+         this.limits.replaceChildren();
+         rows.forEach((row) => {
+@@ -96,17 +161,73 @@ class AdminSystemHealthController {
+         });
+     }
+
++    appendStorageConnectivityResult(result = {}) {
++        this.storageConnectivityRows.prepend(this.createRow([
++            result.actionId || "storage-connectivity",
++            result.status || "WARN",
++            result.executed === true ? "yes" : "no",
++            result.message || "No storage connectivity message returned.",
++        ]));
++    }
++
++    clearStorageConnectivityResults() {
++        this.storageConnectivityRows.replaceChildren();
++    }
++
++    runStorageConnectivityAction(actionId) {
++        try {
++            const result = runAdminSystemHealthStorageConnectivityAction(actionId);
++            this.appendStorageConnectivityResult(result);
++            this.setStorageConnectivityStatus(result.status || "WARN", result.message || "Storage connectivity action returned no message.");
++            return result;
++        } catch (error) {
++            const result = {
++                actionId: actionId || "storage-connectivity",
++                executed: false,
++                message: error instanceof Error ? error.message : "Storage connectivity action failed.",
++                status: "FAIL",
++            };
++            this.appendStorageConnectivityResult(result);
++            this.setStorageConnectivityStatus("FAIL", result.message);
++            return result;
++        }
++    }
++
++    runStartupStorageConnectivity() {
++        this.clearStorageConnectivityResults();
++        this.setStorageConnectivityStatus("SKIP", "Storage connectivity startup running.");
++        const results = STORAGE_CONNECTIVITY_ACTIONS.map((actionId) => this.runStorageConnectivityAction(actionId));
++        const failed = results.find((result) => result.status === "FAIL");
++        const warned = results.find((result) => result.status === "WARN");
++        const skipped = results.find((result) => result.status === "SKIP");
++        if (failed) {
++            this.setStorageConnectivityStatus("FAIL", "Storage connectivity startup found one or more failures. Review result diagnostics.");
++        } else if (warned) {
++            this.setStorageConnectivityStatus("WARN", "Storage connectivity startup found one or more warnings. Review result diagnostics.");
++        } else if (skipped) {
++            this.setStorageConnectivityStatus("SKIP", "Storage connectivity startup skipped one or more actions. Review result diagnostics.");
++        } else {
++            this.setStorageConnectivityStatus("PASS", "Storage connectivity startup completed List, Write Test Object, Read Test Object, and Delete Test Object.");
++        }
 +    }
 +
      load() {
          try {
              const payload = readAdminSystemHealthStatus();
-+            this.renderSummary(payload.summary || {});
+             this.renderSummary(payload.summary || {});
              this.renderOverview(Array.isArray(payload.overview) ? payload.overview : []);
++            this.renderConnectionSummary(payload.connectionSummary || {});
++            this.renderDatabaseStatus(payload.databaseStatus || {});
++            this.renderStorageStatus(payload.storageStatus || {});
              this.renderDetails(Array.isArray(payload.details) ? payload.details : []);
              this.renderLimits(Array.isArray(payload.limits) ? payload.limits : []);
-+            this.renderR2Readiness(payload.r2Readiness || {});
+             this.renderR2Readiness(payload.r2Readiness || {});
              this.setStatus(payload.status || "WARN", payload.message || "Admin System Health loaded.");
++            this.runStartupStorageConnectivity();
          } catch (error) {
-+            this.renderSummary({ counts: { FAIL: 1, PASS: 0, WARN: 0 }, lastRefreshAt: "not available", score: 0, status: "FAIL" });
+             this.renderSummary({ counts: { FAIL: 1, PASS: 0, WARN: 0 }, lastRefreshAt: "not available", score: 0, status: "FAIL" });
++            this.renderConnectionSummary({});
++            this.renderDatabaseStatus({});
              this.renderOverview([
                  {
                      area: "System Health",
-@@ -85,6 +116,7 @@ class AdminSystemHealthController {
+@@ -114,10 +235,13 @@ class AdminSystemHealthController {
+                     summary: error instanceof Error ? error.message : "Admin System Health unavailable.",
+                 },
              ]);
++            this.renderStorageStatus({});
              this.renderDetails([]);
              this.renderLimits([]);
-+            this.renderR2Readiness({ rows: [] });
+             this.renderR2Readiness({ rows: [] });
++            this.clearStorageConnectivityResults();
              this.setStatus("FAIL", error instanceof Error ? error.message : "Admin System Health unavailable.");
++            this.setStorageConnectivityStatus("SKIP", "Storage connectivity startup skipped because Admin System Health failed to load.");
          }
      }
+ }
+diff --git a/assets/theme-v2/js/owner-operations.js b/assets/theme-v2/js/owner-operations.js
+index bd74397bf..b7df47c01 100644
+--- a/assets/theme-v2/js/owner-operations.js
++++ b/assets/theme-v2/js/owner-operations.js
+@@ -8,17 +8,15 @@ class OwnerOperationsController {
+     constructor(root) {
+         this.root = root;
+         this.actionButtons = Array.from(root.querySelectorAll("[data-owner-operation-action]"));
+-        this.connectionSummary = root.querySelector("[data-owner-connection-summary]");
+         this.databaseStatusRows = root.querySelector("[data-owner-database-status-rows]");
+         this.promotionFoundationRows = root.querySelector("[data-owner-promotion-foundation-rows]");
+         this.resultRows = root.querySelector("[data-owner-operation-result-rows]");
+         this.status = root.querySelector("[data-owner-operations-status]");
+-        this.storageStatusRows = root.querySelector("[data-owner-storage-status-rows]");
+         this.validateButton = root.querySelector("[data-owner-operation-validate]");
+     }
+
+     init() {
+-        if (!this.connectionSummary || !this.databaseStatusRows || !this.promotionFoundationRows || !this.resultRows || !this.status || !this.storageStatusRows || !this.validateButton) {
++        if (!this.databaseStatusRows || !this.promotionFoundationRows || !this.resultRows || !this.status || !this.validateButton) {
+             return;
+         }
+         this.validateButton.addEventListener("click", () => this.validateConnection());
+@@ -32,26 +30,6 @@ class OwnerOperationsController {
+         this.status.textContent = `${status}: ${message}`;
+     }
+
+-    renderConnectionSummary(summary = {}) {
+-        const rows = [
+-            ["Account", summary.account?.status || "unknown", summary.account?.configured === true ? "configured" : "not configured"],
+-            ["Product Data", summary.productData?.status || "unknown", summary.productData?.configured === true ? "configured" : "not configured"],
+-            ["Project Asset Storage", summary.projectAssetStorage?.status || "unknown", summary.projectAssetStorage?.configured === true ? "configured" : "not configured"],
+-            ["Environment Switching", summary.environmentSwitching || "manual-env-change-and-server-restart", "manual"],
+-            ["Secrets", summary.secretsExposed === true ? "exposed" : "not exposed", "read-only summary"],
+-        ];
+-        this.connectionSummary.replaceChildren();
+-        rows.forEach((row) => {
+-            const tableRow = document.createElement("tr");
+-            row.forEach((value) => {
+-                const cell = document.createElement("td");
+-                cell.textContent = value;
+-                tableRow.append(cell);
+-            });
+-            this.connectionSummary.append(tableRow);
+-        });
+-    }
+-
+     renderDatabaseStatus(databaseStatus = {}) {
+         const migrationCounts = databaseStatus.migrationCounts || {};
+         const lastMigration = databaseStatus.lastMigration || {};
+@@ -76,27 +54,6 @@ class OwnerOperationsController {
+         });
+     }
+
+-    renderStorageStatus(storageStatus = {}) {
+-        const rows = [
+-            ["Storage Configured", storageStatus.configured === true ? "PASS" : "WARN", storageStatus.configured === true ? "yes" : "no"],
+-            ["Storage Endpoint", storageStatus.endpointStatus || "WARN", storageStatus.endpoint || "not configured"],
+-            ["Storage Bucket", storageStatus.bucketStatus || "WARN", storageStatus.bucket || "not configured"],
+-            ["Projects Prefix", storageStatus.projectsPrefixStatus || "WARN", storageStatus.projectsPrefix || "not configured"],
+-            ["Access Key", storageStatus.accessKeyStatus || "WARN", storageStatus.accessKeyConfigured === true ? "configured; value hidden" : "not configured"],
+-            ["Secret Key", storageStatus.secretKeyStatus || "WARN", storageStatus.secretKeyConfigured === true ? "configured; value hidden" : "not configured"],
+-        ];
+-        this.storageStatusRows.replaceChildren();
+-        rows.forEach((row) => {
+-            const tableRow = document.createElement("tr");
+-            row.forEach((value) => {
+-                const cell = document.createElement("td");
+-                cell.textContent = value;
+-                tableRow.append(cell);
+-            });
+-            this.storageStatusRows.append(tableRow);
+-        });
+-    }
+-
+     renderPromotionFoundation(promotionFoundation = {}) {
+         const steps = Array.isArray(promotionFoundation.steps) ? promotionFoundation.steps : [];
+         const rows = steps.length
+@@ -138,10 +95,8 @@ class OwnerOperationsController {
+     load() {
+         try {
+             const payload = readOwnerOperationsStatus();
+-            this.renderConnectionSummary(payload.connectionSummary || {});
+             this.renderDatabaseStatus(payload.databaseStatus || {});
+             this.renderPromotionFoundation(payload.promotionFoundation || {});
+-            this.renderStorageStatus(payload.storageStatus || {});
+             this.setStatus(payload.status || "PASS", payload.message || "Owner Operations loaded.");
+         } catch (error) {
+             this.setStatus("FAIL", error instanceof Error ? error.message : "Owner Operations are unavailable.");
+@@ -151,10 +106,8 @@ class OwnerOperationsController {
+     validateConnection() {
+         try {
+             const result = validateOwnerOperationsConnection();
+-            this.renderConnectionSummary(result.connectionSummary || {});
+             this.renderDatabaseStatus(result.databaseStatus || {});
+             this.renderPromotionFoundation(result.promotionFoundation || {});
+-            this.renderStorageStatus(result.storageStatus || {});
+             this.appendResult(result);
+             this.setStatus(result.status || "PASS", result.message || "Connection validation finished.");
+         } catch (error) {
 diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
-index 549153dad..9c136e291 100644
+index 9c136e291..f4583a320 100644
 --- a/docs_build/dev/codex_commands.md
 +++ b/docs_build/dev/codex_commands.md
-@@ -2392,3 +2392,112 @@ Required reports:
+@@ -2501,3 +2501,90 @@ Required reports:
 
  Packaging:
- - `tmp/PR_26168_228-system-health-env-limits_delta.zip`
+ - `tmp/PR_26168_232-r2-operational-readiness_delta.zip`
 +
 +
-+## PR_26168_229-system-health-severity-cleanup
++## PR_26168_233-admin-system-health-operations-merge
 +
 +Changes:
 +- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 +- Verified the current branch is `main`.
-+- Fixed Admin System Health limit severity so configured limits can be PASS.
-+- Kept `NOT AVAILABLE` usage from generating WARN by itself.
-+- Preserved exact pressure labels: `OK`, `WATCH`, `UPGRADE SOON`, `RISK`.
++- Moved status-only configured connection, database, and project asset storage status visibility from Owner Operations to Admin System Health.
++- Kept secrets hidden and Theme V2-only HTML.
 +
 +Validation:
 +- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check assets/theme-v2/js/admin-system-health.js`
 +- `node --check src/engine/api/admin-system-health-api-client.js`
++- `node --check assets/theme-v2/js/admin-system-health.js`
++- `node --check assets/theme-v2/js/owner-operations.js`
 +- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+- Static System Health contract validation.
-+- `rg -n "LIMIT RISK" . --glob '!node_modules/**' --glob '!tmp/**' --glob '!docs_build/dev/reports/codex_review.diff'`
-+- Targeted Admin System Health/Admin navigation/R2 status/Assets regression Playwright.
++- Static System Health/Owner Operations move contract validation.
++- Targeted Admin System Health, Owner Operations, Admin navigation, Infrastructure storage connectivity, and Assets regression Playwright.
 +- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
 +
 +Required reports:
-+- `docs_build/dev/reports/PR_26168_229-system-health-severity-cleanup.md`
++- `docs_build/dev/reports/PR_26168_233-admin-system-health-operations-merge.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +
 +Packaging:
-+- `tmp/PR_26168_229-system-health-severity-cleanup_delta.zip`
++- `tmp/PR_26168_233-admin-system-health-operations-merge_delta.zip`
 +
 +
-+## PR_26168_230-system-health-live-usage-foundation
-+
-+Changes:
-+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- Verified the current branch is `main`.
-+- Added service-contract separation for configured limits, current usage, and pressure calculation.
-+- Documented provider-specific future usage integration points.
-+- Avoided Cloudflare billing integration and credential exposure.
-+
-+Validation:
-+- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check assets/theme-v2/js/admin-system-health.js`
-+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+- Static System Health usage-foundation contract validation.
-+- Targeted Admin System Health Playwright.
-+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
-+
-+Required reports:
-+- `docs_build/dev/reports/PR_26168_230-system-health-live-usage-foundation.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+
-+Packaging:
-+- `tmp/PR_26168_230-system-health-live-usage-foundation_delta.zip`
-+
-+
-+## PR_26168_231-admin-system-health-consolidation
++## PR_26168_234-system-health-storage-connectivity-startup
 +
 +Changes:
 +- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 +- Verified the current branch is `main`.
-+- Added Admin System Health summary status, score, refresh timestamp, and PASS/WARN/FAIL counts.
-+- Preserved Admin Infrastructure as reference and Owner Operations as actions.
++- Moved Storage Connectivity controls to Admin System Health.
++- Added System Health startup List, Write Test Object, Read Test Object, and Delete Test Object execution.
++- Kept manual rerun buttons on System Health.
 +
 +Validation:
 +- `node --check src/dev-runtime/server/local-api-router.mjs`
++- `node --check src/engine/api/admin-system-health-api-client.js`
 +- `node --check assets/theme-v2/js/admin-system-health.js`
 +- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+- Targeted Admin System Health and Admin navigation Playwright.
++- Static storage connectivity contract validation.
++- Targeted Playwright for startup connectivity status and manual List/Write/Read/Delete buttons.
++- Targeted Infrastructure storage connectivity regression.
 +- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
 +
 +Required reports:
-+- `docs_build/dev/reports/PR_26168_231-admin-system-health-consolidation.md`
-+- `docs_build/dev/reports/codex_changed_files.txt`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
-+
-+Packaging:
-+- `tmp/PR_26168_231-admin-system-health-consolidation_delta.zip`
-+
-+
-+## PR_26168_232-r2-operational-readiness
-+
-+Changes:
-+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- Verified the current branch is `main`.
-+- Added read-only R2 Operational Readiness visibility to Admin System Health.
-+- Surfaced endpoint, bucket, prefix, hidden credential configured status, connectivity test status, readiness rows, and next steps.
-+- Did not add destructive operations.
-+
-+Validation:
-+- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check assets/theme-v2/js/admin-system-health.js`
-+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+- Static R2 readiness contract validation.
-+- Targeted Admin System Health/R2 readiness/Admin navigation/Assets R2 regression Playwright.
-+- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
-+
-+Required reports:
-+- `docs_build/dev/reports/PR_26168_232-r2-operational-readiness.md`
++- `docs_build/dev/reports/PR_26168_234-system-health-storage-connectivity-startup.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +
 +Packaging:
-+- `tmp/PR_26168_232-r2-operational-readiness_delta.zip`
++- `tmp/PR_26168_234-system-health-storage-connectivity-startup_delta.zip`
++
++
++## PR_26168_235-owner-operations-scope-cleanup
++
++Changes:
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Verified the current branch is `main`.
++- Removed duplicated status-only content from Owner Operations after moving it to System Health.
++- Removed Storage Connectivity controls from Owner Operations.
++- Kept Owner Operations focused on database operations and project package/promotion actions.
++
++Validation:
++- `node --check src/dev-runtime/server/local-api-router.mjs`
++- `node --check assets/theme-v2/js/owner-operations.js`
++- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
++- Static Owner Operations scope validation.
++- Targeted Owner Operations and Admin navigation Playwright.
++- Full samples smoke skipped because samples and `start_of_day` folders were not touched.
++
++Required reports:
++- `docs_build/dev/reports/PR_26168_235-owner-operations-scope-cleanup.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++
++Packaging:
++- `tmp/PR_26168_235-owner-operations-scope-cleanup_delta.zip`
 diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
-index 7185b4724..4aa432b5b 100644
+index 4aa432b5b..d9631e7d6 100644
 --- a/docs_build/dev/commit_comment.txt
 +++ b/docs_build/dev/commit_comment.txt
 @@ -1 +1 @@
--System Health env limits - PR_26168_228-system-health-env-limits
-+R2 operational readiness - PR_26168_232-r2-operational-readiness
+-R2 operational readiness - PR_26168_232-r2-operational-readiness
++Owner operations scope cleanup - PR_26168_235-owner-operations-scope-cleanup
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 88bd3898d..7962d056c 100644
+index 7962d056c..f9be37561 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,16 +6,10 @@ Missing changed runtime JS files are WARN, not FAIL.
- Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+@@ -7,9 +7,9 @@ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 46/65
--(88%) assets/theme-v2/js/admin-infrastructure.js - executed lines 100/100; executed functions 14/16
--(100%) assets/theme-v2/js/admin-system-health.js - executed lines 90/90; executed functions 14/14
--(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 19/19; executed functions 3/3
-+(100%) assets/theme-v2/js/admin-system-health.js - executed lines 120/120; executed functions 17/17
- (100%) src/engine/api/admin-system-health-api-client.js - executed lines 10/10; executed functions 2/2
+-(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 46/65
+-(100%) assets/theme-v2/js/admin-system-health.js - executed lines 120/120; executed functions 17/17
+-(100%) src/engine/api/admin-system-health-api-client.js - executed lines 10/10; executed functions 2/2
++(100%) assets/theme-v2/js/admin-system-health.js - executed lines 235/235; executed functions 34/34
++(100%) assets/theme-v2/js/owner-operations.js - executed lines 125/125; executed functions 20/20
++(100%) src/engine/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
 
  Guardrail warnings:
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
--(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index 04a9b88e2..40128699d 100644
+index 40128699d..4b3a21631 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -14,16 +14,12 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+@@ -14,13 +14,13 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
  Exercised tool entry points detected:
  (50%) Toolbox Index - exercised 1 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(78%) Theme V2 Shared JS - exercised 5 runtime JS files
-+(79%) Theme V2 Shared JS - exercised 5 runtime JS files
+-(79%) Theme V2 Shared JS - exercised 5 runtime JS files
++(84%) Theme V2 Shared JS - exercised 6 runtime JS files
 
  Changed runtime JS files covered:
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 46/65
--(88%) assets/theme-v2/js/admin-infrastructure.js - executed lines 100/100; executed functions 14/16
--(100%) assets/theme-v2/js/admin-system-health.js - executed lines 90/90; executed functions 14/14
--(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 19/19; executed functions 3/3
-+(100%) assets/theme-v2/js/admin-system-health.js - executed lines 120/120; executed functions 17/17
- (100%) src/engine/api/admin-system-health-api-client.js - executed lines 10/10; executed functions 2/2
+-(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 46/65
+-(100%) assets/theme-v2/js/admin-system-health.js - executed lines 120/120; executed functions 17/17
+-(100%) src/engine/api/admin-system-health-api-client.js - executed lines 10/10; executed functions 2/2
++(100%) assets/theme-v2/js/admin-system-health.js - executed lines 235/235; executed functions 34/34
++(100%) assets/theme-v2/js/owner-operations.js - executed lines 125/125; executed functions 20/20
++(100%) src/engine/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
 
  Files with executed line/function counts where available:
-@@ -35,23 +31,16 @@ Files with executed line/function counts where available:
+ (33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
+@@ -31,9 +31,11 @@ Files with executed line/function counts where available:
  (71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 46/65
  (86%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 12/14
  (88%) assets/theme-v2/js/admin-infrastructure.js - executed lines 100/100; executed functions 14/16
--(100%) assets/theme-v2/js/admin-system-health.js - executed lines 90/90; executed functions 14/14
-+(100%) assets/theme-v2/js/admin-system-health.js - executed lines 120/120; executed functions 17/17
+-(100%) assets/theme-v2/js/admin-system-health.js - executed lines 120/120; executed functions 17/17
++(100%) assets/theme-v2/js/admin-system-health.js - executed lines 235/235; executed functions 34/34
++(100%) assets/theme-v2/js/owner-operations.js - executed lines 125/125; executed functions 20/20
  (100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 19/19; executed functions 3/3
- (100%) src/engine/api/admin-system-health-api-client.js - executed lines 10/10; executed functions 2/2
+-(100%) src/engine/api/admin-system-health-api-client.js - executed lines 10/10; executed functions 2/2
++(100%) src/engine/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
++(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
 
  Uncovered or low-coverage changed JS files:
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: uncovered changed runtime JS file; advisory only
-
+@@ -41,6 +43,6 @@ Uncovered or low-coverage changed JS files:
  Changed JS files considered:
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
- (71%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
--(88%) assets/theme-v2/js/admin-infrastructure.js - changed JS file with browser V8 coverage
+-(71%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
  (100%) assets/theme-v2/js/admin-system-health.js - changed JS file with browser V8 coverage
--(100%) src/engine/api/admin-infrastructure-api-client.js - changed JS file with browser V8 coverage
++(100%) assets/theme-v2/js/owner-operations.js - changed JS file with browser V8 coverage
  (100%) src/engine/api/admin-system-health-api-client.js - changed JS file with browser V8 coverage
+diff --git a/owner/operations.html b/owner/operations.html
+index 035a61cbb..3046934a3 100644
+--- a/owner/operations.html
++++ b/owner/operations.html
+@@ -6,7 +6,7 @@
+     <base href="/">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+     <title>Owner Operations - Game Foundry Studio LLC</title>
+-    <meta name="description" content="Owner-only operational controls and connection status.">
++    <meta name="description" content="Owner-only database operations and project package promotion actions.">
+     <link rel="icon" href="/favicon.svg">
+     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+ </head>
+@@ -18,7 +18,7 @@
+             <div class="container">
+                 <div class="kicker">Owner</div>
+                 <h1>Operations</h1>
+-                <p class="lede">Validate configured connections and review owner-only operational actions.</p>
++                <p class="lede">Run owner-only database operations and plan project package promotion actions.</p>
+             </div>
+         </section>
+         <section class="section">
+@@ -41,40 +41,16 @@
+                                     <button class="btn btn--compact" type="button" data-owner-operation-action="promote-uat-to-prod">Promote UAT to PROD</button>
+                                 </div>
+                             </details>
+-                            <details class="vertical-accordion" open>
+-                                <summary>Storage Connectivity</summary>
+-                                <div class="accordion-body content-stack">
+-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-list">List</button>
+-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-write-test-object">Write Test Object</button>
+-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-read-test-object">Read Test Object</button>
+-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-delete-test-object">Delete Test Object</button>
+-                                </div>
+-                            </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="owner-operations" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                     <section class="tool-center-panel content-stack" aria-labelledby="owner-operations-title">
+                         <div>
+                             <div class="kicker">Work Surface</div>
+-                            <h2 id="owner-operations-title">Connection Summary</h2>
+-                        </div>
+-                        <p>Connection details are summarized without exposing secrets. Environment switching remains manual through configuration changes and server restart.</p>
+-                        <p>Promotion planning moves project metadata, asset references, and project asset storage objects between environment lanes through reviewed server-side execution.</p>
+-                        <div class="table-wrapper">
+-                            <table class="data-table" aria-label="Configured connection summary">
+-                                <caption>Configured Connections</caption>
+-                                <thead>
+-                                    <tr>
+-                                        <th scope="col">Connection</th>
+-                                        <th scope="col">Status</th>
+-                                        <th scope="col">Mode</th>
+-                                    </tr>
+-                                </thead>
+-                                <tbody data-owner-connection-summary>
+-                                    <tr><td>Account</td><td>Loading</td><td>read-only summary</td></tr>
+-                                </tbody>
+-                            </table>
++                            <h2 id="owner-operations-title">Database and Package Operations</h2>
+                         </div>
++                        <p>Database operations and project package promotion actions require reviewed server-side execution outside the browser.</p>
++                        <p>Service, configuration, readiness, and storage connectivity status live in Admin System Health.</p>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Owner database status">
+                                 <caption>Database Status</caption>
+@@ -90,21 +66,6 @@
+                                 </tbody>
+                             </table>
+                         </div>
+-                        <div class="table-wrapper">
+-                            <table class="data-table" aria-label="Owner storage status">
+-                                <caption>Project Asset Storage Status</caption>
+-                                <thead>
+-                                    <tr>
+-                                        <th scope="col">Field</th>
+-                                        <th scope="col">Status</th>
+-                                        <th scope="col">Value</th>
+-                                    </tr>
+-                                </thead>
+-                                <tbody data-owner-storage-status-rows>
+-                                    <tr><td>Storage Configured</td><td>Loading</td><td>Loading owner storage status.</td></tr>
+-                                </tbody>
+-                            </table>
+-                        </div>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Owner project promotion foundation">
+                                 <caption>Project Promotion Foundation</caption>
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 9d1395304..ef7de40ef 100644
+index ef7de40ef..271db2ab8 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -256,6 +256,24 @@ const SYSTEM_HEALTH_LIMIT_ENV_KEYS = Object.freeze([
+@@ -309,26 +309,6 @@ const OWNER_OPERATION_ACTIONS = Object.freeze([
+     label: "Run migration",
+     mode: "manual-only",
    }),
- ]);
- const SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS = Object.freeze(["OK", "WATCH", "UPGRADE SOON", "RISK"]);
-+const SYSTEM_HEALTH_USAGE_NOT_AVAILABLE = "NOT AVAILABLE";
-+const SYSTEM_HEALTH_USAGE_CONTRACTS = Object.freeze({
-+  GAMEFOUNDRY_DB_CONNECTION_LIMIT: Object.freeze({
-+    integrationPoint: "Future Local DB pool telemetry can report active connection count through the Local API.",
-+  }),
-+  GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES: Object.freeze({
-+    integrationPoint: "Future Local DB storage telemetry can report database bytes used through the Local API.",
-+  }),
-+  GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY: Object.freeze({
-+    integrationPoint: "Future R2 provider telemetry can report monthly Class A operation count through the Local API.",
-+  }),
-+  GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY: Object.freeze({
-+    integrationPoint: "Future R2 provider telemetry can report monthly Class B operation count through the Local API.",
-+  }),
-+  GAMEFOUNDRY_STORAGE_LIMIT_BYTES: Object.freeze({
-+    integrationPoint: "Future R2 provider telemetry can report project asset storage bytes used through the Local API.",
-+  }),
-+});
- const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
-   Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
-   Object.freeze({ lane: "IST", path: "/ist/projects/" }),
-@@ -482,37 +500,208 @@ function projectPackageReadinessStatus() {
+-  Object.freeze({
+-    id: "storage-list",
+-    label: "Storage list",
+-    mode: "storage-connectivity",
+-  }),
+-  Object.freeze({
+-    id: "storage-write-test-object",
+-    label: "Storage write test object",
+-    mode: "storage-connectivity",
+-  }),
+-  Object.freeze({
+-    id: "storage-read-test-object",
+-    label: "Storage read test object",
+-    mode: "storage-connectivity",
+-  }),
+-  Object.freeze({
+-    id: "storage-delete-test-object",
+-    label: "Storage delete test object",
+-    mode: "storage-connectivity",
+-  }),
+   Object.freeze({
+     id: "promote-dev-to-ist",
+     label: "Promote DEV to IST",
+@@ -2367,6 +2347,11 @@ LIMIT 1;
+     return this.runStorageConnectivityAction(String(body.actionId || "").trim());
    }
- }
 
-+function parsePositiveIntegerConfig(rawValue) {
-+  const value = String(rawValue || "").trim();
-+  if (!/^[1-9]\d*$/.test(value)) {
-+    return null;
++  async adminSystemHealthStorageConnectivityAction(body = {}) {
++    await this.requireAdminSession();
++    return this.runStorageConnectivityAction(String(body.actionId || "").trim());
 +  }
-+  const numberValue = Number(value);
-+  return Number.isSafeInteger(numberValue) ? numberValue : null;
-+}
 +
-+function systemHealthConfiguredLimit(limit) {
-+  const configuredLimit = dotEnvValue(limit.key);
-+  if (!configuredLimit.found || !configuredLimit.value) {
-+    return {
-+      message: `Set ${limit.key} in the selected .env.<target> copy-source, copy it to .env, and restart validation.`,
-+      numericValue: null,
-+      status: "WARN",
-+      value: "not configured",
-+    };
-+  }
-+  const numericValue = parsePositiveIntegerConfig(configuredLimit.value);
-+  if (numericValue === null) {
-+    return {
-+      message: `${limit.key} must be a positive integer value in bytes, operations, or connection count as applicable.`,
-+      numericValue: null,
-+      status: "WARN",
-+      value: configuredLimit.value,
-+    };
-+  }
-+  return {
-+    message: `${limit.key} is configured with a positive integer value.`,
-+    numericValue,
-+    status: "PASS",
-+    value: configuredLimit.value,
-+  };
-+}
-+
-+function systemHealthCurrentUsage(limit) {
-+  const contract = SYSTEM_HEALTH_USAGE_CONTRACTS[limit.key] || {};
-+  return {
-+    integrationPoint: contract.integrationPoint || "Future provider telemetry can report usage through the Local API.",
-+    numericValue: null,
-+    status: SYSTEM_HEALTH_USAGE_NOT_AVAILABLE,
-+    value: SYSTEM_HEALTH_USAGE_NOT_AVAILABLE,
-+  };
-+}
-+
-+function systemHealthPressure(configuredLimit, currentUsage) {
-+  if (configuredLimit.numericValue === null || currentUsage.numericValue === null) {
-+    return {
-+      calculated: false,
-+      label: SYSTEM_HEALTH_USAGE_NOT_AVAILABLE,
-+      status: SYSTEM_HEALTH_USAGE_NOT_AVAILABLE,
-+    };
-+  }
-+  const ratio = currentUsage.numericValue / configuredLimit.numericValue;
-+  if (ratio >= 0.95) {
-+    return { calculated: true, label: "RISK", status: "RISK" };
-+  }
-+  if (ratio >= 0.85) {
-+    return { calculated: true, label: "UPGRADE SOON", status: "UPGRADE SOON" };
-+  }
-+  if (ratio >= 0.7) {
-+    return { calculated: true, label: "WATCH", status: "WATCH" };
-+  }
-+  return { calculated: true, label: "OK", status: "OK" };
-+}
-+
- function systemHealthLimitRows() {
-   return SYSTEM_HEALTH_LIMIT_ENV_KEYS.map((limit) => {
--    const configuredLimit = dotEnvValue(limit.key);
--    const hasLimitValue = configuredLimit.found && configuredLimit.value;
-+    const configuredLimit = systemHealthConfiguredLimit(limit);
-+    const currentUsage = systemHealthCurrentUsage(limit);
-+    const pressure = systemHealthPressure(configuredLimit, currentUsage);
-     return {
-       area: limit.service,
-+      configuredLimit,
-+      currentUsage,
-       field: limit.label,
--      limit: hasLimitValue ? configuredLimit.value : "not configured",
--      nextStep: hasLimitValue
--        ? `Add safe ${limit.service} usage reporting through the Local API before calculating pressure.`
--        : `Set ${limit.key} in the selected .env.<target> copy-source, copy it to .env, then add safe ${limit.service} usage reporting through the Local API.`,
--      pressure: "NOT AVAILABLE",
-+      limit: configuredLimit.value,
-+      nextStep: configuredLimit.status === "PASS"
-+        ? currentUsage.integrationPoint
-+        : configuredLimit.message,
-+      pressure: pressure.label,
-+      pressureCalculation: pressure,
-       pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
--      status: "WARN",
--      usage: "NOT AVAILABLE",
-+      status: configuredLimit.status,
-+      usage: currentUsage.value,
-       variableName: limit.key,
-     };
-   });
- }
-
-+function systemHealthLimitStatus(rows) {
-+  return rows.some((row) => row.status !== "PASS") ? "WARN" : "PASS";
-+}
-+
-+function normalizeHealthStatus(status) {
-+  const normalized = String(status || "").toUpperCase();
-+  if (normalized === "ERROR") {
-+    return "FAIL";
-+  }
-+  if (normalized === "PASS" || normalized === "WARN" || normalized === "FAIL") {
-+    return normalized;
-+  }
-+  return "WARN";
-+}
-+
-+function systemHealthCounts(rows) {
-+  return rows.reduce((counts, row) => {
-+    counts[normalizeHealthStatus(row.status)] += 1;
-+    return counts;
-+  }, { FAIL: 0, PASS: 0, WARN: 0 });
-+}
-+
- function overallHealthStatus(rows) {
--  const statuses = rows.map((row) => String(row.status || "").toUpperCase());
--  if (statuses.includes("FAIL") || statuses.includes("ERROR")) {
-+  const statuses = rows.map((row) => normalizeHealthStatus(row.status));
-+  if (statuses.includes("FAIL")) {
-     return "FAIL";
-   }
--  if (statuses.includes("WARN") || statuses.includes("SKIP")) {
-+  if (statuses.includes("WARN")) {
-     return "WARN";
-   }
-   return "PASS";
- }
-
-+function systemHealthSummary(rows) {
-+  const counts = systemHealthCounts(rows);
-+  const total = counts.PASS + counts.WARN + counts.FAIL;
-+  return {
-+    counts,
-+    lastRefreshAt: new Date().toISOString(),
-+    score: total ? Math.round((counts.PASS / total) * 100) : 0,
-+    status: overallHealthStatus(rows),
-+    total,
-+  };
-+}
-+
-+function systemHealthR2Readiness(storageStatus) {
-+  const credentialsConfigured = storageStatus.accessKeyConfigured === true && storageStatus.secretKeyConfigured === true;
-+  const configurationReady = storageStatus.configured === true
-+    && Boolean(storageStatus.endpoint)
-+    && Boolean(storageStatus.bucket)
-+    && Boolean(storageStatus.projectsPrefix)
-+    && credentialsConfigured;
-+  const configurationNextStep = configurationReady
-+    ? "Run the existing Admin Infrastructure storage connectivity actions when live R2 proof is needed."
-+    : "Configure endpoint, bucket, projects prefix, and hidden credentials in the selected .env.<target> copy-source, then copy it to .env.";
-+  const readinessTargets = ["Ready for Assets", "Ready for Project Packages", "Ready for Promotion Packages"];
-+  const rows = [
-+    {
-+      area: "Project Asset Storage / R2",
-+      field: "Endpoint",
-+      nextStep: storageStatus.endpoint ? "Endpoint is configured." : configurationNextStep,
-+      status: storageStatus.endpointStatus || "WARN",
-+      value: storageStatus.endpoint || "not configured",
-+    },
-+    {
-+      area: "Project Asset Storage / R2",
-+      field: "Bucket",
-+      nextStep: storageStatus.bucket ? "Bucket is configured." : configurationNextStep,
-+      status: storageStatus.bucketStatus || "WARN",
-+      value: storageStatus.bucket || "not configured",
-+    },
-+    {
-+      area: "Project Asset Storage / R2",
-+      field: "Prefix",
-+      nextStep: storageStatus.projectsPrefix ? "Prefix is configured." : configurationNextStep,
-+      status: storageStatus.projectsPrefixStatus || "WARN",
-+      value: storageStatus.projectsPrefix || "not configured",
-+    },
-+    {
-+      area: "Project Asset Storage / R2",
-+      field: "Credential configured status",
-+      nextStep: credentialsConfigured ? "Credentials are configured and hidden." : configurationNextStep,
-+      status: credentialsConfigured ? "PASS" : "WARN",
-+      value: credentialsConfigured ? "configured; values hidden" : "not configured",
-+    },
-+    {
-+      area: "Project Asset Storage / R2",
-+      field: "Connectivity test status",
-+      nextStep: "Use the existing Admin Infrastructure connectivity actions for List, Write test object, Read test object, and Delete test object validation.",
-+      status: "SKIP",
-+      value: "NOT RUN",
-+    },
-+    ...readinessTargets.map((target) => ({
-+      area: "R2 operational readiness",
-+      field: target,
-+      nextStep: configurationReady
-+        ? "Configuration is ready; collect live connectivity evidence before release or promotion signoff."
-+        : configurationNextStep,
-+      status: configurationReady ? "PASS" : "WARN",
-+      value: configurationReady ? "Ready" : "Not ready",
-+    })),
-+  ];
-+  return {
-+    recommendations: configurationReady
-+      ? ["Collect live connectivity evidence before release or promotion signoff."]
-+      : [configurationNextStep],
-+    rows,
-+    status: configurationReady ? "PASS" : "WARN",
-+  };
-+}
-+
- function providerFailureMessage(providerContract, providerId) {
-   const failure = providerContract.providerDiagnostics.providerFailures
-     .find((candidate) => candidate.providerId === providerId);
-@@ -2185,8 +2374,10 @@ LIMIT 1;
-     const storageStatus = this.ownerStorageStatus();
-     const environmentStatus = storageProjectsPrefixStatus();
-     const limitRows = systemHealthLimitRows();
-+    const limitsStatus = systemHealthLimitStatus(limitRows);
-     const packageStatus = projectPackageReadinessStatus();
-     const promotionFoundation = this.ownerPromotionFoundation();
-+    const r2Readiness = systemHealthR2Readiness(storageStatus);
-     const importBlocked = promotionFoundation.importOverwriteAllowed === false
-       && promotionFoundation.browserExecutionAllowed === false
-       && promotionFoundation.destructiveOperationsAllowed === false;
-@@ -2226,8 +2417,10 @@ LIMIT 1;
-       },
-       {
-         area: "Environment limits",
--        status: "WARN",
--        summary: "Limits are read from current .env because values may differ by DEV/IST/UAT/PRD; live usage is NOT AVAILABLE until provider usage metrics are exposed safely.",
-+        status: limitsStatus,
-+        summary: limitsStatus === "PASS"
-+          ? "Required limits are configured correctly; live usage is NOT AVAILABLE until provider usage metrics are exposed safely."
-+          : "One or more required limits are missing or invalid in current .env.",
-       },
-       {
-         area: "Migration status",
-@@ -2270,8 +2463,10 @@ LIMIT 1;
+   async adminSystemHealthStatus() {
+     const session = await this.requireAdminSession();
+     const authStatus = this.authStatus();
+@@ -2463,9 +2448,12 @@ LIMIT 1;
        message: "Admin System Health loaded safe status only.",
        overview,
        pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
-+      r2Readiness,
++      connectionSummary: this.ownerConnectionSummary(),
++      databaseStatus,
+       r2Readiness,
        secretEditingAllowed: false,
        secretsExposed: false,
-+      summary: systemHealthSummary(overview),
++      storageStatus,
+       summary: systemHealthSummary(overview),
        status: overallHealthStatus(overview),
      };
-   }
+@@ -2556,9 +2544,6 @@ LIMIT 1;
+     if (action.id === "validate-current-connection") {
+       return this.validateOwnerConnection();
+     }
+-    if (action.mode === "storage-connectivity") {
+-      return this.runStorageConnectivityAction(action.id);
+-    }
+     return {
+       actionId: action.id,
+       executed: false,
+@@ -4074,6 +4059,12 @@ export function createLocalApiRouter() {
+         return true;
+       }
+
++      if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "POST" && parts[3] === "storage-connectivity-action") {
++        const body = await readRequestJson(request);
++        ok(response, await dataSource.adminSystemHealthStorageConnectivityAction(body));
++        return true;
++      }
++
+       if (parts[1] === "owner" && parts[2] === "operations" && request.method === "GET" && parts[3] === "status") {
+         ok(response, await dataSource.ownerOperationsStatus());
+         return true;
+diff --git a/src/engine/api/admin-system-health-api-client.js b/src/engine/api/admin-system-health-api-client.js
+index da0a4ef8e..dcac596fd 100644
+--- a/src/engine/api/admin-system-health-api-client.js
++++ b/src/engine/api/admin-system-health-api-client.js
+@@ -9,3 +9,13 @@ export function readAdminSystemHealthStatus() {
+     "Admin System Health status",
+   );
+ }
++
++export function runAdminSystemHealthStorageConnectivityAction(actionId) {
++  return requireServerApiData(
++    safeRequestServerApi("/admin/system-health/storage-connectivity-action", {
++      body: { actionId },
++      method: "POST",
++    }),
++    "Admin System Health storage connectivity action",
++  );
++}
 diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-index f61bb5cf3..11e628bc5 100644
+index 11e628bc5..41a345c2e 100644
 --- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
 +++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-@@ -101,11 +101,11 @@ async function startAdminPage(page, pathName, options = {}) {
-       { area: "Promotion/package safety", field: "Import overwrite", status: "PASS", value: "fail-visible-until-explicit-confirmation" },
-     ],
-     limits: [
--      { variableName: "GAMEFOUNDRY_STORAGE_LIMIT_BYTES", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_STORAGE_LIMIT_BYTES in the selected .env.<target> copy-source, copy it to .env, then add safe Project Asset Storage / R2 usage reporting through the Local API." },
--      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY in the selected .env.<target> copy-source, copy it to .env, then add safe Project Asset Storage / R2 usage reporting through the Local API." },
--      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY in the selected .env.<target> copy-source, copy it to .env, then add safe Project Asset Storage / R2 usage reporting through the Local API." },
--      { variableName: "GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES in the selected .env.<target> copy-source, copy it to .env, then add safe Product Data / Local DB usage reporting through the Local API." },
--      { variableName: "GAMEFOUNDRY_DB_CONNECTION_LIMIT", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_DB_CONNECTION_LIMIT in the selected .env.<target> copy-source, copy it to .env, then add safe Product Data / Local DB usage reporting through the Local API." },
-+      { variableName: "GAMEFOUNDRY_STORAGE_LIMIT_BYTES", limit: "1073741824", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future R2 provider telemetry can report project asset storage bytes used through the Local API." },
-+      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY", limit: "1000000", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future R2 provider telemetry can report monthly Class A operation count through the Local API." },
-+      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY", limit: "10000000", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future R2 provider telemetry can report monthly Class B operation count through the Local API." },
-+      { variableName: "GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES", limit: "1073741824", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future Local DB storage telemetry can report database bytes used through the Local API." },
-+      { variableName: "GAMEFOUNDRY_DB_CONNECTION_LIMIT", limit: "20", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", status: "PASS", nextStep: "Future Local DB pool telemetry can report active connection count through the Local API." },
-     ],
-     message: "Admin System Health loaded safe status only.",
-     overview: [
-@@ -114,13 +114,33 @@ async function startAdminPage(page, pathName, options = {}) {
-       { area: "Project Asset Storage / R2", status: "PASS", summary: "Project asset storage is configured. Credential values are hidden." },
-       { area: "Environment configuration", status: "PASS", summary: "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX matches exactly one project storage lane." },
-       { area: "Secrets status", status: "PASS", summary: "Storage credentials are configured; secret values are hidden." },
--      { area: "Environment limits", status: "WARN", summary: "Limits are read from current .env because values may differ by DEV/IST/UAT/PRD; live usage is NOT AVAILABLE until provider usage metrics are exposed safely." },
-+      { area: "Environment limits", status: "PASS", summary: "Required limits are configured correctly; live usage is NOT AVAILABLE until provider usage metrics are exposed safely." },
-       { area: "Migration status", status: "PASS", summary: "DDL=15; DML=15; last=support-tickets.sql." },
-       { area: "Project package readiness", status: "PASS", summary: "Project package decision note is ready for .gfsp export/import/validate planning." },
-       { area: "Promotion/package safety", status: "PASS", summary: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists." },
-     ],
-+    r2Readiness: {
-+      rows: [
-+        { area: "Project Asset Storage / R2", field: "Endpoint", status: "PASS", value: "https://r2.example.test", nextStep: "Endpoint is configured." },
-+        { area: "Project Asset Storage / R2", field: "Bucket", status: "PASS", value: "gamefoundry-project-assets", nextStep: "Bucket is configured." },
-+        { area: "Project Asset Storage / R2", field: "Prefix", status: "PASS", value: "/dev/projects/", nextStep: "Prefix is configured." },
-+        { area: "Project Asset Storage / R2", field: "Credential configured status", status: "PASS", value: "configured; values hidden", nextStep: "Credentials are configured and hidden." },
-+        { area: "Project Asset Storage / R2", field: "Connectivity test status", status: "SKIP", value: "NOT RUN", nextStep: "Use the existing Admin Infrastructure connectivity actions for List, Write test object, Read test object, and Delete test object validation." },
-+        { area: "R2 operational readiness", field: "Ready for Assets", status: "PASS", value: "Ready", nextStep: "Configuration is ready; collect live connectivity evidence before release or promotion signoff." },
-+        { area: "R2 operational readiness", field: "Ready for Project Packages", status: "PASS", value: "Ready", nextStep: "Configuration is ready; collect live connectivity evidence before release or promotion signoff." },
-+        { area: "R2 operational readiness", field: "Ready for Promotion Packages", status: "PASS", value: "Ready", nextStep: "Configuration is ready; collect live connectivity evidence before release or promotion signoff." },
-+      ],
+@@ -90,6 +90,36 @@ async function startAdminPage(page, pathName, options = {}) {
+   const storagePathStatus = options.storagePathStatus || storagePathStatusFor("/dev/projects/");
+   const adminStorageConnectivityPosts = [];
+   const systemHealthStatus = options.systemHealthStatus || {
++    connectionSummary: {
++      account: { configured: true, status: "ready" },
++      environmentSwitching: "manual-env-change-and-server-restart",
++      productData: { configured: true, status: "adapter-ready" },
++      projectAssetStorage: { configured: true, status: "configured" },
++      secretsExposed: false,
++    },
++    databaseStatus: {
++      configured: true,
++      databaseName: "gamefoundry_dev",
++      databaseNameStatus: "PASS",
++      host: "192.168.2.5",
++      hostStatus: "PASS",
++      lastMigration: {
++        appliedAt: "2026-06-17 01:07:30.540517+00",
++        name: "support-tickets.sql",
++        type: "DML",
++      },
++      lastMigrationStatus: "PASS",
++      migrationCounts: {
++        DDL: 15,
++        DML: 15,
++      },
++      migrationStatus: "PASS",
++      port: 55431,
++      portStatus: "PASS",
++      sslMode: "disable",
++      sslModeStatus: "PASS",
 +      status: "PASS",
 +    },
+     details: [
+       { area: "Account/session readiness", field: "Session", status: "PASS", value: "authenticated" },
+       { area: "Product Data / Local DB", field: "Database name", status: "PASS", value: "gamefoundry_dev" },
+@@ -134,6 +164,20 @@ async function startAdminPage(page, pathName, options = {}) {
+     },
      secretEditingAllowed: false,
      secretsExposed: false,
-+    summary: {
-+      counts: { FAIL: 0, PASS: 9, WARN: 0 },
-+      lastRefreshAt: "2026-06-17T16:00:00.000Z",
-+      score: 100,
++    storageStatus: {
++      accessKeyConfigured: true,
++      accessKeyStatus: "PASS",
++      bucket: "gamefoundry-dev-assets",
++      bucketStatus: "PASS",
++      configured: true,
++      endpoint: "https://storage.example.invalid",
++      endpointStatus: "PASS",
++      projectsPrefix: "/dev/projects/",
++      projectsPrefixStatus: "PASS",
++      secretKeyConfigured: true,
++      secretKeyStatus: "PASS",
 +      status: "PASS",
-+      total: 9,
 +    },
-     status: "PASS",
-   };
-
-@@ -491,6 +511,10 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
-         await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("Storage connectivity not run.");
-       } else if (adminPage.systemHealth) {
-         await expect(page.locator("[data-admin-system-health-status]")).toContainText("PASS: Admin System Health loaded safe status only.");
-+        await expect(page.locator("[data-admin-system-health-summary-rows]")).toContainText("100");
-+        await expect(page.locator("[data-admin-system-health-summary-rows]")).toContainText("2026-06-17T16:00:00.000Z");
-+        await expect(page.locator("[data-admin-system-health-summary-rows]")).toContainText("9");
-+        await expect(page.locator("[data-admin-system-health-summary-rows]")).toContainText("0");
-         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Account/session readiness");
-         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Product Data / Local DB");
-         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Project Asset Storage / R2");
-@@ -500,6 +524,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
-         await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Migration status");
+     summary: {
+       counts: { FAIL: 0, PASS: 9, WARN: 0 },
+       lastRefreshAt: "2026-06-17T16:00:00.000Z",
+@@ -295,6 +339,32 @@ async function startAdminPage(page, pathName, options = {}) {
+       }),
+     });
+   });
++  await page.route("**/api/admin/system-health/storage-connectivity-action", async (route) => {
++    const body = route.request().postDataJSON();
++    adminStorageConnectivityPosts.push(body);
++    const actionLabels = {
++      "storage-delete-test-object": "Delete test object",
++      "storage-list": "List",
++      "storage-read-test-object": "Read test object",
++      "storage-write-test-object": "Write test object",
++    };
++    const actionLabel = actionLabels[body.actionId] || body.actionId;
++    await route.fulfill({
++      contentType: "application/json",
++      body: JSON.stringify({
++        data: {
++          actionId: body.actionId,
++          executed: true,
++          message: `${actionLabel} completed through Local API under /dev/projects/. Test object /dev/projects/connectivity/storage-connectivity-test.txt.`,
++          projectsPrefix: "/dev/projects/",
++          secretsExposed: false,
++          status: "PASS",
++          testObjectKey: "/dev/projects/connectivity/storage-connectivity-test.txt",
++        },
++        ok: true,
++      }),
++    });
++  });
+   await page.route("**/api/product-data/snapshot", async (route) => {
+     const timestamp = "2026-06-16T00:00:00.000Z";
+     const audit = {
+@@ -449,8 +519,8 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+       await expect(page.locator(".tool-center-panel")).toBeVisible();
+       await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(adminPage.menuLabels || ADMIN_TOOL_MENU_LABELS);
+       await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText(adminPage.heading);
+-      await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(adminPage.liveSettings ? 1 : 2);
+-      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(adminPage.infrastructure || adminPage.systemHealth ? 3 : 2);
++      await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(adminPage.liveSettings ? 1 : (adminPage.systemHealth ? 3 : 2));
++      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(adminPage.systemHealth ? 4 : (adminPage.infrastructure ? 3 : 2));
+       if (adminPage.liveSettings) {
+         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
+         await expect(page.locator("[data-platform-banner-active]")).toBeVisible();
+@@ -525,6 +595,33 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
          await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Project package readiness");
          await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Promotion/package safety");
-+        await expect(page.locator("[data-admin-system-health-overview-rows]").filter({ hasText: "Environment limits" })).toContainText("PASS");
+         await expect(page.locator("[data-admin-system-health-overview-rows]").filter({ hasText: "Environment limits" })).toContainText("PASS");
++        await expect(page.locator("[data-admin-system-health-connection-summary]")).toContainText("Account");
++        await expect(page.locator("[data-admin-system-health-connection-summary]")).toContainText("Product Data / Local DB");
++        await expect(page.locator("[data-admin-system-health-connection-summary]")).toContainText("Project Asset Storage / R2");
++        await expect(page.locator("[data-admin-system-health-connection-summary]")).toContainText("not exposed");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Connection Configured");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Database Host");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("192.168.2.5");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Database Port");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("55431");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Database Name");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("gamefoundry_dev");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("SSL Mode");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("disable");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Migration Counts");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("DDL=15; DML=15");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).toContainText("Last Migration");
++        await expect(page.locator("[data-admin-system-health-database-status-rows]")).not.toContainText("postgres://");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("Storage Configured");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("Storage Endpoint");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("https://storage.example.invalid");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("Storage Bucket");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("gamefoundry-dev-assets");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("Projects Prefix");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("/dev/projects/");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).toContainText("configured; value hidden");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).not.toContainText("asset-test-secret-key");
++        await expect(page.locator("[data-admin-system-health-storage-status-rows]")).not.toContainText("asset-test-access-key");
          await expect(page.locator("[data-admin-system-health-detail-rows]")).toContainText("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX");
          await expect(page.locator("[data-admin-system-health-detail-rows]")).toContainText("configured; value hidden");
          await expect(page.locator("[data-admin-system-health-detail-rows]")).not.toContainText("asset-test-secret-key");
-@@ -511,7 +536,22 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
-         await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("GAMEFOUNDRY_DB_CONNECTION_LIMIT");
-         await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("NOT AVAILABLE");
-         await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("Local API");
-+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("1073741824");
-+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("20");
-         await expect(page.locator("caption").filter({ hasText: "values may differ by DEV/IST/UAT/PRD" })).toBeVisible();
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Endpoint");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Bucket");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Prefix");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Credential configured status");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Connectivity test status");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Ready for Assets");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Ready for Project Packages");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("Ready for Promotion Packages");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("configured; values hidden");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("NOT RUN");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("collect live connectivity evidence");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).not.toContainText("asset-test-secret-key");
-+        await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).not.toContainText("asset-test-access-key");
+@@ -552,6 +649,43 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+         await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).toContainText("collect live connectivity evidence");
+         await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).not.toContainText("asset-test-secret-key");
+         await expect(page.locator("[data-admin-system-health-r2-readiness-rows]")).not.toContainText("asset-test-access-key");
++        await expect(page.locator("[data-admin-system-health-storage-action='storage-list']")).toHaveText("List");
++        await expect(page.locator("[data-admin-system-health-storage-action='storage-write-test-object']")).toHaveText("Write Test Object");
++        await expect(page.locator("[data-admin-system-health-storage-action='storage-read-test-object']")).toHaveText("Read Test Object");
++        await expect(page.locator("[data-admin-system-health-storage-action='storage-delete-test-object']")).toHaveText("Delete Test Object");
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: Storage connectivity startup completed List, Write Test Object, Read Test Object, and Delete Test Object.");
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).toContainText("storage-list");
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).toContainText("storage-write-test-object");
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).toContainText("storage-read-test-object");
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).toContainText("storage-delete-test-object");
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).not.toContainText("asset-test-secret-key");
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows]")).not.toContainText("asset-test-access-key");
++        expect(failures.adminStorageConnectivityPosts).toEqual([
++          { actionId: "storage-list" },
++          { actionId: "storage-write-test-object" },
++          { actionId: "storage-read-test-object" },
++          { actionId: "storage-delete-test-object" },
++        ]);
++        await page.locator("[data-admin-system-health-storage-action='storage-list']").click();
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: List completed through Local API under /dev/projects/.");
++        await page.locator("[data-admin-system-health-storage-action='storage-write-test-object']").click();
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: Write test object completed through Local API under /dev/projects/.");
++        await page.locator("[data-admin-system-health-storage-action='storage-read-test-object']").click();
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: Read test object completed through Local API under /dev/projects/.");
++        await page.locator("[data-admin-system-health-storage-action='storage-delete-test-object']").click();
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-status]")).toContainText("PASS: Delete test object completed through Local API under /dev/projects/.");
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows] tr").first()).toContainText("storage-delete-test-object");
++        await expect(page.locator("[data-admin-system-health-storage-connectivity-result-rows] tr").first()).toContainText("yes");
++        expect(failures.adminStorageConnectivityPosts).toEqual([
++          { actionId: "storage-list" },
++          { actionId: "storage-write-test-object" },
++          { actionId: "storage-read-test-object" },
++          { actionId: "storage-delete-test-object" },
++          { actionId: "storage-list" },
++          { actionId: "storage-write-test-object" },
++          { actionId: "storage-read-test-object" },
++          { actionId: "storage-delete-test-object" },
++        ]);
          await expect(page.getByRole("link", { name: "Infrastructure Reference" })).toHaveAttribute("href", /admin\/infrastructure\.html$/);
          await expect(page.getByRole("link", { name: "Owner Operations Actions" })).toHaveAttribute("href", /owner\/operations\.html$/);
        } else {
+@@ -1316,30 +1450,8 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+         "promote-dev-to-ist": "Promote DEV to IST",
+         "promote-ist-to-uat": "Promote IST to UAT",
+         "reseed-dev": "Reseed DEV",
+-        "storage-delete-test-object": "Delete test object",
+-        "storage-list": "List",
+-        "storage-read-test-object": "Read test object",
+-        "storage-write-test-object": "Write test object",
+       };
+       const actionLabel = actionLabels[body.actionId] || body.actionId;
+-      if (String(body.actionId || "").startsWith("storage-")) {
+-        await route.fulfill({
+-          contentType: "application/json",
+-          body: JSON.stringify({
+-            data: {
+-              actionId: body.actionId,
+-              executed: true,
+-              message: `${actionLabel} completed through configured storage under /dev/projects/. Test object /dev/projects/connectivity/storage-connectivity-test.txt.`,
+-              projectsPrefix: "/dev/projects/",
+-              secretsExposed: false,
+-              status: "PASS",
+-              testObjectKey: "/dev/projects/connectivity/storage-connectivity-test.txt",
+-            },
+-            ok: true,
+-          }),
+-        });
+-        return;
+-      }
+       await route.fulfill({
+         contentType: "application/json",
+         body: JSON.stringify({
+@@ -1364,17 +1476,16 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+       "Notes",
+       "Operations",
+     ]);
+-    await expect(page.locator("[data-owner-connection-summary]")).toContainText("Account");
+-    await expect(page.locator("[data-owner-connection-summary]")).toContainText("Project Asset Storage");
+-    await expect(page.locator("[data-owner-connection-summary]")).toContainText("not exposed");
++    await expect(page.locator("[data-owner-connection-summary]")).toHaveCount(0);
++    await expect(page.locator("[data-owner-storage-status-rows]")).toHaveCount(0);
+     await expect(page.locator("[data-owner-operation-action='promote-dev-to-uat']")).toHaveCount(0);
+     await expect(page.locator("[data-owner-operation-action='promote-dev-to-ist']")).toHaveText("Promote DEV to IST");
+     await expect(page.locator("[data-owner-operation-action='promote-ist-to-uat']")).toHaveText("Promote IST to UAT");
+     await expect(page.locator("[data-owner-operation-action='promote-uat-to-prod']")).toHaveText("Promote UAT to PROD");
+-    await expect(page.locator("[data-owner-operation-action='storage-list']")).toHaveText("List");
+-    await expect(page.locator("[data-owner-operation-action='storage-write-test-object']")).toHaveText("Write Test Object");
+-    await expect(page.locator("[data-owner-operation-action='storage-read-test-object']")).toHaveText("Read Test Object");
+-    await expect(page.locator("[data-owner-operation-action='storage-delete-test-object']")).toHaveText("Delete Test Object");
++    await expect(page.locator("[data-owner-operation-action='storage-list']")).toHaveCount(0);
++    await expect(page.locator("[data-owner-operation-action='storage-write-test-object']")).toHaveCount(0);
++    await expect(page.locator("[data-owner-operation-action='storage-read-test-object']")).toHaveCount(0);
++    await expect(page.locator("[data-owner-operation-action='storage-delete-test-object']")).toHaveCount(0);
+     await expect(page.locator("[data-owner-operations]")).toContainText("project metadata, asset references, and project asset storage objects");
+     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Connection Configured");
+     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Host");
+@@ -1392,16 +1503,6 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("postgres://");
+     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("password");
+     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("SERVICE_ROLE");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Storage Configured");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Storage Endpoint");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("https://storage.example.invalid");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Storage Bucket");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("gamefoundry-dev-assets");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Projects Prefix");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("/dev/projects/");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("configured; value hidden");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).not.toContainText("asset-test-secret-key");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).not.toContainText("asset-test-access-key");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("DEV");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Export");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("IST");
+@@ -1422,23 +1523,10 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await page.locator("[data-owner-operation-validate]").click();
+     await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Current configured connections validated.");
+     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("DDL=15; DML=15");
+-    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("/dev/projects/");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Local API");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("validate-current-connection");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
 
-diff --git a/docs_build/codex/decisions/system-health-usage-reporting.md b/docs_build/codex/decisions/system-health-usage-reporting.md
-new file mode 100644
-index 000000000..3f34b8386
---- /dev/null
-+++ b/docs_build/codex/decisions/system-health-usage-reporting.md
-@@ -0,0 +1,30 @@
-+# System Health Usage Reporting Foundation
-+
-+Admin System Health separates service limits, current usage, and pressure calculation.
-+
-+## Contract
-+
-+- Configured limits come from the active `.env` file copied from the selected `.env.<target>` copy-source.
-+- Current usage is a service-contract value and may be `NOT AVAILABLE` or a numeric usage value.
-+- Pressure is calculated only when both a configured numeric limit and a numeric usage value exist.
-+- Missing or invalid limit configuration is a warning.
-+- `NOT AVAILABLE` usage is not a warning by itself.
-+
-+## Pressure Labels
-+
-+- `OK`
-+- `WATCH`
-+- `UPGRADE SOON`
-+- `RISK`
-+
-+`RISK` is the highest concern label.
-+
-+## Future Provider Integration Points
-+
-+- R2 storage bytes: a future R2 provider telemetry adapter can report project asset storage bytes used through the Local API.
-+- R2 Class A operations: a future R2 provider telemetry adapter can report monthly Class A operation counts through the Local API.
-+- R2 Class B operations: a future R2 provider telemetry adapter can report monthly Class B operation counts through the Local API.
-+- Local DB size: a future Local DB telemetry adapter can report database bytes used through the Local API.
-+- Local DB connections: a future Local DB pool telemetry adapter can report active connection counts through the Local API.
-+
-+Cloudflare billing integration is not required for the current foundation.
+-    await page.locator("[data-owner-operation-action='storage-list']").click();
+-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: List completed through configured storage under /dev/projects/.");
+-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("storage-list");
+-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
+-    await page.locator("[data-owner-operation-action='storage-write-test-object']").click();
+-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Write test object completed through configured storage under /dev/projects/.");
+-    await page.locator("[data-owner-operation-action='storage-read-test-object']").click();
+-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Read test object completed through configured storage under /dev/projects/.");
+-    await page.locator("[data-owner-operation-action='storage-delete-test-object']").click();
+-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Delete test object completed through configured storage under /dev/projects/.");
+-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("storage-delete-test-object");
+-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("/dev/projects/connectivity/storage-connectivity-test.txt");
+     await expect(page.locator("[data-owner-operation-result-rows]")).not.toContainText("asset-test-secret-key");
+     await expect(page.locator("[data-owner-operation-result-rows]")).not.toContainText("asset-test-access-key");
 
-diff --git a/docs_build/dev/reports/PR_26168_229-system-health-severity-cleanup.md b/docs_build/dev/reports/PR_26168_229-system-health-severity-cleanup.md
+@@ -1455,10 +1543,6 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-ist-to-uat");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
+     expect(ownerActionPosts).toEqual([
+-      { actionId: "storage-list" },
+-      { actionId: "storage-write-test-object" },
+-      { actionId: "storage-read-test-object" },
+-      { actionId: "storage-delete-test-object" },
+       { actionId: "reseed-dev" },
+       { actionId: "promote-dev-to-ist" },
+       { actionId: "promote-ist-to-uat" },
+
+diff --git a/docs_build/dev/reports/PR_26168_233-admin-system-health-operations-merge.md b/docs_build/dev/reports/PR_26168_233-admin-system-health-operations-merge.md
 new file mode 100644
-index 000000000..733c2f252
+index 000000000..92f300ae1
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26168_229-system-health-severity-cleanup.md
-@@ -0,0 +1,60 @@
-+# PR_26168_229-system-health-severity-cleanup
++++ b/docs_build/dev/reports/PR_26168_233-admin-system-health-operations-merge.md
+@@ -0,0 +1,59 @@
++# PR_26168_233-admin-system-health-operations-merge
 +
 +## Branch Validation
 +
@@ -762,125 +1076,61 @@ index 000000000..733c2f252
 +
 +## Summary
 +
-+Fixed Admin System Health limit severity so configured limits are PASS, `NOT AVAILABLE` usage does not automatically produce WARN, and WARN is reserved for missing or invalid limit configuration.
++Moved status-only Owner Operations center/status content into Admin System Health where it represents service, configuration, and readiness status. Admin System Health now renders configured connection summary, database status, and project asset storage status alongside the existing dashboard/readiness sections.
 +
 +## Requirement Checklist
 +
-+- PASS - Environment Limits can be PASS when all required limit variables are configured with valid positive integer values.
-+- PASS - `NOT AVAILABLE` usage values no longer automatically generate WARN.
-+- PASS - Missing required limit variables report WARN.
-+- PASS - Invalid limit values report WARN.
-+- PASS - Failed limit configuration validation reports WARN.
-+- PASS - Pressure labels remain exactly `OK`, `WATCH`, `UPGRADE SOON`, and `RISK`.
-+- PASS - `RISK` remains the highest severity label.
-+- PASS - Forbidden alternate pressure wording was scanned and is absent.
-+- PASS - PR222-228 behavior remains intact.
++- PASS - Kept PR229-232 behavior intact.
++- PASS - Moved configured connection summary visibility from Owner Operations into Admin System Health.
++- PASS - Moved database status visibility from Owner Operations into Admin System Health.
++- PASS - Moved project asset storage status visibility from Owner Operations into Admin System Health.
++- PASS - Admin System Health remains Theme V2-only.
++- PASS - No inline styles, style blocks, script blocks, or inline event handlers were added.
++- PASS - Secrets remain hidden; connection strings and credential values are not rendered.
++- PASS - Sample JSON and `start_of_day` folders were not touched.
 +
 +## Validation Lane Report
 +
 +PASS
 +
 +- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check assets/theme-v2/js/admin-system-health.js`
 +- `node --check src/engine/api/admin-system-health-api-client.js`
++- `node --check assets/theme-v2/js/admin-system-health.js`
++- `node --check assets/theme-v2/js/owner-operations.js`
 +- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+- Static System Health contract validation for severity, exact pressure labels, no forbidden pressure wording, and no inline HTML script/style/event handlers.
++- Static System Health/Owner Operations move contract validation.
 +- Targeted Playwright:
-+  - `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "System Health|Tool Votes side menu includes Admin platform wireframes|Infrastructure storage connectivity actions call Local API and hide secrets|Infrastructure storage path status reports missing env path as ERROR|Infrastructure storage path status reports invalid env path as ERROR|Infrastructure storage path status reports DEV match only|Infrastructure storage path status reports IST match only|Assets DEV storage upload list read and delete use configured projects prefix"`
-+- `rg -n "LIMIT RISK" . --glob '!node_modules/**' --glob '!tmp/**' --glob '!docs_build/dev/reports/codex_review.diff'`
++  - `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "System Health|Owner Operations exposes owner-only connection validation and manual operation actions|Infrastructure storage connectivity actions call Local API and hide secrets|Tool Votes side menu includes Admin platform wireframes|Assets DEV storage upload list read and delete use configured projects prefix"`
 +
 +## Manual Validation Notes
 +
 +PASS
 +
-+- Confirmed limit status now derives from configured limit validation, not usage availability.
-+- Confirmed usage may remain `NOT AVAILABLE` without lowering Environment Limits severity.
-+- Confirmed no secrets or full connection strings are exposed.
++- Confirmed System Health renders the moved status tables through external JavaScript.
++- Confirmed Owner Operations no longer contains the moved connection summary or storage status table targets.
++- Confirmed no secret values appear in moved status tables.
 +
 +## Full Samples Decision
 +
 +SKIP
 +
-+Full samples smoke was not run because this PR only changes Admin System Health limit severity and targeted tests. Sample JSON, game samples, and `start_of_day` folders were not touched.
++Full samples smoke was not run because this PR only moves Admin/Owner operational visibility and targeted tests. Sample JSON, sample runtime flows, and `start_of_day` folders were not touched.
 +
 +## Artifact Output
 +
 +PASS
 +
-+- Repo-structured delta ZIP: `tmp/PR_26168_229-system-health-severity-cleanup_delta.zip`
++- Repo-structured delta ZIP: `tmp/PR_26168_233-admin-system-health-operations-merge_delta.zip`
 +- Review diff: `docs_build/dev/reports/codex_review.diff`
 +- Changed files: `docs_build/dev/reports/codex_changed_files.txt`
 
-diff --git a/docs_build/dev/reports/PR_26168_230-system-health-live-usage-foundation.md b/docs_build/dev/reports/PR_26168_230-system-health-live-usage-foundation.md
+diff --git a/docs_build/dev/reports/PR_26168_234-system-health-storage-connectivity-startup.md b/docs_build/dev/reports/PR_26168_234-system-health-storage-connectivity-startup.md
 new file mode 100644
-index 000000000..62164e218
+index 000000000..b21f4a38b
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26168_230-system-health-live-usage-foundation.md
-@@ -0,0 +1,56 @@
-+# PR_26168_230-system-health-live-usage-foundation
-+
-+## Branch Validation
-+
-+PASS
-+
-+- Current branch: `main`
-+- Expected branch: `main`
-+- Local branches found: `main`
-+
-+## Summary
-+
-+Added a service-contract foundation that separates configured limits, current usage, and pressure calculation for future System Health usage reporting.
-+
-+## Requirement Checklist
-+
-+- PASS - Configured limits are represented separately from current usage.
-+- PASS - Current usage is represented separately and may be `NOT AVAILABLE`.
-+- PASS - Current usage contract can also carry numeric usage when a provider integration supplies it later.
-+- PASS - Pressure calculation is represented separately from limits and usage.
-+- PASS - Pressure is calculated only when both a configured numeric limit and numeric usage exist.
-+- PASS - Cloudflare billing integration is not required.
-+- PASS - Provider-specific future integration points are documented in `docs_build/codex/decisions/system-health-usage-reporting.md`.
-+- PASS - PR222-228 behavior remains intact.
-+
-+## Validation Lane Report
-+
-+PASS
-+
-+- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check assets/theme-v2/js/admin-system-health.js`
-+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+- Static System Health contract validation for `configuredLimit`, `currentUsage`, and `pressureCalculation` separation.
-+- Targeted Playwright System Health validation through `AdminPlatformToolsWireframes.spec.mjs`.
-+
-+## Manual Validation Notes
-+
-+PASS
-+
-+- Confirmed the API payload includes separate `configuredLimit`, `currentUsage`, and `pressureCalculation` objects for each limit row.
-+- Confirmed the documentation names R2 and Local DB future telemetry integration points.
-+- Confirmed no Cloudflare billing dependency or credential exposure was added.
-+
-+## Full Samples Decision
-+
-+SKIP
-+
-+Full samples smoke was not run because this PR only adds Admin System Health usage-reporting contract structure and documentation. Sample JSON, game samples, and `start_of_day` folders were not touched.
-+
-+## Artifact Output
-+
-+PASS
-+
-+- Repo-structured delta ZIP: `tmp/PR_26168_230-system-health-live-usage-foundation_delta.zip`
-+- Review diff: `docs_build/dev/reports/codex_review.diff`
-+- Changed files: `docs_build/dev/reports/codex_changed_files.txt`
-
-diff --git a/docs_build/dev/reports/PR_26168_231-admin-system-health-consolidation.md b/docs_build/dev/reports/PR_26168_231-admin-system-health-consolidation.md
-new file mode 100644
-index 000000000..fd84e72c0
---- /dev/null
-+++ b/docs_build/dev/reports/PR_26168_231-admin-system-health-consolidation.md
++++ b/docs_build/dev/reports/PR_26168_234-system-health-storage-connectivity-startup.md
 @@ -0,0 +1,64 @@
-+# PR_26168_231-admin-system-health-consolidation
++# PR_26168_234-system-health-storage-connectivity-startup
 +
 +## Branch Validation
 +
@@ -892,66 +1142,66 @@ index 000000000..fd84e72c0
 +
 +## Summary
 +
-+Strengthened Admin System Health as the primary operational dashboard by adding a summary health score/status section, last refresh timestamp, and PASS/WARN/FAIL counts.
++Moved Storage Connectivity controls to Admin System Health and added automatic startup connectivity execution. System Health runs List, Write Test Object, Read Test Object, and Delete Test Object on load, renders result rows, and keeps the same buttons for manual rerun.
 +
 +## Requirement Checklist
 +
-+- PASS - Admin System Health remains the primary operational dashboard.
-+- PASS - Visibility is consolidated for Account readiness.
-+- PASS - Visibility is consolidated for Product Data / Local DB.
-+- PASS - Visibility is consolidated for Project Asset Storage / R2.
-+- PASS - Visibility is consolidated for Environment configuration.
-+- PASS - Visibility is consolidated for Secrets status.
-+- PASS - Visibility is consolidated for Migration status.
-+- PASS - Visibility is consolidated for Project package readiness.
-+- PASS - Visibility is consolidated for Promotion/package safety.
-+- PASS - Admin Infrastructure remains the architecture/reference page.
-+- PASS - Owner Operations remains the actions page.
-+- PASS - Added summary health score/status section.
-+- PASS - Added last refresh timestamp.
-+- PASS - Added PASS/WARN/FAIL counts.
-+- PASS - PR222-228 behavior remains intact.
++- PASS - Moved Storage Connectivity into Admin System Health.
++- PASS - Added List button on System Health.
++- PASS - Added Write Test Object button on System Health.
++- PASS - Added Read Test Object button on System Health.
++- PASS - Added Delete Test Object button on System Health.
++- PASS - Storage Connectivity runs on System Health startup/load.
++- PASS - Same buttons remain available on System Health for manual rerun.
++- PASS - Results render PASS/WARN/FAIL/SKIP status values returned by the Local API.
++- PASS - Results include actionable diagnostics from the storage API response.
++- PASS - No secrets are exposed.
++- PASS - No silent fallback to local/browser storage was added.
++- PASS - Existing Admin Infrastructure storage connectivity regression still passes.
 +
 +## Validation Lane Report
 +
 +PASS
 +
 +- `node --check src/dev-runtime/server/local-api-router.mjs`
++- `node --check src/engine/api/admin-system-health-api-client.js`
 +- `node --check assets/theme-v2/js/admin-system-health.js`
 +- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+- Targeted Admin System Health Playwright validation.
-+- Targeted Admin navigation Playwright validation.
++- Static System Health storage connectivity contract validation.
++- Targeted startup/manual connectivity Playwright coverage in `System Health Admin wireframe preserves template structure`.
++- Targeted Infrastructure storage connectivity regression:
++  - `Infrastructure storage connectivity actions call Local API and hide secrets`
 +- Playwright V8 coverage report regenerated for changed runtime JavaScript.
 +
 +## Manual Validation Notes
 +
 +PASS
 +
-+- Confirmed the dashboard summary renders status, score, counts, and timestamp.
-+- Confirmed the existing Related Pages links keep Infrastructure as reference and Owner Operations as actions.
-+- Confirmed the page remains Theme V2-only with external JavaScript.
++- Confirmed startup posts List, Write Test Object, Read Test Object, and Delete Test Object to the System Health Local API route.
++- Confirmed manual button reruns post the same four actions.
++- Confirmed storage result rows hide test access/secret markers and show the configured project prefix/object path only.
 +
 +## Full Samples Decision
 +
 +SKIP
 +
-+Full samples smoke was not run because this PR only changes Admin System Health dashboard visibility and targeted tests. Sample JSON, game samples, and `start_of_day` folders were not touched.
++Full samples smoke was not run because this PR only changes Admin System Health storage connectivity behavior and targeted tests. Sample JSON, sample runtime flows, and `start_of_day` folders were not touched.
 +
 +## Artifact Output
 +
 +PASS
 +
-+- Repo-structured delta ZIP: `tmp/PR_26168_231-admin-system-health-consolidation_delta.zip`
++- Repo-structured delta ZIP: `tmp/PR_26168_234-system-health-storage-connectivity-startup_delta.zip`
 +- Review diff: `docs_build/dev/reports/codex_review.diff`
 +- Changed files: `docs_build/dev/reports/codex_changed_files.txt`
 
-diff --git a/docs_build/dev/reports/PR_26168_232-r2-operational-readiness.md b/docs_build/dev/reports/PR_26168_232-r2-operational-readiness.md
+diff --git a/docs_build/dev/reports/PR_26168_235-owner-operations-scope-cleanup.md b/docs_build/dev/reports/PR_26168_235-owner-operations-scope-cleanup.md
 new file mode 100644
-index 000000000..5288fc6a5
+index 000000000..36cfb8b7c
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26168_232-r2-operational-readiness.md
-@@ -0,0 +1,63 @@
-+# PR_26168_232-r2-operational-readiness
++++ b/docs_build/dev/reports/PR_26168_235-owner-operations-scope-cleanup.md
+@@ -0,0 +1,62 @@
++# PR_26168_235-owner-operations-scope-cleanup
 +
 +## Branch Validation
 +
@@ -963,54 +1213,53 @@ index 000000000..5288fc6a5
 +
 +## Summary
 +
-+Added a read-only R2 Operational Readiness section to Admin System Health. It surfaces endpoint, bucket, prefix, credential configured status, connectivity test status, readiness for Assets, Project Packages, Promotion Packages, and actionable next steps without exposing secrets or adding destructive operations.
++Cleaned Owner Operations scope so it focuses on database operations and project package/promotion actions. Removed duplicated status-only connection/storage content and storage-connectivity action buttons after moving those surfaces to Admin System Health.
 +
 +## Requirement Checklist
 +
-+- PASS - Verified current R2 configuration readiness through the existing safe storage status contract.
-+- PASS - Surfaced Endpoint.
-+- PASS - Surfaced Bucket.
-+- PASS - Surfaced Prefix.
-+- PASS - Surfaced Credential configured status without exposing credential values.
-+- PASS - Surfaced Connectivity test status as `NOT RUN` without executing storage operations from System Health.
-+- PASS - Added Ready for Assets readiness row.
-+- PASS - Added Ready for Project Packages readiness row.
-+- PASS - Added Ready for Promotion Packages readiness row.
-+- PASS - Added actionable next-step recommendations.
-+- PASS - No secrets are exposed.
-+- PASS - No destructive operations were added.
-+- PASS - PR222-228 behavior remains intact.
++- PASS - Owner Operations remains focused on database operations.
++- PASS - Owner Operations remains focused on Project Package / Promotion actions.
++- PASS - Removed duplicated connection summary status content from Owner Operations.
++- PASS - Removed duplicated project asset storage status content from Owner Operations.
++- PASS - Removed Storage Connectivity buttons from Owner Operations.
++- PASS - Removed Owner-side storage connectivity action advertisement from the server action list.
++- PASS - Owner Operations still validates current configured connections and renders database status.
++- PASS - Owner Operations still renders project promotion/package foundation.
++- PASS - Theme V2-only page styling is preserved.
++- PASS - No inline styles, style blocks, script blocks, or inline event handlers were added.
++- PASS - Sample JSON and `start_of_day` folders were not touched.
 +
 +## Validation Lane Report
 +
 +PASS
 +
 +- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check assets/theme-v2/js/admin-system-health.js`
++- `node --check assets/theme-v2/js/owner-operations.js`
 +- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+- Static R2 readiness contract validation for endpoint, bucket, prefix, credential status, connectivity status, readiness targets, and no inline HTML script/style/event handlers.
-+- Targeted R2 readiness/Admin System Health Playwright validation.
-+- Targeted Assets R2 regression validation.
-+- Playwright V8 coverage report regenerated for changed runtime JavaScript.
++- Static Owner Operations scope validation for removed status-only targets and storage action buttons.
++- Targeted Owner Operations Playwright:
++  - `Owner Operations exposes owner-only connection validation and manual operation actions`
++- Targeted Admin navigation Playwright:
++  - `Tool Votes side menu includes Admin platform wireframes`
 +
 +## Manual Validation Notes
 +
 +PASS
 +
-+- Confirmed System Health does not run write/read/delete storage operations.
-+- Confirmed the readiness section points operators to existing Admin Infrastructure connectivity actions for live evidence.
-+- Confirmed credential values remain hidden.
++- Confirmed Owner Operations has no `data-owner-connection-summary` or `data-owner-storage-status-rows` targets.
++- Confirmed Owner Operations has no storage connectivity buttons.
++- Confirmed Owner Operations still supports Validate Current Connection, database operation staging, and promotion/package action staging.
 +
 +## Full Samples Decision
 +
 +SKIP
 +
-+Full samples smoke was not run because this PR only changes Admin System Health/R2 operational visibility and targeted tests. Sample JSON, game samples, and `start_of_day` folders were not touched.
++Full samples smoke was not run because this PR only changes Owner Operations scope and targeted Admin/Owner tests. Sample JSON, sample runtime flows, and `start_of_day` folders were not touched.
 +
 +## Artifact Output
 +
 +PASS
 +
-+- Repo-structured delta ZIP: `tmp/PR_26168_232-r2-operational-readiness_delta.zip`
++- Repo-structured delta ZIP: `tmp/PR_26168_235-owner-operations-scope-cleanup_delta.zip`
 +- Review diff: `docs_build/dev/reports/codex_review.diff`
 +- Changed files: `docs_build/dev/reports/codex_changed_files.txt`

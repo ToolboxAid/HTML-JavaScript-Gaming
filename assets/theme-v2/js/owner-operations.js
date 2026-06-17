@@ -8,17 +8,15 @@ class OwnerOperationsController {
     constructor(root) {
         this.root = root;
         this.actionButtons = Array.from(root.querySelectorAll("[data-owner-operation-action]"));
-        this.connectionSummary = root.querySelector("[data-owner-connection-summary]");
         this.databaseStatusRows = root.querySelector("[data-owner-database-status-rows]");
         this.promotionFoundationRows = root.querySelector("[data-owner-promotion-foundation-rows]");
         this.resultRows = root.querySelector("[data-owner-operation-result-rows]");
         this.status = root.querySelector("[data-owner-operations-status]");
-        this.storageStatusRows = root.querySelector("[data-owner-storage-status-rows]");
         this.validateButton = root.querySelector("[data-owner-operation-validate]");
     }
 
     init() {
-        if (!this.connectionSummary || !this.databaseStatusRows || !this.promotionFoundationRows || !this.resultRows || !this.status || !this.storageStatusRows || !this.validateButton) {
+        if (!this.databaseStatusRows || !this.promotionFoundationRows || !this.resultRows || !this.status || !this.validateButton) {
             return;
         }
         this.validateButton.addEventListener("click", () => this.validateConnection());
@@ -30,26 +28,6 @@ class OwnerOperationsController {
 
     setStatus(status, message) {
         this.status.textContent = `${status}: ${message}`;
-    }
-
-    renderConnectionSummary(summary = {}) {
-        const rows = [
-            ["Account", summary.account?.status || "unknown", summary.account?.configured === true ? "configured" : "not configured"],
-            ["Product Data", summary.productData?.status || "unknown", summary.productData?.configured === true ? "configured" : "not configured"],
-            ["Project Asset Storage", summary.projectAssetStorage?.status || "unknown", summary.projectAssetStorage?.configured === true ? "configured" : "not configured"],
-            ["Environment Switching", summary.environmentSwitching || "manual-env-change-and-server-restart", "manual"],
-            ["Secrets", summary.secretsExposed === true ? "exposed" : "not exposed", "read-only summary"],
-        ];
-        this.connectionSummary.replaceChildren();
-        rows.forEach((row) => {
-            const tableRow = document.createElement("tr");
-            row.forEach((value) => {
-                const cell = document.createElement("td");
-                cell.textContent = value;
-                tableRow.append(cell);
-            });
-            this.connectionSummary.append(tableRow);
-        });
     }
 
     renderDatabaseStatus(databaseStatus = {}) {
@@ -73,27 +51,6 @@ class OwnerOperationsController {
                 tableRow.append(cell);
             });
             this.databaseStatusRows.append(tableRow);
-        });
-    }
-
-    renderStorageStatus(storageStatus = {}) {
-        const rows = [
-            ["Storage Configured", storageStatus.configured === true ? "PASS" : "WARN", storageStatus.configured === true ? "yes" : "no"],
-            ["Storage Endpoint", storageStatus.endpointStatus || "WARN", storageStatus.endpoint || "not configured"],
-            ["Storage Bucket", storageStatus.bucketStatus || "WARN", storageStatus.bucket || "not configured"],
-            ["Projects Prefix", storageStatus.projectsPrefixStatus || "WARN", storageStatus.projectsPrefix || "not configured"],
-            ["Access Key", storageStatus.accessKeyStatus || "WARN", storageStatus.accessKeyConfigured === true ? "configured; value hidden" : "not configured"],
-            ["Secret Key", storageStatus.secretKeyStatus || "WARN", storageStatus.secretKeyConfigured === true ? "configured; value hidden" : "not configured"],
-        ];
-        this.storageStatusRows.replaceChildren();
-        rows.forEach((row) => {
-            const tableRow = document.createElement("tr");
-            row.forEach((value) => {
-                const cell = document.createElement("td");
-                cell.textContent = value;
-                tableRow.append(cell);
-            });
-            this.storageStatusRows.append(tableRow);
         });
     }
 
@@ -138,10 +95,8 @@ class OwnerOperationsController {
     load() {
         try {
             const payload = readOwnerOperationsStatus();
-            this.renderConnectionSummary(payload.connectionSummary || {});
             this.renderDatabaseStatus(payload.databaseStatus || {});
             this.renderPromotionFoundation(payload.promotionFoundation || {});
-            this.renderStorageStatus(payload.storageStatus || {});
             this.setStatus(payload.status || "PASS", payload.message || "Owner Operations loaded.");
         } catch (error) {
             this.setStatus("FAIL", error instanceof Error ? error.message : "Owner Operations are unavailable.");
@@ -151,10 +106,8 @@ class OwnerOperationsController {
     validateConnection() {
         try {
             const result = validateOwnerOperationsConnection();
-            this.renderConnectionSummary(result.connectionSummary || {});
             this.renderDatabaseStatus(result.databaseStatus || {});
             this.renderPromotionFoundation(result.promotionFoundation || {});
-            this.renderStorageStatus(result.storageStatus || {});
             this.appendResult(result);
             this.setStatus(result.status || "PASS", result.message || "Connection validation finished.");
         } catch (error) {

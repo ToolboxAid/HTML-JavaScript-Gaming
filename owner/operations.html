@@ -6,7 +6,7 @@
     <base href="/">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Owner Operations - Game Foundry Studio LLC</title>
-    <meta name="description" content="Owner-only operational controls and connection status.">
+    <meta name="description" content="Owner-only database operations and project package promotion actions.">
     <link rel="icon" href="/favicon.svg">
     <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
 </head>
@@ -18,7 +18,7 @@
             <div class="container">
                 <div class="kicker">Owner</div>
                 <h1>Operations</h1>
-                <p class="lede">Validate configured connections and review owner-only operational actions.</p>
+                <p class="lede">Run owner-only database operations and plan project package promotion actions.</p>
             </div>
         </section>
         <section class="section">
@@ -41,40 +41,16 @@
                                     <button class="btn btn--compact" type="button" data-owner-operation-action="promote-uat-to-prod">Promote UAT to PROD</button>
                                 </div>
                             </details>
-                            <details class="vertical-accordion" open>
-                                <summary>Storage Connectivity</summary>
-                                <div class="accordion-body content-stack">
-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-list">List</button>
-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-write-test-object">Write Test Object</button>
-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-read-test-object">Read Test Object</button>
-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-delete-test-object">Delete Test Object</button>
-                                </div>
-                            </details>
                         </div>
                     </aside>
                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="owner-operations" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
                     <section class="tool-center-panel content-stack" aria-labelledby="owner-operations-title">
                         <div>
                             <div class="kicker">Work Surface</div>
-                            <h2 id="owner-operations-title">Connection Summary</h2>
+                            <h2 id="owner-operations-title">Database and Package Operations</h2>
                         </div>
-                        <p>Connection details are summarized without exposing secrets. Environment switching remains manual through configuration changes and server restart.</p>
-                        <p>Promotion planning moves project metadata, asset references, and project asset storage objects between environment lanes through reviewed server-side execution.</p>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Configured connection summary">
-                                <caption>Configured Connections</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Connection</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Mode</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-owner-connection-summary>
-                                    <tr><td>Account</td><td>Loading</td><td>read-only summary</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
+                        <p>Database operations and project package promotion actions require reviewed server-side execution outside the browser.</p>
+                        <p>Service, configuration, readiness, and storage connectivity status live in Admin System Health.</p>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Owner database status">
                                 <caption>Database Status</caption>
@@ -87,21 +63,6 @@
                                 </thead>
                                 <tbody data-owner-database-status-rows>
                                     <tr><td>Connection Configured</td><td>Loading</td><td>Loading owner database status.</td></tr>
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="table-wrapper">
-                            <table class="data-table" aria-label="Owner storage status">
-                                <caption>Project Asset Storage Status</caption>
-                                <thead>
-                                    <tr>
-                                        <th scope="col">Field</th>
-                                        <th scope="col">Status</th>
-                                        <th scope="col">Value</th>
-                                    </tr>
-                                </thead>
-                                <tbody data-owner-storage-status-rows>
-                                    <tr><td>Storage Configured</td><td>Loading</td><td>Loading owner storage status.</td></tr>
                                 </tbody>
                             </table>
                         </div>

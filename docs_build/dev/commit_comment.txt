@@ -1,1 +1,1 @@
-R2 operational readiness - PR_26168_232-r2-operational-readiness
+Owner operations scope cleanup - PR_26168_235-owner-operations-scope-cleanup

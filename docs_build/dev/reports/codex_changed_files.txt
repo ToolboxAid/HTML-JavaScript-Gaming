@@ -1,14 +1,15 @@
 ﻿ M admin/system-health.html
  M assets/theme-v2/js/admin-system-health.js
+ M assets/theme-v2/js/owner-operations.js
  M docs_build/dev/codex_commands.md
  M docs_build/dev/commit_comment.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M owner/operations.html
  M src/dev-runtime/server/local-api-router.mjs
+ M src/engine/api/admin-system-health-api-client.js
  M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-?? docs_build/codex/decisions/system-health-usage-reporting.md
-?? docs_build/dev/reports/PR_26168_229-system-health-severity-cleanup.md
-?? docs_build/dev/reports/PR_26168_230-system-health-live-usage-foundation.md
-?? docs_build/dev/reports/PR_26168_231-admin-system-health-consolidation.md
-?? docs_build/dev/reports/PR_26168_232-r2-operational-readiness.md
+?? docs_build/dev/reports/PR_26168_233-admin-system-health-operations-merge.md
+?? docs_build/dev/reports/PR_26168_234-system-health-storage-connectivity-startup.md
+?? docs_build/dev/reports/PR_26168_235-owner-operations-scope-cleanup.md
