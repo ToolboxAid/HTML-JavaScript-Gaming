@@ -2180,3 +2180,125 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26168_221-storage-path-error-rule-and-r2-env-ready_delta.zip`
+
+
+## PR_26168_222-storage-env-prefix-consolidation
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Consolidated Admin Infrastructure storage path status on `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`.
+- Removed active Admin/runtime/page dependence on `GAMEFOUNDRY_ASSET_STORAGE_PATH`.
+- Updated Admin Infrastructure lane copy from `/prod/projects/` to `/prd/projects/`.
+- Updated tracked `.env.example` to remove the old asset storage path placeholder.
+- Updated ignored local `.env.<target>` copy-source files with non-secret storage prefix placeholders only.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check assets/theme-v2/js/admin-infrastructure.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Admin Infrastructure static contract check for storage prefix consolidation and no inline HTML script/style/event handlers.
+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure|Infrastructure storage path status reports missing env path as ERROR|Infrastructure storage path status reports invalid env path as ERROR|Infrastructure storage path status reports DEV match only|Infrastructure storage path status reports IST match only"`
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_222-storage-env-prefix-consolidation.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_222-storage-env-prefix-consolidation_delta.zip`
+
+
+## PR_26168_223-codex-decisions-notes
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added `docs_build/codex/decisions/project-packages.md`.
+- Documented `.gfsp` as Game Foundry Studio Project.
+- Documented the internal ZIP-based package format, package filename format, example filename, and package-based promotion terms.
+- Kept Codex decision notes under `docs_build/codex/decisions/` only.
+
+Validation:
+- `Get-Content -Path docs_build/codex/decisions/project-packages.md`
+- Static Node validation for `.gfsp`, ZIP package format, filename format, example, promotion terminology, and allowed notes path.
+- `git diff --check`
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_223-codex-decisions-notes.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26168_223-codex-decisions-notes_delta.zip`
+
+
+## PR_26168_224-r2-storage-connectivity-test
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added Owner Operations storage connectivity actions for List, Write test object, Read test object, and Delete test object.
+- Added Admin Infrastructure storage connectivity actions for List, Write test object, Read test object, and Delete test object.
+- Routed connectivity actions through Local API and the configured project asset storage provider.
+- Added storage provider delete support for the test object cleanup path.
+- Preserved hidden credential handling and visible failure diagnostics.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check src/dev-runtime/storage/r2-project-asset-storage.mjs`
+- `node --check src/engine/api/admin-infrastructure-api-client.js`
+- `node --check assets/theme-v2/js/admin-infrastructure.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Static Node storage connectivity contract validation for no inline HTML script/style/event handlers, server-owned storage actions, prefix diagnostics, and DELETE support.
+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure|Infrastructure storage connectivity actions call Local API and hide secrets|Owner Operations exposes owner-only connection validation and manual operation actions"`
+- `git diff --check`
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_224-r2-storage-connectivity-test.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_224-r2-storage-connectivity-test_delta.zip`
+
+
+## PR_26168_225-assets-r2-storage-integration
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Updated Assets storage-backed delete so the Local API repository deletes the configured storage object before removing DB metadata.
+- Preserved upload/list/read through the Local API and configured project asset storage provider.
+- Preserved browser API repository ownership and guest upload blocking.
+- Added fake R2 DELETE validation to the targeted Assets storage Playwright test.
+
+Validation:
+- `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
+- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
+- `node --check toolbox/assets/assets.js`
+- `node --check toolbox/assets/assets-api-client.js`
+- Static Node Assets storage/API contract validation for API repository ownership, no browser storage SSoT, storage-provider write/read/delete, DB metadata keys, no sample JSON changes, and no `start_of_day` changes.
+- `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "Assets DEV storage upload list read and delete use configured projects prefix"`
+- `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "Assets guest upload action shows account prompt and creates no record"`
+- `npm run test:workspace-v2`
+- `git diff --check`
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+- `npm run test:workspace-v2` is a legacy command name; user-facing language is Project Workspace.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_225-assets-r2-storage-integration.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_225-assets-r2-storage-integration_delta.zip`

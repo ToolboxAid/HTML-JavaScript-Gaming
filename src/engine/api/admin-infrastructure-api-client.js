@@ -9,3 +9,13 @@ export function readAdminInfrastructureStoragePathStatus() {
     "Admin Infrastructure storage path status",
   );
 }
+
+export function runAdminInfrastructureStorageConnectivityAction(actionId) {
+  return requireServerApiData(
+    safeRequestServerApi("/admin/infrastructure/storage-connectivity-action", {
+      body: { actionId },
+      method: "POST",
+    }),
+    "Admin Infrastructure storage connectivity action",
+  );
+}

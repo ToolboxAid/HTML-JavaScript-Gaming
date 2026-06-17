@@ -1,19 +1,19 @@
 # Slow Path Pruning Report
 
-Generated: 2026-06-17T13:48:53.725Z
+Generated: 2026-06-17T15:59:53.719Z
 Status: PASS
 Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
 
 ## Before / After Runtime Observations
 
 PR_26146_038 measured lane elapsed time: 169.71s
-Current measured lane elapsed time: 48.16s
+Current measured lane elapsed time: 44.74s
 PR_26146_038 actual browser launches: 4
 Current actual browser launches: 1
 Accidental no-argument browser launches prevented: 5
 Reduced Workspace lane nested launches: 1
-Reused dependency hydration: 1
-Reused snapshots: 1
+Reused dependency hydration: 0
+Reused snapshots: 0
 Validation cache hits: 18
 
 ## Slow Paths Optimized
@@ -32,15 +32,15 @@ Validation cache hits: 18
 | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
 | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
 | current targeted run | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:630:1 > representative active tool pages align center cleanup and registry group colors |
-| current targeted run | workspace-contract | 9.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
-| current targeted run | workspace-contract | 9.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
-| current targeted run | workspace-contract | 7.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages |
+| current targeted run | workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
+| current targeted run | workspace-contract | 9.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
+| current targeted run | workspace-contract | 7.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages |
 | current targeted run | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:608:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Guardrails
 
 Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
-Runtime failures observed: 1
+Runtime failures observed: 0
 Runtime schedule status: PASS
 
 - Only no-argument broad defaults and safe Workspace legacy routing were pruned.

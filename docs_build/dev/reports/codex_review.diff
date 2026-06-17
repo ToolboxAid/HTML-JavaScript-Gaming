@@ -1,225 +1,2062 @@
-﻿diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
-index acfaee522..350af11b8 100644
+﻿diff --git a/.env.example b/.env.example
+index 064fe7536..97de17312 100644
+--- a/.env.example
++++ b/.env.example
+@@ -26,4 +26,3 @@ GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID=
+ GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY=
+ GAMEFOUNDRY_STORAGE_BUCKET=
+ GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=
+-GAMEFOUNDRY_ASSET_STORAGE_PATH=
+diff --git a/admin/infrastructure.html b/admin/infrastructure.html
+index deb652bbd..43ffc301c 100644
+--- a/admin/infrastructure.html
++++ b/admin/infrastructure.html
+@@ -44,7 +44,7 @@
+                                     <p>/dev/projects/</p>
+                                     <p>/ist/projects/</p>
+                                     <p>/uat/projects/</p>
+-                                    <p>/prod/projects/</p>
++                                    <p>/prd/projects/</p>
+                                 </div>
+                             </details>
+                         </div>
+@@ -72,7 +72,7 @@
+                         </dialog>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Project storage path reference">
+-                                <caption>Project Asset Storage Paths use <code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></caption>
++                                <caption>Project Asset Storage Paths use <code>GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX</code></caption>
+                                 <thead>
+                                     <tr>
+                                         <th scope="col">Lane</th>
+@@ -84,7 +84,23 @@
+                                     <tr><td>DEV</td><td>/dev/projects/</td><td>Loading</td></tr>
+                                     <tr><td>IST</td><td>/ist/projects/</td><td>Loading</td></tr>
+                                     <tr><td>UAT</td><td>/uat/projects/</td><td>Loading</td></tr>
+-                                    <tr><td>PROD</td><td>/prod/projects/</td><td>Loading</td></tr>
++                                    <tr><td>PRD</td><td>/prd/projects/</td><td>Loading</td></tr>
++                                </tbody>
++                            </table>
++                        </div>
++                        <div class="table-wrapper">
++                            <table class="data-table" aria-label="Admin storage connectivity results">
++                                <caption>Storage Connectivity Results</caption>
++                                <thead>
++                                    <tr>
++                                        <th scope="col">Action</th>
++                                        <th scope="col">Status</th>
++                                        <th scope="col">Executed</th>
++                                        <th scope="col">Message</th>
++                                    </tr>
++                                </thead>
++                                <tbody data-admin-storage-connectivity-result-rows>
++                                    <tr><td>startup</td><td>SKIP</td><td>no</td><td>No storage connectivity action has been run.</td></tr>
+                                 </tbody>
+                             </table>
+                         </div>
+@@ -107,7 +123,17 @@
+                                 <summary>Guardrails</summary>
+                                 <div class="accordion-body content-stack">
+                                     <p>Infrastructure status remains a read-only Admin reference.</p>
+-                                    <p>Operational actions and connection validation stay on Owner Operations.</p>
++                                    <p>Storage connectivity tests run through the Local API and never expose secrets.</p>
++                                </div>
++                            </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Storage Connectivity</summary>
++                                <div class="accordion-body content-stack">
++                                    <button class="btn btn--compact" type="button" data-admin-storage-connectivity-action="storage-list">List</button>
++                                    <button class="btn btn--compact" type="button" data-admin-storage-connectivity-action="storage-write-test-object">Write Test Object</button>
++                                    <button class="btn btn--compact" type="button" data-admin-storage-connectivity-action="storage-read-test-object">Read Test Object</button>
++                                    <button class="btn btn--compact" type="button" data-admin-storage-connectivity-action="storage-delete-test-object">Delete Test Object</button>
++                                    <p class="status" role="status" data-admin-storage-connectivity-status>Storage connectivity not run.</p>
+                                 </div>
+                             </details>
+                         </div>
+diff --git a/assets/theme-v2/js/admin-infrastructure.js b/assets/theme-v2/js/admin-infrastructure.js
+index 77c4291f6..f0744fc22 100644
+--- a/assets/theme-v2/js/admin-infrastructure.js
++++ b/assets/theme-v2/js/admin-infrastructure.js
+@@ -1,17 +1,21 @@
+ import {
+-    readAdminInfrastructureStoragePathStatus
++    readAdminInfrastructureStoragePathStatus,
++    runAdminInfrastructureStorageConnectivityAction
+ } from "../../../src/engine/api/admin-infrastructure-api-client.js";
+
+ const STORAGE_PATH_LANES = Object.freeze([
+     Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
+     Object.freeze({ lane: "IST", path: "/ist/projects/" }),
+     Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
+-    Object.freeze({ lane: "PROD", path: "/prod/projects/" }),
++    Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
+ ]);
+
+ class AdminInfrastructureStoragePathStatus {
+     constructor(root) {
+         this.root = root;
++        this.connectivityActionButtons = Array.from(root.querySelectorAll("[data-admin-storage-connectivity-action]"));
++        this.connectivityRows = root.querySelector("[data-admin-storage-connectivity-result-rows]");
++        this.connectivityStatus = root.querySelector("[data-admin-storage-connectivity-status]");
+         this.rows = root.querySelector("[data-admin-storage-path-status-rows]");
+     }
+
+@@ -19,9 +23,36 @@ class AdminInfrastructureStoragePathStatus {
+         if (!this.rows) {
+             return;
+         }
++        this.connectivityActionButtons.forEach((button) => {
++            button.addEventListener("click", () => this.runStorageConnectivityAction(button.dataset.adminStorageConnectivityAction));
++        });
+         this.load();
+     }
+
++    setConnectivityStatus(status, message) {
++        if (this.connectivityStatus) {
++            this.connectivityStatus.textContent = `${status}: ${message}`;
++        }
++    }
++
++    appendConnectivityResult(result = {}) {
++        if (!this.connectivityRows) {
++            return;
++        }
++        const row = document.createElement("tr");
++        [
++            result.actionId || "storage-connectivity",
++            result.status || "WARN",
++            result.executed === true ? "yes" : "no",
++            result.message || "No storage connectivity message returned.",
++        ].forEach((value) => {
++            const cell = document.createElement("td");
++            cell.textContent = value;
++            row.append(cell);
++        });
++        this.connectivityRows.prepend(row);
++    }
++
+     renderRows(rows) {
+         this.rows.replaceChildren();
+         rows.forEach((row) => {
+@@ -58,6 +89,16 @@ class AdminInfrastructureStoragePathStatus {
+             this.renderFailure(error instanceof Error ? error.message : "Storage path status unavailable.");
+         }
+     }
++
++    runStorageConnectivityAction(actionId) {
++        try {
++            const result = runAdminInfrastructureStorageConnectivityAction(actionId);
++            this.appendConnectivityResult(result);
++            this.setConnectivityStatus(result.status || "WARN", result.message || "Storage connectivity action returned no message.");
++        } catch (error) {
++            this.setConnectivityStatus("FAIL", error instanceof Error ? error.message : "Storage connectivity action failed.");
++        }
++    }
+ }
+
+ document.addEventListener("DOMContentLoaded", () => {
+diff --git a/docs_build/dev/codex_commands.md b/docs_build/dev/codex_commands.md
+index 350af11b8..a41a728b7 100644
 --- a/docs_build/dev/codex_commands.md
 +++ b/docs_build/dev/codex_commands.md
-@@ -2150,3 +2150,33 @@ Required reports:
+@@ -2180,3 +2180,125 @@ Required reports:
 
  Packaging:
- - `tmp/PR_26168_220-promotion-lanes-storage-path-status_delta.zip`
+ - `tmp/PR_26168_221-storage-path-error-rule-and-r2-env-ready_delta.zip`
 +
 +
-+## PR_26168_221-storage-path-error-rule-and-r2-env-ready
++## PR_26168_222-storage-env-prefix-consolidation
 +
 +Changes:
 +- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
 +- Verified the current branch is `main`.
-+- Tightened Admin Infrastructure storage path status logic so missing or invalid `GAMEFOUNDRY_ASSET_STORAGE_PATH` values render every lane row as `ERROR`.
-+- Preserved exact-match behavior where `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, or `/prod/projects/` activates only the matching lane.
-+- Added targeted Playwright coverage for missing, invalid, DEV, and IST storage path cases.
-+- Added manual report note that R2 `.env` setup is ready only after this validation passes.
++- Consolidated Admin Infrastructure storage path status on `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`.
++- Removed active Admin/runtime/page dependence on `GAMEFOUNDRY_ASSET_STORAGE_PATH`.
++- Updated Admin Infrastructure lane copy from `/prod/projects/` to `/prd/projects/`.
++- Updated tracked `.env.example` to remove the old asset storage path placeholder.
++- Updated ignored local `.env.<target>` copy-source files with non-secret storage prefix placeholders only.
 +
 +Validation:
 +- `node --check src/dev-runtime/server/local-api-router.mjs`
-+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
 +- `node --check assets/theme-v2/js/admin-infrastructure.js`
-+- Admin Infrastructure static contract check for exact lane paths, invalid-path all-ERROR logic, and no inline HTML script/style/event handlers.
++- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
++- Admin Infrastructure static contract check for storage prefix consolidation and no inline HTML script/style/event handlers.
 +- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure|Infrastructure storage path status reports missing env path as ERROR|Infrastructure storage path status reports invalid env path as ERROR|Infrastructure storage path status reports DEV match only|Infrastructure storage path status reports IST match only"`
-+- `git diff --check`
 +- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
 +
 +Required reports:
-+- `docs_build/dev/reports/PR_26168_221-storage-path-error-rule-and-r2-env-ready.md`
++- `docs_build/dev/reports/PR_26168_222-storage-env-prefix-consolidation.md`
 +- `docs_build/dev/reports/codex_changed_files.txt`
 +- `docs_build/dev/reports/codex_review.diff`
 +- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
 +- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
 +
 +Packaging:
-+- `tmp/PR_26168_221-storage-path-error-rule-and-r2-env-ready_delta.zip`
++- `tmp/PR_26168_222-storage-env-prefix-consolidation_delta.zip`
++
++
++## PR_26168_223-codex-decisions-notes
++
++Changes:
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Verified the current branch is `main`.
++- Added `docs_build/codex/decisions/project-packages.md`.
++- Documented `.gfsp` as Game Foundry Studio Project.
++- Documented the internal ZIP-based package format, package filename format, example filename, and package-based promotion terms.
++- Kept Codex decision notes under `docs_build/codex/decisions/` only.
++
++Validation:
++- `Get-Content -Path docs_build/codex/decisions/project-packages.md`
++- Static Node validation for `.gfsp`, ZIP package format, filename format, example, promotion terminology, and allowed notes path.
++- `git diff --check`
++- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
++
++Required reports:
++- `docs_build/dev/reports/PR_26168_223-codex-decisions-notes.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++
++Packaging:
++- `tmp/PR_26168_223-codex-decisions-notes_delta.zip`
++
++
++## PR_26168_224-r2-storage-connectivity-test
++
++Changes:
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Verified the current branch is `main`.
++- Added Owner Operations storage connectivity actions for List, Write test object, Read test object, and Delete test object.
++- Added Admin Infrastructure storage connectivity actions for List, Write test object, Read test object, and Delete test object.
++- Routed connectivity actions through Local API and the configured project asset storage provider.
++- Added storage provider delete support for the test object cleanup path.
++- Preserved hidden credential handling and visible failure diagnostics.
++
++Validation:
++- `node --check src/dev-runtime/server/local-api-router.mjs`
++- `node --check src/dev-runtime/storage/r2-project-asset-storage.mjs`
++- `node --check src/engine/api/admin-infrastructure-api-client.js`
++- `node --check assets/theme-v2/js/admin-infrastructure.js`
++- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
++- Static Node storage connectivity contract validation for no inline HTML script/style/event handlers, server-owned storage actions, prefix diagnostics, and DELETE support.
++- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure|Infrastructure storage connectivity actions call Local API and hide secrets|Owner Operations exposes owner-only connection validation and manual operation actions"`
++- `git diff --check`
++- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
++
++Required reports:
++- `docs_build/dev/reports/PR_26168_224-r2-storage-connectivity-test.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++
++Packaging:
++- `tmp/PR_26168_224-r2-storage-connectivity-test_delta.zip`
++
++
++## PR_26168_225-assets-r2-storage-integration
++
++Changes:
++- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
++- Verified the current branch is `main`.
++- Updated Assets storage-backed delete so the Local API repository deletes the configured storage object before removing DB metadata.
++- Preserved upload/list/read through the Local API and configured project asset storage provider.
++- Preserved browser API repository ownership and guest upload blocking.
++- Added fake R2 DELETE validation to the targeted Assets storage Playwright test.
++
++Validation:
++- `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
++- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++- `node --check toolbox/assets/assets.js`
++- `node --check toolbox/assets/assets-api-client.js`
++- Static Node Assets storage/API contract validation for API repository ownership, no browser storage SSoT, storage-provider write/read/delete, DB metadata keys, no sample JSON changes, and no `start_of_day` changes.
++- `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "Assets DEV storage upload list read and delete use configured projects prefix"`
++- `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "Assets guest upload action shows account prompt and creates no record"`
++- `npm run test:workspace-v2`
++- `git diff --check`
++- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
++- `npm run test:workspace-v2` is a legacy command name; user-facing language is Project Workspace.
++
++Required reports:
++- `docs_build/dev/reports/PR_26168_225-assets-r2-storage-integration.md`
++- `docs_build/dev/reports/codex_changed_files.txt`
++- `docs_build/dev/reports/codex_review.diff`
++- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
++- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
++
++Packaging:
++- `tmp/PR_26168_225-assets-r2-storage-integration_delta.zip`
 diff --git a/docs_build/dev/commit_comment.txt b/docs_build/dev/commit_comment.txt
-index fe6108395..49364641d 100644
+index 49364641d..d111d6cbb 100644
 --- a/docs_build/dev/commit_comment.txt
 +++ b/docs_build/dev/commit_comment.txt
 @@ -1 +1 @@
--Promotion lanes and storage path status - PR_26168_220-promotion-lanes-storage-path-status
-+Storage path error rule and R2 env readiness - PR_26168_221-storage-path-error-rule-and-r2-env-ready
+-Storage path error rule and R2 env readiness - PR_26168_221-storage-path-error-rule-and-r2-env-ready
++Assets R2 storage integration - PR_26168_225-assets-r2-storage-integration
+diff --git a/docs_build/dev/reports/codex_changed_files.txt b/docs_build/dev/reports/codex_changed_files.txt
+index 7c0363846..0eb0c413e 100644
+--- a/docs_build/dev/reports/codex_changed_files.txt
++++ b/docs_build/dev/reports/codex_changed_files.txt
+@@ -1,24 +1,18 @@
+-﻿# git status --short --untracked-files=all
++﻿ M .env.example
++ M admin/infrastructure.html
++ M assets/theme-v2/js/admin-infrastructure.js
+  M docs_build/dev/codex_commands.md
+  M docs_build/dev/commit_comment.txt
+  M docs_build/dev/reports/codex_changed_files.txt
+  M docs_build/dev/reports/codex_review.diff
+  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+  M docs_build/dev/reports/playwright_v8_coverage_report.txt
++ M owner/operations.html
+  M src/dev-runtime/server/local-api-router.mjs
++ M src/dev-runtime/storage/r2-project-asset-storage.mjs
++ M src/engine/api/admin-infrastructure-api-client.js
+  M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+-?? docs_build/dev/reports/PR_26168_221-storage-path-error-rule-and-r2-env-ready.md
+-
+-# git ls-files --others --exclude-standard
+-docs_build/dev/reports/PR_26168_221-storage-path-error-rule-and-r2-env-ready.md
+-
+-# git diff --stat
+- docs_build/dev/codex_commands.md                   |  30 +
+- docs_build/dev/commit_comment.txt                  |   2 +-
+- docs_build/dev/reports/codex_changed_files.txt     |  32 +-
+- docs_build/dev/reports/codex_review.diff           | 879 +++++----------------
+- .../dev/reports/coverage_changed_js_guardrail.txt  |   4 +-
+- .../dev/reports/playwright_v8_coverage_report.txt  |  11 +-
+- src/dev-runtime/server/local-api-router.mjs        |   9 +-
+- .../tools/AdminPlatformToolsWireframes.spec.mjs    |  87 +-
+- 8 files changed, 337 insertions(+), 717 deletions(-)
++?? docs_build/codex/decisions/project-packages.md
++?? docs_build/dev/reports/PR_26168_222-storage-env-prefix-consolidation.md
++?? docs_build/dev/reports/PR_26168_223-codex-decisions-notes.md
++?? docs_build/dev/reports/PR_26168_224-r2-storage-connectivity-test.md
 diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-index 8ec43d5d2..7ef10ba83 100644
+index 7ef10ba83..3e8bd5f6b 100644
 --- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
 +++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
-@@ -6,11 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
+@@ -6,11 +6,15 @@ Missing changed runtime JS files are WARN, not FAIL.
  Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
  Changed runtime JS files considered:
-+(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
--(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
--(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
- (100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
+-(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
+-(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
++(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/engine/api/admin-infrastructure-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
  Guardrail warnings:
-+(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
++(0%) src/engine/api/admin-infrastructure-api-client.js - WARNING: changed runtime JS file missing from coverage; advisory only
+diff --git a/docs_build/dev/reports/dependency_gating_report.md b/docs_build/dev/reports/dependency_gating_report.md
+index b62c4c0e6..4d808d94d 100644
+--- a/docs_build/dev/reports/dependency_gating_report.md
++++ b/docs_build/dev/reports/dependency_gating_report.md
+@@ -1,6 +1,6 @@
+ # Dependency Gating Report
+
+-Generated: 2026-06-17T13:48:05.539Z
++Generated: 2026-06-17T15:59:08.948Z
+ Status: PASS
+
+ ## Gate Order
+diff --git a/docs_build/dev/reports/dependency_hydration_reuse_report.md b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+index bdd18cdd6..3f5c4fce2 100644
+--- a/docs_build/dev/reports/dependency_hydration_reuse_report.md
++++ b/docs_build/dev/reports/dependency_hydration_reuse_report.md
+@@ -1,22 +1,22 @@
+ # Dependency Hydration Reuse Report
+
+-Generated: 2026-06-17T13:48:05.539Z
++Generated: 2026-06-17T15:59:08.949Z
+ Status: PASS
+
+ ## Summary
+
+-Reused dependency hydration: 1
+-Invalidated dependency hydration: 0
++Reused dependency hydration: 0
++Invalidated dependency hydration: 1
+ Generated dependency hydration: 0
+-Prevented dependency graph hydration: 1
+-Prevented helper resolution passes: 4
++Prevented dependency graph hydration: 0
++Prevented helper resolution passes: 0
+ Prevented fixture ownership traversal: 0
+
+ ## Hydration Decisions
+
+ | Lane | Status | Helpers | Fixtures | Imports | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 1b171620a7a65983 | Dependency hydration reused from validated warm-start state. |
++| workspace-contract | INVALIDATED | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 760c4e57c392ee19 | Dependency hydration was refreshed after warm-start invalidation. |
+
+ ## Safeguards
+
+diff --git a/docs_build/dev/reports/execution_graph_reuse_report.md b/docs_build/dev/reports/execution_graph_reuse_report.md
+index 2562001c0..655b8281f 100644
+--- a/docs_build/dev/reports/execution_graph_reuse_report.md
++++ b/docs_build/dev/reports/execution_graph_reuse_report.md
+@@ -1,22 +1,22 @@
+ # Execution Graph Reuse Report
+
+-Generated: 2026-06-17T13:48:05.539Z
++Generated: 2026-06-17T15:59:08.949Z
+ Status: PASS
+
+ ## Summary
+
+-Reused execution graphs: 1
+-Prevented graph rebuilds: 1
+-Prevented redundant dependency traversal: 1
+-Prevented fixture/helper graph assembly: 4
+-Prevented manifest traversal: 1
+-Prevented targeted scheduling work: 1
++Reused execution graphs: 0
++Prevented graph rebuilds: 0
++Prevented redundant dependency traversal: 0
++Prevented fixture/helper graph assembly: 0
++Prevented manifest traversal: 0
++Prevented targeted scheduling work: 0
+
+ ## Execution Graph Decisions
+
+ | Lane | Status | Snapshot Status | Execution Graph Hash | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | REUSED | 8940e18f0ab808bb | Lane snapshot is part of the selected targeted execution graph. |
++| workspace-contract | INVALIDATED | INVALIDATED | 50b135fc2572fa25 | Lane snapshot is part of the selected targeted execution graph. |
+
+ ## Safeguards
+
+diff --git a/docs_build/dev/reports/failure_fingerprint_report.md b/docs_build/dev/reports/failure_fingerprint_report.md
+index 3ad24dde4..6b62edb47 100644
+--- a/docs_build/dev/reports/failure_fingerprint_report.md
++++ b/docs_build/dev/reports/failure_fingerprint_report.md
+@@ -1,12 +1,12 @@
+ # Failure Fingerprint Report
+
+-Generated: 2026-06-17T13:48:53.724Z
+-Status: WARN
++Generated: 2026-06-17T15:59:53.719Z
++Status: PASS
+
+ ## Summary
+
+ Deterministic setup failures: 0
+-Runtime failures: 1
++Runtime failures: 0
+ Flaky/transient failures: 0
+ Infrastructure failures: 0
+
+@@ -14,7 +14,7 @@ Infrastructure failures: 0
+
+ | Fingerprint | Category | Rule | Lane | Source | Retry Allowed | Diagnostic |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| dd2cd3b1714aba79 | runtime failure | runtime-failure | workspace-contract | runtime command | Yes | workspace-contract command failed: C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| none | none | none | none | none | No | No failures observed during deterministic classification. |
+
+ ## Known Deterministic Fingerprint Rules
+
+diff --git a/docs_build/dev/reports/filesystem_scan_reduction_report.md b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+index 901b0d77c..b6f751b51 100644
+--- a/docs_build/dev/reports/filesystem_scan_reduction_report.md
++++ b/docs_build/dev/reports/filesystem_scan_reduction_report.md
+@@ -1,6 +1,6 @@
+ # Filesystem Scan Reduction Report
+
+-Generated: 2026-06-17T13:48:05.521Z
++Generated: 2026-06-17T15:59:08.931Z
+ Status: PASS
+
+ ## Scan Enforcement
+diff --git a/docs_build/dev/reports/incremental_validation_report.md b/docs_build/dev/reports/incremental_validation_report.md
+index e0cd3e8f5..8aa4e694a 100644
+--- a/docs_build/dev/reports/incremental_validation_report.md
++++ b/docs_build/dev/reports/incremental_validation_report.md
+@@ -1,24 +1,24 @@
+ # Incremental Validation Report
+
+-Generated: 2026-06-17T13:48:05.541Z
++Generated: 2026-06-17T15:59:08.950Z
+ Status: PASS
+
+ ## Reuse Summary
+
+-Reused manifests: 1
+-Invalidated manifests: 0
++Reused manifests: 0
++Invalidated manifests: 1
+ Generated manifests: 0
+ Skipped manifests: 0
+-Prevented lane regeneration: 1
+-Prevented discovery scans: 1
+-Prevented helper resolution passes: 4
++Prevented lane regeneration: 0
++Prevented discovery scans: 0
++Prevented helper resolution passes: 0
+ Prevented fixture resolution passes: 0
+
+ ## Incremental Decisions
+
+ | Lane | Decision | Invalidated By | Runtime Savings Observation |
+ | --- | --- | --- | --- |
+-| workspace-contract | REUSED | unchanged inputs | Reused 1 test input(s), 4 helper(s), and 0 fixture(s). |
++| workspace-contract | INVALIDATED | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. | Manifest was regenerated or skipped; no reuse savings for this lane. |
+
+ ## Invalidation Rules
+
+diff --git a/docs_build/dev/reports/lane_compilation_report.md b/docs_build/dev/reports/lane_compilation_report.md
+index 78272cd20..9a812a466 100644
+--- a/docs_build/dev/reports/lane_compilation_report.md
++++ b/docs_build/dev/reports/lane_compilation_report.md
+@@ -1,6 +1,6 @@
+ # Lane Compilation Report
+
+-Generated: 2026-06-17T13:48:05.538Z
++Generated: 2026-06-17T15:59:08.948Z
+ Status: PASS
+
+ ## Lane Graph
+diff --git a/docs_build/dev/reports/lane_deduplication_report.md b/docs_build/dev/reports/lane_deduplication_report.md
+index 2e7e0dbe2..b53019b73 100644
+--- a/docs_build/dev/reports/lane_deduplication_report.md
++++ b/docs_build/dev/reports/lane_deduplication_report.md
+@@ -1,6 +1,6 @@
+ # Lane Deduplication Report
+
+-Generated: 2026-06-17T13:48:05.539Z
++Generated: 2026-06-17T15:59:08.949Z
+ Status: PASS
+
+ ## Summary
+diff --git a/docs_build/dev/reports/lane_input_validation_report.md b/docs_build/dev/reports/lane_input_validation_report.md
+index d13b8c757..1e925e7c3 100644
+--- a/docs_build/dev/reports/lane_input_validation_report.md
++++ b/docs_build/dev/reports/lane_input_validation_report.md
+@@ -1,6 +1,6 @@
+ # Lane Input Validation Report
+
+-Generated: 2026-06-17T13:48:05.541Z
++Generated: 2026-06-17T15:59:08.950Z
+ Status: PASS
+
+ ## Input Files
+diff --git a/docs_build/dev/reports/lane_manifests/workspace-contract.json b/docs_build/dev/reports/lane_manifests/workspace-contract.json
+index 58639b350..35da0d568 100644
+--- a/docs_build/dev/reports/lane_manifests/workspace-contract.json
++++ b/docs_build/dev/reports/lane_manifests/workspace-contract.json
+@@ -1,12 +1,12 @@
+ {
+   "commandsHash": "39e16c9d480a1e51",
+   "dependencies": [],
+-  "dependencyGraphHash": "0d9380de27fc7d8c",
++  "dependencyGraphHash": "1688f6851b2fc7fb",
+   "fileHashes": {
+     "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+     "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+     "src/dev-runtime/persistence/mock-db-store.js": "a5520a228c2517df",
+-    "src/dev-runtime/server/local-api-router.mjs": "cbc87b9d9231a754",
++    "src/dev-runtime/server/local-api-router.mjs": "e3cc755cca899134",
+     "tests/helpers/playwrightRepoServer.mjs": "8748d47831a3e29d",
+     "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+     "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+@@ -30,15 +30,15 @@
+     "tests/helpers/playwrightV8CoverageReporter.mjs",
+     "tests/helpers/workspaceV2CoverageReporter.mjs"
+   ],
+-  "inputHash": "d8ad74f607a2a4c3",
++  "inputHash": "07dabdd248bbc4eb",
+   "lane": "workspace-contract",
+   "laneDefinitionHash": "fde48767b345621c",
+-  "manifestHash": "23b6ba2dca45c614",
++  "manifestHash": "72c8c7be94e78639",
+   "ownership": "tools",
+   "tests": [
+     "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+   ],
+   "version": 1,
+-  "generatedAt": "2026-06-17T13:46:17.602Z",
++  "generatedAt": "2026-06-17T15:59:08.042Z",
+   "source": "generated"
+ }
+diff --git a/docs_build/dev/reports/lane_runtime_optimization_report.md b/docs_build/dev/reports/lane_runtime_optimization_report.md
+index 15446d51f..42b74162c 100644
+--- a/docs_build/dev/reports/lane_runtime_optimization_report.md
++++ b/docs_build/dev/reports/lane_runtime_optimization_report.md
+@@ -1,16 +1,16 @@
+ # Lane Runtime Optimization Report
+
+-Generated: 2026-06-17T13:48:05.539Z
++Generated: 2026-06-17T15:59:08.949Z
+ Status: PASS
+
+ ## Runtime Cost Summary
+
+ Reused runtime sessions: 0
+-Reused lane snapshots: 1
+-Reused warm-start lanes: 1
+-Reused dependency hydration: 1
+-Prevented graph rebuilds: 1
+-Prevented redundant initialization: 1
++Reused lane snapshots: 0
++Reused warm-start lanes: 0
++Reused dependency hydration: 0
++Prevented graph rebuilds: 0
++Prevented redundant initialization: 0
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+ Baseline Playwright/browser launches: 1
+@@ -28,7 +28,7 @@ No zero-browser, compilation, or dependency blockers were found.
+
+ | Lane | Snapshot | Warm Start | Hydration | Baseline Browser Launches | Scheduled Browser Launches | Commands | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | REUSED | REUSED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | INVALIDATED | INVALIDATED | INVALIDATED | 1 | 1 | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+
+ ## Runtime Savings Observations
+
+diff --git a/docs_build/dev/reports/lane_snapshot_report.md b/docs_build/dev/reports/lane_snapshot_report.md
+index 77511fca1..b73d7836d 100644
+--- a/docs_build/dev/reports/lane_snapshot_report.md
++++ b/docs_build/dev/reports/lane_snapshot_report.md
+@@ -1,23 +1,23 @@
+ # Lane Snapshot Report
+
+-Generated: 2026-06-17T13:48:05.539Z
++Generated: 2026-06-17T15:59:08.949Z
+ Status: PASS
+ Snapshot directory: docs_build/dev/reports/lane_snapshots
+
+ ## Summary
+
+-Reused lane snapshots: 1
+-Invalidated snapshots: 0
++Reused lane snapshots: 0
++Invalidated snapshots: 1
+ Generated snapshots: 0
+ Skipped snapshots: 0
+-Prevented graph rebuilds: 1
+-Prevented manifest traversal: 1
++Prevented graph rebuilds: 0
++Prevented manifest traversal: 0
+
+ ## Snapshot Decisions
+
+ | Lane | Status | Snapshot Path | Manifest Hash | Dependency Graph Hash | Helper Graph Hash | Fixture Graph Hash | Runtime Config Hash | Execution Graph Hash | Snapshot Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 23b6ba2dca45c614 | 0d9380de27fc7d8c | 8f47b14103033dad | 6c4fac7630b0b6f3 | c99c4343771f1683 | 8940e18f0ab808bb | 0523c0f2f2c22dd5 | Targeted files, manifest, dependency graph, helper graph, fixture graph, ownership, lane config, and runtime config are unchanged. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_snapshots/workspace-contract.json | 72c8c7be94e78639 | 1688f6851b2fc7fb | 8f47b14103033dad | 6c4fac7630b0b6f3 | c99c4343771f1683 | 50b135fc2572fa25 | a2ec0d64a9fe4f13 | Lane snapshot dependencyGraphHash changed for workspace-contract.; Lane snapshot executionGraphHash changed for workspace-contract.; Lane snapshot inputHash changed for workspace-contract.; Lane snapshot manifestHash changed for workspace-contract.; Lane snapshot snapshotHash changed for workspace-contract.; Lane snapshot warmStartHash changed for workspace-contract. |
+
+ ## Snapshot Validation Findings
+
+diff --git a/docs_build/dev/reports/lane_snapshots/workspace-contract.json b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
+index 42f0a0518..a5eae4d90 100644
+--- a/docs_build/dev/reports/lane_snapshots/workspace-contract.json
++++ b/docs_build/dev/reports/lane_snapshots/workspace-contract.json
+@@ -3,12 +3,12 @@
+   "dependencyGateStatus": "PASS",
+   "dependencyGraph": {
+     "dependencies": [],
+-    "dependencyGraphHash": "0d9380de27fc7d8c",
++    "dependencyGraphHash": "1688f6851b2fc7fb",
+     "importHashes": {
+       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+       "src/dev-runtime/persistence/mock-db-store.js": "a5520a228c2517df",
+-      "src/dev-runtime/server/local-api-router.mjs": "cbc87b9d9231a754",
++      "src/dev-runtime/server/local-api-router.mjs": "e3cc755cca899134",
+       "tests/helpers/playwrightRepoServer.mjs": "8748d47831a3e29d",
+       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+@@ -25,8 +25,8 @@
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ]
+   },
+-  "dependencyGraphHash": "0d9380de27fc7d8c",
+-  "executionGraphHash": "8940e18f0ab808bb",
++  "dependencyGraphHash": "1688f6851b2fc7fb",
++  "executionGraphHash": "50b135fc2572fa25",
+   "fixtureGraph": {
+     "fixtureHashes": {},
+     "fixtures": []
+@@ -47,7 +47,7 @@
+     ]
+   },
+   "helperGraphHash": "8f47b14103033dad",
+-  "inputHash": "d8ad74f607a2a4c3",
++  "inputHash": "07dabdd248bbc4eb",
+   "lane": "workspace-contract",
+   "laneCompilationStatus": "PASS",
+   "laneDefinitionHash": "fde48767b345621c",
+@@ -56,7 +56,7 @@
+       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+       "src/dev-runtime/persistence/mock-db-store.js": "a5520a228c2517df",
+-      "src/dev-runtime/server/local-api-router.mjs": "cbc87b9d9231a754",
++      "src/dev-runtime/server/local-api-router.mjs": "e3cc755cca899134",
+       "tests/helpers/playwrightRepoServer.mjs": "8748d47831a3e29d",
+       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+@@ -80,14 +80,14 @@
+       "tests/helpers/playwrightV8CoverageReporter.mjs",
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ],
+-    "manifestHash": "23b6ba2dca45c614",
++    "manifestHash": "72c8c7be94e78639",
+     "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+     "source": "generated",
+     "tests": [
+       "tests/playwright/tools/RootToolsFutureState.spec.mjs"
+     ]
+   },
+-  "manifestHash": "23b6ba2dca45c614",
++  "manifestHash": "72c8c7be94e78639",
+   "ownership": "tools",
+   "runtimeConfiguration": {
+     "affectedSurface": "Root tools future-state navigation and Tool Template V2 contract",
+@@ -114,8 +114,8 @@
+     "requiresSamplesFlag": false
+   },
+   "runtimeConfigurationHash": "c99c4343771f1683",
+-  "snapshotHash": "0523c0f2f2c22dd5",
++  "snapshotHash": "a2ec0d64a9fe4f13",
+   "version": 1,
+-  "warmStartHash": "bd524554467aec09",
+-  "generatedAt": "2026-06-17T13:46:18.483Z"
++  "warmStartHash": "6ae57fcf02805352",
++  "generatedAt": "2026-06-17T15:59:08.945Z"
+ }
+diff --git a/docs_build/dev/reports/lane_warm_start_report.md b/docs_build/dev/reports/lane_warm_start_report.md
+index 4b70b43ae..267183e14 100644
+--- a/docs_build/dev/reports/lane_warm_start_report.md
++++ b/docs_build/dev/reports/lane_warm_start_report.md
+@@ -1,23 +1,23 @@
+ # Lane Warm-Start Report
+
+-Generated: 2026-06-17T13:48:05.539Z
++Generated: 2026-06-17T15:59:08.949Z
+ Status: PASS
+ Warm-start directory: docs_build/dev/reports/lane_warm_starts
+
+ ## Summary
+
+-Reused warm-start lanes: 1
+-Invalidated warm-start states: 0
++Reused warm-start lanes: 0
++Invalidated warm-start states: 1
+ Generated warm-start states: 0
+ Skipped warm-start states: 0
+-Prevented redundant initialization: 1
+-Prevented lane graph assembly: 1
++Prevented redundant initialization: 0
++Prevented lane graph assembly: 0
+
+ ## Warm-Start Decisions
+
+ | Lane | Status | Warm-Start Path | Manifest Hash | Warm-Start Hash | Dependency Hydration Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 23b6ba2dca45c614 | bd524554467aec09 | 1b171620a7a65983 | Manifest inputs, dependency graph, ownership metadata, helper placement, fixture placement, and lane configuration are unchanged. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_warm_starts/workspace-contract.json | 72c8c7be94e78639 | 6ae57fcf02805352 | 760c4e57c392ee19 | Warm-start dependencyGraphHash changed for workspace-contract.; Warm-start dependencyHydrationHash changed for workspace-contract.; Warm-start inputHash changed for workspace-contract.; Warm-start manifestHash changed for workspace-contract.; Warm-start warmStartHash changed for workspace-contract. |
+
+ ## Fast-Fail Safeguards
+
+diff --git a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+index 1570c9f75..d3bccd332 100644
+--- a/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
++++ b/docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+@@ -1,8 +1,8 @@
+ {
+   "commandsHash": "39e16c9d480a1e51",
+-  "dependencyGraphHash": "0d9380de27fc7d8c",
++  "dependencyGraphHash": "1688f6851b2fc7fb",
+   "dependencyHydration": {
+-    "dependencyHydrationHash": "1b171620a7a65983",
++    "dependencyHydrationHash": "760c4e57c392ee19",
+     "fixtureHashes": {},
+     "fixtures": [],
+     "helperHashes": {
+@@ -21,7 +21,7 @@
+       "src/dev-runtime/admin/admin-notes-directory.mjs": "0db08db8072499ab",
+       "src/dev-runtime/admin/admin-notes-menu.mjs": "1143d3a104fb4b4f",
+       "src/dev-runtime/persistence/mock-db-store.js": "a5520a228c2517df",
+-      "src/dev-runtime/server/local-api-router.mjs": "cbc87b9d9231a754",
++      "src/dev-runtime/server/local-api-router.mjs": "e3cc755cca899134",
+       "tests/helpers/playwrightRepoServer.mjs": "8748d47831a3e29d",
+       "tests/helpers/playwrightStorageIsolation.mjs": "22604b3e338d2c4a",
+       "tests/helpers/playwrightV8CoverageReporter.mjs": "a1b81069fef85fd6",
+@@ -38,16 +38,16 @@
+       "tests/helpers/workspaceV2CoverageReporter.mjs"
+     ]
+   },
+-  "dependencyHydrationHash": "1b171620a7a65983",
+-  "inputHash": "d8ad74f607a2a4c3",
++  "dependencyHydrationHash": "760c4e57c392ee19",
++  "inputHash": "07dabdd248bbc4eb",
+   "lane": "workspace-contract",
+   "laneConfigHash": "3d8db02cddc33911",
+   "laneDefinitionHash": "fde48767b345621c",
+-  "manifestHash": "23b6ba2dca45c614",
++  "manifestHash": "72c8c7be94e78639",
+   "ownership": "tools",
+-  "warmStartHash": "bd524554467aec09",
++  "warmStartHash": "6ae57fcf02805352",
+   "version": 1,
+-  "generatedAt": "2026-06-17T13:46:17.609Z",
++  "generatedAt": "2026-06-17T15:59:08.049Z",
+   "manifestPath": "docs_build/dev/reports/lane_manifests/workspace-contract.json",
+   "sourceManifest": "generated"
+ }
+diff --git a/docs_build/dev/reports/monolith_trigger_removal_report.md b/docs_build/dev/reports/monolith_trigger_removal_report.md
+index 56b027338..f33bf19d7 100644
+--- a/docs_build/dev/reports/monolith_trigger_removal_report.md
++++ b/docs_build/dev/reports/monolith_trigger_removal_report.md
+@@ -1,6 +1,6 @@
+ # Monolith Trigger Removal Report
+
+-Generated: 2026-06-17T13:48:53.725Z
++Generated: 2026-06-17T15:59:53.720Z
+ Status: PASS
+
+ ## Removed Broad Execution Triggers
+diff --git a/docs_build/dev/reports/persistent_lane_manifest_report.md b/docs_build/dev/reports/persistent_lane_manifest_report.md
+index 40b2a0cef..d1bb53a17 100644
+--- a/docs_build/dev/reports/persistent_lane_manifest_report.md
++++ b/docs_build/dev/reports/persistent_lane_manifest_report.md
+@@ -1,27 +1,27 @@
+ # Persistent Lane Manifest Report
+
+-Generated: 2026-06-17T13:48:05.540Z
++Generated: 2026-06-17T15:59:08.950Z
+ Status: PASS
+ Manifest directory: docs_build/dev/reports/lane_manifests
+
+ ## Summary
+
+-Reused manifests: 1
+-Invalidated manifests: 0
++Reused manifests: 0
++Invalidated manifests: 1
+ Generated manifests: 0
+-Prevented discovery scans: 1
++Prevented discovery scans: 0
+
+ ## Manifest Events
+
+ | Lane | Status | Manifest Path | Input Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | REUSED | docs_build/dev/reports/lane_manifests/workspace-contract.json | d8ad74f607a2a4c3 | 23b6ba2dca45c614 | Inputs unchanged; persisted lane manifest reused. |
++| workspace-contract | INVALIDATED | docs_build/dev/reports/lane_manifests/workspace-contract.json | 07dabdd248bbc4eb | 72c8c7be94e78639 | Persistent manifest dependency graph hash changed for workspace-contract.; Persistent manifest input hash changed for workspace-contract.; Persistent manifest hash changed for workspace-contract. |
+
+ ## Persisted Manifest Files
+
+ | Lane | Ownership | Source | Tests | Helpers | Fixtures | Dependency Graph Hash | Manifest Hash |
+ | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 0d9380de27fc7d8c | 23b6ba2dca45c614 |
++| workspace-contract | tools | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | 1688f6851b2fc7fb | 72c8c7be94e78639 |
+
+ ## Fast-Fail Enforcement
+
+diff --git a/docs_build/dev/reports/playwright_discovery_ownership_report.md b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+index b3e2b1745..1aa9b1a48 100644
+--- a/docs_build/dev/reports/playwright_discovery_ownership_report.md
++++ b/docs_build/dev/reports/playwright_discovery_ownership_report.md
+@@ -1,6 +1,6 @@
+ # Playwright Discovery Ownership Report
+
+-Generated: 2026-06-17T13:48:05.518Z
++Generated: 2026-06-17T15:59:08.928Z
+ Status: PASS
+
+ ## Discovery-Time Ownership
+diff --git a/docs_build/dev/reports/playwright_discovery_scope_report.md b/docs_build/dev/reports/playwright_discovery_scope_report.md
+index 32ef8a6bb..373a7ee75 100644
+--- a/docs_build/dev/reports/playwright_discovery_scope_report.md
++++ b/docs_build/dev/reports/playwright_discovery_scope_report.md
+@@ -1,6 +1,6 @@
+ # Playwright Discovery Scope Report
+
+-Generated: 2026-06-17T13:48:05.520Z
++Generated: 2026-06-17T15:59:08.930Z
+ Status: PASS
+ Scoped discovery: Yes
+
+diff --git a/docs_build/dev/reports/playwright_structure_audit.md b/docs_build/dev/reports/playwright_structure_audit.md
+index 884f8d651..4fe57077b 100644
+--- a/docs_build/dev/reports/playwright_structure_audit.md
++++ b/docs_build/dev/reports/playwright_structure_audit.md
+@@ -1,6 +1,6 @@
+ # Playwright Structure Audit
+
+-Generated: 2026-06-17T13:48:05.512Z
++Generated: 2026-06-17T15:59:08.920Z
+ Status: PASS
+
+ ## Lane Directories
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index e87f42604..357d9f3f3 100644
+index 357d9f3f3..eecbf2c8d 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -14,13 +14,12 @@ Note: coverage entries are aggregated across every page/tool where coverageRepor
+@@ -12,32 +12,51 @@ Note: entry percentages use function coverage when available, otherwise line cov
+ Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
  Exercised tool entry points detected:
- (46%) Toolbox Index - exercised 1 runtime JS files
+-(46%) Toolbox Index - exercised 1 runtime JS files
++(72%) Toolbox Index - exercised 10 runtime JS files
  (0%) Tool Template V2 - not exercised by this Playwright run
--(79%) Theme V2 Shared JS - exercised 5 runtime JS files
-+(73%) Theme V2 Shared JS - exercised 4 runtime JS files
+-(73%) Theme V2 Shared JS - exercised 4 runtime JS files
++(51%) Theme V2 Shared JS - exercised 5 runtime JS files
 
  Changed runtime JS files covered:
-+(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
- (80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
--(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
--(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
- (100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
+-(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
+-(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
++(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(0%) src/engine/api/admin-infrastructure-api-client.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
  Files with executed line/function counts where available:
-@@ -30,17 +29,15 @@ Files with executed line/function counts where available:
- (71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 46/65
- (80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
- (100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
--(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
- (100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
--(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
+-(36%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 5/14
+-(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
++(13%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 3/23
++(14%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 1/7
++(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
++(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
++(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
++(33%) src/engine/api/db-viewer-api-client.js - executed lines 13/13; executed functions 1/3
++(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
++(56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
++(58%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 11/19
+ (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
+-(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 46/65
+-(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
+-(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
+-(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
++(64%) toolbox/controls/controls.js - executed lines 610/610; executed functions 36/56
++(74%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 48/65
++(75%) toolbox/game-workspace/game-workspace.js - executed lines 457/457; executed functions 33/44
++(90%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 26/29
++(91%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 21/23
++(91%) toolbox/tools-page-accordions.js - executed lines 964/964; executed functions 103/113
++(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
++(100%) toolbox/controls/controls-api-client.js - executed lines 33/33; executed functions 5/5
++(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
++(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 3/3
 
  Uncovered or low-coverage changed JS files:
-+(0%) assets/theme-v2/js/owner-operations.js - WARNING: uncovered changed runtime JS file; advisory only
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
  (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: uncovered changed runtime JS file; advisory only
++(0%) src/engine/api/admin-infrastructure-api-client.js - WARNING: uncovered changed runtime JS file; advisory only
 
  Changed JS files considered:
-+(0%) assets/theme-v2/js/owner-operations.js - changed JS file not collected as browser runtime coverage
+-(0%) assets/theme-v2/js/owner-operations.js - changed JS file not collected as browser runtime coverage
++(0%) assets/theme-v2/js/admin-infrastructure.js - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
  (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - changed JS file not collected as browser runtime coverage
++(0%) src/engine/api/admin-infrastructure-api-client.js - changed JS file not collected as browser runtime coverage
  (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
- (80%) assets/theme-v2/js/admin-infrastructure.js - changed JS file with browser V8 coverage
--(100%) assets/theme-v2/js/image-zoom-dialog.js - changed JS file with browser V8 coverage
--(100%) assets/theme-v2/js/owner-operations.js - changed JS file with browser V8 coverage
- (100%) src/engine/api/admin-infrastructure-api-client.js - changed JS file with browser V8 coverage
+-(80%) assets/theme-v2/js/admin-infrastructure.js - changed JS file with browser V8 coverage
+-(100%) src/engine/api/admin-infrastructure-api-client.js - changed JS file with browser V8 coverage
++(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+diff --git a/docs_build/dev/reports/retry_suppression_report.md b/docs_build/dev/reports/retry_suppression_report.md
+index 8d515cff7..c38890153 100644
+--- a/docs_build/dev/reports/retry_suppression_report.md
++++ b/docs_build/dev/reports/retry_suppression_report.md
+@@ -1,7 +1,7 @@
+ # Retry Suppression Report
+
+-Generated: 2026-06-17T13:48:53.725Z
+-Status: WARN
++Generated: 2026-06-17T15:59:53.719Z
++Status: PASS
+
+ ## Summary
+
+@@ -15,7 +15,7 @@ Prevented repeated lane hydration: 0
+
+ | Fingerprint | Lane | Category | Retry Decision | Reason |
+ | --- | --- | --- | --- | --- |
+-| dd2cd3b1714aba79 | workspace-contract | runtime failure | Allowed only on explicit targeted retry | Retry is allowed only when explicitly requested and must preserve the same targeted lane scope. |
++| none | none | none | No retry needed | No failures were observed. |
+
+ ## Enforcement Rules
+
+diff --git a/docs_build/dev/reports/slow_path_pruning_report.md b/docs_build/dev/reports/slow_path_pruning_report.md
+index a5c2d125e..d3aa0b5bf 100644
+--- a/docs_build/dev/reports/slow_path_pruning_report.md
++++ b/docs_build/dev/reports/slow_path_pruning_report.md
+@@ -1,19 +1,19 @@
+ # Slow Path Pruning Report
+
+-Generated: 2026-06-17T13:48:53.725Z
++Generated: 2026-06-17T15:59:53.719Z
+ Status: PASS
+ Source timing evidence: docs_build/dev/reports/test_cleanup_performance_report.md (2026-05-26T21:18:42.199Z)
+
+ ## Before / After Runtime Observations
+
+ PR_26146_038 measured lane elapsed time: 169.71s
+-Current measured lane elapsed time: 48.16s
++Current measured lane elapsed time: 44.74s
+ PR_26146_038 actual browser launches: 4
+ Current actual browser launches: 1
+ Accidental no-argument browser launches prevented: 5
+ Reduced Workspace lane nested launches: 1
+-Reused dependency hydration: 1
+-Reused snapshots: 1
++Reused dependency hydration: 0
++Reused snapshots: 0
+ Validation cache hits: 18
+
+ ## Slow Paths Optimized
+@@ -32,15 +32,15 @@ Validation cache hits: 18
+ | PR_26146_038 | integration | 14.50s | games index resolves Pong thumbnail from manifest preview role |
+ | PR_26146_038 | tool-runtime | 10.10s | Preview Generator V2 real batch output |
+ | current targeted run | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:630:1 > representative active tool pages align center cleanup and registry group colors |
+-| current targeted run | workspace-contract | 9.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
+-| current targeted run | workspace-contract | 9.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
+-| current targeted run | workspace-contract | 7.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages |
++| current targeted run | workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
++| current targeted run | workspace-contract | 9.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
++| current targeted run | workspace-contract | 7.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages |
+ | current targeted run | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:608:1 > tool template future-state page loads from root Theme V2 paths |
+
+ ## Guardrails
+
+ Full samples smoke: SKIP - Skipped because changed files do not modify sample JSON or shared sample loader/framework behavior.
+-Runtime failures observed: 1
++Runtime failures observed: 0
+ Runtime schedule status: PASS
+
+ - Only no-argument broad defaults and safe Workspace legacy routing were pruned.
+diff --git a/docs_build/dev/reports/static_validation_report.md b/docs_build/dev/reports/static_validation_report.md
+index fd3db1f1a..31f054cf9 100644
+--- a/docs_build/dev/reports/static_validation_report.md
++++ b/docs_build/dev/reports/static_validation_report.md
+@@ -1,6 +1,6 @@
+ # Static Validation Report
+
+-Generated: 2026-06-17T13:48:05.534Z
++Generated: 2026-06-17T15:59:08.942Z
+ Status: PASS
+ Static only: No
+ Dry run: No
+@@ -22,13 +22,13 @@ Reason: No deterministic static validation failure was found.
+ | invalid filename detection | PASS | Covered by Playwright structure audit. |
+ | missing import detection | PASS | Covered by Playwright structure audit relative import checks. |
+ | missing fixture detection | PASS | No missing fixture findings. |
+-| targeted file manifests | PASS | workspace-contract:23b6ba2dca45c614 |
+-| persistent lane manifests | PASS | workspace-contract:REUSED |
+-| lane warm-start reuse | PASS | workspace-contract:REUSED |
+-| dependency hydration reuse | PASS | workspace-contract:REUSED |
++| targeted file manifests | PASS | workspace-contract:72c8c7be94e78639 |
++| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
++| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
++| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
+ | lane input graph expansion | PASS | No inputs escaped manifest scope. |
+ | scoped discovery targets | PASS | tests/playwright/tools/RootToolsFutureState.spec.mjs |
+-| broad scan prevention | PASS | Discovery map read 0 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
++| broad scan prevention | PASS | Discovery map read 5 targeted file(s)/helper(s); lane-directory enumeration is delegated only to standalone broad audit mode. |
+ | invalid lane target detection | PASS | No invalid lane target findings. |
+ | Windows quoting hazard detection | PASS | No shell-sensitive grep hazards found. |
+ | duplicate lane registration detection | PASS | No duplicate lane registrations found. |
+diff --git a/docs_build/dev/reports/targeted_file_manifest_report.md b/docs_build/dev/reports/targeted_file_manifest_report.md
+index 29ffd2edf..515d77034 100644
+--- a/docs_build/dev/reports/targeted_file_manifest_report.md
++++ b/docs_build/dev/reports/targeted_file_manifest_report.md
+@@ -1,19 +1,19 @@
+ # Targeted File Manifest Report
+
+-Generated: 2026-06-17T13:48:05.540Z
++Generated: 2026-06-17T15:59:08.950Z
+ Status: PASS
+
+ ## Manifest-Generated Lane Inputs
+
+ | Lane | Ownership | Status | Source | Tests | Helpers | Fixtures | Imports / Dependencies | Dependency Graph Hash | Manifest Hash | Reason |
+ | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | tools | PASS | persistent | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 0d9380de27fc7d8c | 23b6ba2dca45c614 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
++| workspace-contract | tools | PASS | generated | tests/playwright/tools/RootToolsFutureState.spec.mjs | tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | none | src/dev-runtime/admin/admin-notes-directory.mjs; src/dev-runtime/admin/admin-notes-menu.mjs; src/dev-runtime/persistence/mock-db-store.js; src/dev-runtime/server/local-api-router.mjs; tests/helpers/playwrightRepoServer.mjs; tests/helpers/playwrightStorageIsolation.mjs; tests/helpers/playwrightV8CoverageReporter.mjs; tests/helpers/workspaceV2CoverageReporter.mjs | 1688f6851b2fc7fb | 72c8c7be94e78639 | Manifest ownership, helpers, fixtures, imports, and command targets are deterministic before runtime. |
+
+ ## Discovery Expansion Control
+
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 0
+-Targeted file/helper reads: 0
++Prevented redundant scans: 4
++Targeted file/helper reads: 5
+
+ ## Runtime Savings Observations
+
+diff --git a/docs_build/dev/reports/test_cleanup_performance_report.md b/docs_build/dev/reports/test_cleanup_performance_report.md
+index 4004b988f..9472d4acf 100644
+--- a/docs_build/dev/reports/test_cleanup_performance_report.md
++++ b/docs_build/dev/reports/test_cleanup_performance_report.md
+@@ -1,29 +1,29 @@
+ # Test Cleanup Performance Report
+
+-Generated: 2026-06-17T13:48:53.725Z
+-Status: WARN
++Generated: 2026-06-17T15:59:53.719Z
++Status: PASS
+
+ ## Cost Summary
+
+-Total measured lane elapsed time: 48.16s
++Total measured lane elapsed time: 44.74s
+ Actual browser launch count: 1
+ Scheduled browser launch count: 1
+ Baseline browser launch count: 1
+ Skipped lanes: 14
+-Reused manifests: 1
+-Reused snapshots: 1
++Reused manifests: 0
++Reused snapshots: 0
+ Cached validations reused: 18
+ Prevented broad execution: 2
+ Prevented reruns: 0
+ Prevented redundant browser launches: 0
+-Prevented graph rebuilds: 1
+-Prevented redundant dependency traversal: 1
++Prevented graph rebuilds: 0
++Prevented redundant dependency traversal: 0
+
+ ## Lane Elapsed Time
+
+ | Lane | Status | Elapsed | Browser Launches | Reason |
+ | --- | --- | --- | --- | --- |
+-| workspace-contract | FAIL | 48.16s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
++| workspace-contract | PASS | 44.74s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. |
+ | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. |
+@@ -44,9 +44,9 @@ Prevented redundant dependency traversal: 1
+ | Lane | Duration | Test | Command |
+ | --- | --- | --- | --- |
+ | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:630:1 > representative active tool pages align center cleanup and registry group colors | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 9.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 9.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+-| workspace-contract | 7.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 9.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
++| workspace-contract | 7.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+ | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:608:1 > tool template future-state page loads from root Theme V2 paths | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list |
+
+ ## Prevented Broad Execution
+diff --git a/docs_build/dev/reports/test_cleanup_routing_report.md b/docs_build/dev/reports/test_cleanup_routing_report.md
+index d2394f6f6..7949ccf5b 100644
+--- a/docs_build/dev/reports/test_cleanup_routing_report.md
++++ b/docs_build/dev/reports/test_cleanup_routing_report.md
+@@ -1,6 +1,6 @@
+ # Test Cleanup Routing Report
+
+-Generated: 2026-06-17T13:48:53.725Z
++Generated: 2026-06-17T15:59:53.719Z
+ Status: PASS
+
+ ## Representative Routing Cases
+diff --git a/docs_build/dev/reports/testing_lane_execution_report.md b/docs_build/dev/reports/testing_lane_execution_report.md
+index e422390d6..629a515c3 100644
+--- a/docs_build/dev/reports/testing_lane_execution_report.md
++++ b/docs_build/dev/reports/testing_lane_execution_report.md
+@@ -1,15 +1,15 @@
+ # Testing Lane Execution Report
+
+-Generated: 2026-06-17T13:48:53.732Z
++Generated: 2026-06-17T15:59:53.728Z
+ Dry run: No
+
+ ## Summary
+
+-PASS: 0
++PASS: 1
+ WARN: 0
+-FAIL: 1
++FAIL: 0
+ SKIP: 14
+-Total lane elapsed time: 48.16s
++Total lane elapsed time: 44.74s
+ Actual browser launches: 1
+
+ ## Full Samples Smoke
+@@ -34,11 +34,11 @@ Reason: No deterministic dependency failures before runtime.
+ Status: PASS
+ Scheduled lane order: workspace-contract
+ Reused runtime sessions: 0
+-Reused lane snapshots: 1
+-Reused warm-start lanes: 1
+-Reused dependency hydration: 1
+-Prevented graph rebuilds: 1
+-Prevented redundant initialization: 1
++Reused lane snapshots: 0
++Reused warm-start lanes: 0
++Reused dependency hydration: 0
++Prevented graph rebuilds: 0
++Prevented redundant initialization: 0
+ Prevented redundant browser launches: 0
+ Prevented redundant lane execution: 14
+
+@@ -49,9 +49,9 @@ Validation computations: 10
+
+ ## Failure Fingerprints
+
+-Status: WARN
++Status: PASS
+ Deterministic setup failures: 0
+-Runtime failures: 1
++Runtime failures: 0
+ Flaky/transient failures: 0
+ Infrastructure failures: 0
+ Prevented reruns: 0
+@@ -64,7 +64,7 @@ Status: PASS
+ Target files: tests/playwright/tools/RootToolsFutureState.spec.mjs
+ Required shared helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs
+ Required fixtures: none
+-Targeted file/helper reads: 0
++Targeted file/helper reads: 5
+ Cached discovery reuse: Yes
+ Prevented fallback expansion: Yes; no ownership or scope blocker widened into broad discovery.
+
+@@ -73,27 +73,27 @@ Prevented fallback expansion: Yes; no ownership or scope blocker widened into br
+ Status: PASS
+ Generated manifests: workspace-contract:PASS
+ Prevented discovery expansion: Yes
+-Prevented redundant scans: 0
+-Persistent manifest events: workspace-contract:REUSED
++Prevented redundant scans: 4
++Persistent manifest events: workspace-contract:INVALIDATED
+
+ ## Warm-Start Reuse
+
+ Status: PASS
+-Warm-start events: workspace-contract:REUSED
+-Dependency hydration events: workspace-contract:REUSED
+-Prevented redundant initialization: 1
+-Prevented helper resolution passes: 4
++Warm-start events: workspace-contract:INVALIDATED
++Dependency hydration events: workspace-contract:INVALIDATED
++Prevented redundant initialization: 0
++Prevented helper resolution passes: 0
+ Prevented fixture ownership traversal: 0
+
+ ## Lane Snapshots
+
+ Status: PASS
+-Snapshot events: workspace-contract:REUSED
+-Reused snapshots: 1
+-Invalidated snapshots: 0
+-Prevented graph rebuilds: 1
+-Prevented redundant dependency traversal: 1
+-Prevented fixture/helper graph assembly: 4
++Snapshot events: workspace-contract:INVALIDATED
++Reused snapshots: 0
++Invalidated snapshots: 1
++Prevented graph rebuilds: 0
++Prevented redundant dependency traversal: 0
++Prevented fixture/helper graph assembly: 0
+
+ ## Lane Deduplication
+
+@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
+
+ | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
+ | --- | --- | --- | --- | --- | --- | --- |
+-| workspace-contract | FAIL | 48.16s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
++| workspace-contract | PASS | 44.74s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+ | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
+ | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
+ | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
+@@ -126,15 +126,15 @@ Prevented Workspace lane reruns: 0
+ | Lane | Duration | Test |
+ | --- | --- | --- |
+ | workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:630:1 > representative active tool pages align center cleanup and registry group colors |
+-| workspace-contract | 9.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
+-| workspace-contract | 9.50s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
+-| workspace-contract | 7.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages |
++| workspace-contract | 9.90s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
++| workspace-contract | 9.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
++| workspace-contract | 7.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages |
+ | workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:608:1 > tool template future-state page loads from root Theme V2 paths |
+
+ ## Commands
+
+ ### workspace-contract
+-- FAIL 48.16s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
++- PASS 44.74s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+
+ ### game-workspace
+ - SKIP
+diff --git a/docs_build/dev/reports/validation_cache_report.md b/docs_build/dev/reports/validation_cache_report.md
+index cfa455bcd..875a38992 100644
+--- a/docs_build/dev/reports/validation_cache_report.md
++++ b/docs_build/dev/reports/validation_cache_report.md
+@@ -1,6 +1,6 @@
+ # Validation Cache Report
+
+-Generated: 2026-06-17T13:48:05.542Z
++Generated: 2026-06-17T15:59:08.951Z
+ Status: PASS
+
+ ## Cache Summary
+@@ -15,26 +15,26 @@ Validations computed: 10
+ | lane registration validation | MISS | c5f6923cb3e9b570 | initial computation | lane definitions change; package.json lane scripts change |
+ | runner preflight validation | MISS | a56dddb91b84bd8e | initial computation | lane definitions change; fixture ownership changes; targeted files change |
+ | scoped discovery map | MISS | d1596716e5ff4e22 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| targeted file manifest validation | MISS | 2732bdff340992d0 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
+-| lane warm-start validation | MISS | a11c179abb7ef698 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
+-| structural ownership validation | MISS | 6db91a99c8175e8a | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
++| targeted file manifest validation | MISS | 07c8c0585c3e6499 | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change |
++| lane warm-start validation | MISS | 7e582c41855c5992 | initial computation | lane definitions change; targeted files change; ownership metadata changes; dependency graph changes; helper/fixture placement changes; lane configuration changes |
++| structural ownership validation | MISS | 2b73f3dabe5c2d88 | initial computation | fixture ownership changes; helper/import graph changes; targeted files change |
+ | lane compilation validation | MISS | ff2d20b40fcb0398 | initial computation | lane definitions change; targeted files change; fixture ownership changes |
+ | lane compilation validation | HIT | ff2d20b40fcb0398 | dependency validation input | unchanged within execution cycle |
+ | dependency validation | MISS | 718132570eea4d98 | initial computation | dependency graph changes; lane definitions change; lane compilation input changes |
+-| lane snapshot validation | MISS | add162859a24d3b3 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
++| lane snapshot validation | MISS | 4cfc3225c511f507 | initial computation | targeted files change; dependency graph changes; helper/fixture ownership changes; lane configuration changes; runtime configuration changes |
+ | zero-browser preflight | MISS | f19bf3518c98576f | initial computation | lane definitions change; fixture ownership changes; helper/import graph changes; targeted files change; dependency graph changes |
+-| structural ownership validation | HIT | 6db91a99c8175e8a | static validation report | unchanged within execution cycle |
+-| structural ownership validation | HIT | 6db91a99c8175e8a | zero-browser preflight report | unchanged within execution cycle |
++| structural ownership validation | HIT | 2b73f3dabe5c2d88 | static validation report | unchanged within execution cycle |
++| structural ownership validation | HIT | 2b73f3dabe5c2d88 | zero-browser preflight report | unchanged within execution cycle |
+ | scoped discovery map | HIT | d1596716e5ff4e22 | structural ownership validation input | unchanged within execution cycle |
+ | scoped discovery map | HIT | d1596716e5ff4e22 | discovery scope reporting | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 2732bdff340992d0 | lane input validation report | unchanged within execution cycle |
+-| targeted file manifest validation | HIT | 2732bdff340992d0 | runtime scheduling blockers | unchanged within execution cycle |
+-| lane warm-start validation | HIT | a11c179abb7ef698 | warm-start report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | a11c179abb7ef698 | dependency hydration reuse report | unchanged within execution cycle |
+-| lane warm-start validation | HIT | a11c179abb7ef698 | runtime scheduling | unchanged within execution cycle |
+-| lane snapshot validation | HIT | add162859a24d3b3 | lane snapshot report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | add162859a24d3b3 | execution graph reuse report | unchanged within execution cycle |
+-| lane snapshot validation | HIT | add162859a24d3b3 | runtime scheduling | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 07c8c0585c3e6499 | lane input validation report | unchanged within execution cycle |
++| targeted file manifest validation | HIT | 07c8c0585c3e6499 | runtime scheduling blockers | unchanged within execution cycle |
++| lane warm-start validation | HIT | 7e582c41855c5992 | warm-start report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 7e582c41855c5992 | dependency hydration reuse report | unchanged within execution cycle |
++| lane warm-start validation | HIT | 7e582c41855c5992 | runtime scheduling | unchanged within execution cycle |
++| lane snapshot validation | HIT | 4cfc3225c511f507 | lane snapshot report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 4cfc3225c511f507 | execution graph reuse report | unchanged within execution cycle |
++| lane snapshot validation | HIT | 4cfc3225c511f507 | runtime scheduling | unchanged within execution cycle |
+ | lane compilation validation | HIT | ff2d20b40fcb0398 | lane compilation report | unchanged within execution cycle |
+ | lane compilation validation | HIT | ff2d20b40fcb0398 | runtime scheduling | unchanged within execution cycle |
+ | dependency validation | HIT | 718132570eea4d98 | dependency report | unchanged within execution cycle |
+diff --git a/docs_build/dev/reports/zero_browser_preflight_report.md b/docs_build/dev/reports/zero_browser_preflight_report.md
+index 0241bb15b..4f612f5b5 100644
+--- a/docs_build/dev/reports/zero_browser_preflight_report.md
++++ b/docs_build/dev/reports/zero_browser_preflight_report.md
+@@ -1,6 +1,6 @@
+ # Zero-Browser Preflight Report
+
+-Generated: 2026-06-17T13:48:05.541Z
++Generated: 2026-06-17T15:59:08.951Z
+ Status: PASS
+
+ ## Prevented Browser Launches
+@@ -24,10 +24,10 @@ No deterministic setup failures.
+ | unresolved fixtures | PASS | No unresolved fixture findings. |
+ | unresolved helpers | PASS | Shared helper imports and naming ownership checked. |
+ | targeted file manifests | PASS | workspace-contract:PASS |
+-| persistent lane manifests | PASS | workspace-contract:REUSED |
+-| lane warm-start reuse | PASS | workspace-contract:REUSED |
+-| dependency hydration reuse | PASS | workspace-contract:REUSED |
+-| lane snapshots | PASS | workspace-contract:REUSED |
++| persistent lane manifests | PASS | workspace-contract:INVALIDATED |
++| lane warm-start reuse | PASS | workspace-contract:INVALIDATED |
++| dependency hydration reuse | PASS | workspace-contract:INVALIDATED |
++| lane snapshots | PASS | workspace-contract:INVALIDATED |
+ | manifest input graph expansion | PASS | No scoped discovery inputs escaped manifest ownership. |
+ | scoped discovery | PASS | Targets: tests/playwright/tools/RootToolsFutureState.spec.mjs; helpers: tests/helpers/playwrightRepoServer.mjs, tests/helpers/playwrightStorageIsolation.mjs, tests/helpers/playwrightV8CoverageReporter.mjs, tests/helpers/workspaceV2CoverageReporter.mjs. |
+ | invalid grep patterns | PASS | No invalid grep patterns. |
+diff --git a/owner/operations.html b/owner/operations.html
+index 3f95cd150..035a61cbb 100644
+--- a/owner/operations.html
++++ b/owner/operations.html
+@@ -41,6 +41,15 @@
+                                     <button class="btn btn--compact" type="button" data-owner-operation-action="promote-uat-to-prod">Promote UAT to PROD</button>
+                                 </div>
+                             </details>
++                            <details class="vertical-accordion" open>
++                                <summary>Storage Connectivity</summary>
++                                <div class="accordion-body content-stack">
++                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-list">List</button>
++                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-write-test-object">Write Test Object</button>
++                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-read-test-object">Read Test Object</button>
++                                    <button class="btn btn--compact" type="button" data-owner-operation-action="storage-delete-test-object">Delete Test Object</button>
++                                </div>
++                            </details>
+                         </div>
+                     </aside>
+                     <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="owner-operations" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+diff --git a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+index fbebfa209..407a7339e 100644
+--- a/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
++++ b/src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
+@@ -1148,9 +1148,11 @@ export function createAssetToolMockRepository(options = {}) {
+     ok = false,
+     projectId = "",
+     skipped = false,
++    storageObjectKey = "",
+     targetFilePath = ""
+   } = {}) {
+     const normalizedFilePath = normalizeProjectRelativePath(targetFilePath);
++    const normalizedStorageObjectKey = normalizeStorageObjectKey(storageObjectKey || targetFilePath);
+     return {
+       deleteResult,
+       deleted,
+@@ -1158,11 +1160,57 @@ export function createAssetToolMockRepository(options = {}) {
+       ok,
+       projectId,
+       skipped,
++      storageObjectKey: normalizedStorageObjectKey,
+       targetFilePath: normalizedFilePath,
+       viewPath: normalizedFilePath
+     };
+   }
+
++  async function deleteStoredAssetObject(asset) {
++    if (!asset || asset.source !== UPLOAD_SOURCE_MODE) {
++      return createDeleteDiagnostics({
++        deleteResult: "SKIP: Reference asset",
++        message: "No uploaded storage object to delete.",
++        ok: true,
++        projectId: asset?.projectId || "",
++        skipped: true
++      });
++    }
++    if (typeof projectAssetStorage?.deleteObject !== "function") {
++      return createDeleteDiagnostics({
++        deleteResult: "FAIL: Storage delete unavailable",
++        message: "Upload object delete failed: configured project asset storage does not support delete.",
++        ok: false,
++        projectId: asset.projectId,
++        targetFilePath: asset.storedPath || asset.path || ""
++      });
++    }
++    const objectKey = normalizeStorageObjectKey(
++      asset.storageObjectKey || storageObjectKeyForProjectPath(asset.targetFilePath || asset.storedPath || asset.path)
++    );
++    const requiredPrefix = storagePrefix();
++    if (!objectKey || (requiredPrefix && !normalizeProjectRelativePath(objectKey).startsWith(requiredPrefix))) {
++      return createDeleteDiagnostics({
++        deleteResult: "FAIL: Storage prefix validation",
++        message: `Upload object delete failed: storage object key must stay under ${projectAssetStorage.config.projectsPrefix}.`,
++        ok: false,
++        projectId: asset.projectId,
++        storageObjectKey: objectKey,
++        targetFilePath: objectKey
++      });
++    }
++    const result = await projectAssetStorage.deleteObject(objectKey);
++    return createDeleteDiagnostics({
++      deleteResult: result.ok ? "Deleted" : "FAIL: Storage delete",
++      deleted: result.deleted === true,
++      message: result.ok ? `Deleted storage object ${objectKey}.` : result.message,
++      ok: result.ok,
++      projectId: asset.projectId,
++      storageObjectKey: objectKey,
++      targetFilePath: objectKey
++    });
++  }
++
+   function deletePhysicalAssetFile(asset) {
+     if (!asset || asset.source !== UPLOAD_SOURCE_MODE) {
+       return createDeleteDiagnostics({
+@@ -1221,6 +1269,7 @@ export function createAssetToolMockRepository(options = {}) {
+       message: `Deleted file ${resolved.relativePath}.`,
+       ok: true,
+       projectId: asset.projectId,
++      storageObjectKey: "",
+       targetFilePath: resolved.relativePath
+     });
+   }
+@@ -2166,7 +2215,7 @@ export function createAssetToolMockRepository(options = {}) {
+   }
+
+   function deleteAssetRecord(assetId) {
+-    return deleteAsset(assetId);
++    return hasProjectAssetStorage() ? deleteStorageBackedAsset(assetId) : deleteAsset(assetId);
+   }
+
+   function assetsByType() {
+@@ -2271,6 +2320,43 @@ export function createAssetToolMockRepository(options = {}) {
+     };
+   }
+
++  function deleteAssetFailure(asset, projectId, deleteDiagnostics) {
++    replaceValidationRows(projectId, [
++      {
++        action: deleteDiagnostics.message,
++        field: "fileDelete",
++        label: "File Delete"
++      }
++    ]);
++    return {
++      assetId: asset.id,
++      deleted: false,
++      fileDeleteDiagnostics: deleteDiagnostics,
++      message: `FAIL: ${deleteDiagnostics.message}`,
++      snapshot: getSnapshot()
++    };
++  }
++
++  function deleteAssetSuccess(asset, projectId, deleteDiagnostics) {
++    tables.asset_library_items = tables.asset_library_items.filter((row) => row.id !== asset.id);
++    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.id !== asset.storageObjectId && row.assetId !== asset.id);
++    tables.asset_import_events = tables.asset_import_events.filter((row) => row.assetId !== asset.id);
++    tables.asset_validation_items = tables.asset_validation_items.filter((row) => row.projectId !== projectId);
++    if (selectedAssetId === asset.id) {
++      selectedAssetId = ownedAssetsForProject(projectId)[0]?.id || "";
++    }
++    persistTables();
++    return {
++      assetId: asset.id,
++      deleted: true,
++      fileDeleteDiagnostics: deleteDiagnostics,
++      message: deleteDiagnostics.deleted
++        ? `Deleted ${asset.name} from your asset library. ${deleteDiagnostics.message}`
++        : `Deleted ${asset.name} from your asset library.`,
++      snapshot: getSnapshot()
++    };
++  }
++
+   function deleteAsset(assetId) {
+     const handoff = getConfigurationHandoff();
+     const projectId = handoff.activeProject?.id || "";
+@@ -2285,39 +2371,30 @@ export function createAssetToolMockRepository(options = {}) {
+
+     const deleteDiagnostics = deletePhysicalAssetFile(asset);
+     if (!deleteDiagnostics.ok) {
+-      replaceValidationRows(projectId, [
+-        {
+-          action: deleteDiagnostics.message,
+-          field: "fileDelete",
+-          label: "File Delete"
+-        }
+-      ]);
++      return deleteAssetFailure(asset, projectId, deleteDiagnostics);
++    }
++
++    return deleteAssetSuccess(asset, projectId, deleteDiagnostics);
++  }
++
++  async function deleteStorageBackedAsset(assetId) {
++    const handoff = getConfigurationHandoff();
++    const projectId = handoff.activeProject?.id || "";
++    const asset = findOwnedAsset(assetId, projectId);
++    if (!asset) {
+       return {
+-        assetId: asset.id,
+         deleted: false,
+-        fileDeleteDiagnostics: deleteDiagnostics,
+-        message: `FAIL: ${deleteDiagnostics.message}`,
++        message: blockedOwnerMessage("delete"),
+         snapshot: getSnapshot()
+       };
+     }
+
+-    tables.asset_library_items = tables.asset_library_items.filter((row) => row.id !== asset.id);
+-    tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.id !== asset.storageObjectId && row.assetId !== asset.id);
+-    tables.asset_import_events = tables.asset_import_events.filter((row) => row.assetId !== asset.id);
+-    tables.asset_validation_items = tables.asset_validation_items.filter((row) => row.projectId !== projectId);
+-    if (selectedAssetId === asset.id) {
+-      selectedAssetId = ownedAssetsForProject(projectId)[0]?.id || "";
++    const deleteDiagnostics = await deleteStoredAssetObject(asset);
++    if (!deleteDiagnostics.ok) {
++      return deleteAssetFailure(asset, projectId, deleteDiagnostics);
+     }
+-    persistTables();
+-    return {
+-      assetId: asset.id,
+-      deleted: true,
+-      fileDeleteDiagnostics: deleteDiagnostics,
+-      message: deleteDiagnostics.deleted
+-        ? `Deleted ${asset.name} from your asset library. ${deleteDiagnostics.message}`
+-        : `Deleted ${asset.name} from your asset library.`,
+-      snapshot: getSnapshot()
+-    };
++
++    return deleteAssetSuccess(asset, projectId, deleteDiagnostics);
+   }
+
+   function seedDemoAssets() {
 diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index 433039e5c..2490e6b1e 100644
+index 2490e6b1e..ac5bae3c8 100644
 --- a/src/dev-runtime/server/local-api-router.mjs
 +++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -316,8 +316,10 @@ function dotEnvValue(key) {
+@@ -1,4 +1,5 @@
+ import { randomBytes } from "node:crypto";
++import { Buffer } from "node:buffer";
+ import { readFileSync, readdirSync } from "node:fs";
+ import path from "node:path";
+ import process from "node:process";
+@@ -225,13 +226,21 @@ const PLATFORM_BANNER_DEFAULTS = Object.freeze({
+   message: "",
+   tone: "info",
+ });
+-const PROJECT_ASSET_STORAGE_PATH_ENV_KEY = "GAMEFOUNDRY_ASSET_STORAGE_PATH";
+-const PROJECT_ASSET_STORAGE_PATH_LANES = Object.freeze([
++const STORAGE_PROJECTS_PREFIX_ENV_KEY = "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX";
++const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
+   Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
+   Object.freeze({ lane: "IST", path: "/ist/projects/" }),
+   Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
+-  Object.freeze({ lane: "PROD", path: "/prod/projects/" }),
++  Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
+ ]);
++const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
++  Object.freeze({ id: "storage-list", label: "List" }),
++  Object.freeze({ id: "storage-write-test-object", label: "Write test object" }),
++  Object.freeze({ id: "storage-read-test-object", label: "Read test object" }),
++  Object.freeze({ id: "storage-delete-test-object", label: "Delete test object" }),
++]);
++const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
++const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
+ const OWNER_OPERATION_ACTIONS = Object.freeze([
+   Object.freeze({
+     id: "validate-current-connection",
+@@ -253,6 +262,26 @@ const OWNER_OPERATION_ACTIONS = Object.freeze([
+     label: "Run migration",
+     mode: "manual-only",
+   }),
++  Object.freeze({
++    id: "storage-list",
++    label: "Storage list",
++    mode: "storage-connectivity",
++  }),
++  Object.freeze({
++    id: "storage-write-test-object",
++    label: "Storage write test object",
++    mode: "storage-connectivity",
++  }),
++  Object.freeze({
++    id: "storage-read-test-object",
++    label: "Storage read test object",
++    mode: "storage-connectivity",
++  }),
++  Object.freeze({
++    id: "storage-delete-test-object",
++    label: "Storage delete test object",
++    mode: "storage-connectivity",
++  }),
+   Object.freeze({
+     id: "promote-dev-to-ist",
+     label: "Promote DEV to IST",
+@@ -314,11 +343,11 @@ function dotEnvValue(key) {
+   return { found, value: foundValue.trim() };
+ }
 
- function projectAssetStoragePathStatus() {
-   const currentPath = dotEnvValue(PROJECT_ASSET_STORAGE_PATH_ENV_KEY);
-+  const matchedLane = PROJECT_ASSET_STORAGE_PATH_LANES.find((lane) => lane.path === currentPath.value);
-+  const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
-   const rows = PROJECT_ASSET_STORAGE_PATH_LANES.map((lane) => {
--    if (!currentPath.found || !currentPath.value) {
-+    if (invalidPath) {
+-function projectAssetStoragePathStatus() {
+-  const currentPath = dotEnvValue(PROJECT_ASSET_STORAGE_PATH_ENV_KEY);
+-  const matchedLane = PROJECT_ASSET_STORAGE_PATH_LANES.find((lane) => lane.path === currentPath.value);
++function storageProjectsPrefixStatus() {
++  const currentPath = dotEnvValue(STORAGE_PROJECTS_PREFIX_ENV_KEY);
++  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === currentPath.value);
+   const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
+-  const rows = PROJECT_ASSET_STORAGE_PATH_LANES.map((lane) => {
++  const rows = STORAGE_PROJECTS_PREFIX_LANES.map((lane) => {
+     if (invalidPath) {
        return {
          ...lane,
-         active: false,
-@@ -334,11 +336,12 @@ function projectAssetStoragePathStatus() {
-     };
-   });
-   return {
--    configured: currentPath.found && Boolean(currentPath.value),
-+    configured: !invalidPath,
-+    invalidPath,
-     missing: !currentPath.found || !currentPath.value,
+@@ -342,7 +371,7 @@ function projectAssetStoragePathStatus() {
      rows,
      secretsExposed: false,
--    status: currentPath.found && currentPath.value ? "PASS" : "ERROR",
-+    status: invalidPath ? "ERROR" : "PASS",
-     variableName: PROJECT_ASSET_STORAGE_PATH_ENV_KEY,
+     status: invalidPath ? "ERROR" : "PASS",
+-    variableName: PROJECT_ASSET_STORAGE_PATH_ENV_KEY,
++    variableName: STORAGE_PROJECTS_PREFIX_ENV_KEY,
    };
  }
+
+@@ -1782,6 +1811,121 @@ class ApiRuntimeDataSource {
+     };
+   }
+
++  storageConnectivityTestObjectKey(storage) {
++    const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
++    return `${projectsPrefix}${STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH}`.replace(/\/{2,}/g, "/");
++  }
++
++  storageConnectivityConfigFailure(actionId, storage) {
++    const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
++    return {
++      actionId,
++      executed: false,
++      message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
++      secretEditingAllowed: false,
++      secretsExposed: false,
++      status: "FAIL",
++      storageStatus: this.ownerStorageStatus(),
++    };
++  }
++
++  storageConnectivityResult({ actionId, executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
++    return {
++      actionId,
++      executed,
++      keysListed,
++      message,
++      projectsPrefix,
++      secretEditingAllowed: false,
++      secretsExposed: false,
++      status,
++      storageStatus: this.ownerStorageStatus(),
++      testObjectKey: objectKey,
++    };
++  }
++
++  async runStorageConnectivityAction(actionId) {
++    const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
++    if (!action) {
++      throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
++    }
++
++    const storage = createConfiguredProjectAssetStorage();
++    const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
++    if (!storage.configured || !projectsPrefix) {
++      return this.storageConnectivityConfigFailure(action.id, storage);
++    }
++
++    const objectKey = this.storageConnectivityTestObjectKey(storage);
++    try {
++      if (action.id === "storage-list") {
++        const result = await storage.listProjectObjects();
++        const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
++        return this.storageConnectivityResult({
++          actionId: action.id,
++          keysListed,
++          message: result.ok
++            ? `List completed under ${projectsPrefix}; ${keysListed} object(s) returned.`
++            : `${result.message || "Storage list failed."} Verify the endpoint, bucket, credentials, and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX.`,
++          objectKey,
++          projectsPrefix,
++          status: result.ok ? "PASS" : "FAIL",
++        });
++      }
++
++      if (action.id === "storage-write-test-object") {
++        const result = await storage.putObject({
++          bytes: STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT,
++          contentType: "text/plain; charset=utf-8",
++          objectKey,
++        });
++        return this.storageConnectivityResult({
++          actionId: action.id,
++          message: result.ok
++            ? `Write test object completed at ${objectKey}.`
++            : `${result.message || "Storage write failed."} Verify write permission for ${projectsPrefix}.`,
++          objectKey,
++          projectsPrefix,
++          status: result.ok ? "PASS" : "FAIL",
++        });
++      }
++
++      if (action.id === "storage-read-test-object") {
++        const result = await storage.readObject(objectKey);
++        const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
++        const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
++        return this.storageConnectivityResult({
++          actionId: action.id,
++          message: result.ok && contentMatches
++            ? `Read test object completed from ${objectKey}.`
++            : `${result.message || "Storage read failed or returned unexpected content."} Run Write test object first and verify read permission for ${projectsPrefix}.`,
++          objectKey,
++          projectsPrefix,
++          status: result.ok && contentMatches ? "PASS" : "FAIL",
++        });
++      }
++
++      const result = await storage.deleteObject(objectKey);
++      return this.storageConnectivityResult({
++        actionId: action.id,
++        message: result.ok
++          ? `Delete test object completed at ${objectKey}.`
++          : `${result.message || "Storage delete failed."} Verify delete permission for ${projectsPrefix}.`,
++        objectKey,
++        projectsPrefix,
++        status: result.ok ? "PASS" : "FAIL",
++      });
++    } catch (error) {
++      return this.storageConnectivityResult({
++        actionId: action.id,
++        message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
++        objectKey,
++        projectsPrefix,
++        status: "FAIL",
++      });
++    }
++  }
++
+   ownerPromotionFoundation() {
+     const steps = [
+       {
+@@ -1936,7 +2080,12 @@ LIMIT 1;
+
+   async adminInfrastructureStoragePathStatus() {
+     await this.requireAdminSession();
+-    return projectAssetStoragePathStatus();
++    return storageProjectsPrefixStatus();
++  }
++
++  async adminInfrastructureStorageConnectivityAction(body = {}) {
++    await this.requireAdminSession();
++    return this.runStorageConnectivityAction(String(body.actionId || "").trim());
+   }
+
+   projectWorkspaceProjectsForRoute() {
+@@ -2024,6 +2173,9 @@ LIMIT 1;
+     if (action.id === "validate-current-connection") {
+       return this.validateOwnerConnection();
+     }
++    if (action.mode === "storage-connectivity") {
++      return this.runStorageConnectivityAction(action.id);
++    }
+     return {
+       actionId: action.id,
+       executed: false,
+@@ -3528,6 +3680,12 @@ export function createLocalApiRouter() {
+         return true;
+       }
+
++      if (parts[1] === "admin" && parts[2] === "infrastructure" && request.method === "POST" && parts[3] === "storage-connectivity-action") {
++        const body = await readRequestJson(request);
++        ok(response, await dataSource.adminInfrastructureStorageConnectivityAction(body));
++        return true;
++      }
++
+       if (parts[1] === "owner" && parts[2] === "operations" && request.method === "GET" && parts[3] === "status") {
+         ok(response, await dataSource.ownerOperationsStatus());
+         return true;
+diff --git a/src/dev-runtime/storage/r2-project-asset-storage.mjs b/src/dev-runtime/storage/r2-project-asset-storage.mjs
+index 04f36f301..67dc6d163 100644
+--- a/src/dev-runtime/storage/r2-project-asset-storage.mjs
++++ b/src/dev-runtime/storage/r2-project-asset-storage.mjs
+@@ -171,6 +171,13 @@ function unconfiguredStorage(config) {
+         ok: false,
+       };
+     },
++    async deleteObject() {
++      return {
++        deleted: false,
++        message: `Storage configuration missing: ${missing}.`,
++        ok: false,
++      };
++    },
+   };
+ }
+
+@@ -248,6 +255,24 @@ export function createR2ProjectAssetStorage(config) {
+         ok: true,
+       };
+     },
++    async deleteObject(objectKey) {
++      const response = await signedFetch(config, {
++        method: "DELETE",
++        objectKey,
++      });
++      if (!response.ok) {
++        return {
++          deleted: false,
++          message: `Storage delete failed with HTTP ${response.status}.`,
++          ok: false,
++        };
++      }
++      return {
++        deleted: true,
++        message: `Deleted ${objectKey}.`,
++        ok: true,
++      };
++    },
+   };
+ }
+
+@@ -255,4 +280,3 @@ export function createConfiguredProjectAssetStorage(env = process.env) {
+   const config = loadStorageConfig(env);
+   return config.configured ? createR2ProjectAssetStorage(config) : unconfiguredStorage(config);
+ }
+-
+diff --git a/src/engine/api/admin-infrastructure-api-client.js b/src/engine/api/admin-infrastructure-api-client.js
+index dcd7be763..33ffc4c76 100644
+--- a/src/engine/api/admin-infrastructure-api-client.js
++++ b/src/engine/api/admin-infrastructure-api-client.js
+@@ -9,3 +9,13 @@ export function readAdminInfrastructureStoragePathStatus() {
+     "Admin Infrastructure storage path status",
+   );
+ }
++
++export function runAdminInfrastructureStorageConnectivityAction(actionId) {
++  return requireServerApiData(
++    safeRequestServerApi("/admin/infrastructure/storage-connectivity-action", {
++      body: { actionId },
++      method: "POST",
++    }),
++    "Admin Infrastructure storage connectivity action",
++  );
++}
 diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-index a88831759..95cfc4477 100644
+index 95cfc4477..ea0df2d41 100644
 --- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
 +++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-@@ -25,13 +25,16 @@ const ADMIN_WIREFRAME_PAGES = [
- ];
-
- function storagePathStatusFor(configuredPath) {
--  const rows = [
-+  const lanes = [
+@@ -29,7 +29,7 @@ function storagePathStatusFor(configuredPath) {
      { lane: "DEV", path: "/dev/projects/" },
      { lane: "IST", path: "/ist/projects/" },
      { lane: "UAT", path: "/uat/projects/" },
-     { lane: "PROD", path: "/prod/projects/" },
--  ].map((lane) => {
--    if (!configuredPath) {
-+  ];
-+  const matchedLane = lanes.find((lane) => lane.path === configuredPath);
-+  const invalidPath = !matchedLane;
-+  const rows = lanes.map((lane) => {
-+    if (invalidPath) {
-       return {
-         ...lane,
-         active: false,
-@@ -48,11 +51,12 @@ function storagePathStatusFor(configuredPath) {
-     };
-   });
-   return {
--    configured: Boolean(configuredPath),
-+    configured: !invalidPath,
-+    invalidPath,
-     missing: !configuredPath,
+-    { lane: "PROD", path: "/prod/projects/" },
++    { lane: "PRD", path: "/prd/projects/" },
+   ];
+   const matchedLane = lanes.find((lane) => lane.path === configuredPath);
+   const invalidPath = !matchedLane;
+@@ -57,7 +57,7 @@ function storagePathStatusFor(configuredPath) {
      rows,
      secretsExposed: false,
--    status: configuredPath ? "PASS" : "ERROR",
-+    status: invalidPath ? "ERROR" : "PASS",
-     variableName: "GAMEFOUNDRY_ASSET_STORAGE_PATH",
+     status: invalidPath ? "ERROR" : "PASS",
+-    variableName: "GAMEFOUNDRY_ASSET_STORAGE_PATH",
++    variableName: "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX",
    };
  }
-@@ -303,6 +307,21 @@ async function expectNoPageFailures(failures) {
-   expect(failures.consoleErrors).toEqual([]);
+
+@@ -81,6 +81,7 @@ async function startAdminPage(page, pathName, options = {}) {
+   const pageErrors = [];
+   const consoleErrors = [];
+   const storagePathStatus = options.storagePathStatus || storagePathStatusFor("/dev/projects/");
++  const adminStorageConnectivityPosts = [];
+
+   page.on("pageerror", (error) => {
+     const text = error.stack || error.message;
+@@ -197,6 +198,32 @@ async function startAdminPage(page, pathName, options = {}) {
+       }),
+     });
+   });
++  await page.route("**/api/admin/infrastructure/storage-connectivity-action", async (route) => {
++    const body = route.request().postDataJSON();
++    adminStorageConnectivityPosts.push(body);
++    const actionLabels = {
++      "storage-delete-test-object": "Delete test object",
++      "storage-list": "List",
++      "storage-read-test-object": "Read test object",
++      "storage-write-test-object": "Write test object",
++    };
++    const actionLabel = actionLabels[body.actionId] || body.actionId;
++    await route.fulfill({
++      contentType: "application/json",
++      body: JSON.stringify({
++        data: {
++          actionId: body.actionId,
++          executed: true,
++          message: `${actionLabel} completed through Local API under /dev/projects/. Test object /dev/projects/connectivity/storage-connectivity-test.txt.`,
++          projectsPrefix: "/dev/projects/",
++          secretsExposed: false,
++          status: "PASS",
++          testObjectKey: "/dev/projects/connectivity/storage-connectivity-test.txt",
++        },
++        ok: true,
++      }),
++    });
++  });
+   await page.route("**/api/product-data/snapshot", async (route) => {
+     const timestamp = "2026-06-16T00:00:00.000Z";
+     const audit = {
+@@ -298,7 +325,7 @@ async function startAdminPage(page, pathName, options = {}) {
+     });
+   });
+   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
+-  return { consoleErrors, failedRequests, pageErrors, server };
++  return { adminStorageConnectivityPosts, consoleErrors, failedRequests, pageErrors, server };
  }
 
-+async function expectStoragePathStatusRows(page, expectedValues) {
-+  const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
-+  await expect(storageRows).toHaveCount(4);
-+  const lanes = ["DEV", "IST", "UAT", "PROD"];
-+  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prod/projects/"];
-+  for (let index = 0; index < lanes.length; index += 1) {
-+    await expect(storageRows.nth(index).locator("td")).toHaveText([
-+      lanes[index],
-+      paths[index],
-+      expectedValues[index],
-+    ]);
-+  }
-+  await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
-+}
-+
+ async function expectNoPageFailures(failures) {
+@@ -310,8 +337,8 @@ async function expectNoPageFailures(failures) {
+ async function expectStoragePathStatusRows(page, expectedValues) {
+   const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
+   await expect(storageRows).toHaveCount(4);
+-  const lanes = ["DEV", "IST", "UAT", "PROD"];
+-  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prod/projects/"];
++  const lanes = ["DEV", "IST", "UAT", "PRD"];
++  const paths = ["/dev/projects/", "/ist/projects/", "/uat/projects/", "/prd/projects/"];
+   for (let index = 0; index < lanes.length; index += 1) {
+     await expect(storageRows.nth(index).locator("td")).toHaveText([
+       lanes[index],
+@@ -319,7 +346,7 @@ async function expectStoragePathStatusRows(page, expectedValues) {
+       expectedValues[index],
+     ]);
+   }
+-  await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
++  await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX");
+ }
+
  async function expectAdminHeaderMenu(page) {
-   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveAttribute("href", /admin\/platform-settings\.html$/);
-   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveText("Owner \u25BE");
-@@ -366,13 +385,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+@@ -351,7 +378,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+       await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(adminPage.menuLabels || ADMIN_TOOL_MENU_LABELS);
+       await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText(adminPage.heading);
+       await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(adminPage.liveSettings ? 1 : 2);
+-      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(2);
++      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(adminPage.infrastructure ? 3 : 2);
+       if (adminPage.liveSettings) {
+         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
+         await expect(page.locator("[data-platform-banner-active]")).toBeVisible();
+@@ -383,8 +410,8 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+         await expect(page.locator("body")).toContainText("/dev/projects/");
+         await expect(page.locator("body")).toContainText("/ist/projects/");
          await expect(page.locator("body")).toContainText("/uat/projects/");
-         await expect(page.locator("body")).toContainText("/prod/projects/");
-         await expect(page.locator("body")).toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
--        const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
--        await expect(storageRows).toHaveCount(4);
--        await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "yes"]);
--        await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "no"]);
--        await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "no"]);
--        await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "no"]);
--        await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
-+        await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
+-        await expect(page.locator("body")).toContainText("/prod/projects/");
+-        await expect(page.locator("body")).toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
++        await expect(page.locator("body")).toContainText("/prd/projects/");
++        await expect(page.locator("body")).toContainText("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX");
+         await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
          const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");
          await expect(infrastructureImage).toBeVisible();
-         const imageLayout = await infrastructureImage.evaluate((control) => {
-@@ -411,13 +424,49 @@ test("Infrastructure storage path status reports missing env path as ERROR", asy
-   });
+@@ -405,6 +432,11 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+         await expect(page.getByRole("link", { name: "Storage Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
+         await expect(page.getByRole("link", { name: "Owner Operations" })).toHaveAttribute("href", /owner\/operations\.html$/);
+         await expect(page.getByRole("link", { name: "Promotion Foundation" })).toHaveAttribute("href", /owner\/operations\.html$/);
++        await expect(page.locator("[data-admin-storage-connectivity-action='storage-list']")).toHaveText("List");
++        await expect(page.locator("[data-admin-storage-connectivity-action='storage-write-test-object']")).toHaveText("Write Test Object");
++        await expect(page.locator("[data-admin-storage-connectivity-action='storage-read-test-object']")).toHaveText("Read Test Object");
++        await expect(page.locator("[data-admin-storage-connectivity-action='storage-delete-test-object']")).toHaveText("Delete Test Object");
++        await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("Storage connectivity not run.");
+       } else {
+         await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
+         await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
+@@ -474,6 +506,40 @@ test("Infrastructure storage path status reports IST match only", async ({ page
+   }
+ });
 
-   try {
--    const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
--    await expect(storageRows).toHaveCount(4);
--    await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "ERROR"]);
--    await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "ERROR"]);
--    await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "ERROR"]);
--    await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "ERROR"]);
--    await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
-+    await expectStoragePathStatusRows(page, ["ERROR", "ERROR", "ERROR", "ERROR"]);
++test("Infrastructure storage connectivity actions call Local API and hide secrets", async ({ page }) => {
++  const failures = await startAdminPage(page, "/admin/infrastructure.html");
++
++  try {
++    await page.locator("[data-admin-storage-connectivity-action='storage-list']").click();
++    await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("PASS: List completed through Local API under /dev/projects/.");
++    await expect(page.locator("[data-admin-storage-connectivity-result-rows] tr").first()).toContainText("storage-list");
++    await expect(page.locator("[data-admin-storage-connectivity-result-rows] tr").first()).toContainText("yes");
++
++    await page.locator("[data-admin-storage-connectivity-action='storage-write-test-object']").click();
++    await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("PASS: Write test object completed through Local API under /dev/projects/.");
++
++    await page.locator("[data-admin-storage-connectivity-action='storage-read-test-object']").click();
++    await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("PASS: Read test object completed through Local API under /dev/projects/.");
++
++    await page.locator("[data-admin-storage-connectivity-action='storage-delete-test-object']").click();
++    await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("PASS: Delete test object completed through Local API under /dev/projects/.");
++    await expect(page.locator("[data-admin-storage-connectivity-result-rows] tr").first()).toContainText("storage-delete-test-object");
++    await expect(page.locator("[data-admin-storage-connectivity-result-rows] tr").first()).toContainText("/dev/projects/connectivity/storage-connectivity-test.txt");
++    await expect(page.locator("[data-admin-storage-connectivity-result-rows]")).not.toContainText("asset-test-secret-key");
++    await expect(page.locator("[data-admin-storage-connectivity-result-rows]")).not.toContainText("asset-test-access-key");
++    expect(failures.adminStorageConnectivityPosts).toEqual([
++      { actionId: "storage-list" },
++      { actionId: "storage-write-test-object" },
++      { actionId: "storage-read-test-object" },
++      { actionId: "storage-delete-test-object" },
++    ]);
 +    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
 +    await expectNoPageFailures(failures);
 +  } finally {
@@ -227,41 +2064,458 @@ index a88831759..95cfc4477 100644
 +  }
 +});
 +
-+test("Infrastructure storage path status reports invalid env path as ERROR", async ({ page }) => {
-+  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
-+    storagePathStatus: storagePathStatusFor("/qa/projects/"),
-+  });
+ test("Grouping Colors uses current group color model copy", async ({ page }) => {
+   const failures = await startAdminPage(page, "/admin/grouping-colors.html");
+
+@@ -1130,8 +1196,30 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+         "promote-dev-to-ist": "Promote DEV to IST",
+         "promote-ist-to-uat": "Promote IST to UAT",
+         "reseed-dev": "Reseed DEV",
++        "storage-delete-test-object": "Delete test object",
++        "storage-list": "List",
++        "storage-read-test-object": "Read test object",
++        "storage-write-test-object": "Write test object",
+       };
+       const actionLabel = actionLabels[body.actionId] || body.actionId;
++      if (String(body.actionId || "").startsWith("storage-")) {
++        await route.fulfill({
++          contentType: "application/json",
++          body: JSON.stringify({
++            data: {
++              actionId: body.actionId,
++              executed: true,
++              message: `${actionLabel} completed through configured storage under /dev/projects/. Test object /dev/projects/connectivity/storage-connectivity-test.txt.`,
++              projectsPrefix: "/dev/projects/",
++              secretsExposed: false,
++              status: "PASS",
++              testObjectKey: "/dev/projects/connectivity/storage-connectivity-test.txt",
++            },
++            ok: true,
++          }),
++        });
++        return;
++      }
+       await route.fulfill({
+         contentType: "application/json",
+         body: JSON.stringify({
+@@ -1163,6 +1251,10 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await expect(page.locator("[data-owner-operation-action='promote-dev-to-ist']")).toHaveText("Promote DEV to IST");
+     await expect(page.locator("[data-owner-operation-action='promote-ist-to-uat']")).toHaveText("Promote IST to UAT");
+     await expect(page.locator("[data-owner-operation-action='promote-uat-to-prod']")).toHaveText("Promote UAT to PROD");
++    await expect(page.locator("[data-owner-operation-action='storage-list']")).toHaveText("List");
++    await expect(page.locator("[data-owner-operation-action='storage-write-test-object']")).toHaveText("Write Test Object");
++    await expect(page.locator("[data-owner-operation-action='storage-read-test-object']")).toHaveText("Read Test Object");
++    await expect(page.locator("[data-owner-operation-action='storage-delete-test-object']")).toHaveText("Delete Test Object");
+     await expect(page.locator("[data-owner-operations]")).toContainText("project metadata, asset references, and project asset storage objects");
+     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Connection Configured");
+     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Host");
+@@ -1215,6 +1307,21 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("validate-current-connection");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
+
++    await page.locator("[data-owner-operation-action='storage-list']").click();
++    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: List completed through configured storage under /dev/projects/.");
++    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("storage-list");
++    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
++    await page.locator("[data-owner-operation-action='storage-write-test-object']").click();
++    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Write test object completed through configured storage under /dev/projects/.");
++    await page.locator("[data-owner-operation-action='storage-read-test-object']").click();
++    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Read test object completed through configured storage under /dev/projects/.");
++    await page.locator("[data-owner-operation-action='storage-delete-test-object']").click();
++    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Delete test object completed through configured storage under /dev/projects/.");
++    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("storage-delete-test-object");
++    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("/dev/projects/connectivity/storage-connectivity-test.txt");
++    await expect(page.locator("[data-owner-operation-result-rows]")).not.toContainText("asset-test-secret-key");
++    await expect(page.locator("[data-owner-operation-result-rows]")).not.toContainText("asset-test-access-key");
 +
-+  try {
-+    await expectStoragePathStatusRows(page, ["ERROR", "ERROR", "ERROR", "ERROR"]);
-+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await failures.server.close();
-+  }
-+});
-+
-+test("Infrastructure storage path status reports DEV match only", async ({ page }) => {
-+  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
-+    storagePathStatus: storagePathStatusFor("/dev/projects/"),
-+  });
-+
-+  try {
-+    await expectStoragePathStatusRows(page, ["yes", "no", "no", "no"]);
-+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-+    await expectNoPageFailures(failures);
-+  } finally {
-+    await failures.server.close();
-+  }
-+});
-+
-+test("Infrastructure storage path status reports IST match only", async ({ page }) => {
-+  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
-+    storagePathStatus: storagePathStatusFor("/ist/projects/"),
-+  });
-+
-+  try {
-+    await expectStoragePathStatusRows(page, ["no", "yes", "no", "no"]);
+     await page.locator("[data-owner-operation-action='reseed-dev']").click();
+     await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Reseed DEV is staged in Owner Operations");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("reseed-dev");
+@@ -1227,7 +1334,15 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote IST to UAT is staged in Owner Operations");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-ist-to-uat");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
+-    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }, { actionId: "promote-dev-to-ist" }, { actionId: "promote-ist-to-uat" }]);
++    expect(ownerActionPosts).toEqual([
++      { actionId: "storage-list" },
++      { actionId: "storage-write-test-object" },
++      { actionId: "storage-read-test-object" },
++      { actionId: "storage-delete-test-object" },
++      { actionId: "reseed-dev" },
++      { actionId: "promote-dev-to-ist" },
++      { actionId: "promote-ist-to-uat" },
++    ]);
      await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
-     await expectNoPageFailures(failures);
    } finally {
+     await server.close();
+@@ -1320,8 +1435,8 @@ test("Tool Votes side menu includes Admin platform wireframes", async ({ page })
+           const clone = sourceRow.cloneNode(true);
+           clone.dataset.toolboxVotesLargeCountRow = String(index + 1);
+           tableBody.append(clone);
+-        }
+-      }
++  }
++}
+       if (scrollRegion) {
+         scrollRegion.scrollTop = scrollRegion.scrollHeight;
+         scrollRegion.scrollLeft = scrollRegion.scrollWidth;
+diff --git a/tests/playwright/tools/AssetToolMockRepository.spec.mjs b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
+index ada9321b5..c38ee6ec5 100644
+--- a/tests/playwright/tools/AssetToolMockRepository.spec.mjs
++++ b/tests/playwright/tools/AssetToolMockRepository.spec.mjs
+@@ -221,6 +221,12 @@ async function startFakeR2StorageServer(bucket = "asset-test-bucket") {
+       response.end(objects.get(objectKey));
+       return;
+     }
++    if (request.method === "DELETE") {
++      objects.delete(objectKey);
++      response.statusCode = 204;
++      response.end("");
++      return;
++    }
+     response.statusCode = 404;
+     response.end("Missing object");
+   });
+@@ -485,7 +491,7 @@ test("Assets source controls require real upload filenames and valid references"
+   }
+ });
+
+-test("Assets DEV storage upload list and read uses configured projects prefix", async ({ page }) => {
++test("Assets DEV storage upload list read and delete use configured projects prefix", async ({ page }) => {
+   const storageServer = await startFakeR2StorageServer();
+   const uploadFileName = `storage-dev-upload-${Date.now()}.png`;
+   const previousStorageEnv = Object.fromEntries([
+@@ -584,6 +590,30 @@ test("Assets DEV storage upload list and read uses configured projects prefix",
+       }),
+     }));
+
++    await uploadedRow.getByRole("button", { name: "Trash" }).click();
++    await expect(page.locator("[data-asset-tool-log]")).toContainText(`Deleted ${uploadFileName} from your asset library. Deleted storage object ${objectKey}.`);
++    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: uploadFileName })).toHaveCount(0);
++    expect(storageServer.objects.has(objectKey)).toBe(false);
++    expect(storageServer.requests.some((request) => request.method === "DELETE" && request.objectKey === objectKey)).toBe(true);
++
++    const postDeleteListPayload = await page.evaluate(async (projectId) => {
++      const response = await fetch(`/api/storage/project-assets/list?projectId=${encodeURIComponent(projectId)}`);
++      return {
++        ok: response.ok,
++        payload: await response.json(),
++      };
++    }, uploadProjectId);
++    expect(postDeleteListPayload).toEqual(expect.objectContaining({
++      ok: true,
++      payload: expect.objectContaining({
++        data: expect.objectContaining({
++          keys: [],
++          projectsPrefix: "/dev/projects/",
++        }),
++        ok: true,
++      }),
++    }));
++
+     expectNoPageFailures(failures);
+   } finally {
+     await workspaceV2CoverageReporter.stop(page);
+
+diff --git a/docs_build/codex/decisions/project-packages.md b/docs_build/codex/decisions/project-packages.md
+new file mode 100644
+index 000000000..68ca7f486
+--- /dev/null
++++ b/docs_build/codex/decisions/project-packages.md
+@@ -0,0 +1,38 @@
++# Project Packages
++
++## Decision
++
++`.gfsp` is the Game Foundry Studio Project package extension.
++
++Game Foundry Studio project packages use an internal ZIP-based package format. The `.gfsp` extension identifies the package as a Game Foundry Studio Project while preserving the operational advantages of a ZIP container for export, import, validation, and inspection.
++
++## Filename Format
++
++Project package filenames use:
++
++`<ProjectNameWithoutSpaces>-<YYJJJ>-<sequence>.gfsp`
++
++Example:
++
++`KingOfTheIceberg-26168-001.gfsp`
++
++Rules:
++
++- `ProjectNameWithoutSpaces` removes spaces from the project display name.
++- `YYJJJ` uses the two-digit year plus Julian day.
++- `sequence` is a three-digit package sequence for that project/day.
++- The filename is metadata for operators and review; package contents remain authoritative for project identity.
++
++## Promotion Terms
++
++Project promotion language uses package operations:
++
++- Export Project Package
++- Import Project Package
++- Validate Project Package
++
++Promotion planning should describe which project package is exported, imported, or validated and which environment lane is involved. Browser surfaces must not perform destructive promotion behavior without an explicit reviewed runtime contract.
++
++## Notes
++
++These notes are Codex decision notes only. They are intentionally kept under `docs_build/codex/decisions/` and must not be promoted into root, `src/`, `assets/`, `toolbox/`, `games/`, or runtime paths.
+
+diff --git a/docs_build/dev/reports/PR_26168_222-storage-env-prefix-consolidation.md b/docs_build/dev/reports/PR_26168_222-storage-env-prefix-consolidation.md
+new file mode 100644
+index 000000000..a36955ad4
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26168_222-storage-env-prefix-consolidation.md
+@@ -0,0 +1,83 @@
++# PR_26168_222-storage-env-prefix-consolidation
++
++## Branch Validation
++
++PASS: current branch is `main`.
++
++- Expected branch: `main`
++- Current branch: `main`
++- Local branches found: `main`
++
++## Scope Summary
++
++PASS: PR222 consolidates Admin Infrastructure storage path status on `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`.
++
++- Removed active Admin/runtime/page dependence on `GAMEFOUNDRY_ASSET_STORAGE_PATH`.
++- Admin Infrastructure now uses `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` in visible copy and Local API status logic.
++- Valid lane paths are `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, and `/prd/projects/`.
++- `.env.example` keeps only the non-secret storage prefix placeholder; ignored local `.env.<target>` copy-source files were updated locally for prefix placeholders only.
++
++## Requirement Checklist
++
++| Requirement | Status | Evidence |
++| --- | --- | --- |
++| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first | PASS | Instructions were read before branch guard or edits. |
++| Hard stop unless current branch is `main` | PASS | `git branch --show-current` returned `main`; `git branch --list` showed `* main`. |
++| Consolidate storage path usage to `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` | PASS | Admin copy, Local API status logic, and Playwright fixtures use `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`. |
++| Remove active runtime/page dependence on `GAMEFOUNDRY_ASSET_STORAGE_PATH` | PASS | Static scan of active Admin/storage files found no old variable references. |
++| Missing prefix shows all `ERROR` | PASS | Targeted Playwright missing-prefix case passed. |
++| Invalid prefix shows all `ERROR` | PASS | Targeted Playwright invalid-prefix case passed. |
++| Match `/dev/projects/` activates only DEV | PASS | Targeted Playwright DEV exact-match case passed. |
++| Match `/ist/projects/` activates only IST | PASS | Targeted Playwright IST exact-match case passed. |
++| Match `/uat/projects/` supported | PASS | Local API lane list contains exact `/uat/projects/`; non-matching rows stay inactive/no in covered cases. |
++| Match `/prd/projects/` supported | PASS | Admin page, Admin JS, tests, and Local API lane list use `/prd/projects/`. |
++| Exactly one matching lane shows active/yes; others inactive/no/blank | PASS | Playwright DEV and IST cases verify one `yes` and three `no` rows. |
++| Update `.env` copy-source placeholders safely | PASS | `.env.example` now contains only `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=`; ignored local `.env.dev`, `.env.ist`, `.env.uat`, `.env.prd` use non-secret prefix placeholders. |
++| Do not commit real secrets | PASS | No secret values were added to tracked files or reports; ignored `.env.<target>` files are not packaged. |
++| Keep PR independently scoped/testable | PASS | Changes are limited to storage prefix consolidation, Admin validation, env placeholder cleanup, reports, and coverage artifacts. |
++| Do not run full samples smoke unless directly impacted | PASS | Full samples smoke skipped because sample JSON and sample runtime behavior were not touched. |
++
++## Validation Lane Report
++
++PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++
++PASS: `node --check assets/theme-v2/js/admin-infrastructure.js`
++
++PASS: `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
++
++PASS: Admin Infrastructure static contract check
++
++- Active Admin/storage surfaces do not reference `GAMEFOUNDRY_ASSET_STORAGE_PATH`.
++- Admin Infrastructure copy uses `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`.
++- Admin Infrastructure and Local API use `/prd/projects/` for PRD.
++- `.env.example` removed the old asset path placeholder.
++- Local API reads the storage projects prefix from `.env`.
++- Missing or invalid prefix renders all rows `ERROR`.
++- Admin Infrastructure keeps external JS/CSS only.
++
++PASS: targeted Admin Infrastructure Playwright
++
++Command:
++
++`npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure|Infrastructure storage path status reports missing env path as ERROR|Infrastructure storage path status reports invalid env path as ERROR|Infrastructure storage path status reports DEV match only|Infrastructure storage path status reports IST match only"`
++
++Result:
++
++- 5 passed.
++- Covered missing prefix, invalid prefix, DEV exact match, IST exact match, no inline HTML behavior, and no page failures.
++
++PASS: Playwright V8 coverage report produced at `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
++
++- `(80%) assets/theme-v2/js/admin-infrastructure.js`
++- `(100%) src/engine/api/admin-infrastructure-api-client.js`
++- `(0%) src/dev-runtime/server/local-api-router.mjs` is an advisory WARN because browser V8 coverage does not collect Node-side server runtime.
++
++SKIP: Full samples smoke was not run because this PR only changes Admin Infrastructure storage prefix status logic and env placeholders.
++
++## Manual Validation Notes
++
++PASS: Static inspection confirmed the old variable was removed from active Admin/runtime/page storage-path status surfaces.
++
++PASS: Static inspection confirmed no R2 endpoint, access key, secret key, bucket secret, password, or connection string was added.
++
++PASS: Ignored local `.env.<target>` copy-source files were updated only for non-secret `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` values and were not included in the ZIP.
+
+diff --git a/docs_build/dev/reports/PR_26168_223-codex-decisions-notes.md b/docs_build/dev/reports/PR_26168_223-codex-decisions-notes.md
+new file mode 100644
+index 000000000..16936a5df
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26168_223-codex-decisions-notes.md
+@@ -0,0 +1,41 @@
++# PR_26168_223-codex-decisions-notes
++
++## Branch Validation
++
++PASS
++
++- Current branch: `main`
++- Expected branch: `main`
++
++## Summary
++
++Added Codex decision notes for Game Foundry Studio Project packages under `docs_build/codex/decisions/`.
++
++## Requirement Checklist
++
++- PASS - Added `docs_build/codex/decisions/project-packages.md`.
++- PASS - Documented `.gfsp` as Game Foundry Studio Project.
++- PASS - Documented the internal ZIP-based package format.
++- PASS - Documented filename format `<ProjectNameWithoutSpaces>-<YYJJJ>-<sequence>.gfsp`.
++- PASS - Included example `KingOfTheIceberg-26168-001.gfsp`.
++- PASS - Documented promotion terms as Export Project Package, Import Project Package, and Validate Project Package.
++- PASS - Kept Codex notes out of root, `src`, `assets`, `toolbox`, `games`, and runtime-promoted paths.
++
++## Validation Lane Report
++
++- Lane: docs/contract.
++- PASS - Static decision-note validation confirmed required package terminology, filename format, example, and promotion operation names.
++- PASS - Placement validation confirmed the note lives only under `docs_build/codex/decisions/`.
++
++Commands:
++
++- `Get-Content -Path docs_build/codex/decisions/project-packages.md`
++- Static Node validation for decision-note contents and allowed path.
++- `git diff --check`
++
++## Manual Validation Notes
++
++- The decision note is docs-only and does not change runtime behavior.
++- No secrets or runtime configuration values were added.
++- Full samples smoke: SKIP because no sample JSON or sample runtime behavior was touched.
++
+
+diff --git a/docs_build/dev/reports/PR_26168_224-r2-storage-connectivity-test.md b/docs_build/dev/reports/PR_26168_224-r2-storage-connectivity-test.md
+new file mode 100644
+index 000000000..6dbd9d7ca
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26168_224-r2-storage-connectivity-test.md
+@@ -0,0 +1,50 @@
++# PR_26168_224-r2-storage-connectivity-test
++
++## Branch Validation
++
++PASS
++
++- Current branch: `main`
++- Expected branch: `main`
++
++## Summary
++
++Added Owner/Admin storage connectivity actions for configured project asset storage. The actions run through the Local API and configured storage provider only; they do not expose credentials or fall back to browser/local storage.
++
++## Requirement Checklist
++
++- PASS - Added storage connectivity actions: List, Write test object, Read test object, Delete test object.
++- PASS - Actions use `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` and report the tested object key under that prefix.
++- PASS - Admin Infrastructure exposes storage connectivity actions through external JavaScript.
++- PASS - Owner Operations exposes storage connectivity actions through external JavaScript.
++- PASS - Secrets remain hidden; UI and API responses do not expose access keys, secret keys, or full connection strings.
++- PASS - Failures return visible, actionable `FAIL` diagnostics when storage is missing, invalid, or an operation fails.
++- PASS - No silent fallback to browser storage or local storage was added.
++- PASS - Theme V2 page structure was preserved and no inline HTML script/style/event handlers were added.
++
++## Validation Lane Report
++
++- Lane: runtime/API/storage plus targeted Admin/Owner UI.
++- PASS - Syntax checks passed for changed JS/MJS files.
++- PASS - Static contract validation confirmed no inline HTML script/style/event handlers, API-owned connectivity actions, DELETE support in the storage provider, and `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` diagnostics.
++- PASS - Targeted Playwright covered Admin Infrastructure storage connectivity buttons and Owner Operations storage connectivity buttons.
++- WARN - Playwright V8 coverage collected browser-facing JS. Server-side Node modules are reported as advisory WARN because Chromium coverage does not collect Node runtime modules.
++
++Commands:
++
++- `node --check src/dev-runtime/server/local-api-router.mjs`
++- `node --check src/dev-runtime/storage/r2-project-asset-storage.mjs`
++- `node --check src/engine/api/admin-infrastructure-api-client.js`
++- `node --check assets/theme-v2/js/admin-infrastructure.js`
++- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
++- Static Node storage connectivity contract validation.
++- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure|Infrastructure storage connectivity actions call Local API and hide secrets|Owner Operations exposes owner-only connection validation and manual operation actions"`
++- `git diff --check`
++
++## Manual Validation Notes
++
++- The List, Write test object, Read test object, and Delete test object actions are server-owned connectivity checks for the currently configured storage.
++- Test object path: `/dev/projects/connectivity/storage-connectivity-test.txt` in the DEV validation fixture.
++- Real R2 credentials were not added to the repository.
++- Full samples smoke: SKIP because sample JSON and sample runtime behavior were not touched.
++
+
+diff --git a/docs_build/dev/reports/PR_26168_225-assets-r2-storage-integration.md b/docs_build/dev/reports/PR_26168_225-assets-r2-storage-integration.md
+new file mode 100644
+index 000000000..6e1df1c8a
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26168_225-assets-r2-storage-integration.md
+@@ -0,0 +1,56 @@
++# PR_26168_225-assets-r2-storage-integration
++
++## Branch Validation
++
++PASS
++
++- Current branch: `main`
++- Expected branch: `main`
++
++## Summary
++
++Completed the Assets project asset object flow through Local API/service contract to configured project asset storage. Upload, list, read, and delete now validate against the configured R2-compatible storage provider while DB-backed asset metadata remains authoritative.
++
++## Requirement Checklist
++
++- PASS - Assets upload writes project asset objects through Local API -> storage provider.
++- PASS - Assets list/read validation uses `/api/storage/project-assets/list` and `/api/storage/project-assets/read`.
++- PASS - Assets delete now deletes the storage object through the server-side storage provider before removing DB metadata.
++- PASS - Browser does not own authoritative product asset data; the Assets tool continues to use `createAssetToolApiRepository()`.
++- PASS - Metadata remains DB-backed in `asset_library_items` and `asset_storage_objects`.
++- PASS - Storage object keys remain server-owned metadata and are validated under `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX`.
++- PASS - Guest browsing remains allowed; guest upload/save remains blocked with visible account guidance.
++- PASS - No Supabase behavior was introduced.
++- PASS - No sample JSON or `start_of_day` folders were modified.
++- PASS - No inline HTML script/style/event handlers were added.
++
++## Validation Lane Report
++
++- Lane: runtime/API/storage plus targeted Assets tool behavior.
++- PASS - Syntax checks passed for changed JS/MJS files.
++- PASS - Static contract validation confirmed API repository ownership, no browser storage SSoT, storage-provider write/read/delete, DB metadata keys, no sample JSON changes, and no `start_of_day` changes.
++- PASS - Targeted Assets Playwright validated upload, list, read, and delete against a fake R2-compatible server using `/dev/projects/`.
++- PASS - Targeted guest validation confirmed guest upload shows account guidance and creates no record.
++- PASS - `npm run test:workspace-v2` passed 5 RootToolsFutureState tests. The command name is legacy; user-facing language is Project Workspace.
++- WARN - Playwright V8 coverage is advisory. Server-side Node files are reported as WARN because Chromium coverage does not collect Node runtime modules.
++
++Commands:
++
++- `node --check src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js`
++- `node --check tests/playwright/tools/AssetToolMockRepository.spec.mjs`
++- `node --check toolbox/assets/assets.js`
++- `node --check toolbox/assets/assets-api-client.js`
++- Static Node Assets storage/API contract validation.
++- `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "Assets DEV storage upload list read and delete use configured projects prefix"`
++- `npx playwright test tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "Assets guest upload action shows account prompt and creates no record"`
++- `npm run test:workspace-v2`
++- `git diff --check`
++
++## Manual Validation Notes
++
++- Fake R2 validation object path: `/dev/projects/<projectId>/image/<uploaded-file>`.
++- Evidence: fake storage server observed `PUT`, `GET` list/read, and `DELETE` for the configured prefix path.
++- The delete path removes the R2 object before removing DB metadata, using the server-side asset record and storage object key.
++- Real R2 credentials were not added to the repository.
++- Full samples smoke: SKIP because sample JSON and sample runtime behavior were not touched.
++

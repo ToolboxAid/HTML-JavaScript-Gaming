@@ -1,4 +1,5 @@
 import { randomBytes } from "node:crypto";
+import { Buffer } from "node:buffer";
 import { readFileSync, readdirSync } from "node:fs";
 import path from "node:path";
 import process from "node:process";
@@ -225,13 +226,21 @@ const PLATFORM_BANNER_DEFAULTS = Object.freeze({
   message: "",
   tone: "info",
 });
-const PROJECT_ASSET_STORAGE_PATH_ENV_KEY = "GAMEFOUNDRY_ASSET_STORAGE_PATH";
-const PROJECT_ASSET_STORAGE_PATH_LANES = Object.freeze([
+const STORAGE_PROJECTS_PREFIX_ENV_KEY = "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX";
+const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
   Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
   Object.freeze({ lane: "IST", path: "/ist/projects/" }),
   Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
-  Object.freeze({ lane: "PROD", path: "/prod/projects/" }),
+  Object.freeze({ lane: "PRD", path: "/prd/projects/" }),
 ]);
+const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
+  Object.freeze({ id: "storage-list", label: "List" }),
+  Object.freeze({ id: "storage-write-test-object", label: "Write test object" }),
+  Object.freeze({ id: "storage-read-test-object", label: "Read test object" }),
+  Object.freeze({ id: "storage-delete-test-object", label: "Delete test object" }),
+]);
+const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
+const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
 const OWNER_OPERATION_ACTIONS = Object.freeze([
   Object.freeze({
     id: "validate-current-connection",
@@ -252,6 +261,26 @@ const OWNER_OPERATION_ACTIONS = Object.freeze([
     id: "run-migration",
     label: "Run migration",
     mode: "manual-only",
+  }),
+  Object.freeze({
+    id: "storage-list",
+    label: "Storage list",
+    mode: "storage-connectivity",
+  }),
+  Object.freeze({
+    id: "storage-write-test-object",
+    label: "Storage write test object",
+    mode: "storage-connectivity",
+  }),
+  Object.freeze({
+    id: "storage-read-test-object",
+    label: "Storage read test object",
+    mode: "storage-connectivity",
+  }),
+  Object.freeze({
+    id: "storage-delete-test-object",
+    label: "Storage delete test object",
+    mode: "storage-connectivity",
   }),
   Object.freeze({
     id: "promote-dev-to-ist",
@@ -314,11 +343,11 @@ function dotEnvValue(key) {
   return { found, value: foundValue.trim() };
 }
 
-function projectAssetStoragePathStatus() {
-  const currentPath = dotEnvValue(PROJECT_ASSET_STORAGE_PATH_ENV_KEY);
-  const matchedLane = PROJECT_ASSET_STORAGE_PATH_LANES.find((lane) => lane.path === currentPath.value);
+function storageProjectsPrefixStatus() {
+  const currentPath = dotEnvValue(STORAGE_PROJECTS_PREFIX_ENV_KEY);
+  const matchedLane = STORAGE_PROJECTS_PREFIX_LANES.find((lane) => lane.path === currentPath.value);
   const invalidPath = !currentPath.found || !currentPath.value || !matchedLane;
-  const rows = PROJECT_ASSET_STORAGE_PATH_LANES.map((lane) => {
+  const rows = STORAGE_PROJECTS_PREFIX_LANES.map((lane) => {
     if (invalidPath) {
       return {
         ...lane,
@@ -342,7 +371,7 @@ function projectAssetStoragePathStatus() {
     rows,
     secretsExposed: false,
     status: invalidPath ? "ERROR" : "PASS",
-    variableName: PROJECT_ASSET_STORAGE_PATH_ENV_KEY,
+    variableName: STORAGE_PROJECTS_PREFIX_ENV_KEY,
   };
 }
 
@@ -1782,6 +1811,121 @@ class ApiRuntimeDataSource {
     };
   }
 
+  storageConnectivityTestObjectKey(storage) {
+    const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
+    return `${projectsPrefix}${STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH}`.replace(/\/{2,}/g, "/");
+  }
+
+  storageConnectivityConfigFailure(actionId, storage) {
+    const missing = storage.config?.missingKeys?.join(", ") || storage.config?.validationError || "storage configuration incomplete";
+    return {
+      actionId,
+      executed: false,
+      message: `Storage connectivity requires configured storage and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX before this action can run. Missing or invalid: ${missing}.`,
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: "FAIL",
+      storageStatus: this.ownerStorageStatus(),
+    };
+  }
+
+  storageConnectivityResult({ actionId, executed = true, keysListed = 0, message, objectKey, projectsPrefix, status }) {
+    return {
+      actionId,
+      executed,
+      keysListed,
+      message,
+      projectsPrefix,
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status,
+      storageStatus: this.ownerStorageStatus(),
+      testObjectKey: objectKey,
+    };
+  }
+
+  async runStorageConnectivityAction(actionId) {
+    const action = STORAGE_CONNECTIVITY_ACTIONS.find((candidate) => candidate.id === actionId);
+    if (!action) {
+      throw new Error(`Unknown storage connectivity action: ${actionId || "missing actionId"}.`);
+    }
+
+    const storage = createConfiguredProjectAssetStorage();
+    const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
+    if (!storage.configured || !projectsPrefix) {
+      return this.storageConnectivityConfigFailure(action.id, storage);
+    }
+
+    const objectKey = this.storageConnectivityTestObjectKey(storage);
+    try {
+      if (action.id === "storage-list") {
+        const result = await storage.listProjectObjects();
+        const keysListed = Array.isArray(result.keys) ? result.keys.length : 0;
+        return this.storageConnectivityResult({
+          actionId: action.id,
+          keysListed,
+          message: result.ok
+            ? `List completed under ${projectsPrefix}; ${keysListed} object(s) returned.`
+            : `${result.message || "Storage list failed."} Verify the endpoint, bucket, credentials, and GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX.`,
+          objectKey,
+          projectsPrefix,
+          status: result.ok ? "PASS" : "FAIL",
+        });
+      }
+
+      if (action.id === "storage-write-test-object") {
+        const result = await storage.putObject({
+          bytes: STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT,
+          contentType: "text/plain; charset=utf-8",
+          objectKey,
+        });
+        return this.storageConnectivityResult({
+          actionId: action.id,
+          message: result.ok
+            ? `Write test object completed at ${objectKey}.`
+            : `${result.message || "Storage write failed."} Verify write permission for ${projectsPrefix}.`,
+          objectKey,
+          projectsPrefix,
+          status: result.ok ? "PASS" : "FAIL",
+        });
+      }
+
+      if (action.id === "storage-read-test-object") {
+        const result = await storage.readObject(objectKey);
+        const text = result.ok ? Buffer.from(result.bytes || []).toString("utf8") : "";
+        const contentMatches = text === STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT;
+        return this.storageConnectivityResult({
+          actionId: action.id,
+          message: result.ok && contentMatches
+            ? `Read test object completed from ${objectKey}.`
+            : `${result.message || "Storage read failed or returned unexpected content."} Run Write test object first and verify read permission for ${projectsPrefix}.`,
+          objectKey,
+          projectsPrefix,
+          status: result.ok && contentMatches ? "PASS" : "FAIL",
+        });
+      }
+
+      const result = await storage.deleteObject(objectKey);
+      return this.storageConnectivityResult({
+        actionId: action.id,
+        message: result.ok
+          ? `Delete test object completed at ${objectKey}.`
+          : `${result.message || "Storage delete failed."} Verify delete permission for ${projectsPrefix}.`,
+        objectKey,
+        projectsPrefix,
+        status: result.ok ? "PASS" : "FAIL",
+      });
+    } catch (error) {
+      return this.storageConnectivityResult({
+        actionId: action.id,
+        message: `Storage connectivity action failed: ${error instanceof Error ? error.message : String(error || "Unknown storage error.")}`,
+        objectKey,
+        projectsPrefix,
+        status: "FAIL",
+      });
+    }
+  }
+
   ownerPromotionFoundation() {
     const steps = [
       {
@@ -1936,7 +2080,12 @@ LIMIT 1;
 
   async adminInfrastructureStoragePathStatus() {
     await this.requireAdminSession();
-    return projectAssetStoragePathStatus();
+    return storageProjectsPrefixStatus();
+  }
+
+  async adminInfrastructureStorageConnectivityAction(body = {}) {
+    await this.requireAdminSession();
+    return this.runStorageConnectivityAction(String(body.actionId || "").trim());
   }
 
   projectWorkspaceProjectsForRoute() {
@@ -2023,6 +2172,9 @@ LIMIT 1;
     }
     if (action.id === "validate-current-connection") {
       return this.validateOwnerConnection();
+    }
+    if (action.mode === "storage-connectivity") {
+      return this.runStorageConnectivityAction(action.id);
     }
     return {
       actionId: action.id,
@@ -3525,6 +3677,12 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "admin" && parts[2] === "infrastructure" && request.method === "GET" && parts[3] === "storage-path-status") {
         ok(response, await dataSource.adminInfrastructureStoragePathStatus());
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "infrastructure" && request.method === "POST" && parts[3] === "storage-connectivity-action") {
+        const body = await readRequestJson(request);
+        ok(response, await dataSource.adminInfrastructureStorageConnectivityAction(body));
         return true;
       }
 

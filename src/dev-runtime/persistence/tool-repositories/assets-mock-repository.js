@@ -1148,9 +1148,11 @@ export function createAssetToolMockRepository(options = {}) {
     ok = false,
     projectId = "",
     skipped = false,
+    storageObjectKey = "",
     targetFilePath = ""
   } = {}) {
     const normalizedFilePath = normalizeProjectRelativePath(targetFilePath);
+    const normalizedStorageObjectKey = normalizeStorageObjectKey(storageObjectKey || targetFilePath);
     return {
       deleteResult,
       deleted,
@@ -1158,9 +1160,55 @@ export function createAssetToolMockRepository(options = {}) {
       ok,
       projectId,
       skipped,
+      storageObjectKey: normalizedStorageObjectKey,
       targetFilePath: normalizedFilePath,
       viewPath: normalizedFilePath
     };
+  }
+
+  async function deleteStoredAssetObject(asset) {
+    if (!asset || asset.source !== UPLOAD_SOURCE_MODE) {
+      return createDeleteDiagnostics({
+        deleteResult: "SKIP: Reference asset",
+        message: "No uploaded storage object to delete.",
+        ok: true,
+        projectId: asset?.projectId || "",
+        skipped: true
+      });
+    }
+    if (typeof projectAssetStorage?.deleteObject !== "function") {
+      return createDeleteDiagnostics({
+        deleteResult: "FAIL: Storage delete unavailable",
+        message: "Upload object delete failed: configured project asset storage does not support delete.",
+        ok: false,
+        projectId: asset.projectId,
+        targetFilePath: asset.storedPath || asset.path || ""
+      });
+    }
+    const objectKey = normalizeStorageObjectKey(
+      asset.storageObjectKey || storageObjectKeyForProjectPath(asset.targetFilePath || asset.storedPath || asset.path)
+    );
+    const requiredPrefix = storagePrefix();
+    if (!objectKey || (requiredPrefix && !normalizeProjectRelativePath(objectKey).startsWith(requiredPrefix))) {
+      return createDeleteDiagnostics({
+        deleteResult: "FAIL: Storage prefix validation",
+        message: `Upload object delete failed: storage object key must stay under ${projectAssetStorage.config.projectsPrefix}.`,
+        ok: false,
+        projectId: asset.projectId,
+        storageObjectKey: objectKey,
+        targetFilePath: objectKey
+      });
+    }
+    const result = await projectAssetStorage.deleteObject(objectKey);
+    return createDeleteDiagnostics({
+      deleteResult: result.ok ? "Deleted" : "FAIL: Storage delete",
+      deleted: result.deleted === true,
+      message: result.ok ? `Deleted storage object ${objectKey}.` : result.message,
+      ok: result.ok,
+      projectId: asset.projectId,
+      storageObjectKey: objectKey,
+      targetFilePath: objectKey
+    });
   }
 
   function deletePhysicalAssetFile(asset) {
@@ -1221,6 +1269,7 @@ export function createAssetToolMockRepository(options = {}) {
       message: `Deleted file ${resolved.relativePath}.`,
       ok: true,
       projectId: asset.projectId,
+      storageObjectKey: "",
       targetFilePath: resolved.relativePath
     });
   }
@@ -2166,7 +2215,7 @@ export function createAssetToolMockRepository(options = {}) {
   }
 
   function deleteAssetRecord(assetId) {
-    return deleteAsset(assetId);
+    return hasProjectAssetStorage() ? deleteStorageBackedAsset(assetId) : deleteAsset(assetId);
   }
 
   function assetsByType() {
@@ -2271,36 +2320,24 @@ export function createAssetToolMockRepository(options = {}) {
     };
   }
 
-  function deleteAsset(assetId) {
-    const handoff = getConfigurationHandoff();
-    const projectId = handoff.activeProject?.id || "";
-    const asset = findOwnedAsset(assetId, projectId);
-    if (!asset) {
-      return {
-        deleted: false,
-        message: blockedOwnerMessage("delete"),
-        snapshot: getSnapshot()
-      };
-    }
+  function deleteAssetFailure(asset, projectId, deleteDiagnostics) {
+    replaceValidationRows(projectId, [
+      {
+        action: deleteDiagnostics.message,
+        field: "fileDelete",
+        label: "File Delete"
+      }
+    ]);
+    return {
+      assetId: asset.id,
+      deleted: false,
+      fileDeleteDiagnostics: deleteDiagnostics,
+      message: `FAIL: ${deleteDiagnostics.message}`,
+      snapshot: getSnapshot()
+    };
+  }
 
-    const deleteDiagnostics = deletePhysicalAssetFile(asset);
-    if (!deleteDiagnostics.ok) {
-      replaceValidationRows(projectId, [
-        {
-          action: deleteDiagnostics.message,
-          field: "fileDelete",
-          label: "File Delete"
-        }
-      ]);
-      return {
-        assetId: asset.id,
-        deleted: false,
-        fileDeleteDiagnostics: deleteDiagnostics,
-        message: `FAIL: ${deleteDiagnostics.message}`,
-        snapshot: getSnapshot()
-      };
-    }
-
+  function deleteAssetSuccess(asset, projectId, deleteDiagnostics) {
     tables.asset_library_items = tables.asset_library_items.filter((row) => row.id !== asset.id);
     tables.asset_storage_objects = tables.asset_storage_objects.filter((row) => row.id !== asset.storageObjectId && row.assetId !== asset.id);
     tables.asset_import_events = tables.asset_import_events.filter((row) => row.assetId !== asset.id);
@@ -2318,6 +2355,46 @@ export function createAssetToolMockRepository(options = {}) {
         : `Deleted ${asset.name} from your asset library.`,
       snapshot: getSnapshot()
     };
+  }
+
+  function deleteAsset(assetId) {
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    const asset = findOwnedAsset(assetId, projectId);
+    if (!asset) {
+      return {
+        deleted: false,
+        message: blockedOwnerMessage("delete"),
+        snapshot: getSnapshot()
+      };
+    }
+
+    const deleteDiagnostics = deletePhysicalAssetFile(asset);
+    if (!deleteDiagnostics.ok) {
+      return deleteAssetFailure(asset, projectId, deleteDiagnostics);
+    }
+
+    return deleteAssetSuccess(asset, projectId, deleteDiagnostics);
+  }
+
+  async function deleteStorageBackedAsset(assetId) {
+    const handoff = getConfigurationHandoff();
+    const projectId = handoff.activeProject?.id || "";
+    const asset = findOwnedAsset(assetId, projectId);
+    if (!asset) {
+      return {
+        deleted: false,
+        message: blockedOwnerMessage("delete"),
+        snapshot: getSnapshot()
+      };
+    }
+
+    const deleteDiagnostics = await deleteStoredAssetObject(asset);
+    if (!deleteDiagnostics.ok) {
+      return deleteAssetFailure(asset, projectId, deleteDiagnostics);
+    }
+
+    return deleteAssetSuccess(asset, projectId, deleteDiagnostics);
   }
 
   function seedDemoAssets() {

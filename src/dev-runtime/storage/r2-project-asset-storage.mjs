@@ -171,6 +171,13 @@ function unconfiguredStorage(config) {
         ok: false,
       };
     },
+    async deleteObject() {
+      return {
+        deleted: false,
+        message: `Storage configuration missing: ${missing}.`,
+        ok: false,
+      };
+    },
   };
 }
 
@@ -248,6 +255,24 @@ export function createR2ProjectAssetStorage(config) {
         ok: true,
       };
     },
+    async deleteObject(objectKey) {
+      const response = await signedFetch(config, {
+        method: "DELETE",
+        objectKey,
+      });
+      if (!response.ok) {
+        return {
+          deleted: false,
+          message: `Storage delete failed with HTTP ${response.status}.`,
+          ok: false,
+        };
+      }
+      return {
+        deleted: true,
+        message: `Deleted ${objectKey}.`,
+        ok: true,
+      };
+    },
   };
 }
 
@@ -255,4 +280,3 @@ export function createConfiguredProjectAssetStorage(env = process.env) {
   const config = loadStorageConfig(env);
   return config.configured ? createR2ProjectAssetStorage(config) : unconfiguredStorage(config);
 }
-

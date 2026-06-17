@@ -1,1 +1,1 @@
-Storage path error rule and R2 env readiness - PR_26168_221-storage-path-error-rule-and-r2-env-ready
+Assets R2 storage integration - PR_26168_225-assets-r2-storage-integration

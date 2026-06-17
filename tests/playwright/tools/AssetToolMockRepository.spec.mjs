@@ -221,6 +221,12 @@ async function startFakeR2StorageServer(bucket = "asset-test-bucket") {
       response.end(objects.get(objectKey));
       return;
     }
+    if (request.method === "DELETE") {
+      objects.delete(objectKey);
+      response.statusCode = 204;
+      response.end("");
+      return;
+    }
     response.statusCode = 404;
     response.end("Missing object");
   });
@@ -485,7 +491,7 @@ test("Assets source controls require real upload filenames and valid references"
   }
 });
 
-test("Assets DEV storage upload list and read uses configured projects prefix", async ({ page }) => {
+test("Assets DEV storage upload list read and delete use configured projects prefix", async ({ page }) => {
   const storageServer = await startFakeR2StorageServer();
   const uploadFileName = `storage-dev-upload-${Date.now()}.png`;
   const previousStorageEnv = Object.fromEntries([
@@ -581,6 +587,30 @@ test("Assets DEV storage upload list and read uses configured projects prefix", 
       storageObject: expect.objectContaining({
         assetId: expect.stringContaining(uploadFileName.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase()),
         storedPath: objectKey,
+      }),
+    }));
+
+    await uploadedRow.getByRole("button", { name: "Trash" }).click();
+    await expect(page.locator("[data-asset-tool-log]")).toContainText(`Deleted ${uploadFileName} from your asset library. Deleted storage object ${objectKey}.`);
+    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: uploadFileName })).toHaveCount(0);
+    expect(storageServer.objects.has(objectKey)).toBe(false);
+    expect(storageServer.requests.some((request) => request.method === "DELETE" && request.objectKey === objectKey)).toBe(true);
+
+    const postDeleteListPayload = await page.evaluate(async (projectId) => {
+      const response = await fetch(`/api/storage/project-assets/list?projectId=${encodeURIComponent(projectId)}`);
+      return {
+        ok: response.ok,
+        payload: await response.json(),
+      };
+    }, uploadProjectId);
+    expect(postDeleteListPayload).toEqual(expect.objectContaining({
+      ok: true,
+      payload: expect.objectContaining({
+        data: expect.objectContaining({
+          keys: [],
+          projectsPrefix: "/dev/projects/",
+        }),
+        ok: true,
       }),
     }));
 
