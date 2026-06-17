@@ -107,7 +107,7 @@ class OwnerOperationsController {
                 `${step.safetyStatus || "WARN"}: ${step.safetyDiagnostic || promotionFoundation.safetyMessage || "Promotion safety validation unavailable."}`,
                 `${promotionFoundation.ownerOnly === true ? "Owner-only" : "Restricted"}; ${promotionFoundation.browserExecutionAllowed === false ? "browser execution disabled" : "browser execution unknown"}; ${promotionFoundation.destructiveOperationsAllowed === false ? "destructive operations disabled" : "destructive operations unknown"}; ${step.message || promotionFoundation.message || "Promotion foundation planning."}`,
             ])
-            : [["DEV/UAT/PROD", "Planning", promotionFoundation.status || "WARN", promotionFoundation.safetyMessage || "Promotion safety validation unavailable.", promotionFoundation.message || "Promotion foundation status unavailable."]];
+            : [["DEV/IST/UAT/PROD", "Planning", promotionFoundation.status || "WARN", promotionFoundation.safetyMessage || "Promotion safety validation unavailable.", promotionFoundation.message || "Promotion foundation status unavailable."]];
         this.promotionFoundationRows.replaceChildren();
         rows.forEach((row) => {
             const tableRow = document.createElement("tr");

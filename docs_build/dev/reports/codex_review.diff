@@ -1,324 +1,714 @@
-diff --git a/.env.example b/.env.example
-index 97de17312..064fe7536 100644
---- a/.env.example
-+++ b/.env.example
-@@ -26,3 +26,4 @@ GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID=
- GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY=
- GAMEFOUNDRY_STORAGE_BUCKET=
- GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=
-+GAMEFOUNDRY_ASSET_STORAGE_PATH=
-diff --git a/admin/infrastructure.html b/admin/infrastructure.html
-index 20a2099c0..f75861f68 100644
+﻿diff --git a/admin/infrastructure.html b/admin/infrastructure.html
+index f75861f68..deb652bbd 100644
 --- a/admin/infrastructure.html
 +++ b/admin/infrastructure.html
-@@ -56,23 +56,35 @@
-                             <h2 id="admin-infrastructure-title">Game Foundry Infrastructure</h2>
-                         </div>
-                         <figure class="content-stack">
--                            <img src="assets/GFS-Infrastructure v1-3.png" alt="Game Foundry Studio infrastructure diagram version 1-3">
-+                            <button class="image-zoom-trigger" type="button" data-image-zoom-target="admin-infrastructure-image-zoom" aria-haspopup="dialog" aria-controls="admin-infrastructure-image-zoom" aria-label="Open Game Foundry infrastructure diagram zoom view">
-+                                <img src="assets/GFS-Infrastructure v1-3.png" alt="Game Foundry Studio infrastructure diagram version 1-3">
-+                            </button>
-                             <figcaption>GFS-Infrastructure v1-3.png</figcaption>
-                         </figure>
-+                        <dialog class="image-zoom-dialog" id="admin-infrastructure-image-zoom" data-image-zoom-dialog aria-labelledby="admin-infrastructure-image-zoom-title">
-+                            <div class="image-zoom-dialog__header">
-+                                <h3 id="admin-infrastructure-image-zoom-title">Game Foundry Infrastructure</h3>
-+                                <form method="dialog">
-+                                    <button class="btn btn--compact" type="submit" value="close">Close</button>
-+                                </form>
-+                            </div>
-+                            <img src="assets/GFS-Infrastructure v1-3.png" alt="Zoomed Game Foundry Studio infrastructure diagram version 1-3">
-+                        </dialog>
-                         <div class="table-wrapper">
-                             <table class="data-table" aria-label="Project storage path reference">
--                                <caption>Project Asset Storage Paths</caption>
-+                                <caption>Project Asset Storage Paths use <code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></caption>
-                                 <thead>
+@@ -77,14 +77,14 @@
                                      <tr>
                                          <th scope="col">Lane</th>
                                          <th scope="col">Path</th>
-+                                        <th scope="col">.env variable</th>
+-                                        <th scope="col">.env variable</th>
++                                        <th scope="col">Current .env match</th>
                                      </tr>
                                  </thead>
-                                 <tbody>
--                                    <tr><td>DEV</td><td>/dev/projects/</td></tr>
--                                    <tr><td>IST</td><td>/ist/projects/</td></tr>
--                                    <tr><td>UAT</td><td>/uat/projects/</td></tr>
--                                    <tr><td>PROD</td><td>/prod/projects/</td></tr>
-+                                    <tr><td>DEV</td><td>/dev/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
-+                                    <tr><td>IST</td><td>/ist/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
-+                                    <tr><td>UAT</td><td>/uat/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
-+                                    <tr><td>PROD</td><td>/prod/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
+-                                <tbody>
+-                                    <tr><td>DEV</td><td>/dev/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
+-                                    <tr><td>IST</td><td>/ist/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
+-                                    <tr><td>UAT</td><td>/uat/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
+-                                    <tr><td>PROD</td><td>/prod/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
++                                <tbody data-admin-storage-path-status-rows>
++                                    <tr><td>DEV</td><td>/dev/projects/</td><td>Loading</td></tr>
++                                    <tr><td>IST</td><td>/ist/projects/</td><td>Loading</td></tr>
++                                    <tr><td>UAT</td><td>/uat/projects/</td><td>Loading</td></tr>
++                                    <tr><td>PROD</td><td>/prod/projects/</td><td>Loading</td></tr>
                                  </tbody>
                              </table>
                          </div>
-@@ -107,6 +119,7 @@
-     <div data-partial="footer"></div>
+@@ -120,6 +120,7 @@
      <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
      <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
-+    <script src="assets/theme-v2/js/image-zoom-dialog.js" defer></script>
+     <script src="assets/theme-v2/js/image-zoom-dialog.js" defer></script>
++    <script type="module" src="assets/theme-v2/js/admin-infrastructure.js"></script>
  </body>
- 
+
  </html>
-diff --git a/assets/theme-v2/css/dialogs.css b/assets/theme-v2/css/dialogs.css
-index 84eeeab97..fa071f04b 100644
---- a/assets/theme-v2/css/dialogs.css
-+++ b/assets/theme-v2/css/dialogs.css
-@@ -1 +1,62 @@
--/* Home migration does not require reusable dialog patterns yet. */
-+.image-zoom-trigger {
-+  display: block;
-+  width: 100%;
-+  padding: var(--space-0);
-+  border: var(--border-standard);
-+  border-radius: var(--radius-md);
-+  background: var(--panel-overlay);
-+  color: inherit;
-+  cursor: pointer;
-+  overflow: hidden
-+}
-+
-+.tool-center-panel .image-zoom-trigger img {
-+  width: 100%;
-+  height: auto;
-+  object-fit: contain;
-+  display: block;
-+  margin: var(--space-0)
-+}
-+
-+.image-zoom-trigger:focus-visible {
-+  outline: var(--border-standard);
-+  outline-offset: var(--space-3)
-+}
-+
-+.image-zoom-dialog {
-+  width: calc(100% - var(--container-gutter));
-+  max-width: var(--tool-wide-container-max);
-+  max-height: calc(100vh - var(--container-gutter));
-+  padding: var(--space-18);
-+  border: var(--border-standard);
-+  border-radius: var(--radius-lg);
-+  background: var(--dialog-bg);
-+  color: var(--text);
-+  box-shadow: var(--shadow-lg)
-+}
-+
-+.image-zoom-dialog::backdrop {
-+  background: color-mix(in srgb, var(--foundry-space) 82%, transparent)
-+}
-+
-+.image-zoom-dialog__header {
-+  display: flex;
-+  flex-wrap: wrap;
-+  align-items: center;
-+  justify-content: space-between;
-+  gap: var(--space-12);
-+  margin-bottom: var(--space-16)
-+}
-+
-+.image-zoom-dialog__header h3 {
-+  margin: var(--space-0);
-+  color: var(--gold);
-+  font-size: var(--font-size-lg)
-+}
-+
-+.image-zoom-dialog img {
-+  width: 100%;
-+  max-height: calc(100vh - var(--container-gutter) - var(--space-78));
-+  object-fit: contain;
-+  border-radius: var(--radius-sm)
-+}
+diff --git a/assets/theme-v2/js/owner-operations.js b/assets/theme-v2/js/owner-operations.js
+index 19582ed09..bd74397bf 100644
+--- a/assets/theme-v2/js/owner-operations.js
++++ b/assets/theme-v2/js/owner-operations.js
+@@ -107,7 +107,7 @@ class OwnerOperationsController {
+                 `${step.safetyStatus || "WARN"}: ${step.safetyDiagnostic || promotionFoundation.safetyMessage || "Promotion safety validation unavailable."}`,
+                 `${promotionFoundation.ownerOnly === true ? "Owner-only" : "Restricted"}; ${promotionFoundation.browserExecutionAllowed === false ? "browser execution disabled" : "browser execution unknown"}; ${promotionFoundation.destructiveOperationsAllowed === false ? "destructive operations disabled" : "destructive operations unknown"}; ${step.message || promotionFoundation.message || "Promotion foundation planning."}`,
+             ])
+-            : [["DEV/UAT/PROD", "Planning", promotionFoundation.status || "WARN", promotionFoundation.safetyMessage || "Promotion safety validation unavailable.", promotionFoundation.message || "Promotion foundation status unavailable."]];
++            : [["DEV/IST/UAT/PROD", "Planning", promotionFoundation.status || "WARN", promotionFoundation.safetyMessage || "Promotion safety validation unavailable.", promotionFoundation.message || "Promotion foundation status unavailable."]];
+         this.promotionFoundationRows.replaceChildren();
+         rows.forEach((row) => {
+             const tableRow = document.createElement("tr");
+diff --git a/docs_build/dev/reports/coverage_changed_js_guardrail.txt b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+index e5f5218da..8ec43d5d2 100644
+--- a/docs_build/dev/reports/coverage_changed_js_guardrail.txt
++++ b/docs_build/dev/reports/coverage_changed_js_guardrail.txt
+@@ -6,16 +6,11 @@ Missing changed runtime JS files are WARN, not FAIL.
+ Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
+
+ Changed runtime JS files considered:
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+-(75%) toolbox/game-workspace/game-workspace.js - executed lines 457/457; executed functions 33/44
+-(81%) toolbox/tools-page-accordions.js - executed lines 964/964; executed functions 88/108
+-(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 3/3
++(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
++(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
++(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
++(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
+
+ Guardrail warnings:
+-(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file missing from coverage; advisory only
+ (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+-(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file missing from coverage; advisory only
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index f81fcb5a0..03545113d 100644
+index 03545113d..e87f42604 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -1,19 +1,13 @@
+@@ -1,13 +1,46 @@
  Playwright V8 Coverage Report
- 
--PR: PR_26168_218-project-workspace-validation-cleanup
--Coverage source: Playwright/Chromium built-in V8 coverage from the targeted PR218 Playwright runs.
--Coverage scope: browser JavaScript collected while running Project Workspace, Admin Infrastructure, Owner Operations, Controls, and the workspace-contract lane.
-+PR: PR_26168_219-admin-infrastructure-image-storage-path
-+Coverage source: Playwright/Chromium built-in V8 coverage from targeted Admin Infrastructure validation.
-+Coverage scope: browser JavaScript collected while running `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs` for the Admin Infrastructure page.
- Thresholds: none enforced; coverage is advisory for this PR.
- Note: missing changed runtime JavaScript files are reported as WARN, not FAIL.
- 
- Changed runtime JavaScript files covered:
--(0%) src/dev-runtime/server/local-api-router.mjs - WARN: server runtime module is not collected by browser V8 coverage; covered by node --check and RootToolsFutureState validation for read-only validateDesign routing.
--(64%) toolbox/controls/controls.js - PASS: collected by Playwright V8 coverage; RootToolsFutureState and focused Controls validation exercised read-only initial render without repository write cleanup.
-+(100%) assets/theme-v2/js/image-zoom-dialog.js - PASS: collected by Playwright V8 coverage; targeted Admin Infrastructure validation opened and closed the zoom dialog.
- 
--Relevant exercised browser runtime files:
--(91%) toolbox/game-design/game-design.js - PASS: RootToolsFutureState exercised the Game Design page without validateDesign failed requests or page errors.
--(75%) toolbox/game-workspace/game-workspace.js - PASS: targeted Project Workspace validation exercised Local API / Local DB project record behavior and guest save blocking.
--(91%) toolbox/tools-page-accordions.js - PASS: workspace-contract lane exercised root toolbox navigation and representative active tool pages.
--
--Changed non-runtime test files:
--tests/playwright/tools/InputMappingV2Tool.spec.mjs - not counted as runtime JavaScript; covered by node --check and focused Controls Playwright validation.
-+Changed non-runtime validation files:
-+tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - not counted as runtime JavaScript; covered by `node --check` and targeted Playwright validation.
+
+-PR: PR_26168_219-admin-infrastructure-image-storage-path
+-Coverage source: Playwright/Chromium built-in V8 coverage from targeted Admin Infrastructure validation.
+-Coverage scope: browser JavaScript collected while running `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs` for the Admin Infrastructure page.
+-Thresholds: none enforced; coverage is advisory for this PR.
+-Note: missing changed runtime JavaScript files are reported as WARN, not FAIL.
++PR: generated by current Playwright run.
++Coverage source: Playwright/Chromium built-in V8 coverage.
++Coverage scope: all repo-relative browser JavaScript collected by Playwright/Chromium V8 coverage.
++Dependencies: no new npm packages.
++Thresholds: none enforced.
++Note: coverage is an advisory baseline only for this PR.
++Note: missing changed runtime JS coverage is reported as WARN, not FAIL.
++Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.
++Note: entry percentages use function coverage when available, otherwise line coverage.
++Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
+
+-Changed runtime JavaScript files covered:
+-(100%) assets/theme-v2/js/image-zoom-dialog.js - PASS: collected by Playwright V8 coverage; targeted Admin Infrastructure validation opened and closed the zoom dialog.
++Exercised tool entry points detected:
++(46%) Toolbox Index - exercised 1 runtime JS files
++(0%) Tool Template V2 - not exercised by this Playwright run
++(79%) Theme V2 Shared JS - exercised 5 runtime JS files
+
+-Changed non-runtime validation files:
+-tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - not counted as runtime JavaScript; covered by `node --check` and targeted Playwright validation.
++Changed runtime JS files covered:
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
++(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
++(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
++(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
++(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
++
++Files with executed line/function counts where available:
++(36%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 5/14
++(46%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 12/26
++(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
++(71%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 46/65
++(80%) assets/theme-v2/js/admin-infrastructure.js - executed lines 62/62; executed functions 8/10
++(100%) assets/theme-v2/js/image-zoom-dialog.js - executed lines 29/29; executed functions 9/9
++(100%) assets/theme-v2/js/owner-operations.js - executed lines 170/170; executed functions 26/26
++(100%) src/engine/api/admin-infrastructure-api-client.js - executed lines 10/10; executed functions 2/2
++(100%) src/engine/api/owner-operations-api-client.js - executed lines 27/27; executed functions 4/4
++
++Uncovered or low-coverage changed JS files:
++(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
++
++Changed JS files considered:
++(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
++(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
++(80%) assets/theme-v2/js/admin-infrastructure.js - changed JS file with browser V8 coverage
++(100%) assets/theme-v2/js/image-zoom-dialog.js - changed JS file with browser V8 coverage
++(100%) assets/theme-v2/js/owner-operations.js - changed JS file with browser V8 coverage
++(100%) src/engine/api/admin-infrastructure-api-client.js - changed JS file with browser V8 coverage
+diff --git a/owner/operations.html b/owner/operations.html
+index d0a11820d..3f95cd150 100644
+--- a/owner/operations.html
++++ b/owner/operations.html
+@@ -36,7 +36,8 @@
+                                     <button class="btn btn--compact" type="button" data-owner-operation-action="reseed-dev">Reseed DEV</button>
+                                     <button class="btn btn--compact" type="button" data-owner-operation-action="restore-from-backup">Restore from Backup</button>
+                                     <button class="btn btn--compact" type="button" data-owner-operation-action="run-migration">Run Migration</button>
+-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="promote-dev-to-uat">Promote DEV to UAT</button>
++                                    <button class="btn btn--compact" type="button" data-owner-operation-action="promote-dev-to-ist">Promote DEV to IST</button>
++                                    <button class="btn btn--compact" type="button" data-owner-operation-action="promote-ist-to-uat">Promote IST to UAT</button>
+                                     <button class="btn btn--compact" type="button" data-owner-operation-action="promote-uat-to-prod">Promote UAT to PROD</button>
+                                 </div>
+                             </details>
+@@ -49,6 +50,7 @@
+                             <h2 id="owner-operations-title">Connection Summary</h2>
+                         </div>
+                         <p>Connection details are summarized without exposing secrets. Environment switching remains manual through configuration changes and server restart.</p>
++                        <p>Promotion planning moves project metadata, asset references, and project asset storage objects between environment lanes through reviewed server-side execution.</p>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Configured connection summary">
+                                 <caption>Configured Connections</caption>
+diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
+index d83e48e84..433039e5c 100644
+--- a/src/dev-runtime/server/local-api-router.mjs
++++ b/src/dev-runtime/server/local-api-router.mjs
+@@ -225,6 +225,13 @@ const PLATFORM_BANNER_DEFAULTS = Object.freeze({
+   message: "",
+   tone: "info",
+ });
++const PROJECT_ASSET_STORAGE_PATH_ENV_KEY = "GAMEFOUNDRY_ASSET_STORAGE_PATH";
++const PROJECT_ASSET_STORAGE_PATH_LANES = Object.freeze([
++  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
++  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
++  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
++  Object.freeze({ lane: "PROD", path: "/prod/projects/" }),
++]);
+ const OWNER_OPERATION_ACTIONS = Object.freeze([
+   Object.freeze({
+     id: "validate-current-connection",
+@@ -247,8 +254,13 @@ const OWNER_OPERATION_ACTIONS = Object.freeze([
+     mode: "manual-only",
+   }),
+   Object.freeze({
+-    id: "promote-dev-to-uat",
+-    label: "Promote DEV to UAT",
++    id: "promote-dev-to-ist",
++    label: "Promote DEV to IST",
++    mode: "manual-only",
++  }),
++  Object.freeze({
++    id: "promote-ist-to-uat",
++    label: "Promote IST to UAT",
+     mode: "manual-only",
+   }),
+   Object.freeze({
+@@ -262,6 +274,75 @@ function clone(value) {
+   return JSON.parse(JSON.stringify(value));
+ }
+
++function parseEnvValue(value) {
++  const trimmed = value.trim();
++  const quote = trimmed[0];
++  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
++    return trimmed.slice(1, -1);
++  }
++  const commentIndex = trimmed.indexOf(" #");
++  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
++}
++
++function dotEnvValue(key) {
++  const envPath = path.resolve(process.cwd(), ".env");
++  let contents = "";
++  try {
++    contents = readFileSync(envPath, "utf8");
++  } catch {
++    return { found: false, value: "" };
++  }
++  let foundValue = "";
++  let found = false;
++  contents.split(/\r?\n/).forEach((line) => {
++    const trimmed = line.trim();
++    if (!trimmed || trimmed.startsWith("#")) {
++      return;
++    }
++    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
++    const separatorIndex = normalized.indexOf("=");
++    if (separatorIndex <= 0) {
++      return;
++    }
++    const candidateKey = normalized.slice(0, separatorIndex).trim();
++    if (candidateKey !== key) {
++      return;
++    }
++    found = true;
++    foundValue = parseEnvValue(normalized.slice(separatorIndex + 1));
++  });
++  return { found, value: foundValue.trim() };
++}
++
++function projectAssetStoragePathStatus() {
++  const currentPath = dotEnvValue(PROJECT_ASSET_STORAGE_PATH_ENV_KEY);
++  const rows = PROJECT_ASSET_STORAGE_PATH_LANES.map((lane) => {
++    if (!currentPath.found || !currentPath.value) {
++      return {
++        ...lane,
++        active: false,
++        status: "ERROR",
++        value: "ERROR",
++      };
++    }
++    const active = currentPath.value === lane.path;
++    return {
++      ...lane,
++      active,
++      status: active ? "PASS" : "SKIP",
++      value: active ? "yes" : "no",
++    };
++  });
++  return {
++    configured: currentPath.found && Boolean(currentPath.value),
++    missing: !currentPath.found || !currentPath.value,
++    rows,
++    secretsExposed: false,
++    status: currentPath.found && currentPath.value ? "PASS" : "ERROR",
++    variableName: PROJECT_ASSET_STORAGE_PATH_ENV_KEY,
++  };
++}
++
+ function databaseConfigStatus(env = process.env) {
+   const databaseUrl = String(env.GAMEFOUNDRY_DATABASE_URL || "").trim();
+   const sslMode = String(env.GAMEFOUNDRY_DATABASE_SSL || "").trim().toLowerCase();
+@@ -1640,6 +1721,14 @@ class ApiRuntimeDataSource {
+     return session;
+   }
+
++  async requireAdminSession() {
++    const session = await this.currentSessionForRoute();
++    if (!session.isAdmin || !session.userKey) {
++      throw new Error("Admin role required to read Infrastructure status.");
++    }
++    return session;
++  }
++
+   ownerConnectionSummary() {
+     const providerContract = this.providerContract();
+     const authStatus = this.authStatus();
+@@ -1696,10 +1785,28 @@ class ApiRuntimeDataSource {
+         id: "dev-export-plan",
+         stage: "DEV",
+         operation: "Export",
+-        safetyDiagnostic: "Read-only export planning only; no project records or storage objects are changed.",
++        safetyDiagnostic: "Read-only export planning only; no project records, asset references, or storage objects are changed.",
+         safetyStatus: "PASS",
+         status: "PLAN",
+-        message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage.",
++        message: "Plan a read-only DEV export through Local API from Local DB/SQLite metadata, asset references, and configured project asset storage object keys.",
++      },
++      {
++        id: "ist-import-plan",
++        stage: "IST",
++        operation: "Import",
++        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing IST project must fail visibly before any write.",
++        safetyStatus: "FAIL",
++        status: "PLAN",
++        message: "Plan DEV to IST promotion through reviewed server-side tooling; no browser import execution.",
++      },
++      {
++        id: "ist-validate-plan",
++        stage: "IST",
++        operation: "Validate",
++        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying IST.",
++        safetyStatus: "PASS",
++        status: "PLAN",
++        message: "Plan validation of IST project metadata, asset references, and project asset storage objects before UAT promotion.",
+       },
+       {
+         id: "uat-import-plan",
+@@ -1708,7 +1815,7 @@ class ApiRuntimeDataSource {
+         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing UAT project must fail visibly before any write.",
+         safetyStatus: "FAIL",
+         status: "PLAN",
+-        message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution.",
++        message: "Plan IST to UAT promotion through reviewed server-side tooling; no browser import execution.",
+       },
+       {
+         id: "uat-validate-plan",
+@@ -1717,7 +1824,7 @@ class ApiRuntimeDataSource {
+         safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying UAT.",
+         safetyStatus: "PASS",
+         status: "PLAN",
+-        message: "Plan validation of imported UAT metadata and storage references before any PROD promotion.",
++        message: "Plan validation of UAT project metadata, asset references, and project asset storage objects before any PROD promotion.",
+       },
+       {
+         id: "prod-import-plan",
+@@ -1726,7 +1833,7 @@ class ApiRuntimeDataSource {
+         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing PROD project must fail visibly before any write.",
+         safetyStatus: "FAIL",
+         status: "PLAN",
+-        message: "Plan a PROD import only after UAT validation evidence is reviewed.",
++        message: "Plan a PROD import of project metadata, asset references, and project asset storage objects only after UAT validation evidence is reviewed.",
+       },
+       {
+         id: "prod-validate-plan",
+@@ -1744,9 +1851,10 @@ class ApiRuntimeDataSource {
+       exportImportRuntime: "reviewed server-side tooling only",
+       importOverwriteAllowed: false,
+       importOverwritePolicy: "fail-visible-until-explicit-confirmation",
+-      message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
++      message: "Project promotion foundation is planning-only for DEV, IST, UAT, and PROD.",
+       ownerOnly: true,
+       overwriteConfirmationImplemented: false,
++      promotionScope: "project metadata, asset references, and project asset storage objects",
+       safetyMessage: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists.",
+       secretEditingAllowed: false,
+       status: "PASS",
+@@ -1823,6 +1931,11 @@ LIMIT 1;
+     };
+   }
+
++  async adminInfrastructureStoragePathStatus() {
++    await this.requireAdminSession();
++    return projectAssetStoragePathStatus();
++  }
++
+   projectWorkspaceProjectsForRoute() {
+     const activeProject = this.gameWorkspaceRepository.getActiveGame();
+     const records = gameWorkspaceProjectRecords(this.gameWorkspaceRepository);
+@@ -3407,6 +3520,11 @@ export function createLocalApiRouter() {
+         return true;
+       }
+
++      if (parts[1] === "admin" && parts[2] === "infrastructure" && request.method === "GET" && parts[3] === "storage-path-status") {
++        ok(response, await dataSource.adminInfrastructureStoragePathStatus());
++        return true;
++      }
++
+       if (parts[1] === "owner" && parts[2] === "operations" && request.method === "GET" && parts[3] === "status") {
+         ok(response, await dataSource.ownerOperationsStatus());
+         return true;
 diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-index 2804fdd00..5133bb743 100644
+index 5133bb743..a88831759 100644
 --- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
 +++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-@@ -316,12 +316,28 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
-           toneInControls: true,
-         });
-       } else if (adminPage.infrastructure) {
--        await expect(page.locator("img[src*='GFS-Infrastructure%20v1-3.png'], img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(1);
-+        await expect(page.locator("img[src*='GFS-Infrastructure%20v1-3.png'], img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(2);
-         await expect(page.locator("body")).not.toContainText("GFS-Infrastructure v1-2.png");
-         await expect(page.locator("body")).toContainText("/dev/projects/");
-         await expect(page.locator("body")).toContainText("/ist/projects/");
+@@ -24,6 +24,39 @@ const ADMIN_WIREFRAME_PAGES = [
+   { heading: "Platform Settings", liveSettings: true, path: "/admin/platform-settings.html", slug: "platform-settings" },
+ ];
+
++function storagePathStatusFor(configuredPath) {
++  const rows = [
++    { lane: "DEV", path: "/dev/projects/" },
++    { lane: "IST", path: "/ist/projects/" },
++    { lane: "UAT", path: "/uat/projects/" },
++    { lane: "PROD", path: "/prod/projects/" },
++  ].map((lane) => {
++    if (!configuredPath) {
++      return {
++        ...lane,
++        active: false,
++        status: "ERROR",
++        value: "ERROR",
++      };
++    }
++    const active = configuredPath === lane.path;
++    return {
++      ...lane,
++      active,
++      status: active ? "PASS" : "SKIP",
++      value: active ? "yes" : "no",
++    };
++  });
++  return {
++    configured: Boolean(configuredPath),
++    missing: !configuredPath,
++    rows,
++    secretsExposed: false,
++    status: configuredPath ? "PASS" : "ERROR",
++    variableName: "GAMEFOUNDRY_ASSET_STORAGE_PATH",
++  };
++}
++
+ test.beforeEach(async ({ page }) => {
+   await workspaceV2CoverageReporter.start(page);
+   await installPlaywrightStorageIsolation(page, {
+@@ -38,11 +71,12 @@ test.afterEach(async ({ page }) => {
+   await clearPlaywrightStorage(page);
+ });
+
+-async function startAdminPage(page, pathName) {
++async function startAdminPage(page, pathName, options = {}) {
+   const server = await startRepoServer();
+   const failedRequests = [];
+   const pageErrors = [];
+   const consoleErrors = [];
++  const storagePathStatus = options.storagePathStatus || storagePathStatusFor("/dev/projects/");
+
+   page.on("pageerror", (error) => {
+     const text = error.stack || error.message;
+@@ -150,6 +184,15 @@ async function startAdminPage(page, pathName) {
+       }),
+     });
+   });
++  await page.route("**/api/admin/infrastructure/storage-path-status", async (route) => {
++    await route.fulfill({
++      contentType: "application/json",
++      body: JSON.stringify({
++        data: storagePathStatus,
++        ok: true,
++      }),
++    });
++  });
+   await page.route("**/api/product-data/snapshot", async (route) => {
+     const timestamp = "2026-06-16T00:00:00.000Z";
+     const audit = {
+@@ -323,6 +366,13 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
          await expect(page.locator("body")).toContainText("/uat/projects/");
          await expect(page.locator("body")).toContainText("/prod/projects/");
-+        await expect(page.locator("body")).toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
-+        const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");
-+        await expect(infrastructureImage).toBeVisible();
-+        const imageLayout = await infrastructureImage.evaluate((control) => {
-+          const image = control.querySelector("img");
-+          return {
-+            imageWidth: image?.getBoundingClientRect().width || 0,
-+            triggerWidth: control.getBoundingClientRect().width,
-+          };
-+        });
-+        expect(Math.round(imageLayout.triggerWidth - imageLayout.imageWidth)).toBeLessThanOrEqual(4);
-+        await infrastructureImage.click();
-+        await expect(page.locator("#admin-infrastructure-image-zoom")).toBeVisible();
-+        await expect(page.locator("#admin-infrastructure-image-zoom img[src*='GFS-Infrastructure%20v1-3.png'], #admin-infrastructure-image-zoom img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(1);
-+        await page.locator("#admin-infrastructure-image-zoom").getByRole("button", { name: "Close" }).click();
-+        await expect(page.locator("#admin-infrastructure-image-zoom")).not.toBeVisible();
-         await expect(page.getByRole("link", { name: "Database Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
-         await expect(page.getByRole("link", { name: "Storage Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
-         await expect(page.getByRole("link", { name: "Owner Operations" })).toHaveAttribute("href", /owner\/operations\.html$/);
-diff --git a/assets/theme-v2/js/image-zoom-dialog.js b/assets/theme-v2/js/image-zoom-dialog.js
+         await expect(page.locator("body")).toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
++        const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
++        await expect(storageRows).toHaveCount(4);
++        await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "yes"]);
++        await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "no"]);
++        await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "no"]);
++        await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "no"]);
++        await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
+         const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");
+         await expect(infrastructureImage).toBeVisible();
+         const imageLayout = await infrastructureImage.evaluate((control) => {
+@@ -355,6 +405,26 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+   });
+ }
+
++test("Infrastructure storage path status reports missing env path as ERROR", async ({ page }) => {
++  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
++    storagePathStatus: storagePathStatusFor(""),
++  });
++
++  try {
++    const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
++    await expect(storageRows).toHaveCount(4);
++    await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "ERROR"]);
++    await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "ERROR"]);
++    await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "ERROR"]);
++    await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "ERROR"]);
++    await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
++    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
++    await expectNoPageFailures(failures);
++  } finally {
++    await failures.server.close();
++  }
++});
++
+ test("Grouping Colors uses current group color model copy", async ({ page }) => {
+   const failures = await startAdminPage(page, "/admin/grouping-colors.html");
+
+@@ -769,9 +839,10 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     exportImportRuntime: "reviewed server-side tooling only",
+     importOverwriteAllowed: false,
+     importOverwritePolicy: "fail-visible-until-explicit-confirmation",
+-    message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
++    message: "Project promotion foundation is planning-only for DEV, IST, UAT, and PROD.",
+     ownerOnly: true,
+     overwriteConfirmationImplemented: false,
++    promotionScope: "project metadata, asset references, and project asset storage objects",
+     safetyMessage: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists.",
+     secretEditingAllowed: false,
+     status: "PASS",
+@@ -780,10 +851,28 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+         id: "dev-export-plan",
+         stage: "DEV",
+         operation: "Export",
+-        safetyDiagnostic: "Read-only export planning only; no project records or storage objects are changed.",
++        safetyDiagnostic: "Read-only export planning only; no project records, asset references, or storage objects are changed.",
+         safetyStatus: "PASS",
+         status: "PLAN",
+-        message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage.",
++        message: "Plan a read-only DEV export through Local API from Local DB/SQLite metadata, asset references, and configured project asset storage object keys.",
++      },
++      {
++        id: "ist-import-plan",
++        stage: "IST",
++        operation: "Import",
++        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing IST project must fail visibly before any write.",
++        safetyStatus: "FAIL",
++        status: "PLAN",
++        message: "Plan DEV to IST promotion through reviewed server-side tooling; no browser import execution.",
++      },
++      {
++        id: "ist-validate-plan",
++        stage: "IST",
++        operation: "Validate",
++        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying IST.",
++        safetyStatus: "PASS",
++        status: "PLAN",
++        message: "Plan validation of IST project metadata, asset references, and project asset storage objects before UAT promotion.",
+       },
+       {
+         id: "uat-import-plan",
+@@ -792,7 +881,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing UAT project must fail visibly before any write.",
+         safetyStatus: "FAIL",
+         status: "PLAN",
+-        message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution.",
++        message: "Plan IST to UAT promotion through reviewed server-side tooling; no browser import execution.",
+       },
+       {
+         id: "uat-validate-plan",
+@@ -801,7 +890,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+         safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying UAT.",
+         safetyStatus: "PASS",
+         status: "PLAN",
+-        message: "Plan validation of imported UAT metadata and storage references before any PROD promotion.",
++        message: "Plan validation of UAT project metadata, asset references, and project asset storage objects before any PROD promotion.",
+       },
+       {
+         id: "prod-import-plan",
+@@ -810,7 +899,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing PROD project must fail visibly before any write.",
+         safetyStatus: "FAIL",
+         status: "PLAN",
+-        message: "Plan a PROD import only after UAT validation evidence is reviewed.",
++        message: "Plan a PROD import of project metadata, asset references, and project asset storage objects only after UAT validation evidence is reviewed.",
+       },
+       {
+         id: "prod-validate-plan",
+@@ -988,7 +1077,12 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await page.route("**/api/owner/operations/action", async (route) => {
+       const body = route.request().postDataJSON();
+       ownerActionPosts.push(body);
+-      const actionLabel = body.actionId === "promote-dev-to-uat" ? "Promote DEV to UAT" : "Reseed DEV";
++      const actionLabels = {
++        "promote-dev-to-ist": "Promote DEV to IST",
++        "promote-ist-to-uat": "Promote IST to UAT",
++        "reseed-dev": "Reseed DEV",
++      };
++      const actionLabel = actionLabels[body.actionId] || body.actionId;
+       await route.fulfill({
+         contentType: "application/json",
+         body: JSON.stringify({
+@@ -1016,6 +1110,11 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await expect(page.locator("[data-owner-connection-summary]")).toContainText("Account");
+     await expect(page.locator("[data-owner-connection-summary]")).toContainText("Project Asset Storage");
+     await expect(page.locator("[data-owner-connection-summary]")).toContainText("not exposed");
++    await expect(page.locator("[data-owner-operation-action='promote-dev-to-uat']")).toHaveCount(0);
++    await expect(page.locator("[data-owner-operation-action='promote-dev-to-ist']")).toHaveText("Promote DEV to IST");
++    await expect(page.locator("[data-owner-operation-action='promote-ist-to-uat']")).toHaveText("Promote IST to UAT");
++    await expect(page.locator("[data-owner-operation-action='promote-uat-to-prod']")).toHaveText("Promote UAT to PROD");
++    await expect(page.locator("[data-owner-operations]")).toContainText("project metadata, asset references, and project asset storage objects");
+     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Connection Configured");
+     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Host");
+     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("192.168.2.5");
+@@ -1044,10 +1143,12 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await expect(page.locator("[data-owner-storage-status-rows]")).not.toContainText("asset-test-access-key");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("DEV");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Export");
++    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("IST");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("UAT");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Import");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Validate");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("PROD");
++    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("project metadata, asset references, and project asset storage objects");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Owner-only");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("browser execution disabled");
+     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("destructive operations disabled");
+@@ -1069,11 +1170,15 @@ test("Owner Operations exposes owner-only connection validation and manual opera
+     await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Reseed DEV is staged in Owner Operations");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("reseed-dev");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
+-    await page.locator("[data-owner-operation-action='promote-dev-to-uat']").click();
+-    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote DEV to UAT is staged in Owner Operations");
+-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-dev-to-uat");
++    await page.locator("[data-owner-operation-action='promote-dev-to-ist']").click();
++    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote DEV to IST is staged in Owner Operations");
++    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-dev-to-ist");
++    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
++    await page.locator("[data-owner-operation-action='promote-ist-to-uat']").click();
++    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote IST to UAT is staged in Owner Operations");
++    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-ist-to-uat");
+     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
+-    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }, { actionId: "promote-dev-to-uat" }]);
++    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }, { actionId: "promote-dev-to-ist" }, { actionId: "promote-ist-to-uat" }]);
+     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+   } finally {
+     await server.close();
+
+
+diff --git a/assets/theme-v2/js/admin-infrastructure.js b/assets/theme-v2/js/admin-infrastructure.js
 new file mode 100644
-index 000000000..5d4032b7e
+index 000000000..77c4291f6
 --- /dev/null
-+++ b/assets/theme-v2/js/image-zoom-dialog.js
-@@ -0,0 +1,32 @@
-+class ImageZoomDialog {
-+    constructor(dialog) {
-+        this.dialog = dialog;
-+        this.triggers = Array.from(document.querySelectorAll(`[data-image-zoom-target="${dialog.id}"]`));
++++ b/assets/theme-v2/js/admin-infrastructure.js
+@@ -0,0 +1,69 @@
++import {
++    readAdminInfrastructureStoragePathStatus
++} from "../../../src/engine/api/admin-infrastructure-api-client.js";
++
++const STORAGE_PATH_LANES = Object.freeze([
++    Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
++    Object.freeze({ lane: "IST", path: "/ist/projects/" }),
++    Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
++    Object.freeze({ lane: "PROD", path: "/prod/projects/" }),
++]);
++
++class AdminInfrastructureStoragePathStatus {
++    constructor(root) {
++        this.root = root;
++        this.rows = root.querySelector("[data-admin-storage-path-status-rows]");
 +    }
 +
 +    init() {
-+        if (!this.dialog.id || typeof this.dialog.showModal !== "function") {
++        if (!this.rows) {
 +            return;
 +        }
-+        this.triggers.forEach((trigger) => {
-+            trigger.addEventListener("click", () => this.open());
-+        });
-+        this.dialog.addEventListener("click", (event) => {
-+            if (event.target === this.dialog) {
-+                this.dialog.close();
-+            }
++        this.load();
++    }
++
++    renderRows(rows) {
++        this.rows.replaceChildren();
++        rows.forEach((row) => {
++            const tableRow = document.createElement("tr");
++            [
++                row.lane || "",
++                row.path || "",
++                row.value || "ERROR",
++            ].forEach((value) => {
++                const cell = document.createElement("td");
++                cell.textContent = value;
++                tableRow.append(cell);
++            });
++            this.rows.append(tableRow);
 +        });
 +    }
 +
-+    open() {
-+        if (!this.dialog.open) {
-+            this.dialog.showModal();
++    renderFailure(message) {
++        this.renderRows(STORAGE_PATH_LANES.map((lane) => ({
++            ...lane,
++            value: `ERROR: ${message}`,
++        })));
++    }
++
++    load() {
++        try {
++            const payload = readAdminInfrastructureStoragePathStatus();
++            const rows = Array.isArray(payload.rows) ? payload.rows : [];
++            this.renderRows(rows.length ? rows : STORAGE_PATH_LANES.map((lane) => ({
++                ...lane,
++                value: "ERROR",
++            })));
++        } catch (error) {
++            this.renderFailure(error instanceof Error ? error.message : "Storage path status unavailable.");
 +        }
 +    }
 +}
 +
 +document.addEventListener("DOMContentLoaded", () => {
-+    document.querySelectorAll("[data-image-zoom-dialog]").forEach((dialog) => {
-+        new ImageZoomDialog(dialog).init();
-+    });
++    const root = document.querySelector("[data-admin-wireframe='infrastructure']");
++    if (!root) {
++        return;
++    }
++    new AdminInfrastructureStoragePathStatus(root).init();
 +});
-diff --git a/docs_build/dev/reports/PR_26168_219-admin-infrastructure-image-storage-path.md b/docs_build/dev/reports/PR_26168_219-admin-infrastructure-image-storage-path.md
+
+
+
+
+diff --git a/src/engine/api/admin-infrastructure-api-client.js b/src/engine/api/admin-infrastructure-api-client.js
 new file mode 100644
-index 000000000..547c58b33
+index 000000000..dcd7be763
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26168_219-admin-infrastructure-image-storage-path.md
-@@ -0,0 +1,85 @@
-+# PR_26168_219-admin-infrastructure-image-storage-path
++++ b/src/engine/api/admin-infrastructure-api-client.js
+@@ -0,0 +1,11 @@
++import {
++  requireServerApiData,
++  safeRequestServerApi,
++} from "./server-api-client.js";
 +
-+## Branch Validation
-+
-+PASS: current branch is `main`.
-+
-+- Expected branch: `main`
-+- Current branch: `main`
-+- Local branches found: `main`
-+
-+## Scope Summary
-+
-+PASS: PR219 is scoped to the Admin Infrastructure image/storage-path surface.
-+
-+- Admin Infrastructure image now fills the available content width inside a Theme V2 zoom trigger.
-+- The image opens a native dialog zoom view through external JavaScript only.
-+- Project Asset Storage Paths copy now identifies `GAMEFOUNDRY_ASSET_STORAGE_PATH`.
-+- `.env.example` includes the tracked non-secret variable contract.
-+- Ignored local copy-source files `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` were updated locally with the matching non-secret path values.
-+
-+## Requirement Checklist
-+
-+| Requirement | Status | Evidence |
-+| --- | --- | --- |
-+| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first | PASS | Instructions were read before branch guard or edits. |
-+| Hard stop unless current branch is `main` | PASS | `git branch --show-current` returned `main`; `git branch --list` showed `* main`. |
-+| Update `admin/infrastructure.html` so the image uses 100% of available content space | PASS | Theme V2 `.image-zoom-trigger` and `.tool-center-panel .image-zoom-trigger img` set the image to full control/content width; Playwright measured image width within the trigger border box. |
-+| Make the infrastructure image clickable and open a zoom view | PASS | External `assets/theme-v2/js/image-zoom-dialog.js` opens the native dialog; Playwright clicked the image trigger, verified the dialog image, and closed it. |
-+| Keep displaying only `assets/GFS-Infrastructure v1-3.png` | PASS | Static and Playwright checks confirm v1-3 is used and v1-2 is absent. |
-+| Update Project Asset Storage Paths copy to identify `GAMEFOUNDRY_ASSET_STORAGE_PATH` | PASS | Table caption and path rows include the variable name. |
-+| Add `GAMEFOUNDRY_ASSET_STORAGE_PATH` to appropriate `.env` copy-source files if missing | PASS | `.env.example` is tracked with the contract; ignored local `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` each contain exactly one non-secret variable entry. |
-+| Do not expose secrets | PASS | No secret values were added to tracked files, reports, or artifacts; ignored `.env.<target>` files are not packaged. |
-+| Use Theme V2 only | PASS | Styling is in `assets/theme-v2/css/dialogs.css`; page keeps Theme V2 stylesheet only. |
-+| No inline styles, script blocks, style blocks, or inline event handlers | PASS | Static HTML check passed for `style=`, `<style>`, inline script blocks, and `on*=` handlers. |
-+| Put JavaScript in external files only | PASS | Zoom behavior lives in `assets/theme-v2/js/image-zoom-dialog.js`; HTML only references external scripts. |
-+| Do not add unrelated Admin, storage, or promotion behavior | PASS | Changes are limited to image zoom, storage path copy, env contract, and targeted test coverage. |
-+| Do not run full samples smoke | PASS | Full samples smoke was skipped by instruction and because no sample surface changed. |
-+
-+## Validation Lane Report
-+
-+PASS: `node --check assets/theme-v2/js/image-zoom-dialog.js`
-+
-+PASS: `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
-+
-+PASS: Admin Infrastructure HTML static check
-+
-+- Checked no `<style>` blocks.
-+- Checked no inline `style=` attributes.
-+- Checked no inline script blocks.
-+- Checked no inline event handlers.
-+- Checked `assets/GFS-Infrastructure v1-3.png` is present.
-+- Checked `assets/GFS-Infrastructure v1-2.png` is absent.
-+- Checked `GAMEFOUNDRY_ASSET_STORAGE_PATH` copy is present.
-+- Checked external zoom script reference is present.
-+
-+PASS: changed CSS brace check for `assets/theme-v2/css/dialogs.css`
-+
-+PASS: env asset storage path static check
-+
-+- `.env.example`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=`
-+- `.env.dev`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=/dev/projects/`
-+- `.env.ist`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=/ist/projects/`
-+- `.env.uat`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=/uat/projects/`
-+- `.env.prd`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=/prod/projects/`
-+
-+PASS: `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure"`
-+
-+- Result: 1 passed.
-+- Behavior validated: Theme V2 Admin Infrastructure structure, v1-3-only image usage, storage path copy, full-width image trigger, zoom dialog open/close, no inline style/script/event handlers, and no page failures.
-+
-+PASS: Playwright V8 coverage report produced at `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
-+
-+- `(100%) assets/theme-v2/js/image-zoom-dialog.js` covered by browser V8 coverage.
-+
-+## Manual Validation Notes
-+
-+PASS: Static inspection confirmed Admin Infrastructure still references only `assets/GFS-Infrastructure v1-3.png` and not `assets/GFS-Infrastructure v1-2.png`.
-+
-+PASS: The image is a keyboard-focusable button with `aria-haspopup="dialog"` and `aria-controls="admin-infrastructure-image-zoom"`.
-+
-+PASS: The zoom view uses a native `<dialog>` with an external JS opener and a visible Close button.
-+
-+PASS: The tracked env example and ignored local env copy-source files contain only the non-secret `GAMEFOUNDRY_ASSET_STORAGE_PATH` variable addition for this PR.
-+
-+SKIP: Full samples smoke was not run because this PR only affects the Admin Infrastructure page, Theme V2 zoom styling/JS, and env copy-source documentation; sample JSON and sample runtime behavior were untouched.
++export function readAdminInfrastructureStoragePathStatus() {
++  return requireServerApiData(
++    safeRequestServerApi("/admin/infrastructure/storage-path-status"),
++    "Admin Infrastructure storage path status",
++  );
++}

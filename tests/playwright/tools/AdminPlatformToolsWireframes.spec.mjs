@@ -24,6 +24,39 @@ const ADMIN_WIREFRAME_PAGES = [
   { heading: "Platform Settings", liveSettings: true, path: "/admin/platform-settings.html", slug: "platform-settings" },
 ];
 
+function storagePathStatusFor(configuredPath) {
+  const rows = [
+    { lane: "DEV", path: "/dev/projects/" },
+    { lane: "IST", path: "/ist/projects/" },
+    { lane: "UAT", path: "/uat/projects/" },
+    { lane: "PROD", path: "/prod/projects/" },
+  ].map((lane) => {
+    if (!configuredPath) {
+      return {
+        ...lane,
+        active: false,
+        status: "ERROR",
+        value: "ERROR",
+      };
+    }
+    const active = configuredPath === lane.path;
+    return {
+      ...lane,
+      active,
+      status: active ? "PASS" : "SKIP",
+      value: active ? "yes" : "no",
+    };
+  });
+  return {
+    configured: Boolean(configuredPath),
+    missing: !configuredPath,
+    rows,
+    secretsExposed: false,
+    status: configuredPath ? "PASS" : "ERROR",
+    variableName: "GAMEFOUNDRY_ASSET_STORAGE_PATH",
+  };
+}
+
 test.beforeEach(async ({ page }) => {
   await workspaceV2CoverageReporter.start(page);
   await installPlaywrightStorageIsolation(page, {
@@ -38,11 +71,12 @@ test.afterEach(async ({ page }) => {
   await clearPlaywrightStorage(page);
 });
 
-async function startAdminPage(page, pathName) {
+async function startAdminPage(page, pathName, options = {}) {
   const server = await startRepoServer();
   const failedRequests = [];
   const pageErrors = [];
   const consoleErrors = [];
+  const storagePathStatus = options.storagePathStatus || storagePathStatusFor("/dev/projects/");
 
   page.on("pageerror", (error) => {
     const text = error.stack || error.message;
@@ -146,6 +180,15 @@ async function startAdminPage(page, pathName) {
           recordsWritten: 0,
           sourceTable: "platform_settings",
         },
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/admin/infrastructure/storage-path-status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: storagePathStatus,
         ok: true,
       }),
     });
@@ -323,6 +366,13 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("body")).toContainText("/uat/projects/");
         await expect(page.locator("body")).toContainText("/prod/projects/");
         await expect(page.locator("body")).toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
+        const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
+        await expect(storageRows).toHaveCount(4);
+        await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "yes"]);
+        await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "no"]);
+        await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "no"]);
+        await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "no"]);
+        await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
         const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");
         await expect(infrastructureImage).toBeVisible();
         const imageLayout = await infrastructureImage.evaluate((control) => {
@@ -354,6 +404,26 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
     }
   });
 }
+
+test("Infrastructure storage path status reports missing env path as ERROR", async ({ page }) => {
+  const failures = await startAdminPage(page, "/admin/infrastructure.html", {
+    storagePathStatus: storagePathStatusFor(""),
+  });
+
+  try {
+    const storageRows = page.locator("[data-admin-storage-path-status-rows] tr");
+    await expect(storageRows).toHaveCount(4);
+    await expect(storageRows.nth(0).locator("td")).toHaveText(["DEV", "/dev/projects/", "ERROR"]);
+    await expect(storageRows.nth(1).locator("td")).toHaveText(["IST", "/ist/projects/", "ERROR"]);
+    await expect(storageRows.nth(2).locator("td")).toHaveText(["UAT", "/uat/projects/", "ERROR"]);
+    await expect(storageRows.nth(3).locator("td")).toHaveText(["PROD", "/prod/projects/", "ERROR"]);
+    await expect(page.locator("[data-admin-storage-path-status-rows]")).not.toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
 
 test("Grouping Colors uses current group color model copy", async ({ page }) => {
   const failures = await startAdminPage(page, "/admin/grouping-colors.html");
@@ -769,9 +839,10 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     exportImportRuntime: "reviewed server-side tooling only",
     importOverwriteAllowed: false,
     importOverwritePolicy: "fail-visible-until-explicit-confirmation",
-    message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
+    message: "Project promotion foundation is planning-only for DEV, IST, UAT, and PROD.",
     ownerOnly: true,
     overwriteConfirmationImplemented: false,
+    promotionScope: "project metadata, asset references, and project asset storage objects",
     safetyMessage: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists.",
     secretEditingAllowed: false,
     status: "PASS",
@@ -780,10 +851,28 @@ test("Owner Operations exposes owner-only connection validation and manual opera
         id: "dev-export-plan",
         stage: "DEV",
         operation: "Export",
-        safetyDiagnostic: "Read-only export planning only; no project records or storage objects are changed.",
+        safetyDiagnostic: "Read-only export planning only; no project records, asset references, or storage objects are changed.",
         safetyStatus: "PASS",
         status: "PLAN",
-        message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage.",
+        message: "Plan a read-only DEV export through Local API from Local DB/SQLite metadata, asset references, and configured project asset storage object keys.",
+      },
+      {
+        id: "ist-import-plan",
+        stage: "IST",
+        operation: "Import",
+        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing IST project must fail visibly before any write.",
+        safetyStatus: "FAIL",
+        status: "PLAN",
+        message: "Plan DEV to IST promotion through reviewed server-side tooling; no browser import execution.",
+      },
+      {
+        id: "ist-validate-plan",
+        stage: "IST",
+        operation: "Validate",
+        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying IST.",
+        safetyStatus: "PASS",
+        status: "PLAN",
+        message: "Plan validation of IST project metadata, asset references, and project asset storage objects before UAT promotion.",
       },
       {
         id: "uat-import-plan",
@@ -792,7 +881,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing UAT project must fail visibly before any write.",
         safetyStatus: "FAIL",
         status: "PLAN",
-        message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution.",
+        message: "Plan IST to UAT promotion through reviewed server-side tooling; no browser import execution.",
       },
       {
         id: "uat-validate-plan",
@@ -801,7 +890,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
         safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying UAT.",
         safetyStatus: "PASS",
         status: "PLAN",
-        message: "Plan validation of imported UAT metadata and storage references before any PROD promotion.",
+        message: "Plan validation of UAT project metadata, asset references, and project asset storage objects before any PROD promotion.",
       },
       {
         id: "prod-import-plan",
@@ -810,7 +899,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing PROD project must fail visibly before any write.",
         safetyStatus: "FAIL",
         status: "PLAN",
-        message: "Plan a PROD import only after UAT validation evidence is reviewed.",
+        message: "Plan a PROD import of project metadata, asset references, and project asset storage objects only after UAT validation evidence is reviewed.",
       },
       {
         id: "prod-validate-plan",
@@ -988,7 +1077,12 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await page.route("**/api/owner/operations/action", async (route) => {
       const body = route.request().postDataJSON();
       ownerActionPosts.push(body);
-      const actionLabel = body.actionId === "promote-dev-to-uat" ? "Promote DEV to UAT" : "Reseed DEV";
+      const actionLabels = {
+        "promote-dev-to-ist": "Promote DEV to IST",
+        "promote-ist-to-uat": "Promote IST to UAT",
+        "reseed-dev": "Reseed DEV",
+      };
+      const actionLabel = actionLabels[body.actionId] || body.actionId;
       await route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({
@@ -1016,6 +1110,11 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await expect(page.locator("[data-owner-connection-summary]")).toContainText("Account");
     await expect(page.locator("[data-owner-connection-summary]")).toContainText("Project Asset Storage");
     await expect(page.locator("[data-owner-connection-summary]")).toContainText("not exposed");
+    await expect(page.locator("[data-owner-operation-action='promote-dev-to-uat']")).toHaveCount(0);
+    await expect(page.locator("[data-owner-operation-action='promote-dev-to-ist']")).toHaveText("Promote DEV to IST");
+    await expect(page.locator("[data-owner-operation-action='promote-ist-to-uat']")).toHaveText("Promote IST to UAT");
+    await expect(page.locator("[data-owner-operation-action='promote-uat-to-prod']")).toHaveText("Promote UAT to PROD");
+    await expect(page.locator("[data-owner-operations]")).toContainText("project metadata, asset references, and project asset storage objects");
     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Connection Configured");
     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Host");
     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("192.168.2.5");
@@ -1044,10 +1143,12 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await expect(page.locator("[data-owner-storage-status-rows]")).not.toContainText("asset-test-access-key");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("DEV");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Export");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("IST");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("UAT");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Import");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Validate");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("PROD");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("project metadata, asset references, and project asset storage objects");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Owner-only");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("browser execution disabled");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("destructive operations disabled");
@@ -1069,11 +1170,15 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Reseed DEV is staged in Owner Operations");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("reseed-dev");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
-    await page.locator("[data-owner-operation-action='promote-dev-to-uat']").click();
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote DEV to UAT is staged in Owner Operations");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-dev-to-uat");
+    await page.locator("[data-owner-operation-action='promote-dev-to-ist']").click();
+    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote DEV to IST is staged in Owner Operations");
+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-dev-to-ist");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
-    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }, { actionId: "promote-dev-to-uat" }]);
+    await page.locator("[data-owner-operation-action='promote-ist-to-uat']").click();
+    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote IST to UAT is staged in Owner Operations");
+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-ist-to-uat");
+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
+    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }, { actionId: "promote-dev-to-ist" }, { actionId: "promote-ist-to-uat" }]);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
   } finally {
     await server.close();

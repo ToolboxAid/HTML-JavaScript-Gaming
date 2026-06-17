@@ -225,6 +225,13 @@ const PLATFORM_BANNER_DEFAULTS = Object.freeze({
   message: "",
   tone: "info",
 });
+const PROJECT_ASSET_STORAGE_PATH_ENV_KEY = "GAMEFOUNDRY_ASSET_STORAGE_PATH";
+const PROJECT_ASSET_STORAGE_PATH_LANES = Object.freeze([
+  Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
+  Object.freeze({ lane: "IST", path: "/ist/projects/" }),
+  Object.freeze({ lane: "UAT", path: "/uat/projects/" }),
+  Object.freeze({ lane: "PROD", path: "/prod/projects/" }),
+]);
 const OWNER_OPERATION_ACTIONS = Object.freeze([
   Object.freeze({
     id: "validate-current-connection",
@@ -247,8 +254,13 @@ const OWNER_OPERATION_ACTIONS = Object.freeze([
     mode: "manual-only",
   }),
   Object.freeze({
-    id: "promote-dev-to-uat",
-    label: "Promote DEV to UAT",
+    id: "promote-dev-to-ist",
+    label: "Promote DEV to IST",
+    mode: "manual-only",
+  }),
+  Object.freeze({
+    id: "promote-ist-to-uat",
+    label: "Promote IST to UAT",
     mode: "manual-only",
   }),
   Object.freeze({
@@ -260,6 +272,75 @@ const OWNER_OPERATION_ACTIONS = Object.freeze([
 
 function clone(value) {
   return JSON.parse(JSON.stringify(value));
+}
+
+function parseEnvValue(value) {
+  const trimmed = value.trim();
+  const quote = trimmed[0];
+  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
+    return trimmed.slice(1, -1);
+  }
+  const commentIndex = trimmed.indexOf(" #");
+  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
+}
+
+function dotEnvValue(key) {
+  const envPath = path.resolve(process.cwd(), ".env");
+  let contents = "";
+  try {
+    contents = readFileSync(envPath, "utf8");
+  } catch {
+    return { found: false, value: "" };
+  }
+  let foundValue = "";
+  let found = false;
+  contents.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      return;
+    }
+    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
+    const separatorIndex = normalized.indexOf("=");
+    if (separatorIndex <= 0) {
+      return;
+    }
+    const candidateKey = normalized.slice(0, separatorIndex).trim();
+    if (candidateKey !== key) {
+      return;
+    }
+    found = true;
+    foundValue = parseEnvValue(normalized.slice(separatorIndex + 1));
+  });
+  return { found, value: foundValue.trim() };
+}
+
+function projectAssetStoragePathStatus() {
+  const currentPath = dotEnvValue(PROJECT_ASSET_STORAGE_PATH_ENV_KEY);
+  const rows = PROJECT_ASSET_STORAGE_PATH_LANES.map((lane) => {
+    if (!currentPath.found || !currentPath.value) {
+      return {
+        ...lane,
+        active: false,
+        status: "ERROR",
+        value: "ERROR",
+      };
+    }
+    const active = currentPath.value === lane.path;
+    return {
+      ...lane,
+      active,
+      status: active ? "PASS" : "SKIP",
+      value: active ? "yes" : "no",
+    };
+  });
+  return {
+    configured: currentPath.found && Boolean(currentPath.value),
+    missing: !currentPath.found || !currentPath.value,
+    rows,
+    secretsExposed: false,
+    status: currentPath.found && currentPath.value ? "PASS" : "ERROR",
+    variableName: PROJECT_ASSET_STORAGE_PATH_ENV_KEY,
+  };
 }
 
 function databaseConfigStatus(env = process.env) {
@@ -1640,6 +1721,14 @@ class ApiRuntimeDataSource {
     return session;
   }
 
+  async requireAdminSession() {
+    const session = await this.currentSessionForRoute();
+    if (!session.isAdmin || !session.userKey) {
+      throw new Error("Admin role required to read Infrastructure status.");
+    }
+    return session;
+  }
+
   ownerConnectionSummary() {
     const providerContract = this.providerContract();
     const authStatus = this.authStatus();
@@ -1696,10 +1785,28 @@ class ApiRuntimeDataSource {
         id: "dev-export-plan",
         stage: "DEV",
         operation: "Export",
-        safetyDiagnostic: "Read-only export planning only; no project records or storage objects are changed.",
+        safetyDiagnostic: "Read-only export planning only; no project records, asset references, or storage objects are changed.",
         safetyStatus: "PASS",
         status: "PLAN",
-        message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage.",
+        message: "Plan a read-only DEV export through Local API from Local DB/SQLite metadata, asset references, and configured project asset storage object keys.",
+      },
+      {
+        id: "ist-import-plan",
+        stage: "IST",
+        operation: "Import",
+        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing IST project must fail visibly before any write.",
+        safetyStatus: "FAIL",
+        status: "PLAN",
+        message: "Plan DEV to IST promotion through reviewed server-side tooling; no browser import execution.",
+      },
+      {
+        id: "ist-validate-plan",
+        stage: "IST",
+        operation: "Validate",
+        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying IST.",
+        safetyStatus: "PASS",
+        status: "PLAN",
+        message: "Plan validation of IST project metadata, asset references, and project asset storage objects before UAT promotion.",
       },
       {
         id: "uat-import-plan",
@@ -1708,7 +1815,7 @@ class ApiRuntimeDataSource {
         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing UAT project must fail visibly before any write.",
         safetyStatus: "FAIL",
         status: "PLAN",
-        message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution.",
+        message: "Plan IST to UAT promotion through reviewed server-side tooling; no browser import execution.",
       },
       {
         id: "uat-validate-plan",
@@ -1717,7 +1824,7 @@ class ApiRuntimeDataSource {
         safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying UAT.",
         safetyStatus: "PASS",
         status: "PLAN",
-        message: "Plan validation of imported UAT metadata and storage references before any PROD promotion.",
+        message: "Plan validation of UAT project metadata, asset references, and project asset storage objects before any PROD promotion.",
       },
       {
         id: "prod-import-plan",
@@ -1726,7 +1833,7 @@ class ApiRuntimeDataSource {
         safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing PROD project must fail visibly before any write.",
         safetyStatus: "FAIL",
         status: "PLAN",
-        message: "Plan a PROD import only after UAT validation evidence is reviewed.",
+        message: "Plan a PROD import of project metadata, asset references, and project asset storage objects only after UAT validation evidence is reviewed.",
       },
       {
         id: "prod-validate-plan",
@@ -1744,9 +1851,10 @@ class ApiRuntimeDataSource {
       exportImportRuntime: "reviewed server-side tooling only",
       importOverwriteAllowed: false,
       importOverwritePolicy: "fail-visible-until-explicit-confirmation",
-      message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
+      message: "Project promotion foundation is planning-only for DEV, IST, UAT, and PROD.",
       ownerOnly: true,
       overwriteConfirmationImplemented: false,
+      promotionScope: "project metadata, asset references, and project asset storage objects",
       safetyMessage: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists.",
       secretEditingAllowed: false,
       status: "PASS",
@@ -1821,6 +1929,11 @@ LIMIT 1;
       status: "PASS",
       storageStatus: this.ownerStorageStatus(),
     };
+  }
+
+  async adminInfrastructureStoragePathStatus() {
+    await this.requireAdminSession();
+    return projectAssetStoragePathStatus();
   }
 
   projectWorkspaceProjectsForRoute() {
@@ -3404,6 +3517,11 @@ export function createLocalApiRouter() {
       if (parts[1] === "admin" && parts[2] === "platform-settings" && request.method === "POST" && parts[3] === "banner") {
         const body = await readRequestJson(request);
         ok(response, await dataSource.updateAdminPlatformBanner(body));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "infrastructure" && request.method === "GET" && parts[3] === "storage-path-status") {
+        ok(response, await dataSource.adminInfrastructureStoragePathStatus());
         return true;
       }
 

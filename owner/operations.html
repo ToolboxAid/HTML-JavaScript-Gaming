@@ -36,7 +36,8 @@
                                     <button class="btn btn--compact" type="button" data-owner-operation-action="reseed-dev">Reseed DEV</button>
                                     <button class="btn btn--compact" type="button" data-owner-operation-action="restore-from-backup">Restore from Backup</button>
                                     <button class="btn btn--compact" type="button" data-owner-operation-action="run-migration">Run Migration</button>
-                                    <button class="btn btn--compact" type="button" data-owner-operation-action="promote-dev-to-uat">Promote DEV to UAT</button>
+                                    <button class="btn btn--compact" type="button" data-owner-operation-action="promote-dev-to-ist">Promote DEV to IST</button>
+                                    <button class="btn btn--compact" type="button" data-owner-operation-action="promote-ist-to-uat">Promote IST to UAT</button>
                                     <button class="btn btn--compact" type="button" data-owner-operation-action="promote-uat-to-prod">Promote UAT to PROD</button>
                                 </div>
                             </details>
@@ -49,6 +50,7 @@
                             <h2 id="owner-operations-title">Connection Summary</h2>
                         </div>
                         <p>Connection details are summarized without exposing secrets. Environment switching remains manual through configuration changes and server restart.</p>
+                        <p>Promotion planning moves project metadata, asset references, and project asset storage objects between environment lanes through reviewed server-side execution.</p>
                         <div class="table-wrapper">
                             <table class="data-table" aria-label="Configured connection summary">
                                 <caption>Configured Connections</caption>

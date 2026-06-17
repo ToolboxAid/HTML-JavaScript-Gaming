@@ -77,14 +77,14 @@
                                     <tr>
                                         <th scope="col">Lane</th>
                                         <th scope="col">Path</th>
-                                        <th scope="col">.env variable</th>
+                                        <th scope="col">Current .env match</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr><td>DEV</td><td>/dev/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
-                                    <tr><td>IST</td><td>/ist/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
-                                    <tr><td>UAT</td><td>/uat/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
-                                    <tr><td>PROD</td><td>/prod/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
+                                <tbody data-admin-storage-path-status-rows>
+                                    <tr><td>DEV</td><td>/dev/projects/</td><td>Loading</td></tr>
+                                    <tr><td>IST</td><td>/ist/projects/</td><td>Loading</td></tr>
+                                    <tr><td>UAT</td><td>/uat/projects/</td><td>Loading</td></tr>
+                                    <tr><td>PROD</td><td>/prod/projects/</td><td>Loading</td></tr>
                                 </tbody>
                             </table>
                         </div>
@@ -120,6 +120,7 @@
     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
     <script src="assets/theme-v2/js/image-zoom-dialog.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/admin-infrastructure.js"></script>
 </body>
 
 </html>

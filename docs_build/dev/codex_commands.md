@@ -2117,3 +2117,36 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26167_184-delete-sqlite-local-db-runtime-debt_delta.zip`
+
+
+## PR_26168_220-promotion-lanes-storage-path-status
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Removed `Promote DEV to UAT` from Owner Operations HTML and Local API actions.
+- Added `Promote DEV to IST` and `Promote IST to UAT` as manual-only Owner Operations actions.
+- Added Owner Operations copy explaining promotion of project metadata, asset references, and project asset storage objects between lanes.
+- Added read-only Admin Infrastructure storage path status rendering through external Theme V2 JavaScript and a Local API route.
+- Kept Admin Infrastructure path rows to lane/path/status values only, with `GAMEFOUNDRY_ASSET_STORAGE_PATH` identified in section copy.
+
+Validation:
+- `node --check assets/theme-v2/js/admin-infrastructure.js`
+- `node --check assets/theme-v2/js/owner-operations.js`
+- `node --check src/engine/api/admin-infrastructure-api-client.js`
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Admin/Owner static contract check for no inline HTML script/style/event handlers, v1-3-only infrastructure image, storage path copy, and `.env` path status handling.
+- `git diff --check`
+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure|Infrastructure storage path status reports missing env path as ERROR|Owner Operations exposes owner-only connection validation and manual operation actions"`
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_220-promotion-lanes-storage-path-status.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_220-promotion-lanes-storage-path-status_delta.zip`
