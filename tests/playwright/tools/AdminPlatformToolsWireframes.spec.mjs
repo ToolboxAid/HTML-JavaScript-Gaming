@@ -6,12 +6,20 @@ import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../..
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
 
 const ADMIN_TOOL_MENU_LABELS = [
+  "Infrastructure",
   "Platform Settings",
   "Tool Votes",
   "Users",
 ];
 
 const ADMIN_WIREFRAME_PAGES = [
+  {
+    heading: "Infrastructure",
+    infrastructure: true,
+    path: "/admin/infrastructure.html",
+    slug: "infrastructure",
+    statusText: "Infrastructure status remains a read-only Admin reference.",
+  },
   { heading: "Users", path: "/admin/users.html", slug: "users", statusText: "Read-only Admin view." },
   { heading: "Platform Settings", liveSettings: true, path: "/admin/platform-settings.html", slug: "platform-settings" },
 ];
@@ -76,6 +84,7 @@ async function startAdminPage(page, pathName) {
       body: JSON.stringify({
         data: {
           adminMainItems: [
+            { label: "Infrastructure", path: "admin/infrastructure.html", route: "admin-infrastructure" },
             { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
             { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
             { label: "Users", path: "admin/users.html", route: "admin-users" },
@@ -258,6 +267,7 @@ async function expectAdminHeaderMenu(page) {
   const ownerSubmenu = page.locator("nav.nav-links > .nav-item[data-owner-menu] > .sub-menu");
   await expect(ownerSubmenu.locator("a")).toHaveText(["DB Viewer", "Design System", "Grouping Colors", "Notes", "Operations"]);
   const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
+  await expect(adminSubmenu.locator(":scope > a[data-route='admin-infrastructure']")).toHaveText("Infrastructure");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-platform-settings']")).toHaveText("Platform Settings");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-tool-votes']")).toHaveText("Tool Votes");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-users']")).toHaveText("Users");
@@ -305,6 +315,17 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
           saveInControls: true,
           toneInControls: true,
         });
+      } else if (adminPage.infrastructure) {
+        await expect(page.locator("img[src*='GFS-Infrastructure%20v1-3.png'], img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(1);
+        await expect(page.locator("body")).not.toContainText("GFS-Infrastructure v1-2.png");
+        await expect(page.locator("body")).toContainText("/dev/projects/");
+        await expect(page.locator("body")).toContainText("/ist/projects/");
+        await expect(page.locator("body")).toContainText("/uat/projects/");
+        await expect(page.locator("body")).toContainText("/prod/projects/");
+        await expect(page.getByRole("link", { name: "Database Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
+        await expect(page.getByRole("link", { name: "Storage Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
+        await expect(page.getByRole("link", { name: "Owner Operations" })).toHaveAttribute("href", /owner\/operations\.html$/);
+        await expect(page.getByRole("link", { name: "Promotion Foundation" })).toHaveAttribute("href", /owner\/operations\.html$/);
       } else {
         await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
         await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
@@ -730,16 +751,60 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     browserExecutionAllowed: false,
     destructiveOperationsAllowed: false,
     exportImportRuntime: "reviewed server-side tooling only",
+    importOverwriteAllowed: false,
+    importOverwritePolicy: "fail-visible-until-explicit-confirmation",
     message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
     ownerOnly: true,
+    overwriteConfirmationImplemented: false,
+    safetyMessage: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists.",
     secretEditingAllowed: false,
     status: "PASS",
     steps: [
-      { id: "dev-export-plan", stage: "DEV", operation: "Export", status: "PLAN", message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage." },
-      { id: "uat-import-plan", stage: "UAT", operation: "Import", status: "PLAN", message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution." },
-      { id: "uat-validate-plan", stage: "UAT", operation: "Validate", status: "PLAN", message: "Plan validation of imported UAT metadata and storage references before any PROD promotion." },
-      { id: "prod-import-plan", stage: "PROD", operation: "Import", status: "PLAN", message: "Plan a PROD import only after UAT validation evidence is reviewed." },
-      { id: "prod-validate-plan", stage: "PROD", operation: "Validate", status: "PLAN", message: "Plan runtime-safe PROD validation without destructive browser operations." },
+      {
+        id: "dev-export-plan",
+        stage: "DEV",
+        operation: "Export",
+        safetyDiagnostic: "Read-only export planning only; no project records or storage objects are changed.",
+        safetyStatus: "PASS",
+        status: "PLAN",
+        message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage.",
+      },
+      {
+        id: "uat-import-plan",
+        stage: "UAT",
+        operation: "Import",
+        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing UAT project must fail visibly before any write.",
+        safetyStatus: "FAIL",
+        status: "PLAN",
+        message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution.",
+      },
+      {
+        id: "uat-validate-plan",
+        stage: "UAT",
+        operation: "Validate",
+        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying UAT.",
+        safetyStatus: "PASS",
+        status: "PLAN",
+        message: "Plan validation of imported UAT metadata and storage references before any PROD promotion.",
+      },
+      {
+        id: "prod-import-plan",
+        stage: "PROD",
+        operation: "Import",
+        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing PROD project must fail visibly before any write.",
+        safetyStatus: "FAIL",
+        status: "PLAN",
+        message: "Plan a PROD import only after UAT validation evidence is reviewed.",
+      },
+      {
+        id: "prod-validate-plan",
+        stage: "PROD",
+        operation: "Validate",
+        safetyDiagnostic: "Validation planning is read-only and reports PROD readiness without modifying project data.",
+        safetyStatus: "PASS",
+        status: "PLAN",
+        message: "Plan runtime-safe PROD validation without destructive browser operations.",
+      },
     ],
   };
   try {
@@ -970,6 +1035,10 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Owner-only");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("browser execution disabled");
     await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("destructive operations disabled");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("PASS: Read-only export planning only");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("FAIL: Overwrite confirmation is not implemented");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("must fail visibly before any write");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("PASS: Validation planning is read-only");
     await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Owner Operations loaded.");
 
     await page.locator("[data-owner-operation-validate]").click();

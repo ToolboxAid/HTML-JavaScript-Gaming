@@ -3,10 +3,12 @@ import {
   GAME_WORKSPACE_GAME_PURPOSES,
   GAME_WORKSPACE_GAME_STATUSES,
   createGameWorkspaceApiRepository,
+  readProjectWorkspaceProjectRecords,
 } from "./game-workspace-api-client.js";
 import { getSessionCurrent } from "../../src/engine/api/session-api-client.js";
 
 const repository = createGameWorkspaceApiRepository();
+let projectRecordContract = null;
 
 const elements = {
   activeGameName: document.querySelector("[data-active-game-name]"),
@@ -24,6 +26,8 @@ const elements = {
   gameList: document.querySelector("[data-game-list]"),
   gameProgress: document.querySelector("[data-game-progress]"),
   gameJourneyLink: document.querySelector("[data-game-journey-link]"),
+  projectRecordStatus: document.querySelector("[data-project-record-status]"),
+  projectRecordsTable: document.querySelector("[data-project-records-table]"),
   purposeInput: document.querySelector("[data-game-purpose-input]"),
   gameStatus: document.querySelector("[data-game-status]"),
   gameStatusInput: document.querySelector("[data-game-status-input]"),
@@ -123,6 +127,47 @@ function currentSessionUserKey() {
   }
 }
 
+function projectRecordsSaveAllowed() {
+  return Boolean(currentSessionUserKey());
+}
+
+function setProjectRecordStatus(message) {
+  setText(elements.projectRecordStatus, message);
+}
+
+function refreshSaveControls() {
+  const saveAllowed = projectRecordsSaveAllowed();
+  [elements.nameInput, elements.purposeInput, elements.gameStatusInput, elements.currentUserRoleInput].forEach((control) => {
+    if (control) {
+      control.disabled = !saveAllowed;
+    }
+  });
+  const submitButton = elements.form?.querySelector("button[type='submit']");
+  if (submitButton) {
+    submitButton.disabled = !saveAllowed;
+  }
+  if (elements.deleteOpenGame) {
+    elements.deleteOpenGame.disabled = !saveAllowed;
+  }
+  if (!saveAllowed) {
+    const currentStatus = String(elements.statusLog?.textContent || "");
+    if (!/Blocked|failed|malformed|Restore|Sign in required|unavailable/i.test(currentStatus)) {
+      setStatusLog("Guest browsing enabled; sign in required to save Project Workspace project records through Local API.");
+    }
+  }
+}
+
+function ensureProjectRecordsSaveAllowed(action) {
+  if (projectRecordsSaveAllowed()) {
+    return true;
+  }
+  const message = `Sign in required to ${action} Project Workspace project records through Local API.`;
+  setStatusLog(message);
+  setProjectRecordStatus(message);
+  refreshSaveControls();
+  return false;
+}
+
 function populateSelect(select, options) {
   if (!select) {
     return;
@@ -162,6 +207,54 @@ function createGameButton(game, isActive) {
   }
   button.textContent = isActive ? `Open ${game.name} (Active)` : `Open ${game.name}`;
   return button;
+}
+
+function renderProjectRecords() {
+  if (!elements.projectRecordsTable) {
+    return;
+  }
+
+  try {
+    projectRecordContract = readProjectWorkspaceProjectRecords();
+  } catch (error) {
+    projectRecordContract = null;
+    setProjectRecordStatus(error instanceof Error ? error.message : "Project Workspace project records are unavailable.");
+    return;
+  }
+
+  const records = Array.isArray(projectRecordContract.records) ? projectRecordContract.records : [];
+  const source = projectRecordContract.serviceContract || "Web UI -> Local API/Service Contract -> Local DB";
+  const saveMode = projectRecordsSaveAllowed()
+    ? "signed-in saves enabled"
+    : "guest browsing enabled; guest saving blocked";
+  setProjectRecordStatus(`${projectRecordContract.terminology || "Project Workspace"} records loaded from ${projectRecordContract.api || "Local API"} to ${projectRecordContract.database || "Local DB"}/SQLite; API owns authoritative keys; ${saveMode}.`);
+
+  elements.projectRecordsTable.replaceChildren();
+  if (!records.length) {
+    const row = document.createElement("tr");
+    ["No records", "No Project Workspace records", "Not started", source].forEach((value) => {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.append(cell);
+    });
+    elements.projectRecordsTable.append(row);
+    return;
+  }
+
+  records.forEach((record) => {
+    const row = document.createElement("tr");
+    [
+      record.projectKey || "missing key",
+      record.name || "Untitled project",
+      record.status || "No status",
+      record.source || source,
+    ].forEach((value) => {
+      const cell = document.createElement("td");
+      cell.textContent = value;
+      row.append(cell);
+    });
+    elements.projectRecordsTable.append(row);
+  });
 }
 
 function renderGameList() {
@@ -325,14 +418,18 @@ function renderWorkspace() {
   renderMembersTable(activeGame);
   renderTableCounts();
   renderChecklist(progress);
+  renderProjectRecords();
+  refreshSaveControls();
 }
 
 elements.form?.addEventListener("submit", (event) => {
   event.preventDefault();
+  if (!ensureProjectRecordsSaveAllowed("create")) {
+    return;
+  }
   const activeGame = normalizeActiveGame(repository.getActiveGame());
   const game = repository.createGame({
     name: elements.nameInput?.value,
-    ownerKey: currentGameUserKey(activeGame),
     purpose: elements.purposeInput?.value,
     status: elements.gameStatusInput?.value,
   });
@@ -369,6 +466,9 @@ elements.gameList?.addEventListener("click", (event) => {
 });
 
 elements.deleteOpenGame?.addEventListener("click", () => {
+  if (!ensureProjectRecordsSaveAllowed("delete")) {
+    return;
+  }
   const activeGame = normalizeActiveGame(repository.getActiveGame(), "Delete active game");
 
   if (!activeGame) {
@@ -383,6 +483,9 @@ elements.deleteOpenGame?.addEventListener("click", () => {
 });
 
 elements.purposeInput?.addEventListener("change", () => {
+  if (!ensureProjectRecordsSaveAllowed("update")) {
+    return;
+  }
   const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update game purpose");
   if (!activeGame) {
     return;
@@ -394,6 +497,9 @@ elements.purposeInput?.addEventListener("change", () => {
 });
 
 elements.gameStatusInput?.addEventListener("change", () => {
+  if (!ensureProjectRecordsSaveAllowed("update")) {
+    return;
+  }
   const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update game status");
   if (!activeGame) {
     return;
@@ -405,6 +511,9 @@ elements.gameStatusInput?.addEventListener("change", () => {
 });
 
 elements.currentUserRoleInput?.addEventListener("change", () => {
+  if (!ensureProjectRecordsSaveAllowed("update")) {
+    return;
+  }
   const activeGame = normalizeActiveGame(repository.getActiveGame(), "Update current user role");
   if (!activeGame) {
     return;
@@ -418,5 +527,4 @@ elements.currentUserRoleInput?.addEventListener("change", () => {
 populateSelect(elements.purposeInput, GAME_WORKSPACE_GAME_PURPOSES);
 populateSelect(elements.gameStatusInput, GAME_WORKSPACE_GAME_STATUSES);
 populateSelect(elements.currentUserRoleInput, GAME_WORKSPACE_MEMBER_ROLES);
-reportRepositoryError(repository.resetGameData(), "Reset Game Workspace data");
 renderWorkspace();

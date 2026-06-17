@@ -32,7 +32,6 @@ import { getSessionCurrent } from "../src/engine/api/session-api-client.js";
     const launchStatus = document.querySelector("[data-toolbox-launch-status]");
     const searchParams = new URLSearchParams(window.location.search);
     const gameWorkspaceRepository = createGameWorkspaceApiRepository();
-    gameWorkspaceRepository.resetGameData();
     const urlMemberRole = searchParams.get("memberRole");
     const defaultGameMemberRole = "Owner";
     const gameMemberRole = GAME_WORKSPACE_MEMBER_ROLES.includes(urlMemberRole)

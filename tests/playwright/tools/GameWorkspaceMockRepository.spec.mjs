@@ -1,6 +1,7 @@
 ﻿import { expect, test } from "@playwright/test";
 import http from "node:http";
 import process from "node:process";
+import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store.js";
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
@@ -120,7 +121,7 @@ test.afterAll(async () => {
   });
 });
 
-async function openRepoPage(page, pathName) {
+async function openRepoPage(page, pathName, options = {}) {
   const server = await startRepoServer();
   const failedRequests = [];
   const pageErrors = [];
@@ -143,9 +144,64 @@ async function openRepoPage(page, pathName) {
     failedRequests.push(`FAILED ${request.url()}`);
   });
 
+  if (options.session) {
+    const userKey = options.session.userKey || MOCK_DB_KEYS.users.user1;
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            authenticated: true,
+            displayName: options.session.displayName || "User 1",
+            roleSlugs: options.session.roleSlugs || ["creator"],
+            userKey,
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.request.post(`${server.baseUrl}/api/session/user`, {
+      data: { userKey },
+    });
+  }
+
+  if (pathName.includes("/toolbox/game-workspace/") || pathName.includes("/toolbox/project-workspace/")) {
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: { banner: { active: false, message: "", tone: "info" } },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            activeTools: [],
+            readinessByStatus: {},
+            tools: [],
+            toolboxContract: {},
+          },
+          ok: true,
+        }),
+      });
+    });
+  }
+
   await workspaceV2CoverageReporter.start(page);
   await page.goto(`${server.baseUrl}${pathName}`, { waitUntil: "networkidle" });
   return { failedRequests, pageErrors, consoleErrors, server };
+}
+
+function creatorSession() {
+  return {
+    displayName: "User 1",
+    roleSlugs: ["creator"],
+    userKey: MOCK_DB_KEYS.users.user1,
+  };
 }
 
 async function expectNoPageFailures(failures) {
@@ -170,13 +226,19 @@ test("Deprecated project workspace route points creators to Game Workspace", asy
 });
 
 test("Game Workspace creates, opens, and deletes mock games", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
 
   try {
     await expect(page.locator(".tool-workspace")).toBeVisible();
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
     await expect(page.getByRole("button", { name: "Create Game" })).toHaveClass("btn");
+    await expect(page.getByRole("button", { name: "Create Game" })).toBeEnabled();
     await expect(page.getByRole("button", { name: "Delete Open Game" })).toHaveClass("btn");
+    await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeEnabled();
+    await expect(page.locator("[data-project-record-status]")).toContainText("Project Workspace records loaded from Local API to Local DB/SQLite");
+    await expect(page.locator("[data-project-record-status]")).toContainText("API owns authoritative keys");
+    await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
+    await expect(page.locator("[data-project-records-table]")).toContainText("Local DB");
     await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
     await expect(page.locator("[data-active-game-purpose]")).toHaveText("Game");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Owner");
@@ -193,6 +255,7 @@ test("Game Workspace creates, opens, and deletes mock games", async ({ page }) =
     await page.getByRole("button", { name: "Create Game" }).click();
     await expect(page.locator("[data-active-game-name]")).toHaveText("Launch Test Game");
     await expect(page.locator("[data-game-list]")).toContainText("Launch Test Game");
+    await expect(page.locator("[data-project-records-table]")).toContainText("Launch Test Game");
     await expect(page.locator("[data-game-row='launch-test-game-1']").getByRole("button", { name: "Open Launch Test Game (Active)" })).toHaveClass(/primary/);
     await expect(page.locator("[data-game-workspace-log]")).toHaveText("Created and opened Launch Test Game.");
 
@@ -209,6 +272,33 @@ test("Game Workspace creates, opens, and deletes mock games", async ({ page }) =
     await expect(page.locator("[data-active-game-name]")).not.toHaveText("Launch Test Game");
     await expect(page.locator("[data-game-list]")).not.toContainText("Launch Test Game");
     await expect(page.locator("[data-game-workspace-log]")).toHaveText("Deleted Launch Test Game.");
+
+    await expectNoPageFailures(failures);
+  } finally {
+    await failures.server.close();
+  }
+});
+
+test("Project Workspace preserves guest browsing and blocks guest saves", async ({ page }) => {
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+
+  try {
+    await expect(page.locator("[data-active-game-name]")).toHaveText("Demo Game");
+    await expect(page.locator("[data-game-list]")).toContainText("Gravity Demo");
+    await expect(page.locator("[data-project-record-status]")).toContainText("guest browsing enabled; guest saving blocked");
+    await expect(page.locator("[data-project-record-status]")).toContainText("Local API to Local DB/SQLite");
+    await expect(page.locator("[data-project-records-table]")).toContainText("Demo Game");
+    await expect(page.locator("[data-project-records-table]")).toContainText("Local DB");
+    await expect(page.getByRole("button", { name: "Create Game" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Delete Open Game" })).toBeDisabled();
+    await expect(page.getByLabel("Game Name")).toBeDisabled();
+    await expect(page.getByLabel("Game Purpose")).toBeDisabled();
+    await expect(page.getByLabel("Game Status")).toBeDisabled();
+    await expect(page.getByLabel("Current User Role")).toBeDisabled();
+
+    await page.getByRole("button", { name: "Open Gravity Demo" }).click();
+    await expect(page.locator("[data-active-game-name]")).toHaveText("Gravity Demo");
+    await expect(page.locator("[data-game-workspace-log]")).toHaveText("Guest browsing enabled; sign in required to save Project Workspace project records through Local API.");
 
     await expectNoPageFailures(failures);
   } finally {
@@ -264,9 +354,7 @@ test("Game Workspace reports malformed active-game payloads without throwing", a
     await expect(page.locator("[data-active-game-name]")).toHaveText("No game open");
     await expect(page.locator("[data-current-user-role]")).toHaveText("Viewer");
     await expect(page.locator("[data-game-workspace-log]")).toContainText("Active game response is malformed.");
-
-    await page.getByLabel("Game Purpose").selectOption("Learning Game");
-    await expect(page.locator("[data-game-workspace-log]")).toContainText("Update game purpose response is malformed.");
+    await expect(page.getByLabel("Game Purpose")).toBeDisabled();
 
     await expectNoPageFailures(failures);
   } finally {
@@ -275,7 +363,7 @@ test("Game Workspace reports malformed active-game payloads without throwing", a
 });
 
 test("Game Workspace displays and edits game purpose and member role", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
 
   try {
     await expect(page.locator("#gamePurposeInput option")).toHaveText([
@@ -334,7 +422,7 @@ test("Game Workspace displays and edits game purpose and member role", async ({ 
 });
 
 test("Game Workspace progress panels update from mock game state", async ({ page }) => {
-  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html");
+  const failures = await openRepoPage(page, "/toolbox/game-workspace/index.html", { session: creatorSession() });
 
   try {
     await expect(page.locator("[data-game-status]")).toHaveText("Under Construction");

@@ -176,6 +176,7 @@ const TOOLBOX_ROLE_FOCUS_TOOLS = Object.freeze({
 const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Analytics", path: "admin/analytics.html", route: "admin-analytics" }),
   Object.freeze({ label: "Controls", path: "admin/controls.html", route: "admin-controls" }),
+  Object.freeze({ label: "Infrastructure", path: "admin/infrastructure.html", route: "admin-infrastructure" }),
   Object.freeze({ label: "Moderation", path: "admin/moderation.html", route: "admin-moderation" }),
   Object.freeze({ label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" }),
   Object.freeze({ label: "Ratings", path: "admin/ratings.html", route: "admin-ratings" }),
@@ -701,8 +702,19 @@ function repositoryMethodError(message, statusCode = 502) {
 }
 
 function repositoryMethodRequiresPersistence(methodName) {
-  return !/^(get|list|read)/.test(String(methodName || ""));
+  return !/^(get|list|open|read)/.test(String(methodName || ""));
 }
+
+const GAME_WORKSPACE_SAVE_METHODS = new Set([
+  "clearTestData",
+  "createGame",
+  "deleteGame",
+  "resetGameData",
+  "seedDemoGame",
+  "updateGameMemberRole",
+  "updateGamePurpose",
+  "updateGameStatus",
+]);
 
 function assertRepositoryMethodResult(repositoryId, methodName, result) {
   if (result === undefined) {
@@ -1010,6 +1022,19 @@ function gameWorkspaceTables(repository) {
       recommendedNextTool: progress.recommendedNextTool,
     }] : [],
   });
+}
+
+function gameWorkspaceProjectRecords(repository) {
+  const tables = repository.getTables();
+  return (tables.games || []).map((project) => ({
+    apiOwnedKey: true,
+    localRecordId: project.id,
+    name: project.name,
+    ownerKey: project.ownerKey,
+    projectKey: gameWorkspaceGameKey(project.id),
+    source: "Local DB",
+    status: project.status,
+  }));
 }
 
 function gameDesignTables(repository) {
@@ -1464,7 +1489,14 @@ class ApiRuntimeDataSource {
   }
 
   async persistGameWorkspaceProviderState(action) {
-    return this.persistSupabaseGameWorkspaceSnapshot(action);
+    return {
+      action,
+      database: "Local DB",
+      databaseEngine: "SQLite",
+      providerId: "local-api-project-workspace",
+      serviceContract: "Web UI -> Local API/Service Contract -> Local DB",
+      status: "PASS",
+    };
   }
 
   async persistAssetProviderState(action) {
@@ -1664,6 +1696,8 @@ class ApiRuntimeDataSource {
         id: "dev-export-plan",
         stage: "DEV",
         operation: "Export",
+        safetyDiagnostic: "Read-only export planning only; no project records or storage objects are changed.",
+        safetyStatus: "PASS",
         status: "PLAN",
         message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage.",
       },
@@ -1671,6 +1705,8 @@ class ApiRuntimeDataSource {
         id: "uat-import-plan",
         stage: "UAT",
         operation: "Import",
+        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing UAT project must fail visibly before any write.",
+        safetyStatus: "FAIL",
         status: "PLAN",
         message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution.",
       },
@@ -1678,6 +1714,8 @@ class ApiRuntimeDataSource {
         id: "uat-validate-plan",
         stage: "UAT",
         operation: "Validate",
+        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying UAT.",
+        safetyStatus: "PASS",
         status: "PLAN",
         message: "Plan validation of imported UAT metadata and storage references before any PROD promotion.",
       },
@@ -1685,6 +1723,8 @@ class ApiRuntimeDataSource {
         id: "prod-import-plan",
         stage: "PROD",
         operation: "Import",
+        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing PROD project must fail visibly before any write.",
+        safetyStatus: "FAIL",
         status: "PLAN",
         message: "Plan a PROD import only after UAT validation evidence is reviewed.",
       },
@@ -1692,6 +1732,8 @@ class ApiRuntimeDataSource {
         id: "prod-validate-plan",
         stage: "PROD",
         operation: "Validate",
+        safetyDiagnostic: "Validation planning is read-only and reports PROD readiness without modifying project data.",
+        safetyStatus: "PASS",
         status: "PLAN",
         message: "Plan runtime-safe PROD validation without destructive browser operations.",
       },
@@ -1700,8 +1742,12 @@ class ApiRuntimeDataSource {
       browserExecutionAllowed: false,
       destructiveOperationsAllowed: false,
       exportImportRuntime: "reviewed server-side tooling only",
+      importOverwriteAllowed: false,
+      importOverwritePolicy: "fail-visible-until-explicit-confirmation",
       message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
       ownerOnly: true,
+      overwriteConfirmationImplemented: false,
+      safetyMessage: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists.",
       secretEditingAllowed: false,
       status: "PASS",
       steps,
@@ -1774,6 +1820,27 @@ LIMIT 1;
       secretEditingAllowed: false,
       status: "PASS",
       storageStatus: this.ownerStorageStatus(),
+    };
+  }
+
+  projectWorkspaceProjectsForRoute() {
+    const activeProject = this.gameWorkspaceRepository.getActiveGame();
+    const records = gameWorkspaceProjectRecords(this.gameWorkspaceRepository);
+    return {
+      api: "Local API",
+      apiOwnsAuthoritativeProjectKeys: true,
+      activeProjectKey: activeProject ? gameWorkspaceGameKey(activeProject.id) : "",
+      browserProductDataSsoT: false,
+      database: "Local DB",
+      databaseEngine: "SQLite",
+      guestBrowsingAllowed: true,
+      guestSavingAllowed: false,
+      pageLocalProductDataArrays: false,
+      recordCount: records.length,
+      records,
+      serviceContract: "Web UI -> Local API/Service Contract -> Local DB",
+      source: "Local API",
+      terminology: "Project Workspace",
     };
   }
 
@@ -3062,6 +3129,9 @@ LIMIT 1;
     if (typeof method !== "function") {
       throw new Error(`Server repository method ${methodName} is missing.`);
     }
+    if (repository === this.gameWorkspaceRepository && GAME_WORKSPACE_SAVE_METHODS.has(methodName) && !this.sessionUserKey) {
+      throw new Error("Sign in required to save Project Workspace project records through Local API.");
+    }
     this.cleared = false;
     if (repository === this.assetRepository && methodName === "makeReadyGameConfiguration") {
       if (this.assetReadyInitialized) {
@@ -3297,6 +3367,11 @@ export function createLocalApiRouter() {
 
       if (parts[1] === "product-data" && request.method === "GET" && parts[2] === "snapshot") {
         ok(response, await dataSource.snapshotForRoute());
+        return true;
+      }
+
+      if (parts[1] === "project-workspace" && request.method === "GET" && parts[2] === "projects") {
+        ok(response, dataSource.projectWorkspaceProjectsForRoute());
         return true;
       }
 

@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Infrastructure - Game Foundry Studio LLC</title>
+    <meta name="description" content="Admin infrastructure reference for project asset storage paths and owner operations status surfaces.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body class="meaning-molten-orange">
+    <div data-partial="header-nav"></div>
+    <main data-admin-only="true" data-admin-wireframe="infrastructure">
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Admin</div>
+                <h1>Infrastructure</h1>
+                <p class="lede">Review the current infrastructure reference, project storage paths, and linked operational status surfaces.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container container--tool-wide">
+                <div class="tool-workspace tool-workspace--wide">
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Admin</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Admin Tools</summary>
+                                <nav class="accordion-body content-stack" aria-label="Admin tool pages" data-admin-tool-menu>
+                                    <a class="btn btn--compact primary" aria-current="page" href="/admin/infrastructure.html">Infrastructure</a>
+                                    <a class="btn btn--compact" href="/admin/platform-settings.html">Platform Settings</a>
+                                    <a class="btn btn--compact" href="/admin/tool-votes.html">Tool Votes</a>
+                                    <a class="btn btn--compact" href="/admin/users.html">Users</a>
+                                </nav>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Storage Paths</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>/dev/projects/</p>
+                                    <p>/ist/projects/</p>
+                                    <p>/uat/projects/</p>
+                                    <p>/prod/projects/</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-infrastructure" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                    <section class="tool-center-panel content-stack" aria-labelledby="admin-infrastructure-title">
+                        <div>
+                            <div class="kicker">Reference</div>
+                            <h2 id="admin-infrastructure-title">Game Foundry Infrastructure</h2>
+                        </div>
+                        <figure class="content-stack">
+                            <img src="assets/GFS-Infrastructure v1-3.png" alt="Game Foundry Studio infrastructure diagram version 1-3">
+                            <figcaption>GFS-Infrastructure v1-3.png</figcaption>
+                        </figure>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="Project storage path reference">
+                                <caption>Project Asset Storage Paths</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Lane</th>
+                                        <th scope="col">Path</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr><td>DEV</td><td>/dev/projects/</td></tr>
+                                    <tr><td>IST</td><td>/ist/projects/</td></tr>
+                                    <tr><td>UAT</td><td>/uat/projects/</td></tr>
+                                    <tr><td>PROD</td><td>/prod/projects/</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Status Surfaces</summary>
+                                <div class="accordion-body content-stack">
+                                    <a class="btn btn--compact" href="/owner/operations.html">Database Status</a>
+                                    <a class="btn btn--compact" href="/owner/operations.html">Storage Status</a>
+                                    <a class="btn btn--compact" href="/owner/operations.html">Owner Operations</a>
+                                    <a class="btn btn--compact" href="/owner/operations.html">Promotion Foundation</a>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Guardrails</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Infrastructure status remains a read-only Admin reference.</p>
+                                    <p>Operational actions and connection validation stay on Owner Operations.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+</body>
+
+</html>
