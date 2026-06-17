@@ -146,6 +146,64 @@ class AdminOperationsController {
         this.resultRows.prepend(row);
     }
 
+    artifactForResult(result = {}) {
+        if (result.actionId === "export-project-package") {
+            return {
+                bytesBase64: result.package?.packageBytesBase64,
+                fileName: result.package?.filename,
+                missingMessage: "Export Project Package completed without downloadable .gfsp package bytes. Restore the Local API package response before retrying.",
+                mimeType: "application/octet-stream",
+            };
+        }
+        return null;
+    }
+
+    decodeBase64(base64Value) {
+        const binary = atob(base64Value);
+        const bytes = new Uint8Array(binary.length);
+        for (let index = 0; index < binary.length; index += 1) {
+            bytes[index] = binary.charCodeAt(index);
+        }
+        return bytes;
+    }
+
+    downloadArtifact(artifact) {
+        if (!artifact?.fileName || !artifact?.bytesBase64) {
+            throw new Error(artifact?.missingMessage || "Downloadable artifact bytes were not returned.");
+        }
+        const blob = new Blob([this.decodeBase64(artifact.bytesBase64)], { type: artifact.mimeType || "application/octet-stream" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.download = artifact.fileName;
+        link.href = url;
+        link.rel = "noopener";
+        document.body.append(link);
+        link.click();
+        link.remove();
+        window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    }
+
+    applyArtifactFeedback(result = {}) {
+        const artifact = this.artifactForResult(result);
+        if (!artifact || result.status !== "PASS" || result.executed !== true) {
+            return result;
+        }
+        try {
+            this.downloadArtifact(artifact);
+            return {
+                ...result,
+                message: `${result.message || "Admin operation completed."} Download started: ${artifact.fileName}.`,
+            };
+        } catch (error) {
+            return {
+                ...result,
+                executed: false,
+                message: error instanceof Error ? error.message : "Artifact download failed before it could start.",
+                status: "FAIL",
+            };
+        }
+    }
+
     async readFileAsBase64(file) {
         const bytes = new Uint8Array(await file.arrayBuffer());
         const chunkSize = 32768;
@@ -210,11 +268,19 @@ class AdminOperationsController {
         try {
             this.setStatus("SKIP", `Running ${action.label || action.id || "Admin Operation"} through the Local API.`);
             const options = await this.collectActionOptions(action);
-            const result = runAdminOperationAction(action.id, options);
+            const result = this.applyArtifactFeedback(runAdminOperationAction(action.id, options));
             this.appendResult(result);
             this.setStatus(result.status || "SKIP", result.message || "Admin operation returned no message.");
         } catch (error) {
-            this.setStatus("FAIL", error instanceof Error ? error.message : "Admin operation failed.");
+            const result = {
+                actionId: action.id,
+                actionLabel: action.label,
+                executed: false,
+                message: error instanceof Error ? error.message : "Admin operation failed.",
+                status: "FAIL",
+            };
+            this.appendResult(result);
+            this.setStatus(result.status, result.message);
         }
     }
 }

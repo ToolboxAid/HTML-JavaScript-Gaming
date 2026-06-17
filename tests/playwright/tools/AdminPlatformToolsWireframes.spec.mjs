@@ -1180,8 +1180,8 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
       id: "backup-recovery",
       label: "Backup & Recovery",
       actions: [
-        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup creates a safe Local API backup snapshot." },
-        { id: "restore-from-backup", label: "Restore From Backup", status: "WARN", diagnostic: "Restore From Backup validates backup JSON and is DEV-only.", confirmationMessage: "Restore From Backup requires explicit RESTORE confirmation.", confirmationPhrase: "RESTORE", confirmationRequired: true, requiresBackupFile: true, risky: true },
+        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup validates the configured Local DB connection, then runs server-side pg_dump --format=custom into GAMEFOUNDRY_DB_BACKUP_DIR." },
+        { id: "restore-from-backup", label: "Restore From Backup", status: "WARN", diagnostic: "Restore From Backup remains scaffold-only until server-side pg_restore safety is approved.", confirmationMessage: "Restore From Backup is scaffold-only until server-side pg_restore safety is approved.", confirmationPhrase: "RESTORE", confirmationRequired: true, requiresBackupFile: true, risky: true },
       ],
     },
     {
@@ -1200,8 +1200,8 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
     "export-project-package": "Export Project Package generated DemoGame-26168-001.gfsp with 3 required file(s) and 0 asset reference(s); export validation PASS.",
     "validate-project-package": "Validate Project Package passed integrity, required file, schema, compatibility, and asset reference checks. No import performed.",
     "import-project-package": "Import Project Package replaced existing project Demo Game after explicit REPLACE confirmation.",
-    "create-backup": "Create Backup generated gamefoundry-local-api-backup.json with 12 table snapshot(s). Secret values were not included.",
-    "restore-from-backup": "Restore From Backup applied selected backup in DEV after explicit RESTORE confirmation.",
+    "create-backup": "Create Backup wrote gamefoundry-dev-db-26168-001.dump for DEV with pg_dump custom format at 2026-06-17T16:00:00.000Z; size 2048 bytes.",
+    "restore-from-backup": "Restore From Backup is scaffold-only. Server-side pg_restore safety, conflict validation, and explicit restore approval must be implemented before restore can run.",
     "run-migration": "Run Migration is not implemented in Admin Operations. Run Migration is risky and must require explicit confirmation before migration execution is implemented.",
     "reseed-dev": "Reseed DEV is not implemented in Admin Operations. Reseed DEV is destructive and is only available when the configured project storage lane resolves to DEV.",
   };
@@ -1287,8 +1287,8 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
         },
         "create-backup": { executed: true, status: "PASS" },
         "restore-from-backup": {
-          executed: body.backupBytesBase64 && body.restoreConfirmed === true && body.confirmationPhrase === "RESTORE",
-          status: body.backupBytesBase64 && body.restoreConfirmed === true && body.confirmationPhrase === "RESTORE" ? "PASS" : "FAIL",
+          executed: false,
+          status: "SKIP",
         },
       };
       const packageResult = packageMessages[body.actionId];
@@ -1298,9 +1298,19 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
           data: {
             actionId: body.actionId,
             actionLabel,
+            backup: body.actionId === "create-backup" ? {
+              createdAt: "2026-06-17T16:00:00.000Z",
+              fileName: "gamefoundry-dev-db-26168-001.dump",
+              format: "custom",
+              sizeBytes: 2048,
+            } : undefined,
             executed: packageResult ? packageResult.executed : body.actionId === "validate-current-connection" || body.actionId === "database-connectivity-test",
             manualOnly: !packageResult && body.actionId !== "validate-current-connection" && body.actionId !== "database-connectivity-test",
             message: liveMessages[body.actionId] || actionMessages[body.actionId] || `${actionLabel} is not implemented in Admin Operations.`,
+            package: body.actionId === "export-project-package" ? {
+              filename: "DemoGame-26168-001.gfsp",
+              packageBytesBase64: Buffer.from("fake-gfsp-package").toString("base64"),
+            } : undefined,
             status: packageResult?.status || (liveMessages[body.actionId] ? "PASS" : "SKIP"),
           },
           ok: true,
@@ -1354,8 +1364,14 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
     await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-secret-key");
     await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-access-key");
 
+    const exportDownloadPromise = page.waitForEvent("download");
     await page.locator("[data-admin-operation-action='export-project-package']").click();
+    const exportDownload = await exportDownloadPromise;
+    expect(exportDownload.suggestedFilename()).toBe("DemoGame-26168-001.gfsp");
     await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Export Project Package generated DemoGame-26168-001.gfsp");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Export Project Package");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("yes");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Download started: DemoGame-26168-001.gfsp.");
     await page.locator("[data-admin-operation-package-file='validate-project-package']").setInputFiles({
       buffer: Buffer.from("fake-gfsp-package"),
       mimeType: "application/octet-stream",
@@ -1374,7 +1390,10 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
     await page.locator("[data-admin-operation-action='import-project-package']").click();
     await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Import Project Package replaced existing project Demo Game after explicit REPLACE confirmation.");
     await page.locator("[data-admin-operation-action='create-backup']").click();
-    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Create Backup generated gamefoundry-local-api-backup.json");
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Create Backup wrote gamefoundry-dev-db-26168-001.dump for DEV");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Create Backup");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("yes");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("size 2048 bytes.");
     await page.locator("[data-admin-operation-backup-file='restore-from-backup']").setInputFiles({
       buffer: Buffer.from("{\"backupType\":\"Game Foundry Studio Local API Backup\"}"),
       mimeType: "application/json",
@@ -1383,7 +1402,7 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
     await page.locator("[data-admin-operation-confirmation='restore-from-backup']").check();
     await page.locator("[data-admin-operation-confirmation-phrase='restore-from-backup']").fill("RESTORE");
     await page.locator("[data-admin-operation-action='restore-from-backup']").click();
-    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Restore From Backup applied selected backup in DEV after explicit RESTORE confirmation.");
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("SKIP: Restore From Backup is scaffold-only.");
     await page.locator("[data-admin-operation-action='validate-current-connection']").click();
     await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Current configured connections validated.");
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Validate Current Connection");
@@ -1415,11 +1434,122 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
       overwriteConfirmed: true,
       packageFileName: "DemoGame-26168-001.gfsp",
     }));
-    expect(adminActionPosts.find((post) => post.actionId === "restore-from-backup")).toEqual(expect.objectContaining({
-      backupFileName: "gamefoundry-local-api-backup.json",
-      confirmationPhrase: "RESTORE",
-      restoreConfirmed: true,
-    }));
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+  } finally {
+    await server.close();
+  }
+});
+
+test("Admin Operations reports export artifact and Postgres backup failures visibly", async ({ page }) => {
+  const server = await startRepoServer();
+  const actionGroups = [
+    {
+      id: "project-packaging",
+      label: "Project Packaging",
+      actions: [
+        { id: "export-project-package", label: "Export Project Package", status: "PASS", diagnostic: "Export Project Package creates a .gfsp ZIP package." },
+      ],
+    },
+    {
+      id: "backup-recovery",
+      label: "Backup & Recovery",
+      actions: [
+        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup runs server-side pg_dump --format=custom into GAMEFOUNDRY_DB_BACKUP_DIR." },
+      ],
+    },
+    {
+      id: "database-operations",
+      label: "Database Operations",
+      actions: [],
+    },
+  ];
+  try {
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            authenticated: true,
+            displayName: "DavidQ",
+            roleSlugs: ["admin", "creator"],
+            userKey: MOCK_DB_KEYS.users.admin,
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/navigation/admin-menu", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            adminMainItems: [
+              { label: "Operations", path: "admin/operations.html", route: "admin-operations" },
+              { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
+            ],
+            ownerMenuItems: [],
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ data: { banner: { active: false, message: "", tone: "info" } }, ok: true }),
+      });
+    });
+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ data: { activeTools: [], readinessByStatus: {}, tools: [], toolboxContract: {} }, ok: true }),
+      });
+    });
+    await page.route("**/api/admin/operations/status", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            actionGroups,
+            currentEnvironment: "DEV",
+            message: "Admin Operations loaded.",
+            status: "PASS",
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/admin/operations/action", async (route) => {
+      const body = route.request().postDataJSON();
+      const createBackup = body.actionId === "create-backup";
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            actionId: body.actionId,
+            actionLabel: createBackup ? "Create Backup" : "Export Project Package",
+            executed: !createBackup,
+            message: createBackup
+              ? "GAMEFOUNDRY_DB_BACKUP_DIR is missing. Configure a server-side backup folder outside repo tmp/ before running Create Backup."
+              : `${body.actionId} returned PASS without artifact bytes.`,
+            status: createBackup ? "FAIL" : "PASS",
+          },
+          ok: true,
+        }),
+      });
+    });
+
+    await page.goto(`${server.baseUrl}/admin/operations.html`, { waitUntil: "networkidle" });
+    await page.locator("[data-admin-operation-action='export-project-package']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("FAIL: Export Project Package completed without downloadable .gfsp package bytes.");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Export Project Package");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("FAIL");
+    await page.locator("[data-admin-operation-action='create-backup']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("FAIL: GAMEFOUNDRY_DB_BACKUP_DIR is missing.");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Create Backup");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("FAIL");
+    await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-secret-key");
+    await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-access-key");
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
   } finally {
     await server.close();

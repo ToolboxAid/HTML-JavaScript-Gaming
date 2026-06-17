@@ -18,6 +18,7 @@ import {
 } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
 import { createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
 import { loadStorageConfig } from "../storage/storage-config.mjs";
+import { createPostgresBackup } from "../database/postgres-backup-service.mjs";
 import {
   GFSP_PACKAGE_REQUIRED_FILES,
   GFSP_PACKAGE_FILENAME_PATTERN,
@@ -337,16 +338,16 @@ const ADMIN_OPERATION_GROUPS = Object.freeze([
     message: "Backup and recovery actions run through guarded Local API contracts with environment-aware restore restrictions.",
     actions: Object.freeze([
       Object.freeze({
-        diagnostic: "Create Backup creates a safe JSON snapshot through the Local API without exposing secrets.",
+        diagnostic: "Create Backup validates the configured Local DB connection, then runs server-side pg_dump --format=custom into GAMEFOUNDRY_DB_BACKUP_DIR.",
         id: "create-backup",
         label: "Create Backup",
         mode: "server-backup",
         status: "PASS",
       }),
       Object.freeze({
-        confirmationMessage: "Restore From Backup is destructive in DEV runtime state and requires explicit RESTORE confirmation.",
+        confirmationMessage: "Restore From Backup is scaffold-only until server-side pg_restore safety is approved.",
         confirmationPhrase: "RESTORE",
-        diagnostic: "Restore From Backup validates the selected backup and only applies after confirmation in the DEV lane.",
+        diagnostic: "Restore From Backup reports guarded not-implemented diagnostics and does not apply browser-uploaded backup data.",
         id: "restore-from-backup",
         label: "Restore From Backup",
         mode: "server-backup",
@@ -2832,95 +2833,62 @@ LIMIT 1;
     };
   }
 
-  backupFileName(now = new Date()) {
-    return `gamefoundry-local-api-backup-${now.toISOString().replace(/[:.]/g, "-")}.json`;
-  }
-
-  createBackupAction() {
-    const now = new Date();
-    const snapshot = this.currentStateSnapshot();
-    const tableCounts = Object.fromEntries(Object.entries(snapshot.tables || {})
-      .map(([tableName, rows]) => [tableName, Array.isArray(rows) ? rows.length : 0]));
-    const backup = {
-      backupType: "Game Foundry Studio Local API Backup",
-      contractVersion: "1.0.0",
-      createdAt: now.toISOString(),
-      currentEnvironment: this.adminOperationsEnvironment(),
-      environmentRestrictions: {
-        restore: "DEV lane only with explicit RESTORE confirmation",
-      },
-      secretValuesIncluded: false,
-      snapshot,
-      tableCounts,
-    };
-    const backupBytesBase64 = Buffer.from(`${JSON.stringify(backup, null, 2)}\n`, "utf8").toString("base64");
-    const fileName = this.backupFileName(now);
-    return {
-      actionId: "create-backup",
-      actionLabel: "Create Backup",
-      backup: {
-        backupBytesBase64,
-        fileName,
-        tableCounts,
-      },
-      executed: true,
-      message: `Create Backup generated ${fileName} with ${Object.keys(tableCounts).length} table snapshot(s). Secret values were not included.`,
-      secretEditingAllowed: false,
-      secretsExposed: false,
-      status: "PASS",
-    };
-  }
-
-  restoreBackupAction(body = {}) {
-    const currentEnvironment = this.adminOperationsEnvironment();
-    if (body.restoreConfirmed !== true || String(body.confirmationPhrase || "").trim() !== "RESTORE") {
-      return {
-        actionId: "restore-from-backup",
-        actionLabel: "Restore From Backup",
-        executed: false,
-        message: "Restore From Backup blocked: check confirmation and type RESTORE before applying a backup.",
-        secretEditingAllowed: false,
-        secretsExposed: false,
-        status: "FAIL",
-      };
-    }
-    if (!body.backupBytesBase64) {
-      return {
-        actionId: "restore-from-backup",
-        actionLabel: "Restore From Backup",
-        executed: false,
-        message: "Restore From Backup blocked: select a backup JSON file before restore.",
-        secretEditingAllowed: false,
-        secretsExposed: false,
-        status: "FAIL",
-      };
-    }
+  async validateBackupDatabaseConnection() {
     try {
-      const backup = JSON.parse(Buffer.from(String(body.backupBytesBase64), "base64").toString("utf8"));
-      if (backup.backupType !== "Game Foundry Studio Local API Backup" || !backup.snapshot?.tables) {
-        throw new Error("Backup JSON does not match the Game Foundry Studio Local API Backup contract.");
-      }
-      this.applyStateSnapshot(backup.snapshot);
+      const adapter = this.supabaseDatabaseAdapter("Validating Create Backup database connection");
+      await adapter.databaseClient().query("SELECT 1 AS backup_ready;");
       return {
-        actionId: "restore-from-backup",
-        actionLabel: "Restore From Backup",
-        executed: true,
-        message: `Restore From Backup applied ${body.backupFileName || "selected backup"} for current lane ${currentEnvironment} after explicit RESTORE confirmation.`,
-        secretEditingAllowed: false,
-        secretsExposed: false,
+        message: "Configured database connection validated before pg_dump.",
         status: "PASS",
       };
     } catch (error) {
       return {
-        actionId: "restore-from-backup",
-        actionLabel: "Restore From Backup",
+        message: error instanceof Error ? error.message : String(error || "Database connection validation failed before pg_dump."),
+        status: "FAIL",
+      };
+    }
+  }
+
+  async createBackupAction() {
+    const currentEnvironment = this.adminOperationsEnvironment();
+    const connectionValidation = await this.validateBackupDatabaseConnection();
+    if (connectionValidation.status !== "PASS") {
+      return {
+        actionId: "create-backup",
+        actionLabel: "Create Backup",
+        checks: [
+          {
+            id: "database-connection",
+            label: "Database connection",
+            message: connectionValidation.message,
+            status: "FAIL",
+          },
+        ],
+        currentEnvironment,
         executed: false,
-        message: `Restore From Backup blocked: ${error instanceof Error ? error.message : "backup validation failed."}`,
+        message: `Create Backup blocked before pg_dump: ${connectionValidation.message}`,
         secretEditingAllowed: false,
         secretsExposed: false,
         status: "FAIL",
       };
     }
+    return createPostgresBackup({
+      env: process.env,
+      environment: currentEnvironment,
+    });
+  }
+
+  restoreBackupAction() {
+    return {
+      actionId: "restore-from-backup",
+      actionLabel: "Restore From Backup",
+      executed: false,
+      manualOnly: true,
+      message: "Restore From Backup is scaffold-only. Server-side pg_restore safety, conflict validation, and explicit restore approval must be implemented before restore can run.",
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: "SKIP",
+    };
   }
 
   async runAdminOperationAction(body = {}) {
