@@ -1,9 +1,13 @@
 import { spawn } from "node:child_process";
-import { readdir, stat, unlink } from "node:fs/promises";
+import { mkdtemp, readFile, rm, stat, unlink } from "node:fs/promises";
+import os from "node:os";
 import path from "node:path";
 import process from "node:process";
+import { createConfiguredBackupStorage } from "../storage/r2-project-asset-storage.mjs";
+import { DB_BACKUP_PREFIX_ENV, DB_BACKUP_STORAGE_PROVIDER_ENV } from "../storage/storage-config.mjs";
 
 export const DB_BACKUP_DIR_ENV = "GAMEFOUNDRY_DB_BACKUP_DIR";
+export const DB_BACKUP_STAGING_DIR_ENV = "GAMEFOUNDRY_DB_BACKUP_STAGING_DIR";
 export const POSTGRES_BACKUP_FORMAT = "custom";
 
 const DATABASE_SSL_MODES = new Set(["disable", "require"]);
@@ -58,26 +62,67 @@ function parseDatabaseConfig(env = process.env) {
   };
 }
 
-function resolveBackupDirectory(env = process.env, repoRoot = process.cwd()) {
+function resolveBackupStagingRoot(env = process.env, repoRoot = process.cwd()) {
+  const configured = String(env[DB_BACKUP_STAGING_DIR_ENV] || "").trim();
+  const stagingRoot = path.resolve(configured ? configured : os.tmpdir());
+  const repoTmp = path.resolve(repoRoot, "tmp");
+  if (pathIsInside(repoTmp, stagingRoot)) {
+    throw new Error(`${DB_BACKUP_STAGING_DIR_ENV} must not point inside repo tmp/. Configure temporary server-side staging outside tmp/.`);
+  }
+  return stagingRoot;
+}
+
+function deprecatedBackupDirectoryMessage(env = process.env) {
   const configured = String(env[DB_BACKUP_DIR_ENV] || "").trim();
   if (!configured) {
-    throw new Error(`${DB_BACKUP_DIR_ENV} is missing. Configure a server-side backup folder outside repo tmp/ before running Create Backup.`);
+    return "";
   }
-  const backupDirectory = path.resolve(repoRoot, configured);
-  const repoTmp = path.resolve(repoRoot, "tmp");
-  if (pathIsInside(repoTmp, backupDirectory)) {
-    throw new Error(`${DB_BACKUP_DIR_ENV} must not point inside repo tmp/. Configure a server-side backup folder outside tmp/.`);
-  }
-  return backupDirectory;
+  return `${DB_BACKUP_DIR_ENV} is deprecated for final backup storage and was not used.`;
 }
 
 export function postgresBackupFilename({ environment = "unknown", now = new Date(), sequence = 1 } = {}) {
   return `gamefoundry-${safeEnvironmentName(environment)}-db-${julianCode(now)}-${String(sequence).padStart(3, "0")}.dump`;
 }
 
-async function nextBackupSequence(backupDirectory, environment, now) {
+function storageMissingMessage(backupStorage) {
+  if (backupStorage?.config?.missingKeys?.length) {
+    return `Missing or empty: ${backupStorage.config.missingKeys.join(", ")}.`;
+  }
+  if (backupStorage?.config?.validationError) {
+    return backupStorage.config.validationError;
+  }
+  return `Configure ${DB_BACKUP_STORAGE_PROVIDER_ENV}=r2 and ${DB_BACKUP_PREFIX_ENV} before running Create Backup.`;
+}
+
+function assertBackupStorage(backupStorage) {
+  if (!backupStorage?.configured || typeof backupStorage.putObject !== "function") {
+    throw new Error(`Create Backup requires configured R2 backup storage. ${storageMissingMessage(backupStorage)}`);
+  }
+  const backupPrefix = String(backupStorage.config?.backupPrefix || "").trim();
+  if (!backupPrefix) {
+    throw new Error(`Create Backup requires ${DB_BACKUP_PREFIX_ENV} before running pg_dump.`);
+  }
+  return {
+    backupPrefix,
+    storageProvider: String(backupStorage.config?.provider || "r2").trim() || "r2",
+  };
+}
+
+export function postgresBackupObjectKey({ backupPrefix, fileName } = {}) {
+  const normalizedPrefix = String(backupPrefix || "").trim().replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
+  return `/${normalizedPrefix}/${String(fileName || "").trim()}`.replace(/\/{2,}/g, "/");
+}
+
+async function nextBackupSequence(backupStorage, backupPrefix, environment, now) {
   const prefix = `gamefoundry-${safeEnvironmentName(environment)}-db-${julianCode(now)}-`;
-  const names = await readdir(backupDirectory);
+  const listed = typeof backupStorage.listObjects === "function"
+    ? await backupStorage.listObjects(backupPrefix)
+    : { keys: [] };
+  if (listed.ok === false) {
+    throw new Error(`Create Backup failed: R2 backup prefix could not be listed. ${listed.message || "Verify storage list permissions and backup prefix."}`);
+  }
+  const names = (Array.isArray(listed.keys) ? listed.keys : [])
+    .map((key) => path.posix.basename(String(key || "")));
   const sequences = names
     .map((name) => {
       const match = name.match(new RegExp(`^${prefix.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")}(\\d{3})\\.dump$`));
@@ -114,11 +159,17 @@ function spawnProcess(command, args, options = {}) {
   });
 }
 
-async function assertBackupDirectory(backupDirectory) {
-  const details = await stat(backupDirectory);
+async function assertBackupStagingRoot(stagingRoot) {
+  const details = await stat(stagingRoot);
   if (!details.isDirectory()) {
-    throw new Error(`${DB_BACKUP_DIR_ENV} must point to an existing server-side directory.`);
+    throw new Error(`${DB_BACKUP_STAGING_DIR_ENV} must point to an existing temporary server-side staging directory.`);
   }
+}
+
+async function createBackupStagingDirectory(env, repoRoot) {
+  const stagingRoot = resolveBackupStagingRoot(env, repoRoot);
+  await assertBackupStagingRoot(stagingRoot);
+  return mkdtemp(path.join(stagingRoot, "gamefoundry-postgres-backup-"));
 }
 
 async function removePartialBackup(outputPath) {
@@ -127,6 +178,13 @@ async function removePartialBackup(outputPath) {
   } catch {
     // Partial cleanup is best-effort after pg_dump failure.
   }
+}
+
+async function removeStagingDirectory(stagingDirectory) {
+  if (!stagingDirectory) {
+    return;
+  }
+  await rm(stagingDirectory, { force: true, recursive: true });
 }
 
 function pgDumpArgs(config, outputPath) {
@@ -169,27 +227,36 @@ function failure(message, details = {}) {
 }
 
 export async function createPostgresBackup({
+  backupStorage = null,
   env = process.env,
   environment = "UNKNOWN",
   now = new Date(),
   repoRoot = process.cwd(),
   runProcess = spawnProcess,
 } = {}) {
+  let stagingDirectory = "";
+  let outputPath = "";
   try {
     const config = parseDatabaseConfig(env);
-    const backupDirectory = resolveBackupDirectory(env, repoRoot);
-    await assertBackupDirectory(backupDirectory);
+    const storage = backupStorage || createConfiguredBackupStorage(env);
+    const storageConfig = assertBackupStorage(storage);
     const version = await runProcess("pg_dump", ["--version"], { env: pgDumpEnvironment(config) });
     if (version.code === "ENOENT") {
-      return failure("Create Backup failed: pg_dump is unavailable. Install PostgreSQL client tools on the Local API host and ensure pg_dump is on PATH.");
+      return failure("Create Backup failed: pg_dump is unavailable. Install PostgreSQL client tools on the Local API host and ensure pg_dump is on PATH.", {
+        currentEnvironment: environment,
+      });
     }
     if (version.code !== 0) {
-      return failure("Create Backup failed: pg_dump --version did not complete. Verify PostgreSQL client tools are installed on the Local API host.");
+      return failure("Create Backup failed: pg_dump --version did not complete. Verify PostgreSQL client tools are installed on the Local API host.", {
+        currentEnvironment: environment,
+      });
     }
 
-    const sequence = await nextBackupSequence(backupDirectory, environment, now);
+    const sequence = await nextBackupSequence(storage, storageConfig.backupPrefix, environment, now);
     const fileName = postgresBackupFilename({ environment, now, sequence });
-    const outputPath = path.join(backupDirectory, fileName);
+    const r2Key = postgresBackupObjectKey({ backupPrefix: storageConfig.backupPrefix, fileName });
+    stagingDirectory = await createBackupStagingDirectory(env, repoRoot);
+    outputPath = path.join(stagingDirectory, fileName);
     const dump = await runProcess("pg_dump", pgDumpArgs(config, outputPath), {
       env: pgDumpEnvironment(config),
     });
@@ -198,6 +265,7 @@ export async function createPostgresBackup({
       return failure("Create Backup failed: pg_dump did not complete. Verify database connectivity, credentials, SSL mode, and backup directory permissions.", {
         currentEnvironment: environment,
         fileName,
+        r2Key,
       });
     }
 
@@ -207,27 +275,56 @@ export async function createPostgresBackup({
       return failure("Create Backup failed: pg_dump produced an empty or invalid backup artifact.", {
         currentEnvironment: environment,
         fileName,
+        r2Key,
       });
     }
 
     const createdAt = now.toISOString();
+    const upload = await storage.putObject({
+      bytes: await readFile(outputPath),
+      contentType: "application/octet-stream",
+      objectKey: r2Key,
+    });
+    if (!upload.ok) {
+      return failure(`Create Backup failed: R2 upload did not complete for ${r2Key}. ${upload.message || "Verify endpoint, bucket, credentials, and backup prefix."}`, {
+        backup: {
+          createdAt,
+          fileName,
+          format: POSTGRES_BACKUP_FORMAT,
+          r2Key,
+          sizeBytes: output.size,
+          storageProvider: storageConfig.storageProvider,
+        },
+        currentEnvironment: environment,
+      });
+    }
+
+    await removeStagingDirectory(stagingDirectory);
+    stagingDirectory = "";
     return {
       actionId: "create-backup",
       actionLabel: "Create Backup",
       backup: {
         createdAt,
+        environment,
         fileName,
         format: POSTGRES_BACKUP_FORMAT,
+        r2Key,
         sizeBytes: output.size,
+        storageProvider: storageConfig.storageProvider,
       },
       currentEnvironment: environment,
       executed: true,
-      message: `Create Backup wrote ${fileName} for ${environment} with pg_dump custom format at ${createdAt}; size ${output.size} bytes.`,
+      message: `Create Backup uploaded ${fileName} to R2 key ${r2Key} for ${environment} at ${createdAt}; size ${output.size} bytes. ${deprecatedBackupDirectoryMessage(env)}`.trim(),
       secretEditingAllowed: false,
       secretsExposed: false,
       status: "PASS",
     };
   } catch (error) {
-    return failure(error instanceof Error ? error.message : String(error || "Create Backup failed."));
+    return failure(error instanceof Error ? error.message : String(error || "Create Backup failed."), {
+      currentEnvironment: environment,
+    });
+  } finally {
+    await removeStagingDirectory(stagingDirectory);
   }
 }

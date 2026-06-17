@@ -16,7 +16,7 @@ import {
 import {
   createInputMappingToolMockRepository,
 } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
-import { createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
+import { createConfiguredBackupStorage, createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
 import { loadStorageConfig } from "../storage/storage-config.mjs";
 import { createPostgresBackup } from "../database/postgres-backup-service.mjs";
 import {
@@ -338,7 +338,7 @@ const ADMIN_OPERATION_GROUPS = Object.freeze([
     message: "Backup and recovery actions run through guarded Local API contracts with environment-aware restore restrictions.",
     actions: Object.freeze([
       Object.freeze({
-        diagnostic: "Create Backup validates the configured Local DB connection, then runs server-side pg_dump --format=custom into GAMEFOUNDRY_DB_BACKUP_DIR.",
+        diagnostic: "Create Backup validates the configured Local DB connection, runs server-side pg_dump --format=custom into temporary staging, uploads the .dump to the configured R2 backup prefix, then removes staging.",
         id: "create-backup",
         label: "Create Backup",
         mode: "server-backup",
@@ -2873,6 +2873,7 @@ LIMIT 1;
       };
     }
     return createPostgresBackup({
+      backupStorage: createConfiguredBackupStorage(process.env),
       env: process.env,
       environment: currentEnvironment,
     });

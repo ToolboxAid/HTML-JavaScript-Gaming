@@ -2613,3 +2613,33 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26168_235-owner-operations-scope-cleanup_delta.zip`
+
+
+## PR_26168_246-r2-backed-postgres-backups
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Updated Create Backup to stage `pg_dump --format=custom` output in temporary server-side storage only.
+- Uploaded final `.dump` artifacts to the configured R2 backup prefix.
+- Added backup storage provider and prefix configuration for R2-backed Postgres backups.
+- Deprecated `GAMEFOUNDRY_DB_BACKUP_DIR` for final backup storage.
+- Kept Restore From Backup scaffold-only.
+
+Validation:
+- `node --check` for changed JS/MJS and Playwright files.
+- `node --test tests/dev-runtime/PostgresBackupService.test.mjs`
+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs --grep "Admin Operations" --reporter=line`
+- `git diff --check -- touched files`
+- Static checks for no `.dump` artifacts and no inline Admin Operations HTML violations.
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+
+Required reports:
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_246-r2-backed-postgres-backups_delta.zip`

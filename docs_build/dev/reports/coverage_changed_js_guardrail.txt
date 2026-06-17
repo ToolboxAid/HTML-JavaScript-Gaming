@@ -6,16 +6,13 @@ Missing changed runtime JS files are WARN, not FAIL.
 Source: Playwright/Chromium built-in V8 coverage from the active Playwright run.
 
 Changed runtime JS files considered:
-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(77%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 744/744; executed functions 50/65
-(100%) assets/theme-v2/js/admin-operations.js - executed lines 118/118; executed functions 20/20
-(100%) assets/theme-v2/js/admin-system-health.js - executed lines 235/235; executed functions 34/34
-(100%) src/engine/api/admin-operations-api-client.js - executed lines 19/19; executed functions 3/3
-(100%) src/engine/api/admin-system-health-api-client.js - executed lines 19/19; executed functions 3/3
+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Guardrail warnings:
-(0%) assets/theme-v2/js/admin-service-page-data.js - WARNING: changed runtime JS file missing from coverage; advisory only
-(0%) src/dev-runtime/auth/provider-contract-stubs.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file missing from coverage; advisory only
+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file missing from coverage; advisory only

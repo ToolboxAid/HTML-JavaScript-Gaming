@@ -1,26 +1,48 @@
 # git status --short
 M .env.example
- M assets/theme-v2/js/admin-operations.js
+ M docs_build/database/README.md
+ M docs_build/database/backup-restore-lane.md
+ M docs_build/database/runbook.md
+ M docs_build/dev/codex_commands.md
+ M docs_build/dev/commit_comment.txt
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
+ M docs_build/dev/reports/coverage_changed_js_guardrail.txt
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M src/dev-runtime/database/postgres-backup-service.mjs
  M src/dev-runtime/server/local-api-router.mjs
+ M src/dev-runtime/storage/r2-project-asset-storage.mjs
+ M src/dev-runtime/storage/storage-config.mjs
+ M tests/dev-runtime/PostgresBackupService.test.mjs
  M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
-?? docs_build/dev/reports/PR_26168_245-postgres-backup-foundation.md
-?? src/dev-runtime/database/
-?? tests/dev-runtime/PostgresBackupService.test.mjs
+?? docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26168_245-postgres-backup-foundation.md
-src/dev-runtime/database/postgres-backup-service.mjs
-tests/dev-runtime/PostgresBackupService.test.mjs
+docs_build/dev/reports/PR_26168_246-r2-backed-postgres-backups.md
 
 # git diff --stat
-.env.example                                       |    1 +
- assets/theme-v2/js/admin-operations.js             |   70 +-
- docs_build/dev/reports/codex_changed_files.txt     |   54 +-
- docs_build/dev/reports/codex_review.diff           | 7098 +-------------------
- .../dev/reports/playwright_v8_coverage_report.txt  |   48 +-
- src/dev-runtime/server/local-api-router.mjs        |  126 +-
- .../tools/AdminPlatformToolsWireframes.spec.mjs    |  156 +-
- 7 files changed, 606 insertions(+), 6947 deletions(-)
+.env.example                                       |   16 +
+ docs_build/database/README.md                      |    2 +-
+ docs_build/database/backup-restore-lane.md         |   80 +-
+ docs_build/database/runbook.md                     |   23 +-
+ docs_build/dev/codex_commands.md                   |   30 +
+ docs_build/dev/commit_comment.txt                  |    2 +-
+ docs_build/dev/reports/codex_changed_files.txt     |   51 +-
+ docs_build/dev/reports/codex_review.diff           | 9458 +++-----------------
+ .../dev/reports/coverage_changed_js_guardrail.txt  |   15 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |   22 +-
+ .../database/postgres-backup-service.mjs           |  141 +-
+ src/dev-runtime/server/local-api-router.mjs        |    5 +-
+ .../storage/r2-project-asset-storage.mjs           |   64 +-
+ src/dev-runtime/storage/storage-config.mjs         |  103 +-
+ tests/dev-runtime/PostgresBackupService.test.mjs   |  269 +-
+ .../tools/AdminPlatformToolsWireframes.spec.mjs    |   16 +-
+ 16 files changed, 1989 insertions(+), 8308 deletions(-)
+warning: in the working copy of '.env.example', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'docs_build/dev/reports/codex_changed_files.txt', CRLF will be replaced by LF the next time Git touches it
+warning: in the working copy of 'src/dev-runtime/database/postgres-backup-service.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/dev-runtime/server/local-api-router.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/dev-runtime/storage/r2-project-asset-storage.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'src/dev-runtime/storage/storage-config.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/dev-runtime/PostgresBackupService.test.mjs', LF will be replaced by CRLF the next time Git touches it
+warning: in the working copy of 'tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs', LF will be replaced by CRLF the next time Git touches it

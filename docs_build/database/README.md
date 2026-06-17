@@ -37,7 +37,7 @@ The database promotion lane is documented in [promotion-lane.md](promotion-lane.
 
 ## Backup And Restore
 
-The operator-controlled backup and restore lane is documented in [backup-restore-lane.md](backup-restore-lane.md). Backup and restore use `GAMEFOUNDRY_DATABASE_URL` from `.env`; restore requires an explicit operator checklist and confirmation phrase before any destructive command runs.
+The operator-controlled backup and restore lane is documented in [backup-restore-lane.md](backup-restore-lane.md). Backup uses `GAMEFOUNDRY_DATABASE_URL` from `.env`, temporary server-side `pg_dump --format=custom` staging, and the configured R2 backup prefix for final artifacts. Restore remains scaffold-only until safe R2 restore is explicitly implemented and still requires an operator checklist and confirmation phrase before any future destructive command can run.
 
 ## Runbook
 

@@ -1,5 +1,5 @@
 import crypto from "node:crypto";
-import { loadStorageConfig } from "./storage-config.mjs";
+import { loadBackupStorageConfig, loadStorageConfig } from "./storage-config.mjs";
 
 const AWS_ALGORITHM = "AWS4-HMAC-SHA256";
 const AWS_REGION = "auto";
@@ -156,6 +156,13 @@ function unconfiguredStorage(config) {
         ok: false,
       };
     },
+    async listObjects() {
+      return {
+        keys: [],
+        message: `Storage configuration missing: ${missing}.`,
+        ok: false,
+      };
+    },
     async putObject() {
       return {
         bytesWritten: 0,
@@ -181,6 +188,29 @@ function unconfiguredStorage(config) {
   };
 }
 
+async function listObjectsForPrefix(config, prefix) {
+  const response = await signedFetch(config, {
+    method: "GET",
+    query: {
+      "list-type": "2",
+      prefix,
+    },
+  });
+  const body = await response.text();
+  if (!response.ok) {
+    return {
+      keys: [],
+      message: `Storage list failed with HTTP ${response.status}.`,
+      ok: false,
+    };
+  }
+  return {
+    keys: parseListBucketKeys(body),
+    message: `Listed storage objects under ${prefix}.`,
+    ok: true,
+  };
+}
+
 export function createR2ProjectAssetStorage(config) {
   return {
     config,
@@ -192,26 +222,10 @@ export function createR2ProjectAssetStorage(config) {
       const prefix = projectId
         ? `${config.projectsPrefix}${String(projectId).trim().replace(/^\/+|\/+$/g, "")}/`
         : config.projectsPrefix;
-      const response = await signedFetch(config, {
-        method: "GET",
-        query: {
-          "list-type": "2",
-          prefix,
-        },
-      });
-      const body = await response.text();
-      if (!response.ok) {
-        return {
-          keys: [],
-          message: `Storage list failed with HTTP ${response.status}.`,
-          ok: false,
-        };
-      }
-      return {
-        keys: parseListBucketKeys(body),
-        message: `Listed storage objects under ${prefix}.`,
-        ok: true,
-      };
+      return listObjectsForPrefix(config, prefix);
+    },
+    async listObjects(prefix = "") {
+      return listObjectsForPrefix(config, normalizeObjectKey(prefix));
     },
     async putObject({ contentType = "application/octet-stream", objectKey, bytes }) {
       const payload = Buffer.isBuffer(bytes) ? bytes : Buffer.from(bytes || "");
@@ -279,4 +293,12 @@ export function createR2ProjectAssetStorage(config) {
 export function createConfiguredProjectAssetStorage(env = process.env) {
   const config = loadStorageConfig(env);
   return config.configured ? createR2ProjectAssetStorage(config) : unconfiguredStorage(config);
+}
+
+export function createConfiguredBackupStorage(env = process.env) {
+  const config = loadBackupStorageConfig(env);
+  return config.configured ? createR2ProjectAssetStorage({
+    ...config,
+    projectsPrefix: config.backupPrefix,
+  }) : unconfiguredStorage(config);
 }

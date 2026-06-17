@@ -95,32 +95,41 @@ execution is allowed.
 
 ## Backup
 
-Use the backup path documented in
+Use the backup operation path documented in
 [backup-restore-lane.md](backup-restore-lane.md). Backups use
-`GAMEFOUNDRY_DATABASE_URL` from `.env`.
+`GAMEFOUNDRY_DATABASE_URL` from `.env`, write `pg_dump --format=custom` only
+to temporary server-side staging, and upload the final `.dump` artifact to the
+configured R2 backup prefix.
 
 Minimum backup checklist:
 
 - Confirm `.env` points at the intended database.
 - Confirm `pg_dump` is installed.
+- Confirm `GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER=r2`.
+- Confirm `GAMEFOUNDRY_DB_BACKUP_PREFIX` matches the active target:
+  `/dev/backups/postgres/`, `/ist/backups/postgres/`,
+  `/uat/backups/postgres/`, or `/prd/backups/postgres/`.
 - Record backup metadata: `backupName`, `databaseName`, `createdAt`, and
   `migrationVersion`.
-- Write backup files outside tracked source paths.
-- Record backup path and checksum only.
+- Confirm R2 prefixes require no manual folder creation.
+- Confirm temporary local staging is deleted after successful upload.
+- Record R2 key, filename, size, timestamp, environment, and checksum only.
 - Do not write secrets, full URLs, service role keys, or dump contents to
   reports.
 
 ## Restore
 
 Use the restore path documented in
-[backup-restore-lane.md](backup-restore-lane.md). Restore is destructive and
-must require explicit operator confirmation.
+[backup-restore-lane.md](backup-restore-lane.md). Restore is destructive,
+remains scaffold-only until safe R2 restore is explicitly implemented, and must
+require explicit operator confirmation before any future destructive command can
+run.
 
 Minimum restore checklist:
 
 - Confirm `.env` points at the intended target database.
 - Validate the current `schema_migrations` state before applying restore.
-- Confirm the backup file path and checksum.
+- Confirm the R2 backup key, filename, size, timestamp, and checksum.
 - Confirm backup metadata, including `migrationVersion`.
 - Stop the application or enter a maintenance window.
 - Confirm owner approval.

@@ -1180,7 +1180,7 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
       id: "backup-recovery",
       label: "Backup & Recovery",
       actions: [
-        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup validates the configured Local DB connection, then runs server-side pg_dump --format=custom into GAMEFOUNDRY_DB_BACKUP_DIR." },
+        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup validates the configured Local DB connection, runs server-side pg_dump --format=custom into temporary staging, uploads the .dump to the configured R2 backup prefix, then removes staging." },
         { id: "restore-from-backup", label: "Restore From Backup", status: "WARN", diagnostic: "Restore From Backup remains scaffold-only until server-side pg_restore safety is approved.", confirmationMessage: "Restore From Backup is scaffold-only until server-side pg_restore safety is approved.", confirmationPhrase: "RESTORE", confirmationRequired: true, requiresBackupFile: true, risky: true },
       ],
     },
@@ -1200,7 +1200,7 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
     "export-project-package": "Export Project Package generated DemoGame-26168-001.gfsp with 3 required file(s) and 0 asset reference(s); export validation PASS.",
     "validate-project-package": "Validate Project Package passed integrity, required file, schema, compatibility, and asset reference checks. No import performed.",
     "import-project-package": "Import Project Package replaced existing project Demo Game after explicit REPLACE confirmation.",
-    "create-backup": "Create Backup wrote gamefoundry-dev-db-26168-001.dump for DEV with pg_dump custom format at 2026-06-17T16:00:00.000Z; size 2048 bytes.",
+    "create-backup": "Create Backup uploaded gamefoundry-dev-db-26168-001.dump to R2 key /dev/backups/postgres/gamefoundry-dev-db-26168-001.dump for DEV at 2026-06-17T16:00:00.000Z; size 2048 bytes.",
     "restore-from-backup": "Restore From Backup is scaffold-only. Server-side pg_restore safety, conflict validation, and explicit restore approval must be implemented before restore can run.",
     "run-migration": "Run Migration is not implemented in Admin Operations. Run Migration is risky and must require explicit confirmation before migration execution is implemented.",
     "reseed-dev": "Reseed DEV is not implemented in Admin Operations. Reseed DEV is destructive and is only available when the configured project storage lane resolves to DEV.",
@@ -1300,9 +1300,12 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
             actionLabel,
             backup: body.actionId === "create-backup" ? {
               createdAt: "2026-06-17T16:00:00.000Z",
+              environment: "DEV",
               fileName: "gamefoundry-dev-db-26168-001.dump",
               format: "custom",
+              r2Key: "/dev/backups/postgres/gamefoundry-dev-db-26168-001.dump",
               sizeBytes: 2048,
+              storageProvider: "r2",
             } : undefined,
             executed: packageResult ? packageResult.executed : body.actionId === "validate-current-connection" || body.actionId === "database-connectivity-test",
             manualOnly: !packageResult && body.actionId !== "validate-current-connection" && body.actionId !== "database-connectivity-test",
@@ -1390,9 +1393,10 @@ test("Admin Operations exposes ordered guarded operation actions", async ({ page
     await page.locator("[data-admin-operation-action='import-project-package']").click();
     await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Import Project Package replaced existing project Demo Game after explicit REPLACE confirmation.");
     await page.locator("[data-admin-operation-action='create-backup']").click();
-    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Create Backup wrote gamefoundry-dev-db-26168-001.dump for DEV");
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Create Backup uploaded gamefoundry-dev-db-26168-001.dump to R2 key /dev/backups/postgres/gamefoundry-dev-db-26168-001.dump for DEV");
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Create Backup");
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("yes");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("/dev/backups/postgres/gamefoundry-dev-db-26168-001.dump");
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("size 2048 bytes.");
     await page.locator("[data-admin-operation-backup-file='restore-from-backup']").setInputFiles({
       buffer: Buffer.from("{\"backupType\":\"Game Foundry Studio Local API Backup\"}"),
@@ -1454,7 +1458,7 @@ test("Admin Operations reports export artifact and Postgres backup failures visi
       id: "backup-recovery",
       label: "Backup & Recovery",
       actions: [
-        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup runs server-side pg_dump --format=custom into GAMEFOUNDRY_DB_BACKUP_DIR." },
+        { id: "create-backup", label: "Create Backup", status: "PASS", diagnostic: "Create Backup runs server-side pg_dump --format=custom into temporary staging, uploads the .dump to the configured R2 backup prefix, then removes staging." },
       ],
     },
     {
@@ -1530,7 +1534,7 @@ test("Admin Operations reports export artifact and Postgres backup failures visi
             actionLabel: createBackup ? "Create Backup" : "Export Project Package",
             executed: !createBackup,
             message: createBackup
-              ? "GAMEFOUNDRY_DB_BACKUP_DIR is missing. Configure a server-side backup folder outside repo tmp/ before running Create Backup."
+              ? "Create Backup requires configured R2 backup storage. Missing or empty: GAMEFOUNDRY_DB_BACKUP_STORAGE_PROVIDER, GAMEFOUNDRY_DB_BACKUP_PREFIX."
               : `${body.actionId} returned PASS without artifact bytes.`,
             status: createBackup ? "FAIL" : "PASS",
           },
@@ -1545,7 +1549,7 @@ test("Admin Operations reports export artifact and Postgres backup failures visi
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Export Project Package");
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("FAIL");
     await page.locator("[data-admin-operation-action='create-backup']").click();
-    await expect(page.locator("[data-admin-operations-status]")).toContainText("FAIL: GAMEFOUNDRY_DB_BACKUP_DIR is missing.");
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("FAIL: Create Backup requires configured R2 backup storage.");
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Create Backup");
     await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("FAIL");
     await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-secret-key");

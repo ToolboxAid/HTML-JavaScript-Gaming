@@ -17,14 +17,10 @@ Exercised tool entry points detected:
 (78%) Theme V2 Shared JS - exercised 3 runtime JS files
 
 Changed runtime JS files covered:
-(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) src/dev-runtime/project-packages/project-package-service.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(0%) toolbox/game-workspace/game-workspace.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
-(70%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 741/741; executed functions 45/64
-(100%) assets/theme-v2/js/admin-operations.js - executed lines 273/273; executed functions 30/30
-(100%) src/engine/api/admin-operations-api-client.js - executed lines 19/19; executed functions 3/3
+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 
 Files with executed line/function counts where available:
 (35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
@@ -35,21 +31,15 @@ Files with executed line/function counts where available:
 (100%) src/engine/api/admin-operations-api-client.js - executed lines 19/19; executed functions 3/3
 
 Uncovered or low-coverage changed JS files:
-(0%) assets/theme-v2/js/admin-infrastructure.js - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/database/postgres-backup-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) src/dev-runtime/project-packages/project-package-service.mjs - WARNING: uncovered changed runtime JS file; advisory only
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
-(0%) toolbox/game-workspace/game-workspace.js - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: uncovered changed runtime JS file; advisory only
+(0%) src/dev-runtime/storage/storage-config.mjs - WARNING: uncovered changed runtime JS file; advisory only
 
 Changed JS files considered:
-(0%) assets/theme-v2/js/admin-infrastructure.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/database/postgres-backup-service.mjs - changed JS file not collected as browser runtime coverage
-(0%) src/dev-runtime/project-packages/project-package-service.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - changed JS file not collected as browser runtime coverage
+(0%) src/dev-runtime/storage/storage-config.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/dev-runtime/PostgresBackupService.test.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
-(0%) toolbox/game-workspace/game-workspace.js - changed JS file not collected as browser runtime coverage
-(70%) assets/theme-v2/js/gamefoundry-partials.js - changed JS file with browser V8 coverage
-(100%) assets/theme-v2/js/admin-operations.js - changed JS file with browser V8 coverage
-(100%) src/engine/api/admin-operations-api-client.js - changed JS file with browser V8 coverage
