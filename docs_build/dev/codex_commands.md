@@ -78,6 +78,31 @@ Validation:
 
 Required reports:
 - `docs_build/dev/reports/theme_css_entrypoint_closeout_report.md`
+
+## PR_26168_236-admin-operations-order-and-safety
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Confirmed current branch is `main`.
+- Moved Operations from `owner/operations.html` to `admin/operations.html`.
+- Replaced Owner Operations browser/API routes with Admin Operations browser/API routes.
+- Added Admin Operations action groups in the required order: Project Packaging, Backup & Recovery, Database Operations.
+- Removed direct promotion action buttons and stale Owner Operations navigation.
+- Kept status/readiness links on Admin System Health and architecture/reference links on Admin Infrastructure.
+- Added visible not implemented and confirmation diagnostics for risky/destructive actions.
+
+Validation:
+- `node --check` for changed JS/MJS and Playwright files.
+- Inline HTML guard for touched Admin HTML.
+- `git diff --check` for touched files.
+- Targeted Playwright Admin Operations, Admin System Health, Admin Infrastructure, Admin navigation.
+- Playwright V8 coverage report generated for changed runtime JavaScript.
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+
+Required reports:
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/PR_26168_236-admin-operations-order-and-safety.md`
 - `docs_build/dev/reports/migration_final_status_report.md`
 
 ## PR_26155_096-099

@@ -217,7 +217,7 @@ function renderAdminSiteSettings(root, snapshot) {
     "Site Settings Service Contract",
     "site_settings",
     "Editable branding and site identity settings are code/content-owned and deferred from this Admin surface.",
-    "Use Owner Operations for operational planning. Keep Platform Settings focused on banner settings and future runtime toggles.",
+    "Use Admin Operations for operational planning. Keep Platform Settings focused on banner settings and future runtime toggles.",
   );
 }
 

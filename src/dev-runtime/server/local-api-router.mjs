@@ -179,6 +179,7 @@ const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Controls", path: "admin/controls.html", route: "admin-controls" }),
   Object.freeze({ label: "Infrastructure", path: "admin/infrastructure.html", route: "admin-infrastructure" }),
   Object.freeze({ label: "Moderation", path: "admin/moderation.html", route: "admin-moderation" }),
+  Object.freeze({ label: "Operations", path: "admin/operations.html", route: "admin-operations" }),
   Object.freeze({ label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" }),
   Object.freeze({ label: "Ratings", path: "admin/ratings.html", route: "admin-ratings" }),
   Object.freeze({ label: "Roles", path: "admin/roles.html", route: "admin-roles" }),
@@ -191,7 +192,6 @@ const OWNER_NAVIGATION_ITEMS = Object.freeze([
   Object.freeze({ label: "Design System", path: "admin/design-system.html", route: "admin-design-system" }),
   Object.freeze({ label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" }),
   Object.freeze({ href: "/admin/admin-notes.html", label: "Notes", localNotes: true }),
-  Object.freeze({ label: "Operations", path: "owner/operations.html", route: "owner-operations" }),
 ]);
 
 const DB_ADAPTER_CONTRACT = Object.freeze({
@@ -288,41 +288,110 @@ const STORAGE_CONNECTIVITY_ACTIONS = Object.freeze([
 ]);
 const STORAGE_CONNECTIVITY_TEST_OBJECT_CONTENT = "Game Foundry Studio storage connectivity test object.\n";
 const STORAGE_CONNECTIVITY_TEST_OBJECT_RELATIVE_PATH = "connectivity/storage-connectivity-test.txt";
-const OWNER_OPERATION_ACTIONS = Object.freeze([
+const ADMIN_OPERATION_GROUPS = Object.freeze([
   Object.freeze({
-    id: "validate-current-connection",
-    label: "Validate current connection",
-    mode: "live-check",
+    id: "project-packaging",
+    label: "Project Packaging",
+    message: "Project package actions are staged through the Local API and do not execute browser-owned package writes.",
+    actions: Object.freeze([
+      Object.freeze({
+        diagnostic: "Export Project Package is not implemented in this PR; future .gfsp export must run through reviewed server-side package tooling.",
+        id: "export-project-package",
+        label: "Export Project Package",
+        mode: "not-implemented",
+        notImplemented: true,
+        status: "SKIP",
+      }),
+      Object.freeze({
+        diagnostic: "Validate Project Package is not implemented in this PR; future validation must inspect package metadata and storage references without writing.",
+        id: "validate-project-package",
+        label: "Validate Project Package",
+        mode: "not-implemented",
+        notImplemented: true,
+        status: "SKIP",
+      }),
+      Object.freeze({
+        confirmationMessage: "Import Project Package must fail visibly until explicit overwrite confirmation behavior exists.",
+        diagnostic: "Import Project Package is not implemented in this PR; existing project overwrites are blocked.",
+        id: "import-project-package",
+        label: "Import Project Package",
+        mode: "not-implemented",
+        notImplemented: true,
+        risky: true,
+        confirmationRequired: true,
+        status: "SKIP",
+      }),
+    ]),
   }),
   Object.freeze({
-    id: "reseed-dev",
-    label: "Reseed DEV",
-    mode: "manual-only",
+    id: "backup-recovery",
+    label: "Backup & Recovery",
+    message: "Backup and recovery actions are staged for reviewed server-side execution.",
+    actions: Object.freeze([
+      Object.freeze({
+        diagnostic: "Create Backup is not implemented in this PR; future backups must be produced through server-side tooling.",
+        id: "create-backup",
+        label: "Create Backup",
+        mode: "not-implemented",
+        notImplemented: true,
+        status: "SKIP",
+      }),
+      Object.freeze({
+        confirmationMessage: "Restore From Backup is risky and must require explicit confirmation before any restore behavior is implemented.",
+        diagnostic: "Restore From Backup is not implemented in this PR; restore operations remain blocked in the browser.",
+        id: "restore-from-backup",
+        label: "Restore From Backup",
+        mode: "not-implemented",
+        notImplemented: true,
+        risky: true,
+        confirmationRequired: true,
+        status: "SKIP",
+      }),
+    ]),
   }),
   Object.freeze({
-    id: "restore-from-backup",
-    label: "Restore from backup",
-    mode: "manual-only",
-  }),
-  Object.freeze({
-    id: "run-migration",
-    label: "Run migration",
-    mode: "manual-only",
-  }),
-  Object.freeze({
-    id: "promote-dev-to-ist",
-    label: "Promote DEV to IST",
-    mode: "manual-only",
-  }),
-  Object.freeze({
-    id: "promote-ist-to-uat",
-    label: "Promote IST to UAT",
-    mode: "manual-only",
-  }),
-  Object.freeze({
-    id: "promote-uat-to-prod",
-    label: "Promote UAT to PROD",
-    mode: "manual-only",
+    id: "database-operations",
+    label: "Database Operations",
+    message: "Database actions use Local API checks or return guarded diagnostics.",
+    actions: Object.freeze([
+      Object.freeze({
+        diagnostic: "Validate Current Connection checks the configured account session and Local DB connection without changing data.",
+        id: "validate-current-connection",
+        label: "Validate Current Connection",
+        mode: "live-check",
+        status: "PASS",
+      }),
+      Object.freeze({
+        diagnostic: "Database Connectivity Test checks the configured Local DB connection without changing data.",
+        id: "database-connectivity-test",
+        label: "Database Connectivity Test",
+        mode: "live-check",
+        status: "PASS",
+      }),
+      Object.freeze({
+        confirmationMessage: "Run Migration is risky and must require explicit confirmation before migration execution is implemented.",
+        diagnostic: "Run Migration is not implemented from Admin Operations; use reviewed server-side migration scripts.",
+        id: "run-migration",
+        label: "Run Migration",
+        mode: "manual-only",
+        notImplemented: true,
+        risky: true,
+        confirmationRequired: true,
+        status: "SKIP",
+      }),
+      Object.freeze({
+        confirmationMessage: "Reseed DEV is destructive and is only available when the configured project storage lane resolves to DEV.",
+        devOnly: true,
+        diagnostic: "Reseed DEV is not implemented from Admin Operations; use reviewed DEV-only reseed scripts.",
+        id: "reseed-dev",
+        label: "Reseed DEV",
+        mode: "manual-only",
+        notImplemented: true,
+        risky: true,
+        confirmationRequired: true,
+        status: "SKIP",
+      }),
+    ]),
   }),
 ]);
 
@@ -1906,7 +1975,7 @@ class ApiRuntimeDataSource {
         status: firstAdminReady ? "PASS" : "FAIL",
         message: firstAdminReady
           ? "At least one active user has the admin role through user_roles."
-          : "Create or assign the first admin through Owner Operations before promotion.",
+          : "Create or assign the first admin through Admin Operations before promotion.",
       },
       {
         action: "Create approved role records",
@@ -1952,8 +2021,8 @@ class ApiRuntimeDataSource {
     const status = statusCounts.FAIL ? "FAIL" : (statusCounts.WARN || statusCounts.SKIP ? "WARN" : "PASS");
     return {
       areas,
-      message: `Owner Operations setup status checked ${areas.length} setup areas.`,
-      ownership: "Owner -> Operations",
+      message: `Admin Operations setup status checked ${areas.length} setup areas.`,
+      ownership: "Admin -> Operations",
       connection: this.providerContract().activeProviders,
       status,
       statusCounts,
@@ -2004,18 +2073,10 @@ class ApiRuntimeDataSource {
     };
   }
 
-  async requireOwnerSession() {
-    const session = await this.currentSessionForRoute();
-    if (!session.isOwner || !session.userKey) {
-      throw new Error("Owner role required to use Owner Operations.");
-    }
-    return session;
-  }
-
   async requireAdminSession() {
     const session = await this.currentSessionForRoute();
     if (!session.isAdmin || !session.userKey) {
-      throw new Error("Admin role required to read Infrastructure status.");
+      throw new Error("Admin role required to use this Admin API route.");
     }
     return session;
   }
@@ -2285,7 +2346,7 @@ class ApiRuntimeDataSource {
       status: "WARN",
     };
     try {
-      const adapter = this.supabaseDatabaseAdapter("Reading Owner Operations migration history");
+      const adapter = this.supabaseDatabaseAdapter("Reading Admin System Health migration history");
       const countRows = await adapter.databaseClient().query(`
 SELECT "migrationType", count(*)::int AS count
 FROM schema_migrations
@@ -2323,17 +2384,30 @@ LIMIT 1;
     }
   }
 
-  async ownerOperationsStatus() {
-    await this.requireOwnerSession();
+  adminOperationsEnvironment() {
+    const environmentStatus = storageProjectsPrefixStatus();
+    const activeLane = Array.isArray(environmentStatus.rows)
+      ? environmentStatus.rows.find((row) => row.active === true)
+      : null;
+    return activeLane?.lane || "UNKNOWN";
+  }
+
+  adminOperationGroups() {
+    const currentEnvironment = this.adminOperationsEnvironment();
+    return ADMIN_OPERATION_GROUPS.map((group) => ({
+      ...group,
+      actions: group.actions.filter((action) => action.devOnly !== true || currentEnvironment === "DEV"),
+    }));
+  }
+
+  async adminOperationsStatus() {
+    await this.requireAdminSession();
     return {
-      actions: clone(OWNER_OPERATION_ACTIONS),
-      connectionSummary: this.ownerConnectionSummary(),
-      databaseStatus: await this.ownerDatabaseStatus(),
-      message: "Owner Operations loaded. Environment switching remains manual through configuration changes and server restart.",
-      promotionFoundation: this.ownerPromotionFoundation(),
+      actionGroups: clone(this.adminOperationGroups()),
+      currentEnvironment: this.adminOperationsEnvironment(),
+      message: "Admin Operations loaded. Health, readiness, database status, storage status, and configuration tables remain in Admin System Health.",
       secretEditingAllowed: false,
       status: "PASS",
-      storageStatus: this.ownerStorageStatus(),
     };
   }
 
@@ -2442,7 +2516,7 @@ LIMIT 1;
       ],
       links: {
         infrastructure: "/admin/infrastructure.html",
-        ownerOperations: "/owner/operations.html",
+        adminOperations: "/admin/operations.html",
       },
       limits: limitRows,
       message: "Admin System Health loaded safe status only.",
@@ -2480,8 +2554,8 @@ LIMIT 1;
     };
   }
 
-  async validateOwnerConnection() {
-    await this.requireOwnerSession();
+  async validateAdminConnection() {
+    await this.requireAdminSession();
     const authStatus = await this.authStatusForRoute();
     let productCheck = {
       ready: false,
@@ -2489,24 +2563,26 @@ LIMIT 1;
       message: "Product data connection was not validated.",
     };
     try {
-      const connection = this.supabaseDatabaseAdapter("Validating Owner Operations product data connection").connect();
+      const connection = this.supabaseDatabaseAdapter("Validating Admin Operations Local DB connection").connect();
       productCheck = {
         ready: connection.ready === true,
         status: connection.ready === true ? "ready" : "unavailable",
         message: connection.ready === true
-          ? "Product data connection is configured."
-          : "Product data connection did not report ready.",
+          ? "Local DB connection is configured."
+          : "Local DB connection did not report ready.",
       };
     } catch (error) {
       productCheck = {
         ready: false,
         status: "unavailable",
-        message: error instanceof Error ? error.message : String(error || "Product data connection validation failed."),
+        message: error instanceof Error ? error.message : String(error || "Local DB connection validation failed."),
       };
     }
     const accountReady = authStatus.ready === true;
     const status = accountReady && productCheck.ready ? "PASS" : "FAIL";
     return {
+      actionId: "validate-current-connection",
+      actionLabel: "Validate Current Connection",
       checks: [
         {
           id: "account-connection",
@@ -2516,7 +2592,7 @@ LIMIT 1;
         },
         {
           id: "product-data-connection",
-          label: "Product data connection",
+          label: "Local DB connection",
           status: productCheck.ready ? "PASS" : "FAIL",
           message: productCheck.message,
         },
@@ -2529,26 +2605,58 @@ LIMIT 1;
         : "Current configured connection validation failed.",
       secretEditingAllowed: false,
       status,
-      promotionFoundation: this.ownerPromotionFoundation(),
-      storageStatus: this.ownerStorageStatus(),
     };
   }
 
-  async runOwnerOperationAction(body = {}) {
-    await this.requireOwnerSession();
+  async adminDatabaseConnectivityTest() {
+    await this.requireAdminSession();
+    try {
+      const connection = this.supabaseDatabaseAdapter("Running Admin Operations database connectivity test").connect();
+      const ready = connection.ready === true;
+      return {
+        actionId: "database-connectivity-test",
+        actionLabel: "Database Connectivity Test",
+        executed: true,
+        message: ready
+          ? "Database Connectivity Test completed for the configured Local DB."
+          : "Database Connectivity Test did not report the configured Local DB as ready.",
+        secretEditingAllowed: false,
+        status: ready ? "PASS" : "FAIL",
+      };
+    } catch (error) {
+      return {
+        actionId: "database-connectivity-test",
+        actionLabel: "Database Connectivity Test",
+        executed: true,
+        message: error instanceof Error ? error.message : String(error || "Database Connectivity Test failed."),
+        secretEditingAllowed: false,
+        status: "FAIL",
+      };
+    }
+  }
+
+  async runAdminOperationAction(body = {}) {
+    await this.requireAdminSession();
     const actionId = String(body.actionId || "").trim();
-    const action = OWNER_OPERATION_ACTIONS.find((candidate) => candidate.id === actionId);
+    const action = this.adminOperationGroups()
+      .flatMap((group) => group.actions)
+      .find((candidate) => candidate.id === actionId);
     if (!action) {
-      throw new Error(`Unknown Owner Operations action: ${actionId || "missing actionId"}.`);
+      throw new Error(`Unknown Admin Operations action: ${actionId || "missing actionId"}.`);
     }
     if (action.id === "validate-current-connection") {
-      return this.validateOwnerConnection();
+      return this.validateAdminConnection();
+    }
+    if (action.id === "database-connectivity-test") {
+      return this.adminDatabaseConnectivityTest();
     }
     return {
       actionId: action.id,
+      actionLabel: action.label,
+      confirmationRequired: action.confirmationRequired === true,
       executed: false,
       manualOnly: true,
-      message: `${action.label} is staged in Owner Operations but must be executed manually through reviewed server-side scripts, configuration changes, and server restart.`,
+      message: `${action.label} is not implemented in Admin Operations. ${action.confirmationMessage || action.diagnostic || "Use reviewed server-side tooling before enabling this action."}`,
       secretEditingAllowed: false,
       status: "SKIP",
     };
@@ -4065,19 +4173,14 @@ export function createLocalApiRouter() {
         return true;
       }
 
-      if (parts[1] === "owner" && parts[2] === "operations" && request.method === "GET" && parts[3] === "status") {
-        ok(response, await dataSource.ownerOperationsStatus());
+      if (parts[1] === "admin" && parts[2] === "operations" && request.method === "GET" && parts[3] === "status") {
+        ok(response, await dataSource.adminOperationsStatus());
         return true;
       }
 
-      if (parts[1] === "owner" && parts[2] === "operations" && request.method === "POST" && parts[3] === "validate") {
-        ok(response, await dataSource.validateOwnerConnection());
-        return true;
-      }
-
-      if (parts[1] === "owner" && parts[2] === "operations" && request.method === "POST" && parts[3] === "action") {
+      if (parts[1] === "admin" && parts[2] === "operations" && request.method === "POST" && parts[3] === "action") {
         const body = await readRequestJson(request);
-        ok(response, await dataSource.runOwnerOperationAction(body));
+        ok(response, await dataSource.runAdminOperationAction(body));
         return true;
       }
 

@@ -393,14 +393,14 @@ function createSupabasePreflight({
     },
     {
       id: "site-setup-readiness",
-      label: "Owner Operations readiness",
+      label: "Admin Operations readiness",
       status: preflightStatus({
         active: supabasePostgresActive,
         ready: supabasePostgresReadiness.siteSetupReady,
       }),
       summary: supabasePostgresReadiness.siteSetupReady
-        ? "Owner Operations readiness checks are available for Supabase Postgres."
-        : "Owner Operations for Supabase requires server-only setup configuration.",
+        ? "Admin Operations readiness checks are available for Supabase Postgres."
+        : "Admin Operations for Supabase requires server-only setup configuration.",
     },
   ];
   const failedChecks = checks.filter((check) => check.status === "FAIL");
@@ -426,7 +426,7 @@ export function createSupabasePostgresReadiness(env = process.env) {
     blockers.push(`Add ${adapterMissing.join(", ")} for the configured database connection.`);
   }
   if (!siteSetupReady) {
-    blockers.push("Add server-only direct database configuration before Owner Operations can run setup.");
+    blockers.push("Add server-only direct database configuration before Admin Operations can run setup.");
   }
   return {
     configured,
@@ -1016,11 +1016,11 @@ export class SupabasePostgresProviderAdapter {
     this.assertConfigured();
     const readiness = this.readiness();
     if (!readiness.siteSetupReady) {
-      throw new Error("Owner Operations setup requires server-only direct SQL configuration before setup can run.");
+      throw new Error("Admin Operations setup requires server-only direct SQL configuration before setup can run.");
     }
     return {
       executed: false,
-      owner: "Owner -> Operations",
+      owner: "Admin -> Operations",
       providerId: this.providerId,
       ready: true,
     };

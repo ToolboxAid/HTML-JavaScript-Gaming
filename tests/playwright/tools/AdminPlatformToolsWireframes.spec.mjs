@@ -7,6 +7,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 
 const ADMIN_TOOL_MENU_LABELS = [
   "Infrastructure",
+  "Operations",
   "Platform Settings",
   "System Health",
   "Tool Votes",
@@ -229,6 +230,7 @@ async function startAdminPage(page, pathName, options = {}) {
         data: {
           adminMainItems: [
             { label: "Infrastructure", path: "admin/infrastructure.html", route: "admin-infrastructure" },
+            { label: "Operations", path: "admin/operations.html", route: "admin-operations" },
             { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
             { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
             { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
@@ -239,7 +241,6 @@ async function startAdminPage(page, pathName, options = {}) {
             { label: "Design System", path: "admin/design-system.html", route: "admin-design-system" },
             { label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" },
             { href: "/admin/admin-notes.html", label: "Notes", localNotes: true },
-            { label: "Operations", path: "owner/operations.html", route: "owner-operations" },
           ],
         },
         ok: true,
@@ -493,11 +494,12 @@ async function expectStoragePathStatusRows(page, expectedValues) {
 async function expectAdminHeaderMenu(page) {
   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='admin']")).toHaveAttribute("href", /admin\/platform-settings\.html$/);
   await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveText("Owner \u25BE");
-  await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveAttribute("href", /owner\/operations\.html$/);
+  await expect(page.locator("nav.nav-links > .nav-item > a[data-route='owner']")).toHaveAttribute("href", /admin\/db-viewer\.html$/);
   const ownerSubmenu = page.locator("nav.nav-links > .nav-item[data-owner-menu] > .sub-menu");
-  await expect(ownerSubmenu.locator("a")).toHaveText(["DB Viewer", "Design System", "Grouping Colors", "Notes", "Operations"]);
+  await expect(ownerSubmenu.locator("a")).toHaveText(["DB Viewer", "Design System", "Grouping Colors", "Notes"]);
   const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-infrastructure']")).toHaveText("Infrastructure");
+  await expect(adminSubmenu.locator(":scope > a[data-route='admin-operations']")).toHaveText("Operations");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-platform-settings']")).toHaveText("Platform Settings");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-system-health']")).toHaveText("System Health");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-tool-votes']")).toHaveText("Tool Votes");
@@ -570,10 +572,10 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("#admin-infrastructure-image-zoom img[src*='GFS-Infrastructure%20v1-3.png'], #admin-infrastructure-image-zoom img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(1);
         await page.locator("#admin-infrastructure-image-zoom").getByRole("button", { name: "Close" }).click();
         await expect(page.locator("#admin-infrastructure-image-zoom")).not.toBeVisible();
-        await expect(page.getByRole("link", { name: "Database Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
-        await expect(page.getByRole("link", { name: "Storage Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
-        await expect(page.getByRole("link", { name: "Owner Operations" })).toHaveAttribute("href", /owner\/operations\.html$/);
-        await expect(page.getByRole("link", { name: "Promotion Foundation" })).toHaveAttribute("href", /owner\/operations\.html$/);
+        await expect(page.getByRole("link", { name: "Database Status" })).toHaveAttribute("href", /admin\/system-health\.html$/);
+        await expect(page.getByRole("link", { name: "Storage Status" })).toHaveAttribute("href", /admin\/system-health\.html$/);
+        await expect(page.getByRole("link", { name: "Admin Operations" })).toHaveAttribute("href", /admin\/operations\.html$/);
+        await expect(page.getByRole("link", { name: "Promotion Foundation" })).toHaveAttribute("href", /admin\/system-health\.html$/);
         await expect(page.locator("[data-admin-storage-connectivity-action='storage-list']")).toHaveText("List");
         await expect(page.locator("[data-admin-storage-connectivity-action='storage-write-test-object']")).toHaveText("Write Test Object");
         await expect(page.locator("[data-admin-storage-connectivity-action='storage-read-test-object']")).toHaveText("Read Test Object");
@@ -687,7 +689,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
           { actionId: "storage-delete-test-object" },
         ]);
         await expect(page.getByRole("link", { name: "Infrastructure Reference" })).toHaveAttribute("href", /admin\/infrastructure\.html$/);
-        await expect(page.getByRole("link", { name: "Owner Operations Actions" })).toHaveAttribute("href", /owner\/operations\.html$/);
+        await expect(page.getByRole("link", { name: "Admin Operations Actions" })).toHaveAttribute("href", /admin\/operations\.html$/);
       } else {
         await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
         await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
@@ -989,6 +991,7 @@ test("Platform Settings Admin controls update banner through the service route",
         body: JSON.stringify({
           data: {
             adminMainItems: [
+              { label: "Operations", path: "admin/operations.html", route: "admin-operations" },
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
               { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
               { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
@@ -1151,7 +1154,6 @@ test("Owner menu is role-gated separately from Admin menu", async ({ page }) => 
               { label: "Design System", path: "admin/design-system.html", route: "admin-design-system" },
               { label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" },
               { href: "/admin/admin-notes.html", label: "Notes", localNotes: true },
-              { label: "Operations", path: "owner/operations.html", route: "owner-operations" },
             ],
           },
           ok: true,
@@ -1186,7 +1188,6 @@ test("Owner menu is role-gated separately from Admin menu", async ({ page }) => 
       "Design System",
       "Grouping Colors",
       "Notes",
-      "Operations",
     ]);
 
     sessionRoles.splice(0, sessionRoles.length, "owner", "admin", "creator");
@@ -1198,87 +1199,44 @@ test("Owner menu is role-gated separately from Admin menu", async ({ page }) => 
   }
 });
 
-test("Owner Operations exposes owner-only connection validation and manual operation actions", async ({ page }) => {
+test("Admin Operations exposes ordered guarded operation actions", async ({ page }) => {
   const server = await startRepoServer();
-  const ownerActionPosts = [];
-  const promotionFoundation = {
-    browserExecutionAllowed: false,
-    destructiveOperationsAllowed: false,
-    exportImportRuntime: "reviewed server-side tooling only",
-    importOverwriteAllowed: false,
-    importOverwritePolicy: "fail-visible-until-explicit-confirmation",
-    message: "Project promotion foundation is planning-only for DEV, IST, UAT, and PROD.",
-    ownerOnly: true,
-    overwriteConfirmationImplemented: false,
-    promotionScope: "project metadata, asset references, and project asset storage objects",
-    safetyMessage: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists.",
-    secretEditingAllowed: false,
-    status: "PASS",
-    steps: [
-      {
-        id: "dev-export-plan",
-        stage: "DEV",
-        operation: "Export",
-        safetyDiagnostic: "Read-only export planning only; no project records, asset references, or storage objects are changed.",
-        safetyStatus: "PASS",
-        status: "PLAN",
-        message: "Plan a read-only DEV export through Local API from Local DB/SQLite metadata, asset references, and configured project asset storage object keys.",
-      },
-      {
-        id: "ist-import-plan",
-        stage: "IST",
-        operation: "Import",
-        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing IST project must fail visibly before any write.",
-        safetyStatus: "FAIL",
-        status: "PLAN",
-        message: "Plan DEV to IST promotion through reviewed server-side tooling; no browser import execution.",
-      },
-      {
-        id: "ist-validate-plan",
-        stage: "IST",
-        operation: "Validate",
-        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying IST.",
-        safetyStatus: "PASS",
-        status: "PLAN",
-        message: "Plan validation of IST project metadata, asset references, and project asset storage objects before UAT promotion.",
-      },
-      {
-        id: "uat-import-plan",
-        stage: "UAT",
-        operation: "Import",
-        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing UAT project must fail visibly before any write.",
-        safetyStatus: "FAIL",
-        status: "PLAN",
-        message: "Plan IST to UAT promotion through reviewed server-side tooling; no browser import execution.",
-      },
-      {
-        id: "uat-validate-plan",
-        stage: "UAT",
-        operation: "Validate",
-        safetyDiagnostic: "Validation planning is read-only and reports metadata/storage reference mismatches without modifying UAT.",
-        safetyStatus: "PASS",
-        status: "PLAN",
-        message: "Plan validation of UAT project metadata, asset references, and project asset storage objects before any PROD promotion.",
-      },
-      {
-        id: "prod-import-plan",
-        stage: "PROD",
-        operation: "Import",
-        safetyDiagnostic: "Overwrite confirmation is not implemented; importing over an existing PROD project must fail visibly before any write.",
-        safetyStatus: "FAIL",
-        status: "PLAN",
-        message: "Plan a PROD import of project metadata, asset references, and project asset storage objects only after UAT validation evidence is reviewed.",
-      },
-      {
-        id: "prod-validate-plan",
-        stage: "PROD",
-        operation: "Validate",
-        safetyDiagnostic: "Validation planning is read-only and reports PROD readiness without modifying project data.",
-        safetyStatus: "PASS",
-        status: "PLAN",
-        message: "Plan runtime-safe PROD validation without destructive browser operations.",
-      },
-    ],
+  const adminActionPosts = [];
+  const actionGroups = [
+    {
+      id: "project-packaging",
+      label: "Project Packaging",
+      actions: [
+        { id: "export-project-package", label: "Export Project Package", status: "SKIP", diagnostic: "Export Project Package is not implemented in this PR.", notImplemented: true },
+        { id: "validate-project-package", label: "Validate Project Package", status: "SKIP", diagnostic: "Validate Project Package is not implemented in this PR.", notImplemented: true },
+        { id: "import-project-package", label: "Import Project Package", status: "SKIP", diagnostic: "Import Project Package is not implemented in this PR; existing project overwrites are blocked.", confirmationMessage: "Import Project Package must fail visibly until explicit overwrite confirmation behavior exists.", confirmationRequired: true, notImplemented: true, risky: true },
+      ],
+    },
+    {
+      id: "backup-recovery",
+      label: "Backup & Recovery",
+      actions: [
+        { id: "create-backup", label: "Create Backup", status: "SKIP", diagnostic: "Create Backup is not implemented in this PR.", notImplemented: true },
+        { id: "restore-from-backup", label: "Restore From Backup", status: "SKIP", diagnostic: "Restore From Backup is not implemented in this PR.", confirmationMessage: "Restore From Backup is risky and must require explicit confirmation before any restore behavior is implemented.", confirmationRequired: true, notImplemented: true, risky: true },
+      ],
+    },
+    {
+      id: "database-operations",
+      label: "Database Operations",
+      actions: [
+        { id: "validate-current-connection", label: "Validate Current Connection", status: "PASS", diagnostic: "Validate Current Connection checks configured services without changing data." },
+        { id: "database-connectivity-test", label: "Database Connectivity Test", status: "PASS", diagnostic: "Database Connectivity Test checks the configured Local DB without changing data." },
+        { id: "run-migration", label: "Run Migration", status: "SKIP", diagnostic: "Run Migration is not implemented from Admin Operations; use reviewed server-side migration scripts.", confirmationMessage: "Run Migration is risky and must require explicit confirmation before migration execution is implemented.", confirmationRequired: true, notImplemented: true, risky: true },
+        { id: "reseed-dev", label: "Reseed DEV", status: "SKIP", diagnostic: "Reseed DEV is not implemented from Admin Operations; use reviewed DEV-only reseed scripts.", confirmationMessage: "Reseed DEV is destructive and is only available when the configured project storage lane resolves to DEV.", confirmationRequired: true, notImplemented: true, risky: true },
+      ],
+    },
+  ];
+  const actionLabels = Object.fromEntries(actionGroups.flatMap((group) => group.actions.map((action) => [action.id, action.label])));
+  const actionMessages = {
+    "import-project-package": "Import Project Package is not implemented in Admin Operations. Import Project Package must fail visibly until explicit overwrite confirmation behavior exists.",
+    "restore-from-backup": "Restore From Backup is not implemented in Admin Operations. Restore From Backup is risky and must require explicit confirmation before any restore behavior is implemented.",
+    "run-migration": "Run Migration is not implemented in Admin Operations. Run Migration is risky and must require explicit confirmation before migration execution is implemented.",
+    "reseed-dev": "Reseed DEV is not implemented in Admin Operations. Reseed DEV is destructive and is only available when the configured project storage lane resolves to DEV.",
   };
   try {
     await page.route("**/api/session/current", async (route) => {
@@ -1288,7 +1246,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
           data: {
             authenticated: true,
             displayName: "DavidQ",
-            roleSlugs: ["owner", "admin", "creator"],
+            roleSlugs: ["admin", "creator"],
             userKey: MOCK_DB_KEYS.users.admin,
           },
           ok: true,
@@ -1301,6 +1259,8 @@ test("Owner Operations exposes owner-only connection validation and manual opera
         body: JSON.stringify({
           data: {
             adminMainItems: [
+              { label: "Infrastructure", path: "admin/infrastructure.html", route: "admin-infrastructure" },
+              { label: "Operations", path: "admin/operations.html", route: "admin-operations" },
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
               { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
               { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
@@ -1311,7 +1271,6 @@ test("Owner Operations exposes owner-only connection validation and manual opera
               { label: "Design System", path: "admin/design-system.html", route: "admin-design-system" },
               { label: "Grouping Colors", path: "admin/grouping-colors.html", route: "admin-grouping-colors" },
               { href: "/admin/admin-notes.html", label: "Notes", localNotes: true },
-              { label: "Operations", path: "owner/operations.html", route: "owner-operations" },
             ],
           },
           ok: true,
@@ -1330,222 +1289,105 @@ test("Owner Operations exposes owner-only connection validation and manual opera
         body: JSON.stringify({ data: { activeTools: [], readinessByStatus: {}, tools: [], toolboxContract: {} }, ok: true }),
       });
     });
-    await page.route("**/api/owner/operations/status", async (route) => {
+    await page.route("**/api/admin/operations/status", async (route) => {
       await route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({
           data: {
-            connectionSummary: {
-              account: { configured: true, status: "ready" },
-              environmentSwitching: "manual-env-change-and-server-restart",
-              productData: { configured: true, status: "adapter-ready" },
-              secretsExposed: false,
-            },
-            databaseStatus: {
-              configured: true,
-              databaseName: "gamefoundry_dev",
-              databaseNameStatus: "PASS",
-              host: "192.168.2.5",
-              hostStatus: "PASS",
-              lastMigration: {
-                appliedAt: "2026-06-17 01:07:30.540517+00",
-                name: "support-tickets.sql",
-                type: "DML",
-              },
-              lastMigrationStatus: "PASS",
-              migrationCounts: {
-                DDL: 15,
-                DML: 15,
-              },
-              migrationStatus: "PASS",
-              port: 55431,
-              portStatus: "PASS",
-              sslMode: "disable",
-              sslModeStatus: "PASS",
-              status: "PASS",
-            },
-            promotionFoundation,
-            storageStatus: {
-              accessKeyConfigured: true,
-              accessKeyStatus: "PASS",
-              bucket: "gamefoundry-dev-assets",
-              bucketStatus: "PASS",
-              configured: true,
-              endpoint: "https://storage.example.invalid",
-              endpointStatus: "PASS",
-              projectsPrefix: "/dev/projects/",
-              projectsPrefixStatus: "PASS",
-              secretKeyConfigured: true,
-              secretKeyStatus: "PASS",
-              status: "PASS",
-            },
-            message: "Owner Operations loaded.",
+            actionGroups,
+            currentEnvironment: "DEV",
+            message: "Admin Operations loaded.",
             status: "PASS",
           },
           ok: true,
         }),
       });
     });
-    await page.route("**/api/owner/operations/validate", async (route) => {
-      await route.fulfill({
-        contentType: "application/json",
-        body: JSON.stringify({
-          data: {
-            connectionSummary: {
-              account: { configured: true, status: "ready" },
-              environmentSwitching: "manual-env-change-and-server-restart",
-              productData: { configured: true, status: "adapter-ready" },
-              secretsExposed: false,
-            },
-            databaseStatus: {
-              configured: true,
-              databaseName: "gamefoundry_dev",
-              databaseNameStatus: "PASS",
-              host: "192.168.2.5",
-              hostStatus: "PASS",
-              lastMigration: {
-                appliedAt: "2026-06-17 01:07:30.540517+00",
-                name: "support-tickets.sql",
-                type: "DML",
-              },
-              lastMigrationStatus: "PASS",
-              migrationCounts: {
-                DDL: 15,
-                DML: 15,
-              },
-              migrationStatus: "PASS",
-              port: 55431,
-              portStatus: "PASS",
-              sslMode: "disable",
-              sslModeStatus: "PASS",
-              status: "PASS",
-            },
-            storageStatus: {
-              accessKeyConfigured: true,
-              accessKeyStatus: "PASS",
-              bucket: "gamefoundry-dev-assets",
-              bucketStatus: "PASS",
-              configured: true,
-              endpoint: "https://storage.example.invalid",
-              endpointStatus: "PASS",
-              projectsPrefix: "/dev/projects/",
-              projectsPrefixStatus: "PASS",
-              secretKeyConfigured: true,
-              secretKeyStatus: "PASS",
-              status: "PASS",
-            },
-            promotionFoundation,
-            executed: true,
-            message: "Current configured connections validated.",
-            status: "PASS",
-          },
-          ok: true,
-        }),
-      });
-    });
-    await page.route("**/api/owner/operations/action", async (route) => {
+    await page.route("**/api/admin/operations/action", async (route) => {
       const body = route.request().postDataJSON();
-      ownerActionPosts.push(body);
-      const actionLabels = {
-        "promote-dev-to-ist": "Promote DEV to IST",
-        "promote-ist-to-uat": "Promote IST to UAT",
-        "reseed-dev": "Reseed DEV",
-      };
       const actionLabel = actionLabels[body.actionId] || body.actionId;
+      adminActionPosts.push(body);
+      const liveMessages = {
+        "database-connectivity-test": "Database Connectivity Test completed for the configured Local DB.",
+        "validate-current-connection": "Current configured connections validated.",
+      };
       await route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({
           data: {
             actionId: body.actionId,
-            executed: false,
-            manualOnly: true,
-            message: `${actionLabel} is staged in Owner Operations but must be executed manually through reviewed server-side scripts, configuration changes, and server restart.`,
-            status: "SKIP",
+            actionLabel,
+            executed: body.actionId === "validate-current-connection" || body.actionId === "database-connectivity-test",
+            manualOnly: body.actionId !== "validate-current-connection" && body.actionId !== "database-connectivity-test",
+            message: liveMessages[body.actionId] || actionMessages[body.actionId] || `${actionLabel} is not implemented in Admin Operations.`,
+            status: liveMessages[body.actionId] ? "PASS" : "SKIP",
           },
           ok: true,
         }),
       });
     });
 
-    await page.goto(`${server.baseUrl}/owner/operations.html`, { waitUntil: "networkidle" });
+    await page.goto(`${server.baseUrl}/admin/operations.html`, { waitUntil: "networkidle" });
     await expect(page.getByRole("heading", { level: 1, name: "Operations" })).toBeVisible();
-    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu] > .sub-menu a")).toHaveText([
-      "DB Viewer",
-      "Design System",
-      "Grouping Colors",
-      "Notes",
-      "Operations",
+    await expect(page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu a")).toHaveText(ADMIN_TOOL_MENU_LABELS);
+    await expect(page.locator("nav.nav-links > .nav-item[data-owner-menu]")).toHaveCount(0);
+    await expect(page.locator("[data-admin-operations] .tool-column").first().locator("summary")).toHaveText([
+      "Project Packaging",
+      "Backup & Recovery",
+      "Database Operations",
     ]);
-    await expect(page.locator("[data-owner-connection-summary]")).toHaveCount(0);
-    await expect(page.locator("[data-owner-storage-status-rows]")).toHaveCount(0);
-    await expect(page.locator("[data-owner-operation-action='promote-dev-to-uat']")).toHaveCount(0);
-    await expect(page.locator("[data-owner-operation-action='promote-dev-to-ist']")).toHaveText("Promote DEV to IST");
-    await expect(page.locator("[data-owner-operation-action='promote-ist-to-uat']")).toHaveText("Promote IST to UAT");
-    await expect(page.locator("[data-owner-operation-action='promote-uat-to-prod']")).toHaveText("Promote UAT to PROD");
-    await expect(page.locator("[data-owner-operation-action='storage-list']")).toHaveCount(0);
-    await expect(page.locator("[data-owner-operation-action='storage-write-test-object']")).toHaveCount(0);
-    await expect(page.locator("[data-owner-operation-action='storage-read-test-object']")).toHaveCount(0);
-    await expect(page.locator("[data-owner-operation-action='storage-delete-test-object']")).toHaveCount(0);
-    await expect(page.locator("[data-owner-operations]")).toContainText("project metadata, asset references, and project asset storage objects");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Connection Configured");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Host");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("192.168.2.5");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Port");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("55431");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Name");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("gamefoundry_dev");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("SSL Mode");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("disable");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Migration Counts");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("DDL=15; DML=15");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Last Migration");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("DML support-tickets.sql at 2026-06-17 01:07:30.540517+00");
-    await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("postgres://");
-    await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("password");
-    await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("SERVICE_ROLE");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("DEV");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Export");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("IST");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("UAT");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Import");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Validate");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("PROD");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("project metadata, asset references, and project asset storage objects");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Owner-only");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("browser execution disabled");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("destructive operations disabled");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("PASS: Read-only export planning only");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("FAIL: Overwrite confirmation is not implemented");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("must fail visibly before any write");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("PASS: Validation planning is read-only");
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Owner Operations loaded.");
+    await expect(page.locator("[data-admin-operation-group='project-packaging'] button")).toHaveText([
+      "Export Project Package",
+      "Validate Project Package",
+      "Import Project Package",
+    ]);
+    await expect(page.locator("[data-admin-operation-group='backup-recovery'] button")).toHaveText([
+      "Create Backup",
+      "Restore From Backup",
+    ]);
+    await expect(page.locator("[data-admin-operation-group='database-operations'] button")).toHaveText([
+      "Validate Current Connection",
+      "Database Connectivity Test",
+      "Run Migration",
+      "Reseed DEV",
+    ]);
+    await expect(page.locator("[data-admin-operations]")).not.toContainText("Promote DEV to IST");
+    await expect(page.locator("[data-admin-operations]")).not.toContainText("Promote IST to UAT");
+    await expect(page.locator("[data-admin-operations]")).not.toContainText("Promote UAT to PROD");
+    await expect(page.locator("[data-owner-database-status-rows]")).toHaveCount(0);
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toHaveCount(0);
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Admin Operations loaded.");
+    await expect(page.locator("[data-admin-operations-environment]")).toContainText("DEV");
+    await expect(page.locator("[data-admin-operation-safety-rows]")).toContainText("Import Project Package");
+    await expect(page.locator("[data-admin-operation-safety-rows]")).toContainText("Restore From Backup");
+    await expect(page.locator("[data-admin-operation-safety-rows]")).toContainText("Run Migration");
+    await expect(page.locator("[data-admin-operation-safety-rows]")).toContainText("Reseed DEV");
+    await expect(page.locator("[data-admin-operation-safety-rows]")).toContainText("required before execution");
+    await expect(page.locator("[data-admin-operation-safety-rows]")).toContainText("not implemented");
+    await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-secret-key");
+    await expect(page.locator("[data-admin-operations]")).not.toContainText("asset-test-access-key");
 
-    await page.locator("[data-owner-operation-validate]").click();
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Current configured connections validated.");
-    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("DDL=15; DML=15");
-    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Local API");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("validate-current-connection");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
-
-    await expect(page.locator("[data-owner-operation-result-rows]")).not.toContainText("asset-test-secret-key");
-    await expect(page.locator("[data-owner-operation-result-rows]")).not.toContainText("asset-test-access-key");
-
-    await page.locator("[data-owner-operation-action='reseed-dev']").click();
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Reseed DEV is staged in Owner Operations");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("reseed-dev");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
-    await page.locator("[data-owner-operation-action='promote-dev-to-ist']").click();
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote DEV to IST is staged in Owner Operations");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-dev-to-ist");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
-    await page.locator("[data-owner-operation-action='promote-ist-to-uat']").click();
-    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote IST to UAT is staged in Owner Operations");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-ist-to-uat");
-    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
-    expect(ownerActionPosts).toEqual([
+    await page.locator("[data-admin-operation-action='validate-current-connection']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Current configured connections validated.");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("Validate Current Connection");
+    await expect(page.locator("[data-admin-operation-result-rows] tr").first()).toContainText("yes");
+    await page.locator("[data-admin-operation-action='database-connectivity-test']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("PASS: Database Connectivity Test completed for the configured Local DB.");
+    await page.locator("[data-admin-operation-action='import-project-package']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("SKIP: Import Project Package is not implemented in Admin Operations.");
+    await page.locator("[data-admin-operation-action='restore-from-backup']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("SKIP: Restore From Backup is not implemented in Admin Operations.");
+    await page.locator("[data-admin-operation-action='run-migration']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("SKIP: Run Migration is not implemented in Admin Operations.");
+    await page.locator("[data-admin-operation-action='reseed-dev']").click();
+    await expect(page.locator("[data-admin-operations-status]")).toContainText("SKIP: Reseed DEV is not implemented in Admin Operations.");
+    expect(adminActionPosts).toEqual([
+      { actionId: "validate-current-connection" },
+      { actionId: "database-connectivity-test" },
+      { actionId: "import-project-package" },
+      { actionId: "restore-from-backup" },
+      { actionId: "run-migration" },
       { actionId: "reseed-dev" },
-      { actionId: "promote-dev-to-ist" },
-      { actionId: "promote-ist-to-uat" },
     ]);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
   } finally {
@@ -1553,7 +1395,97 @@ test("Owner Operations exposes owner-only connection validation and manual opera
   }
 });
 
-test("Owner Operations blocks signed-in non-owner users", async ({ page }) => {
+test("Admin Operations hides Reseed DEV outside the DEV lane", async ({ page }) => {
+  const server = await startRepoServer();
+  try {
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            authenticated: true,
+            displayName: "DavidQ",
+            roleSlugs: ["admin", "creator"],
+            userKey: MOCK_DB_KEYS.users.admin,
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/navigation/admin-menu", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            adminMainItems: [
+              { label: "Infrastructure", path: "admin/infrastructure.html", route: "admin-infrastructure" },
+              { label: "Operations", path: "admin/operations.html", route: "admin-operations" },
+              { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+              { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
+              { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
+              { label: "Users", path: "admin/users.html", route: "admin-users" },
+            ],
+            ownerMenuItems: [],
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ data: { banner: { active: false, message: "", tone: "info" } }, ok: true }),
+      });
+    });
+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ data: { activeTools: [], readinessByStatus: {}, tools: [], toolboxContract: {} }, ok: true }),
+      });
+    });
+    await page.route("**/api/admin/operations/status", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            actionGroups: [
+              { id: "project-packaging", label: "Project Packaging", actions: [{ id: "export-project-package", label: "Export Project Package", status: "SKIP", diagnostic: "Export Project Package is not implemented in this PR.", notImplemented: true }] },
+              { id: "backup-recovery", label: "Backup & Recovery", actions: [{ id: "create-backup", label: "Create Backup", status: "SKIP", diagnostic: "Create Backup is not implemented in this PR.", notImplemented: true }] },
+              {
+                id: "database-operations",
+                label: "Database Operations",
+                actions: [
+                  { id: "validate-current-connection", label: "Validate Current Connection", status: "PASS", diagnostic: "Validate Current Connection checks configured services without changing data." },
+                  { id: "database-connectivity-test", label: "Database Connectivity Test", status: "PASS", diagnostic: "Database Connectivity Test checks the configured Local DB without changing data." },
+                  { id: "run-migration", label: "Run Migration", status: "SKIP", diagnostic: "Run Migration is not implemented from Admin Operations; use reviewed server-side migration scripts.", confirmationRequired: true, notImplemented: true, risky: true },
+                ],
+              },
+            ],
+            currentEnvironment: "IST",
+            message: "Admin Operations loaded.",
+            status: "PASS",
+          },
+          ok: true,
+        }),
+      });
+    });
+
+    await page.goto(`${server.baseUrl}/admin/operations.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("[data-admin-operations-environment]")).toContainText("IST");
+    await expect(page.locator("[data-admin-operation-group='database-operations'] button")).toHaveText([
+      "Validate Current Connection",
+      "Database Connectivity Test",
+      "Run Migration",
+    ]);
+    await expect(page.locator("[data-admin-operation-action='reseed-dev']")).toHaveCount(0);
+    await expect(page.locator("[data-admin-operation-safety-rows]")).not.toContainText("Reseed DEV");
+    await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+  } finally {
+    await server.close();
+  }
+});
+
+test("Admin Operations blocks signed-in non-admin users", async ({ page }) => {
   const server = await startRepoServer();
   try {
     await page.route("**/api/session/current", async (route) => {
@@ -1576,9 +1508,7 @@ test("Owner Operations blocks signed-in non-owner users", async ({ page }) => {
         body: JSON.stringify({
           data: {
             adminMainItems: [],
-            ownerMenuItems: [
-              { label: "Operations", path: "owner/operations.html", route: "owner-operations" },
-            ],
+            ownerMenuItems: [],
           },
           ok: true,
         }),
@@ -1597,11 +1527,11 @@ test("Owner Operations blocks signed-in non-owner users", async ({ page }) => {
       });
     });
 
-    await page.goto(`${server.baseUrl}/owner/operations.html`, { waitUntil: "networkidle" });
-    await expect(page.locator("main[data-session-access-blocked='owner']")).toBeVisible();
-    await expect(page.getByRole("heading", { level: 1, name: "Owner role required" })).toBeVisible();
+    await page.goto(`${server.baseUrl}/admin/operations.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("main[data-session-access-blocked='admin']")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Admin role required" })).toBeVisible();
     await expect(page.locator("[data-session-access-status]")).toContainText("Current session: User 1");
-    await expect(page.locator("[data-owner-operations]")).toHaveCount(0);
+    await expect(page.locator("[data-admin-operations]")).toHaveCount(0);
   } finally {
     await server.close();
   }
