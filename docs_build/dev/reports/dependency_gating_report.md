@@ -1,6 +1,6 @@
 # Dependency Gating Report
 
-Generated: 2026-06-16T20:39:54.276Z
+Generated: 2026-06-17T01:43:02.672Z
 Status: PASS
 
 ## Gate Order
@@ -14,7 +14,7 @@ Status: PASS
 
 | Lane | Selected | Status | Dependencies | Affected Surface | Reason |
 | --- | --- | --- | --- | --- | --- |
-| workspace-contract | Yes | PASS | none | Root tools future-state navigation and Tool Template V2 contract | Lane has no lane dependencies and is eligible after preflight and compilation pass. |
+| workspace-contract | No | SKIP | none | Root tools future-state navigation and Tool Template V2 contract | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | game-workspace | No | SKIP | none | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | game-design | No | SKIP | none | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |
 | game-configuration | No | SKIP | none | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | Lane was not selected, so dependency-gated runtime scheduling skipped it. |

@@ -1,5 +1,5 @@
-scripts/apply-database-ddl.mjs
-scripts/validate-runtime-connections.mjs
-docs_build/dev/reports/PR_26167_200-database-migration-apply-lane.md
+docs_build/database/README.md
+docs_build/database/runbook.md
+docs_build/dev/reports/PR_26167_206-database-runbook.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

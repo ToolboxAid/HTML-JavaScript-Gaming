@@ -65,6 +65,23 @@
                             </table>
                         </div>
                         <div class="table-wrapper">
+                            <table class="data-table" aria-label="Database operation status">
+                                <caption>Database Operations</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Operation</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Mode</th>
+                                        <th scope="col">Command Or Source</th>
+                                        <th scope="col">Message</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-owner-database-status-rows>
+                                    <tr><td>Migration History</td><td>Loading</td><td>read-only</td><td>schema_migrations</td><td>Loading database operation status.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
                             <table class="data-table" aria-label="Owner operation results">
                                 <caption>Operation Results</caption>
                                 <thead>

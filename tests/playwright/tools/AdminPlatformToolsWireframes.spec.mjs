@@ -786,6 +786,50 @@ test("Owner Operations exposes owner-only connection validation and manual opera
               productData: { configured: true, status: "adapter-ready" },
               secretsExposed: false,
             },
+            databaseOperations: [
+              {
+                command: "node .\\scripts\\validate-runtime-connections.mjs",
+                label: "Validate Connections",
+                message: "Operator-run validation against the current .env.",
+                mode: "manual script",
+                status: "READY",
+              },
+              {
+                command: "node .\\scripts\\apply-database-ddl.mjs",
+                label: "Apply DDL",
+                message: "schema_migrations tracks applied DDL files.",
+                mode: "manual script",
+                status: "READY",
+              },
+              {
+                command: "node .\\scripts\\apply-database-dml.mjs",
+                label: "Apply DML",
+                message: "schema_migrations tracks applied DML files.",
+                mode: "manual script",
+                status: "READY",
+              },
+              {
+                command: "docs_build/database/backup-restore-lane.md",
+                label: "Backup",
+                message: "Manual backup path uses .env without exposing secrets.",
+                mode: "operator command",
+                status: "MANUAL",
+              },
+              {
+                command: "docs_build/database/backup-restore-lane.md",
+                label: "Restore",
+                message: "Restore requires confirmation outside the browser.",
+                mode: "manual confirmation",
+                status: "GUARDED",
+              },
+              {
+                command: "schema_migrations",
+                label: "Migration History",
+                message: "schema_migrations records=30; DDL=15; DML=15.",
+                mode: "read-only",
+                status: "PASS",
+              },
+            ],
             message: "Owner Operations loaded.",
             status: "PASS",
           },
@@ -804,6 +848,15 @@ test("Owner Operations exposes owner-only connection validation and manual opera
               productData: { configured: true, status: "adapter-ready" },
               secretsExposed: false,
             },
+            databaseOperations: [
+              {
+                command: "schema_migrations",
+                label: "Migration History",
+                message: "schema_migrations records=30; DDL=15; DML=15.",
+                mode: "read-only",
+                status: "PASS",
+              },
+            ],
             executed: true,
             message: "Current configured connections validated.",
             status: "PASS",
@@ -841,10 +894,20 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     ]);
     await expect(page.locator("[data-owner-connection-summary]")).toContainText("Account");
     await expect(page.locator("[data-owner-connection-summary]")).toContainText("not exposed");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Validate Connections");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Apply DDL");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Apply DML");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Backup");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Restore");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Migration History");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("schema_migrations records=30");
+    await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("postgres://");
+    await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("SERVICE_ROLE");
     await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Owner Operations loaded.");
 
     await page.locator("[data-owner-operation-validate]").click();
     await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Current configured connections validated.");
+    await expect(page.locator("[data-owner-database-status-rows]")).toContainText("schema_migrations records=30");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("validate-current-connection");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
 
@@ -854,6 +917,60 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
     expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }]);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
+  } finally {
+    await server.close();
+  }
+});
+
+test("Owner Operations blocks signed-in non-owner users", async ({ page }) => {
+  const server = await startRepoServer();
+  try {
+    await page.route("**/api/session/current", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            authenticated: true,
+            displayName: "User 1",
+            roleSlugs: ["creator"],
+            userKey: MOCK_DB_KEYS.users.user1,
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/navigation/admin-menu", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({
+          data: {
+            adminMainItems: [],
+            ownerMenuItems: [
+              { label: "Operations", path: "owner/operations.html", route: "owner-operations" },
+            ],
+          },
+          ok: true,
+        }),
+      });
+    });
+    await page.route("**/api/platform-settings/banner", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ data: { banner: { active: false, message: "", tone: "info" } }, ok: true }),
+      });
+    });
+    await page.route("**/api/toolbox/registry/snapshot", async (route) => {
+      await route.fulfill({
+        contentType: "application/json",
+        body: JSON.stringify({ data: { activeTools: [], readinessByStatus: {}, tools: [], toolboxContract: {} }, ok: true }),
+      });
+    });
+
+    await page.goto(`${server.baseUrl}/owner/operations.html`, { waitUntil: "networkidle" });
+    await expect(page.locator("main[data-session-access-blocked='owner']")).toBeVisible();
+    await expect(page.getByRole("heading", { level: 1, name: "Owner role required" })).toBeVisible();
+    await expect(page.locator("[data-session-access-status]")).toContainText("Current session: User 1");
+    await expect(page.locator("[data-owner-operations]")).toHaveCount(0);
   } finally {
     await server.close();
   }

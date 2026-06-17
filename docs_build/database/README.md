@@ -20,3 +20,25 @@ Each product area/tool owns one grouped file in `ddl/`, `dml/`, and `seed/`. Acc
 Runtime DEV setup and reseed actions must call server-side APIs. Browser pages must not directly seed authoritative DB records or generate authoritative DB keys.
 
 Codex may execute DEV database setup only. UAT and production SQL execution is user-controlled. Codex may prepare review artifacts, but it must not execute UAT or production SQL.
+
+## Apply Lanes
+
+Database setup is split into separate lanes:
+
+- DDL: `node .\scripts\apply-database-ddl.mjs`
+- DML: `node .\scripts\apply-database-dml.mjs`
+- DEV seed: `node .\scripts\apply-database-seed.mjs --dry-run`
+
+DDL and DML use `schema_migrations` for applied file tracking. DEV seed is separate from migration tracking and refuses non-DEV database targets.
+
+## Promotion
+
+The database promotion lane is documented in [promotion-lane.md](promotion-lane.md). Promotion uses manual `.env.<target>` copy-source files, validates and applies against `.env` only, and uses `schema_migrations` as the authoritative DDL/DML migration state.
+
+## Backup And Restore
+
+The operator-controlled backup and restore lane is documented in [backup-restore-lane.md](backup-restore-lane.md). Backup and restore use `GAMEFOUNDRY_DATABASE_URL` from `.env`; restore requires an explicit operator checklist and confirmation phrase before any destructive command runs.
+
+## Runbook
+
+The consolidated operator runbook is documented in [runbook.md](runbook.md). It covers validation, DDL apply, DML apply, DEV seed, backup, restore, promotion, and rollback guidance while keeping `schema_migrations` as migration state and `platform_settings` as runtime settings only.

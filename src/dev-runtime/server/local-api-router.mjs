@@ -1488,11 +1488,92 @@ class ApiRuntimeDataSource {
     };
   }
 
+  async ownerDatabaseOperationStatus() {
+    let migrationHistory = {
+      command: "schema_migrations",
+      id: "migration-history",
+      label: "Migration History",
+      message: "Migration history is unavailable until the configured database can be read.",
+      mode: "read-only",
+      status: "WARN",
+    };
+    try {
+      const adapter = this.supabaseDatabaseAdapter("Reading Owner Operations migration history");
+      const rows = await adapter.databaseClient().query(`
+SELECT "migrationType", count(*)::int AS count, max("appliedAt") AS "lastAppliedAt"
+FROM schema_migrations
+GROUP BY "migrationType"
+ORDER BY "migrationType";
+`);
+      const counts = new Map(rows.map((row) => [String(row.migrationType || ""), Number(row.count || 0)]));
+      const total = rows.reduce((sum, row) => sum + Number(row.count || 0), 0);
+      const lastAppliedAt = rows
+        .map((row) => String(row.lastAppliedAt || ""))
+        .filter(Boolean)
+        .sort()
+        .at(-1) || "not recorded";
+      migrationHistory = {
+        ...migrationHistory,
+        message: `schema_migrations records=${total}; DDL=${counts.get("DDL") || 0}; DML=${counts.get("DML") || 0}; last applied=${lastAppliedAt}.`,
+        status: "PASS",
+      };
+    } catch (error) {
+      migrationHistory = {
+        ...migrationHistory,
+        message: `Migration history read failed: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`,
+      };
+    }
+    return [
+      {
+        command: "node .\\scripts\\validate-runtime-connections.mjs",
+        id: "validate-connections",
+        label: "Validate Connections",
+        message: "Operator-run validation against the current .env.",
+        mode: "manual script",
+        status: "READY",
+      },
+      {
+        command: "node .\\scripts\\apply-database-ddl.mjs",
+        id: "apply-ddl",
+        label: "Apply DDL",
+        message: "Operator-run DDL apply; schema_migrations tracks applied files.",
+        mode: "manual script",
+        status: "READY",
+      },
+      {
+        command: "node .\\scripts\\apply-database-dml.mjs",
+        id: "apply-dml",
+        label: "Apply DML",
+        message: "Operator-run DML apply; schema_migrations tracks applied files.",
+        mode: "manual script",
+        status: "READY",
+      },
+      {
+        command: "docs_build/database/backup-restore-lane.md",
+        id: "backup",
+        label: "Backup",
+        message: "Manual pg_dump path uses GAMEFOUNDRY_DATABASE_URL from .env without exposing it in the browser.",
+        mode: "operator command",
+        status: "MANUAL",
+      },
+      {
+        command: "docs_build/database/backup-restore-lane.md",
+        id: "restore",
+        label: "Restore",
+        message: "Destructive restore requires the documented checklist and confirmation phrase outside the browser.",
+        mode: "manual confirmation",
+        status: "GUARDED",
+      },
+      migrationHistory,
+    ];
+  }
+
   async ownerOperationsStatus() {
     await this.requireOwnerSession();
     return {
       actions: clone(OWNER_OPERATION_ACTIONS),
       connectionSummary: this.ownerConnectionSummary(),
+      databaseOperations: await this.ownerDatabaseOperationStatus(),
       message: "Owner Operations loaded. Environment switching remains manual through configuration changes and server restart.",
       secretEditingAllowed: false,
       status: "PASS",
@@ -1541,6 +1622,7 @@ class ApiRuntimeDataSource {
         },
       ],
       connectionSummary: this.ownerConnectionSummary(),
+      databaseOperations: await this.ownerDatabaseOperationStatus(),
       executed: true,
       message: status === "PASS"
         ? "Current configured connections validated."
