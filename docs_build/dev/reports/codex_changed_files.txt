@@ -1,20 +1,5 @@
-# PR_26167_196 scoped changed files
-M docs_build/dev/reports/PR_26167_196-local-postgres-runtime-unblock.md
-M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
-M package.json
-D scripts/start-local-postgres.mjs
-M scripts/validate-local-postgres-runtime.mjs
-M scripts/validate-supabase-dev.mjs
-M src/dev-runtime/auth/provider-contract-stubs.mjs
-M src/dev-runtime/persistence/postgres-connection-client.mjs
-M src/dev-runtime/server/local-api-router.mjs
-
-# Required reports generated
-M docs_build/dev/reports/codex_changed_files.txt
-M docs_build/dev/reports/codex_review.diff
-
-# Artifact
-tmp/PR_26167_196-local-postgres-runtime-unblock_delta.zip
-
-# Note
-ZIP remains ignored by git and is not staged.
+﻿scripts/apply-supabase-dev-ddl.mjs
+scripts/validate-local-postgres-runtime.mjs
+docs_build/dev/reports/PR_26167_197-ddl-apply-supports-local-postgres.md
+docs_build/dev/reports/codex_review.diff
+docs_build/dev/reports/codex_changed_files.txt

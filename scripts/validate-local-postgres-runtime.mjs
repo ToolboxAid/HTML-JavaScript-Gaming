@@ -10,13 +10,6 @@ import { createServerSeedTables } from "../src/dev-runtime/seed/server-seed-load
 import { SEED_DB_KEYS } from "../src/dev-runtime/seed/seed-db-keys.mjs";
 
 const RUNTIME_ENV_FILE = ".env";
-const EXPECTED_DATABASE_URL = Object.freeze({
-  database: "gamefoundry_dev",
-  host: "192.168.2.5",
-  port: "55432",
-  protocol: "postgresql:",
-  user: "postgres",
-});
 const DDL_FILES = Object.freeze([
   "docs_build/database/ddl/account.sql",
   "docs_build/database/ddl/admin.sql",
@@ -39,7 +32,8 @@ const BANNER_SETTING_KEYS = Object.freeze([
   "platform.banner.message",
   "platform.banner.tone",
 ]);
-const GAME_NAME = `PR196 Runtime Game ${process.pid}`;
+const LOCAL_HOSTS = new Set(["127.0.0.1", "::1", "localhost"]);
+const GAME_NAME = `PR197 Runtime Game ${process.pid}`;
 
 function parseEnvValue(value) {
   const trimmed = String(value || "").trim();
@@ -88,9 +82,24 @@ function requireEnv(key) {
   return value;
 }
 
-function assertExpectedDatabaseUrl() {
+function isPrivateIpv4Host(host) {
+  const parts = String(host || "").split(".").map((part) => Number(part));
+  if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) {
+    return false;
+  }
+  const [first, second] = parts;
+  return first === 10 ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168) ||
+    (first === 169 && second === 254);
+}
+
+function assertConfiguredLocalDatabaseUrl() {
   const value = requireEnv("GAMEFOUNDRY_DATABASE_URL");
   const databaseUrl = new URL(value);
+  if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
+    throw new Error("GAMEFOUNDRY_DATABASE_URL must use postgres:// or postgresql:// for local Postgres runtime validation.");
+  }
   const database = decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "");
   const actual = {
     database,
@@ -99,14 +108,11 @@ function assertExpectedDatabaseUrl() {
     protocol: databaseUrl.protocol,
     user: decodeURIComponent(databaseUrl.username || ""),
   };
-  const mismatches = Object.entries(EXPECTED_DATABASE_URL)
-    .filter(([key, expected]) => actual[key] !== expected)
-    .map(([key, expected]) => `${key} expected ${expected}, got ${actual[key] || "(empty)"}`);
-  if (mismatches.length) {
-    throw new Error(`GAMEFOUNDRY_DATABASE_URL must target the local validation database: ${mismatches.join("; ")}.`);
+  if (!LOCAL_HOSTS.has(actual.host) && !isPrivateIpv4Host(actual.host)) {
+    throw new Error("GAMEFOUNDRY_DATABASE_URL must target a local/private Postgres host for local runtime validation.");
   }
-  if (decodeURIComponent(databaseUrl.password || "") !== "postgres") {
-    throw new Error("GAMEFOUNDRY_DATABASE_URL must use the local validation password for the configured local Postgres connection.");
+  if (!actual.database || !actual.user || !decodeURIComponent(databaseUrl.password || "")) {
+    throw new Error("GAMEFOUNDRY_DATABASE_URL must include database, username, and password for local Postgres runtime validation.");
   }
   return actual;
 }
@@ -335,7 +341,7 @@ async function validateApiRuntime({ adapter, client }) {
 
 async function main() {
   const envLoad = loadRuntimeEnv();
-  const database = assertExpectedDatabaseUrl();
+  const database = assertConfiguredLocalDatabaseUrl();
   const originalSupabaseEnv = {
     GAMEFOUNDRY_SUPABASE_ANON_KEY: process.env.GAMEFOUNDRY_SUPABASE_ANON_KEY,
     GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY: process.env.GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY,
@@ -368,7 +374,7 @@ async function main() {
     console.log(`PASS - Banner saved and read through API; local platform_settings banner rows observed=${apiEvidence.bannerRows}.`);
     console.log(`PASS - Supabase Auth health calls=${fakeSupabase.requests.filter((request) => request.path === "/auth/v1/health").length}; Supabase platform_settings REST calls=0.`);
     console.log(`PASS - Game Workspace create/getActiveGame used repository ${apiEvidence.repositoryId}; local game rows observed=${apiEvidence.gameRows}.`);
-    console.log("PASS - Validation cleanup restored banner rows and removed PR196 Game Workspace rows.");
+    console.log("PASS - Validation cleanup restored banner rows and removed PR197 Game Workspace rows.");
   } finally {
     await fakeSupabase.close();
     Object.entries(originalSupabaseEnv).forEach(([key, value]) => {
