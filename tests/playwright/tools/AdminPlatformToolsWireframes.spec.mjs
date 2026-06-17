@@ -726,6 +726,22 @@ test("Owner menu is role-gated separately from Admin menu", async ({ page }) => 
 test("Owner Operations exposes owner-only connection validation and manual operation actions", async ({ page }) => {
   const server = await startRepoServer();
   const ownerActionPosts = [];
+  const promotionFoundation = {
+    browserExecutionAllowed: false,
+    destructiveOperationsAllowed: false,
+    exportImportRuntime: "reviewed server-side tooling only",
+    message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
+    ownerOnly: true,
+    secretEditingAllowed: false,
+    status: "PASS",
+    steps: [
+      { id: "dev-export-plan", stage: "DEV", operation: "Export", status: "PLAN", message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage." },
+      { id: "uat-import-plan", stage: "UAT", operation: "Import", status: "PLAN", message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution." },
+      { id: "uat-validate-plan", stage: "UAT", operation: "Validate", status: "PLAN", message: "Plan validation of imported UAT metadata and storage references before any PROD promotion." },
+      { id: "prod-import-plan", stage: "PROD", operation: "Import", status: "PLAN", message: "Plan a PROD import only after UAT validation evidence is reviewed." },
+      { id: "prod-validate-plan", stage: "PROD", operation: "Validate", status: "PLAN", message: "Plan runtime-safe PROD validation without destructive browser operations." },
+    ],
+  };
   try {
     await page.route("**/api/session/current", async (route) => {
       await route.fulfill({
@@ -809,6 +825,21 @@ test("Owner Operations exposes owner-only connection validation and manual opera
               sslModeStatus: "PASS",
               status: "PASS",
             },
+            promotionFoundation,
+            storageStatus: {
+              accessKeyConfigured: true,
+              accessKeyStatus: "PASS",
+              bucket: "gamefoundry-dev-assets",
+              bucketStatus: "PASS",
+              configured: true,
+              endpoint: "https://storage.example.invalid",
+              endpointStatus: "PASS",
+              projectsPrefix: "/dev/projects/",
+              projectsPrefixStatus: "PASS",
+              secretKeyConfigured: true,
+              secretKeyStatus: "PASS",
+              status: "PASS",
+            },
             message: "Owner Operations loaded.",
             status: "PASS",
           },
@@ -850,6 +881,21 @@ test("Owner Operations exposes owner-only connection validation and manual opera
               sslModeStatus: "PASS",
               status: "PASS",
             },
+            storageStatus: {
+              accessKeyConfigured: true,
+              accessKeyStatus: "PASS",
+              bucket: "gamefoundry-dev-assets",
+              bucketStatus: "PASS",
+              configured: true,
+              endpoint: "https://storage.example.invalid",
+              endpointStatus: "PASS",
+              projectsPrefix: "/dev/projects/",
+              projectsPrefixStatus: "PASS",
+              secretKeyConfigured: true,
+              secretKeyStatus: "PASS",
+              status: "PASS",
+            },
+            promotionFoundation,
             executed: true,
             message: "Current configured connections validated.",
             status: "PASS",
@@ -861,6 +907,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await page.route("**/api/owner/operations/action", async (route) => {
       const body = route.request().postDataJSON();
       ownerActionPosts.push(body);
+      const actionLabel = body.actionId === "promote-dev-to-uat" ? "Promote DEV to UAT" : "Reseed DEV";
       await route.fulfill({
         contentType: "application/json",
         body: JSON.stringify({
@@ -868,7 +915,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
             actionId: body.actionId,
             executed: false,
             manualOnly: true,
-            message: "Reseed DEV is staged in Owner Operations but must be executed manually through reviewed server-side scripts, configuration changes, and server restart.",
+            message: `${actionLabel} is staged in Owner Operations but must be executed manually through reviewed server-side scripts, configuration changes, and server restart.`,
             status: "SKIP",
           },
           ok: true,
@@ -886,6 +933,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
       "Operations",
     ]);
     await expect(page.locator("[data-owner-connection-summary]")).toContainText("Account");
+    await expect(page.locator("[data-owner-connection-summary]")).toContainText("Project Asset Storage");
     await expect(page.locator("[data-owner-connection-summary]")).toContainText("not exposed");
     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Connection Configured");
     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("Database Host");
@@ -903,11 +951,32 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("postgres://");
     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("password");
     await expect(page.locator("[data-owner-database-status-rows]")).not.toContainText("SERVICE_ROLE");
+    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Storage Configured");
+    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Storage Endpoint");
+    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("https://storage.example.invalid");
+    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Storage Bucket");
+    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("gamefoundry-dev-assets");
+    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("Projects Prefix");
+    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("/dev/projects/");
+    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("configured; value hidden");
+    await expect(page.locator("[data-owner-storage-status-rows]")).not.toContainText("asset-test-secret-key");
+    await expect(page.locator("[data-owner-storage-status-rows]")).not.toContainText("asset-test-access-key");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("DEV");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Export");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("UAT");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Import");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Validate");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("PROD");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Owner-only");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("browser execution disabled");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("destructive operations disabled");
     await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Owner Operations loaded.");
 
     await page.locator("[data-owner-operation-validate]").click();
     await expect(page.locator("[data-owner-operations-status]")).toContainText("PASS: Current configured connections validated.");
     await expect(page.locator("[data-owner-database-status-rows]")).toContainText("DDL=15; DML=15");
+    await expect(page.locator("[data-owner-storage-status-rows]")).toContainText("/dev/projects/");
+    await expect(page.locator("[data-owner-promotion-foundation-rows]")).toContainText("Local API");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("validate-current-connection");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("yes");
 
@@ -915,7 +984,11 @@ test("Owner Operations exposes owner-only connection validation and manual opera
     await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Reseed DEV is staged in Owner Operations");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("reseed-dev");
     await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
-    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }]);
+    await page.locator("[data-owner-operation-action='promote-dev-to-uat']").click();
+    await expect(page.locator("[data-owner-operations-status]")).toContainText("SKIP: Promote DEV to UAT is staged in Owner Operations");
+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("promote-dev-to-uat");
+    await expect(page.locator("[data-owner-operation-result-rows] tr").first()).toContainText("no");
+    expect(ownerActionPosts).toEqual([{ actionId: "reseed-dev" }, { actionId: "promote-dev-to-uat" }]);
     await expect(page.locator("style, [style], script:not([src])")).toHaveCount(0);
   } finally {
     await server.close();

@@ -270,6 +270,7 @@ function uploadDiagnosticsText(diagnostics = {}) {
   if (diagnostics.targetDirectory) parts.push(`Target directory: ${diagnostics.targetDirectory}`);
   if (diagnostics.targetDirectoryResult) parts.push(`Directory result: ${diagnostics.targetDirectoryResult}`);
   if (diagnostics.directoryStatus) parts.push(`Directory status: ${diagnostics.directoryStatus}`);
+  if (diagnostics.storageObjectKey) parts.push(`Storage object key: ${diagnostics.storageObjectKey}`);
   if (diagnostics.targetFilePath) parts.push(`Target file path: ${diagnostics.targetFilePath}`);
   if (diagnostics.writeResult) parts.push(`Write result: ${diagnostics.writeResult}`);
   if (diagnostics.viewPath) parts.push(`View path: ${diagnostics.viewPath}`);
@@ -1524,6 +1525,7 @@ function renderMetadata(snapshot) {
   if (asset.targetDirectory) metadataLines.push(`Target directory: ${asset.targetDirectory}`);
   if (asset.targetDirectoryResult) metadataLines.push(`Directory result: ${asset.targetDirectoryResult}`);
   if (asset.directoryStatus) metadataLines.push(`Directory status: ${asset.directoryStatus}`);
+  if (asset.storageObjectKey) metadataLines.push(`Storage object key: ${asset.storageObjectKey}`);
   if (asset.targetFilePath) metadataLines.push(`Target file path: ${asset.targetFilePath}`);
   if (asset.writeResult) metadataLines.push(`Write result: ${asset.writeResult}`);
   if (assetViewPath(asset)) metadataLines.push(`View path: ${assetViewPath(asset)}`);

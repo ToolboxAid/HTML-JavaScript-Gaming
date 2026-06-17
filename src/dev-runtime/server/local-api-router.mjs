@@ -16,6 +16,7 @@ import {
   createInputMappingToolMockRepository,
 } from "../persistence/tool-repositories/input-mapping-mock-repository.js";
 import { createConfiguredProjectAssetStorage } from "../storage/r2-project-asset-storage.mjs";
+import { loadStorageConfig } from "../storage/storage-config.mjs";
 import {
   TOOL_IMAGE_FALLBACK,
   TOOL_RELEASE_CHANNELS,
@@ -1102,6 +1103,75 @@ function assetTables(repository) {
   return normalizeOwnedTables("asset", repository.getTables());
 }
 
+function assetRuntimeTables(repository) {
+  const tables = assetTables(repository);
+  const assets = (tables.asset_library_items || []).map((row) => ({
+    ...row,
+    gameId: row.gameId || row.ownerProjectId || "",
+    key: row.id || row.key,
+  }));
+  const assetKeyById = new Map(assets.map((asset) => [asset.id, asset.key]));
+  const projectIds = new Map();
+  const rememberProject = (projectId, sourceRow = {}) => {
+    const key = String(projectId || "").trim();
+    if (!key || projectIds.has(key)) {
+      return;
+    }
+    const ownerKey = sourceRow.ownerUserId || sourceRow.createdBy || SEED_DB_KEYS.users.user1;
+    projectIds.set(key, {
+      createdAt: sourceRow.createdAt,
+      createdBy: sourceRow.createdBy || ownerKey,
+      ownerKey,
+      updatedAt: sourceRow.updatedAt,
+      updatedBy: sourceRow.updatedBy || ownerKey,
+    });
+  };
+  assets.forEach((asset) => rememberProject(asset.ownerProjectId || asset.gameId, asset));
+  const storageObjects = (tables.asset_storage_objects || []).map((row) => {
+    const assetId = assetKeyById.get(row.assetId) || row.assetId;
+    const gameId = row.gameId || row.ownerProjectId || "";
+    rememberProject(row.ownerProjectId || gameId, row);
+    return {
+      ...row,
+      assetId,
+      gameId,
+      key: row.id || row.key,
+    };
+  });
+  const importEvents = (tables.asset_import_events || []).map((row) => {
+    const assetId = assetKeyById.get(row.assetId) || row.assetId;
+    const owningAsset = assets.find((asset) => asset.key === assetId || asset.id === row.assetId);
+    const gameId = row.gameId || owningAsset?.ownerProjectId || "";
+    rememberProject(gameId, row);
+    return {
+      ...row,
+      assetId,
+      gameId,
+      key: row.id || row.key,
+    };
+  });
+  const validationItems = (tables.asset_validation_items || []).map((row) => ({
+    ...row,
+    key: row.id || row.key,
+  }));
+  return {
+    game_workspace_games: Array.from(projectIds.entries()).map(([key, project]) => ({
+      createdAt: project.createdAt || snapshotAuditFields(90, project.ownerKey).createdAt,
+      createdBy: project.createdBy,
+      key,
+      name: "Project Asset Storage",
+      ownerKey: project.ownerKey,
+      status: "Under Construction",
+      updatedAt: project.updatedAt || project.createdAt || snapshotAuditFields(90, project.ownerKey).updatedAt,
+      updatedBy: project.updatedBy,
+    })),
+    asset_import_events: importEvents,
+    asset_library_items: assets,
+    asset_storage_objects: storageObjects,
+    asset_validation_items: validationItems,
+  };
+}
+
 function productTableNamesForSnapshot() {
   const schemaTableNames = Object.keys(getMockDbTableSchemas());
   return SUPABASE_POSTGRES_PRODUCT_TABLES
@@ -1227,6 +1297,10 @@ class ApiRuntimeDataSource {
     return this.upsertSupabaseProductTables(gameWorkspaceTables(this.gameWorkspaceRepository), action);
   }
 
+  async persistSupabaseAssetSnapshot(action) {
+    return this.upsertSupabaseProductTables(assetRuntimeTables(this.assetRepository), action);
+  }
+
   async supabaseIdentityReadinessCheck() {
     try {
       const tables = await this.readSupabaseIdentityTablesUnchecked("Validating Supabase identity tables");
@@ -1272,14 +1346,21 @@ class ApiRuntimeDataSource {
 
   async currentSessionForRoute() {
     const status = await this.authStatusForRoute();
+    if (this.sessionUserKey) {
+      try {
+        const tables = await this.readSupabaseIdentityTablesUnchecked("Reading selected Local API session");
+        return sessionUserFromIdentityTables(tables, this.sessionUserKey, this.sessionModeId, "Local DB identity");
+      } catch (error) {
+        return guestSession(
+          FIXED_ACCOUNT_SESSION_MODE,
+          `Selected Local API session could not be resolved from identity tables: ${error instanceof Error ? error.message : String(error || "Unknown identity table error.")}`,
+        );
+      }
+    }
     if (!status.ready) {
       return guestSession(FIXED_ACCOUNT_SESSION_MODE, status.operatorDiagnostic || AUTH_UNAVAILABLE_MESSAGE);
     }
-    if (!this.sessionUserKey) {
-      return guestSession(FIXED_ACCOUNT_SESSION_MODE);
-    }
-    const tables = await this.readSupabaseIdentityTables("Reading current session");
-    return sessionUserFromIdentityTables(tables, this.sessionUserKey, this.sessionModeId, "Supabase identity");
+    return guestSession(FIXED_ACCOUNT_SESSION_MODE);
   }
 
   async sessionUsersForRoute() {
@@ -1384,6 +1465,10 @@ class ApiRuntimeDataSource {
 
   async persistGameWorkspaceProviderState(action) {
     return this.persistSupabaseGameWorkspaceSnapshot(action);
+  }
+
+  async persistAssetProviderState(action) {
+    return this.persistSupabaseAssetSnapshot(action);
   }
 
   adminInitializeIdentity(body = {}) {
@@ -1527,6 +1612,7 @@ class ApiRuntimeDataSource {
     const providerContract = this.providerContract();
     const authStatus = this.authStatus();
     const productStatus = providerContract.supabasePostgres?.status || "unknown";
+    const storageConfigured = loadStorageConfig().configured === true;
     return {
       account: {
         configured: authStatus.configured === true,
@@ -1540,7 +1626,85 @@ class ApiRuntimeDataSource {
         label: "Product data connection",
         status: productStatus,
       },
+      projectAssetStorage: {
+        configured: storageConfigured,
+        label: "Project asset storage",
+        status: storageConfigured ? "configured" : "not configured",
+      },
       secretsExposed: false,
+    };
+  }
+
+  ownerStorageStatus() {
+    const storageConfig = loadStorageConfig();
+    const safe = storageConfig.safe || {};
+    const configured = storageConfig.configured === true;
+    return {
+      accessKeyConfigured: configured,
+      accessKeyStatus: configured ? "PASS" : "WARN",
+      bucket: safe.bucket || "",
+      bucketStatus: safe.bucket ? "PASS" : "WARN",
+      configured,
+      endpoint: safe.endpoint || "",
+      endpointStatus: safe.endpoint && safe.endpoint !== "invalid endpoint" ? "PASS" : "WARN",
+      message: configured
+        ? "Project asset storage is configured. Credential values are hidden."
+        : `Project asset storage is not fully configured: ${storageConfig.missingKeys?.join(", ") || storageConfig.validationError || "storage configuration incomplete"}.`,
+      projectsPrefix: safe.projectsPrefix || "",
+      projectsPrefixStatus: safe.projectsPrefix ? "PASS" : "WARN",
+      secretKeyConfigured: configured,
+      secretKeyStatus: configured ? "PASS" : "WARN",
+      status: configured ? "PASS" : "WARN",
+    };
+  }
+
+  ownerPromotionFoundation() {
+    const steps = [
+      {
+        id: "dev-export-plan",
+        stage: "DEV",
+        operation: "Export",
+        status: "PLAN",
+        message: "Plan a read-only export from Local API, Local DB/SQLite metadata, and configured project asset storage.",
+      },
+      {
+        id: "uat-import-plan",
+        stage: "UAT",
+        operation: "Import",
+        status: "PLAN",
+        message: "Plan an import into UAT through reviewed server-side runtime tooling; no browser import execution.",
+      },
+      {
+        id: "uat-validate-plan",
+        stage: "UAT",
+        operation: "Validate",
+        status: "PLAN",
+        message: "Plan validation of imported UAT metadata and storage references before any PROD promotion.",
+      },
+      {
+        id: "prod-import-plan",
+        stage: "PROD",
+        operation: "Import",
+        status: "PLAN",
+        message: "Plan a PROD import only after UAT validation evidence is reviewed.",
+      },
+      {
+        id: "prod-validate-plan",
+        stage: "PROD",
+        operation: "Validate",
+        status: "PLAN",
+        message: "Plan runtime-safe PROD validation without destructive browser operations.",
+      },
+    ];
+    return {
+      browserExecutionAllowed: false,
+      destructiveOperationsAllowed: false,
+      exportImportRuntime: "reviewed server-side tooling only",
+      message: "Project promotion foundation is planning-only for DEV, UAT, and PROD.",
+      ownerOnly: true,
+      secretEditingAllowed: false,
+      status: "PASS",
+      steps,
     };
   }
 
@@ -1606,8 +1770,10 @@ LIMIT 1;
       connectionSummary: this.ownerConnectionSummary(),
       databaseStatus: await this.ownerDatabaseStatus(),
       message: "Owner Operations loaded. Environment switching remains manual through configuration changes and server restart.",
+      promotionFoundation: this.ownerPromotionFoundation(),
       secretEditingAllowed: false,
       status: "PASS",
+      storageStatus: this.ownerStorageStatus(),
     };
   }
 
@@ -1660,6 +1826,8 @@ LIMIT 1;
         : "Current configured connection validation failed.",
       secretEditingAllowed: false,
       status,
+      promotionFoundation: this.ownerPromotionFoundation(),
+      storageStatus: this.ownerStorageStatus(),
     };
   }
 
@@ -2912,6 +3080,8 @@ LIMIT 1;
     if (repositoryMethodRequiresPersistence(methodName)) {
       if (repository === this.gameWorkspaceRepository) {
         await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
+      } else if (repository === this.assetRepository) {
+        await this.persistAssetProviderState(`Persisting ${methodName} result`);
       } else {
         await this.persistProductProviderState(`Persisting ${methodName} result`);
       }
@@ -3197,6 +3367,28 @@ export function createLocalApiRouter() {
           return true;
         }
         sendBinary(response, 200, result.bytes, result.contentType || "application/octet-stream");
+        return true;
+      }
+
+      if (parts[1] === "storage" && parts[2] === "project-assets" && parts[3] === "list" && request.method === "GET") {
+        const projectId = String(requestUrl.searchParams.get("projectId") || "").trim();
+        const storage = createConfiguredProjectAssetStorage();
+        const projectsPrefix = String(storage.config?.projectsPrefix || "").trim();
+        if (!projectsPrefix) {
+          fail(response, 400, new Error("Project asset storage list requires configured project storage."));
+          return true;
+        }
+        const result = await storage.listProjectObjects(projectId);
+        if (!result.ok) {
+          fail(response, 404, new Error(result.message || "Project asset storage objects were not listed."));
+          return true;
+        }
+        ok(response, {
+          keys: result.keys,
+          message: result.message,
+          projectId,
+          projectsPrefix,
+        });
         return true;
       }
 

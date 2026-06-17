@@ -11,6 +11,7 @@ Changed runtime JS files considered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(76%) toolbox/assets/assets.js - executed lines 1602/1602; executed functions 106/139
 
 Guardrail warnings:
 (0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file missing from coverage; advisory only

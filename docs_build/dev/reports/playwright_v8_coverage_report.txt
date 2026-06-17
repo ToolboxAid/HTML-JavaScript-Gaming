@@ -12,9 +12,9 @@ Note: entry percentages use function coverage when available, otherwise line cov
 Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
 
 Exercised tool entry points detected:
-(70%) Toolbox Index - exercised 3 runtime JS files
+(76%) Toolbox Index - exercised 3 runtime JS files
 (0%) Tool Template V2 - not exercised by this Playwright run
-(57%) Theme V2 Shared JS - exercised 2 runtime JS files
+(59%) Theme V2 Shared JS - exercised 2 runtime JS files
 
 Changed runtime JS files covered:
 (0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
@@ -22,15 +22,16 @@ Changed runtime JS files covered:
 (0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
 (0%) src/dev-runtime/storage/storage-config.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
+(76%) toolbox/assets/assets.js - executed lines 1602/1602; executed functions 106/139
 
 Files with executed line/function counts where available:
 (25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
-(35%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 9/26
 (53%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 10/19
-(56%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 34/61
+(57%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 35/61
 (64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
 (67%) toolbox/assets/assets-api-client.js - executed lines 19/19; executed functions 2/3
-(76%) toolbox/assets/assets.js - executed lines 1600/1600; executed functions 106/139
+(76%) toolbox/assets/assets.js - executed lines 1602/1602; executed functions 106/139
+(76%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 22/29
 
 Uncovered or low-coverage changed JS files:
 (0%) assets/theme-v2/js/owner-operations.js - WARNING: uncovered changed runtime JS file; advisory only
@@ -41,13 +42,12 @@ Uncovered or low-coverage changed JS files:
 
 Changed JS files considered:
 (0%) assets/theme-v2/js/owner-operations.js - changed JS file not collected as browser runtime coverage
-(0%) scripts/apply-database-seed.mjs - changed JS file not collected as browser runtime coverage
-(0%) scripts/database-migration-runner.mjs - changed JS file not collected as browser runtime coverage
-(0%) scripts/validate-database-drift.mjs - changed JS file not collected as browser runtime coverage
 (0%) scripts/validate-storage-config.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/storage/r2-project-asset-storage.mjs - changed JS file not collected as browser runtime coverage
 (0%) src/dev-runtime/storage/storage-config.mjs - changed JS file not collected as browser runtime coverage
+(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
 (0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
+(76%) toolbox/assets/assets.js - changed JS file with browser V8 coverage

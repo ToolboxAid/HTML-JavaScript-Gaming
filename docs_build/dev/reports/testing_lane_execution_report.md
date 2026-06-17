@@ -1,15 +1,15 @@
 # Testing Lane Execution Report
 
-Generated: 2026-06-16T20:40:58.203Z
+Generated: 2026-06-17T13:11:16.273Z
 Dry run: No
 
 ## Summary
 
-PASS: 1
+PASS: 0
 WARN: 0
-FAIL: 0
+FAIL: 1
 SKIP: 14
-Total lane elapsed time: 63.89s
+Total lane elapsed time: 52.16s
 Actual browser launches: 1
 
 ## Full Samples Smoke
@@ -49,9 +49,9 @@ Validation computations: 10
 
 ## Failure Fingerprints
 
-Status: PASS
+Status: WARN
 Deterministic setup failures: 0
-Runtime failures: 0
+Runtime failures: 1
 Flaky/transient failures: 0
 Infrastructure failures: 0
 Prevented reruns: 0
@@ -105,7 +105,7 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Status | Elapsed | Browser Launches | Executed/Skipped Reason | Affected Surface | Fixtures / Inputs |
 | --- | --- | --- | --- | --- | --- | --- |
-| workspace-contract | PASS | 63.89s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
+| workspace-contract | FAIL | 52.16s | 1 | Workspace V2 command now validates the future-state tools surface without exercising deprecated toolbox/old_* routes. | Root tools future-state navigation and Tool Template V2 contract | repo-served root tools page; Tool Template V2 future-state page; Theme V2 shared partials and assets |
 | game-workspace | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | repo-served Game Workspace page; repo-served Toolbox page with role simulation; in-memory SQL-shaped mock game repository |
 | game-design | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | repo-served Game Design page; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Design mock repository; Game Workspace mock game context |
 | game-configuration | SKIP | 0ms | 0 | Lane was not selected for this targeted run. | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | repo-served Game Configuration page; repo-served Game Design page for handoff checks; repo-served Toolbox Progress and Build Path views; in-memory SQL-shaped Game Configuration mock repository; Game Design mock repository handoff |
@@ -125,16 +125,16 @@ Prevented Workspace lane reruns: 0
 
 | Lane | Duration | Test |
 | --- | --- | --- |
-| workspace-contract | 29.80s | tests\playwright\tools\RootToolsFutureState.spec.mjs:630:1 > representative active tool pages align center cleanup and registry group colors |
-| workspace-contract | 10.00s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
-| workspace-contract | 9.30s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
-| workspace-contract | 6.70s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages |
-| workspace-contract | 1.10s | tests\playwright\tools\RootToolsFutureState.spec.mjs:608:1 > tool template future-state page loads from root Theme V2 paths |
+| workspace-contract | 10.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:246:1 > root tools surface links current tool pages without old_* routes |
+| workspace-contract | 10.60s | tests\playwright\tools\RootToolsFutureState.spec.mjs:630:1 > representative active tool pages align center cleanup and registry group colors |
+| workspace-contract | 10.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:530:1 > learn wireframe pages load with shared Theme V2 structure |
+| workspace-contract | 8.40s | tests\playwright\tools\RootToolsFutureState.spec.mjs:452:1 > common header renders primary navigation order across active pages |
+| workspace-contract | 1.20s | tests\playwright\tools\RootToolsFutureState.spec.mjs:608:1 > tool template future-state page loads from root Theme V2 paths |
 
 ## Commands
 
 ### workspace-contract
-- PASS 63.89s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
+- FAIL 52.16s C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list
 
 ### game-workspace
 - SKIP

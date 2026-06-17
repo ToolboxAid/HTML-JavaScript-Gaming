@@ -1,43 +1,104 @@
 # git status --short
-M .env.example
- M .vscode/settings.json
- M assets/theme-v2/js/owner-operations.js
+M assets/theme-v2/js/owner-operations.js
  M docs_build/dev/reports/codex_changed_files.txt
  M docs_build/dev/reports/codex_review.diff
  M docs_build/dev/reports/coverage_changed_js_guardrail.txt
+ M docs_build/dev/reports/dependency_gating_report.md
+ M docs_build/dev/reports/dependency_hydration_reuse_report.md
  M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
+ M docs_build/dev/reports/execution_graph_reuse_report.md
+ M docs_build/dev/reports/failure_fingerprint_report.md
+ M docs_build/dev/reports/filesystem_scan_reduction_report.md
+ M docs_build/dev/reports/incremental_validation_report.md
+ M docs_build/dev/reports/lane_compilation_report.md
+ M docs_build/dev/reports/lane_deduplication_report.md
+ M docs_build/dev/reports/lane_input_validation_report.md
+ M docs_build/dev/reports/lane_manifests/workspace-contract.json
+ M docs_build/dev/reports/lane_runtime_optimization_report.md
+ M docs_build/dev/reports/lane_snapshot_report.md
+ M docs_build/dev/reports/lane_snapshots/workspace-contract.json
+ M docs_build/dev/reports/lane_warm_start_report.md
+ M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
+ M docs_build/dev/reports/monolith_trigger_removal_report.md
+ M docs_build/dev/reports/persistent_lane_manifest_report.md
+ M docs_build/dev/reports/playwright_discovery_ownership_report.md
+ M docs_build/dev/reports/playwright_discovery_scope_report.md
+ M docs_build/dev/reports/playwright_structure_audit.md
  M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M docs_build/dev/reports/retry_suppression_report.md
+ M docs_build/dev/reports/slow_path_pruning_report.md
+ M docs_build/dev/reports/static_validation_report.md
+ M docs_build/dev/reports/targeted_file_manifest_report.md
+ M docs_build/dev/reports/test_cleanup_performance_report.md
+ M docs_build/dev/reports/test_cleanup_routing_report.md
+ M docs_build/dev/reports/testing_lane_execution_report.md
+ M docs_build/dev/reports/validation_cache_report.md
+ M docs_build/dev/reports/zero_browser_preflight_report.md
  M owner/operations.html
  M src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js
  M src/dev-runtime/server/local-api-router.mjs
+ M tests/helpers/playwrightRepoServer.mjs
  M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
  M tests/playwright/tools/AssetToolMockRepository.spec.mjs
-?? docs_build/dev/reports/PR_26167_208-database-idempotency-final-check.md
-?? docs_build/dev/reports/PR_26167_209-owner-database-status-surface.md
-?? docs_build/dev/reports/PR_26167_210-r2-project-assets-dev-storage.md
-?? scripts/validate-storage-config.mjs
-?? src/dev-runtime/storage/
+ M toolbox/assets/assets.js
+?? "assets/GFS-Infrastructure v1-0..png"
+?? "assets/GFS-Infrastructure v1-1.png"
+?? "assets/GFS-Infrastructure v1-2.png"
+?? docs_build/dev/reports/PR_26168_211-storage-status-surface.md
+?? docs_build/dev/reports/PR_26168_212-assets-real-storage-mode.md
+?? docs_build/dev/reports/PR_26168_213-project-asset-reference-linking.md
+?? docs_build/dev/reports/PR_26168_214-project-promotion-foundation.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26167_208-database-idempotency-final-check.md
-docs_build/dev/reports/PR_26167_209-owner-database-status-surface.md
-docs_build/dev/reports/PR_26167_210-r2-project-assets-dev-storage.md
-scripts/validate-storage-config.mjs
-src/dev-runtime/storage/r2-project-asset-storage.mjs
-src/dev-runtime/storage/storage-config.mjs
+assets/GFS-Infrastructure v1-0..png
+assets/GFS-Infrastructure v1-1.png
+assets/GFS-Infrastructure v1-2.png
+docs_build/dev/reports/PR_26168_211-storage-status-surface.md
+docs_build/dev/reports/PR_26168_212-assets-real-storage-mode.md
+docs_build/dev/reports/PR_26168_213-project-asset-reference-linking.md
+docs_build/dev/reports/PR_26168_214-project-promotion-foundation.md
 
 # git diff --stat
-.env.example                                       |    8 +
- .vscode/settings.json                              |   26 +-
- assets/theme-v2/js/owner-operations.js             |   38 +-
- docs_build/dev/reports/codex_changed_files.txt     |   54 +-
- docs_build/dev/reports/codex_review.diff           | 4960 +++++++++++++++++---
- .../dev/reports/coverage_changed_js_guardrail.txt  |    9 +-
- .../environment_agnostic_browser_gate_report.md    |   10 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |   32 +-
- owner/operations.html                              |   12 +-
- .../tool-repositories/assets-mock-repository.js    |  210 +-
- src/dev-runtime/server/local-api-router.mjs        |  184 +-
- .../tools/AdminPlatformToolsWireframes.spec.mjs    |  116 +-
- .../tools/AssetToolMockRepository.spec.mjs         |  228 +
- 13 files changed, 4999 insertions(+), 888 deletions(-)
+assets/theme-v2/js/owner-operations.js             |    52 +-
+ docs_build/dev/reports/codex_changed_files.txt     |   117 +-
+ docs_build/dev/reports/codex_review.diff           | 44067 ++++++++++++++++---
+ .../dev/reports/coverage_changed_js_guardrail.txt  |     1 +
+ docs_build/dev/reports/dependency_gating_report.md |     4 +-
+ .../reports/dependency_hydration_reuse_report.md   |     6 +-
+ .../environment_agnostic_browser_gate_report.md    |     4 +-
+ .../dev/reports/execution_graph_reuse_report.md    |     4 +-
+ .../dev/reports/failure_fingerprint_report.md      |     8 +-
+ .../reports/filesystem_scan_reduction_report.md    |     2 +-
+ .../dev/reports/incremental_validation_report.md   |     6 +-
+ docs_build/dev/reports/lane_compilation_report.md  |     4 +-
+ .../dev/reports/lane_deduplication_report.md       |     6 +-
+ .../dev/reports/lane_input_validation_report.md    |    16 +-
+ .../reports/lane_manifests/workspace-contract.json |    14 +-
+ .../reports/lane_runtime_optimization_report.md    |    12 +-
+ docs_build/dev/reports/lane_snapshot_report.md     |     6 +-
+ .../reports/lane_snapshots/workspace-contract.json |    34 +-
+ docs_build/dev/reports/lane_warm_start_report.md   |     6 +-
+ .../lane_warm_starts/workspace-contract.json       |    22 +-
+ .../dev/reports/monolith_trigger_removal_report.md |    14 +-
+ .../dev/reports/persistent_lane_manifest_report.md |     8 +-
+ .../playwright_discovery_ownership_report.md       |     2 +-
+ .../reports/playwright_discovery_scope_report.md   |     2 +-
+ .../dev/reports/playwright_structure_audit.md      |     2 +-
+ .../dev/reports/playwright_v8_coverage_report.txt  |    16 +-
+ docs_build/dev/reports/retry_suppression_report.md |     6 +-
+ docs_build/dev/reports/slow_path_pruning_report.md |    18 +-
+ docs_build/dev/reports/static_validation_report.md |    24 +-
+ .../dev/reports/targeted_file_manifest_report.md   |     8 +-
+ .../dev/reports/test_cleanup_performance_report.md |    41 +-
+ .../dev/reports/test_cleanup_routing_report.md     |     6 +-
+ .../dev/reports/testing_lane_execution_report.md   |    26 +-
+ docs_build/dev/reports/validation_cache_report.md  |    57 +-
+ .../dev/reports/zero_browser_preflight_report.md   |    26 +-
+ owner/operations.html                              |    31 +
+ .../tool-repositories/assets-mock-repository.js    |    25 +-
+ src/dev-runtime/server/local-api-router.mjs        |   202 +-
+ tests/helpers/playwrightRepoServer.mjs             |    40 +
+ .../tools/AdminPlatformToolsWireframes.spec.mjs    |    77 +-
+ .../tools/AssetToolMockRepository.spec.mjs         |   152 +-
+ toolbox/assets/assets.js                           |     2 +
+ 42 files changed, 38229 insertions(+), 6947 deletions(-)

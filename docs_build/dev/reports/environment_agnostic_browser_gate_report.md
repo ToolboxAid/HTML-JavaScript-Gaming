@@ -29,6 +29,7 @@ Status: PASS
 
 ## Non-Branching Deployment Mentions Reviewed
 - `admin/branding.html:21` - `development.</p>`
+- `assets/theme-v2/js/owner-operations.js:109` - `: [["DEV/UAT/PROD", "Planning", promotionFoundation.status || "WARN", promotionFoundation.message || "Promotion foundation status unavailable."]];`
 - `docs_build/database/README.md:7` - `- DEV database DDL belongs in `docs_build/database/ddl/`.`
 - `docs_build/database/README.md:8` - `- DEV setup or DML review artifacts belong in `docs_build/database/dml/`.`
 - `docs_build/database/README.md:20` - `Runtime DEV setup and reseed actions must call server-side APIs. Browser pages must not directly seed authoritative DB records or generate authoritative DB keys.`
@@ -67,8 +68,7 @@ Status: PASS
 - `docs_build/database/ddl/support-tickets.sql:1` - `-- Game Foundry Studio DEV database DDL`
 - `docs_build/database/ddl/support-tickets.sql:4` - `-- Target DEV database: gamefoundry_dev`
 - `docs_build/database/ddl/tags.sql:1` - `-- Game Foundry Studio DEV database DDL`
-- `docs_build/database/ddl/tags.sql:4` - `-- Target DEV database: gamefoundry_dev`
-- ... 159 additional record(s) omitted from this report.
+- ... 170 additional record(s) omitted from this report.
 
 ## Result
 - PASS - Active app/server/DB code uses service contracts without deployment-label branching, account dependency leaks, product-data fallback, or user-facing implementation wording.

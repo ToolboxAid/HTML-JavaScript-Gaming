@@ -413,6 +413,14 @@ function normalizeProjectRelativePath(value) {
   return normalizeText(value).replace(/\\/g, "/").replace(/^\/+/, "");
 }
 
+function normalizeStorageObjectKey(value) {
+  const normalized = normalizeText(value).replace(/\\/g, "/");
+  if (!normalized) {
+    return "";
+  }
+  return normalized.startsWith("/") ? normalized : `/${normalized}`;
+}
+
 function clonePaletteSwatch(swatch) {
   if (!swatch) {
     return null;
@@ -733,10 +741,12 @@ export function createAssetToolMockRepository(options = {}) {
     targetDirectory = "",
     targetDirectoryResult = "",
     targetFilePath = "",
+    storageObjectKey = "",
     viewPath = "",
     writeResult = ""
   } = {}) {
     const normalizedFilePath = normalizeProjectRelativePath(targetFilePath);
+    const normalizedStorageObjectKey = normalizeStorageObjectKey(storageObjectKey);
     const normalizedTargetDirectory = normalizeProjectRelativePath(
       targetDirectory || path.posix.dirname(normalizedFilePath || `${PROJECT_ASSET_STORAGE_ROOT}/${projectId}`)
     );
@@ -745,6 +755,7 @@ export function createAssetToolMockRepository(options = {}) {
       directoryStatus,
       ok,
       projectId,
+      storageObjectKey: normalizedStorageObjectKey,
       targetDirectory: normalizedTargetDirectory,
       targetDirectoryResult,
       targetFilePath: normalizedFilePath,
@@ -997,6 +1008,7 @@ export function createAssetToolMockRepository(options = {}) {
         message: `Upload file write failed: storage object key must stay under ${projectAssetStorage.config.projectsPrefix}.`,
         ok: false,
         projectId,
+        storageObjectKey: objectKey,
         targetFilePath: objectKey,
         writeResult: "FAIL: Storage prefix validation"
       });
@@ -1009,6 +1021,7 @@ export function createAssetToolMockRepository(options = {}) {
         message: listed.message,
         ok: false,
         projectId,
+        storageObjectKey: objectKey,
         targetFilePath: objectKey,
         writeResult: "FAIL: Storage list"
       });
@@ -1019,6 +1032,7 @@ export function createAssetToolMockRepository(options = {}) {
         message: `Upload file blocked: ${objectKey} already exists. Rename the file or remove the existing asset before uploading.`,
         ok: false,
         projectId,
+        storageObjectKey: objectKey,
         targetFilePath: objectKey,
         writeResult: "FAIL: Duplicate storage object"
       });
@@ -1036,6 +1050,7 @@ export function createAssetToolMockRepository(options = {}) {
       message: uploaded.ok ? `Uploaded ${input.fileName} to ${objectKey}.` : uploaded.message,
       ok: uploaded.ok,
       projectId,
+      storageObjectKey: objectKey,
       targetDirectory: objectKey.split("/").slice(0, -1).join("/"),
       targetDirectoryResult: listed.message,
       targetFilePath: objectKey,
@@ -1099,6 +1114,7 @@ export function createAssetToolMockRepository(options = {}) {
         message: readResult.message,
         ok: false,
         projectId,
+        storageObjectKey: objectKey,
         targetFilePath: objectKey,
         writeResult: "FAIL: Missing storage object"
       });
@@ -1108,6 +1124,7 @@ export function createAssetToolMockRepository(options = {}) {
       message: `Verified existing upload at ${objectKey}.`,
       ok: true,
       projectId,
+      storageObjectKey: objectKey,
       targetFilePath: objectKey,
       viewPath: `api/storage/project-assets/read?key=${encodeURIComponent(objectKey)}`,
       writeResult: "Existing storage object verified"
@@ -1775,7 +1792,7 @@ export function createAssetToolMockRepository(options = {}) {
     const role = roleDefinitionForId(assetRole) || roleDefinitionForId("image");
     const fileName = input.source === UPLOAD_SOURCE_MODE ? input.fileName : "";
     const originalName = fileName || input.reference;
-    const storedPath = writeDiagnostics?.targetFilePath || catalogStoredPath({
+    const storedPath = writeDiagnostics?.storageObjectKey || writeDiagnostics?.targetFilePath || catalogStoredPath({
       assetRole,
       assetType,
       fileName,
@@ -1823,6 +1840,7 @@ export function createAssetToolMockRepository(options = {}) {
       status: "Ready",
       storedPath,
       storageObjectId: `${id}-storage`,
+      storageObjectKey: writeDiagnostics?.storageObjectKey || "",
       tagKeys: input.tagKeys,
       targetFilePath: writeDiagnostics?.targetFilePath || storedPath,
       targetDirectory: writeDiagnostics?.targetDirectory || writeDiagnostics?.targetFolder || "",
@@ -1909,6 +1927,7 @@ export function createAssetToolMockRepository(options = {}) {
       size: asset.size,
       status: "Cataloged",
       storedPath: asset.storedPath,
+      storageObjectKey: asset.storageObjectKey || "",
       targetFilePath: asset.targetFilePath,
       targetDirectory: asset.targetDirectory,
       targetDirectoryResult: asset.targetDirectoryResult,
@@ -2044,7 +2063,7 @@ export function createAssetToolMockRepository(options = {}) {
     asset.tagKeys = validation.asset.tagKeys;
     asset.updatedAt = now;
     asset.updatedBy = activeUserKey();
-    const nextStoredPath = writeDiagnostics?.targetFilePath || catalogStoredPath({
+    const nextStoredPath = writeDiagnostics?.storageObjectKey || writeDiagnostics?.targetFilePath || catalogStoredPath({
       assetRole: asset.assetRole,
       assetType: asset.assetType,
       fileName: asset.fileName,
@@ -2054,6 +2073,7 @@ export function createAssetToolMockRepository(options = {}) {
       usage: asset.usage
     });
     asset.storedPath = nextStoredPath;
+    asset.storageObjectKey = writeDiagnostics?.storageObjectKey || "";
     asset.path = nextStoredPath;
     asset.targetFilePath = writeDiagnostics?.targetFilePath || nextStoredPath;
     asset.targetDirectory = writeDiagnostics?.targetDirectory || writeDiagnostics?.targetFolder || "";
@@ -2071,6 +2091,7 @@ export function createAssetToolMockRepository(options = {}) {
       storageObject.role = asset.type;
       storageObject.size = asset.size;
       storageObject.storedPath = nextStoredPath;
+      storageObject.storageObjectKey = asset.storageObjectKey || "";
       storageObject.targetFilePath = asset.targetFilePath;
       storageObject.targetDirectory = asset.targetDirectory;
       storageObject.targetDirectoryResult = asset.targetDirectoryResult;

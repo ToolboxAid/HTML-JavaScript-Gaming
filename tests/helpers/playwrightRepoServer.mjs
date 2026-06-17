@@ -9,6 +9,45 @@ import { createLocalApiRouter } from "../../src/dev-runtime/server/local-api-rou
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const repoRoot = path.resolve(__dirname, "..", "..");
+let runtimeEnvLoaded = false;
+
+function parseEnvValue(value) {
+  const trimmed = value.trim();
+  const quote = trimmed[0];
+  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
+    return trimmed.slice(1, -1);
+  }
+  const commentIndex = trimmed.indexOf(" #");
+  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
+}
+
+async function loadRuntimeEnv() {
+  if (runtimeEnvLoaded) {
+    return;
+  }
+  runtimeEnvLoaded = true;
+  const envPath = path.join(repoRoot, ".env");
+  const contents = await fs.readFile(envPath, "utf8").catch(() => "");
+  if (!contents) {
+    return;
+  }
+  contents.split(/\r?\n/).forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed || trimmed.startsWith("#")) {
+      return;
+    }
+    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
+    const separatorIndex = normalized.indexOf("=");
+    if (separatorIndex <= 0) {
+      return;
+    }
+    const key = normalized.slice(0, separatorIndex).trim();
+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key) || process.env[key] !== undefined) {
+      return;
+    }
+    process.env[key] = parseEnvValue(normalized.slice(separatorIndex + 1));
+  });
+}
 
 function contentTypeForPath(filePath) {
   const extension = path.extname(filePath).toLowerCase();
@@ -52,6 +91,7 @@ function resolveBrowserRoutePath(decodedPath) {
 }
 
 export async function startRepoServer() {
+  await loadRuntimeEnv();
   const handleLocalApiRequest = createLocalApiRouter();
   const server = http.createServer(async (request, response) => {
     try {

@@ -1,13 +1,13 @@
 # Lane Compilation Report
 
-Generated: 2026-06-17T01:43:02.671Z
+Generated: 2026-06-17T13:10:24.063Z
 Status: PASS
 
 ## Lane Graph
 
 | Lane | Status | Affected Surface | Targets | Commands | Reason |
 | --- | --- | --- | --- | --- | --- |
-| workspace-contract | SKIP | Root tools future-state navigation and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
+| workspace-contract | PASS | Root tools future-state navigation and Tool Template V2 contract | tests/playwright/tools/RootToolsFutureState.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/RootToolsFutureState.spec.mjs --project=playwright --workers=1 --reporter=list | Lane graph, command shape, targets, fixtures, and ownership compile before runtime. |
 | game-workspace | SKIP | Game Workspace mock repository, Game Workspace UI, and Toolbox Progress/Build Path game-state bridge | tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
 | game-design | SKIP | Game Design mock repository, project purpose flow, validation overlay, capability demo authoring, and Toolbox progress handoff | tests/playwright/tools/GameDesignMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameDesignMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |
 | game-configuration | SKIP | Game Configuration mock repository, Game Design handoff, configuration validation, user-facing output, and Toolbox progress handoff | tests/playwright/tools/GameConfigurationMockRepository.spec.mjs | C:\nvm4w\nodejs\node.exe C:\Users\davidq\Documents\GitHub\HTML-JavaScript-Gaming\node_modules\@playwright\test\cli.js test tests/playwright/tools/GameConfigurationMockRepository.spec.mjs --project=playwright --workers=1 --reporter=list | Lane was not selected. |

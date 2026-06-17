@@ -15,7 +15,6 @@ import { MOCK_DB_KEYS } from "../../../src/dev-runtime/persistence/mock-db-store
 import { startRepoServer } from "../../helpers/playwrightRepoServer.mjs";
 import { clearPlaywrightStorage, installPlaywrightStorageIsolation } from "../../helpers/playwrightStorageIsolation.mjs";
 import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageReporter.mjs";
-import { createR2ProjectAssetStorage } from "../../../src/dev-runtime/storage/r2-project-asset-storage.mjs";
 
 const USAGE_VALUES = [
   "Background",
@@ -488,6 +487,7 @@ test("Assets source controls require real upload filenames and valid references"
 
 test("Assets DEV storage upload list and read uses configured projects prefix", async ({ page }) => {
   const storageServer = await startFakeR2StorageServer();
+  const uploadFileName = `storage-dev-upload-${Date.now()}.png`;
   const previousStorageEnv = Object.fromEntries([
     "GAMEFOUNDRY_STORAGE_ENDPOINT",
     "GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID",
@@ -500,82 +500,6 @@ test("Assets DEV storage upload list and read uses configured projects prefix", 
   process.env.GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY = "asset-test-secret-key";
   process.env.GAMEFOUNDRY_STORAGE_BUCKET = storageServer.bucket;
   process.env.GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX = "/dev/projects/";
-  const storage = createR2ProjectAssetStorage({
-    accessKeyId: "asset-test-access-key",
-    bucket: storageServer.bucket,
-    endpoint: storageServer.baseUrl,
-    projectsPrefix: "/dev/projects/",
-    secretAccessKey: "asset-test-secret-key",
-  });
-  const assetRepository = createAssetToolMockRepository({
-    persist: false,
-    projectAssetStorage: storage,
-  });
-  await page.route("**/api/toolbox/assets/constants", async (route) => {
-    await route.fulfill({
-      contentType: "application/json",
-      body: JSON.stringify({
-        data: {
-          ASSET_CATALOG_TYPES: assetRepository.ASSET_CATALOG_TYPES,
-          ASSET_ROLE_DEFINITIONS: assetRepository.ASSET_ROLE_DEFINITIONS,
-          ASSET_TOOL_TABLES: assetRepository.ASSET_TOOL_TABLES,
-          ASSET_TYPES: assetRepository.ASSET_TYPES,
-          ASSET_USAGE_BY_ROLE: assetRepository.ASSET_USAGE_BY_ROLE,
-          ASSET_USAGE_OPTIONS: assetRepository.ASSET_USAGE_OPTIONS,
-        },
-        ok: true,
-      }),
-    });
-  });
-  await page.route("**/api/toolbox/assets/repositories", async (route) => {
-    await route.fulfill({
-      contentType: "application/json",
-      body: JSON.stringify({
-        data: {
-          repositoryId: "assets-storage-test",
-        },
-        ok: true,
-      }),
-    });
-  });
-  await page.route("**/api/toolbox/assets/repositories/assets-storage-test/methods/*", async (route) => {
-    const methodName = new URL(route.request().url()).pathname.split("/").at(-1);
-    const body = route.request().postDataJSON();
-    const result = await assetRepository[methodName](...(body.args || []));
-    await route.fulfill({
-      contentType: "application/json",
-      body: JSON.stringify({
-        data: { result },
-        ok: true,
-      }),
-    });
-  });
-  await page.route("**/api/session/current", async (route) => {
-    await route.fulfill({
-      contentType: "application/json",
-      body: JSON.stringify({
-        data: {
-          authenticated: true,
-          displayName: "User 1",
-          roleSlugs: ["creator"],
-          userKey: MOCK_DB_KEYS.users.user1,
-        },
-        ok: true,
-      }),
-    });
-  });
-  await page.route("**/api/platform-settings/banner", async (route) => {
-    await route.fulfill({
-      contentType: "application/json",
-      body: JSON.stringify({ data: { banner: { active: false, message: "", tone: "info" } }, ok: true }),
-    });
-  });
-  await page.route("**/api/toolbox/registry/snapshot", async (route) => {
-    await route.fulfill({
-      contentType: "application/json",
-      body: JSON.stringify({ data: { activeTools: [], readinessByStatus: {}, tools: [], toolboxContract: {} }, ok: true }),
-    });
-  });
   const failures = await openRepoPage(page, "/toolbox/assets/index.html?uploadProgressDelayMs=0", {
     sessionModeId: "local-db",
     sessionUserKey: MOCK_DB_KEYS.users.user1
@@ -585,41 +509,79 @@ test("Assets DEV storage upload list and read uses configured projects prefix", 
     await page.getByRole("button", { name: "Add Images" }).click();
     const newRow = page.locator("[data-asset-tool-editing-row='__new__:Images']");
     await newRow.getByLabel("Usage").selectOption("Character");
-    await newRow.getByLabel("Upload File").setInputFiles(uploadFile("storage-dev-upload.png", "image/png", SMALL_PNG));
+    await newRow.getByLabel("Upload File").setInputFiles(uploadFile(uploadFileName, "image/png", SMALL_PNG));
     await expect(page.locator("[data-asset-tool-log]")).toHaveText("Batch upload complete: 1 written, 0 failed, 0 skipped, 0 warnings.");
-    await expect(page.locator("[data-asset-tool-row]").filter({ hasText: "storage-dev-upload.png" })).toContainText("api/storage/project-assets/read");
+    const uploadedRow = page.locator("[data-asset-tool-row]").filter({ hasText: uploadFileName });
+    await expect(uploadedRow).toContainText("api/storage/project-assets/read");
     await expect(page.locator("body")).not.toContainText("asset-test-secret-key");
     await expect(page.locator("body")).not.toContainText("asset-test-access-key");
 
     const uploadProjectId = await projectIdFromProjectPath(page);
-    const objectKey = `/dev/projects/${uploadProjectId}/image/storage-dev-upload.png`;
+    const objectKey = `/dev/projects/${uploadProjectId}/image/${uploadFileName}`;
     expect(storageServer.objects.get(objectKey)).toEqual(SMALL_PNG);
     expect(storageServer.requests.some((request) => request.method === "PUT" && request.objectKey === objectKey)).toBe(true);
 
     const listPayload = await page.evaluate(async (projectId) => {
-      const response = await fetch("/api/toolbox/assets/repositories/assets-storage-test/methods/listStoredProjectObjects", {
-        body: JSON.stringify({ args: [projectId] }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-      });
-      return response.json();
+      const response = await fetch(`/api/storage/project-assets/list?projectId=${encodeURIComponent(projectId)}`);
+      return {
+        ok: response.ok,
+        payload: await response.json(),
+      };
     }, uploadProjectId);
-    expect(listPayload.data.result).toEqual(expect.objectContaining({
-      keys: [objectKey],
+    expect(listPayload).toEqual(expect.objectContaining({
       ok: true,
+      payload: expect.objectContaining({
+        data: expect.objectContaining({
+          keys: [objectKey],
+          projectsPrefix: "/dev/projects/",
+        }),
+        ok: true,
+      }),
     }));
 
     const readPayload = await page.evaluate(async (key) => {
-      const response = await fetch("/api/toolbox/assets/repositories/assets-storage-test/methods/readStoredProjectObject", {
-        body: JSON.stringify({ args: [key] }),
-        headers: { "Content-Type": "application/json" },
-        method: "POST",
-      });
-      return response.json();
+      const response = await fetch(`/api/storage/project-assets/read?key=${encodeURIComponent(key)}`);
+      return {
+        bytesBase64: btoa(String.fromCharCode(...new Uint8Array(await response.arrayBuffer()))),
+        contentType: response.headers.get("content-type") || "",
+        ok: response.ok,
+      };
     }, objectKey);
-    expect(readPayload.data.result).toEqual(expect.objectContaining({
+    expect(readPayload).toEqual(expect.objectContaining({
       bytesBase64: SMALL_PNG.toString("base64"),
+      contentType: "application/octet-stream",
       ok: true,
+    }));
+
+    await uploadedRow.getByRole("button", { name: "View" }).click();
+    const metadata = page.locator("[data-asset-tool-metadata]");
+    await expect(metadata).toContainText(`Stored path: ${objectKey}`);
+    await expect(metadata).toContainText(`Storage object key: ${objectKey}`);
+    await expect(metadata).toContainText(`View path: api/storage/project-assets/read?key=${encodeURIComponent(objectKey)}`);
+
+    const dbSnapshot = await page.evaluate(async (fileName) => {
+      const response = await fetch("/api/product-data/snapshot");
+      const payload = await response.json();
+      const tables = payload?.data?.tables || {};
+      const asset = (tables.asset_library_items || []).find((row) => row.originalName === fileName);
+      const storageObject = (tables.asset_storage_objects || []).find((row) => row.id === asset?.storageObjectId);
+      return {
+        asset,
+        ok: response.ok && payload?.ok === true,
+        storageObject,
+      };
+    }, uploadFileName);
+    expect(dbSnapshot).toEqual(expect.objectContaining({
+      asset: expect.objectContaining({
+        originalName: uploadFileName,
+        storageObjectId: expect.any(String),
+        storedPath: objectKey,
+      }),
+      ok: true,
+      storageObject: expect.objectContaining({
+        assetId: expect.stringContaining(uploadFileName.replace(/[^a-zA-Z0-9]+/g, "-").replace(/^-+|-+$/g, "").toLowerCase()),
+        storedPath: objectKey,
+      }),
     }));
 
     expectNoPageFailures(failures);
