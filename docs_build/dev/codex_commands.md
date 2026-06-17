@@ -2302,3 +2302,93 @@ Required reports:
 
 Packaging:
 - `tmp/PR_26168_225-assets-r2-storage-integration_delta.zip`
+
+
+## PR_26168_226-r2-stack-report-cleanup
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Confirmed the worktree was clean before PR226 changes.
+- Confirmed no unrelated modified `docs_build/dev/reports` churn from PR225 needed cleanup.
+- Preserved PR222-225 behavior, `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` consolidation, R2 Assets integration, and `docs_build/codex/decisions/project-packages.md`.
+
+Validation:
+- `git branch --show-current`
+- `git branch --list`
+- `git status --short --untracked-files=all`
+- Static preservation check for storage prefix consolidation, storage delete support, Assets storage object key metadata, and package decision notes.
+- `git diff --check`
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_226-r2-stack-report-cleanup.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+
+Packaging:
+- `tmp/PR_26168_226-r2-stack-report-cleanup_delta.zip`
+
+
+## PR_26168_227-admin-system-health-page
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added `admin/system-health.html`.
+- Added a read-only Admin System Health Local API endpoint.
+- Added external Admin System Health JavaScript and API client modules.
+- Added Admin navigation links for System Health.
+- Kept Infrastructure as the visual architecture/reference page and Owner Operations as the action page.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check src/engine/api/admin-system-health-api-client.js`
+- `node --check assets/theme-v2/js/admin-system-health.js`
+- `node --check assets/theme-v2/js/gamefoundry-partials.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Static Node Admin System Health contract validation for safe status areas, Theme V2 CSS, no inline HTML script/style/event handlers, and hidden-secret status.
+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "System Health Admin wireframe preserves template structure|Tool Votes side menu includes Admin platform wireframes"`
+- `git diff --check`
+- Full samples smoke skipped because sample JSON and sample runtime behavior were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_227-admin-system-health-page.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_227-admin-system-health-page_delta.zip`
+
+
+## PR_26168_228-system-health-env-limits
+
+Changes:
+- Read `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
+- Verified the current branch is `main`.
+- Added env-driven System Health limit rows for storage and Local DB limit placeholders.
+- Added blank limit placeholders to `.env.example` and ignored local `.env.<target>` copy-source files without adding real private values.
+- Kept live usage as `NOT AVAILABLE` with actionable Local API next steps because no safe live provider/service usage contract exists in this path.
+- Preserved PR222-225 R2 Assets behavior and `GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX` storage prefix consolidation.
+
+Validation:
+- `node --check src/dev-runtime/server/local-api-router.mjs`
+- `node --check assets/theme-v2/js/admin-system-health.js`
+- `node --check assets/theme-v2/js/gamefoundry-partials.js`
+- `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
+- Static Node contract validation for env placeholders, System Health limits, Theme V2-only HTML, no inline script/style/event handlers, safe `NOT AVAILABLE` usage diagnostics, and exact pressure labels.
+- `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs tests/playwright/tools/AssetToolMockRepository.spec.mjs -g "System Health|Tool Votes side menu includes Admin platform wireframes|Infrastructure storage path status reports DEV match only|Infrastructure storage path status reports IST match only|Infrastructure storage path status reports invalid env path as ERROR|Infrastructure storage path status reports missing env path as ERROR|Infrastructure storage connectivity actions call Local API and hide secrets|Assets DEV storage upload list read and delete use configured projects prefix"`
+- `git diff --check`
+- Full samples smoke skipped because sample JSON, sample runtime flows, and start-of-day folders were not touched.
+
+Required reports:
+- `docs_build/dev/reports/PR_26168_228-system-health-env-limits.md`
+- `docs_build/dev/reports/codex_changed_files.txt`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`
+- `docs_build/dev/reports/coverage_changed_js_guardrail.txt`
+
+Packaging:
+- `tmp/PR_26168_228-system-health-env-limits_delta.zip`

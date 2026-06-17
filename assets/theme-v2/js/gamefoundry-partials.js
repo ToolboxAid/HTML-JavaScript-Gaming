@@ -88,6 +88,7 @@
         "admin-ratings": "admin/ratings.html",
         "admin-users": "admin/users.html",
         "admin-roles": "admin/roles.html",
+        "admin-system-health": "admin/system-health.html",
         "admin-tool-votes": "admin/tool-votes.html",
         "admin-moderation": "admin/moderation.html",
         "admin-analytics": "admin/analytics.html",

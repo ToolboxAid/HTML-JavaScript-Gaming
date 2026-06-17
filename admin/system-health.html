@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <base href="/">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>System Health - Game Foundry Studio LLC</title>
+    <meta name="description" content="Admin read-only system health status for account, product data, storage, environment, migrations, packages, and promotion safety.">
+    <link rel="icon" href="/favicon.svg">
+    <link rel="stylesheet" href="assets/theme-v2/css/theme.css">
+</head>
+
+<body class="meaning-molten-orange">
+    <div data-partial="header-nav"></div>
+    <main data-admin-only="true" data-admin-system-health data-admin-wireframe="system-health">
+        <section class="page-title">
+            <div class="container">
+                <div class="kicker">Admin</div>
+                <h1>System Health</h1>
+                <p class="lede">Review safe runtime readiness across account, Local DB, R2 storage, migrations, package planning, and promotion safety.</p>
+            </div>
+        </section>
+        <section class="section">
+            <div class="container container--tool-wide">
+                <div class="tool-workspace tool-workspace--wide">
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Admin</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Admin Tools</summary>
+                                <nav class="accordion-body content-stack" aria-label="Admin tool pages" data-admin-tool-menu>
+                                    <a class="btn btn--compact" href="/admin/infrastructure.html">Infrastructure</a>
+                                    <a class="btn btn--compact" href="/admin/platform-settings.html">Platform Settings</a>
+                                    <a class="btn btn--compact primary" aria-current="page" href="/admin/system-health.html">System Health</a>
+                                    <a class="btn btn--compact" href="/admin/tool-votes.html">Tool Votes</a>
+                                    <a class="btn btn--compact" href="/admin/users.html">Users</a>
+                                </nav>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Status Sources</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>Account/session readiness</p>
+                                    <p>Product Data / Local DB</p>
+                                    <p>Project Asset Storage / R2</p>
+                                    <p>Project package readiness</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                    <div data-tool-display-mode data-asset-root="assets/theme-v2/images" data-tool-slug="admin-system-health" data-tool-icon-src="assets/theme-v2/images/image-missing.svg" data-tool-character-src="assets/theme-v2/images/image-missing.svg"></div>
+                    <section class="tool-center-panel content-stack" aria-labelledby="admin-system-health-title">
+                        <div>
+                            <div class="kicker">Read-only Status</div>
+                            <h2 id="admin-system-health-title">System Health Overview</h2>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="System health overview">
+                                <caption>System Health Overview</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Area</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Summary</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-overview-rows>
+                                    <tr><td>System Health</td><td>Loading</td><td>Loading safe status.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="System health details">
+                                <caption>System Health Details</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Area</th>
+                                        <th scope="col">Field</th>
+                                        <th scope="col">Status</th>
+                                        <th scope="col">Value</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-detail-rows>
+                                    <tr><td>System Health</td><td>Status</td><td>Loading</td><td>Loading safe details.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="table-wrapper">
+                            <table class="data-table" aria-label="System health environment limits">
+                                <caption>Environment Limits from current .env; values may differ by DEV/IST/UAT/PRD</caption>
+                                <thead>
+                                    <tr>
+                                        <th scope="col">Variable</th>
+                                        <th scope="col">Limit</th>
+                                        <th scope="col">Usage</th>
+                                        <th scope="col">Pressure</th>
+                                        <th scope="col">Next Step</th>
+                                    </tr>
+                                </thead>
+                                <tbody data-admin-system-health-limit-rows>
+                                    <tr><td>System Health</td><td>Loading</td><td>Loading</td><td>Loading</td><td>Loading limit diagnostics.</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </section>
+                    <aside class="tool-column tool-group-platform">
+                        <div class="tool-column-header">
+                            <h2>Inspector</h2>
+                        </div>
+                        <div class="accordion-stack">
+                            <details class="vertical-accordion" open>
+                                <summary>Status</summary>
+                                <div class="accordion-body content-stack">
+                                    <p class="status" role="status" data-admin-system-health-status>Loading Admin System Health.</p>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Related Pages</summary>
+                                <div class="accordion-body content-stack">
+                                    <a class="btn btn--compact" href="/admin/infrastructure.html">Infrastructure Reference</a>
+                                    <a class="btn btn--compact" href="/owner/operations.html">Owner Operations Actions</a>
+                                </div>
+                            </details>
+                            <details class="vertical-accordion" open>
+                                <summary>Guardrails</summary>
+                                <div class="accordion-body content-stack">
+                                    <p>System Health is read-only and does not expose secrets.</p>
+                                    <p>Infrastructure remains the architecture reference page.</p>
+                                    <p>Owner Operations remains the action page.</p>
+                                </div>
+                            </details>
+                        </div>
+                    </aside>
+                </div>
+            </div>
+        </section>
+    </main>
+    <div data-partial="footer"></div>
+    <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+    <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
+    <script type="module" src="assets/theme-v2/js/admin-system-health.js"></script>
+</body>
+
+</html>

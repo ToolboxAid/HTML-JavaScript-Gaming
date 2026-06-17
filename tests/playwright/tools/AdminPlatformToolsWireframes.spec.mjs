@@ -8,6 +8,7 @@ import { workspaceV2CoverageReporter } from "../../helpers/workspaceV2CoverageRe
 const ADMIN_TOOL_MENU_LABELS = [
   "Infrastructure",
   "Platform Settings",
+  "System Health",
   "Tool Votes",
   "Users",
 ];
@@ -19,6 +20,12 @@ const ADMIN_WIREFRAME_PAGES = [
     path: "/admin/infrastructure.html",
     slug: "infrastructure",
     statusText: "Infrastructure status remains a read-only Admin reference.",
+  },
+  {
+    heading: "System Health",
+    path: "/admin/system-health.html",
+    slug: "system-health",
+    systemHealth: true,
   },
   { heading: "Users", path: "/admin/users.html", slug: "users", statusText: "Read-only Admin view." },
   { heading: "Platform Settings", liveSettings: true, path: "/admin/platform-settings.html", slug: "platform-settings" },
@@ -82,6 +89,40 @@ async function startAdminPage(page, pathName, options = {}) {
   const consoleErrors = [];
   const storagePathStatus = options.storagePathStatus || storagePathStatusFor("/dev/projects/");
   const adminStorageConnectivityPosts = [];
+  const systemHealthStatus = options.systemHealthStatus || {
+    details: [
+      { area: "Account/session readiness", field: "Session", status: "PASS", value: "authenticated" },
+      { area: "Product Data / Local DB", field: "Database name", status: "PASS", value: "gamefoundry_dev" },
+      { area: "Project Asset Storage / R2", field: "Projects prefix", status: "PASS", value: "/dev/projects/" },
+      { area: "Environment configuration", field: "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX", status: "PASS", value: "valid lane match" },
+      { area: "Secrets status", field: "Storage secret key", status: "PASS", value: "configured; value hidden" },
+      { area: "Migration status", field: "Migration counts", status: "PASS", value: "DDL=15; DML=15" },
+      { area: "Project package readiness", field: ".gfsp decision", status: "PASS", value: "docs_build/codex/decisions/project-packages.md" },
+      { area: "Promotion/package safety", field: "Import overwrite", status: "PASS", value: "fail-visible-until-explicit-confirmation" },
+    ],
+    limits: [
+      { variableName: "GAMEFOUNDRY_STORAGE_LIMIT_BYTES", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_STORAGE_LIMIT_BYTES in the selected .env.<target> copy-source, copy it to .env, then add safe Project Asset Storage / R2 usage reporting through the Local API." },
+      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY in the selected .env.<target> copy-source, copy it to .env, then add safe Project Asset Storage / R2 usage reporting through the Local API." },
+      { variableName: "GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY in the selected .env.<target> copy-source, copy it to .env, then add safe Project Asset Storage / R2 usage reporting through the Local API." },
+      { variableName: "GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES in the selected .env.<target> copy-source, copy it to .env, then add safe Product Data / Local DB usage reporting through the Local API." },
+      { variableName: "GAMEFOUNDRY_DB_CONNECTION_LIMIT", limit: "not configured", usage: "NOT AVAILABLE", pressure: "NOT AVAILABLE", nextStep: "Set GAMEFOUNDRY_DB_CONNECTION_LIMIT in the selected .env.<target> copy-source, copy it to .env, then add safe Product Data / Local DB usage reporting through the Local API." },
+    ],
+    message: "Admin System Health loaded safe status only.",
+    overview: [
+      { area: "Account/session readiness", status: "PASS", summary: "Current session is authenticated with Admin access." },
+      { area: "Product Data / Local DB", status: "PASS", summary: "Local DB status is configured for gamefoundry_dev." },
+      { area: "Project Asset Storage / R2", status: "PASS", summary: "Project asset storage is configured. Credential values are hidden." },
+      { area: "Environment configuration", status: "PASS", summary: "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX matches exactly one project storage lane." },
+      { area: "Secrets status", status: "PASS", summary: "Storage credentials are configured; secret values are hidden." },
+      { area: "Environment limits", status: "WARN", summary: "Limits are read from current .env because values may differ by DEV/IST/UAT/PRD; live usage is NOT AVAILABLE until provider usage metrics are exposed safely." },
+      { area: "Migration status", status: "PASS", summary: "DDL=15; DML=15; last=support-tickets.sql." },
+      { area: "Project package readiness", status: "PASS", summary: "Project package decision note is ready for .gfsp export/import/validate planning." },
+      { area: "Promotion/package safety", status: "PASS", summary: "Export and Validate are read-only; Import overwrite is blocked until explicit confirmation exists." },
+    ],
+    secretEditingAllowed: false,
+    secretsExposed: false,
+    status: "PASS",
+  };
 
   page.on("pageerror", (error) => {
     const text = error.stack || error.message;
@@ -125,6 +166,7 @@ async function startAdminPage(page, pathName, options = {}) {
           adminMainItems: [
             { label: "Infrastructure", path: "admin/infrastructure.html", route: "admin-infrastructure" },
             { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+            { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
             { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
             { label: "Users", path: "admin/users.html", route: "admin-users" },
           ],
@@ -194,6 +236,15 @@ async function startAdminPage(page, pathName, options = {}) {
       contentType: "application/json",
       body: JSON.stringify({
         data: storagePathStatus,
+        ok: true,
+      }),
+    });
+  });
+  await page.route("**/api/admin/system-health/status", async (route) => {
+    await route.fulfill({
+      contentType: "application/json",
+      body: JSON.stringify({
+        data: systemHealthStatus,
         ok: true,
       }),
     });
@@ -358,6 +409,7 @@ async function expectAdminHeaderMenu(page) {
   const adminSubmenu = page.locator("nav.nav-links > .nav-item:has(> a[data-route='admin']) > .sub-menu");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-infrastructure']")).toHaveText("Infrastructure");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-platform-settings']")).toHaveText("Platform Settings");
+  await expect(adminSubmenu.locator(":scope > a[data-route='admin-system-health']")).toHaveText("System Health");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-tool-votes']")).toHaveText("Tool Votes");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-users']")).toHaveText("Users");
   await expect(adminSubmenu.locator(":scope > a[data-route='admin-environments'], :scope > a[data-route='admin-game-migration'], :scope > a[data-route='admin-site-setup']")).toHaveCount(0);
@@ -378,7 +430,7 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
       await expect(page.locator("[data-admin-tool-menu] a")).toHaveText(adminPage.menuLabels || ADMIN_TOOL_MENU_LABELS);
       await expect(page.locator("[data-admin-tool-menu] a[aria-current='page']")).toHaveText(adminPage.heading);
       await expect(page.locator(".tool-column").first().locator("details.vertical-accordion")).toHaveCount(adminPage.liveSettings ? 1 : 2);
-      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(adminPage.infrastructure ? 3 : 2);
+      await expect(page.locator(".tool-column").last().locator("details.vertical-accordion")).toHaveCount(adminPage.infrastructure || adminPage.systemHealth ? 3 : 2);
       if (adminPage.liveSettings) {
         await expect(page.locator("[data-platform-settings-status]")).toBeVisible();
         await expect(page.locator("[data-platform-banner-active]")).toBeVisible();
@@ -437,6 +489,31 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
         await expect(page.locator("[data-admin-storage-connectivity-action='storage-read-test-object']")).toHaveText("Read Test Object");
         await expect(page.locator("[data-admin-storage-connectivity-action='storage-delete-test-object']")).toHaveText("Delete Test Object");
         await expect(page.locator("[data-admin-storage-connectivity-status]")).toContainText("Storage connectivity not run.");
+      } else if (adminPage.systemHealth) {
+        await expect(page.locator("[data-admin-system-health-status]")).toContainText("PASS: Admin System Health loaded safe status only.");
+        await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Account/session readiness");
+        await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Product Data / Local DB");
+        await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Project Asset Storage / R2");
+        await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Environment configuration");
+        await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Secrets status");
+        await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Environment limits");
+        await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Migration status");
+        await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Project package readiness");
+        await expect(page.locator("[data-admin-system-health-overview-rows]")).toContainText("Promotion/package safety");
+        await expect(page.locator("[data-admin-system-health-detail-rows]")).toContainText("GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX");
+        await expect(page.locator("[data-admin-system-health-detail-rows]")).toContainText("configured; value hidden");
+        await expect(page.locator("[data-admin-system-health-detail-rows]")).not.toContainText("asset-test-secret-key");
+        await expect(page.locator("[data-admin-system-health-detail-rows]")).not.toContainText("asset-test-access-key");
+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("GAMEFOUNDRY_STORAGE_LIMIT_BYTES");
+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY");
+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY");
+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES");
+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("GAMEFOUNDRY_DB_CONNECTION_LIMIT");
+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("NOT AVAILABLE");
+        await expect(page.locator("[data-admin-system-health-limit-rows]")).toContainText("Local API");
+        await expect(page.locator("caption").filter({ hasText: "values may differ by DEV/IST/UAT/PRD" })).toBeVisible();
+        await expect(page.getByRole("link", { name: "Infrastructure Reference" })).toHaveAttribute("href", /admin\/infrastructure\.html$/);
+        await expect(page.getByRole("link", { name: "Owner Operations Actions" })).toHaveAttribute("href", /owner\/operations\.html$/);
       } else {
         await expect(page.locator(".tool-column").last().getByText(adminPage.statusText || "Wireframe only.")).toBeVisible();
         await expect(page.locator("main button:disabled, main input:disabled, main select:disabled").first()).toBeVisible();
@@ -739,6 +816,7 @@ test("Platform Settings Admin controls update banner through the service route",
           data: {
             adminMainItems: [
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+              { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
               { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
               { label: "Users", path: "admin/users.html", route: "admin-users" },
             ],
@@ -890,6 +968,7 @@ test("Owner menu is role-gated separately from Admin menu", async ({ page }) => 
           data: {
             adminMainItems: [
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+              { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
               { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
               { label: "Users", path: "admin/users.html", route: "admin-users" },
             ],
@@ -1049,6 +1128,7 @@ test("Owner Operations exposes owner-only connection validation and manual opera
           data: {
             adminMainItems: [
               { label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" },
+              { label: "System Health", path: "admin/system-health.html", route: "admin-system-health" },
               { label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" },
               { label: "Users", path: "admin/users.html", route: "admin-users" },
             ],

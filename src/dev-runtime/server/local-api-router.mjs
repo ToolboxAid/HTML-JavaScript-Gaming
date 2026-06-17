@@ -182,6 +182,7 @@ const ADMIN_NAVIGATION_MAIN_ITEMS = Object.freeze([
   Object.freeze({ label: "Platform Settings", path: "admin/platform-settings.html", route: "admin-platform-settings" }),
   Object.freeze({ label: "Ratings", path: "admin/ratings.html", route: "admin-ratings" }),
   Object.freeze({ label: "Roles", path: "admin/roles.html", route: "admin-roles" }),
+  Object.freeze({ label: "System Health", path: "admin/system-health.html", route: "admin-system-health" }),
   Object.freeze({ label: "Tool Votes", path: "admin/tool-votes.html", route: "admin-tool-votes" }),
   Object.freeze({ label: "Users", path: "admin/users.html", route: "admin-users" }),
 ]);
@@ -227,6 +228,34 @@ const PLATFORM_BANNER_DEFAULTS = Object.freeze({
   tone: "info",
 });
 const STORAGE_PROJECTS_PREFIX_ENV_KEY = "GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX";
+const SYSTEM_HEALTH_LIMIT_ENV_KEYS = Object.freeze([
+  Object.freeze({
+    key: "GAMEFOUNDRY_STORAGE_LIMIT_BYTES",
+    label: "Storage limit bytes",
+    service: "Project Asset Storage / R2",
+  }),
+  Object.freeze({
+    key: "GAMEFOUNDRY_STORAGE_CLASS_A_LIMIT_MONTHLY",
+    label: "Storage Class A monthly limit",
+    service: "Project Asset Storage / R2",
+  }),
+  Object.freeze({
+    key: "GAMEFOUNDRY_STORAGE_CLASS_B_LIMIT_MONTHLY",
+    label: "Storage Class B monthly limit",
+    service: "Project Asset Storage / R2",
+  }),
+  Object.freeze({
+    key: "GAMEFOUNDRY_DB_SIZE_LIMIT_BYTES",
+    label: "Local DB size limit bytes",
+    service: "Product Data / Local DB",
+  }),
+  Object.freeze({
+    key: "GAMEFOUNDRY_DB_CONNECTION_LIMIT",
+    label: "Local DB connection limit",
+    service: "Product Data / Local DB",
+  }),
+]);
+const SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS = Object.freeze(["OK", "WATCH", "UPGRADE SOON", "RISK"]);
 const STORAGE_PROJECTS_PREFIX_LANES = Object.freeze([
   Object.freeze({ lane: "DEV", path: "/dev/projects/" }),
   Object.freeze({ lane: "IST", path: "/ist/projects/" }),
@@ -421,6 +450,67 @@ function databaseConfigStatus(env = process.env) {
       sslModeStatus: sslMode ? "PASS" : "WARN",
     };
   }
+}
+
+function projectPackageReadinessStatus() {
+  const decisionPath = path.join(process.cwd(), "docs_build", "codex", "decisions", "project-packages.md");
+  try {
+    const contents = readFileSync(decisionPath, "utf8");
+    const requiredContent = [
+      ".gfsp",
+      "Game Foundry Studio Project",
+      "ZIP-based package format",
+      "<ProjectNameWithoutSpaces>-<YYJJJ>-<sequence>.gfsp",
+      "Export Project Package",
+      "Import Project Package",
+      "Validate Project Package",
+    ];
+    const missing = requiredContent.filter((item) => !contents.includes(item));
+    return {
+      decisionPath: "docs_build/codex/decisions/project-packages.md",
+      message: missing.length
+        ? `Project package decision note is missing: ${missing.join(", ")}.`
+        : "Project package decision note is ready for .gfsp export/import/validate planning.",
+      status: missing.length ? "WARN" : "PASS",
+    };
+  } catch {
+    return {
+      decisionPath: "docs_build/codex/decisions/project-packages.md",
+      message: "Project package decision note is missing. Restore docs_build/codex/decisions/project-packages.md.",
+      status: "WARN",
+    };
+  }
+}
+
+function systemHealthLimitRows() {
+  return SYSTEM_HEALTH_LIMIT_ENV_KEYS.map((limit) => {
+    const configuredLimit = dotEnvValue(limit.key);
+    const hasLimitValue = configuredLimit.found && configuredLimit.value;
+    return {
+      area: limit.service,
+      field: limit.label,
+      limit: hasLimitValue ? configuredLimit.value : "not configured",
+      nextStep: hasLimitValue
+        ? `Add safe ${limit.service} usage reporting through the Local API before calculating pressure.`
+        : `Set ${limit.key} in the selected .env.<target> copy-source, copy it to .env, then add safe ${limit.service} usage reporting through the Local API.`,
+      pressure: "NOT AVAILABLE",
+      pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
+      status: "WARN",
+      usage: "NOT AVAILABLE",
+      variableName: limit.key,
+    };
+  });
+}
+
+function overallHealthStatus(rows) {
+  const statuses = rows.map((row) => String(row.status || "").toUpperCase());
+  if (statuses.includes("FAIL") || statuses.includes("ERROR")) {
+    return "FAIL";
+  }
+  if (statuses.includes("WARN") || statuses.includes("SKIP")) {
+    return "WARN";
+  }
+  return "PASS";
 }
 
 function providerFailureMessage(providerContract, providerId) {
@@ -2088,6 +2178,104 @@ LIMIT 1;
     return this.runStorageConnectivityAction(String(body.actionId || "").trim());
   }
 
+  async adminSystemHealthStatus() {
+    const session = await this.requireAdminSession();
+    const authStatus = this.authStatus();
+    const databaseStatus = await this.ownerDatabaseStatus();
+    const storageStatus = this.ownerStorageStatus();
+    const environmentStatus = storageProjectsPrefixStatus();
+    const limitRows = systemHealthLimitRows();
+    const packageStatus = projectPackageReadinessStatus();
+    const promotionFoundation = this.ownerPromotionFoundation();
+    const importBlocked = promotionFoundation.importOverwriteAllowed === false
+      && promotionFoundation.browserExecutionAllowed === false
+      && promotionFoundation.destructiveOperationsAllowed === false;
+    const overview = [
+      {
+        area: "Account/session readiness",
+        status: session.authenticated && session.isAdmin ? "PASS" : "FAIL",
+        summary: session.authenticated && session.isAdmin
+          ? "Current session is authenticated with Admin access."
+          : "Sign in with an Admin account to view system health.",
+      },
+      {
+        area: "Product Data / Local DB",
+        status: databaseStatus.configured === true ? databaseStatus.status || "PASS" : "WARN",
+        summary: databaseStatus.configured === true
+          ? `Local DB status is configured for ${databaseStatus.databaseName || "configured database"}.`
+          : databaseStatus.message || "Local DB configuration is not complete.",
+      },
+      {
+        area: "Project Asset Storage / R2",
+        status: storageStatus.status || "WARN",
+        summary: storageStatus.message || "Project asset storage status unavailable.",
+      },
+      {
+        area: "Environment configuration",
+        status: environmentStatus.status === "PASS" ? "PASS" : "WARN",
+        summary: environmentStatus.status === "PASS"
+          ? `${environmentStatus.variableName} matches exactly one project storage lane.`
+          : `${environmentStatus.variableName} is missing or does not match an approved project storage lane.`,
+      },
+      {
+        area: "Secrets status",
+        status: storageStatus.accessKeyConfigured && storageStatus.secretKeyConfigured ? "PASS" : "WARN",
+        summary: storageStatus.accessKeyConfigured && storageStatus.secretKeyConfigured
+          ? "Storage credentials are configured; secret values are hidden."
+          : "Storage credentials are not fully configured; secret values remain hidden.",
+      },
+      {
+        area: "Environment limits",
+        status: "WARN",
+        summary: "Limits are read from current .env because values may differ by DEV/IST/UAT/PRD; live usage is NOT AVAILABLE until provider usage metrics are exposed safely.",
+      },
+      {
+        area: "Migration status",
+        status: databaseStatus.migrationStatus || "WARN",
+        summary: `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}; last=${databaseStatus.lastMigration?.name || "not recorded"}.`,
+      },
+      {
+        area: "Project package readiness",
+        status: packageStatus.status,
+        summary: packageStatus.message,
+      },
+      {
+        area: "Promotion/package safety",
+        status: importBlocked ? "PASS" : "WARN",
+        summary: promotionFoundation.safetyMessage || "Promotion safety status unavailable.",
+      },
+    ];
+    return {
+      details: [
+        { area: "Account/session readiness", field: "Session", status: session.authenticated ? "PASS" : "FAIL", value: session.authenticated ? "authenticated" : "not authenticated" },
+        { area: "Account/session readiness", field: "Role", status: session.isAdmin ? "PASS" : "FAIL", value: session.isAdmin ? "Admin" : "Admin required" },
+        { area: "Product Data / Local DB", field: "Database host", status: databaseStatus.hostStatus || "WARN", value: databaseStatus.host || "not configured" },
+        { area: "Product Data / Local DB", field: "Database name", status: databaseStatus.databaseNameStatus || "WARN", value: databaseStatus.databaseName || "not configured" },
+        { area: "Project Asset Storage / R2", field: "Endpoint", status: storageStatus.endpointStatus || "WARN", value: storageStatus.endpoint || "not configured" },
+        { area: "Project Asset Storage / R2", field: "Bucket", status: storageStatus.bucketStatus || "WARN", value: storageStatus.bucket || "not configured" },
+        { area: "Project Asset Storage / R2", field: "Projects prefix", status: storageStatus.projectsPrefixStatus || "WARN", value: storageStatus.projectsPrefix || "not configured" },
+        { area: "Environment configuration", field: environmentStatus.variableName, status: environmentStatus.status, value: environmentStatus.configured ? "valid lane match" : "missing or invalid" },
+        { area: "Secrets status", field: "Storage access key", status: storageStatus.accessKeyStatus || "WARN", value: storageStatus.accessKeyConfigured ? "configured; value hidden" : "not configured" },
+        { area: "Secrets status", field: "Storage secret key", status: storageStatus.secretKeyStatus || "WARN", value: storageStatus.secretKeyConfigured ? "configured; value hidden" : "not configured" },
+        { area: "Migration status", field: "Migration counts", status: databaseStatus.migrationStatus || "WARN", value: `DDL=${databaseStatus.migrationCounts?.DDL || 0}; DML=${databaseStatus.migrationCounts?.DML || 0}` },
+        { area: "Project package readiness", field: ".gfsp decision", status: packageStatus.status, value: packageStatus.decisionPath },
+        { area: "Promotion/package safety", field: "Browser destructive operations", status: promotionFoundation.destructiveOperationsAllowed === false ? "PASS" : "WARN", value: promotionFoundation.destructiveOperationsAllowed === false ? "disabled" : "review required" },
+        { area: "Promotion/package safety", field: "Import overwrite", status: promotionFoundation.importOverwriteAllowed === false ? "PASS" : "WARN", value: promotionFoundation.importOverwritePolicy || "review required" },
+      ],
+      links: {
+        infrastructure: "/admin/infrastructure.html",
+        ownerOperations: "/owner/operations.html",
+      },
+      limits: limitRows,
+      message: "Admin System Health loaded safe status only.",
+      overview,
+      pressureLabels: SYSTEM_HEALTH_LIMIT_PRESSURE_LABELS,
+      secretEditingAllowed: false,
+      secretsExposed: false,
+      status: overallHealthStatus(overview),
+    };
+  }
+
   projectWorkspaceProjectsForRoute() {
     const activeProject = this.gameWorkspaceRepository.getActiveGame();
     const records = gameWorkspaceProjectRecords(this.gameWorkspaceRepository);
@@ -3683,6 +3871,11 @@ export function createLocalApiRouter() {
       if (parts[1] === "admin" && parts[2] === "infrastructure" && request.method === "POST" && parts[3] === "storage-connectivity-action") {
         const body = await readRequestJson(request);
         ok(response, await dataSource.adminInfrastructureStorageConnectivityAction(body));
+        return true;
+      }
+
+      if (parts[1] === "admin" && parts[2] === "system-health" && request.method === "GET" && parts[3] === "status") {
+        ok(response, await dataSource.adminSystemHealthStatus());
         return true;
       }
 
