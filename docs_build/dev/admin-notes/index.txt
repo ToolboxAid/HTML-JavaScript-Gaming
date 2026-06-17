@@ -2,18 +2,23 @@
 [.] Start the server
 npm run dev:local-api
 
+[x] Deploy DEV, IST, UAT, PRD
+node .\scripts\validate-supabase-dev.mjs
+node .\scripts\apply-supabase-dev-ddl.mjs
+node .\scripts\validate-supabase-dev.mjs
+npm run dev:local-api
+
+[x] Users/PSWD
 - Update DEV Supabase identity seed so only these test identities remain:
   - User 1, email user1@example.invalid, password GFS1
   - User 2, email user2@example.invalid, password GFS2
   - User 3, email user3@example.invalid, password GFS3
   - DavidQ, email qbytes.dq@gmail.com, password GFS$2026
-  
+   
 [x] move 
 src\assets\fonts\0xProtoNerdFont\ to assets\theme-v2\fonts\
 src\assets\fonts\vector_battle\ to assets\theme-v2\fonts\
 delete src\assets\
-
-
 
 
 # Admin Notes Ownership

@@ -1,9 +1,9 @@
-﻿.env.example
-scripts/apply-supabase-dev-ddl.mjs
-scripts/start-local-api-server.mjs
+﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
+package.json
+scripts/validate-runtime-connections.mjs
+scripts/apply-database-ddl.mjs
 scripts/validate-supabase-dev.mjs
-src/dev-runtime/auth/provider-contract-stubs.mjs
-src/dev-runtime/persistence/postgres-connection-client.mjs
-docs_build/dev/reports/PR_26167_198-database-ssl-mode-contract.md
+scripts/apply-supabase-dev-ddl.mjs
+docs_build/dev/reports/PR_26167_199-env-copy-source-governance.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

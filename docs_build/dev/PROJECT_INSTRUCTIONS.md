@@ -350,6 +350,60 @@ Rules:
 - Local session state must resolve selected users and roles from persisted Memory DB `users`, `roles`, and `user_roles` records.
 - Missing users or roles must fail visibly with actionable diagnostics.
 
+## ENVIRONMENT CONFIGURATION GOVERNANCE
+
+Runtime startup loads `.env` only.
+
+The following files are copy-source files only:
+- `.env.dev`
+- `.env.ist`
+- `.env.uat`
+- `.env.prd`
+
+Valid deployment targets are:
+- `DEV`
+- `IST`
+- `UAT`
+- `PRD`
+
+Manual deployment-target flow:
+1. Copy the selected `.env.<target>` file to `.env`.
+2. Run validation.
+3. Apply DDL/DML migrations.
+4. Start runtime.
+
+Runtime environment parameters are prohibited.
+
+Do not introduce runtime parameters such as:
+- `--env`
+- `--environment`
+- `ENVIRONMENT=DEV`
+- `ENVIRONMENT=UAT`
+- `ENVIRONMENT=PRD`
+
+`DEV`, `IST`, `UAT`, and `PRD` are deployment targets, not application behaviors.
+
+Application code, runtime code, API/service code, and DB runtime scripts must not branch behavior by deployment target name.
+
+## RUNTIME SCRIPT NAMING GOVERNANCE
+
+Active runtime script names should describe capability rather than vendor/provider.
+
+Preferred runtime naming nouns are:
+- `auth`
+- `database`
+- `storage`
+- `telemetry`
+- `api`
+
+Avoid provider or vendor names in future active runtime script names.
+
+When an active script is renamed, a temporary compatibility wrapper may remain only when needed for command continuity.
+
+Compatibility wrappers must log:
+
+`Deprecated script name. Use <new-name>.`
+
 ## ARCHIVED V1/V2 REFERENCE MATERIAL
 
 Deprecated V1/V2 reference material lives under:
