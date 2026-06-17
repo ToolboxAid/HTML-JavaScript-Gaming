@@ -322,12 +322,7 @@ function readMappings() {
   const gameControlMappings = normalizedMappings.filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
   const engineSafeMappings = ensureEngineOwnedMappings(gameControlMappings);
   if (engineOwnedRepairNeeded || gameControlMappings.length !== normalizedMappings.length || persistedMappingFieldsChanged(gameControlMappings, engineSafeMappings)) {
-    const cleanupResult = controlsRepository.replaceMappings(engineSafeMappings);
-    if (Array.isArray(cleanupResult?.mappings)) {
-      return cleanupResult.mappings
-        .map((mapping) => normalizeMapping(mapping))
-        .filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
-    }
+    return engineSafeMappings;
   }
   return engineSafeMappings;
 }
@@ -350,10 +345,8 @@ function ensureDefaultMappings() {
   if (mappings.length) {
     return "";
   }
-  if (saveMappings(createDefaultGameControlMappings())) {
-    return "Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.";
-  }
-  return "";
+  mappings = createDefaultGameControlMappings();
+  return "Loaded default Game Controls for review. Save to persist changes through the server API.";
 }
 
 function saveMappings(nextMappings) {

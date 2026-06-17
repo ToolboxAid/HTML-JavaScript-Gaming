@@ -1,104 +1,16 @@
 # git status --short
-M admin/platform-settings.html
- M admin/tool-votes.html
- M admin/users.html
- M assets/theme-v2/js/owner-operations.js
- M docs_build/dev/reports/codex_changed_files.txt
- M docs_build/dev/reports/codex_review.diff
- M docs_build/dev/reports/coverage_changed_js_guardrail.txt
- M docs_build/dev/reports/dependency_gating_report.md
- M docs_build/dev/reports/dependency_hydration_reuse_report.md
- M docs_build/dev/reports/execution_graph_reuse_report.md
- M docs_build/dev/reports/failure_fingerprint_report.md
- M docs_build/dev/reports/filesystem_scan_reduction_report.md
- M docs_build/dev/reports/incremental_validation_report.md
- M docs_build/dev/reports/lane_compilation_report.md
- M docs_build/dev/reports/lane_deduplication_report.md
- M docs_build/dev/reports/lane_input_validation_report.md
- M docs_build/dev/reports/lane_manifests/workspace-contract.json
- M docs_build/dev/reports/lane_runtime_optimization_report.md
- M docs_build/dev/reports/lane_snapshot_report.md
- M docs_build/dev/reports/lane_snapshots/workspace-contract.json
- M docs_build/dev/reports/lane_warm_start_report.md
- M docs_build/dev/reports/lane_warm_starts/workspace-contract.json
- M docs_build/dev/reports/monolith_trigger_removal_report.md
- M docs_build/dev/reports/persistent_lane_manifest_report.md
- M docs_build/dev/reports/playwright_discovery_ownership_report.md
- M docs_build/dev/reports/playwright_discovery_scope_report.md
- M docs_build/dev/reports/playwright_structure_audit.md
- M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M docs_build/dev/reports/retry_suppression_report.md
- M docs_build/dev/reports/slow_path_pruning_report.md
- M docs_build/dev/reports/static_validation_report.md
- M docs_build/dev/reports/targeted_file_manifest_report.md
- M docs_build/dev/reports/test_cleanup_performance_report.md
- M docs_build/dev/reports/test_cleanup_routing_report.md
- M docs_build/dev/reports/testing_lane_execution_report.md
- M docs_build/dev/reports/validation_cache_report.md
- M docs_build/dev/reports/zero_browser_preflight_report.md
- M owner/operations.html
+M docs_build/dev/reports/playwright_v8_coverage_report.txt
  M src/dev-runtime/server/local-api-router.mjs
- M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
- M tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs
- M toolbox/game-workspace/game-workspace-api-client.js
- M toolbox/game-workspace/game-workspace.js
- M toolbox/game-workspace/index.html
- M toolbox/tools-page-accordions.js
-?? admin/infrastructure.html
-?? docs_build/dev/reports/PR_26168_215-admin-infrastructure-page.md
-?? docs_build/dev/reports/PR_26168_216-promotion-safety-validation.md
-?? docs_build/dev/reports/PR_26168_217-project-workspace-db-integration.md
+ M tests/playwright/tools/InputMappingV2Tool.spec.mjs
+ M toolbox/controls/controls.js
+?? docs_build/dev/reports/PR_26168_218-project-workspace-validation-cleanup.md
 
 # git ls-files --others --exclude-standard
-admin/infrastructure.html
-docs_build/dev/reports/PR_26168_215-admin-infrastructure-page.md
-docs_build/dev/reports/PR_26168_216-promotion-safety-validation.md
-docs_build/dev/reports/PR_26168_217-project-workspace-db-integration.md
+docs_build/dev/reports/PR_26168_218-project-workspace-validation-cleanup.md
 
 # git diff --stat
-admin/platform-settings.html                       |     1 +
- admin/tool-votes.html                              |     1 +
- admin/users.html                                   |     1 +
- assets/theme-v2/js/owner-operations.js             |     3 +-
- docs_build/dev/reports/codex_changed_files.txt     |   114 +-
- docs_build/dev/reports/codex_review.diff           | 94192 ++++++++++---------
- .../dev/reports/coverage_changed_js_guardrail.txt  |    10 +-
- docs_build/dev/reports/dependency_gating_report.md |     2 +-
- .../reports/dependency_hydration_reuse_report.md   |    12 +-
- .../dev/reports/execution_graph_reuse_report.md    |    16 +-
- .../dev/reports/failure_fingerprint_report.md      |     2 +-
- .../reports/filesystem_scan_reduction_report.md    |     2 +-
- .../dev/reports/incremental_validation_report.md   |    14 +-
- docs_build/dev/reports/lane_compilation_report.md  |     2 +-
- .../dev/reports/lane_deduplication_report.md       |     2 +-
- .../dev/reports/lane_input_validation_report.md    |     2 +-
- .../reports/lane_manifests/workspace-contract.json |    10 +-
- .../reports/lane_runtime_optimization_report.md    |    14 +-
- docs_build/dev/reports/lane_snapshot_report.md     |    12 +-
- .../reports/lane_snapshots/workspace-contract.json |    22 +-
- docs_build/dev/reports/lane_warm_start_report.md   |    12 +-
- .../lane_warm_starts/workspace-contract.json       |    16 +-
- .../dev/reports/monolith_trigger_removal_report.md |     2 +-
- .../dev/reports/persistent_lane_manifest_report.md |    12 +-
- .../playwright_discovery_ownership_report.md       |     2 +-
- .../reports/playwright_discovery_scope_report.md   |     2 +-
- .../dev/reports/playwright_structure_audit.md      |     2 +-
- .../dev/reports/playwright_v8_coverage_report.txt  |    46 +-
- docs_build/dev/reports/retry_suppression_report.md |     2 +-
- docs_build/dev/reports/slow_path_pruning_report.md |    16 +-
- docs_build/dev/reports/static_validation_report.md |    12 +-
- .../dev/reports/targeted_file_manifest_report.md   |     8 +-
- .../dev/reports/test_cleanup_performance_report.md |    22 +-
- .../dev/reports/test_cleanup_routing_report.md     |     2 +-
- .../dev/reports/testing_lane_execution_report.md   |    52 +-
- docs_build/dev/reports/validation_cache_report.md  |    30 +-
- .../dev/reports/zero_browser_preflight_report.md   |    10 +-
- owner/operations.html                              |     3 +-
- src/dev-runtime/server/local-api-router.mjs        |    81 +-
- .../tools/AdminPlatformToolsWireframes.spec.mjs    |    79 +-
- .../tools/GameWorkspaceMockRepository.spec.mjs     |   102 +-
- .../game-workspace/game-workspace-api-client.js    |     9 +
- toolbox/game-workspace/game-workspace.js           |   112 +-
- toolbox/game-workspace/index.html                  |    19 +-
- toolbox/tools-page-accordions.js                   |     1 -
- 45 files changed, 48205 insertions(+), 46883 deletions(-)
+.../dev/reports/playwright_v8_coverage_report.txt  | 76 ++++------------------
+ src/dev-runtime/server/local-api-router.mjs        |  2 +-
+ tests/playwright/tools/InputMappingV2Tool.spec.mjs | 36 +---------
+ toolbox/controls/controls.js                       | 13 +---
+ 4 files changed, 19 insertions(+), 108 deletions(-)

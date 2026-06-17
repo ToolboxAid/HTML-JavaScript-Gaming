@@ -702,7 +702,7 @@ function repositoryMethodError(message, statusCode = 502) {
 }
 
 function repositoryMethodRequiresPersistence(methodName) {
-  return !/^(get|list|open|read)/.test(String(methodName || ""));
+  return !/^(get|list|open|read|validate)/.test(String(methodName || ""));
 }
 
 const GAME_WORKSPACE_SAVE_METHODS = new Set([

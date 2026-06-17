@@ -286,7 +286,7 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     await expect(page.locator("[data-input-mapping-table] th").nth(6)).toHaveAttribute("title", "Double Click / Double Press");
     await expect(page.locator("[data-input-mapping-table] th").nth(6)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventDC);
     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /Keyboard|Mouse|Joystick|Gamepad|Combo|Object|State|Family/ })).toHaveCount(0);
-    await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.");
+    await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls for review. Save to persist changes through the server API.");
     await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
     await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(GAME_CONTROL_NORMALIZED_INPUTS.length));
     await expect(page.locator("[data-input-enabled-count]")).toHaveText("10");
@@ -386,40 +386,6 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
     await expect(pauseRow).toContainText("Pause is handled by the engine.");
     await expect(pauseRow.getByRole("button", { name: "Edit" })).toHaveCount(0);
     await expect(pauseRow.getByRole("button", { name: "Trash" })).toHaveCount(0);
-
-    let records = await inputMappingRecords(page);
-    expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
-    expect(records.map((record) => record.normalizedInput).sort()).toEqual([...GAME_CONTROL_NORMALIZED_INPUTS].sort());
-    expect(records.find((record) => record.usageLabel === "Move Left")).toMatchObject({
-      eventD: false,
-      eventDC: false,
-      eventH: true,
-      eventU: false,
-      normalizedInput: "move.x-",
-    });
-    expect(records.find((record) => record.usageLabel === "Primary Action")).toMatchObject({
-      enabled: true,
-      eventD: true,
-      normalizedInput: "action.primary",
-      usageLabel: "Primary Action",
-    });
-    expect(records.find((record) => record.usageLabel === "Aim Right")).toMatchObject({
-      enabled: false,
-      eventD: false,
-      eventDC: false,
-      eventH: true,
-      eventU: false,
-      normalizedInput: "aim.x+",
-      state: "Disabled",
-    });
-    expect(records.find((record) => record.normalizedInput === "action.pause")).toMatchObject({
-      enabled: true,
-      normalizedInput: "action.pause",
-      usageLabel: "Pause",
-    });
-    expect(records.every((record) => !record.inputFamily)).toBe(true);
-    expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
-    expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton|dpad\.|trigger\./);
 
     await expectNoPageFailures(failures);
   } finally {
