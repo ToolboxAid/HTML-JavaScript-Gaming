@@ -1,1 +1,62 @@
-/* Home migration does not require reusable dialog patterns yet. */
+.image-zoom-trigger {
+  display: block;
+  width: 100%;
+  padding: var(--space-0);
+  border: var(--border-standard);
+  border-radius: var(--radius-md);
+  background: var(--panel-overlay);
+  color: inherit;
+  cursor: pointer;
+  overflow: hidden
+}
+
+.tool-center-panel .image-zoom-trigger img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  display: block;
+  margin: var(--space-0)
+}
+
+.image-zoom-trigger:focus-visible {
+  outline: var(--border-standard);
+  outline-offset: var(--space-3)
+}
+
+.image-zoom-dialog {
+  width: calc(100% - var(--container-gutter));
+  max-width: var(--tool-wide-container-max);
+  max-height: calc(100vh - var(--container-gutter));
+  padding: var(--space-18);
+  border: var(--border-standard);
+  border-radius: var(--radius-lg);
+  background: var(--dialog-bg);
+  color: var(--text);
+  box-shadow: var(--shadow-lg)
+}
+
+.image-zoom-dialog::backdrop {
+  background: color-mix(in srgb, var(--foundry-space) 82%, transparent)
+}
+
+.image-zoom-dialog__header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-12);
+  margin-bottom: var(--space-16)
+}
+
+.image-zoom-dialog__header h3 {
+  margin: var(--space-0);
+  color: var(--gold);
+  font-size: var(--font-size-lg)
+}
+
+.image-zoom-dialog img {
+  width: 100%;
+  max-height: calc(100vh - var(--container-gutter) - var(--space-78));
+  object-fit: contain;
+  border-radius: var(--radius-sm)
+}

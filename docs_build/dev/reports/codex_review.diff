@@ -1,194 +1,243 @@
+diff --git a/.env.example b/.env.example
+index 97de17312..064fe7536 100644
+--- a/.env.example
++++ b/.env.example
+@@ -26,3 +26,4 @@ GAMEFOUNDRY_STORAGE_ACCESS_KEY_ID=
+ GAMEFOUNDRY_STORAGE_SECRET_ACCESS_KEY=
+ GAMEFOUNDRY_STORAGE_BUCKET=
+ GAMEFOUNDRY_STORAGE_PROJECTS_PREFIX=
++GAMEFOUNDRY_ASSET_STORAGE_PATH=
+diff --git a/admin/infrastructure.html b/admin/infrastructure.html
+index 20a2099c0..f75861f68 100644
+--- a/admin/infrastructure.html
++++ b/admin/infrastructure.html
+@@ -56,23 +56,35 @@
+                             <h2 id="admin-infrastructure-title">Game Foundry Infrastructure</h2>
+                         </div>
+                         <figure class="content-stack">
+-                            <img src="assets/GFS-Infrastructure v1-3.png" alt="Game Foundry Studio infrastructure diagram version 1-3">
++                            <button class="image-zoom-trigger" type="button" data-image-zoom-target="admin-infrastructure-image-zoom" aria-haspopup="dialog" aria-controls="admin-infrastructure-image-zoom" aria-label="Open Game Foundry infrastructure diagram zoom view">
++                                <img src="assets/GFS-Infrastructure v1-3.png" alt="Game Foundry Studio infrastructure diagram version 1-3">
++                            </button>
+                             <figcaption>GFS-Infrastructure v1-3.png</figcaption>
+                         </figure>
++                        <dialog class="image-zoom-dialog" id="admin-infrastructure-image-zoom" data-image-zoom-dialog aria-labelledby="admin-infrastructure-image-zoom-title">
++                            <div class="image-zoom-dialog__header">
++                                <h3 id="admin-infrastructure-image-zoom-title">Game Foundry Infrastructure</h3>
++                                <form method="dialog">
++                                    <button class="btn btn--compact" type="submit" value="close">Close</button>
++                                </form>
++                            </div>
++                            <img src="assets/GFS-Infrastructure v1-3.png" alt="Zoomed Game Foundry Studio infrastructure diagram version 1-3">
++                        </dialog>
+                         <div class="table-wrapper">
+                             <table class="data-table" aria-label="Project storage path reference">
+-                                <caption>Project Asset Storage Paths</caption>
++                                <caption>Project Asset Storage Paths use <code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></caption>
+                                 <thead>
+                                     <tr>
+                                         <th scope="col">Lane</th>
+                                         <th scope="col">Path</th>
++                                        <th scope="col">.env variable</th>
+                                     </tr>
+                                 </thead>
+                                 <tbody>
+-                                    <tr><td>DEV</td><td>/dev/projects/</td></tr>
+-                                    <tr><td>IST</td><td>/ist/projects/</td></tr>
+-                                    <tr><td>UAT</td><td>/uat/projects/</td></tr>
+-                                    <tr><td>PROD</td><td>/prod/projects/</td></tr>
++                                    <tr><td>DEV</td><td>/dev/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
++                                    <tr><td>IST</td><td>/ist/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
++                                    <tr><td>UAT</td><td>/uat/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
++                                    <tr><td>PROD</td><td>/prod/projects/</td><td><code>GAMEFOUNDRY_ASSET_STORAGE_PATH</code></td></tr>
+                                 </tbody>
+                             </table>
+                         </div>
+@@ -107,6 +119,7 @@
+     <div data-partial="footer"></div>
+     <script src="assets/theme-v2/js/gamefoundry-partials.js" defer></script>
+     <script src="assets/theme-v2/js/tool-display-mode.js" defer></script>
++    <script src="assets/theme-v2/js/image-zoom-dialog.js" defer></script>
+ </body>
+ 
+ </html>
+diff --git a/assets/theme-v2/css/dialogs.css b/assets/theme-v2/css/dialogs.css
+index 84eeeab97..fa071f04b 100644
+--- a/assets/theme-v2/css/dialogs.css
++++ b/assets/theme-v2/css/dialogs.css
+@@ -1 +1,62 @@
+-/* Home migration does not require reusable dialog patterns yet. */
++.image-zoom-trigger {
++  display: block;
++  width: 100%;
++  padding: var(--space-0);
++  border: var(--border-standard);
++  border-radius: var(--radius-md);
++  background: var(--panel-overlay);
++  color: inherit;
++  cursor: pointer;
++  overflow: hidden
++}
++
++.tool-center-panel .image-zoom-trigger img {
++  width: 100%;
++  height: auto;
++  object-fit: contain;
++  display: block;
++  margin: var(--space-0)
++}
++
++.image-zoom-trigger:focus-visible {
++  outline: var(--border-standard);
++  outline-offset: var(--space-3)
++}
++
++.image-zoom-dialog {
++  width: calc(100% - var(--container-gutter));
++  max-width: var(--tool-wide-container-max);
++  max-height: calc(100vh - var(--container-gutter));
++  padding: var(--space-18);
++  border: var(--border-standard);
++  border-radius: var(--radius-lg);
++  background: var(--dialog-bg);
++  color: var(--text);
++  box-shadow: var(--shadow-lg)
++}
++
++.image-zoom-dialog::backdrop {
++  background: color-mix(in srgb, var(--foundry-space) 82%, transparent)
++}
++
++.image-zoom-dialog__header {
++  display: flex;
++  flex-wrap: wrap;
++  align-items: center;
++  justify-content: space-between;
++  gap: var(--space-12);
++  margin-bottom: var(--space-16)
++}
++
++.image-zoom-dialog__header h3 {
++  margin: var(--space-0);
++  color: var(--gold);
++  font-size: var(--font-size-lg)
++}
++
++.image-zoom-dialog img {
++  width: 100%;
++  max-height: calc(100vh - var(--container-gutter) - var(--space-78));
++  object-fit: contain;
++  border-radius: var(--radius-sm)
++}
 diff --git a/docs_build/dev/reports/playwright_v8_coverage_report.txt b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-index b3ce71639..f81fcb5a0 100644
+index f81fcb5a0..03545113d 100644
 --- a/docs_build/dev/reports/playwright_v8_coverage_report.txt
 +++ b/docs_build/dev/reports/playwright_v8_coverage_report.txt
-@@ -1,67 +1,19 @@
+@@ -1,19 +1,13 @@
  Playwright V8 Coverage Report
  
--PR: generated by current Playwright run.
--Coverage source: Playwright/Chromium built-in V8 coverage.
--Coverage scope: all repo-relative browser JavaScript collected by Playwright/Chromium V8 coverage.
--Dependencies: no new npm packages.
--Thresholds: none enforced.
--Note: coverage is an advisory baseline only for this PR.
--Note: missing changed runtime JS coverage is reported as WARN, not FAIL.
--Note: line counts are V8 range-based and advisory; function counts show partial module exercise where available.
--Note: entry percentages use function coverage when available, otherwise line coverage.
--Note: coverage entries are aggregated across every page/tool where coverageReporter.start(page) and coverageReporter.stop(page) ran.
-+PR: PR_26168_218-project-workspace-validation-cleanup
-+Coverage source: Playwright/Chromium built-in V8 coverage from the targeted PR218 Playwright runs.
-+Coverage scope: browser JavaScript collected while running Project Workspace, Admin Infrastructure, Owner Operations, Controls, and the workspace-contract lane.
-+Thresholds: none enforced; coverage is advisory for this PR.
-+Note: missing changed runtime JavaScript files are reported as WARN, not FAIL.
+-PR: PR_26168_218-project-workspace-validation-cleanup
+-Coverage source: Playwright/Chromium built-in V8 coverage from the targeted PR218 Playwright runs.
+-Coverage scope: browser JavaScript collected while running Project Workspace, Admin Infrastructure, Owner Operations, Controls, and the workspace-contract lane.
++PR: PR_26168_219-admin-infrastructure-image-storage-path
++Coverage source: Playwright/Chromium built-in V8 coverage from targeted Admin Infrastructure validation.
++Coverage scope: browser JavaScript collected while running `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs` for the Admin Infrastructure page.
+ Thresholds: none enforced; coverage is advisory for this PR.
+ Note: missing changed runtime JavaScript files are reported as WARN, not FAIL.
  
--Exercised tool entry points detected:
--(65%) Toolbox Index - exercised 10 runtime JS files
--(0%) Tool Template V2 - not exercised by this Playwright run
--(43%) Theme V2 Shared JS - exercised 5 runtime JS files
-+Changed runtime JavaScript files covered:
-+(0%) src/dev-runtime/server/local-api-router.mjs - WARN: server runtime module is not collected by browser V8 coverage; covered by node --check and RootToolsFutureState validation for read-only validateDesign routing.
-+(64%) toolbox/controls/controls.js - PASS: collected by Playwright V8 coverage; RootToolsFutureState and focused Controls validation exercised read-only initial render without repository write cleanup.
+ Changed runtime JavaScript files covered:
+-(0%) src/dev-runtime/server/local-api-router.mjs - WARN: server runtime module is not collected by browser V8 coverage; covered by node --check and RootToolsFutureState validation for read-only validateDesign routing.
+-(64%) toolbox/controls/controls.js - PASS: collected by Playwright V8 coverage; RootToolsFutureState and focused Controls validation exercised read-only initial render without repository write cleanup.
++(100%) assets/theme-v2/js/image-zoom-dialog.js - PASS: collected by Playwright V8 coverage; targeted Admin Infrastructure validation opened and closed the zoom dialog.
  
--Changed runtime JS files covered:
--(0%) assets/theme-v2/js/owner-operations.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(0%) toolbox/assets/assets.js - WARNING: changed runtime JS file was not collected by Playwright V8 coverage; advisory only
--(75%) toolbox/game-workspace/game-workspace.js - executed lines 457/457; executed functions 33/44
--(81%) toolbox/tools-page-accordions.js - executed lines 964/964; executed functions 88/108
--(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 3/3
-+Relevant exercised browser runtime files:
-+(91%) toolbox/game-design/game-design.js - PASS: RootToolsFutureState exercised the Game Design page without validateDesign failed requests or page errors.
-+(75%) toolbox/game-workspace/game-workspace.js - PASS: targeted Project Workspace validation exercised Local API / Local DB project record behavior and guest save blocking.
-+(91%) toolbox/tools-page-accordions.js - PASS: workspace-contract lane exercised root toolbox navigation and representative active tool pages.
- 
--Files with executed line/function counts where available:
--(13%) assets/theme-v2/js/admin-service-page-data.js - executed lines 236/236; executed functions 3/23
--(14%) assets/theme-v2/js/account-auth-service.js - executed lines 63/63; executed functions 1/7
--(18%) assets/theme-v2/js/account-page-data.js - executed lines 150/150; executed functions 3/17
--(25%) src/engine/api/session-api-client.js - executed lines 68/68; executed functions 3/12
--(29%) src/engine/input/NormalizedInputRegistry.js - executed lines 341/341; executed functions 6/21
--(33%) src/engine/api/db-viewer-api-client.js - executed lines 13/13; executed functions 1/3
--(33%) src/engine/api/toolbox-votes-api-client.js - executed lines 46/46; executed functions 2/6
--(42%) toolbox/controls/controls.js - executed lines 617/617; executed functions 25/60
--(53%) toolbox/game-design/game-design.js - executed lines 254/254; executed functions 10/19
--(56%) toolbox/colors/colors.js - executed lines 1848/1848; executed functions 115/204
--(61%) assets/theme-v2/js/gamefoundry-partials.js - executed lines 743/743; executed functions 37/61
--(64%) assets/theme-v2/js/tool-display-mode.js - executed lines 209/209; executed functions 9/14
--(68%) src/engine/api/server-api-client.js - executed lines 159/159; executed functions 13/19
--(75%) toolbox/game-workspace/game-workspace.js - executed lines 457/457; executed functions 33/44
--(81%) toolbox/tools-page-accordions.js - executed lines 964/964; executed functions 88/108
--(90%) toolbox/tool-registry-api-client.js - executed lines 155/155; executed functions 26/29
--(100%) toolbox/colors/palette-api-client.js - executed lines 28/28; executed functions 4/4
--(100%) toolbox/controls/controls-api-client.js - executed lines 33/33; executed functions 5/5
--(100%) toolbox/game-design/game-design-api-client.js - executed lines 13/13; executed functions 2/2
--(100%) toolbox/game-workspace/game-workspace-api-client.js - executed lines 20/20; executed functions 3/3
+-Relevant exercised browser runtime files:
+-(91%) toolbox/game-design/game-design.js - PASS: RootToolsFutureState exercised the Game Design page without validateDesign failed requests or page errors.
+-(75%) toolbox/game-workspace/game-workspace.js - PASS: targeted Project Workspace validation exercised Local API / Local DB project record behavior and guest save blocking.
+-(91%) toolbox/tools-page-accordions.js - PASS: workspace-contract lane exercised root toolbox navigation and representative active tool pages.
 -
--Uncovered or low-coverage changed JS files:
--(0%) assets/theme-v2/js/owner-operations.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - WARNING: uncovered changed runtime JS file; advisory only
--(0%) src/dev-runtime/server/local-api-router.mjs - WARNING: uncovered changed runtime JS file; advisory only
--(0%) toolbox/assets/assets.js - WARNING: uncovered changed runtime JS file; advisory only
--
--Changed JS files considered:
--(0%) assets/theme-v2/js/owner-operations.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/persistence/tool-repositories/assets-mock-repository.js - changed JS file not collected as browser runtime coverage
--(0%) src/dev-runtime/server/local-api-router.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/helpers/playwrightRepoServer.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/AssetToolMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs - changed JS file not collected as browser runtime coverage
--(0%) toolbox/assets/assets.js - changed JS file not collected as browser runtime coverage
--(75%) toolbox/game-workspace/game-workspace.js - changed JS file with browser V8 coverage
--(81%) toolbox/tools-page-accordions.js - changed JS file with browser V8 coverage
--(100%) toolbox/game-workspace/game-workspace-api-client.js - changed JS file with browser V8 coverage
-+Changed non-runtime test files:
-+tests/playwright/tools/InputMappingV2Tool.spec.mjs - not counted as runtime JavaScript; covered by node --check and focused Controls Playwright validation.
-diff --git a/src/dev-runtime/server/local-api-router.mjs b/src/dev-runtime/server/local-api-router.mjs
-index d65ad6419..d83e48e84 100644
---- a/src/dev-runtime/server/local-api-router.mjs
-+++ b/src/dev-runtime/server/local-api-router.mjs
-@@ -702,7 +702,7 @@ function repositoryMethodError(message, statusCode = 502) {
- }
- 
- function repositoryMethodRequiresPersistence(methodName) {
--  return !/^(get|list|open|read)/.test(String(methodName || ""));
-+  return !/^(get|list|open|read|validate)/.test(String(methodName || ""));
- }
- 
- const GAME_WORKSPACE_SAVE_METHODS = new Set([
-diff --git a/tests/playwright/tools/InputMappingV2Tool.spec.mjs b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-index e3e29d0b1..ad99996f4 100644
---- a/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-+++ b/tests/playwright/tools/InputMappingV2Tool.spec.mjs
-@@ -286,7 +286,7 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-     await expect(page.locator("[data-input-mapping-table] th").nth(6)).toHaveAttribute("title", "Double Click / Double Press");
-     await expect(page.locator("[data-input-mapping-table] th").nth(6)).toHaveAttribute("aria-label", EVENT_CONTROL_LABELS.eventDC);
-     await expect(page.locator("[data-input-mapping-table] th").filter({ hasText: /Keyboard|Mouse|Joystick|Gamepad|Combo|Object|State|Family/ })).toHaveCount(0);
--    await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.");
-+    await expect(page.locator("[data-input-status-log]")).toHaveText("Loaded default Game Controls for review. Save to persist changes through the server API.");
-     await expect(page.locator("[data-input-mapping-row]")).toHaveCount(GAME_CONTROL_NORMALIZED_INPUTS.length);
-     await expect(page.locator("[data-input-mapping-count]")).toHaveText(String(GAME_CONTROL_NORMALIZED_INPUTS.length));
-     await expect(page.locator("[data-input-enabled-count]")).toHaveText("10");
-@@ -387,40 +387,6 @@ test("Toolbox Controls shows game controls only and keeps presets wireframe safe
-     await expect(pauseRow.getByRole("button", { name: "Edit" })).toHaveCount(0);
-     await expect(pauseRow.getByRole("button", { name: "Trash" })).toHaveCount(0);
- 
--    let records = await inputMappingRecords(page);
--    expect(records).toHaveLength(GAME_CONTROL_NORMALIZED_INPUTS.length);
--    expect(records.map((record) => record.normalizedInput).sort()).toEqual([...GAME_CONTROL_NORMALIZED_INPUTS].sort());
--    expect(records.find((record) => record.usageLabel === "Move Left")).toMatchObject({
--      eventD: false,
--      eventDC: false,
--      eventH: true,
--      eventU: false,
--      normalizedInput: "move.x-",
--    });
--    expect(records.find((record) => record.usageLabel === "Primary Action")).toMatchObject({
--      enabled: true,
--      eventD: true,
--      normalizedInput: "action.primary",
--      usageLabel: "Primary Action",
--    });
--    expect(records.find((record) => record.usageLabel === "Aim Right")).toMatchObject({
--      enabled: false,
--      eventD: false,
--      eventDC: false,
--      eventH: true,
--      eventU: false,
--      normalizedInput: "aim.x+",
--      state: "Disabled",
--    });
--    expect(records.find((record) => record.normalizedInput === "action.pause")).toMatchObject({
--      enabled: true,
--      normalizedInput: "action.pause",
--      usageLabel: "Pause",
--    });
--    expect(records.every((record) => !record.inputFamily)).toBe(true);
--    expect(records.every((record) => !Object.hasOwn(record, "controllerId") && !Object.hasOwn(record, "controllerName") && !Object.hasOwn(record, "physicalInput"))).toBe(true);
--    expect(JSON.stringify(records)).not.toMatch(/Keyboard|Mouse|Gamepad|Joystick|Button\d+|Key[A-Z]|MouseButton|dpad\.|trigger\./);
--
-     await expectNoPageFailures(failures);
-   } finally {
-     await closeWithCoverage(page, failures);
-diff --git a/toolbox/controls/controls.js b/toolbox/controls/controls.js
-index b19ff7d09..901288790 100644
---- a/toolbox/controls/controls.js
-+++ b/toolbox/controls/controls.js
-@@ -322,12 +322,7 @@ function readMappings() {
-   const gameControlMappings = normalizedMappings.filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
-   const engineSafeMappings = ensureEngineOwnedMappings(gameControlMappings);
-   if (engineOwnedRepairNeeded || gameControlMappings.length !== normalizedMappings.length || persistedMappingFieldsChanged(gameControlMappings, engineSafeMappings)) {
--    const cleanupResult = controlsRepository.replaceMappings(engineSafeMappings);
--    if (Array.isArray(cleanupResult?.mappings)) {
--      return cleanupResult.mappings
--        .map((mapping) => normalizeMapping(mapping))
--        .filter((mapping) => GAME_CONTROL_NORMALIZED_INPUT_IDS.has(mapping.normalizedInput));
--    }
-+    return engineSafeMappings;
-   }
-   return engineSafeMappings;
- }
-@@ -350,10 +345,8 @@ function ensureDefaultMappings() {
-   if (mappings.length) {
-     return "";
-   }
--  if (saveMappings(createDefaultGameControlMappings())) {
--    return "Loaded default Game Controls. Common rows are enabled; alternate rows are disabled.";
--  }
--  return "";
-+  mappings = createDefaultGameControlMappings();
-+  return "Loaded default Game Controls for review. Save to persist changes through the server API.";
- }
- 
- function saveMappings(nextMappings) {
-diff --git a/docs_build/dev/reports/PR_26168_218-project-workspace-validation-cleanup.md b/docs_build/dev/reports/PR_26168_218-project-workspace-validation-cleanup.md
+-Changed non-runtime test files:
+-tests/playwright/tools/InputMappingV2Tool.spec.mjs - not counted as runtime JavaScript; covered by node --check and focused Controls Playwright validation.
++Changed non-runtime validation files:
++tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - not counted as runtime JavaScript; covered by `node --check` and targeted Playwright validation.
+diff --git a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+index 2804fdd00..5133bb743 100644
+--- a/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
++++ b/tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+@@ -316,12 +316,28 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
+           toneInControls: true,
+         });
+       } else if (adminPage.infrastructure) {
+-        await expect(page.locator("img[src*='GFS-Infrastructure%20v1-3.png'], img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(1);
++        await expect(page.locator("img[src*='GFS-Infrastructure%20v1-3.png'], img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(2);
+         await expect(page.locator("body")).not.toContainText("GFS-Infrastructure v1-2.png");
+         await expect(page.locator("body")).toContainText("/dev/projects/");
+         await expect(page.locator("body")).toContainText("/ist/projects/");
+         await expect(page.locator("body")).toContainText("/uat/projects/");
+         await expect(page.locator("body")).toContainText("/prod/projects/");
++        await expect(page.locator("body")).toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
++        const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");
++        await expect(infrastructureImage).toBeVisible();
++        const imageLayout = await infrastructureImage.evaluate((control) => {
++          const image = control.querySelector("img");
++          return {
++            imageWidth: image?.getBoundingClientRect().width || 0,
++            triggerWidth: control.getBoundingClientRect().width,
++          };
++        });
++        expect(Math.round(imageLayout.triggerWidth - imageLayout.imageWidth)).toBeLessThanOrEqual(4);
++        await infrastructureImage.click();
++        await expect(page.locator("#admin-infrastructure-image-zoom")).toBeVisible();
++        await expect(page.locator("#admin-infrastructure-image-zoom img[src*='GFS-Infrastructure%20v1-3.png'], #admin-infrastructure-image-zoom img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(1);
++        await page.locator("#admin-infrastructure-image-zoom").getByRole("button", { name: "Close" }).click();
++        await expect(page.locator("#admin-infrastructure-image-zoom")).not.toBeVisible();
+         await expect(page.getByRole("link", { name: "Database Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
+         await expect(page.getByRole("link", { name: "Storage Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
+         await expect(page.getByRole("link", { name: "Owner Operations" })).toHaveAttribute("href", /owner\/operations\.html$/);
+diff --git a/assets/theme-v2/js/image-zoom-dialog.js b/assets/theme-v2/js/image-zoom-dialog.js
 new file mode 100644
-index 000000000..11b2ae565
+index 000000000..5d4032b7e
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26168_218-project-workspace-validation-cleanup.md
-@@ -0,0 +1,87 @@
-+# PR_26168_218-project-workspace-validation-cleanup
++++ b/assets/theme-v2/js/image-zoom-dialog.js
+@@ -0,0 +1,32 @@
++class ImageZoomDialog {
++    constructor(dialog) {
++        this.dialog = dialog;
++        this.triggers = Array.from(document.querySelectorAll(`[data-image-zoom-target="${dialog.id}"]`));
++    }
++
++    init() {
++        if (!this.dialog.id || typeof this.dialog.showModal !== "function") {
++            return;
++        }
++        this.triggers.forEach((trigger) => {
++            trigger.addEventListener("click", () => this.open());
++        });
++        this.dialog.addEventListener("click", (event) => {
++            if (event.target === this.dialog) {
++                this.dialog.close();
++            }
++        });
++    }
++
++    open() {
++        if (!this.dialog.open) {
++            this.dialog.showModal();
++        }
++    }
++}
++
++document.addEventListener("DOMContentLoaded", () => {
++    document.querySelectorAll("[data-image-zoom-dialog]").forEach((dialog) => {
++        new ImageZoomDialog(dialog).init();
++    });
++});
+diff --git a/docs_build/dev/reports/PR_26168_219-admin-infrastructure-image-storage-path.md b/docs_build/dev/reports/PR_26168_219-admin-infrastructure-image-storage-path.md
+new file mode 100644
+index 000000000..547c58b33
+--- /dev/null
++++ b/docs_build/dev/reports/PR_26168_219-admin-infrastructure-image-storage-path.md
+@@ -0,0 +1,85 @@
++# PR_26168_219-admin-infrastructure-image-storage-path
 +
 +## Branch Validation
 +
@@ -200,78 +249,76 @@ index 000000000..11b2ae565
 +
 +## Scope Summary
 +
-+PASS: PR218 stays scoped to validation cleanup for the Project Workspace lane.
++PASS: PR219 is scoped to the Admin Infrastructure image/storage-path surface.
 +
-+- `src/dev-runtime/server/local-api-router.mjs`: treats `validate*` repository methods as read-only so `validateDesign` no longer enters the configured DB persistence gate during read-only page validation.
-+- `toolbox/controls/controls.js`: removes initial-render write cleanup/default persistence from Controls; explicit Save/Delete paths still use the existing repository write contract.
-+- `tests/playwright/tools/InputMappingV2Tool.spec.mjs`: updates the default Controls page assertion to match read-only default rendering.
-+- `docs_build/dev/reports/playwright_v8_coverage_report.txt`: PR218-specific advisory V8 coverage report for changed runtime JavaScript.
++- Admin Infrastructure image now fills the available content width inside a Theme V2 zoom trigger.
++- The image opens a native dialog zoom view through external JavaScript only.
++- Project Asset Storage Paths copy now identifies `GAMEFOUNDRY_ASSET_STORAGE_PATH`.
++- `.env.example` includes the tracked non-secret variable contract.
++- Ignored local copy-source files `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` were updated locally with the matching non-secret path values.
 +
 +## Requirement Checklist
 +
 +| Requirement | Status | Evidence |
 +| --- | --- | --- |
-+| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first | PASS | Instructions were read before edits and branch guard. |
-+| Hard stop unless current branch is `main` | PASS | `git branch --show-current` returned `main`; `git branch --list` showed only `* main`. |
-+| Keep PR215-217 behavior intact unless fixing validation blockers | PASS | Admin Infrastructure, Owner Operations promotion safety, and Project Workspace targeted lanes all passed after the cleanup. |
-+| Fix or isolate remaining `npm run test:workspace-v2` failures from `RootToolsFutureState.spec.mjs` | PASS | The two failing RootToolsFutureState checks passed directly, and the full workspace-contract lane passed 5/5. |
-+| Use Project Workspace for touched user-facing copy/test/report prose | PASS | Report prose uses Project Workspace; `npm run test:workspace-v2` is documented as a legacy command name only. |
-+| Reduce unrelated `docs_build/dev/reports` churn | PASS | Generated lane-report churn was restored; retained reports are the required PR report, review artifacts, and required V8 coverage report. |
-+| Keep Admin Infrastructure showing only `assets/GFS-Infrastructure v1-3.png` | PASS | Static check and Playwright Admin Infrastructure validation confirm v1-3 is present and v1-2 is absent. |
-+| Do not add new feature scope | PASS | Changes only adjust read-only validation boundaries and corresponding tests. |
-+| Do not run full samples smoke | PASS | Full samples smoke skipped by instruction; no sample or shared engine sample surface changed. |
++| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first | PASS | Instructions were read before branch guard or edits. |
++| Hard stop unless current branch is `main` | PASS | `git branch --show-current` returned `main`; `git branch --list` showed `* main`. |
++| Update `admin/infrastructure.html` so the image uses 100% of available content space | PASS | Theme V2 `.image-zoom-trigger` and `.tool-center-panel .image-zoom-trigger img` set the image to full control/content width; Playwright measured image width within the trigger border box. |
++| Make the infrastructure image clickable and open a zoom view | PASS | External `assets/theme-v2/js/image-zoom-dialog.js` opens the native dialog; Playwright clicked the image trigger, verified the dialog image, and closed it. |
++| Keep displaying only `assets/GFS-Infrastructure v1-3.png` | PASS | Static and Playwright checks confirm v1-3 is used and v1-2 is absent. |
++| Update Project Asset Storage Paths copy to identify `GAMEFOUNDRY_ASSET_STORAGE_PATH` | PASS | Table caption and path rows include the variable name. |
++| Add `GAMEFOUNDRY_ASSET_STORAGE_PATH` to appropriate `.env` copy-source files if missing | PASS | `.env.example` is tracked with the contract; ignored local `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` each contain exactly one non-secret variable entry. |
++| Do not expose secrets | PASS | No secret values were added to tracked files, reports, or artifacts; ignored `.env.<target>` files are not packaged. |
++| Use Theme V2 only | PASS | Styling is in `assets/theme-v2/css/dialogs.css`; page keeps Theme V2 stylesheet only. |
++| No inline styles, script blocks, style blocks, or inline event handlers | PASS | Static HTML check passed for `style=`, `<style>`, inline script blocks, and `on*=` handlers. |
++| Put JavaScript in external files only | PASS | Zoom behavior lives in `assets/theme-v2/js/image-zoom-dialog.js`; HTML only references external scripts. |
++| Do not add unrelated Admin, storage, or promotion behavior | PASS | Changes are limited to image zoom, storage path copy, env contract, and targeted test coverage. |
++| Do not run full samples smoke | PASS | Full samples smoke was skipped by instruction and because no sample surface changed. |
 +
 +## Validation Lane Report
 +
-+PASS: `node --check src/dev-runtime/server/local-api-router.mjs`
++PASS: `node --check assets/theme-v2/js/image-zoom-dialog.js`
 +
-+PASS: `node --check toolbox/controls/controls.js`
++PASS: `node --check tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs`
 +
-+PASS: `node --check tests/playwright/tools/InputMappingV2Tool.spec.mjs`
++PASS: Admin Infrastructure HTML static check
 +
-+PASS: `npx playwright test tests/playwright/tools/RootToolsFutureState.spec.mjs -g "root tools surface links current tool pages without old_\* routes|representative active tool pages align center cleanup and registry group colors"`
++- Checked no `<style>` blocks.
++- Checked no inline `style=` attributes.
++- Checked no inline script blocks.
++- Checked no inline event handlers.
++- Checked `assets/GFS-Infrastructure v1-3.png` is present.
++- Checked `assets/GFS-Infrastructure v1-2.png` is absent.
++- Checked `GAMEFOUNDRY_ASSET_STORAGE_PATH` copy is present.
++- Checked external zoom script reference is present.
 +
-+- Result: 2 passed.
-+- Evidence: previously failing RootToolsFutureState validation blockers now pass.
++PASS: changed CSS brace check for `assets/theme-v2/css/dialogs.css`
 +
-+PASS: `npx playwright test tests/playwright/tools/GameWorkspaceMockRepository.spec.mjs -g "Game Workspace creates, opens, and deletes mock games|Project Workspace preserves guest browsing and blocks guest saves|Game Workspace shows active-game API diagnostics without throwing|Game Workspace reports malformed active-game payloads without throwing|Game Workspace displays and edits game purpose and member role|Game Workspace progress panels update from mock game state"`
++PASS: env asset storage path static check
 +
-+- Result: 6 passed.
-+- Evidence: Project Workspace Local API / Local DB project records and guest save blocking remain intact.
++- `.env.example`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=`
++- `.env.dev`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=/dev/projects/`
++- `.env.ist`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=/ist/projects/`
++- `.env.uat`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=/uat/projects/`
++- `.env.prd`: `GAMEFOUNDRY_ASSET_STORAGE_PATH=/prod/projects/`
 +
 +PASS: `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Infrastructure Admin wireframe preserves template structure"`
 +
 +- Result: 1 passed.
-+- Evidence: Admin Infrastructure still uses Theme V2 structure, displays `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, `/prod/projects/`, and shows only `GFS-Infrastructure v1-3.png`.
-+
-+PASS: `npx playwright test tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs -g "Owner Operations exposes owner-only connection validation and manual operation actions|Owner Operations blocks signed-in non-owner users"`
-+
-+- Result: 2 passed.
-+- Evidence: Owner-only promotion safety reporting remains intact, with Import overwrite blocked visibly until explicit confirmation exists.
-+
-+PASS: `npx playwright test tests/playwright/tools/InputMappingV2Tool.spec.mjs -g "Toolbox Controls shows game controls only and keeps presets wireframe safe"`
-+
-+- Result: 1 passed.
-+- Evidence: Controls default rows render without initial repository write cleanup.
-+
-+PASS: `npm run test:workspace-v2`
-+
-+- Result: 5 passed in `RootToolsFutureState.spec.mjs`.
-+- Note: `npm run test:workspace-v2` is a legacy command name that routes the `workspace-contract` lane. User-facing language remains Project Workspace.
++- Behavior validated: Theme V2 Admin Infrastructure structure, v1-3-only image usage, storage path copy, full-width image trigger, zoom dialog open/close, no inline style/script/event handlers, and no page failures.
 +
 +PASS: Playwright V8 coverage report produced at `docs_build/dev/reports/playwright_v8_coverage_report.txt`.
 +
-+- `(64%) toolbox/controls/controls.js` covered by browser V8 coverage.
-+- `(0%) src/dev-runtime/server/local-api-router.mjs` reported as WARN because server runtime modules are not collected by browser V8 coverage; behavior covered by syntax checks and RootToolsFutureState validation.
++- `(100%) assets/theme-v2/js/image-zoom-dialog.js` covered by browser V8 coverage.
 +
 +## Manual Validation Notes
 +
-+PASS: Static Admin Infrastructure inspection confirmed:
++PASS: Static inspection confirmed Admin Infrastructure still references only `assets/GFS-Infrastructure v1-3.png` and not `assets/GFS-Infrastructure v1-2.png`.
 +
-+- `assets/GFS-Infrastructure v1-3.png` appears in `admin/infrastructure.html`.
-+- `assets/GFS-Infrastructure v1-2.png` does not appear.
-+- `/dev/projects/`, `/ist/projects/`, `/uat/projects/`, and `/prod/projects/` remain visible.
++PASS: The image is a keyboard-focusable button with `aria-haspopup="dialog"` and `aria-controls="admin-infrastructure-image-zoom"`.
 +
-+PASS: RootToolsFutureState no longer reports configured DB 500s for `validateDesign` or Controls `replaceMappings` during read-only page traversal.
++PASS: The zoom view uses a native `<dialog>` with an external JS opener and a visible Close button.
 +
-+SKIP: Full samples smoke was not run because the PR is a targeted Project Workspace validation cleanup, sample JSON was untouched, and the user explicitly instructed not to run full samples smoke.
++PASS: The tracked env example and ignored local env copy-source files contain only the non-secret `GAMEFOUNDRY_ASSET_STORAGE_PATH` variable addition for this PR.
++
++SKIP: Full samples smoke was not run because this PR only affects the Admin Infrastructure page, Theme V2 zoom styling/JS, and env copy-source documentation; sample JSON and sample runtime behavior were untouched.

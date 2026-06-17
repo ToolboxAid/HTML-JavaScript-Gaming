@@ -316,12 +316,28 @@ for (const adminPage of ADMIN_WIREFRAME_PAGES) {
           toneInControls: true,
         });
       } else if (adminPage.infrastructure) {
-        await expect(page.locator("img[src*='GFS-Infrastructure%20v1-3.png'], img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(1);
+        await expect(page.locator("img[src*='GFS-Infrastructure%20v1-3.png'], img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(2);
         await expect(page.locator("body")).not.toContainText("GFS-Infrastructure v1-2.png");
         await expect(page.locator("body")).toContainText("/dev/projects/");
         await expect(page.locator("body")).toContainText("/ist/projects/");
         await expect(page.locator("body")).toContainText("/uat/projects/");
         await expect(page.locator("body")).toContainText("/prod/projects/");
+        await expect(page.locator("body")).toContainText("GAMEFOUNDRY_ASSET_STORAGE_PATH");
+        const infrastructureImage = page.locator("[data-image-zoom-target='admin-infrastructure-image-zoom']");
+        await expect(infrastructureImage).toBeVisible();
+        const imageLayout = await infrastructureImage.evaluate((control) => {
+          const image = control.querySelector("img");
+          return {
+            imageWidth: image?.getBoundingClientRect().width || 0,
+            triggerWidth: control.getBoundingClientRect().width,
+          };
+        });
+        expect(Math.round(imageLayout.triggerWidth - imageLayout.imageWidth)).toBeLessThanOrEqual(4);
+        await infrastructureImage.click();
+        await expect(page.locator("#admin-infrastructure-image-zoom")).toBeVisible();
+        await expect(page.locator("#admin-infrastructure-image-zoom img[src*='GFS-Infrastructure%20v1-3.png'], #admin-infrastructure-image-zoom img[src*='GFS-Infrastructure v1-3.png']")).toHaveCount(1);
+        await page.locator("#admin-infrastructure-image-zoom").getByRole("button", { name: "Close" }).click();
+        await expect(page.locator("#admin-infrastructure-image-zoom")).not.toBeVisible();
         await expect(page.getByRole("link", { name: "Database Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
         await expect(page.getByRole("link", { name: "Storage Status" })).toHaveAttribute("href", /owner\/operations\.html$/);
         await expect(page.getByRole("link", { name: "Owner Operations" })).toHaveAttribute("href", /owner\/operations\.html$/);

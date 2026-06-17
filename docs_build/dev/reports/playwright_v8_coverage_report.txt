@@ -1,19 +1,13 @@
 Playwright V8 Coverage Report
 
-PR: PR_26168_218-project-workspace-validation-cleanup
-Coverage source: Playwright/Chromium built-in V8 coverage from the targeted PR218 Playwright runs.
-Coverage scope: browser JavaScript collected while running Project Workspace, Admin Infrastructure, Owner Operations, Controls, and the workspace-contract lane.
+PR: PR_26168_219-admin-infrastructure-image-storage-path
+Coverage source: Playwright/Chromium built-in V8 coverage from targeted Admin Infrastructure validation.
+Coverage scope: browser JavaScript collected while running `tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs` for the Admin Infrastructure page.
 Thresholds: none enforced; coverage is advisory for this PR.
 Note: missing changed runtime JavaScript files are reported as WARN, not FAIL.
 
 Changed runtime JavaScript files covered:
-(0%) src/dev-runtime/server/local-api-router.mjs - WARN: server runtime module is not collected by browser V8 coverage; covered by node --check and RootToolsFutureState validation for read-only validateDesign routing.
-(64%) toolbox/controls/controls.js - PASS: collected by Playwright V8 coverage; RootToolsFutureState and focused Controls validation exercised read-only initial render without repository write cleanup.
+(100%) assets/theme-v2/js/image-zoom-dialog.js - PASS: collected by Playwright V8 coverage; targeted Admin Infrastructure validation opened and closed the zoom dialog.
 
-Relevant exercised browser runtime files:
-(91%) toolbox/game-design/game-design.js - PASS: RootToolsFutureState exercised the Game Design page without validateDesign failed requests or page errors.
-(75%) toolbox/game-workspace/game-workspace.js - PASS: targeted Project Workspace validation exercised Local API / Local DB project record behavior and guest save blocking.
-(91%) toolbox/tools-page-accordions.js - PASS: workspace-contract lane exercised root toolbox navigation and representative active tool pages.
-
-Changed non-runtime test files:
-tests/playwright/tools/InputMappingV2Tool.spec.mjs - not counted as runtime JavaScript; covered by node --check and focused Controls Playwright validation.
+Changed non-runtime validation files:
+tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs - not counted as runtime JavaScript; covered by `node --check` and targeted Playwright validation.

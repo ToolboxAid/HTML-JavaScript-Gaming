@@ -1,16 +1,20 @@
 # git status --short
-M docs_build/dev/reports/playwright_v8_coverage_report.txt
- M src/dev-runtime/server/local-api-router.mjs
- M tests/playwright/tools/InputMappingV2Tool.spec.mjs
- M toolbox/controls/controls.js
-?? docs_build/dev/reports/PR_26168_218-project-workspace-validation-cleanup.md
+M .env.example
+ M admin/infrastructure.html
+ M assets/theme-v2/css/dialogs.css
+ M docs_build/dev/reports/playwright_v8_coverage_report.txt
+ M tests/playwright/tools/AdminPlatformToolsWireframes.spec.mjs
+?? assets/theme-v2/js/image-zoom-dialog.js
+?? docs_build/dev/reports/PR_26168_219-admin-infrastructure-image-storage-path.md
 
 # git ls-files --others --exclude-standard
-docs_build/dev/reports/PR_26168_218-project-workspace-validation-cleanup.md
+assets/theme-v2/js/image-zoom-dialog.js
+docs_build/dev/reports/PR_26168_219-admin-infrastructure-image-storage-path.md
 
 # git diff --stat
-.../dev/reports/playwright_v8_coverage_report.txt  | 76 ++++------------------
- src/dev-runtime/server/local-api-router.mjs        |  2 +-
- tests/playwright/tools/InputMappingV2Tool.spec.mjs | 36 +---------
- toolbox/controls/controls.js                       | 13 +---
- 4 files changed, 19 insertions(+), 108 deletions(-)
+.env.example                                       |  1 +
+ admin/infrastructure.html                          | 25 ++++++---
+ assets/theme-v2/css/dialogs.css                    | 63 +++++++++++++++++++++-
+ .../dev/reports/playwright_v8_coverage_report.txt  | 18 +++----
+ .../tools/AdminPlatformToolsWireframes.spec.mjs    | 18 ++++++-
+ 5 files changed, 105 insertions(+), 20 deletions(-)
