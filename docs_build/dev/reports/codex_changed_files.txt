@@ -1,11 +1,13 @@
 # PR_26167_196 scoped changed files
+M docs_build/dev/reports/PR_26167_196-local-postgres-runtime-unblock.md
 M docs_build/dev/reports/environment_agnostic_browser_gate_report.md
 M package.json
+D scripts/start-local-postgres.mjs
+M scripts/validate-local-postgres-runtime.mjs
+M scripts/validate-supabase-dev.mjs
+M src/dev-runtime/auth/provider-contract-stubs.mjs
 M src/dev-runtime/persistence/postgres-connection-client.mjs
 M src/dev-runtime/server/local-api-router.mjs
-A docs_build/dev/reports/PR_26167_196-local-postgres-runtime-unblock.md
-A scripts/start-local-postgres.mjs
-A scripts/validate-local-postgres-runtime.mjs
 
 # Required reports generated
 M docs_build/dev/reports/codex_changed_files.txt

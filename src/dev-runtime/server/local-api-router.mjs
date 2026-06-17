@@ -1168,6 +1168,10 @@ class ApiRuntimeDataSource {
     return this.upsertSupabaseProductTables(this.snapshot().tables, action);
   }
 
+  async persistSupabaseGameWorkspaceSnapshot(action) {
+    return this.upsertSupabaseProductTables(gameWorkspaceTables(this.gameWorkspaceRepository), action);
+  }
+
   async supabaseIdentityReadinessCheck() {
     try {
       const tables = await this.readSupabaseIdentityTablesUnchecked("Validating Supabase identity tables");
@@ -1320,6 +1324,10 @@ class ApiRuntimeDataSource {
 
   async persistProductProviderState(action) {
     return this.persistSupabaseProductSnapshot(action);
+  }
+
+  async persistGameWorkspaceProviderState(action) {
+    return this.persistSupabaseGameWorkspaceSnapshot(action);
   }
 
   adminInitializeIdentity(body = {}) {
@@ -2789,7 +2797,11 @@ class ApiRuntimeDataSource {
     const result = method(...args);
     assertRepositoryMethodResult(repositoryId, methodName, result);
     if (repositoryMethodRequiresPersistence(methodName)) {
-      await this.persistProductProviderState(`Persisting ${methodName} result`);
+      if (repository === this.gameWorkspaceRepository) {
+        await this.persistGameWorkspaceProviderState(`Persisting ${methodName} result`);
+      } else {
+        await this.persistProductProviderState(`Persisting ${methodName} result`);
+      }
     }
     return result;
   }

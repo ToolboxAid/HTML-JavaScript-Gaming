@@ -1,13 +1,14 @@
 #!/usr/bin/env node
-import crypto from "node:crypto";
 import fs from "node:fs";
-import net from "node:net";
+import http from "node:http";
+import https from "node:https";
 import path from "node:path";
 import process from "node:process";
 import tls from "node:tls";
 import { URL } from "node:url";
+import { createPostgresConnectionClient } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
 
-const ENV_FILE = ".env.local";
+const ENV_FILE = ".env";
 const REQUIRED_ENV = Object.freeze([
   {
     key: "GAMEFOUNDRY_SUPABASE_URL",
@@ -29,13 +30,11 @@ const REQUIRED_ENV = Object.freeze([
 
 const IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
 const REQUEST_TIMEOUT_MS = 15000;
-const POSTGRES_PROTOCOL_VERSION = 196608;
-const POSTGRES_SSL_REQUEST_CODE = 80877103;
 
-function int32(value) {
-  const buffer = Buffer.alloc(4);
-  buffer.writeInt32BE(value, 0);
-  return buffer;
+function systemCaCertificates() {
+  return typeof tls.getCACertificates === "function"
+    ? tls.getCACertificates("system")
+    : undefined;
 }
 
 function maskValue(value) {
@@ -59,7 +58,7 @@ function parseEnvValue(value) {
   return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
 }
 
-function parseEnvLocal(contents) {
+function parseEnvFile(contents) {
   const values = new Map();
   contents.split(/\r?\n/).forEach((line) => {
     const trimmed = line.trim();
@@ -80,7 +79,7 @@ function parseEnvLocal(contents) {
   return values;
 }
 
-function loadEnvLocal() {
+function loadEnvFile() {
   const envPath = path.resolve(process.cwd(), ENV_FILE);
   if (!fs.existsSync(envPath)) {
     return {
@@ -89,7 +88,7 @@ function loadEnvLocal() {
       path: envPath,
     };
   }
-  const values = parseEnvLocal(fs.readFileSync(envPath, "utf8"));
+  const values = parseEnvFile(fs.readFileSync(envPath, "utf8"));
   values.forEach((value, key) => {
     if (!String(process.env[key] || "").trim()) {
       process.env[key] = value;
@@ -145,10 +144,6 @@ function fail(label, detail = "") {
   return result("FAIL", label, detail);
 }
 
-function warn(label, detail = "") {
-  return result("WARN", label, detail);
-}
-
 function formatResult({ detail, label, status }) {
   return detail ? `${status} - ${label} (${detail})` : `${status} - ${label}`;
 }
@@ -162,16 +157,40 @@ function supabaseApiUrl(route) {
 }
 
 async function fetchWithTimeout(url, options = {}) {
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
-  try {
-    return await fetch(url, {
-      ...options,
-      signal: controller.signal,
+  const requestUrl = new URL(url);
+  const client = requestUrl.protocol === "http:" ? http : https;
+  return new Promise((resolve, reject) => {
+    const request = client.request(requestUrl, {
+      headers: options.headers,
+      method: options.method || "GET",
+      timeout: REQUEST_TIMEOUT_MS,
+      ca: requestUrl.protocol === "https:" ? systemCaCertificates() : undefined,
+    }, (response) => {
+      const chunks = [];
+      response.on("data", (chunk) => {
+        chunks.push(chunk);
+      });
+      response.on("end", () => {
+        const status = Number(response.statusCode || 0);
+        const rawBody = Buffer.concat(chunks).toString("utf8");
+        resolve({
+          ok: status >= 200 && status < 300,
+          status,
+          async json() {
+            return rawBody ? JSON.parse(rawBody) : {};
+          },
+        });
+      });
     });
-  } finally {
-    clearTimeout(timeout);
-  }
+    request.once("timeout", () => {
+      request.destroy(new Error("Request timed out."));
+    });
+    request.once("error", reject);
+    if (options.body) {
+      request.write(options.body);
+    }
+    request.end();
+  });
 }
 
 async function checkSupabaseReachable() {
@@ -218,34 +237,22 @@ async function checkServiceRoleAuthentication() {
   }
 }
 
-async function checkIdentityTable(tableName) {
-  try {
-    const serviceRoleKey = envValue("GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY");
-    const response = await fetchWithTimeout(supabaseApiUrl(`/rest/v1/${encodeURIComponent(tableName)}?select=key&limit=1`), {
-      headers: {
-        apikey: serviceRoleKey,
-        authorization: `Bearer ${serviceRoleKey}`,
-      },
-    });
-    if (response.ok) {
-      return pass(`${tableName} table`, `HTTP ${response.status}`);
-    }
-    const payload = await safeJson(response);
-    const message = payload?.message || "";
-    const setupHint = response.status === 404
-      ? " Run docs_build/database/ddl/account/supabase-identity-tables.sql through the approved Supabase SQL setup path."
-      : "";
-    return fail(`${tableName} table`, `HTTP ${response.status}${message ? `: ${message}` : ""}${setupHint}`);
-  } catch (error) {
-    return fail(`${tableName} table`, error?.code || error?.cause?.code || error?.message);
+function quoteIdentifier(value) {
+  const name = String(value || "").trim();
+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
+    throw new Error(`Invalid database identifier: ${name || "(empty)"}.`);
   }
+  return `"${name.replace(/"/g, "\"\"")}"`;
 }
 
-async function safeJson(response) {
+async function checkIdentityTable(tableName) {
   try {
-    return await response.json();
-  } catch {
-    return {};
+    const config = parseDatabaseUrl();
+    const client = createPostgresConnectionClient();
+    await client.query(`SELECT key FROM ${quoteIdentifier(tableName)} LIMIT 1;`);
+    return pass(`${tableName} table`, databaseDiagnostic(config));
+  } catch (error) {
+    return fail(`${tableName} table`, error?.code || error?.cause?.code || error?.message);
   }
 }
 
@@ -256,6 +263,7 @@ async function checkTlsValidation() {
       const socket = tls.connect({
         host: hostname,
         port: 443,
+        ca: systemCaCertificates(),
         rejectUnauthorized: true,
         servername: hostname,
         timeout: REQUEST_TIMEOUT_MS,
@@ -296,350 +304,30 @@ function parseDatabaseUrl() {
   };
 }
 
-function createReader(socket) {
-  let buffer = Buffer.alloc(0);
-  const waiters = [];
-  let closedError = null;
-
-  function flush() {
-    while (waiters.length && (closedError || buffer.length >= waiters[0].size)) {
-      const waiter = waiters.shift();
-      clearTimeout(waiter.timeout);
-      if (closedError) {
-        waiter.reject(closedError);
-        continue;
-      }
-      const chunk = buffer.subarray(0, waiter.size);
-      buffer = buffer.subarray(waiter.size);
-      waiter.resolve(chunk);
-    }
-  }
-
-  socket.on("data", (chunk) => {
-    buffer = Buffer.concat([buffer, chunk]);
-    flush();
-  });
-  socket.once("error", (error) => {
-    closedError = error;
-    flush();
-  });
-  socket.once("close", () => {
-    if (!closedError) {
-      closedError = new Error("Connection closed before the expected response was received.");
-      flush();
-    }
-  });
-
-  return {
-    read(size, timeoutMs = REQUEST_TIMEOUT_MS) {
-      if (closedError) {
-        return Promise.reject(closedError);
-      }
-      if (buffer.length >= size) {
-        const chunk = buffer.subarray(0, size);
-        buffer = buffer.subarray(size);
-        return Promise.resolve(chunk);
-      }
-      return new Promise((resolve, reject) => {
-        const timeout = setTimeout(() => {
-          const index = waiters.findIndex((waiter) => waiter.resolve === resolve);
-          if (index !== -1) {
-            waiters.splice(index, 1);
-          }
-          reject(new Error("Timed out waiting for PostgreSQL response."));
-        }, timeoutMs);
-        waiters.push({
-          reject,
-          resolve,
-          size,
-          timeout,
-        });
-      });
-    },
-  };
-}
-
-async function readPgMessage(reader) {
-  const type = (await reader.read(1)).toString("utf8");
-  const length = (await reader.read(4)).readInt32BE(0);
-  const payload = length > 4 ? await reader.read(length - 4) : Buffer.alloc(0);
-  return {
-    payload,
-    type,
-  };
-}
-
-function pgCString(value) {
-  return Buffer.from(`${value}\0`, "utf8");
-}
-
-function pgStartupMessage({ database, user }) {
-  const params = Buffer.concat([
-    pgCString("user"),
-    pgCString(user),
-    pgCString("database"),
-    pgCString(database),
-    pgCString("client_encoding"),
-    pgCString("UTF8"),
-    pgCString("application_name"),
-    pgCString("gamefoundry-dev-validator"),
-    Buffer.from([0]),
-  ]);
-  const payload = Buffer.concat([int32(POSTGRES_PROTOCOL_VERSION), params]);
-  return Buffer.concat([int32(payload.length + 4), payload]);
-}
-
-function pgPasswordMessage(content) {
-  const payload = Buffer.isBuffer(content) ? content : pgCString(content);
-  return Buffer.concat([Buffer.from("p"), int32(payload.length + 4), payload]);
-}
-
-function parseCStringList(payload, offset = 0) {
-  const values = [];
-  let start = offset;
-  for (let index = offset; index < payload.length; index += 1) {
-    if (payload[index] !== 0) {
-      continue;
-    }
-    if (index === start) {
-      break;
-    }
-    values.push(payload.subarray(start, index).toString("utf8"));
-    start = index + 1;
-  }
-  return values;
-}
-
-function parsePgError(payload) {
-  const fields = {};
-  let index = 0;
-  while (index < payload.length && payload[index] !== 0) {
-    const code = String.fromCharCode(payload[index]);
-    index += 1;
-    const end = payload.indexOf(0, index);
-    if (end === -1) {
-      break;
-    }
-    fields[code] = payload.subarray(index, end).toString("utf8");
-    index = end + 1;
-  }
-  return fields.M || fields.C || "PostgreSQL returned an error response.";
-}
-
-function md5PostgresPassword(password, user, salt) {
-  const inner = crypto.createHash("md5").update(password + user).digest("hex");
-  return `md5${crypto.createHash("md5").update(Buffer.concat([Buffer.from(inner), salt])).digest("hex")}`;
-}
-
-function saslName(value) {
-  return String(value).replace(/=/g, "=3D").replace(/,/g, "=2C");
-}
-
-function xorBuffers(left, right) {
-  const output = Buffer.alloc(left.length);
-  for (let index = 0; index < left.length; index += 1) {
-    output[index] = left[index] ^ right[index];
-  }
-  return output;
-}
-
-function parseScramAttributes(message) {
-  const attributes = new Map();
-  message.split(",").forEach((part) => {
-    const key = part.slice(0, 1);
-    attributes.set(key, part.slice(2));
-  });
-  return attributes;
-}
-
-function createScramClient(user, password) {
-  const nonce = crypto.randomBytes(18).toString("base64").replace(/=+$/u, "");
-  const clientFirstBare = `n=${saslName(user)},r=${nonce}`;
-  const clientFirstMessage = `n,,${clientFirstBare}`;
-  let expectedServerSignature = "";
-
-  return {
-    clientFirstMessage,
-    createFinalMessage(serverFirstMessage) {
-      const attributes = parseScramAttributes(serverFirstMessage);
-      const serverNonce = attributes.get("r") || "";
-      const salt = Buffer.from(attributes.get("s") || "", "base64");
-      const iterations = Number(attributes.get("i") || 0);
-      if (!serverNonce.startsWith(nonce) || !salt.length || !iterations) {
-        throw new Error("PostgreSQL SCRAM authentication returned an invalid challenge.");
-      }
-      const clientFinalWithoutProof = `c=${Buffer.from("n,,").toString("base64")},r=${serverNonce}`;
-      const authMessage = `${clientFirstBare},${serverFirstMessage},${clientFinalWithoutProof}`;
-      const saltedPassword = crypto.pbkdf2Sync(password, salt, iterations, 32, "sha256");
-      const clientKey = crypto.createHmac("sha256", saltedPassword).update("Client Key").digest();
-      const storedKey = crypto.createHash("sha256").update(clientKey).digest();
-      const clientSignature = crypto.createHmac("sha256", storedKey).update(authMessage).digest();
-      const clientProof = xorBuffers(clientKey, clientSignature).toString("base64");
-      const serverKey = crypto.createHmac("sha256", saltedPassword).update("Server Key").digest();
-      expectedServerSignature = crypto.createHmac("sha256", serverKey).update(authMessage).digest("base64");
-      return `${clientFinalWithoutProof},p=${clientProof}`;
-    },
-    verifyServerFinal(serverFinalMessage) {
-      const attributes = parseScramAttributes(serverFinalMessage);
-      const signature = attributes.get("v");
-      if (expectedServerSignature && signature && signature !== expectedServerSignature) {
-        throw new Error("PostgreSQL SCRAM server signature did not match.");
-      }
-    },
-  };
-}
-
-async function openPostgresTlsConnection({ host, port }) {
-  const socket = net.connect({
-    host,
-    port,
-    timeout: REQUEST_TIMEOUT_MS,
-  });
-  await new Promise((resolve, reject) => {
-    socket.once("connect", resolve);
-    socket.once("timeout", () => {
-      socket.destroy();
-      reject(new Error("PostgreSQL TCP connection timed out."));
-    });
-    socket.once("error", reject);
-  });
-  socket.write(Buffer.concat([int32(8), int32(POSTGRES_SSL_REQUEST_CODE)]));
-  const sslResponse = await new Promise((resolve, reject) => {
-    socket.once("data", (chunk) => resolve(chunk.subarray(0, 1).toString("utf8")));
-    socket.once("error", reject);
-    socket.once("timeout", () => {
-      socket.destroy();
-      reject(new Error("Timed out waiting for PostgreSQL SSL response."));
-    });
-  });
-  if (sslResponse !== "S") {
-    socket.destroy();
-    throw new Error("PostgreSQL server did not accept TLS negotiation.");
-  }
-  return new Promise((resolve, reject) => {
-    const secureSocket = tls.connect({
-      rejectUnauthorized: true,
-      servername: host,
-      socket,
-    });
-    secureSocket.once("secureConnect", () => {
-      if (secureSocket.authorized) {
-        resolve(secureSocket);
-        return;
-      }
-      const reason = secureSocket.authorizationError || "PostgreSQL TLS certificate was not authorized.";
-      secureSocket.destroy();
-      reject(new Error(reason));
-    });
-    secureSocket.once("error", reject);
-  });
+function databaseDiagnostic(config) {
+  return `host=${config.host}; port=${config.port}; database=${config.database}`;
 }
 
 async function checkDatabaseConnection() {
-  let secureSocket = null;
   try {
     const config = parseDatabaseUrl();
     if (!config.user || !config.password) {
       throw new Error("Database URL must include username and password.");
     }
-    secureSocket = await openPostgresTlsConnection(config);
-    const reader = createReader(secureSocket);
-    secureSocket.write(pgStartupMessage(config));
-
-    let scramClient = null;
-    let authenticated = false;
-    while (true) {
-      const message = await readPgMessage(reader);
-      if (message.type === "R") {
-        const authCode = message.payload.readInt32BE(0);
-        if (authCode === 0) {
-          authenticated = true;
-          continue;
-        }
-        if (authCode === 3) {
-          secureSocket.write(pgPasswordMessage(config.password));
-          continue;
-        }
-        if (authCode === 5) {
-          secureSocket.write(pgPasswordMessage(md5PostgresPassword(config.password, config.user, message.payload.subarray(4, 8))));
-          continue;
-        }
-        if (authCode === 10) {
-          const mechanisms = parseCStringList(message.payload, 4);
-          if (!mechanisms.includes("SCRAM-SHA-256")) {
-            throw new Error(`PostgreSQL requested unsupported authentication mechanism: ${mechanisms.join(", ") || "unknown"}.`);
-          }
-          scramClient = createScramClient(config.user, config.password);
-          const initialResponse = Buffer.from(scramClient.clientFirstMessage, "utf8");
-          secureSocket.write(pgPasswordMessage(Buffer.concat([
-            pgCString("SCRAM-SHA-256"),
-            int32(initialResponse.length),
-            initialResponse,
-          ])));
-          continue;
-        }
-        if (authCode === 11) {
-          if (!scramClient) {
-            throw new Error("PostgreSQL SCRAM challenge arrived before client setup.");
-          }
-          const finalMessage = scramClient.createFinalMessage(message.payload.subarray(4).toString("utf8"));
-          secureSocket.write(pgPasswordMessage(Buffer.from(finalMessage, "utf8")));
-          continue;
-        }
-        if (authCode === 12) {
-          if (scramClient) {
-            scramClient.verifyServerFinal(message.payload.subarray(4).toString("utf8"));
-          }
-          continue;
-        }
-        throw new Error(`PostgreSQL requested unsupported authentication code ${authCode}.`);
-      }
-      if (message.type === "E") {
-        throw new Error(parsePgError(message.payload));
-      }
-      if (message.type === "Z") {
-        if (!authenticated) {
-          throw new Error("PostgreSQL reached ready state before authentication completed.");
-        }
-        return pass("Database connection");
-      }
-    }
+    const client = createPostgresConnectionClient();
+    await client.query("SELECT 1 AS ok;");
+    return pass("Database connection", databaseDiagnostic(config));
   } catch (error) {
     return fail("Database connection", error?.code || error?.message);
-  } finally {
-    if (secureSocket) {
-      secureSocket.end();
-    }
   }
-}
-
-function isTlsTrustFailure(detail) {
-  return [
-    "CERT_",
-    "SELF_SIGNED_CERT_IN_CHAIN",
-    "UNABLE_TO_VERIFY_LEAF_SIGNATURE",
-  ].some((marker) => String(detail || "").includes(marker));
-}
-
-function directDatabaseReadiness(databaseResult, restIdentityReady) {
-  if (databaseResult.status !== "FAIL") {
-    return databaseResult;
-  }
-  if (restIdentityReady && isTlsTrustFailure(databaseResult.detail)) {
-    return warn(
-      "Database connection",
-      `${databaseResult.detail}; REST/API identity readiness passed, so direct PostgreSQL TLS failure is advisory for DEV.`,
-    );
-  }
-  return databaseResult;
 }
 
 async function main() {
-  const envLoad = loadEnvLocal();
+  const envLoad = loadEnvFile();
   const results = [];
   results.push(envLoad.loaded
-    ? pass("Explicit .env.local DEV validation load", `${envLoad.loadedKeys.length} key(s) loaded`)
-    : fail("Explicit .env.local DEV validation load", `${ENV_FILE} was not found`));
+    ? pass("Runtime .env validation load", `${envLoad.loadedKeys.length} key(s) loaded`)
+    : fail("Runtime .env validation load", `${ENV_FILE} was not found`));
 
   REQUIRED_ENV.forEach(({ key, label }) => {
     const value = envValue(key);
@@ -658,9 +346,7 @@ async function main() {
   for (const tableName of IDENTITY_TABLES) {
     identityTableResults.push(await checkIdentityTable(tableName));
   }
-  const restIdentityReady = serviceRole.status === "PASS"
-    && identityTableResults.every((check) => check.status === "PASS");
-  results.push(directDatabaseReadiness(await checkDatabaseConnection(), restIdentityReady));
+  results.push(await checkDatabaseConnection());
   results.push(...identityTableResults);
 
   results.forEach((check) => {

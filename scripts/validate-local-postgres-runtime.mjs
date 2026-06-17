@@ -12,8 +12,8 @@ import { SEED_DB_KEYS } from "../src/dev-runtime/seed/seed-db-keys.mjs";
 const RUNTIME_ENV_FILE = ".env";
 const EXPECTED_DATABASE_URL = Object.freeze({
   database: "gamefoundry_dev",
-  host: "127.0.0.1",
-  port: "5432",
+  host: "192.168.2.5",
+  port: "55432",
   protocol: "postgresql:",
   user: "postgres",
 });
@@ -106,7 +106,7 @@ function assertExpectedDatabaseUrl() {
     throw new Error(`GAMEFOUNDRY_DATABASE_URL must target the local validation database: ${mismatches.join("; ")}.`);
   }
   if (decodeURIComponent(databaseUrl.password || "") !== "postgres") {
-    throw new Error("GAMEFOUNDRY_DATABASE_URL must use the local validation password configured by npm run dev:local-postgres.");
+    throw new Error("GAMEFOUNDRY_DATABASE_URL must use the local validation password for the configured local Postgres connection.");
   }
   return actual;
 }

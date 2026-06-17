@@ -21,6 +21,22 @@ function pgCString(value) {
   return Buffer.from(`${value}\0`, "utf8");
 }
 
+function isPrivateIpv4Host(host) {
+  const parts = String(host || "").split(".").map((part) => Number(part));
+  if (parts.length !== 4 || parts.some((part) => !Number.isInteger(part) || part < 0 || part > 255)) {
+    return false;
+  }
+  const [first, second] = parts;
+  return first === 10 ||
+    (first === 172 && second >= 16 && second <= 31) ||
+    (first === 192 && second === 168) ||
+    (first === 169 && second === 254);
+}
+
+function isLocalConnectionHost(host) {
+  return LOCAL_HOSTS.has(host) || isPrivateIpv4Host(host);
+}
+
 function parseDatabaseUrl(env) {
   const value = String(env?.GAMEFOUNDRY_DATABASE_URL || "").trim();
   if (!value) {
@@ -31,7 +47,7 @@ function parseDatabaseUrl(env) {
     throw new Error("GAMEFOUNDRY_DATABASE_URL must use postgres:// or postgresql://.");
   }
   const host = databaseUrl.hostname;
-  const sslMode = String(databaseUrl.searchParams.get("sslmode") || (LOCAL_HOSTS.has(host) ? "disable" : "require")).toLowerCase();
+  const sslMode = String(databaseUrl.searchParams.get("sslmode") || (isLocalConnectionHost(host) ? "disable" : "require")).toLowerCase();
   return {
     database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
     host,

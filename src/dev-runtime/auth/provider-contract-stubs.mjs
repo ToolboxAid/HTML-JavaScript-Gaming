@@ -948,13 +948,21 @@ export class SupabasePostgresProviderAdapter {
       const roleSlug = optionalString(role.roleSlug || role.slug);
       return this.normalizeRoleRecord({
         ...role,
-        key: optionalString(role.key) || existingRoleKeyBySlug.get(roleSlug),
+        key: existingRoleKeyBySlug.get(roleSlug) || optionalString(role.key),
       }, setupActorKey, timestamp);
     });
     const roleKeyBySlug = new Map([
       ...existingRoleKeyBySlug,
       ...normalizedRoles.map((role) => [role.roleSlug, role.key]),
     ]);
+    const normalizedRoleKeyByInputKey = new Map();
+    roles.forEach((role, index) => {
+      const inputKey = optionalString(role.key);
+      const normalizedKey = optionalString(normalizedRoles[index]?.key);
+      if (inputKey && normalizedKey) {
+        normalizedRoleKeyByInputKey.set(inputKey, normalizedKey);
+      }
+    });
     const existingUserRoles = userRoles.length ? await this.getUserRoles() : [];
     const existingUserRoleKeyByUserAndRole = new Map(existingUserRoles
       .map((userRole) => [
@@ -963,7 +971,10 @@ export class SupabasePostgresProviderAdapter {
       ])
       .filter(([userRoleKey, key]) => userRoleKey !== "\u0000" && key));
     const normalizedUserRoles = userRoles.map((userRole) => {
-      const roleKey = optionalString(userRole.roleKey) || roleKeyBySlug.get(optionalString(userRole.roleSlug || userRole.slug));
+      const inputRoleKey = optionalString(userRole.roleKey);
+      const roleKey = roleKeyBySlug.get(optionalString(userRole.roleSlug || userRole.slug)) ||
+        normalizedRoleKeyByInputKey.get(inputRoleKey) ||
+        inputRoleKey;
       return this.normalizeUserRoleRecord({
         ...userRole,
         key: optionalString(userRole.key) || existingUserRoleKeyByUserAndRole.get(`${optionalString(userRole.userKey)}\u0000${optionalString(roleKey)}`),
