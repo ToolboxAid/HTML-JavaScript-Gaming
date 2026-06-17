@@ -15,9 +15,21 @@ application behavior.
 `schema_migrations` is the authoritative migration state for DDL and DML apply
 history.
 
+Required `schema_migrations` fields are:
+
+- `key`
+- `migrationName`
+- `migrationType`
+- `checksum`
+- `appliedAt`
+- `appliedBy`
+
 `platform_settings` is runtime settings data only. It may hold settings such as
 platform banners and future maintenance toggles, but it must not track, gate, or
 control migration apply state.
+
+The optional current database version report is derived from
+`schema_migrations`; it is not stored in `platform_settings`.
 
 ## Validate
 
@@ -45,10 +57,10 @@ Apply DDL from `docs_build/database/ddl/`:
 node .\scripts\apply-database-ddl.mjs
 ```
 
-The apply lane records each file in `schema_migrations` with file name, type,
-checksum, applied time, and applied-by metadata. If an applied file checksum
-changes, the apply lane must fail visibly. Create a new migration file instead
-of editing an already-applied file.
+The apply lane records each file in `schema_migrations` with `key`,
+`migrationName`, `migrationType`, `checksum`, `appliedAt`, and `appliedBy`
+metadata. If an applied file checksum changes, the apply lane must fail visibly.
+Create a new migration file instead of editing an already-applied file.
 
 ## Apply DML
 
@@ -76,9 +88,10 @@ node --use-system-ca .\scripts\apply-database-seed.mjs
 ```
 
 The DEV seed target keeps User 1, User 2, and User 3 as creator-only identities.
-DavidQ remains owner, admin, and creator. The seed script must refuse unsafe
-non-DEV targets unless a later approved operator lane explicitly changes that
-rule.
+DavidQ remains owner, admin, and creator. The seed script must refuse IST, UAT,
+and PRD targets and must confirm the owner role assignment before seed
+execution. A later approved operator lane is required before any non-DEV seed
+execution is allowed.
 
 ## Backup
 
@@ -90,6 +103,8 @@ Minimum backup checklist:
 
 - Confirm `.env` points at the intended database.
 - Confirm `pg_dump` is installed.
+- Record backup metadata: `backupName`, `databaseName`, `createdAt`, and
+  `migrationVersion`.
 - Write backup files outside tracked source paths.
 - Record backup path and checksum only.
 - Do not write secrets, full URLs, service role keys, or dump contents to
@@ -104,7 +119,9 @@ must require explicit operator confirmation.
 Minimum restore checklist:
 
 - Confirm `.env` points at the intended target database.
+- Validate the current `schema_migrations` state before applying restore.
 - Confirm the backup file path and checksum.
+- Confirm backup metadata, including `migrationVersion`.
 - Stop the application or enter a maintenance window.
 - Confirm owner approval.
 - Record the confirmation phrase `RESTORE CONFIRMED`.
@@ -120,21 +137,32 @@ Promotion is manual and must move in this order:
 DEV -> IST -> UAT -> PRD
 ```
 
-For each target:
+Exact operator workflow for each target:
 
 1. Copy the selected `.env.<target>` file to `.env`.
 2. Confirm `.env` contains the intended database host, port, database name, and
    SSL mode without exposing secrets.
 3. Run `node .\scripts\validate-runtime-connections.mjs`.
-4. Run `node .\scripts\apply-database-ddl.mjs`.
-5. Run `node .\scripts\apply-database-dml.mjs`.
-6. Run `node .\scripts\validate-database-drift.mjs`.
-7. Run `node .\scripts\validate-runtime-connections.mjs` again.
-8. Review `schema_migrations` for the expected DDL/DML files.
-9. Start or restart the runtime.
-10. Promote the next target only after the current target passes.
+4. Create a backup and record backup metadata.
+5. Run `node .\scripts\apply-database-ddl.mjs`.
+6. Run `node .\scripts\apply-database-dml.mjs`.
+7. Run `node .\scripts\validate-database-drift.mjs`.
+8. Run `node .\scripts\validate-runtime-connections.mjs` again.
+9. Review `schema_migrations` for the expected DDL/DML files.
+10. Start or restart the runtime.
+11. Promote the next target only after the current target passes.
 
 Do not use `platform_settings` as a migration gate or promotion gate.
+
+## Owner Operations Boundary
+
+Owner Operations remains status-first and execute-later until the database lanes
+are stable. It may show validation, apply, backup, restore, and migration
+history status, but it must not execute database operations from the browser.
+
+The status surface currently routes through
+`src/dev-runtime/server/local-api-router.mjs`. That filename is retained as a
+legacy runtime filename for now; do not infer local database behavior from it.
 
 ## Rollback Guidance
 

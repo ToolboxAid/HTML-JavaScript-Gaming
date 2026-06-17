@@ -7,6 +7,11 @@ import { createPostgresConnectionClient } from "../src/dev-runtime/persistence/p
 const ENV_FILE = ".env";
 const DDL_DIRECTORY = "docs_build/database/ddl";
 const ACTION = "Run node .\\scripts\\apply-database-ddl.mjs against the current .env, then rerun drift validation.";
+const REQUIRED_PLATFORM_SETTING_KEYS = Object.freeze([
+  "platform.banner.enabled",
+  "platform.banner.message",
+  "platform.banner.tone",
+]);
 
 function parseEnvValue(value) {
   const trimmed = value.trim();
@@ -55,8 +60,58 @@ function normalizeIdentifier(value) {
   return trimmed.toLowerCase();
 }
 
+function parseColumnList(value) {
+  return Array.from(String(value || "").matchAll(/"([^"]+)"|([A-Za-z_][A-Za-z0-9_]*)/g))
+    .map((match) => match[1] || normalizeIdentifier(match[2]))
+    .filter(Boolean);
+}
+
+function parsePostgresArray(value) {
+  if (Array.isArray(value)) {
+    return value.map((item) => String(item || "")).filter(Boolean);
+  }
+  const text = String(value || "").trim();
+  if (!text || text === "{}") {
+    return [];
+  }
+  return text
+    .replace(/^\{|\}$/g, "")
+    .split(",")
+    .map((item) => item.trim().replace(/^"|"$/g, ""))
+    .filter(Boolean);
+}
+
+function constraintSignature({ columns, foreignColumns = [], foreignTable = "", tableName, type }) {
+  return [
+    tableName,
+    type,
+    columns.join(","),
+    foreignTable,
+    foreignColumns.join(","),
+  ].join(":");
+}
+
+function constraintLabel(constraint) {
+  const columns = constraint.columns.join(", ");
+  if (constraint.type === "foreign key") {
+    return `${constraint.type} ${constraint.tableName}(${columns}) -> ${constraint.foreignTable}(${constraint.foreignColumns.join(", ")})`;
+  }
+  return `${constraint.type} ${constraint.tableName}(${columns})`;
+}
+
+function addConstraint(constraintMap, constraint) {
+  const signature = constraintSignature(constraint);
+  if (!constraintMap.has(signature)) {
+    constraintMap.set(signature, {
+      label: constraintLabel(constraint),
+      source: constraint.source,
+    });
+  }
+}
+
 function readExpectedSchema() {
   const directory = path.resolve(process.cwd(), DDL_DIRECTORY);
+  const constraintMap = new Map();
   const tableMap = new Map();
   const indexMap = new Map();
   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
@@ -71,12 +126,53 @@ function readExpectedSchema() {
       const columns = new Set();
       match[2].split(/\r?\n/).forEach((rawLine) => {
         const line = rawLine.trim().replace(/,$/, "");
-        if (!line || /^(CONSTRAINT|PRIMARY|UNIQUE|FOREIGN|CHECK)\b/i.test(line)) {
+        if (!line) {
+          return;
+        }
+        const namedUnique = line.match(/^CONSTRAINT\s+("[^"]+"|[A-Za-z_][A-Za-z0-9_]*)\s+UNIQUE\s*\(([^)]+)\)/i);
+        if (namedUnique) {
+          addConstraint(constraintMap, {
+            columns: parseColumnList(namedUnique[2]),
+            source: filePath,
+            tableName,
+            type: "unique",
+          });
+          return;
+        }
+        if (/^(CONSTRAINT|PRIMARY|UNIQUE|FOREIGN|CHECK)\b/i.test(line)) {
           return;
         }
         const columnMatch = line.match(/^"([^"]+)"/) || line.match(/^([A-Za-z_][A-Za-z0-9_]*)\b/);
         if (columnMatch) {
-          columns.add(columnMatch[1]);
+          const columnName = columnMatch[1];
+          columns.add(columnName);
+          if (/\bPRIMARY\s+KEY\b/i.test(line)) {
+            addConstraint(constraintMap, {
+              columns: [columnName],
+              source: filePath,
+              tableName,
+              type: "primary key",
+            });
+          }
+          if (/\bUNIQUE\b/i.test(line)) {
+            addConstraint(constraintMap, {
+              columns: [columnName],
+              source: filePath,
+              tableName,
+              type: "unique",
+            });
+          }
+          const foreignKey = line.match(/\bREFERENCES\s+("[^"]+"|[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*("[^"]+"|[A-Za-z_][A-Za-z0-9_]*)\s*\)/i);
+          if (foreignKey) {
+            addConstraint(constraintMap, {
+              columns: [columnName],
+              foreignColumns: [normalizeIdentifier(foreignKey[2])],
+              foreignTable: normalizeIdentifier(foreignKey[1]),
+              source: filePath,
+              tableName,
+              type: "foreign key",
+            });
+          }
         }
       });
       tableMap.set(tableName, {
@@ -94,9 +190,24 @@ function readExpectedSchema() {
     }
   }
   return {
+    constraints: constraintMap,
     indexes: indexMap,
+    platformSettingKeys: new Set(REQUIRED_PLATFORM_SETTING_KEYS),
     tables: tableMap,
   };
+}
+
+function constraintType(contype) {
+  if (contype === "p") {
+    return "primary key";
+  }
+  if (contype === "u") {
+    return "unique";
+  }
+  if (contype === "f") {
+    return "foreign key";
+  }
+  return "";
 }
 
 async function readActualSchema() {
@@ -116,7 +227,34 @@ SELECT tablename, indexname
 FROM pg_indexes
 WHERE schemaname = 'public';
 `);
+  const constraintRows = await client.query(`
+SELECT
+  c.contype,
+  rel.relname AS table_name,
+  ARRAY(
+    SELECT att.attname
+    FROM unnest(c.conkey) WITH ORDINALITY AS cols(attnum, ord)
+    JOIN pg_attribute att ON att.attrelid = c.conrelid AND att.attnum = cols.attnum
+    ORDER BY cols.ord
+  ) AS columns,
+  frel.relname AS foreign_table,
+  ARRAY(
+    SELECT fatt.attname
+    FROM unnest(c.confkey) WITH ORDINALITY AS cols(attnum, ord)
+    JOIN pg_attribute fatt ON fatt.attrelid = c.confrelid AND fatt.attnum = cols.attnum
+    ORDER BY cols.ord
+  ) AS foreign_columns
+FROM pg_constraint c
+JOIN pg_class rel ON rel.oid = c.conrelid
+JOIN pg_namespace ns ON ns.oid = rel.relnamespace
+LEFT JOIN pg_class frel ON frel.oid = c.confrelid
+WHERE ns.nspname = 'public' AND c.contype IN ('p', 'u', 'f');
+`);
   const migrationRows = await client.query("SELECT count(*)::int AS count FROM schema_migrations;");
+  const tableNames = new Set(tableRows.map((row) => row.table_name));
+  const platformSettingRows = tableNames.has("platform_settings")
+    ? await client.query('SELECT "settingKey" FROM platform_settings;')
+    : [];
   const columnsByTable = new Map();
   columnRows.forEach((row) => {
     const tableName = row.table_name;
@@ -126,9 +264,20 @@ WHERE schemaname = 'public';
   });
   return {
     columnsByTable,
+    constraints: new Set(constraintRows
+      .map((row) => ({
+        columns: parsePostgresArray(row.columns),
+        foreignColumns: parsePostgresArray(row.foreign_columns),
+        foreignTable: row.foreign_table || "",
+        tableName: row.table_name,
+        type: constraintType(row.contype),
+      }))
+      .filter((constraint) => constraint.type)
+      .map(constraintSignature)),
     indexes: new Set(indexRows.map((row) => row.indexname)),
     migrationCount: Number(migrationRows[0]?.count || 0),
-    tables: new Set(tableRows.map((row) => row.table_name)),
+    platformSettingKeys: new Set(platformSettingRows.map((row) => String(row.settingKey || ""))),
+    tables: tableNames,
   };
 }
 
@@ -151,14 +300,26 @@ function compareSchema(expected, actual) {
       findings.push(`Missing index ${indexName} on ${index.tableName} expected from ${index.source}. ${ACTION}`);
     }
   });
+  expected.constraints.forEach((constraint, signature) => {
+    if (!actual.constraints.has(signature)) {
+      findings.push(`Missing constraint ${constraint.label} expected from ${constraint.source}. ${ACTION}`);
+    }
+  });
+  expected.platformSettingKeys.forEach((settingKey) => {
+    if (!actual.platformSettingKeys.has(settingKey)) {
+      findings.push(`Missing platform_settings settingKey ${settingKey}. Run owner-approved DEV seed or server-side platform settings setup, then rerun drift validation.`);
+    }
+  });
   return findings;
 }
 
 function selfTest(expected) {
   const actual = {
     columnsByTable: new Map(),
+    constraints: new Set(),
     indexes: new Set(),
     migrationCount: 0,
+    platformSettingKeys: new Set(),
     tables: new Set(),
   };
   const findings = compareSchema(expected, actual);
@@ -179,7 +340,7 @@ async function main() {
   const actual = await readActualSchema();
   const findings = compareSchema(expected, actual);
   console.log(`PASS - .env loaded for database drift validation (${loadedKeys.length} key(s) applied).`);
-  console.log(`PASS - Expected DDL objects loaded from ${DDL_DIRECTORY}: tables=${expected.tables.size}; indexes=${expected.indexes.size}.`);
+  console.log(`PASS - Expected DDL objects loaded from ${DDL_DIRECTORY}: tables=${expected.tables.size}; constraints=${expected.constraints.size}; indexes=${expected.indexes.size}; platform setting keys=${expected.platformSettingKeys.size}.`);
   console.log(`PASS - schema_migrations is the migration-state SSoT; applied records=${actual.migrationCount}.`);
   if (findings.length) {
     console.log(`FAIL - Database drift detected (${findings.length} finding(s)).`);
@@ -187,7 +348,7 @@ async function main() {
     process.exitCode = 1;
     return;
   }
-  console.log("PASS - Database drift validation found no missing required tables, columns, or indexes.");
+  console.log("PASS - Database drift validation found no missing required tables, columns, indexes, constraints, or platform settings keys.");
 }
 
 await main();

@@ -1,201 +1,686 @@
-diff --git a/docs_build/database/README.md b/docs_build/database/README.md
-index 204532053..e73a5abe3 100644
---- a/docs_build/database/README.md
-+++ b/docs_build/database/README.md
-@@ -20,3 +20,25 @@ Each product area/tool owns one grouped file in `ddl/`, `dml/`, and `seed/`. Acc
- Runtime DEV setup and reseed actions must call server-side APIs. Browser pages must not directly seed authoritative DB records or generate authoritative DB keys.
+diff --git a/docs_build/database/backup-restore-lane.md b/docs_build/database/backup-restore-lane.md
+index bcf7ce10e..d1cd866d3 100644
+--- a/docs_build/database/backup-restore-lane.md
++++ b/docs_build/database/backup-restore-lane.md
+@@ -33,13 +33,25 @@ Validation expectation:
+ - the backup file is written outside tracked source paths
+ - reports state only the backup path and success/failure, not the connection string
 
- Codex may execute DEV database setup only. UAT and production SQL execution is user-controlled. Codex may prepare review artifacts, but it must not execute UAT or production SQL.
++Backup metadata must be recorded without secrets:
 +
-+## Apply Lanes
++- `backupName`
++- `databaseName`
++- `createdAt`
++- `migrationVersion`
 +
-+Database setup is split into separate lanes:
++Use `schema_migrations` to derive `migrationVersion`; do not use
++`platform_settings` for backup migration state.
 +
-+- DDL: `node .\scripts\apply-database-ddl.mjs`
-+- DML: `node .\scripts\apply-database-dml.mjs`
-+- DEV seed: `node .\scripts\apply-database-seed.mjs --dry-run`
+ ## Restore Checklist
+
+ Restore is destructive. Do not run restore unless every checklist item is complete:
+
+ - Confirm the target `.env` is the intended database.
+ - Run `node .\scripts\validate-runtime-connections.mjs` and record PASS/FAIL.
++- Validate the current `schema_migrations` state before applying restore.
+ - Confirm the backup file path and checksum.
++- Confirm the backup metadata `migrationVersion`.
+ - Confirm the application is stopped or in a maintenance window.
+ - Confirm owner approval.
+ - Type or record the exact operator confirmation phrase: `RESTORE CONFIRMED`.
+@@ -68,8 +80,10 @@ pg_restore --dbname $databaseUrl --clean --if-exists --single-transaction $backu
+ Restore reports must include:
+
+ - target host, port, and database name only
++- backup metadata: `backupName`, `databaseName`, `createdAt`, and `migrationVersion`
+ - backup file path
+ - backup checksum
++- migration state validation before restore
+ - confirmation checklist status
+ - validation result after restore
+
+diff --git a/docs_build/database/promotion-lane.md b/docs_build/database/promotion-lane.md
+index 0ae7186fd..5a8171213 100644
+--- a/docs_build/database/promotion-lane.md
++++ b/docs_build/database/promotion-lane.md
+@@ -8,6 +8,10 @@ DEV -> IST -> UAT -> PRD
+
+ The target name describes where the operator points the configured connection. It must not change application behavior.
+
++This order is mandatory. Do not skip a target, promote backward, or promote a
++later target until the current target's `schema_migrations` state has been
++validated.
 +
-+DDL and DML use `schema_migrations` for applied file tracking. DEV seed is separate from migration tracking and refuses non-DEV database targets.
-+
-+## Promotion
-+
-+The database promotion lane is documented in [promotion-lane.md](promotion-lane.md). Promotion uses manual `.env.<target>` copy-source files, validates and applies against `.env` only, and uses `schema_migrations` as the authoritative DDL/DML migration state.
-+
-+## Backup And Restore
-+
-+The operator-controlled backup and restore lane is documented in [backup-restore-lane.md](backup-restore-lane.md). Backup and restore use `GAMEFOUNDRY_DATABASE_URL` from `.env`; restore requires an explicit operator checklist and confirmation phrase before any destructive command runs.
-+
-+## Runbook
-+
-+The consolidated operator runbook is documented in [runbook.md](runbook.md). It covers validation, DDL apply, DML apply, DEV seed, backup, restore, promotion, and rollback guidance while keeping `schema_migrations` as migration state and `platform_settings` as runtime settings only.
-diff --git a/docs_build/database/runbook.md b/docs_build/database/runbook.md
-new file mode 100644
-index 000000000..bfb64b11a
---- /dev/null
-+++ b/docs_build/database/runbook.md
-@@ -0,0 +1,155 @@
-+# Database Runbook
-+
-+This runbook is the operator path for the database configured by `.env`.
-+
-+Runtime, validation, DDL apply, DML apply, seed, backup, and restore use `.env`
-+only. Files such as `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` are
-+manual copy sources only.
-+
-+Do not pass runtime environment parameters such as `--env`, `--environment`, or
-+`ENVIRONMENT=<target>`. Deployment targets describe the selected connection, not
-+application behavior.
-+
-+## State Authority
-+
-+`schema_migrations` is the authoritative migration state for DDL and DML apply
-+history.
-+
-+`platform_settings` is runtime settings data only. It may hold settings such as
-+platform banners and future maintenance toggles, but it must not track, gate, or
-+control migration apply state.
-+
-+## Validate
-+
-+Run connection validation before and after apply work:
-+
-+```powershell
-+node .\scripts\validate-runtime-connections.mjs
-+```
-+
-+Run drift validation when schema shape needs to be compared with expected DDL:
-+
-+```powershell
-+node .\scripts\validate-database-drift.mjs
-+```
-+
-+Validation reports must include host, port, database name, and SSL mode only.
-+They must not include passwords, full connection strings, service role keys, or
-+access tokens.
-+
-+## Apply DDL
-+
-+Apply DDL from `docs_build/database/ddl/`:
-+
-+```powershell
-+node .\scripts\apply-database-ddl.mjs
-+```
-+
-+The apply lane records each file in `schema_migrations` with file name, type,
-+checksum, applied time, and applied-by metadata. If an applied file checksum
-+changes, the apply lane must fail visibly. Create a new migration file instead
-+of editing an already-applied file.
-+
-+## Apply DML
-+
-+Apply DML from `docs_build/database/dml/`:
-+
-+```powershell
-+node .\scripts\apply-database-dml.mjs
-+```
-+
-+DML uses the same `schema_migrations` tracking contract as DDL. Repeat runs must
-+skip unchanged already-applied files and fail on checksum drift.
-+
-+## Seed DEV
-+
-+Seed is separate from DDL and DML migration apply. Use the seed dry run first:
-+
-+```powershell
-+node --use-system-ca .\scripts\apply-database-seed.mjs --dry-run
-+```
-+
-+Run the DEV seed only after the dry run passes:
-+
-+```powershell
-+node --use-system-ca .\scripts\apply-database-seed.mjs
-+```
-+
-+The DEV seed target keeps User 1, User 2, and User 3 as creator-only identities.
-+DavidQ remains owner, admin, and creator. The seed script must refuse unsafe
-+non-DEV targets unless a later approved operator lane explicitly changes that
-+rule.
-+
-+## Backup
-+
-+Use the backup path documented in
-+[backup-restore-lane.md](backup-restore-lane.md). Backups use
-+`GAMEFOUNDRY_DATABASE_URL` from `.env`.
-+
-+Minimum backup checklist:
-+
-+- Confirm `.env` points at the intended database.
-+- Confirm `pg_dump` is installed.
-+- Write backup files outside tracked source paths.
-+- Record backup path and checksum only.
-+- Do not write secrets, full URLs, service role keys, or dump contents to
-+  reports.
-+
-+## Restore
-+
-+Use the restore path documented in
-+[backup-restore-lane.md](backup-restore-lane.md). Restore is destructive and
-+must require explicit operator confirmation.
-+
-+Minimum restore checklist:
-+
-+- Confirm `.env` points at the intended target database.
-+- Confirm the backup file path and checksum.
-+- Stop the application or enter a maintenance window.
-+- Confirm owner approval.
-+- Record the confirmation phrase `RESTORE CONFIRMED`.
-+- Run restore from the operator machine.
-+- Run connection validation after restore.
-+- Run drift validation after restore.
-+
-+## Promote DEV -> IST -> UAT -> PRD
-+
-+Promotion is manual and must move in this order:
-+
-+```text
-+DEV -> IST -> UAT -> PRD
-+```
-+
-+For each target:
-+
-+1. Copy the selected `.env.<target>` file to `.env`.
-+2. Confirm `.env` contains the intended database host, port, database name, and
-+   SSL mode without exposing secrets.
-+3. Run `node .\scripts\validate-runtime-connections.mjs`.
-+4. Run `node .\scripts\apply-database-ddl.mjs`.
-+5. Run `node .\scripts\apply-database-dml.mjs`.
+ ## Copy-Source Flow
+
+ Runtime, validation, and migration apply scripts load `.env` only.
+@@ -26,9 +30,10 @@ Promotion is manual:
+ 3. Run `node .\scripts\validate-runtime-connections.mjs`.
+ 4. Run `node .\scripts\apply-database-ddl.mjs`.
+ 5. Run `node .\scripts\apply-database-dml.mjs`.
+-6. Run `node .\scripts\validate-runtime-connections.mjs` again.
+-7. Review `schema_migrations` before promoting the next target.
+-8. Start or restart the runtime after validation passes.
 +6. Run `node .\scripts\validate-database-drift.mjs`.
 +7. Run `node .\scripts\validate-runtime-connections.mjs` again.
-+8. Review `schema_migrations` for the expected DDL/DML files.
-+9. Start or restart the runtime.
-+10. Promote the next target only after the current target passes.
++8. Review `schema_migrations` before promoting the next target.
++9. Start or restart the runtime after validation passes.
+
+ Do not pass runtime environment parameters such as `--env`, `--environment`, or `ENVIRONMENT=<target>`.
+
+@@ -38,7 +43,8 @@ Do not pass runtime environment parameters such as `--env`, `--environment`, or
+
+ The migration apply lane records:
+
+-- `fileName`
++- `key`
++- `migrationName`
+ - `migrationType`
+ - `checksum`
+ - `appliedAt`
+@@ -54,6 +60,8 @@ Each target is eligible for the next promotion step only after:
+
+ - validation passes against the current `.env`
+ - DDL/DML apply completes without checksum drift
++- drift validation confirms required tables, columns, indexes, constraints, and platform setting keys
++- `schema_migrations` matches the expected applied DDL/DML state for the target
+ - repeat validation passes
+ - the operator confirms the intended target connection without exposing secrets
+
+diff --git a/docs_build/database/runbook.md b/docs_build/database/runbook.md
+index bfb64b11a..c9f6e4594 100644
+--- a/docs_build/database/runbook.md
++++ b/docs_build/database/runbook.md
+@@ -15,10 +15,22 @@ application behavior.
+ `schema_migrations` is the authoritative migration state for DDL and DML apply
+ history.
+
++Required `schema_migrations` fields are:
 +
-+Do not use `platform_settings` as a migration gate or promotion gate.
++- `key`
++- `migrationName`
++- `migrationType`
++- `checksum`
++- `appliedAt`
++- `appliedBy`
 +
-+## Rollback Guidance
+ `platform_settings` is runtime settings data only. It may hold settings such as
+ platform banners and future maintenance toggles, but it must not track, gate, or
+ control migration apply state.
+
++The optional current database version report is derived from
++`schema_migrations`; it is not stored in `platform_settings`.
 +
-+Prefer forward-fix migrations for application schema corrections. Do not edit an
-+already-applied DDL or DML file; checksum drift must remain a visible failure.
+ ## Validate
+
+ Run connection validation before and after apply work:
+@@ -45,10 +57,10 @@ Apply DDL from `docs_build/database/ddl/`:
+ node .\scripts\apply-database-ddl.mjs
+ ```
+
+-The apply lane records each file in `schema_migrations` with file name, type,
+-checksum, applied time, and applied-by metadata. If an applied file checksum
+-changes, the apply lane must fail visibly. Create a new migration file instead
+-of editing an already-applied file.
++The apply lane records each file in `schema_migrations` with `key`,
++`migrationName`, `migrationType`, `checksum`, `appliedAt`, and `appliedBy`
++metadata. If an applied file checksum changes, the apply lane must fail visibly.
++Create a new migration file instead of editing an already-applied file.
+
+ ## Apply DML
+
+@@ -76,9 +88,10 @@ node --use-system-ca .\scripts\apply-database-seed.mjs
+ ```
+
+ The DEV seed target keeps User 1, User 2, and User 3 as creator-only identities.
+-DavidQ remains owner, admin, and creator. The seed script must refuse unsafe
+-non-DEV targets unless a later approved operator lane explicitly changes that
+-rule.
++DavidQ remains owner, admin, and creator. The seed script must refuse IST, UAT,
++and PRD targets and must confirm the owner role assignment before seed
++execution. A later approved operator lane is required before any non-DEV seed
++execution is allowed.
+
+ ## Backup
+
+@@ -90,6 +103,8 @@ Minimum backup checklist:
+
+ - Confirm `.env` points at the intended database.
+ - Confirm `pg_dump` is installed.
++- Record backup metadata: `backupName`, `databaseName`, `createdAt`, and
++  `migrationVersion`.
+ - Write backup files outside tracked source paths.
+ - Record backup path and checksum only.
+ - Do not write secrets, full URLs, service role keys, or dump contents to
+@@ -104,7 +119,9 @@ must require explicit operator confirmation.
+ Minimum restore checklist:
+
+ - Confirm `.env` points at the intended target database.
++- Validate the current `schema_migrations` state before applying restore.
+ - Confirm the backup file path and checksum.
++- Confirm backup metadata, including `migrationVersion`.
+ - Stop the application or enter a maintenance window.
+ - Confirm owner approval.
+ - Record the confirmation phrase `RESTORE CONFIRMED`.
+@@ -120,22 +137,33 @@ Promotion is manual and must move in this order:
+ DEV -> IST -> UAT -> PRD
+ ```
+
+-For each target:
++Exact operator workflow for each target:
+
+ 1. Copy the selected `.env.<target>` file to `.env`.
+ 2. Confirm `.env` contains the intended database host, port, database name, and
+    SSL mode without exposing secrets.
+ 3. Run `node .\scripts\validate-runtime-connections.mjs`.
+-4. Run `node .\scripts\apply-database-ddl.mjs`.
+-5. Run `node .\scripts\apply-database-dml.mjs`.
+-6. Run `node .\scripts\validate-database-drift.mjs`.
+-7. Run `node .\scripts\validate-runtime-connections.mjs` again.
+-8. Review `schema_migrations` for the expected DDL/DML files.
+-9. Start or restart the runtime.
+-10. Promote the next target only after the current target passes.
++4. Create a backup and record backup metadata.
++5. Run `node .\scripts\apply-database-ddl.mjs`.
++6. Run `node .\scripts\apply-database-dml.mjs`.
++7. Run `node .\scripts\validate-database-drift.mjs`.
++8. Run `node .\scripts\validate-runtime-connections.mjs` again.
++9. Review `schema_migrations` for the expected DDL/DML files.
++10. Start or restart the runtime.
++11. Promote the next target only after the current target passes.
+
+ Do not use `platform_settings` as a migration gate or promotion gate.
+
++## Owner Operations Boundary
 +
-+When restore-based rollback is required:
++Owner Operations remains status-first and execute-later until the database lanes
++are stable. It may show validation, apply, backup, restore, and migration
++history status, but it must not execute database operations from the browser.
 +
-+1. Stop runtime traffic or enter a maintenance window.
-+2. Confirm the target `.env` and backup checksum.
-+3. Follow the restore checklist and confirmation phrase.
-+4. Run connection validation.
-+5. Run drift validation.
-+6. Review `schema_migrations` against the expected migration state.
-+7. Restart runtime only after validation passes.
++The status surface currently routes through
++`src/dev-runtime/server/local-api-router.mjs`. That filename is retained as a
++legacy runtime filename for now; do not infer local database behavior from it.
 +
-+Runtime settings in `platform_settings` may be adjusted after rollback as normal
-+product configuration, but they must not be treated as migration state.
-diff --git a/docs_build/dev/reports/PR_26167_206-database-runbook.md b/docs_build/dev/reports/PR_26167_206-database-runbook.md
+ ## Rollback Guidance
+
+ Prefer forward-fix migrations for application schema corrections. Do not edit an
+diff --git a/docs_build/database/seed/account/supabase-dev-identity-bootstrap.md b/docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
+index 4c812d3ab..1452aa8e9 100644
+--- a/docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
++++ b/docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
+@@ -5,7 +5,7 @@ Use this only for the DEV Supabase project. Identity seeding is server-side only
+ ## Bootstrap Order
+
+ 1. Run `docs_build/database/ddl/account/supabase-identity-tables.sql` in the Supabase SQL editor or through an approved operator SQL path.
+-2. Run `npm run validate:supabase-dev`.
++2. Run `npm run validate:runtime-connections`.
+ 3. Confirm these checks pass through REST/API:
+    - `Service role authentication`
+    - `users table`
+diff --git a/package.json b/package.json
+index b8fed0fdc..505b71d5f 100644
+--- a/package.json
++++ b/package.json
+@@ -27,7 +27,6 @@
+     "validate:local-postgres-runtime": "node --use-system-ca ./scripts/validate-local-postgres-runtime.mjs",
+     "validate:database-drift": "node ./scripts/validate-database-drift.mjs",
+     "validate:runtime-connections": "node --use-system-ca ./scripts/validate-runtime-connections.mjs",
+-    "validate:supabase-dev": "node --use-system-ca ./scripts/validate-supabase-dev.mjs",
+     "validate:browser-env-agnostic": "node ./scripts/validate-browser-env-agnostic.mjs",
+     "apply:database-ddl": "node ./scripts/apply-database-ddl.mjs",
+     "apply:database-dml": "node ./scripts/apply-database-dml.mjs",
+diff --git a/scripts/apply-database-seed.mjs b/scripts/apply-database-seed.mjs
+index d25b0d467..698cec037 100644
+--- a/scripts/apply-database-seed.mjs
++++ b/scripts/apply-database-seed.mjs
+@@ -2,6 +2,8 @@
+ import fs from "node:fs";
+ import path from "node:path";
+ import process from "node:process";
++import { SupabasePostgresProviderAdapter } from "../src/dev-runtime/auth/provider-contract-stubs.mjs";
++import { SEED_DB_KEYS } from "../src/dev-runtime/seed/seed-db-keys.mjs";
+ import { syncSupabaseDevCreatorIdentities } from "../src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs";
+
+ const ENV_FILE = ".env";
+@@ -82,6 +84,25 @@ function runUnsafeTargetSelfTest() {
+   throw new Error("Unsafe seed target self-test failed because non-DEV database was accepted.");
+ }
+
++async function assertOwnerSeedAuthority({
++  databaseProvider = new SupabasePostgresProviderAdapter(),
++} = {}) {
++  const roles = await databaseProvider.getRoles();
++  const userRoles = await databaseProvider.getUserRoles();
++  const ownerRole = roles.find((role) => String(role.roleSlug || "") === "owner" && role.isActive !== false);
++  if (!ownerRole?.key) {
++    throw new Error("DEV seed requires an active owner role before seed execution.");
++  }
++  const ownerAssignment = userRoles.some((row) => row.userKey === SEED_DB_KEYS.users.admin && row.roleKey === ownerRole.key);
++  if (!ownerAssignment) {
++    throw new Error("DEV seed requires DavidQ to have the owner role before seed execution.");
++  }
++  return {
++    roleKey: ownerRole.key,
++    userKey: SEED_DB_KEYS.users.admin,
++  };
++}
++
+ function roleEvidenceLine(result) {
+   const evidence = result.verification.roleEvidence;
+   return [
+@@ -105,9 +126,11 @@ async function main() {
+   const loadedKeys = loadRuntimeEnv();
+   const database = configuredDatabase();
+   assertDevSeedTarget(database);
++  const ownerGate = await assertOwnerSeedAuthority();
+   const result = await syncSupabaseDevCreatorIdentities({ dryRun });
+   console.log(`PASS - .env loaded for DEV seed lane (${loadedKeys.length} key(s) applied).`);
+   console.log(`PASS - DEV seed target confirmed (host=${database.host}; port=${database.port}; database=${database.database}).`);
++  console.log(`PASS - Owner role gate confirmed for DEV seed operations (userKey=${ownerGate.userKey}; roleKey=${ownerGate.roleKey}).`);
+   console.log(`PASS - DEV seed mode: ${dryRun ? "dry-run validation" : "apply"}.`);
+   console.log(`PASS - Seed identity counts before auth=${result.beforeCounts.authUsers}; public.users=${result.beforeCounts.publicUsers}.`);
+   console.log(`PASS - Seed identity counts after auth=${result.afterCounts.authUsers}; public.users=${result.afterCounts.publicUsers}.`);
+diff --git a/scripts/database-migration-runner.mjs b/scripts/database-migration-runner.mjs
+index 08963c8ae..51d823d96 100644
+--- a/scripts/database-migration-runner.mjs
++++ b/scripts/database-migration-runner.mjs
+@@ -115,7 +115,7 @@ function migrationChecksum(sql) {
+ }
+
+ function migrationKey(migration) {
+-  return `${migration.type}:${migration.fileName}`;
++  return `${migration.type}:${migration.filePath}`;
+ }
+
+ function readMigrationFiles(migrationDirs) {
+@@ -132,6 +132,7 @@ function readMigrationFiles(migrationDirs) {
+           fileName: entry.name,
+           filePath,
+           key: `${type}:${filePath}`,
++          migrationName: entry.name,
+           sql: `\n-- Begin ${filePath}\n${sql}\n-- End ${filePath}\n`,
+           type,
+         };
+@@ -139,24 +140,46 @@ function readMigrationFiles(migrationDirs) {
+   });
+ }
+
++async function schemaMigrationColumns(client) {
++  const rows = await client.query(`
++SELECT column_name
++FROM information_schema.columns
++WHERE table_schema = 'public' AND table_name = 'schema_migrations';
++`);
++  return new Set(rows.map((row) => String(row.column_name || "")));
++}
++
+ async function ensureSchemaMigrations(client) {
+   await client.query(`
+ CREATE TABLE IF NOT EXISTS schema_migrations (
+   key text PRIMARY KEY,
+-  "fileName" text NOT NULL,
++  "migrationName" text NOT NULL,
+   "migrationType" text NOT NULL CHECK ("migrationType" IN ('DDL', 'DML')),
+   checksum text NOT NULL,
+   "appliedAt" timestamptz NOT NULL DEFAULT now(),
+   "appliedBy" text NOT NULL
+ );
+-CREATE UNIQUE INDEX IF NOT EXISTS schema_migrations_file_type_idx
+-  ON schema_migrations ("migrationType", "fileName");
+ `);
++  let columns = await schemaMigrationColumns(client);
++  if (!columns.has("migrationName")) {
++    await client.query('ALTER TABLE schema_migrations ADD COLUMN "migrationName" text;');
++    columns = await schemaMigrationColumns(client);
++  }
++  if (columns.has("fileName")) {
++    await client.query('UPDATE schema_migrations SET "migrationName" = COALESCE(NULLIF("migrationName", \'\'), "fileName") WHERE "migrationName" IS NULL OR "migrationName" = \'\';');
++  }
++  await client.query('UPDATE schema_migrations SET "migrationName" = key WHERE "migrationName" IS NULL OR "migrationName" = \'\';');
++  await client.query('ALTER TABLE schema_migrations ALTER COLUMN "migrationName" SET NOT NULL;');
++  await client.query(`
++CREATE UNIQUE INDEX IF NOT EXISTS schema_migrations_name_type_idx
++  ON schema_migrations ("migrationType", "migrationName");
++`);
++  return schemaMigrationColumns(client);
+ }
+
+ async function readAppliedMigrations(client) {
+-  const rows = await client.query('SELECT key, "fileName", "migrationType", checksum, "appliedAt", "appliedBy" FROM schema_migrations;');
+-  return new Map(rows.map((row) => [row.key || migrationKey({ fileName: row.fileName, type: row.migrationType }), row]));
++  const rows = await client.query('SELECT key, "migrationName", "migrationType", checksum, "appliedAt", "appliedBy" FROM schema_migrations;');
++  return new Map(rows.map((row) => [row.key || migrationKey({ filePath: row.migrationName, type: row.migrationType }), row]));
+ }
+
+ function appliedBy() {
+@@ -166,7 +189,7 @@ function appliedBy() {
+     "codex";
+ }
+
+-async function applyMigration(client, migration, appliedMigrations, actor) {
++async function applyMigration(client, migration, appliedMigrations, actor, schemaColumns) {
+   const applied = appliedMigrations.get(migration.key);
+   if (applied) {
+     if (applied.checksum !== migration.checksum) {
+@@ -176,15 +199,18 @@ async function applyMigration(client, migration, appliedMigrations, actor) {
+   }
+
+   await client.query(migration.sql);
+-  await client.query(`
+-INSERT INTO schema_migrations (key, "fileName", "migrationType", checksum, "appliedAt", "appliedBy")
+-VALUES (${sqlLiteral(migration.key)}, ${sqlLiteral(migration.fileName)}, ${sqlLiteral(migration.type)}, ${sqlLiteral(migration.checksum)}, now(), ${sqlLiteral(actor)});
+-`);
++  const columns = ["key", "\"migrationName\"", "\"migrationType\"", "checksum", "\"appliedAt\"", "\"appliedBy\""];
++  const values = [sqlLiteral(migration.key), sqlLiteral(migration.migrationName), sqlLiteral(migration.type), sqlLiteral(migration.checksum), "now()", sqlLiteral(actor)];
++  if (schemaColumns.has("fileName")) {
++    columns.splice(2, 0, "\"fileName\"");
++    values.splice(2, 0, sqlLiteral(migration.fileName));
++  }
++  await client.query(`INSERT INTO schema_migrations (${columns.join(", ")}) VALUES (${values.join(", ")});`);
+   appliedMigrations.set(migration.key, {
+     appliedBy: actor,
+     checksum: migration.checksum,
+-    fileName: migration.fileName,
+     key: migration.key,
++    migrationName: migration.migrationName,
+     migrationType: migration.type,
+   });
+   return "APPLY";
+@@ -203,7 +229,7 @@ export async function runDatabaseMigrationLane({ laneLabel, migrationDirs }) {
+
+   const client = createPostgresConnectionClient();
+   await client.query("SELECT 1 AS ok;");
+-  await ensureSchemaMigrations(client);
++  const schemaColumns = await ensureSchemaMigrations(client);
+
+   const migrations = readMigrationFiles(migrationDirs);
+   const appliedMigrations = await readAppliedMigrations(client);
+@@ -213,7 +239,7 @@ export async function runDatabaseMigrationLane({ laneLabel, migrationDirs }) {
+     try {
+       results.push({
+         migration,
+-        status: await applyMigration(client, migration, appliedMigrations, actor),
++        status: await applyMigration(client, migration, appliedMigrations, actor, schemaColumns),
+       });
+     } catch (error) {
+       throw new Error(`Failed applying ${migration.filePath}: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`);
+@@ -227,7 +253,7 @@ export async function runDatabaseMigrationLane({ laneLabel, migrationDirs }) {
+   console.log(`PASS - Database SSL mode: ${config.sslMode}`);
+   console.log(`PASS - Database connection mode selected from GAMEFOUNDRY_DATABASE_SSL: ${connectionModeDiagnostic(config)}.`);
+   console.log("PASS - schema_migrations table confirmed.");
+-  console.log("PASS - Migration tracking fields: fileName, migrationType, checksum, appliedAt, appliedBy.");
++  console.log("PASS - Migration tracking fields: key, migrationName, migrationType, checksum, appliedAt, appliedBy.");
+   console.log(`PASS - Database migrations processed=${results.length}; applied=${appliedCount}; skipped=${skippedCount}.`);
+   results.forEach((result) => {
+     console.log(`${result.status === "APPLY" ? "APPLIED" : "SKIPPED"} - ${result.migration.type} ${result.migration.filePath}`);
+diff --git a/scripts/validate-database-drift.mjs b/scripts/validate-database-drift.mjs
+index e716f63ba..1a66bd6f8 100644
+--- a/scripts/validate-database-drift.mjs
++++ b/scripts/validate-database-drift.mjs
+@@ -7,6 +7,11 @@ import { createPostgresConnectionClient } from "../src/dev-runtime/persistence/p
+ const ENV_FILE = ".env";
+ const DDL_DIRECTORY = "docs_build/database/ddl";
+ const ACTION = "Run node .\\scripts\\apply-database-ddl.mjs against the current .env, then rerun drift validation.";
++const REQUIRED_PLATFORM_SETTING_KEYS = Object.freeze([
++  "platform.banner.enabled",
++  "platform.banner.message",
++  "platform.banner.tone",
++]);
+
+ function parseEnvValue(value) {
+   const trimmed = value.trim();
+@@ -55,8 +60,58 @@ function normalizeIdentifier(value) {
+   return trimmed.toLowerCase();
+ }
+
++function parseColumnList(value) {
++  return Array.from(String(value || "").matchAll(/"([^"]+)"|([A-Za-z_][A-Za-z0-9_]*)/g))
++    .map((match) => match[1] || normalizeIdentifier(match[2]))
++    .filter(Boolean);
++}
++
++function parsePostgresArray(value) {
++  if (Array.isArray(value)) {
++    return value.map((item) => String(item || "")).filter(Boolean);
++  }
++  const text = String(value || "").trim();
++  if (!text || text === "{}") {
++    return [];
++  }
++  return text
++    .replace(/^\{|\}$/g, "")
++    .split(",")
++    .map((item) => item.trim().replace(/^"|"$/g, ""))
++    .filter(Boolean);
++}
++
++function constraintSignature({ columns, foreignColumns = [], foreignTable = "", tableName, type }) {
++  return [
++    tableName,
++    type,
++    columns.join(","),
++    foreignTable,
++    foreignColumns.join(","),
++  ].join(":");
++}
++
++function constraintLabel(constraint) {
++  const columns = constraint.columns.join(", ");
++  if (constraint.type === "foreign key") {
++    return `${constraint.type} ${constraint.tableName}(${columns}) -> ${constraint.foreignTable}(${constraint.foreignColumns.join(", ")})`;
++  }
++  return `${constraint.type} ${constraint.tableName}(${columns})`;
++}
++
++function addConstraint(constraintMap, constraint) {
++  const signature = constraintSignature(constraint);
++  if (!constraintMap.has(signature)) {
++    constraintMap.set(signature, {
++      label: constraintLabel(constraint),
++      source: constraint.source,
++    });
++  }
++}
++
+ function readExpectedSchema() {
+   const directory = path.resolve(process.cwd(), DDL_DIRECTORY);
++  const constraintMap = new Map();
+   const tableMap = new Map();
+   const indexMap = new Map();
+   for (const entry of fs.readdirSync(directory, { withFileTypes: true })) {
+@@ -71,12 +126,53 @@ function readExpectedSchema() {
+       const columns = new Set();
+       match[2].split(/\r?\n/).forEach((rawLine) => {
+         const line = rawLine.trim().replace(/,$/, "");
+-        if (!line || /^(CONSTRAINT|PRIMARY|UNIQUE|FOREIGN|CHECK)\b/i.test(line)) {
++        if (!line) {
++          return;
++        }
++        const namedUnique = line.match(/^CONSTRAINT\s+("[^"]+"|[A-Za-z_][A-Za-z0-9_]*)\s+UNIQUE\s*\(([^)]+)\)/i);
++        if (namedUnique) {
++          addConstraint(constraintMap, {
++            columns: parseColumnList(namedUnique[2]),
++            source: filePath,
++            tableName,
++            type: "unique",
++          });
++          return;
++        }
++        if (/^(CONSTRAINT|PRIMARY|UNIQUE|FOREIGN|CHECK)\b/i.test(line)) {
+           return;
+         }
+         const columnMatch = line.match(/^"([^"]+)"/) || line.match(/^([A-Za-z_][A-Za-z0-9_]*)\b/);
+         if (columnMatch) {
+-          columns.add(columnMatch[1]);
++          const columnName = columnMatch[1];
++          columns.add(columnName);
++          if (/\bPRIMARY\s+KEY\b/i.test(line)) {
++            addConstraint(constraintMap, {
++              columns: [columnName],
++              source: filePath,
++              tableName,
++              type: "primary key",
++            });
++          }
++          if (/\bUNIQUE\b/i.test(line)) {
++            addConstraint(constraintMap, {
++              columns: [columnName],
++              source: filePath,
++              tableName,
++              type: "unique",
++            });
++          }
++          const foreignKey = line.match(/\bREFERENCES\s+("[^"]+"|[A-Za-z_][A-Za-z0-9_]*)\s*\(\s*("[^"]+"|[A-Za-z_][A-Za-z0-9_]*)\s*\)/i);
++          if (foreignKey) {
++            addConstraint(constraintMap, {
++              columns: [columnName],
++              foreignColumns: [normalizeIdentifier(foreignKey[2])],
++              foreignTable: normalizeIdentifier(foreignKey[1]),
++              source: filePath,
++              tableName,
++              type: "foreign key",
++            });
++          }
+         }
+       });
+       tableMap.set(tableName, {
+@@ -94,11 +190,26 @@ function readExpectedSchema() {
+     }
+   }
+   return {
++    constraints: constraintMap,
+     indexes: indexMap,
++    platformSettingKeys: new Set(REQUIRED_PLATFORM_SETTING_KEYS),
+     tables: tableMap,
+   };
+ }
+
++function constraintType(contype) {
++  if (contype === "p") {
++    return "primary key";
++  }
++  if (contype === "u") {
++    return "unique";
++  }
++  if (contype === "f") {
++    return "foreign key";
++  }
++  return "";
++}
++
+ async function readActualSchema() {
+   const client = createPostgresConnectionClient();
+   const tableRows = await client.query(`
+@@ -115,8 +226,35 @@ WHERE table_schema = 'public';
+ SELECT tablename, indexname
+ FROM pg_indexes
+ WHERE schemaname = 'public';
++`);
++  const constraintRows = await client.query(`
++SELECT
++  c.contype,
++  rel.relname AS table_name,
++  ARRAY(
++    SELECT att.attname
++    FROM unnest(c.conkey) WITH ORDINALITY AS cols(attnum, ord)
++    JOIN pg_attribute att ON att.attrelid = c.conrelid AND att.attnum = cols.attnum
++    ORDER BY cols.ord
++  ) AS columns,
++  frel.relname AS foreign_table,
++  ARRAY(
++    SELECT fatt.attname
++    FROM unnest(c.confkey) WITH ORDINALITY AS cols(attnum, ord)
++    JOIN pg_attribute fatt ON fatt.attrelid = c.confrelid AND fatt.attnum = cols.attnum
++    ORDER BY cols.ord
++  ) AS foreign_columns
++FROM pg_constraint c
++JOIN pg_class rel ON rel.oid = c.conrelid
++JOIN pg_namespace ns ON ns.oid = rel.relnamespace
++LEFT JOIN pg_class frel ON frel.oid = c.confrelid
++WHERE ns.nspname = 'public' AND c.contype IN ('p', 'u', 'f');
+ `);
+   const migrationRows = await client.query("SELECT count(*)::int AS count FROM schema_migrations;");
++  const tableNames = new Set(tableRows.map((row) => row.table_name));
++  const platformSettingRows = tableNames.has("platform_settings")
++    ? await client.query('SELECT "settingKey" FROM platform_settings;')
++    : [];
+   const columnsByTable = new Map();
+   columnRows.forEach((row) => {
+     const tableName = row.table_name;
+@@ -126,9 +264,20 @@ WHERE schemaname = 'public';
+   });
+   return {
+     columnsByTable,
++    constraints: new Set(constraintRows
++      .map((row) => ({
++        columns: parsePostgresArray(row.columns),
++        foreignColumns: parsePostgresArray(row.foreign_columns),
++        foreignTable: row.foreign_table || "",
++        tableName: row.table_name,
++        type: constraintType(row.contype),
++      }))
++      .filter((constraint) => constraint.type)
++      .map(constraintSignature)),
+     indexes: new Set(indexRows.map((row) => row.indexname)),
+     migrationCount: Number(migrationRows[0]?.count || 0),
+-    tables: new Set(tableRows.map((row) => row.table_name)),
++    platformSettingKeys: new Set(platformSettingRows.map((row) => String(row.settingKey || ""))),
++    tables: tableNames,
+   };
+ }
+
+@@ -151,14 +300,26 @@ function compareSchema(expected, actual) {
+       findings.push(`Missing index ${indexName} on ${index.tableName} expected from ${index.source}. ${ACTION}`);
+     }
+   });
++  expected.constraints.forEach((constraint, signature) => {
++    if (!actual.constraints.has(signature)) {
++      findings.push(`Missing constraint ${constraint.label} expected from ${constraint.source}. ${ACTION}`);
++    }
++  });
++  expected.platformSettingKeys.forEach((settingKey) => {
++    if (!actual.platformSettingKeys.has(settingKey)) {
++      findings.push(`Missing platform_settings settingKey ${settingKey}. Run owner-approved DEV seed or server-side platform settings setup, then rerun drift validation.`);
++    }
++  });
+   return findings;
+ }
+
+ function selfTest(expected) {
+   const actual = {
+     columnsByTable: new Map(),
++    constraints: new Set(),
+     indexes: new Set(),
+     migrationCount: 0,
++    platformSettingKeys: new Set(),
+     tables: new Set(),
+   };
+   const findings = compareSchema(expected, actual);
+@@ -179,7 +340,7 @@ async function main() {
+   const actual = await readActualSchema();
+   const findings = compareSchema(expected, actual);
+   console.log(`PASS - .env loaded for database drift validation (${loadedKeys.length} key(s) applied).`);
+-  console.log(`PASS - Expected DDL objects loaded from ${DDL_DIRECTORY}: tables=${expected.tables.size}; indexes=${expected.indexes.size}.`);
++  console.log(`PASS - Expected DDL objects loaded from ${DDL_DIRECTORY}: tables=${expected.tables.size}; constraints=${expected.constraints.size}; indexes=${expected.indexes.size}; platform setting keys=${expected.platformSettingKeys.size}.`);
+   console.log(`PASS - schema_migrations is the migration-state SSoT; applied records=${actual.migrationCount}.`);
+   if (findings.length) {
+     console.log(`FAIL - Database drift detected (${findings.length} finding(s)).`);
+@@ -187,7 +348,7 @@ async function main() {
+     process.exitCode = 1;
+     return;
+   }
+-  console.log("PASS - Database drift validation found no missing required tables, columns, or indexes.");
++  console.log("PASS - Database drift validation found no missing required tables, columns, indexes, constraints, or platform settings keys.");
+ }
+
+ await main();
+diff --git a/docs_build/dev/reports/PR_26167_207-database-lane-hardening.md b/docs_build/dev/reports/PR_26167_207-database-lane-hardening.md
 new file mode 100644
-index 000000000..bbbae0083
+index 000000000..49ad91999
 --- /dev/null
-+++ b/docs_build/dev/reports/PR_26167_206-database-runbook.md
-@@ -0,0 +1,44 @@
-+# PR_26167_206-database-runbook
++++ b/docs_build/dev/reports/PR_26167_207-database-lane-hardening.md
+@@ -0,0 +1,58 @@
++# PR_26167_207-database-lane-hardening
 +
 +Status: PASS
 +
@@ -203,39 +688,53 @@ index 000000000..bbbae0083
 +
 +PASS - current branch is `main`.
 +
-+## Requirement Checklist
++## Review Resolution Checklist
 +
-+| Requirement | Status | Evidence |
++| Finding | Status | Resolution |
 +| --- | --- | --- |
-+| Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` first | PASS | Re-read before PR206 edits. |
-+| Add DB runbook for validate | PASS | `docs_build/database/runbook.md` documents `validate-runtime-connections.mjs` and `validate-database-drift.mjs`. |
-+| Add DB runbook for apply DDL | PASS | Runbook documents `node .\scripts\apply-database-ddl.mjs`. |
-+| Add DB runbook for apply DML | PASS | Runbook documents `node .\scripts\apply-database-dml.mjs`. |
-+| Add DB runbook for seed DEV | PASS | Runbook documents dry-run and live DEV seed commands, with User 1-3 creator-only and DavidQ owner/admin/creator notes. |
-+| Add DB runbook for backup | PASS | Runbook links to backup lane and lists backup checklist. |
-+| Add DB runbook for restore | PASS | Runbook links to restore lane and requires `RESTORE CONFIRMED`. |
-+| Add DB runbook for promote DEV -> IST -> UAT -> PRD | PASS | Runbook documents the ordered manual copy-source promotion flow. |
-+| Add rollback guidance | PASS | Runbook documents forward-fix preference and restore-based rollback steps. |
-+| Document `schema_migrations` as authoritative migration state | PASS | Runbook State Authority and apply sections identify `schema_migrations` as DDL/DML state. |
-+| Document `platform_settings` as runtime settings only | PASS | Runbook states `platform_settings` must not track, gate, or control migration apply state. |
-+| Docs/static validation | PASS | `npm run test:playwright:static` passed. |
-+| `git diff --check` | PASS | Final full `git diff --check` passed after PR206 review artifacts were regenerated. |
++| Keep `schema_migrations` as the only DDL/DML apply authority | PASS | Migration apply and docs keep `schema_migrations` authoritative. `platform_settings` is documented as runtime settings only. |
++| PR201 promotion lane order and migration validation | PASS | `promotion-lane.md` now states mandatory `DEV -> IST -> UAT -> PRD` order and requires `schema_migrations` plus drift validation before promotion. |
++| PR202 backup metadata and restore migration validation | PASS | `backup-restore-lane.md` now requires `backupName`, `databaseName`, `createdAt`, and `migrationVersion`, and restore validates migration state before applying. |
++| PR203 drift validation expansion | PASS | `validate-database-drift.mjs` now validates tables, columns, indexes, constraints, and required `platform_settings` keys with exact missing-object diagnostics. |
++| PR204 DEV-only seed and owner role requirement | PASS | `apply-database-seed.mjs` refuses non-DEV database names and confirms DavidQ owner assignment before seed execution. |
++| PR205 Owner Operations warning | PASS | `runbook.md` documents `src/dev-runtime/server/local-api-router.mjs` as a legacy filename and keeps Owner Operations status-first, execute-later. |
++| PR206 exact operator workflow | PASS | `runbook.md` now documents validate, backup, apply DDL, apply DML, validate, and promote. |
++| Standard DB script names | PASS | Active package/database lane uses `validate-runtime-connections.mjs`, `apply-database-ddl.mjs`, `apply-database-dml.mjs`, and `apply-database-seed.mjs`; stale database doc command was updated. |
++| Remove active Supabase-specific DB tooling naming | PASS | Removed `validate:supabase-dev` from active `package.json` scripts. Compatibility wrapper files remain only as deprecated entrypoints. |
++| Add `schema_migrations` fields | PASS | Runner now creates/ensures `key`, `migrationName`, `migrationType`, `checksum`, `appliedAt`, and `appliedBy`; existing DB evidence includes those fields. Legacy `fileName` remains only for existing-table compatibility. |
++
++## Migration State Evidence
++
++- DDL/DML apply output reports: `Migration tracking fields: key, migrationName, migrationType, checksum, appliedAt, appliedBy`.
++- Current database columns observed: `key,fileName,migrationType,checksum,appliedAt,appliedBy,migrationName`.
++- `fileName` is retained in the current database for compatibility with already-applied records; active tracking uses `migrationName`.
 +
 +## Validation Lane Report
 +
-+Commands run:
++Targeted DB validation only:
 +
-+- `rg -n "validate-runtime-connections|apply-database-ddl|apply-database-dml|apply-database-seed|pg_dump|RESTORE CONFIRMED|DEV -> IST -> UAT -> PRD|schema_migrations|platform_settings|Rollback" docs_build\database\runbook.md docs_build\database\README.md` - PASS
-+- `git diff --check -- docs_build\database\README.md docs_build\database\runbook.md` - PASS
-+- `npm run test:playwright:static` - PASS
++- `node --check scripts\database-migration-runner.mjs` - PASS
++- `node --check scripts\validate-database-drift.mjs` - PASS
++- `node --check scripts\apply-database-seed.mjs` - PASS
++- `node --check scripts\apply-database-ddl.mjs` - PASS
++- `node --check scripts\apply-database-dml.mjs` - PASS
++- `node --use-system-ca .\scripts\validate-runtime-connections.mjs` - PASS before apply and PASS after apply
++- `node .\scripts\apply-database-ddl.mjs` - PASS, processed=15, applied=0, skipped=15
++- `node .\scripts\apply-database-dml.mjs` - PASS, processed=15, applied=0, skipped=15
++- `node .\scripts\validate-database-drift.mjs --diagnostic-self-test` - PASS
++- `node .\scripts\validate-database-drift.mjs` - PASS, tables=34, constraints=146, indexes=115, platform setting keys=3
++- `node --use-system-ca .\scripts\apply-database-seed.mjs --unsafe-target-self-test` - PASS
++- `node --use-system-ca .\scripts\apply-database-seed.mjs --dry-run` - PASS; User 1-3 creator PASS, DavidQ owner/admin/creator PASS
++- `node -e "JSON.parse(require('fs').readFileSync('package.json','utf8')); console.log('PASS - package.json parsed')"` - PASS
++- `rg -n "validate:supabase-dev|apply:supabase|validate-supabase-dev|apply-supabase-dev-ddl" package.json docs_build\database scripts\database-migration-runner.mjs scripts\apply-database-ddl.mjs scripts\apply-database-dml.mjs scripts\apply-database-seed.mjs scripts\validate-database-drift.mjs` - PASS, no active database lane matches
++- `git diff --check -- scripts\database-migration-runner.mjs scripts\validate-database-drift.mjs scripts\apply-database-seed.mjs package.json docs_build\database\promotion-lane.md docs_build\database\backup-restore-lane.md docs_build\database\runbook.md docs_build\database\seed\account\supabase-dev-identity-bootstrap.md` - PASS
 +- `git diff --check` - PASS
 +
 +Skipped lanes:
 +
-+- Runtime validation - SKIP, docs/runbook-only PR.
-+- Playwright browser validation - SKIP, no runtime UI behavior changed by PR206.
++- Playwright - SKIP, no Owner Operations UI/browser behavior changed; existing Owner Operations coverage remains from PR205.
 +- Full samples smoke - SKIP, samples are not in scope.
 +
 +## Manual Validation Notes
 +
-+The runbook was manually reviewed against the requested operator topics: validate, apply DDL, apply DML, seed DEV, backup, restore, promotion, and rollback. It keeps `.env` as the active runtime/apply source, identifies copy-source target files as manual inputs only, uses `schema_migrations` as migration state, and keeps `platform_settings` limited to runtime settings.
++The hardened DB lane was manually reviewed against the review findings. `schema_migrations` remains the DDL/DML apply state, `platform_settings` remains runtime configuration only, seed is DEV-only and owner-gated, and Owner Operations remains a read/status surface until database lanes are stable.

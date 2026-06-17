@@ -2,6 +2,8 @@
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
+import { SupabasePostgresProviderAdapter } from "../src/dev-runtime/auth/provider-contract-stubs.mjs";
+import { SEED_DB_KEYS } from "../src/dev-runtime/seed/seed-db-keys.mjs";
 import { syncSupabaseDevCreatorIdentities } from "../src/dev-runtime/testing/supabase-dev-creator-identity-seed-sync.mjs";
 
 const ENV_FILE = ".env";
@@ -82,6 +84,25 @@ function runUnsafeTargetSelfTest() {
   throw new Error("Unsafe seed target self-test failed because non-DEV database was accepted.");
 }
 
+async function assertOwnerSeedAuthority({
+  databaseProvider = new SupabasePostgresProviderAdapter(),
+} = {}) {
+  const roles = await databaseProvider.getRoles();
+  const userRoles = await databaseProvider.getUserRoles();
+  const ownerRole = roles.find((role) => String(role.roleSlug || "") === "owner" && role.isActive !== false);
+  if (!ownerRole?.key) {
+    throw new Error("DEV seed requires an active owner role before seed execution.");
+  }
+  const ownerAssignment = userRoles.some((row) => row.userKey === SEED_DB_KEYS.users.admin && row.roleKey === ownerRole.key);
+  if (!ownerAssignment) {
+    throw new Error("DEV seed requires DavidQ to have the owner role before seed execution.");
+  }
+  return {
+    roleKey: ownerRole.key,
+    userKey: SEED_DB_KEYS.users.admin,
+  };
+}
+
 function roleEvidenceLine(result) {
   const evidence = result.verification.roleEvidence;
   return [
@@ -105,9 +126,11 @@ async function main() {
   const loadedKeys = loadRuntimeEnv();
   const database = configuredDatabase();
   assertDevSeedTarget(database);
+  const ownerGate = await assertOwnerSeedAuthority();
   const result = await syncSupabaseDevCreatorIdentities({ dryRun });
   console.log(`PASS - .env loaded for DEV seed lane (${loadedKeys.length} key(s) applied).`);
   console.log(`PASS - DEV seed target confirmed (host=${database.host}; port=${database.port}; database=${database.database}).`);
+  console.log(`PASS - Owner role gate confirmed for DEV seed operations (userKey=${ownerGate.userKey}; roleKey=${ownerGate.roleKey}).`);
   console.log(`PASS - DEV seed mode: ${dryRun ? "dry-run validation" : "apply"}.`);
   console.log(`PASS - Seed identity counts before auth=${result.beforeCounts.authUsers}; public.users=${result.beforeCounts.publicUsers}.`);
   console.log(`PASS - Seed identity counts after auth=${result.afterCounts.authUsers}; public.users=${result.afterCounts.publicUsers}.`);

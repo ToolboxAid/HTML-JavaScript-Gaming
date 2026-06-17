@@ -1,5 +1,11 @@
-docs_build/database/README.md
+docs_build/database/backup-restore-lane.md
+docs_build/database/promotion-lane.md
 docs_build/database/runbook.md
-docs_build/dev/reports/PR_26167_206-database-runbook.md
+docs_build/database/seed/account/supabase-dev-identity-bootstrap.md
+package.json
+scripts/apply-database-seed.mjs
+scripts/database-migration-runner.mjs
+scripts/validate-database-drift.mjs
+docs_build/dev/reports/PR_26167_207-database-lane-hardening.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt

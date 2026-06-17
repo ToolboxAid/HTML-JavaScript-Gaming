@@ -5,7 +5,7 @@ Use this only for the DEV Supabase project. Identity seeding is server-side only
 ## Bootstrap Order
 
 1. Run `docs_build/database/ddl/account/supabase-identity-tables.sql` in the Supabase SQL editor or through an approved operator SQL path.
-2. Run `npm run validate:supabase-dev`.
+2. Run `npm run validate:runtime-connections`.
 3. Confirm these checks pass through REST/API:
    - `Service role authentication`
    - `users table`

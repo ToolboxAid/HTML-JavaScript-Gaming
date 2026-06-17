@@ -27,7 +27,6 @@
     "validate:local-postgres-runtime": "node --use-system-ca ./scripts/validate-local-postgres-runtime.mjs",
     "validate:database-drift": "node ./scripts/validate-database-drift.mjs",
     "validate:runtime-connections": "node --use-system-ca ./scripts/validate-runtime-connections.mjs",
-    "validate:supabase-dev": "node --use-system-ca ./scripts/validate-supabase-dev.mjs",
     "validate:browser-env-agnostic": "node ./scripts/validate-browser-env-agnostic.mjs",
     "apply:database-ddl": "node ./scripts/apply-database-ddl.mjs",
     "apply:database-dml": "node ./scripts/apply-database-dml.mjs",

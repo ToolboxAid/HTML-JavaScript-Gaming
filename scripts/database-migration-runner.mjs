@@ -115,7 +115,7 @@ function migrationChecksum(sql) {
 }
 
 function migrationKey(migration) {
-  return `${migration.type}:${migration.fileName}`;
+  return `${migration.type}:${migration.filePath}`;
 }
 
 function readMigrationFiles(migrationDirs) {
@@ -132,6 +132,7 @@ function readMigrationFiles(migrationDirs) {
           fileName: entry.name,
           filePath,
           key: `${type}:${filePath}`,
+          migrationName: entry.name,
           sql: `\n-- Begin ${filePath}\n${sql}\n-- End ${filePath}\n`,
           type,
         };
@@ -139,24 +140,46 @@ function readMigrationFiles(migrationDirs) {
   });
 }
 
+async function schemaMigrationColumns(client) {
+  const rows = await client.query(`
+SELECT column_name
+FROM information_schema.columns
+WHERE table_schema = 'public' AND table_name = 'schema_migrations';
+`);
+  return new Set(rows.map((row) => String(row.column_name || "")));
+}
+
 async function ensureSchemaMigrations(client) {
   await client.query(`
 CREATE TABLE IF NOT EXISTS schema_migrations (
   key text PRIMARY KEY,
-  "fileName" text NOT NULL,
+  "migrationName" text NOT NULL,
   "migrationType" text NOT NULL CHECK ("migrationType" IN ('DDL', 'DML')),
   checksum text NOT NULL,
   "appliedAt" timestamptz NOT NULL DEFAULT now(),
   "appliedBy" text NOT NULL
 );
-CREATE UNIQUE INDEX IF NOT EXISTS schema_migrations_file_type_idx
-  ON schema_migrations ("migrationType", "fileName");
 `);
+  let columns = await schemaMigrationColumns(client);
+  if (!columns.has("migrationName")) {
+    await client.query('ALTER TABLE schema_migrations ADD COLUMN "migrationName" text;');
+    columns = await schemaMigrationColumns(client);
+  }
+  if (columns.has("fileName")) {
+    await client.query('UPDATE schema_migrations SET "migrationName" = COALESCE(NULLIF("migrationName", \'\'), "fileName") WHERE "migrationName" IS NULL OR "migrationName" = \'\';');
+  }
+  await client.query('UPDATE schema_migrations SET "migrationName" = key WHERE "migrationName" IS NULL OR "migrationName" = \'\';');
+  await client.query('ALTER TABLE schema_migrations ALTER COLUMN "migrationName" SET NOT NULL;');
+  await client.query(`
+CREATE UNIQUE INDEX IF NOT EXISTS schema_migrations_name_type_idx
+  ON schema_migrations ("migrationType", "migrationName");
+`);
+  return schemaMigrationColumns(client);
 }
 
 async function readAppliedMigrations(client) {
-  const rows = await client.query('SELECT key, "fileName", "migrationType", checksum, "appliedAt", "appliedBy" FROM schema_migrations;');
-  return new Map(rows.map((row) => [row.key || migrationKey({ fileName: row.fileName, type: row.migrationType }), row]));
+  const rows = await client.query('SELECT key, "migrationName", "migrationType", checksum, "appliedAt", "appliedBy" FROM schema_migrations;');
+  return new Map(rows.map((row) => [row.key || migrationKey({ filePath: row.migrationName, type: row.migrationType }), row]));
 }
 
 function appliedBy() {
@@ -166,7 +189,7 @@ function appliedBy() {
     "codex";
 }
 
-async function applyMigration(client, migration, appliedMigrations, actor) {
+async function applyMigration(client, migration, appliedMigrations, actor, schemaColumns) {
   const applied = appliedMigrations.get(migration.key);
   if (applied) {
     if (applied.checksum !== migration.checksum) {
@@ -176,15 +199,18 @@ async function applyMigration(client, migration, appliedMigrations, actor) {
   }
 
   await client.query(migration.sql);
-  await client.query(`
-INSERT INTO schema_migrations (key, "fileName", "migrationType", checksum, "appliedAt", "appliedBy")
-VALUES (${sqlLiteral(migration.key)}, ${sqlLiteral(migration.fileName)}, ${sqlLiteral(migration.type)}, ${sqlLiteral(migration.checksum)}, now(), ${sqlLiteral(actor)});
-`);
+  const columns = ["key", "\"migrationName\"", "\"migrationType\"", "checksum", "\"appliedAt\"", "\"appliedBy\""];
+  const values = [sqlLiteral(migration.key), sqlLiteral(migration.migrationName), sqlLiteral(migration.type), sqlLiteral(migration.checksum), "now()", sqlLiteral(actor)];
+  if (schemaColumns.has("fileName")) {
+    columns.splice(2, 0, "\"fileName\"");
+    values.splice(2, 0, sqlLiteral(migration.fileName));
+  }
+  await client.query(`INSERT INTO schema_migrations (${columns.join(", ")}) VALUES (${values.join(", ")});`);
   appliedMigrations.set(migration.key, {
     appliedBy: actor,
     checksum: migration.checksum,
-    fileName: migration.fileName,
     key: migration.key,
+    migrationName: migration.migrationName,
     migrationType: migration.type,
   });
   return "APPLY";
@@ -203,7 +229,7 @@ export async function runDatabaseMigrationLane({ laneLabel, migrationDirs }) {
 
   const client = createPostgresConnectionClient();
   await client.query("SELECT 1 AS ok;");
-  await ensureSchemaMigrations(client);
+  const schemaColumns = await ensureSchemaMigrations(client);
 
   const migrations = readMigrationFiles(migrationDirs);
   const appliedMigrations = await readAppliedMigrations(client);
@@ -213,7 +239,7 @@ export async function runDatabaseMigrationLane({ laneLabel, migrationDirs }) {
     try {
       results.push({
         migration,
-        status: await applyMigration(client, migration, appliedMigrations, actor),
+        status: await applyMigration(client, migration, appliedMigrations, actor, schemaColumns),
       });
     } catch (error) {
       throw new Error(`Failed applying ${migration.filePath}: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`);
@@ -227,7 +253,7 @@ export async function runDatabaseMigrationLane({ laneLabel, migrationDirs }) {
   console.log(`PASS - Database SSL mode: ${config.sslMode}`);
   console.log(`PASS - Database connection mode selected from GAMEFOUNDRY_DATABASE_SSL: ${connectionModeDiagnostic(config)}.`);
   console.log("PASS - schema_migrations table confirmed.");
-  console.log("PASS - Migration tracking fields: fileName, migrationType, checksum, appliedAt, appliedBy.");
+  console.log("PASS - Migration tracking fields: key, migrationName, migrationType, checksum, appliedAt, appliedBy.");
   console.log(`PASS - Database migrations processed=${results.length}; applied=${appliedCount}; skipped=${skippedCount}.`);
   results.forEach((result) => {
     console.log(`${result.status === "APPLY" ? "APPLIED" : "SKIPPED"} - ${result.migration.type} ${result.migration.filePath}`);

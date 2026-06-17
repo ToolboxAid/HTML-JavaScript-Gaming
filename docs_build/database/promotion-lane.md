@@ -8,6 +8,10 @@ DEV -> IST -> UAT -> PRD
 
 The target name describes where the operator points the configured connection. It must not change application behavior.
 
+This order is mandatory. Do not skip a target, promote backward, or promote a
+later target until the current target's `schema_migrations` state has been
+validated.
+
 ## Copy-Source Flow
 
 Runtime, validation, and migration apply scripts load `.env` only.
@@ -26,9 +30,10 @@ Promotion is manual:
 3. Run `node .\scripts\validate-runtime-connections.mjs`.
 4. Run `node .\scripts\apply-database-ddl.mjs`.
 5. Run `node .\scripts\apply-database-dml.mjs`.
-6. Run `node .\scripts\validate-runtime-connections.mjs` again.
-7. Review `schema_migrations` before promoting the next target.
-8. Start or restart the runtime after validation passes.
+6. Run `node .\scripts\validate-database-drift.mjs`.
+7. Run `node .\scripts\validate-runtime-connections.mjs` again.
+8. Review `schema_migrations` before promoting the next target.
+9. Start or restart the runtime after validation passes.
 
 Do not pass runtime environment parameters such as `--env`, `--environment`, or `ENVIRONMENT=<target>`.
 
@@ -38,7 +43,8 @@ Do not pass runtime environment parameters such as `--env`, `--environment`, or 
 
 The migration apply lane records:
 
-- `fileName`
+- `key`
+- `migrationName`
 - `migrationType`
 - `checksum`
 - `appliedAt`
@@ -54,6 +60,8 @@ Each target is eligible for the next promotion step only after:
 
 - validation passes against the current `.env`
 - DDL/DML apply completes without checksum drift
+- drift validation confirms required tables, columns, indexes, constraints, and platform setting keys
+- `schema_migrations` matches the expected applied DDL/DML state for the target
 - repeat validation passes
 - the operator confirms the intended target connection without exposing secrets
 

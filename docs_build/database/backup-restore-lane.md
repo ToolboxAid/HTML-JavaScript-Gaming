@@ -33,13 +33,25 @@ Validation expectation:
 - the backup file is written outside tracked source paths
 - reports state only the backup path and success/failure, not the connection string
 
+Backup metadata must be recorded without secrets:
+
+- `backupName`
+- `databaseName`
+- `createdAt`
+- `migrationVersion`
+
+Use `schema_migrations` to derive `migrationVersion`; do not use
+`platform_settings` for backup migration state.
+
 ## Restore Checklist
 
 Restore is destructive. Do not run restore unless every checklist item is complete:
 
 - Confirm the target `.env` is the intended database.
 - Run `node .\scripts\validate-runtime-connections.mjs` and record PASS/FAIL.
+- Validate the current `schema_migrations` state before applying restore.
 - Confirm the backup file path and checksum.
+- Confirm the backup metadata `migrationVersion`.
 - Confirm the application is stopped or in a maintenance window.
 - Confirm owner approval.
 - Type or record the exact operator confirmation phrase: `RESTORE CONFIRMED`.
@@ -68,8 +80,10 @@ pg_restore --dbname $databaseUrl --clean --if-exists --single-transaction $backu
 Restore reports must include:
 
 - target host, port, and database name only
+- backup metadata: `backupName`, `databaseName`, `createdAt`, and `migrationVersion`
 - backup file path
 - backup checksum
+- migration state validation before restore
 - confirmation checklist status
 - validation result after restore
 
