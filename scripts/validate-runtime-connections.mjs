@@ -32,7 +32,7 @@ const REQUIRED_ENV = Object.freeze([
   },
 ]);
 
-const IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
+const REQUIRED_TABLES = Object.freeze(["users", "roles", "user_roles", "platform_settings"]);
 const REQUEST_TIMEOUT_MS = 15000;
 
 function systemCaCertificates() {
@@ -357,13 +357,13 @@ async function main() {
   results.push(tlsValidation);
   results.push(authEndpoint);
   results.push(serviceRole);
-  const identityTableResults = [];
-  for (const tableName of IDENTITY_TABLES) {
-    identityTableResults.push(await checkIdentityTable(tableName));
+  const tableResults = [];
+  for (const tableName of REQUIRED_TABLES) {
+    tableResults.push(await checkIdentityTable(tableName));
   }
   results.push(checkDatabaseSslMode());
   results.push(await checkDatabaseConnection());
-  results.push(...identityTableResults);
+  results.push(...tableResults);
 
   results.forEach((check) => {
     console.log(formatResult(check));

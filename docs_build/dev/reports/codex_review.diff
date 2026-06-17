@@ -1,92 +1,16 @@
-﻿diff --git a/docs_build/dev/PROJECT_INSTRUCTIONS.md b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-index 1a2e6647b..5c32ef5dd 100644
---- a/docs_build/dev/PROJECT_INSTRUCTIONS.md
-+++ b/docs_build/dev/PROJECT_INSTRUCTIONS.md
-@@ -350,6 +350,60 @@ Rules:
- - Local session state must resolve selected users and roles from persisted Memory DB `users`, `roles`, and `user_roles` records.
- - Missing users or roles must fail visibly with actionable diagnostics.
- 
-+## ENVIRONMENT CONFIGURATION GOVERNANCE
-+
-+Runtime startup loads `.env` only.
-+
-+The following files are copy-source files only:
-+- `.env.dev`
-+- `.env.ist`
-+- `.env.uat`
-+- `.env.prd`
-+
-+Valid deployment targets are:
-+- `DEV`
-+- `IST`
-+- `UAT`
-+- `PRD`
-+
-+Manual deployment-target flow:
-+1. Copy the selected `.env.<target>` file to `.env`.
-+2. Run validation.
-+3. Apply DDL/DML migrations.
-+4. Start runtime.
-+
-+Runtime environment parameters are prohibited.
-+
-+Do not introduce runtime parameters such as:
-+- `--env`
-+- `--environment`
-+- `ENVIRONMENT=DEV`
-+- `ENVIRONMENT=UAT`
-+- `ENVIRONMENT=PRD`
-+
-+`DEV`, `IST`, `UAT`, and `PRD` are deployment targets, not application behaviors.
-+
-+Application code, runtime code, API/service code, and DB runtime scripts must not branch behavior by deployment target name.
-+
-+## RUNTIME SCRIPT NAMING GOVERNANCE
-+
-+Active runtime script names should describe capability rather than vendor/provider.
-+
-+Preferred runtime naming nouns are:
-+- `auth`
-+- `database`
-+- `storage`
-+- `telemetry`
-+- `api`
-+
-+Avoid provider or vendor names in future active runtime script names.
-+
-+When an active script is renamed, a temporary compatibility wrapper may remain only when needed for command continuity.
-+
-+Compatibility wrappers must log:
-+
-+`Deprecated script name. Use <new-name>.`
-+
- ## ARCHIVED V1/V2 REFERENCE MATERIAL
- 
- Deprecated V1/V2 reference material lives under:
-diff --git a/package.json b/package.json
-index 47d1f3764..c9f738260 100644
---- a/package.json
-+++ b/package.json
-@@ -25,6 +25,7 @@
-     "test:lane:samples": "node ./scripts/run-targeted-test-lanes.mjs --lane samples --include-samples",
-     "dev:local-api": "node --use-system-ca ./scripts/start-local-api-server.mjs",
-     "validate:local-postgres-runtime": "node --use-system-ca ./scripts/validate-local-postgres-runtime.mjs",
-+    "validate:runtime-connections": "node --use-system-ca ./scripts/validate-runtime-connections.mjs",
-     "validate:supabase-dev": "node --use-system-ca ./scripts/validate-supabase-dev.mjs",
-     "validate:browser-env-agnostic": "node ./scripts/validate-browser-env-agnostic.mjs",
-     "cleanup:supabase-dev-auth-test-users": "node --use-system-ca ./scripts/cleanup-supabase-dev-auth-test-users.mjs",
-diff --git a/scripts/apply-supabase-dev-ddl.mjs b/scripts/apply-supabase-dev-ddl.mjs
-index 540949c8f..da00be582 100644
---- a/scripts/apply-supabase-dev-ddl.mjs
-+++ b/scripts/apply-supabase-dev-ddl.mjs
-@@ -1,150 +1,3 @@
+diff --git a/scripts/apply-database-ddl.mjs b/scripts/apply-database-ddl.mjs
+index 540949c8f..68f2ec194 100644
+--- a/scripts/apply-database-ddl.mjs
++++ b/scripts/apply-database-ddl.mjs
+@@ -1,27 +1,39 @@
  #!/usr/bin/env node
--import fs from "node:fs";
--import path from "node:path";
--import process from "node:process";
--import { createPostgresConnectionClient, databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
--
--const ENV_FILE = ".env";
++import crypto from "node:crypto";
+ import fs from "node:fs";
+ import path from "node:path";
+ import process from "node:process";
+ import { createPostgresConnectionClient, databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
+ 
+ const ENV_FILE = ".env";
 -const DDL_FILES = Object.freeze([
 -  "docs_build/database/ddl/account.sql",
 -  "docs_build/database/ddl/admin.sql",
@@ -103,89 +27,57 @@ index 540949c8f..da00be582 100644
 -  "docs_build/database/ddl/tool-planning.sql",
 -  "docs_build/database/ddl/toolbox-votes.sql",
 -  "docs_build/database/ddl/support-tickets.sql",
--]);
--function parseEnvValue(value) {
--  const trimmed = value.trim();
--  const quote = trimmed[0];
--  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
--    return trimmed.slice(1, -1);
--  }
--  const commentIndex = trimmed.indexOf(" #");
--  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
--}
--
--function loadRuntimeEnv() {
--  const envPath = path.resolve(process.cwd(), ENV_FILE);
--  if (!fs.existsSync(envPath)) {
--    return {
--      loaded: false,
--      loadedKeys: [],
--      path: envPath,
--    };
--  }
--  const loadedKeys = [];
--  fs.readFileSync(envPath, "utf8").split(/\r?\n/).forEach((line) => {
--    const trimmed = line.trim();
--    if (!trimmed || trimmed.startsWith("#")) {
--      return;
--    }
--    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
--    const separatorIndex = normalized.indexOf("=");
--    if (separatorIndex <= 0) {
--      return;
--    }
--    const key = normalized.slice(0, separatorIndex).trim();
--    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
--      return;
--    }
--    if (process.env[key] !== undefined) {
--      return;
--    }
--    process.env[key] = parseEnvValue(normalized.slice(separatorIndex + 1));
--    loadedKeys.push(key);
--  });
--  return {
--    loaded: true,
--    loadedKeys: loadedKeys.sort(),
--    path: envPath,
--  };
--}
--
--function envValue(key) {
--  return String(process.env[key] || "").trim();
--}
--
--function parseDatabaseUrl() {
--  const value = envValue("GAMEFOUNDRY_DATABASE_URL");
--  if (!value) {
++const MIGRATION_DIRS = Object.freeze([
++  {
++    directory: "docs_build/database/ddl",
++    type: "DDL",
++  },
++  {
++    directory: "docs_build/database/dml",
++    type: "DML",
++  },
+ ]);
++const PREFERRED_GROUP_ORDER = Object.freeze([
++  "account.sql",
++  "admin.sql",
++  "game-workspace.sql",
++  "asset.sql",
++  "objects.sql",
++  "controls.sql",
++  "game-design.sql",
++  "game-configuration.sql",
++  "game-journey.sql",
++  "palette.sql",
++  "tags.sql",
++  "tool-metadata.sql",
++  "tool-planning.sql",
++  "toolbox-votes.sql",
++  "support-tickets.sql",
++]);
++
+ function parseEnvValue(value) {
+   const trimmed = value.trim();
+   const quote = trimmed[0];
+@@ -76,7 +88,7 @@ function envValue(key) {
+ function parseDatabaseUrl() {
+   const value = envValue("GAMEFOUNDRY_DATABASE_URL");
+   if (!value) {
 -    throw new Error("GAMEFOUNDRY_DATABASE_URL is required to apply GFS DDL.");
--  }
--  const databaseUrl = new URL(value);
--  if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
--    throw new Error("GAMEFOUNDRY_DATABASE_URL must use postgres:// or postgresql://.");
--  }
--  const host = databaseUrl.hostname;
--  return {
--    database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
--    host,
--    password: decodeURIComponent(databaseUrl.password || ""),
--    port: Number(databaseUrl.port || 5432),
--    sslMode: databaseSslMode(),
--    user: decodeURIComponent(databaseUrl.username || ""),
--  };
--}
--
--function databaseDiagnostic(config) {
--  return `host=${config.host}; port=${config.port}; database=${config.database}`;
--}
--
--function connectionModeDiagnostic(config) {
++    throw new Error("GAMEFOUNDRY_DATABASE_URL is required to apply database migrations.");
+   }
+   const databaseUrl = new URL(value);
+   if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
+@@ -98,26 +110,102 @@ function databaseDiagnostic(config) {
+ }
+ 
+ function connectionModeDiagnostic(config) {
 -  if (config.sslMode === "disable") {
 -    return "plain TCP";
 -  }
 -  return "TLS";
--}
--
++  return config.sslMode === "disable" ? "plain TCP" : "TLS";
+ }
+ 
 -function readDdlFiles() {
 -  return DDL_FILES.map((filePath) => {
 -    const absolutePath = path.resolve(process.cwd(), filePath);
@@ -193,1061 +85,177 @@ index 540949c8f..da00be582 100644
 -      filePath,
 -      sql: `\n-- Begin ${filePath}\n${fs.readFileSync(absolutePath, "utf8")}\n-- End ${filePath}\n`,
 -    };
--  });
--}
--
--async function main() {
--  const envLoad = loadRuntimeEnv();
--  if (!envLoad.loaded) {
++function migrationOrder(fileName) {
++  const index = PREFERRED_GROUP_ORDER.indexOf(fileName);
++  return index === -1 ? PREFERRED_GROUP_ORDER.length : index;
++}
++
++function sqlLiteral(value) {
++  return `'${String(value ?? "").replace(/'/g, "''")}'`;
++}
++
++function migrationChecksum(sql) {
++  return crypto.createHash("sha256").update(sql, "utf8").digest("hex");
++}
++
++function migrationKey(migration) {
++  return `${migration.type}:${migration.fileName}`;
++}
++
++function readMigrationFiles() {
++  return MIGRATION_DIRS.flatMap(({ directory, type }) => {
++    const absoluteDirectory = path.resolve(process.cwd(), directory);
++    return fs.readdirSync(absoluteDirectory, { withFileTypes: true })
++      .filter((entry) => entry.isFile() && entry.name.endsWith(".sql"))
++      .sort((left, right) => migrationOrder(left.name) - migrationOrder(right.name) || left.name.localeCompare(right.name))
++      .map((entry) => {
++        const filePath = `${directory}/${entry.name}`;
++        const sql = fs.readFileSync(path.join(absoluteDirectory, entry.name), "utf8");
++        return {
++          checksum: migrationChecksum(sql),
++          fileName: entry.name,
++          filePath,
++          key: `${type}:${filePath}`,
++          sql: `\n-- Begin ${filePath}\n${sql}\n-- End ${filePath}\n`,
++          type,
++        };
++      });
+   });
+ }
+ 
++async function ensureSchemaMigrations(client) {
++  await client.query(`
++CREATE TABLE IF NOT EXISTS schema_migrations (
++  key text PRIMARY KEY,
++  "fileName" text NOT NULL,
++  "migrationType" text NOT NULL CHECK ("migrationType" IN ('DDL', 'DML')),
++  checksum text NOT NULL,
++  "appliedAt" timestamptz NOT NULL DEFAULT now(),
++  "appliedBy" text NOT NULL
++);
++CREATE UNIQUE INDEX IF NOT EXISTS schema_migrations_file_type_idx
++  ON schema_migrations ("migrationType", "fileName");
++`);
++}
++
++async function readAppliedMigrations(client) {
++  const rows = await client.query('SELECT key, "fileName", "migrationType", checksum, "appliedAt", "appliedBy" FROM schema_migrations;');
++  return new Map(rows.map((row) => [row.key || migrationKey({ fileName: row.fileName, type: row.migrationType }), row]));
++}
++
++function appliedBy() {
++  return envValue("GAMEFOUNDRY_DATABASE_MIGRATION_ACTOR") ||
++    envValue("USERNAME") ||
++    envValue("USER") ||
++    "codex";
++}
++
++async function applyMigration(client, migration, appliedMigrations, actor) {
++  const applied = appliedMigrations.get(migration.key);
++  if (applied) {
++    if (applied.checksum !== migration.checksum) {
++      throw new Error(`Migration checksum changed for ${migration.filePath}. Existing checksum ${applied.checksum}; current checksum ${migration.checksum}. Create a new migration file instead of editing an applied one.`);
++    }
++    return "SKIP";
++  }
++
++  await client.query(migration.sql);
++  await client.query(`
++INSERT INTO schema_migrations (key, "fileName", "migrationType", checksum, "appliedAt", "appliedBy")
++VALUES (${sqlLiteral(migration.key)}, ${sqlLiteral(migration.fileName)}, ${sqlLiteral(migration.type)}, ${sqlLiteral(migration.checksum)}, now(), ${sqlLiteral(actor)});
++`);
++  appliedMigrations.set(migration.key, {
++    appliedBy: actor,
++    checksum: migration.checksum,
++    fileName: migration.fileName,
++    key: migration.key,
++    migrationType: migration.type,
++  });
++  return "APPLY";
++}
++
+ async function main() {
+   const envLoad = loadRuntimeEnv();
+   if (!envLoad.loaded) {
 -    throw new Error(`${ENV_FILE} was not found; DDL apply uses the same runtime env file.`);
--  }
--
--  const config = parseDatabaseUrl();
--  if (!config.user || !config.password) {
--    throw new Error("GAMEFOUNDRY_DATABASE_URL must include username and password.");
--  }
--
--  const client = createPostgresConnectionClient();
--  await client.query("SELECT 1 AS ok;");
--
++    throw new Error(`${ENV_FILE} was not found; database migrations use the same runtime env file.`);
+   }
+ 
+   const config = parseDatabaseUrl();
+@@ -127,24 +215,35 @@ async function main() {
+ 
+   const client = createPostgresConnectionClient();
+   await client.query("SELECT 1 AS ok;");
++  await ensureSchemaMigrations(client);
+ 
 -  const appliedFiles = [];
 -  for (const ddlFile of readDdlFiles()) {
--    try {
++  const migrations = readMigrationFiles();
++  const appliedMigrations = await readAppliedMigrations(client);
++  const actor = appliedBy();
++  const results = [];
++  for (const migration of migrations) {
+     try {
 -      await client.query(ddlFile.sql);
 -      appliedFiles.push(ddlFile.filePath);
--    } catch (error) {
++      results.push({
++        migration,
++        status: await applyMigration(client, migration, appliedMigrations, actor),
++      });
+     } catch (error) {
 -      throw new Error(`Failed applying ${ddlFile.filePath}: ${error instanceof Error ? error.message : String(error || "Unknown PostgreSQL error.")}`);
--    }
--  }
--
++      throw new Error(`Failed applying ${migration.filePath}: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`);
+     }
+   }
+ 
 -  console.log(`PASS - .env loaded for DDL apply (${envLoad.loadedKeys.length} key(s) applied)`);
--  console.log(`PASS - Database connection ready (${databaseDiagnostic(config)})`);
--  console.log(`PASS - Database SSL mode: ${config.sslMode}`);
++  const appliedCount = results.filter((result) => result.status === "APPLY").length;
++  const skippedCount = results.filter((result) => result.status === "SKIP").length;
++  console.log(`PASS - .env loaded for database migration apply (${envLoad.loadedKeys.length} key(s) applied)`);
+   console.log(`PASS - Database connection ready (${databaseDiagnostic(config)})`);
+   console.log(`PASS - Database SSL mode: ${config.sslMode}`);
 -  console.log(`PASS - DDL connection mode selected from GAMEFOUNDRY_DATABASE_SSL: ${connectionModeDiagnostic(config)}.`);
 -  console.log(`PASS - Applied ${appliedFiles.length} grouped GFS DDL file(s) through GAMEFOUNDRY_DATABASE_URL.`);
 -  console.log("PASS - DDL connection behavior is driven by GAMEFOUNDRY_DATABASE_URL and GAMEFOUNDRY_DATABASE_SSL.");
 -  appliedFiles.forEach((filePath) => console.log(`APPLIED - ${filePath}`));
--}
--
--await main();
-+console.log("Deprecated script name. Use apply-database-ddl.mjs.");
-+await import("./apply-database-ddl.mjs");
-diff --git a/scripts/validate-supabase-dev.mjs b/scripts/validate-supabase-dev.mjs
-index efdd5aeb7..49caba207 100644
---- a/scripts/validate-supabase-dev.mjs
-+++ b/scripts/validate-supabase-dev.mjs
-@@ -1,384 +1,3 @@
- #!/usr/bin/env node
--import fs from "node:fs";
--import http from "node:http";
--import https from "node:https";
--import path from "node:path";
--import process from "node:process";
--import tls from "node:tls";
--import { URL } from "node:url";
--import { createPostgresConnectionClient, databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
--
--const ENV_FILE = ".env";
--const REQUIRED_ENV = Object.freeze([
--  {
--    key: "GAMEFOUNDRY_SUPABASE_URL",
--    label: "Auth connection URL configured",
--  },
--  {
--    key: "GAMEFOUNDRY_SUPABASE_ANON_KEY",
--    label: "Auth anon key configured",
--  },
--  {
--    key: "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
--    label: "Auth service role key configured",
--  },
--  {
--    key: "GAMEFOUNDRY_DATABASE_URL",
--    label: "Database connection URL configured",
--  },
--  {
--    key: "GAMEFOUNDRY_DATABASE_SSL",
--    label: "Database SSL mode configured",
--  },
--]);
--
++  console.log(`PASS - Database connection mode selected from GAMEFOUNDRY_DATABASE_SSL: ${connectionModeDiagnostic(config)}.`);
++  console.log("PASS - schema_migrations table confirmed.");
++  console.log(`PASS - Migration tracking fields: fileName, migrationType, checksum, appliedAt, appliedBy.`);
++  console.log(`PASS - Database migrations processed=${results.length}; applied=${appliedCount}; skipped=${skippedCount}.`);
++  results.forEach((result) => {
++    console.log(`${result.status === "APPLY" ? "APPLIED" : "SKIPPED"} - ${result.migration.type} ${result.migration.filePath}`);
++  });
+ }
+ 
+ await main();
+diff --git a/scripts/validate-runtime-connections.mjs b/scripts/validate-runtime-connections.mjs
+index efdd5aeb7..1ca044c32 100644
+--- a/scripts/validate-runtime-connections.mjs
++++ b/scripts/validate-runtime-connections.mjs
+@@ -32,7 +32,7 @@ const REQUIRED_ENV = Object.freeze([
+   },
+ ]);
+ 
 -const IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
--const REQUEST_TIMEOUT_MS = 15000;
--
--function systemCaCertificates() {
--  return typeof tls.getCACertificates === "function"
--    ? tls.getCACertificates("system")
--    : undefined;
--}
--
--function maskValue(value) {
--  const normalized = String(value || "").trim();
--  if (!normalized) {
--    return "missing";
--  }
--  if (normalized === "disable" || normalized === "require") {
--    return normalized;
--  }
--  if (normalized.length <= 10) {
--    return `${normalized.slice(0, Math.min(6, normalized.length))}...`;
--  }
--  return `${normalized.slice(0, 6)}...${normalized.slice(-4)}`;
--}
--
--function parseEnvValue(value) {
--  const trimmed = value.trim();
--  const quote = trimmed[0];
--  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
--    return trimmed.slice(1, -1);
--  }
--  const commentIndex = trimmed.indexOf(" #");
--  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
--}
--
--function parseEnvFile(contents) {
--  const values = new Map();
--  contents.split(/\r?\n/).forEach((line) => {
--    const trimmed = line.trim();
--    if (!trimmed || trimmed.startsWith("#")) {
--      return;
--    }
--    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
--    const separatorIndex = normalized.indexOf("=");
--    if (separatorIndex <= 0) {
--      return;
--    }
--    const key = normalized.slice(0, separatorIndex).trim();
--    const value = parseEnvValue(normalized.slice(separatorIndex + 1));
--    if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
--      values.set(key, value);
--    }
--  });
--  return values;
--}
--
--function loadEnvFile() {
--  const envPath = path.resolve(process.cwd(), ENV_FILE);
--  if (!fs.existsSync(envPath)) {
--    return {
--      loaded: false,
--      loadedKeys: [],
--      path: envPath,
--    };
--  }
--  const values = parseEnvFile(fs.readFileSync(envPath, "utf8"));
--  values.forEach((value, key) => {
--    if (!String(process.env[key] || "").trim()) {
--      process.env[key] = value;
--    }
--  });
--  return {
--    loaded: true,
--    loadedKeys: Array.from(values.keys()).sort(),
--    path: envPath,
--  };
--}
--
--function envValue(key) {
--  return String(process.env[key] || "").trim();
--}
--
--function sanitizeDiagnostic(value) {
--  const source = String(value || "").trim();
--  if (!source) {
--    return "";
--  }
--  let text = source;
--  REQUIRED_ENV.forEach(({ key }) => {
--    const raw = envValue(key);
--    if (raw) {
--      text = text.split(raw).join(maskValue(raw));
--    }
--  });
--  try {
--    const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
--    if (databaseUrl.password) {
--      text = text.split(databaseUrl.password).join(maskValue(databaseUrl.password));
--    }
--  } catch {
--    // Ignore malformed or missing database URLs while sanitizing diagnostics.
--  }
--  return text;
--}
--
--function result(status, label, detail = "") {
--  return {
--    detail: sanitizeDiagnostic(detail),
--    label,
--    status,
--  };
--}
--
--function pass(label, detail = "") {
--  return result("PASS", label, detail);
--}
--
--function fail(label, detail = "") {
--  return result("FAIL", label, detail);
--}
--
--function formatResult({ detail, label, status }) {
--  return detail ? `${status} - ${label} (${detail})` : `${status} - ${label}`;
--}
--
--function supabaseApiUrl(route) {
--  const base = envValue("GAMEFOUNDRY_SUPABASE_URL").replace(/\/+$/, "");
--  if (!base) {
--    throw new Error("GAMEFOUNDRY_SUPABASE_URL is missing.");
--  }
--  return `${base}${route}`;
--}
--
--async function fetchWithTimeout(url, options = {}) {
--  const requestUrl = new URL(url);
--  const client = requestUrl.protocol === "http:" ? http : https;
--  return new Promise((resolve, reject) => {
--    const request = client.request(requestUrl, {
--      headers: options.headers,
--      method: options.method || "GET",
--      timeout: REQUEST_TIMEOUT_MS,
--      ca: requestUrl.protocol === "https:" ? systemCaCertificates() : undefined,
--    }, (response) => {
--      const chunks = [];
--      response.on("data", (chunk) => {
--        chunks.push(chunk);
--      });
--      response.on("end", () => {
--        const status = Number(response.statusCode || 0);
--        const rawBody = Buffer.concat(chunks).toString("utf8");
--        resolve({
--          ok: status >= 200 && status < 300,
--          status,
--          async json() {
--            return rawBody ? JSON.parse(rawBody) : {};
--          },
--        });
--      });
--    });
--    request.once("timeout", () => {
--      request.destroy(new Error("Request timed out."));
--    });
--    request.once("error", reject);
--    if (options.body) {
--      request.write(options.body);
--    }
--    request.end();
--  });
--}
--
--async function checkSupabaseReachable() {
--  try {
--    const response = await fetchWithTimeout(supabaseApiUrl("/"));
--    return pass("Supabase reachable", `HTTP ${response.status}`);
--  } catch (error) {
--    return fail("Supabase reachable", error?.code || error?.cause?.code || error?.message);
--  }
--}
--
--async function checkAuthEndpointReachable() {
--  try {
--    const anonKey = envValue("GAMEFOUNDRY_SUPABASE_ANON_KEY");
--    const response = await fetchWithTimeout(supabaseApiUrl("/auth/v1/settings"), {
--      headers: {
--        apikey: anonKey,
--        authorization: `Bearer ${anonKey}`,
--      },
--    });
--    return response.status < 500
--      ? pass("Auth endpoint reachable", `HTTP ${response.status}`)
--      : fail("Auth endpoint reachable", `HTTP ${response.status}`);
--  } catch (error) {
--    return fail("Auth endpoint reachable", error?.code || error?.cause?.code || error?.message);
--  }
--}
--
--async function checkServiceRoleAuthentication() {
--  try {
--    const serviceRoleKey = envValue("GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY");
--    const response = await fetchWithTimeout(supabaseApiUrl("/auth/v1/admin/users?page=1&per_page=1"), {
--      headers: {
--        apikey: serviceRoleKey,
--        authorization: `Bearer ${serviceRoleKey}`,
--      },
--    });
--    if (response.ok) {
--      return pass("Service role authentication", `HTTP ${response.status}`);
--    }
--    return fail("Service role authentication", `HTTP ${response.status}`);
--  } catch (error) {
--    return fail("Service role authentication", error?.code || error?.cause?.code || error?.message);
--  }
--}
--
--function quoteIdentifier(value) {
--  const name = String(value || "").trim();
--  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
--    throw new Error(`Invalid database identifier: ${name || "(empty)"}.`);
--  }
--  return `"${name.replace(/"/g, "\"\"")}"`;
--}
--
--async function checkIdentityTable(tableName) {
--  try {
--    const config = parseDatabaseUrl();
--    const client = createPostgresConnectionClient();
--    await client.query(`SELECT key FROM ${quoteIdentifier(tableName)} LIMIT 1;`);
--    return pass(`${tableName} table`, databaseDiagnostic(config));
--  } catch (error) {
--    return fail(`${tableName} table`, error?.code || error?.cause?.code || error?.message);
--  }
--}
--
--async function checkTlsValidation() {
--  try {
--    const { hostname } = new URL(envValue("GAMEFOUNDRY_SUPABASE_URL"));
--    await new Promise((resolve, reject) => {
--      const socket = tls.connect({
--        host: hostname,
--        port: 443,
--        ca: systemCaCertificates(),
--        rejectUnauthorized: true,
--        servername: hostname,
--        timeout: REQUEST_TIMEOUT_MS,
--      });
--      socket.once("secureConnect", () => {
--        if (socket.authorized) {
--          socket.end();
--          resolve();
--          return;
--        }
--        const reason = socket.authorizationError || "TLS certificate was not authorized.";
--        socket.destroy();
--        reject(new Error(reason));
--      });
--      socket.once("timeout", () => {
--        socket.destroy();
--        reject(new Error("TLS validation timed out."));
--      });
--      socket.once("error", reject);
--    });
--    return pass("TLS validation");
--  } catch (error) {
--    return fail("TLS validation", error?.code || error?.message);
--  }
--}
--
--function parseDatabaseUrl() {
--  const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
--  if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
--    throw new Error("Database URL must use postgres:// or postgresql://.");
--  }
--  return {
--    database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
--    host: databaseUrl.hostname,
--    password: decodeURIComponent(databaseUrl.password || ""),
--    port: Number(databaseUrl.port || 5432),
--    user: decodeURIComponent(databaseUrl.username || ""),
--  };
--}
--
--function databaseDiagnostic(config) {
--  return `host=${config.host}; port=${config.port}; database=${config.database}`;
--}
--
--function checkDatabaseSslMode() {
--  try {
--    return pass(`Database SSL mode: ${databaseSslMode()}`);
--  } catch (error) {
--    return fail("Database SSL mode", error?.message);
--  }
--}
--
--async function checkDatabaseConnection() {
--  try {
--    const config = parseDatabaseUrl();
--    if (!config.user || !config.password) {
--      throw new Error("Database URL must include username and password.");
--    }
--    const client = createPostgresConnectionClient();
--    await client.query("SELECT 1 AS ok;");
--    return pass("Database connection", databaseDiagnostic(config));
--  } catch (error) {
--    return fail("Database connection", error?.code || error?.message);
--  }
--}
--
--async function main() {
--  const envLoad = loadEnvFile();
--  const results = [];
--  results.push(envLoad.loaded
--    ? pass("Runtime .env validation load", `${envLoad.loadedKeys.length} key(s) loaded`)
--    : fail("Runtime .env validation load", `${ENV_FILE} was not found`));
--
--  REQUIRED_ENV.forEach(({ key, label }) => {
--    const value = envValue(key);
--    results.push(value ? pass(label, `${key}=${maskValue(value)}`) : fail(label, `${key}=missing`));
--  });
--
--  const supabaseReachable = await checkSupabaseReachable();
--  const tlsValidation = await checkTlsValidation();
--  const authEndpoint = await checkAuthEndpointReachable();
--  const serviceRole = await checkServiceRoleAuthentication();
--  results.push(supabaseReachable);
--  results.push(tlsValidation);
--  results.push(authEndpoint);
--  results.push(serviceRole);
++const REQUIRED_TABLES = Object.freeze(["users", "roles", "user_roles", "platform_settings"]);
+ const REQUEST_TIMEOUT_MS = 15000;
+ 
+ function systemCaCertificates() {
+@@ -357,13 +357,13 @@ async function main() {
+   results.push(tlsValidation);
+   results.push(authEndpoint);
+   results.push(serviceRole);
 -  const identityTableResults = [];
 -  for (const tableName of IDENTITY_TABLES) {
 -    identityTableResults.push(await checkIdentityTable(tableName));
--  }
--  results.push(checkDatabaseSslMode());
--  results.push(await checkDatabaseConnection());
++  const tableResults = [];
++  for (const tableName of REQUIRED_TABLES) {
++    tableResults.push(await checkIdentityTable(tableName));
+   }
+   results.push(checkDatabaseSslMode());
+   results.push(await checkDatabaseConnection());
 -  results.push(...identityTableResults);
--
--  results.forEach((check) => {
--    console.log(formatResult(check));
--  });
--  const failed = results.filter((check) => check.status === "FAIL");
--  const warned = results.filter((check) => check.status === "WARN");
--  console.log("");
--  console.log(`Overall Result: ${failed.length ? "FAIL" : "PASS"}`);
--  if (warned.length) {
--    console.log(`Warning checks: ${warned.map((check) => check.label).join(", ")}`);
--  }
--  if (failed.length) {
--    console.log(`Failed checks: ${failed.map((check) => check.label).join(", ")}`);
--    process.exitCode = 1;
--  }
--}
--
--await main();
-+console.log("Deprecated script name. Use validate-runtime-connections.mjs.");
-+await import("./validate-runtime-connections.mjs");
-diff --git "a/scripts\\validate-runtime-connections.mjs" "b/scripts\\validate-runtime-connections.mjs"
-new file mode 100644
-index 000000000..efdd5aeb7
---- /dev/null
-+++ "b/scripts\\validate-runtime-connections.mjs"
-@@ -0,0 +1,384 @@
-+#!/usr/bin/env node
-+import fs from "node:fs";
-+import http from "node:http";
-+import https from "node:https";
-+import path from "node:path";
-+import process from "node:process";
-+import tls from "node:tls";
-+import { URL } from "node:url";
-+import { createPostgresConnectionClient, databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
-+
-+const ENV_FILE = ".env";
-+const REQUIRED_ENV = Object.freeze([
-+  {
-+    key: "GAMEFOUNDRY_SUPABASE_URL",
-+    label: "Auth connection URL configured",
-+  },
-+  {
-+    key: "GAMEFOUNDRY_SUPABASE_ANON_KEY",
-+    label: "Auth anon key configured",
-+  },
-+  {
-+    key: "GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY",
-+    label: "Auth service role key configured",
-+  },
-+  {
-+    key: "GAMEFOUNDRY_DATABASE_URL",
-+    label: "Database connection URL configured",
-+  },
-+  {
-+    key: "GAMEFOUNDRY_DATABASE_SSL",
-+    label: "Database SSL mode configured",
-+  },
-+]);
-+
-+const IDENTITY_TABLES = Object.freeze(["users", "roles", "user_roles"]);
-+const REQUEST_TIMEOUT_MS = 15000;
-+
-+function systemCaCertificates() {
-+  return typeof tls.getCACertificates === "function"
-+    ? tls.getCACertificates("system")
-+    : undefined;
-+}
-+
-+function maskValue(value) {
-+  const normalized = String(value || "").trim();
-+  if (!normalized) {
-+    return "missing";
-+  }
-+  if (normalized === "disable" || normalized === "require") {
-+    return normalized;
-+  }
-+  if (normalized.length <= 10) {
-+    return `${normalized.slice(0, Math.min(6, normalized.length))}...`;
-+  }
-+  return `${normalized.slice(0, 6)}...${normalized.slice(-4)}`;
-+}
-+
-+function parseEnvValue(value) {
-+  const trimmed = value.trim();
-+  const quote = trimmed[0];
-+  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
-+    return trimmed.slice(1, -1);
-+  }
-+  const commentIndex = trimmed.indexOf(" #");
-+  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
-+}
-+
-+function parseEnvFile(contents) {
-+  const values = new Map();
-+  contents.split(/\r?\n/).forEach((line) => {
-+    const trimmed = line.trim();
-+    if (!trimmed || trimmed.startsWith("#")) {
-+      return;
-+    }
-+    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
-+    const separatorIndex = normalized.indexOf("=");
-+    if (separatorIndex <= 0) {
-+      return;
-+    }
-+    const key = normalized.slice(0, separatorIndex).trim();
-+    const value = parseEnvValue(normalized.slice(separatorIndex + 1));
-+    if (/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
-+      values.set(key, value);
-+    }
-+  });
-+  return values;
-+}
-+
-+function loadEnvFile() {
-+  const envPath = path.resolve(process.cwd(), ENV_FILE);
-+  if (!fs.existsSync(envPath)) {
-+    return {
-+      loaded: false,
-+      loadedKeys: [],
-+      path: envPath,
-+    };
-+  }
-+  const values = parseEnvFile(fs.readFileSync(envPath, "utf8"));
-+  values.forEach((value, key) => {
-+    if (!String(process.env[key] || "").trim()) {
-+      process.env[key] = value;
-+    }
-+  });
-+  return {
-+    loaded: true,
-+    loadedKeys: Array.from(values.keys()).sort(),
-+    path: envPath,
-+  };
-+}
-+
-+function envValue(key) {
-+  return String(process.env[key] || "").trim();
-+}
-+
-+function sanitizeDiagnostic(value) {
-+  const source = String(value || "").trim();
-+  if (!source) {
-+    return "";
-+  }
-+  let text = source;
-+  REQUIRED_ENV.forEach(({ key }) => {
-+    const raw = envValue(key);
-+    if (raw) {
-+      text = text.split(raw).join(maskValue(raw));
-+    }
-+  });
-+  try {
-+    const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
-+    if (databaseUrl.password) {
-+      text = text.split(databaseUrl.password).join(maskValue(databaseUrl.password));
-+    }
-+  } catch {
-+    // Ignore malformed or missing database URLs while sanitizing diagnostics.
-+  }
-+  return text;
-+}
-+
-+function result(status, label, detail = "") {
-+  return {
-+    detail: sanitizeDiagnostic(detail),
-+    label,
-+    status,
-+  };
-+}
-+
-+function pass(label, detail = "") {
-+  return result("PASS", label, detail);
-+}
-+
-+function fail(label, detail = "") {
-+  return result("FAIL", label, detail);
-+}
-+
-+function formatResult({ detail, label, status }) {
-+  return detail ? `${status} - ${label} (${detail})` : `${status} - ${label}`;
-+}
-+
-+function supabaseApiUrl(route) {
-+  const base = envValue("GAMEFOUNDRY_SUPABASE_URL").replace(/\/+$/, "");
-+  if (!base) {
-+    throw new Error("GAMEFOUNDRY_SUPABASE_URL is missing.");
-+  }
-+  return `${base}${route}`;
-+}
-+
-+async function fetchWithTimeout(url, options = {}) {
-+  const requestUrl = new URL(url);
-+  const client = requestUrl.protocol === "http:" ? http : https;
-+  return new Promise((resolve, reject) => {
-+    const request = client.request(requestUrl, {
-+      headers: options.headers,
-+      method: options.method || "GET",
-+      timeout: REQUEST_TIMEOUT_MS,
-+      ca: requestUrl.protocol === "https:" ? systemCaCertificates() : undefined,
-+    }, (response) => {
-+      const chunks = [];
-+      response.on("data", (chunk) => {
-+        chunks.push(chunk);
-+      });
-+      response.on("end", () => {
-+        const status = Number(response.statusCode || 0);
-+        const rawBody = Buffer.concat(chunks).toString("utf8");
-+        resolve({
-+          ok: status >= 200 && status < 300,
-+          status,
-+          async json() {
-+            return rawBody ? JSON.parse(rawBody) : {};
-+          },
-+        });
-+      });
-+    });
-+    request.once("timeout", () => {
-+      request.destroy(new Error("Request timed out."));
-+    });
-+    request.once("error", reject);
-+    if (options.body) {
-+      request.write(options.body);
-+    }
-+    request.end();
-+  });
-+}
-+
-+async function checkSupabaseReachable() {
-+  try {
-+    const response = await fetchWithTimeout(supabaseApiUrl("/"));
-+    return pass("Supabase reachable", `HTTP ${response.status}`);
-+  } catch (error) {
-+    return fail("Supabase reachable", error?.code || error?.cause?.code || error?.message);
-+  }
-+}
-+
-+async function checkAuthEndpointReachable() {
-+  try {
-+    const anonKey = envValue("GAMEFOUNDRY_SUPABASE_ANON_KEY");
-+    const response = await fetchWithTimeout(supabaseApiUrl("/auth/v1/settings"), {
-+      headers: {
-+        apikey: anonKey,
-+        authorization: `Bearer ${anonKey}`,
-+      },
-+    });
-+    return response.status < 500
-+      ? pass("Auth endpoint reachable", `HTTP ${response.status}`)
-+      : fail("Auth endpoint reachable", `HTTP ${response.status}`);
-+  } catch (error) {
-+    return fail("Auth endpoint reachable", error?.code || error?.cause?.code || error?.message);
-+  }
-+}
-+
-+async function checkServiceRoleAuthentication() {
-+  try {
-+    const serviceRoleKey = envValue("GAMEFOUNDRY_SUPABASE_SERVICE_ROLE_KEY");
-+    const response = await fetchWithTimeout(supabaseApiUrl("/auth/v1/admin/users?page=1&per_page=1"), {
-+      headers: {
-+        apikey: serviceRoleKey,
-+        authorization: `Bearer ${serviceRoleKey}`,
-+      },
-+    });
-+    if (response.ok) {
-+      return pass("Service role authentication", `HTTP ${response.status}`);
-+    }
-+    return fail("Service role authentication", `HTTP ${response.status}`);
-+  } catch (error) {
-+    return fail("Service role authentication", error?.code || error?.cause?.code || error?.message);
-+  }
-+}
-+
-+function quoteIdentifier(value) {
-+  const name = String(value || "").trim();
-+  if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(name)) {
-+    throw new Error(`Invalid database identifier: ${name || "(empty)"}.`);
-+  }
-+  return `"${name.replace(/"/g, "\"\"")}"`;
-+}
-+
-+async function checkIdentityTable(tableName) {
-+  try {
-+    const config = parseDatabaseUrl();
-+    const client = createPostgresConnectionClient();
-+    await client.query(`SELECT key FROM ${quoteIdentifier(tableName)} LIMIT 1;`);
-+    return pass(`${tableName} table`, databaseDiagnostic(config));
-+  } catch (error) {
-+    return fail(`${tableName} table`, error?.code || error?.cause?.code || error?.message);
-+  }
-+}
-+
-+async function checkTlsValidation() {
-+  try {
-+    const { hostname } = new URL(envValue("GAMEFOUNDRY_SUPABASE_URL"));
-+    await new Promise((resolve, reject) => {
-+      const socket = tls.connect({
-+        host: hostname,
-+        port: 443,
-+        ca: systemCaCertificates(),
-+        rejectUnauthorized: true,
-+        servername: hostname,
-+        timeout: REQUEST_TIMEOUT_MS,
-+      });
-+      socket.once("secureConnect", () => {
-+        if (socket.authorized) {
-+          socket.end();
-+          resolve();
-+          return;
-+        }
-+        const reason = socket.authorizationError || "TLS certificate was not authorized.";
-+        socket.destroy();
-+        reject(new Error(reason));
-+      });
-+      socket.once("timeout", () => {
-+        socket.destroy();
-+        reject(new Error("TLS validation timed out."));
-+      });
-+      socket.once("error", reject);
-+    });
-+    return pass("TLS validation");
-+  } catch (error) {
-+    return fail("TLS validation", error?.code || error?.message);
-+  }
-+}
-+
-+function parseDatabaseUrl() {
-+  const databaseUrl = new URL(envValue("GAMEFOUNDRY_DATABASE_URL"));
-+  if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
-+    throw new Error("Database URL must use postgres:// or postgresql://.");
-+  }
-+  return {
-+    database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
-+    host: databaseUrl.hostname,
-+    password: decodeURIComponent(databaseUrl.password || ""),
-+    port: Number(databaseUrl.port || 5432),
-+    user: decodeURIComponent(databaseUrl.username || ""),
-+  };
-+}
-+
-+function databaseDiagnostic(config) {
-+  return `host=${config.host}; port=${config.port}; database=${config.database}`;
-+}
-+
-+function checkDatabaseSslMode() {
-+  try {
-+    return pass(`Database SSL mode: ${databaseSslMode()}`);
-+  } catch (error) {
-+    return fail("Database SSL mode", error?.message);
-+  }
-+}
-+
-+async function checkDatabaseConnection() {
-+  try {
-+    const config = parseDatabaseUrl();
-+    if (!config.user || !config.password) {
-+      throw new Error("Database URL must include username and password.");
-+    }
-+    const client = createPostgresConnectionClient();
-+    await client.query("SELECT 1 AS ok;");
-+    return pass("Database connection", databaseDiagnostic(config));
-+  } catch (error) {
-+    return fail("Database connection", error?.code || error?.message);
-+  }
-+}
-+
-+async function main() {
-+  const envLoad = loadEnvFile();
-+  const results = [];
-+  results.push(envLoad.loaded
-+    ? pass("Runtime .env validation load", `${envLoad.loadedKeys.length} key(s) loaded`)
-+    : fail("Runtime .env validation load", `${ENV_FILE} was not found`));
-+
-+  REQUIRED_ENV.forEach(({ key, label }) => {
-+    const value = envValue(key);
-+    results.push(value ? pass(label, `${key}=${maskValue(value)}`) : fail(label, `${key}=missing`));
-+  });
-+
-+  const supabaseReachable = await checkSupabaseReachable();
-+  const tlsValidation = await checkTlsValidation();
-+  const authEndpoint = await checkAuthEndpointReachable();
-+  const serviceRole = await checkServiceRoleAuthentication();
-+  results.push(supabaseReachable);
-+  results.push(tlsValidation);
-+  results.push(authEndpoint);
-+  results.push(serviceRole);
-+  const identityTableResults = [];
-+  for (const tableName of IDENTITY_TABLES) {
-+    identityTableResults.push(await checkIdentityTable(tableName));
-+  }
-+  results.push(checkDatabaseSslMode());
-+  results.push(await checkDatabaseConnection());
-+  results.push(...identityTableResults);
-+
-+  results.forEach((check) => {
-+    console.log(formatResult(check));
-+  });
-+  const failed = results.filter((check) => check.status === "FAIL");
-+  const warned = results.filter((check) => check.status === "WARN");
-+  console.log("");
-+  console.log(`Overall Result: ${failed.length ? "FAIL" : "PASS"}`);
-+  if (warned.length) {
-+    console.log(`Warning checks: ${warned.map((check) => check.label).join(", ")}`);
-+  }
-+  if (failed.length) {
-+    console.log(`Failed checks: ${failed.map((check) => check.label).join(", ")}`);
-+    process.exitCode = 1;
-+  }
-+}
-+
-+await main();
-diff --git "a/scripts\\apply-database-ddl.mjs" "b/scripts\\apply-database-ddl.mjs"
-new file mode 100644
-index 000000000..540949c8f
---- /dev/null
-+++ "b/scripts\\apply-database-ddl.mjs"
-@@ -0,0 +1,150 @@
-+#!/usr/bin/env node
-+import fs from "node:fs";
-+import path from "node:path";
-+import process from "node:process";
-+import { createPostgresConnectionClient, databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
-+
-+const ENV_FILE = ".env";
-+const DDL_FILES = Object.freeze([
-+  "docs_build/database/ddl/account.sql",
-+  "docs_build/database/ddl/admin.sql",
-+  "docs_build/database/ddl/game-workspace.sql",
-+  "docs_build/database/ddl/asset.sql",
-+  "docs_build/database/ddl/objects.sql",
-+  "docs_build/database/ddl/controls.sql",
-+  "docs_build/database/ddl/game-design.sql",
-+  "docs_build/database/ddl/game-configuration.sql",
-+  "docs_build/database/ddl/game-journey.sql",
-+  "docs_build/database/ddl/palette.sql",
-+  "docs_build/database/ddl/tags.sql",
-+  "docs_build/database/ddl/tool-metadata.sql",
-+  "docs_build/database/ddl/tool-planning.sql",
-+  "docs_build/database/ddl/toolbox-votes.sql",
-+  "docs_build/database/ddl/support-tickets.sql",
-+]);
-+function parseEnvValue(value) {
-+  const trimmed = value.trim();
-+  const quote = trimmed[0];
-+  if ((quote === "\"" || quote === "'") && trimmed.endsWith(quote)) {
-+    return trimmed.slice(1, -1);
-+  }
-+  const commentIndex = trimmed.indexOf(" #");
-+  return commentIndex === -1 ? trimmed : trimmed.slice(0, commentIndex).trim();
-+}
-+
-+function loadRuntimeEnv() {
-+  const envPath = path.resolve(process.cwd(), ENV_FILE);
-+  if (!fs.existsSync(envPath)) {
-+    return {
-+      loaded: false,
-+      loadedKeys: [],
-+      path: envPath,
-+    };
-+  }
-+  const loadedKeys = [];
-+  fs.readFileSync(envPath, "utf8").split(/\r?\n/).forEach((line) => {
-+    const trimmed = line.trim();
-+    if (!trimmed || trimmed.startsWith("#")) {
-+      return;
-+    }
-+    const normalized = trimmed.startsWith("export ") ? trimmed.slice(7).trim() : trimmed;
-+    const separatorIndex = normalized.indexOf("=");
-+    if (separatorIndex <= 0) {
-+      return;
-+    }
-+    const key = normalized.slice(0, separatorIndex).trim();
-+    if (!/^[A-Za-z_][A-Za-z0-9_]*$/.test(key)) {
-+      return;
-+    }
-+    if (process.env[key] !== undefined) {
-+      return;
-+    }
-+    process.env[key] = parseEnvValue(normalized.slice(separatorIndex + 1));
-+    loadedKeys.push(key);
-+  });
-+  return {
-+    loaded: true,
-+    loadedKeys: loadedKeys.sort(),
-+    path: envPath,
-+  };
-+}
-+
-+function envValue(key) {
-+  return String(process.env[key] || "").trim();
-+}
-+
-+function parseDatabaseUrl() {
-+  const value = envValue("GAMEFOUNDRY_DATABASE_URL");
-+  if (!value) {
-+    throw new Error("GAMEFOUNDRY_DATABASE_URL is required to apply GFS DDL.");
-+  }
-+  const databaseUrl = new URL(value);
-+  if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
-+    throw new Error("GAMEFOUNDRY_DATABASE_URL must use postgres:// or postgresql://.");
-+  }
-+  const host = databaseUrl.hostname;
-+  return {
-+    database: decodeURIComponent(databaseUrl.pathname.replace(/^\/+/, "") || "postgres"),
-+    host,
-+    password: decodeURIComponent(databaseUrl.password || ""),
-+    port: Number(databaseUrl.port || 5432),
-+    sslMode: databaseSslMode(),
-+    user: decodeURIComponent(databaseUrl.username || ""),
-+  };
-+}
-+
-+function databaseDiagnostic(config) {
-+  return `host=${config.host}; port=${config.port}; database=${config.database}`;
-+}
-+
-+function connectionModeDiagnostic(config) {
-+  if (config.sslMode === "disable") {
-+    return "plain TCP";
-+  }
-+  return "TLS";
-+}
-+
-+function readDdlFiles() {
-+  return DDL_FILES.map((filePath) => {
-+    const absolutePath = path.resolve(process.cwd(), filePath);
-+    return {
-+      filePath,
-+      sql: `\n-- Begin ${filePath}\n${fs.readFileSync(absolutePath, "utf8")}\n-- End ${filePath}\n`,
-+    };
-+  });
-+}
-+
-+async function main() {
-+  const envLoad = loadRuntimeEnv();
-+  if (!envLoad.loaded) {
-+    throw new Error(`${ENV_FILE} was not found; DDL apply uses the same runtime env file.`);
-+  }
-+
-+  const config = parseDatabaseUrl();
-+  if (!config.user || !config.password) {
-+    throw new Error("GAMEFOUNDRY_DATABASE_URL must include username and password.");
-+  }
-+
-+  const client = createPostgresConnectionClient();
-+  await client.query("SELECT 1 AS ok;");
-+
-+  const appliedFiles = [];
-+  for (const ddlFile of readDdlFiles()) {
-+    try {
-+      await client.query(ddlFile.sql);
-+      appliedFiles.push(ddlFile.filePath);
-+    } catch (error) {
-+      throw new Error(`Failed applying ${ddlFile.filePath}: ${error instanceof Error ? error.message : String(error || "Unknown PostgreSQL error.")}`);
-+    }
-+  }
-+
-+  console.log(`PASS - .env loaded for DDL apply (${envLoad.loadedKeys.length} key(s) applied)`);
-+  console.log(`PASS - Database connection ready (${databaseDiagnostic(config)})`);
-+  console.log(`PASS - Database SSL mode: ${config.sslMode}`);
-+  console.log(`PASS - DDL connection mode selected from GAMEFOUNDRY_DATABASE_SSL: ${connectionModeDiagnostic(config)}.`);
-+  console.log(`PASS - Applied ${appliedFiles.length} grouped GFS DDL file(s) through GAMEFOUNDRY_DATABASE_URL.`);
-+  console.log("PASS - DDL connection behavior is driven by GAMEFOUNDRY_DATABASE_URL and GAMEFOUNDRY_DATABASE_SSL.");
-+  appliedFiles.forEach((filePath) => console.log(`APPLIED - ${filePath}`));
-+}
-+
-+await main();
-diff --git "a/docs_build\\dev\\reports\\PR_26167_199-env-copy-source-governance.md" "b/docs_build\\dev\\reports\\PR_26167_199-env-copy-source-governance.md"
-new file mode 100644
-index 000000000..75d08fc40
---- /dev/null
-+++ "b/docs_build\\dev\\reports\\PR_26167_199-env-copy-source-governance.md"
-@@ -0,0 +1,76 @@
-+# PR_26167_199-env-copy-source-governance
-+
-+Status: PASS with unrelated worktree note
-+
-+## Branch Validation
-+- PASS: Current branch is `main`.
-+- Expected branch: `main`.
-+
-+## Summary
-+- Added targeted Project Instructions governance for `.env` runtime loading, copy-source env files, deployment targets, and script naming.
-+- Added vendor-neutral active script names:
-+  - `scripts/validate-runtime-connections.mjs`
-+  - `scripts/apply-database-ddl.mjs`
-+- Kept compatibility wrappers for the old script names with the required deprecation messages.
-+
-+## Requirement Checklist
-+- PASS: Read `docs_build/dev/PROJECT_INSTRUCTIONS.md` before execution.
-+- PASS: Hard-stop branch check passed on `main`.
-+- PASS: Documented that runtime loads `.env` only.
-+- PASS: Documented `.env.dev`, `.env.ist`, `.env.uat`, and `.env.prd` as copy-source files only.
-+- PASS: Documented manual flow: copy selected target file to `.env`, run validation, apply DDL/DML migrations, start runtime.
-+- PASS: Documented valid deployment targets: `DEV`, `IST`, `UAT`, `PRD`.
-+- PASS: Prohibited runtime environment parameters including `--env`, `--environment`, `ENVIRONMENT=DEV`, `ENVIRONMENT=UAT`, and `ENVIRONMENT=PRD`.
-+- PASS: Stated that deployment targets are not application behaviors.
-+- PASS: Added script naming governance.
-+- PASS: Added preferred naming nouns: `auth`, `database`, `storage`, `telemetry`, `api`.
-+- PASS: Documented avoidance of provider/vendor names in future active runtime script names.
-+- PASS: Renamed `scripts/validate-supabase-dev.mjs` to `scripts/validate-runtime-connections.mjs`.
-+- PASS: Renamed `scripts/apply-supabase-dev-ddl.mjs` to `scripts/apply-database-ddl.mjs`.
-+- PASS: Kept compatibility wrapper `scripts/validate-supabase-dev.mjs`.
-+- PASS: Kept compatibility wrapper `scripts/apply-supabase-dev-ddl.mjs`.
-+- PASS: Wrapper output includes `Deprecated script name. Use validate-runtime-connections.mjs.`
-+- PASS: Wrapper output includes `Deprecated script name. Use apply-database-ddl.mjs.`
-+
-+## Script Rename Mapping
-+- `scripts/validate-supabase-dev.mjs` -> `scripts/validate-runtime-connections.mjs`.
-+- `scripts/apply-supabase-dev-ddl.mjs` -> `scripts/apply-database-ddl.mjs`.
-+- Added npm alias: `validate:runtime-connections`.
-+- Kept npm compatibility alias: `validate:supabase-dev`.
-+
-+## Validation Lane Report
-+- PASS: `node --check scripts\validate-runtime-connections.mjs`.
-+- PASS: `node --check scripts\apply-database-ddl.mjs`.
-+- PASS: `node --check scripts\validate-supabase-dev.mjs`.
-+- PASS: `node --check scripts\apply-supabase-dev-ddl.mjs`.
-+- PASS: `node -e` package JSON parse.
-+- PASS: docs/static governance assertion over `docs_build/dev/PROJECT_INSTRUCTIONS.md`.
-+- PASS: `node --use-system-ca .\scripts\validate-runtime-connections.mjs`.
-+- PASS: `node .\scripts\apply-database-ddl.mjs`.
-+- PASS: `node --use-system-ca .\scripts\validate-supabase-dev.mjs`.
-+- PASS: `node .\scripts\apply-supabase-dev-ddl.mjs`.
-+- PASS: `npm run validate:runtime-connections`.
-+- WARN: Full-worktree `git diff --check` failed on pre-existing unrelated `docs_build/dev/admin-notes/index.txt` trailing whitespace.
-+- PASS: Scoped PR199 `git diff --check -- docs_build\dev\PROJECT_INSTRUCTIONS.md package.json scripts\validate-runtime-connections.mjs scripts\apply-database-ddl.mjs scripts\validate-supabase-dev.mjs scripts\apply-supabase-dev-ddl.mjs`.
-+- SKIP: Playwright; not required because this PR changes docs/governance and script naming only.
-+- SKIP: Full samples smoke; not in scope.
-+
-+## Manual Validation Notes
-+- New validator script executed successfully and returned `Overall Result: PASS`.
-+- New DDL script executed successfully and applied 15 grouped DDL files.
-+- Compatibility wrappers executed successfully and printed the required deprecation messages before running the new scripts.
-+- Existing unrelated worktree change `docs_build/dev/admin-notes/index.txt` was not modified or packaged.
-+
-+## Artifact Output
-+- PASS: Repo-structured ZIP created at `tmp/PR_26167_199-env-copy-source-governance_delta.zip`.
-+
-+## Changed Files
-+- `docs_build/dev/PROJECT_INSTRUCTIONS.md`
-+- `package.json`
-+- `scripts/validate-runtime-connections.mjs`
-+- `scripts/apply-database-ddl.mjs`
-+- `scripts/validate-supabase-dev.mjs`
-+- `scripts/apply-supabase-dev-ddl.mjs`
-+- `docs_build/dev/reports/PR_26167_199-env-copy-source-governance.md`
-+- `docs_build/dev/reports/codex_review.diff`
-+- `docs_build/dev/reports/codex_changed_files.txt`
++  results.push(...tableResults);
+ 
+   results.forEach((check) => {
+     console.log(formatResult(check));

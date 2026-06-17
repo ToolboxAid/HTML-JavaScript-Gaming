@@ -1,27 +1,39 @@
 #!/usr/bin/env node
+import crypto from "node:crypto";
 import fs from "node:fs";
 import path from "node:path";
 import process from "node:process";
 import { createPostgresConnectionClient, databaseSslMode } from "../src/dev-runtime/persistence/postgres-connection-client.mjs";
 
 const ENV_FILE = ".env";
-const DDL_FILES = Object.freeze([
-  "docs_build/database/ddl/account.sql",
-  "docs_build/database/ddl/admin.sql",
-  "docs_build/database/ddl/game-workspace.sql",
-  "docs_build/database/ddl/asset.sql",
-  "docs_build/database/ddl/objects.sql",
-  "docs_build/database/ddl/controls.sql",
-  "docs_build/database/ddl/game-design.sql",
-  "docs_build/database/ddl/game-configuration.sql",
-  "docs_build/database/ddl/game-journey.sql",
-  "docs_build/database/ddl/palette.sql",
-  "docs_build/database/ddl/tags.sql",
-  "docs_build/database/ddl/tool-metadata.sql",
-  "docs_build/database/ddl/tool-planning.sql",
-  "docs_build/database/ddl/toolbox-votes.sql",
-  "docs_build/database/ddl/support-tickets.sql",
+const MIGRATION_DIRS = Object.freeze([
+  {
+    directory: "docs_build/database/ddl",
+    type: "DDL",
+  },
+  {
+    directory: "docs_build/database/dml",
+    type: "DML",
+  },
 ]);
+const PREFERRED_GROUP_ORDER = Object.freeze([
+  "account.sql",
+  "admin.sql",
+  "game-workspace.sql",
+  "asset.sql",
+  "objects.sql",
+  "controls.sql",
+  "game-design.sql",
+  "game-configuration.sql",
+  "game-journey.sql",
+  "palette.sql",
+  "tags.sql",
+  "tool-metadata.sql",
+  "tool-planning.sql",
+  "toolbox-votes.sql",
+  "support-tickets.sql",
+]);
+
 function parseEnvValue(value) {
   const trimmed = value.trim();
   const quote = trimmed[0];
@@ -76,7 +88,7 @@ function envValue(key) {
 function parseDatabaseUrl() {
   const value = envValue("GAMEFOUNDRY_DATABASE_URL");
   if (!value) {
-    throw new Error("GAMEFOUNDRY_DATABASE_URL is required to apply GFS DDL.");
+    throw new Error("GAMEFOUNDRY_DATABASE_URL is required to apply database migrations.");
   }
   const databaseUrl = new URL(value);
   if (!["postgres:", "postgresql:"].includes(databaseUrl.protocol)) {
@@ -98,26 +110,102 @@ function databaseDiagnostic(config) {
 }
 
 function connectionModeDiagnostic(config) {
-  if (config.sslMode === "disable") {
-    return "plain TCP";
-  }
-  return "TLS";
+  return config.sslMode === "disable" ? "plain TCP" : "TLS";
 }
 
-function readDdlFiles() {
-  return DDL_FILES.map((filePath) => {
-    const absolutePath = path.resolve(process.cwd(), filePath);
-    return {
-      filePath,
-      sql: `\n-- Begin ${filePath}\n${fs.readFileSync(absolutePath, "utf8")}\n-- End ${filePath}\n`,
-    };
+function migrationOrder(fileName) {
+  const index = PREFERRED_GROUP_ORDER.indexOf(fileName);
+  return index === -1 ? PREFERRED_GROUP_ORDER.length : index;
+}
+
+function sqlLiteral(value) {
+  return `'${String(value ?? "").replace(/'/g, "''")}'`;
+}
+
+function migrationChecksum(sql) {
+  return crypto.createHash("sha256").update(sql, "utf8").digest("hex");
+}
+
+function migrationKey(migration) {
+  return `${migration.type}:${migration.fileName}`;
+}
+
+function readMigrationFiles() {
+  return MIGRATION_DIRS.flatMap(({ directory, type }) => {
+    const absoluteDirectory = path.resolve(process.cwd(), directory);
+    return fs.readdirSync(absoluteDirectory, { withFileTypes: true })
+      .filter((entry) => entry.isFile() && entry.name.endsWith(".sql"))
+      .sort((left, right) => migrationOrder(left.name) - migrationOrder(right.name) || left.name.localeCompare(right.name))
+      .map((entry) => {
+        const filePath = `${directory}/${entry.name}`;
+        const sql = fs.readFileSync(path.join(absoluteDirectory, entry.name), "utf8");
+        return {
+          checksum: migrationChecksum(sql),
+          fileName: entry.name,
+          filePath,
+          key: `${type}:${filePath}`,
+          sql: `\n-- Begin ${filePath}\n${sql}\n-- End ${filePath}\n`,
+          type,
+        };
+      });
   });
+}
+
+async function ensureSchemaMigrations(client) {
+  await client.query(`
+CREATE TABLE IF NOT EXISTS schema_migrations (
+  key text PRIMARY KEY,
+  "fileName" text NOT NULL,
+  "migrationType" text NOT NULL CHECK ("migrationType" IN ('DDL', 'DML')),
+  checksum text NOT NULL,
+  "appliedAt" timestamptz NOT NULL DEFAULT now(),
+  "appliedBy" text NOT NULL
+);
+CREATE UNIQUE INDEX IF NOT EXISTS schema_migrations_file_type_idx
+  ON schema_migrations ("migrationType", "fileName");
+`);
+}
+
+async function readAppliedMigrations(client) {
+  const rows = await client.query('SELECT key, "fileName", "migrationType", checksum, "appliedAt", "appliedBy" FROM schema_migrations;');
+  return new Map(rows.map((row) => [row.key || migrationKey({ fileName: row.fileName, type: row.migrationType }), row]));
+}
+
+function appliedBy() {
+  return envValue("GAMEFOUNDRY_DATABASE_MIGRATION_ACTOR") ||
+    envValue("USERNAME") ||
+    envValue("USER") ||
+    "codex";
+}
+
+async function applyMigration(client, migration, appliedMigrations, actor) {
+  const applied = appliedMigrations.get(migration.key);
+  if (applied) {
+    if (applied.checksum !== migration.checksum) {
+      throw new Error(`Migration checksum changed for ${migration.filePath}. Existing checksum ${applied.checksum}; current checksum ${migration.checksum}. Create a new migration file instead of editing an applied one.`);
+    }
+    return "SKIP";
+  }
+
+  await client.query(migration.sql);
+  await client.query(`
+INSERT INTO schema_migrations (key, "fileName", "migrationType", checksum, "appliedAt", "appliedBy")
+VALUES (${sqlLiteral(migration.key)}, ${sqlLiteral(migration.fileName)}, ${sqlLiteral(migration.type)}, ${sqlLiteral(migration.checksum)}, now(), ${sqlLiteral(actor)});
+`);
+  appliedMigrations.set(migration.key, {
+    appliedBy: actor,
+    checksum: migration.checksum,
+    fileName: migration.fileName,
+    key: migration.key,
+    migrationType: migration.type,
+  });
+  return "APPLY";
 }
 
 async function main() {
   const envLoad = loadRuntimeEnv();
   if (!envLoad.loaded) {
-    throw new Error(`${ENV_FILE} was not found; DDL apply uses the same runtime env file.`);
+    throw new Error(`${ENV_FILE} was not found; database migrations use the same runtime env file.`);
   }
 
   const config = parseDatabaseUrl();
@@ -127,24 +215,35 @@ async function main() {
 
   const client = createPostgresConnectionClient();
   await client.query("SELECT 1 AS ok;");
+  await ensureSchemaMigrations(client);
 
-  const appliedFiles = [];
-  for (const ddlFile of readDdlFiles()) {
+  const migrations = readMigrationFiles();
+  const appliedMigrations = await readAppliedMigrations(client);
+  const actor = appliedBy();
+  const results = [];
+  for (const migration of migrations) {
     try {
-      await client.query(ddlFile.sql);
-      appliedFiles.push(ddlFile.filePath);
+      results.push({
+        migration,
+        status: await applyMigration(client, migration, appliedMigrations, actor),
+      });
     } catch (error) {
-      throw new Error(`Failed applying ${ddlFile.filePath}: ${error instanceof Error ? error.message : String(error || "Unknown PostgreSQL error.")}`);
+      throw new Error(`Failed applying ${migration.filePath}: ${error instanceof Error ? error.message : String(error || "Unknown database error.")}`);
     }
   }
 
-  console.log(`PASS - .env loaded for DDL apply (${envLoad.loadedKeys.length} key(s) applied)`);
+  const appliedCount = results.filter((result) => result.status === "APPLY").length;
+  const skippedCount = results.filter((result) => result.status === "SKIP").length;
+  console.log(`PASS - .env loaded for database migration apply (${envLoad.loadedKeys.length} key(s) applied)`);
   console.log(`PASS - Database connection ready (${databaseDiagnostic(config)})`);
   console.log(`PASS - Database SSL mode: ${config.sslMode}`);
-  console.log(`PASS - DDL connection mode selected from GAMEFOUNDRY_DATABASE_SSL: ${connectionModeDiagnostic(config)}.`);
-  console.log(`PASS - Applied ${appliedFiles.length} grouped GFS DDL file(s) through GAMEFOUNDRY_DATABASE_URL.`);
-  console.log("PASS - DDL connection behavior is driven by GAMEFOUNDRY_DATABASE_URL and GAMEFOUNDRY_DATABASE_SSL.");
-  appliedFiles.forEach((filePath) => console.log(`APPLIED - ${filePath}`));
+  console.log(`PASS - Database connection mode selected from GAMEFOUNDRY_DATABASE_SSL: ${connectionModeDiagnostic(config)}.`);
+  console.log("PASS - schema_migrations table confirmed.");
+  console.log(`PASS - Migration tracking fields: fileName, migrationType, checksum, appliedAt, appliedBy.`);
+  console.log(`PASS - Database migrations processed=${results.length}; applied=${appliedCount}; skipped=${skippedCount}.`);
+  results.forEach((result) => {
+    console.log(`${result.status === "APPLY" ? "APPLIED" : "SKIPPED"} - ${result.migration.type} ${result.migration.filePath}`);
+  });
 }
 
 await main();

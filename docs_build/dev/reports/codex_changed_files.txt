@@ -1,9 +1,5 @@
-﻿docs_build/dev/PROJECT_INSTRUCTIONS.md
-package.json
-scripts/validate-runtime-connections.mjs
 scripts/apply-database-ddl.mjs
-scripts/validate-supabase-dev.mjs
-scripts/apply-supabase-dev-ddl.mjs
-docs_build/dev/reports/PR_26167_199-env-copy-source-governance.md
+scripts/validate-runtime-connections.mjs
+docs_build/dev/reports/PR_26167_200-database-migration-apply-lane.md
 docs_build/dev/reports/codex_review.diff
 docs_build/dev/reports/codex_changed_files.txt
