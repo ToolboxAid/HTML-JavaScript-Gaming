@@ -33,14 +33,8 @@
 - Marketplace categories: Games, Assets, Audio, Music, Worlds, Templates, Tutorials.
 - Revenue: creator receives 80% of Net Revenue.
 - Net Revenue: sale amount less processing fees, taxes, refunds, chargebacks, and required deductions.
-- AI credit packs:
-  - Small: 100 credits, $5.
-  - Medium: 500 credits, $20.
-  - Large: 3000 credits, $99.
-- Roles:
-  - Creator: platform user.
-  - Admin: health, infrastructure, operations, invitations, AI monitoring, support.
-  - Owner: membership pricing, marketplace percentages, AI pricing, AI action costs, founding programs, legal, revenue settings.
+- AI credit packs: Small 100 credits for $5; Medium 500 credits for $20; Large 3000 credits for $99.
+- Roles: Creator platform user; Admin health, infrastructure, operations, invitations, AI monitoring, support; Owner membership pricing, marketplace percentages, AI pricing, AI action costs, founding programs, legal, revenue settings.
 
 ## Required Database Tables Captured
 - `membership_plans`
@@ -80,11 +74,14 @@
 - Expected branch: `main`.
 - Local branches found: `main`.
 - Branch validation: PASS.
-- Runtime validation: SKIP, docs-only PLAN request.
+- PLAN_PR file count: PASS, 19 of 19 required files exist.
+- PLAN_PR required section validation: PASS.
+- Required reports: PASS, `codex_review.diff`, `codex_changed_files.txt`, and `pr_stack_summary.md` exist.
+- Runtime validation: SKIP, docs-only PLAN stack packaging request.
 - Playwright validation: SKIP, no runtime or UI implementation.
-- ZIP packaging: SKIP, this request explicitly required planning documentation only and did not request BUILD execution.
+- ZIP packaging: PASS, `tmp/PR_26169_plan_stack_delta.zip` created with repo-relative paths.
 
-## Files Created
+## Files Packaged
 - `docs_build/pr/PLAN_PR_26169_001-creator-platform-foundation.md`
 - `docs_build/pr/PLAN_PR_26169_002-auth-preview-signin-regression.md`
 - `docs_build/pr/PLAN_PR_26169_003-beta-invitations-admin.md`
@@ -104,4 +101,6 @@
 - `docs_build/pr/PLAN_PR_26169_017-owner-memberships.md`
 - `docs_build/pr/PLAN_PR_26169_018-owner-ai-credits.md`
 - `docs_build/pr/PLAN_PR_26169_019-admin-health-operations.md`
+- `docs_build/dev/reports/codex_review.diff`
+- `docs_build/dev/reports/codex_changed_files.txt`
 - `docs_build/dev/reports/pr_stack_summary.md`
